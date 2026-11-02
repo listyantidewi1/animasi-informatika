@@ -1,0 +1,955 @@
+<title>Kiko: Kata Sandi dan Jejak Digital</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<style>
+/* Inti gaya halaman latihan: satu kolom, pemutar di atas, latihan di bawah; palet kantin sama dengan video. */
+:root {
+  --bg: #EAF2EE; --surface: #FFFFFF; --surface2: #DCE9E2; --ink: #1F2A33; --ink2: #4A5A66; --line: #C9D8D0;
+  --accent: #2E7E9A; --accent-ink: #FFFFFF; --warm: #F2B134; --warm-ink: #5E3E05; --good: #2E9E5B; --good-bg: #DDF3E4; --bad: #D9443B; --bad-bg: #FBE1DF;
+  --font: Inter, "Segoe UI", Roboto, Arial, sans-serif;
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) { --bg: #141C1A; --surface: #1E2926; --surface2: #273532; --ink: #EAF2EE; --ink2: #A9BBB3; --line: #3A4A45; --accent: #5FB3CE; --accent-ink: #0F1D22; --warm: #F2B134; --warm-ink: #2B1C02; --good: #5FCB8A; --good-bg: #1F3A2B; --bad: #F07A72; --bad-bg: #442523; color-scheme: dark } }
+:root[data-theme="dark"] { --bg: #141C1A; --surface: #1E2926; --surface2: #273532; --ink: #EAF2EE; --ink2: #A9BBB3; --line: #3A4A45; --accent: #5FB3CE; --accent-ink: #0F1D22; --warm: #F2B134; --warm-ink: #2B1C02; --good: #5FCB8A; --good-bg: #1F3A2B; --bad: #F07A72; --bad-bg: #442523; color-scheme: dark }
+* { box-sizing: border-box }
+body { background: var(--bg); color: var(--ink); font-family: var(--font); font-size: 17px; line-height: 1.5; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); padding-block: 16px 48px }
+.wrap { max-width: 980px; margin: 0 auto; display: grid; gap: 28px }
+h1 { font-size: clamp(26px, 5vw, 38px); line-height: 1.15; margin: 0; text-wrap: balance; font-weight: 900 }
+h2 { font-size: 22px; margin: 0 0 12px; font-weight: 800 }
+h3 { font-size: 18px; margin: 0 0 8px; font-weight: 800 }
+p { margin: 0 0 10px; max-width: 65ch }
+.eyebrow { font-size: 13px; letter-spacing: .08em; text-transform: uppercase; color: var(--ink2); font-weight: 800; margin-bottom: 6px }
+.card { background: var(--surface); border-radius: 18px; padding: 18px; border: 1px solid var(--line) }
+button { font: inherit; font-weight: 800; border: 0; border-radius: 12px; padding: 12px 16px; cursor: pointer; background: var(--surface2); color: var(--ink); min-height: 48px; touch-action: manipulation }
+button:focus-visible, [tabindex]:focus-visible { outline: 3px solid var(--warm); outline-offset: 2px }
+button.primary { background: var(--accent); color: var(--accent-ink) }
+button.warm { background: var(--warm); color: var(--warm-ink) }
+button[aria-pressed="true"] { box-shadow: inset 0 0 0 3px var(--accent) }
+button:disabled { opacity: .45; cursor: default }
+.row { display: flex; flex-wrap: wrap; gap: 10px; align-items: center }
+/* player */
+.player { display: grid; gap: 12px }
+.stage { position: relative; width: 100%; aspect-ratio: 16 / 9; max-width: 100%; background: #EAF2EE; border-radius: 14px; overflow: hidden; border: 1px solid var(--line) }
+.stage canvas { width: 100%; height: 100%; display: block }
+.bigplay { position: absolute; inset: 0; display: grid; place-items: center; background: rgba(31,42,51,.25); border: 0; border-radius: 0; color: #fff; font-size: 20px; min-height: 0 }
+.bigplay span { background: var(--accent); color: var(--accent-ink); padding: 14px 26px; border-radius: 999px; font-weight: 900 }
+.bar { height: 10px; background: var(--surface2); border-radius: 999px; overflow: hidden; cursor: pointer }
+.bar > i { display: block; height: 100%; width: 0; background: var(--warm) }
+.chapters { display: flex; flex-wrap: wrap; gap: 8px }
+.chapters button { font-size: 14px; padding: 8px 12px; min-height: 40px }
+.chapters button.now { background: var(--warm); color: var(--warm-ink) }
+.hint { color: var(--ink2); font-size: 15px }
+/* exercises (generic parts) */
+.levels { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 12px }
+.levels button { font-size: 14px; padding: 8px 12px; min-height: 40px }
+.levels button.done::after { content: " ✓"; color: var(--good) }
+.task { background: var(--surface2); border-radius: 12px; padding: 12px 14px; margin-bottom: 12px; font-weight: 700 }
+.result { border-radius: 12px; padding: 12px 14px; font-weight: 800; margin-top: 10px }
+.result.good { background: var(--good-bg); color: var(--good) }
+.result.bad { background: var(--bad-bg); color: var(--bad) }
+.result.info { background: var(--surface2); color: var(--ink) }
+/* quiz */
+.quiz { display: grid; gap: 16px }
+.q { border-top: 1px solid var(--line); padding-top: 14px }
+.q:first-child { border-top: 0; padding-top: 0 }
+.opts { display: grid; gap: 8px; margin-top: 8px }
+.opts button { text-align: left; font-weight: 700; background: var(--surface2); display: flex; gap: 10px; align-items: center }
+.opts button b { width: 30px; height: 30px; border-radius: 50%; background: var(--accent); color: var(--accent-ink); display: grid; place-items: center; flex: none }
+.opts button.right { background: var(--good-bg); box-shadow: inset 0 0 0 3px var(--good) }
+.opts button.wrong { background: var(--bad-bg) }
+.fb { margin-top: 8px; font-weight: 700 }
+.fb.good { color: var(--good) } .fb.bad { color: var(--bad) }
+details summary { cursor: pointer; font-weight: 800; font-size: 18px }
+details[open] summary { margin-bottom: 10px }
+ul.plain { padding-left: 20px; margin: 0 0 10px } ul.plain li { margin-bottom: 6px; max-width: 65ch }
+.progress { display: flex; gap: 8px; flex-wrap: wrap } .progress span { background: var(--surface2); border-radius: 999px; padding: 6px 12px; font-size: 14px; font-weight: 700 }
+.progress span.ok { background: var(--good-bg); color: var(--good) }
+@media (prefers-reduced-motion: reduce) { * { transition: none !important } }
+
+/* latihan D7.3 */
+.qnum { font-weight: 800; color: var(--ink2); font-size: 14px; margin-bottom: 4px }
+.qtext { font-weight: 800; font-size: 18px; margin-bottom: 8px }
+.pwwrap { display: grid; gap: 10px }
+.pwwrap input { font: inherit; font-size: 20px; font-weight: 700; padding: 12px 14px; border-radius: 12px; border: 2px solid var(--line); background: var(--surface); color: var(--ink); width: 100% }
+.meter { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px } .meter i { display: block; height: 14px; border-radius: 7px; background: var(--surface2) }
+.meter.l0 i:nth-child(-n+1) { background: var(--bad) } .meter.l1 i:nth-child(-n+2) { background: var(--warm) } .meter.l2 i:nth-child(-n+3) { background: var(--good) } .meter.l3 i { background: var(--accent) }
+.tips { display: grid; gap: 6px } .tips div { padding: 8px 12px; border-radius: 10px; background: var(--surface2); font-weight: 700; font-size: 15px } .tips div.ok { background: var(--good-bg); color: var(--good) }
+.warn { background: var(--bad-bg); color: var(--bad); border-radius: 12px; padding: 10px 12px; font-weight: 800; font-size: 15px }
+.samples { display: flex; flex-wrap: wrap; gap: 8px } .samples button { font-size: 15px; min-height: 40px; padding: 8px 12px; background: var(--surface); border: 2px solid var(--line) }
+.two { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 10px }
+.two button { font-size: 17px }
+.two button.right { background: var(--good-bg); box-shadow: inset 0 0 0 3px var(--good) }
+.two button.wrong { background: var(--bad-bg) }
+.three { display: grid; gap: 8px; margin-top: 10px } .three button { text-align: left; font-weight: 700; background: var(--surface); border: 2px solid var(--line) }
+.three button.right { border-color: var(--good); background: var(--good-bg) } .three button.wrong { background: var(--bad-bg) }
+</style>
+
+<div class="wrap">
+  <header>
+    <div class="eyebrow">Informatika · Fase D · Kelas VII · Episode D7.3</div>
+    <h1>Kata Sandi Aman dan Rekam Jejak Digital</h1>
+    <p class="hint">Tonton bagian demi bagian, lalu kerjakan tiga latihan di bawahnya. Prasyarat: episode D7.0. <b>Jangan pernah mengetik kata sandimu yang asli di halaman ini</b>; pakai contoh karangan.</p>
+  </header>
+
+  <section class="card player" aria-label="Pemutar episode">
+    <div class="stage">
+      <canvas id="screen" width="1920" height="1080" aria-label="Animasi episode"></canvas>
+      <audio id="nar" preload="auto" src="narasi.mp3"></audio>
+      <button class="bigplay" id="bigplay" aria-label="Putar"><span>▶ Putar episode</span></button>
+    </div>
+    <div class="bar" id="bar" role="slider" aria-label="Posisi episode" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" tabindex="0"><i id="barfill"></i></div>
+    <div class="row">
+      <button class="primary" id="playbtn">▶ Putar</button>
+      <button id="replay">↺ Ulangi bagian ini</button>
+      <button id="voice" aria-pressed="true">🔊 Suara: nyala</button>
+      <button id="slow" aria-pressed="false">🐢 Mode lambat</button>
+      <span class="hint" id="timelabel">0:00 / 0:00</span>
+    </div>
+    <div>
+      <div class="eyebrow">Bagian</div>
+      <div class="chapters" id="chapters"></div>
+    </div>
+  </section>
+
+  <section class="card" aria-label="Cek pemahaman">
+    <h2>Cek pemahaman</h2>
+    <p class="hint">Pilih satu jawaban. Kalau salah, kamu dapat petunjuk, lalu coba lagi.</p>
+    <div class="quiz" id="quiz"></div>
+  </section>
+
+  <section class="card" aria-label="Latihan">
+    <h2>Latihan: sandi dan jejak</h2>
+    <p class="hint">Tiga latihan. Jawaban salah memberi petunjuk, bukan nilai.</p>
+    <div class="levels" id="levels"></div>
+    <div class="task" id="task"></div>
+    <div id="exarea"></div>
+    <div id="result"></div>
+    <div class="row" style="margin-top:10px"><button id="redo">↺ Ulangi latihan ini</button></div>
+  </section>
+
+  <section class="card" aria-label="Kemajuan">
+    <h2>Kemajuanmu</h2>
+    <div class="progress" id="progress"></div>
+    <p class="hint" style="margin-top:8px">Kemajuan tersimpan di perangkat ini saja. Kata sandi contoh yang kamu ketik tidak disimpan atau dikirim ke mana pun.</p>
+  </section>
+
+  <section class="card">
+    <details>
+      <summary>Untuk guru: cara memakai episode ini (6 JP)</summary>
+      <p><b>Tujuan pembelajaran (D7.3):</b> murid membuat kata sandi yang aman dan menjelaskan mengapa rekam jejak digital sulit dihapus. Elemen LD, Fase D. Semua contoh memakai sandi dan akun fiktif; jangan pernah meminta murid menuliskan sandi aslinya.</p>
+      <ul class="plain">
+        <li><b>Pertemuan 1 (2 JP), konkret:</b> permainan tebak angka (1 digit vs 3 digit) berpasangan, hitung jumlah tebakan; diskusi: berapa lama kalau komputer menebak sejuta kali per detik? Tonton Bagian 1 segmen Kata sandi yang kuat. Murid membuat tiga frasa sandi karangan (bukan untuk dipakai) dan mengujinya di pengukur.</li>
+        <li><b>Pertemuan 2 (2 JP), aturan:</b> tonton segmen Tiga aturan; bermain peran: "admin palsu" meminta sandi, murid berlatih menolak dengan sopan. Tugas rumah bersama orang tua: periksa akun, ganti sandi pendek/kembar, nyalakan verifikasi dua langkah (tanpa melaporkan sandinya ke sekolah).</li>
+        <li><b>Pertemuan 3 (2 JP), jejak digital:</b> tonton Bagian 2; kegiatan "jejak hari ini": murid mendaftar jejak yang ia buat dan yang tercatat diam-diam dalam sehari. Latihan Pilah jejak dan diskusi tiga pertanyaan sebelum mengunggah, termasuk izin memotret teman.</li>
+      </ul>
+      <p><b>Target minimum:</b> murid dapat membuat frasa sandi ≥ 16 huruf dan menyebut dua alasan unggahan sulit dihapus. <b>Catatan aman:</b> pengukur di halaman ini bekerja di perangkat murid dan tidak mengirim apa pun.</p>
+    </details>
+  </section>
+</div>
+
+<script>/* Kiko core: mesin gambar bersama untuk semua episode Fase D.
+   Kiko.draw(ctx, t, TL) menggambar frame pada detik t di kanvas 1920x1080 secara deterministik.
+   Berisi palet, pembantu gambar, tokoh (Kiko, murid), dan adegan umum (judul, kuis, ringkasan, penutup).
+   Setiap episode menambahkan adegannya sendiri di scenes.js: Object.assign(Kiko.SCENES, {...}). */
+(function (global) {
+  const W = 1920, H = 1080;
+  const FONT = "Inter, 'Segoe UI', Roboto, Arial, sans-serif";
+  const C = {
+    bg: "#EAF2EE", bg2: "#DCE9E2", ink: "#1F2A33", ink2: "#4A5A66", panel: "#FFFFFF",
+    tile: "#F7FAF8", tileLine: "#C9D8D0", table: "#A4653A", tableTop: "#C98A57",
+    kiko: "#2E7E9A", kikoDark: "#1F5A6E", kikoLight: "#8FD0E6", eye: "#FFFFFF", pupil: "#1F2A33",
+    accent: "#F2B134", accentDark: "#B57A12", good: "#2E9E5B", bad: "#D9443B", goodBg: "#DDF3E4", badBg: "#FBE1DF",
+    sub: "#1F2A33", subText: "#FFFFFF", star: "#F2B134", skin: "#F1C9A5", skin2: "#C98A57", hair: "#2B2118",
+    uniform: "#FFFFFF", pants: "#2F4E7D", bubble: "#FFFFFF", muted: "#9AAFA6"
+  };
+  const ease = u => u < 0 ? 0 : u > 1 ? 1 : u * u * (3 - 2 * u);
+  const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
+  const lerp = (a, b, u) => a + (b - a) * u;
+
+  // ---------- drawing helpers ----------
+  function rr(ctx, x, y, w, h, r) {
+    ctx.beginPath(); ctx.moveTo(x + r, y); ctx.arcTo(x + w, y, x + w, y + h, r); ctx.arcTo(x + w, y + h, x, y + h, r);
+    ctx.arcTo(x, y + h, x, y, r); ctx.arcTo(x, y, x + w, y, r); ctx.closePath();
+  }
+  function text(ctx, s, x, y, size, opt = {}) {
+    ctx.font = `${opt.weight || 600} ${size}px ${FONT}`; ctx.fillStyle = opt.color || C.ink;
+    ctx.textAlign = opt.align || "left"; ctx.textBaseline = opt.base || "alphabetic"; ctx.fillText(s, x, y);
+  }
+  function wrap(ctx, s, size, weight, maxW) {
+    ctx.font = `${weight} ${size}px ${FONT}`;
+    const words = s.split(" "), lines = []; let cur = "";
+    for (const w of words) {
+      const test = cur ? cur + " " + w : w;
+      if (ctx.measureText(test).width > maxW && cur) { lines.push(cur); cur = w; } else cur = test;
+    }
+    if (cur) lines.push(cur);
+    return lines;
+  }
+  function para(ctx, s, x, y, size, maxW, opt = {}) {
+    const lines = wrap(ctx, s, size, opt.weight || 500, maxW); const lh = size * (opt.lh || 1.35);
+    lines.forEach((l, i) => text(ctx, l, x, y + i * lh, size, opt));
+    return lines.length * lh;
+  }
+  function arrowIcon(ctx, kind, cx, cy, s, color) {
+    ctx.save(); ctx.translate(cx, cy); ctx.strokeStyle = color; ctx.fillStyle = color; ctx.lineWidth = s * 0.16; ctx.lineCap = "round"; ctx.lineJoin = "round";
+    if (kind === "up") {
+      ctx.beginPath(); ctx.moveTo(0, s * 0.45); ctx.lineTo(0, -s * 0.3); ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(-s * 0.32, -s * 0.05); ctx.lineTo(0, -s * 0.45); ctx.lineTo(s * 0.32, -s * 0.05); ctx.stroke();
+    } else if (kind === "left" || kind === "right") {
+      const k = kind === "left" ? -1 : 1;
+      ctx.beginPath(); ctx.moveTo(0, s * 0.45); ctx.lineTo(0, -s * 0.05); ctx.quadraticCurveTo(0, -s * 0.32, k * s * 0.28, -s * 0.32); ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(k * s * 0.12, -s * 0.5); ctx.lineTo(k * s * 0.4, -s * 0.32); ctx.lineTo(k * s * 0.12, -s * 0.14); ctx.stroke();
+    } else if (kind === "east") {
+      ctx.beginPath(); ctx.moveTo(-s * 0.4, 0); ctx.lineTo(s * 0.3, 0); ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(s * 0.05, -s * 0.28); ctx.lineTo(s * 0.4, 0); ctx.lineTo(s * 0.05, s * 0.28); ctx.stroke();
+    } else if (kind === "grab") {
+      ctx.beginPath(); ctx.arc(0, s * 0.12, s * 0.22, 0, Math.PI * 2); ctx.fill();
+      ctx.beginPath(); ctx.moveTo(-s * 0.4, -s * 0.42); ctx.lineTo(-s * 0.4, -s * 0.12); ctx.moveTo(s * 0.4, -s * 0.42); ctx.lineTo(s * 0.4, -s * 0.12);
+      ctx.moveTo(-s * 0.4, -s * 0.42); ctx.lineTo(s * 0.4, -s * 0.42); ctx.stroke();
+    }
+    ctx.restore();
+  }
+  function bakso(ctx, cx, cy, s, opt = {}) {
+    // a bowl of bakso: the goal
+    ctx.save(); ctx.translate(cx, cy);
+    if (opt.glow) { ctx.beginPath(); ctx.arc(0, 0, s * 0.62, 0, Math.PI * 2); ctx.fillStyle = "rgba(242,177,52,0.22)"; ctx.fill(); }
+    ctx.fillStyle = "#E4EEF5"; ctx.beginPath(); ctx.moveTo(-s * 0.46, -s * 0.05); ctx.quadraticCurveTo(-s * 0.4, s * 0.45, 0, s * 0.45); ctx.quadraticCurveTo(s * 0.4, s * 0.45, s * 0.46, -s * 0.05); ctx.closePath(); ctx.fill();
+    ctx.strokeStyle = "#8FA9BD"; ctx.lineWidth = s * 0.05; ctx.stroke();
+    ctx.fillStyle = "#C8B49A"; ctx.beginPath(); ctx.ellipse(0, -s * 0.05, s * 0.44, s * 0.14, 0, 0, Math.PI * 2); ctx.fill();
+    for (const [dx, dy, r] of [[-0.16, -0.1, 0.13], [0.14, -0.12, 0.13], [0, -0.22, 0.12]]) {
+      ctx.fillStyle = "#9A7B5B"; ctx.beginPath(); ctx.arc(dx * s, dy * s, r * s, 0, Math.PI * 2); ctx.fill();
+      ctx.fillStyle = "#B8977A"; ctx.beginPath(); ctx.arc(dx * s - r * s * 0.3, dy * s - r * s * 0.3, r * s * 0.4, 0, Math.PI * 2); ctx.fill();
+    }
+    ctx.fillStyle = "#4CA64C"; for (const dx of [-0.26, 0.1, 0.26]) { ctx.beginPath(); ctx.arc(dx * s, -s * 0.07, s * 0.045, 0, Math.PI * 2); ctx.fill(); }
+    ctx.restore();
+  }
+  function table(ctx, x, y, w, h) {
+    ctx.fillStyle = C.table; rr(ctx, x + w * 0.1, y + h * 0.3, w * 0.8, h * 0.55, 10); ctx.fill();
+    ctx.fillStyle = C.tableTop; rr(ctx, x + w * 0.06, y + h * 0.18, w * 0.88, h * 0.3, 10); ctx.fill();
+    ctx.fillStyle = "rgba(0,0,0,0.12)"; ctx.fillRect(x + w * 0.16, y + h * 0.5, w * 0.08, h * 0.35); ctx.fillRect(x + w * 0.76, y + h * 0.5, w * 0.08, h * 0.35);
+  }
+  function kiko(ctx, cx, cy, s, ang, opt = {}) {
+    ctx.save(); ctx.translate(cx, cy);
+    // shadow
+    ctx.fillStyle = "rgba(0,0,0,0.12)"; ctx.beginPath(); ctx.ellipse(0, s * 0.42, s * 0.42, s * 0.12, 0, 0, Math.PI * 2); ctx.fill();
+    ctx.rotate(ang);
+    // wheels
+    ctx.fillStyle = C.kikoDark; rr(ctx, -s * 0.46, -s * 0.2, s * 0.12, s * 0.5, 5); ctx.fill(); rr(ctx, s * 0.34, -s * 0.2, s * 0.12, s * 0.5, 5); ctx.fill();
+    // body
+    ctx.fillStyle = opt.flash ? `rgba(217,68,59,${0.5 + 0.5 * opt.flash})` : C.kiko; rr(ctx, -s * 0.38, -s * 0.36, s * 0.76, s * 0.72, s * 0.16); ctx.fill();
+    // visor (front, facing up)
+    ctx.fillStyle = C.kikoLight; rr(ctx, -s * 0.26, -s * 0.33, s * 0.52, s * 0.3, s * 0.1); ctx.fill();
+    // eyes
+    const mood = opt.mood || "happy";
+    ctx.fillStyle = C.pupil;
+    if (mood === "sad") { ctx.beginPath(); ctx.arc(-s * 0.12, -s * 0.18, s * 0.05, 0, Math.PI * 2); ctx.arc(s * 0.12, -s * 0.18, s * 0.05, 0, Math.PI * 2); ctx.fill(); ctx.strokeStyle = C.pupil; ctx.lineWidth = s * 0.03; ctx.beginPath(); ctx.arc(0, -s * 0.03, s * 0.08, Math.PI * 1.15, Math.PI * 1.85); ctx.stroke(); }
+    else if (mood === "confused") { ctx.beginPath(); ctx.arc(-s * 0.12, -s * 0.18, s * 0.05, 0, Math.PI * 2); ctx.arc(s * 0.12, -s * 0.18, s * 0.035, 0, Math.PI * 2); ctx.fill(); ctx.strokeStyle = C.pupil; ctx.lineWidth = s * 0.03; ctx.beginPath(); ctx.moveTo(-s * 0.08, -s * 0.06); ctx.lineTo(s * 0.08, -s * 0.09); ctx.stroke(); }
+    else { ctx.beginPath(); ctx.arc(-s * 0.12, -s * 0.18, s * 0.055, 0, Math.PI * 2); ctx.arc(s * 0.12, -s * 0.18, s * 0.055, 0, Math.PI * 2); ctx.fill(); ctx.strokeStyle = C.pupil; ctx.lineWidth = s * 0.03; ctx.beginPath(); ctx.arc(0, -s * 0.1, s * 0.08, Math.PI * 0.15, Math.PI * 0.85); ctx.stroke(); }
+    // front pointer
+    ctx.fillStyle = C.accent; ctx.beginPath(); ctx.moveTo(-s * 0.1, -s * 0.38); ctx.lineTo(s * 0.1, -s * 0.38); ctx.lineTo(0, -s * 0.5); ctx.closePath(); ctx.fill();
+    // antenna
+    ctx.strokeStyle = C.kikoDark; ctx.lineWidth = s * 0.04; ctx.beginPath(); ctx.moveTo(0, s * 0.36); ctx.lineTo(0, s * 0.5); ctx.stroke();
+    ctx.fillStyle = C.accent; ctx.beginPath(); ctx.arc(0, s * 0.52, s * 0.07, 0, Math.PI * 2); ctx.fill();
+    // tray with bakso when grabbed
+    if (opt.grabbed) bakso(ctx, 0, s * 0.05, s * 0.45);
+    ctx.restore();
+    if (opt.wave !== undefined) { // arm waving (title scene)
+      ctx.save(); ctx.translate(cx + s * 0.42, cy - s * 0.1); ctx.rotate(-0.6 + Math.sin(opt.wave * 6) * 0.4);
+      ctx.strokeStyle = C.kikoDark; ctx.lineWidth = s * 0.08; ctx.lineCap = "round"; ctx.beginPath(); ctx.moveTo(0, 0); ctx.lineTo(s * 0.3, -s * 0.3); ctx.stroke();
+      ctx.fillStyle = C.kikoLight; ctx.beginPath(); ctx.arc(s * 0.32, -s * 0.33, s * 0.09, 0, Math.PI * 2); ctx.fill(); ctx.restore();
+    }
+  }
+  function kid(ctx, cx, cy, s, opt = {}) {
+    // simple student figure, standing, facing viewer
+    ctx.save(); ctx.translate(cx, cy);
+    ctx.fillStyle = "rgba(0,0,0,0.12)"; ctx.beginPath(); ctx.ellipse(0, s * 1.02, s * 0.5, s * 0.1, 0, 0, Math.PI * 2); ctx.fill();
+    ctx.fillStyle = C.pants; rr(ctx, -s * 0.3, s * 0.35, s * 0.6, s * 0.5, s * 0.1); ctx.fill();
+    ctx.fillStyle = C.skin; ctx.fillRect(-s * 0.24, s * 0.8, s * 0.16, s * 0.2); ctx.fillRect(s * 0.08, s * 0.8, s * 0.16, s * 0.2);
+    ctx.fillStyle = C.uniform; rr(ctx, -s * 0.36, -s * 0.12, s * 0.72, s * 0.56, s * 0.12); ctx.fill();
+    ctx.strokeStyle = "#D5DDE2"; ctx.lineWidth = s * 0.025; rr(ctx, -s * 0.36, -s * 0.12, s * 0.72, s * 0.56, s * 0.12); ctx.stroke();
+    ctx.fillStyle = C.skin; ctx.beginPath(); ctx.arc(0, -s * 0.42, s * 0.32, 0, Math.PI * 2); ctx.fill();
+    ctx.fillStyle = opt.hairColor || C.hair; ctx.beginPath(); ctx.arc(0, -s * 0.5, s * 0.33, Math.PI, 0); ctx.fill();
+    if (opt.hair === "long") { ctx.fillRect(-s * 0.33, -s * 0.5, s * 0.12, s * 0.45); ctx.fillRect(s * 0.21, -s * 0.5, s * 0.12, s * 0.45); }
+    ctx.fillStyle = C.pupil; ctx.beginPath(); ctx.arc(-s * 0.11, -s * 0.4, s * 0.035, 0, Math.PI * 2); ctx.arc(s * 0.11, -s * 0.4, s * 0.035, 0, Math.PI * 2); ctx.fill();
+    ctx.strokeStyle = C.pupil; ctx.lineWidth = s * 0.025; ctx.beginPath(); ctx.arc(0, -s * 0.33, s * 0.08, Math.PI * 0.15, Math.PI * 0.85); ctx.stroke();
+    // arms
+    ctx.strokeStyle = C.skin; ctx.lineWidth = s * 0.11; ctx.lineCap = "round"; ctx.beginPath();
+    if (opt.point) { ctx.moveTo(s * 0.32, s * 0.02); ctx.lineTo(s * 0.75, -s * 0.2); } else { ctx.moveTo(s * 0.34, s * 0.02); ctx.lineTo(s * 0.42, s * 0.38); }
+    ctx.moveTo(-s * 0.34, s * 0.02); ctx.lineTo(-s * 0.42, s * 0.38); ctx.stroke();
+    ctx.restore();
+  }
+  function bubble(ctx, x, y, w, s, size, opt = {}) {
+    const lines = wrap(ctx, s, size, 600, w - 48); const h = lines.length * size * 1.3 + 40;
+    ctx.fillStyle = opt.fill || C.bubble; ctx.strokeStyle = opt.stroke || "#B7C7BF"; ctx.lineWidth = 3;
+    rr(ctx, x, y - h, w, h, 22); ctx.fill(); ctx.stroke();
+    const tx = opt.tailX !== undefined ? opt.tailX : x + 60;
+    ctx.beginPath(); ctx.moveTo(tx - 16, y); ctx.lineTo(tx + 16, y); ctx.lineTo(tx + (opt.tailDir || 0), y + 28); ctx.closePath(); ctx.fillStyle = opt.fill || C.bubble; ctx.fill();
+    ctx.strokeStyle = opt.stroke || "#B7C7BF"; ctx.beginPath(); ctx.moveTo(tx - 16, y); ctx.lineTo(tx + (opt.tailDir || 0), y + 28); ctx.lineTo(tx + 16, y); ctx.stroke();
+    lines.forEach((l, i) => text(ctx, l, x + 24, y - h + 24 + size + i * size * 1.3, size, { color: opt.color || C.ink, weight: 600 }));
+    return h;
+  }
+  function card(ctx, x, y, w, h, opt = {}) { ctx.fillStyle = opt.fill || C.panel; rr(ctx, x, y, w, h, opt.r || 26); ctx.fill(); if (opt.stroke) { ctx.strokeStyle = opt.stroke; ctx.lineWidth = opt.lw || 4; ctx.stroke(); } }
+
+  // ---------- adegan umum (semua episode) ----------
+  const SCENES = {
+    title(ctx, b, l, t, TL) {
+      card(ctx, 160, 160, 1600, 700, { fill: C.panel });
+      kiko(ctx, 420, 520, 260, 0, { wave: l, mood: "happy" });
+      text(ctx, "Informatika · Fase D · Episode " + TL.episode, 720, 330, 34, { color: C.ink2, weight: 700 });
+      para(ctx, TL.title, 720, 440, 92, 980, { weight: 900, lh: 1.1 });
+      text(ctx, "Dengarkan, atau baca teksnya pelan-pelan.", 720, 700, 36, { color: C.ink2, weight: 600 });
+      arrowIcon(ctx, "up", 1560, 360, 70, C.kikoLight); arrowIcon(ctx, "right", 1660, 360, 70, C.kikoLight);
+    },
+    quiz(ctx, b, l, t, TL, answered) {
+      const q = TL.quizzes[b.quiz]; card(ctx, 200, 150, 1520, 740, { stroke: C.accent, lw: 6 });
+      text(ctx, "CEK PEMAHAMAN", 960, 230, 32, { align: "center", color: C.accentDark, weight: 800 });
+      para(ctx, q.q, 960, 320, 44, 1360, { weight: 800, align: "center", lh: 1.3 });
+      q.options.forEach((o, i) => {
+        const y = 470 + i * 120; const right = answered && i === q.answer;
+        card(ctx, 320, y, 1280, 96, { fill: right ? C.goodBg : answered ? "#F4F6F5" : C.bg2, stroke: right ? C.good : "#CFDCD5", lw: right ? 6 : 3 });
+        ctx.fillStyle = right ? C.good : C.kiko; ctx.beginPath(); ctx.arc(380, y + 48, 30, 0, Math.PI * 2); ctx.fill();
+        text(ctx, "ABC"[i], 380, y + 61, 34, { align: "center", color: "#fff", weight: 900 });
+        text(ctx, o, 440, y + 62, 38, { weight: 700, color: answered && !right ? C.muted : C.ink });
+        if (right) text(ctx, "✓", 1540, y + 66, 54, { align: "center", color: C.good, weight: 900 });
+      });
+      if (!answered) { // thinking timer
+        const frac = clamp(l / b.dur, 0, 1); ctx.strokeStyle = "#D7E2DC"; ctx.lineWidth = 14; ctx.beginPath(); ctx.arc(1640, 230, 40, 0, Math.PI * 2); ctx.stroke();
+        ctx.strokeStyle = C.accent; ctx.beginPath(); ctx.arc(1640, 230, 40, -Math.PI / 2, -Math.PI / 2 + frac * Math.PI * 2); ctx.stroke();
+        text(ctx, "Pikirkan dulu, jangan buru-buru.", 960, 860, 32, { align: "center", color: C.ink2, weight: 600 });
+      }
+    },
+    quiz_answer(ctx, b, l, t, TL) { SCENES.quiz(ctx, b, l, t, TL, true); },
+    recap(ctx, b, l, t, TL) {
+      // TL.recap: tiga kalimat pendek dari script.json
+      card(ctx, 160, 140, 1600, 760);
+      text(ctx, "TIGA HAL UNTUK DIINGAT", 960, 230, 34, { align: "center", color: C.accentDark, weight: 900 });
+      const items = TL.recap || [];
+      const show = clamp(Math.floor((l - 0.6) / 2.2) + 1, 1, Math.max(1, items.length));
+      items.forEach((s, i) => { if (i >= show) return; card(ctx, 300, 290 + i * 180, 1320, 140, { fill: C.bg2 }); ctx.fillStyle = C.kiko; ctx.beginPath(); ctx.arc(380, 360 + i * 180, 40, 0, Math.PI * 2); ctx.fill(); text(ctx, String(i + 1), 380, 376 + i * 180, 40, { align: "center", color: "#fff", weight: 900 }); text(ctx, s, 450, 375 + i * 180, 42, { weight: 800 }); });
+      kiko(ctx, 1620, 820, 130, 0);
+    },
+    outro(ctx, b, l, t, TL) {
+      // TL.next: {code, title, note} episode berikutnya, dari script.json
+      const n = TL.next || {};
+      card(ctx, 260, 200, 1400, 600);
+      text(ctx, "EPISODE BERIKUTNYA", 960, 320, 34, { align: "center", color: C.accentDark, weight: 900 });
+      text(ctx, n.code || "", 960, 440, 60, { align: "center", weight: 900 });
+      text(ctx, n.title || "", 960, 530, 54, { align: "center", weight: 800, color: C.ink2 });
+      text(ctx, n.note || "", 960, 680, 34, { align: "center", color: C.ink2, weight: 600 });
+      kiko(ctx, 960, 760 + 20, 140, 0, { wave: l });
+    }
+  };
+
+  function beatAt(TL, t) {
+    let b = TL.beats[0];
+    for (const x of TL.beats) { if (t >= x.start) b = x; else break; }
+    return b;
+  }
+  function draw(ctx, t, TL, opt = {}) {
+    const b = beatAt(TL, t); const l = t - b.start;
+    ctx.save(); ctx.setTransform(1, 0, 0, 1, 0, 0);
+    ctx.fillStyle = C.bg; ctx.fillRect(0, 0, W, H);
+    // header
+    text(ctx, TL.episode + " · " + TL.title, 60, 78, 30, { color: C.ink2, weight: 700 });
+    text(ctx, TL.segments[b.seg], 1860, 78, 30, { color: C.accentDark, weight: 800, align: "right" });
+    ctx.fillStyle = C.bg2; ctx.fillRect(0, 100, W, 6); ctx.fillStyle = C.accent; ctx.fillRect(0, 100, W * clamp(t / TL.total, 0, 1), 6);
+    const fn = SCENES[b.scene]; if (fn) fn(ctx, b, l, t, TL);
+    // narration card (burned-in text the student reads)
+    if (opt.subtitles !== false) {
+      const size = 44; const lines = wrap(ctx, b.text, size, 700, 1660);
+      const h = lines.length * size * 1.3 + 44; const y0 = 1056 - h;
+      ctx.fillStyle = "rgba(31,42,51,0.92)"; rr(ctx, 100, y0, 1720, h, 20); ctx.fill();
+      // reading progress (how far along the text the reader should be)
+      const frac = clamp(l / b.audio, 0, 1); ctx.fillStyle = C.accent; rr(ctx, 100, y0 + h - 8, 1720 * frac, 8, 4); ctx.fill();
+      lines.forEach((ln, i) => text(ctx, ln, 960, y0 + 22 + size + i * size * 1.3, size, { align: "center", color: C.subText, weight: 700 }));
+    }
+    ctx.restore();
+    return b;
+  }
+
+  global.Kiko = { draw, beatAt, W, H, C, FONT, SCENES,
+    helpers: { rr, text, wrap, para, arrowIcon, bakso, table, kiko, kid, bubble, card, ease, clamp, lerp } };
+})(typeof window !== "undefined" ? window : globalThis);
+
+/* Pembantu gambar perangkat (dipakai D7.0, D7.2, …): monitor, mouse, pointer, keyboard, HP, jari, ikon file/folder, jendela.
+   Semua digambar dengan kode (tanpa aset unduhan). Muat setelah ../_alat/kiko-core.js; dipakai scenes.js. */
+(function (global) {
+  const K = global.Kiko, H = K.helpers, C = K.C;
+  const { rr, text, wrap, card, ease, clamp, lerp } = H;
+  const D = {};
+  const SCREEN_BG = "#F4F8FB", BEZEL = "#2B3A46", BEZEL2 = "#1A262F", SEL = "rgba(46,126,154,0.22)";
+
+  // ---------- komputer ----------
+  // monitor di atas meja; mengembalikan kotak layar {x,y,w,h}
+  D.monitor = function (ctx, x, y, w, h) {
+    ctx.fillStyle = BEZEL; rr(ctx, x - 18, y - 18, w + 36, h + 36, 22); ctx.fill();
+    ctx.fillStyle = SCREEN_BG; rr(ctx, x, y, w, h, 10); ctx.fill();
+    // kaki dan meja
+    ctx.fillStyle = BEZEL2; rr(ctx, x + w / 2 - 40, y + h + 18, 80, 36, 8); ctx.fill(); rr(ctx, x + w / 2 - 140, y + h + 50, 280, 16, 8); ctx.fill();
+    ctx.fillStyle = C.tableTop; rr(ctx, x - 80, y + h + 66, w + 160, 22, 8); ctx.fill();
+    return { x, y, w, h };
+  };
+  // panah pointer
+  D.pointer = function (ctx, x, y, s = 34, color = C.ink) {
+    ctx.save(); ctx.translate(x, y); ctx.fillStyle = color; ctx.strokeStyle = "#fff"; ctx.lineWidth = s * 0.08; ctx.lineJoin = "round";
+    ctx.beginPath(); ctx.moveTo(0, 0); ctx.lineTo(0, s); ctx.lineTo(s * 0.27, s * 0.78); ctx.lineTo(s * 0.45, s * 1.15); ctx.lineTo(s * 0.62, s * 1.07); ctx.lineTo(s * 0.45, s * 0.7); ctx.lineTo(s * 0.75, s * 0.7); ctx.closePath();
+    ctx.fill(); ctx.stroke(); ctx.restore();
+  };
+  // mouse tampak atas; opt.left / opt.right = tombol ditekan; opt.label = tulis "kiri/kanan"
+  D.mouse = function (ctx, cx, cy, s, opt = {}) {
+    ctx.save(); ctx.translate(cx, cy);
+    ctx.fillStyle = "rgba(0,0,0,0.12)"; ctx.beginPath(); ctx.ellipse(0, s * 0.62, s * 0.5, s * 0.1, 0, 0, Math.PI * 2); ctx.fill();
+    // kabel
+    ctx.strokeStyle = "#7B8B95"; ctx.lineWidth = s * 0.05; ctx.beginPath(); ctx.moveTo(0, -s * 0.6); ctx.quadraticCurveTo(0, -s * 1.0, s * 0.5, -s * 1.1); ctx.stroke();
+    // badan
+    ctx.fillStyle = "#E8EEF2"; rr(ctx, -s * 0.42, -s * 0.62, s * 0.84, s * 1.24, s * 0.4); ctx.fill(); ctx.strokeStyle = "#A9B7C0"; ctx.lineWidth = s * 0.04; ctx.stroke();
+    // dua tombol
+    const btn = (side, on) => { ctx.fillStyle = on ? C.accent : "#F7FAFC"; ctx.beginPath(); const sx = side === "left" ? -1 : 1;
+      ctx.moveTo(sx * s * 0.03, -s * 0.6); ctx.lineTo(sx * s * 0.03, -s * 0.1); ctx.lineTo(sx * s * 0.4, -s * 0.1); ctx.lineTo(sx * s * 0.4, -s * 0.28); ctx.quadraticCurveTo(sx * s * 0.4, -s * 0.6, sx * s * 0.1, -s * 0.6); ctx.closePath(); ctx.fill(); ctx.strokeStyle = "#A9B7C0"; ctx.lineWidth = s * 0.03; ctx.stroke(); };
+    btn("left", opt.left); btn("right", opt.right);
+    ctx.fillStyle = "#A9B7C0"; rr(ctx, -s * 0.04, -s * 0.5, s * 0.08, s * 0.26, s * 0.04); ctx.fill(); // roda
+    ctx.restore();
+    if (opt.label) { text(ctx, "kiri", cx - s * 0.22, cy - s * 0.72, 26, { align: "center", color: opt.left ? C.accentDark : C.ink2, weight: 800 }); text(ctx, "kanan", cx + s * 0.22, cy - s * 0.72, 26, { align: "center", color: opt.right ? C.accentDark : C.ink2, weight: 800 }); }
+  };
+  // riak "klik" di sekitar titik
+  D.ripple = function (ctx, x, y, u, color = C.accent) { if (u <= 0 || u >= 1) return; ctx.strokeStyle = color; ctx.globalAlpha = 1 - u; ctx.lineWidth = 6; ctx.beginPath(); ctx.arc(x, y, 12 + u * 60, 0, Math.PI * 2); ctx.stroke(); ctx.globalAlpha = 1; };
+
+  // ---------- ikon file & folder ----------
+  const KIND = { folder: "#F2B134", foto: "#5FA8D3", tulisan: "#7B8B95", lagu: "#8E6BBF", video: "#D9443B" };
+  D.fileIcon = function (ctx, cx, cy, s, kind, opt = {}) {
+    ctx.save(); ctx.translate(cx, cy);
+    if (opt.selected) { ctx.fillStyle = SEL; rr(ctx, -s * 0.62, -s * 0.62, s * 1.24, s * 1.24 + (opt.name ? s * 0.5 : 0), s * 0.14); ctx.fill(); }
+    if (kind === "folder") {
+      ctx.fillStyle = "#D99A1B"; rr(ctx, -s * 0.5, -s * 0.32, s * 0.45, s * 0.2, s * 0.06); ctx.fill();
+      ctx.fillStyle = opt.open ? "#F7C860" : KIND.folder; rr(ctx, -s * 0.5, -s * 0.22, s, s * 0.7, s * 0.08); ctx.fill();
+      if (opt.open) { ctx.fillStyle = "#D99A1B"; rr(ctx, -s * 0.46, -s * 0.02, s * 0.92, s * 0.5, s * 0.08); ctx.fill(); }
+    } else {
+      ctx.fillStyle = "#FFFFFF"; ctx.strokeStyle = "#B7C4CC"; ctx.lineWidth = s * 0.05;
+      ctx.beginPath(); ctx.moveTo(-s * 0.36, -s * 0.5); ctx.lineTo(s * 0.12, -s * 0.5); ctx.lineTo(s * 0.36, -s * 0.26); ctx.lineTo(s * 0.36, s * 0.5); ctx.lineTo(-s * 0.36, s * 0.5); ctx.closePath(); ctx.fill(); ctx.stroke();
+      ctx.fillStyle = KIND[kind] || KIND.tulisan;
+      if (kind === "foto") { rr(ctx, -s * 0.26, -s * 0.2, s * 0.52, s * 0.44, s * 0.04); ctx.fill(); ctx.fillStyle = "#fff"; ctx.beginPath(); ctx.arc(-s * 0.12, -s * 0.08, s * 0.06, 0, Math.PI * 2); ctx.fill(); ctx.beginPath(); ctx.moveTo(-s * 0.26, s * 0.24); ctx.lineTo(-s * 0.06, s * 0.02); ctx.lineTo(s * 0.06, s * 0.14); ctx.lineTo(s * 0.14, s * 0.06); ctx.lineTo(s * 0.26, s * 0.24); ctx.closePath(); ctx.fill(); }
+      else if (kind === "lagu") { ctx.beginPath(); ctx.arc(-s * 0.1, s * 0.22, s * 0.1, 0, Math.PI * 2); ctx.arc(s * 0.16, s * 0.16, s * 0.1, 0, Math.PI * 2); ctx.fill(); ctx.lineWidth = s * 0.06; ctx.strokeStyle = KIND.lagu; ctx.beginPath(); ctx.moveTo(0, s * 0.2); ctx.lineTo(0, -s * 0.2); ctx.lineTo(s * 0.26, -s * 0.26); ctx.lineTo(s * 0.26, s * 0.14); ctx.stroke(); }
+      else if (kind === "video") { rr(ctx, -s * 0.26, -s * 0.16, s * 0.52, s * 0.4, s * 0.04); ctx.fill(); ctx.fillStyle = "#fff"; ctx.beginPath(); ctx.moveTo(-s * 0.06, -s * 0.04); ctx.lineTo(s * 0.12, s * 0.04); ctx.lineTo(-s * 0.06, s * 0.12); ctx.closePath(); ctx.fill(); }
+      else { for (let i = 0; i < 4; i++) { rr(ctx, -s * 0.22, -s * 0.14 + i * s * 0.14, s * (i === 3 ? 0.26 : 0.44), s * 0.06, s * 0.03); ctx.fill(); } }
+    }
+    ctx.restore();
+    if (opt.name) { const lines = wrap(ctx, opt.name, opt.size || 24, 700, s * 1.6); lines.slice(0, 2).forEach((ln, i) => text(ctx, ln, cx, cy + s * 0.78 + i * (opt.size || 24) * 1.15, opt.size || 24, { align: "center", weight: 700, color: opt.color || C.ink })); }
+  };
+  D.KIND = KIND;
+
+  // jendela aplikasi (file manager / editor) di dalam layar; mengembalikan area isi
+  D.windowFrame = function (ctx, x, y, w, h, title, opt = {}) {
+    ctx.fillStyle = "#FFFFFF"; rr(ctx, x, y, w, h, 14); ctx.fill(); ctx.strokeStyle = "#C9D4DB"; ctx.lineWidth = 3; ctx.stroke();
+    ctx.fillStyle = "#E6EDF2"; rr(ctx, x, y, w, 54, 14); ctx.fill(); ctx.fillRect(x, y + 30, w, 24);
+    ["#E0655C", "#F2B134", "#2E9E5B"].forEach((c, i) => { ctx.fillStyle = c; ctx.beginPath(); ctx.arc(x + 26 + i * 26, y + 27, 8, 0, Math.PI * 2); ctx.fill(); });
+    if (title) text(ctx, title, x + w / 2, y + 36, 24, { align: "center", color: C.ink2, weight: 800 });
+    if (opt.path) { ctx.fillStyle = "#F4F8FB"; rr(ctx, x + 16, y + 66, w - 32, 44, 10); ctx.fill(); text(ctx, opt.path, x + 32, y + 96, 24, { color: C.ink2, weight: 700 }); }
+    return { x: x + 16, y: y + (opt.path ? 124 : 70), w: w - 32, h: h - (opt.path ? 140 : 86) };
+  };
+  // kotak teks dengan kursor berkedip; opt.cursor = posisi karakter (bawaan akhir)
+  D.textBox = function (ctx, x, y, w, h, lines, tt, opt = {}) {
+    ctx.fillStyle = "#FFFFFF"; rr(ctx, x, y, w, h, 14); ctx.fill(); ctx.strokeStyle = opt.stroke || "#C9D4DB"; ctx.lineWidth = 3; ctx.stroke();
+    const size = opt.size || 48, lh = size * 1.4;
+    lines.forEach((ln, i) => text(ctx, ln, x + 28, y + 24 + size + i * lh, size, { weight: 700, color: opt.color || C.ink }));
+    if (opt.cursor !== false) {
+      const li = lines.length - 1, s = lines[li] || ""; ctx.font = `700 ${size}px ${K.FONT}`; const cw = ctx.measureText(s).width;
+      if (Math.floor(tt * 2.5) % 2 === 0 || opt.cursorOn) { ctx.fillStyle = C.kiko; ctx.fillRect(x + 30 + cw, y + 22 + li * lh, 5, size * 1.15); }
+      return [x + 32 + cw, y + 22 + li * lh + size * 0.6];
+    }
+  };
+
+  // ---------- keyboard ----------
+  const ROWS = [["Q", "W", "E", "R", "T", "Y", "U", "I", "O", "P"], ["A", "S", "D", "F", "G", "H", "J", "K", "L"], ["Z", "X", "C", "V", "B", "N", "M"]];
+  // keyboard sederhana: 3 baris huruf + Shift, Spasi, Backspace, Enter. opt.pressed = [tombol], opt.glow = [tombol] disorot lembut
+  D.keyboard = function (ctx, x, y, w, opt = {}) {
+    const key = w / 11.6, gap = key * 0.12, k = key - gap, h = k * 4 + gap * 5;
+    ctx.fillStyle = BEZEL; rr(ctx, x - 16, y - 16, w + 32, h + 32, 22); ctx.fill();
+    const pressed = opt.pressed || [], glow = opt.glow || [];
+    const draw = (kx, ky, kw, label, small) => {
+      const on = pressed.includes(label), soft = glow.includes(label);
+      ctx.fillStyle = on ? C.accent : soft ? "#FFF3D6" : "#F7FAFC"; rr(ctx, kx, ky + (on ? 4 : 0), kw, k - (on ? 4 : 0), 10); ctx.fill();
+      ctx.strokeStyle = on ? C.accentDark : soft ? C.accent : "#B7C4CC"; ctx.lineWidth = on || soft ? 4 : 2; ctx.stroke();
+      // ukuran huruf mengikuti ukuran tombol; pada keyboard mini (tombol < 40 px) label tombol khusus tidak digambar
+      const fs = small ? Math.min(24, k * 0.45) : Math.min(32, k * 0.6);
+      if (small ? k >= 40 : k >= 18) text(ctx, label, kx + kw / 2, ky + k / 2 + fs * 0.38, fs, { align: "center", weight: 800, color: on ? "#fff" : C.ink });
+    };
+    ROWS.forEach((row, r) => { const off = r === 0 ? 0 : r === 1 ? key * 0.35 : key * 0.85; row.forEach((lab, i) => draw(x + gap + off + i * key, y + gap + r * key, k, lab)); });
+    draw(x + gap + key * 0.85 + 7 * key + gap, y + gap + 2 * key, key * 2.4 - gap, "Backspace", true);
+    draw(x + gap, y + gap + 3 * key, key * 1.9 - gap, "Shift", true);
+    draw(x + gap + key * 1.9, y + gap + 3 * key, key * 6.2 - gap, "Spasi", true);
+    draw(x + gap + key * 8.1, y + gap + 3 * key, key * 2.3 - gap, "Enter", true);
+    draw(x + gap + key * 0.35 + 9 * key, y + gap + 1 * key, key * 1.9 - gap, "Enter", true);
+    return { x, y, w, h };
+  };
+
+  // ---------- HP & jari ----------
+  // HP tegak; mengembalikan kotak layar
+  D.phone = function (ctx, cx, cy, w, h) {
+    ctx.fillStyle = BEZEL; rr(ctx, cx - w / 2 - 14, cy - h / 2 - 22, w + 28, h + 44, 40); ctx.fill();
+    ctx.fillStyle = SCREEN_BG; rr(ctx, cx - w / 2, cy - h / 2, w, h, 26); ctx.fill();
+    ctx.fillStyle = BEZEL2; rr(ctx, cx - 40, cy - h / 2 + 8, 80, 12, 6); ctx.fill();
+    return { x: cx - w / 2, y: cy - h / 2, w, h };
+  };
+  // kisi ikon aplikasi generik di layar HP; mengembalikan posisi tiap ikon
+  const APPS = [["Kamera", "#2E7E9A"], ["Galeri", "#5FA8D3"], ["Pesan", "#2E9E5B"], ["Musik", "#8E6BBF"], ["Kalkulator", "#7B8B95"], ["Peta", "#F2B134"], ["Catatan", "#E0A23B"], ["Jam", "#D9443B"], ["Cuaca", "#4C9BE0"]];
+  D.appGrid = function (ctx, sc, opt = {}) {
+    const cols = 3, cell = sc.w / cols, out = [];
+    APPS.forEach(([name, col], i) => {
+      const r = Math.floor(i / cols), c = i % cols; const ax = sc.x + cell * c + cell / 2, ay = sc.y + 90 + r * (cell + 26);
+      const on = opt.active === name; const sz = cell * 0.56 * (on && opt.scale ? opt.scale : 1);
+      ctx.fillStyle = col; rr(ctx, ax - sz / 2, ay - sz / 2, sz, sz, sz * 0.24); ctx.fill();
+      if (on) { ctx.strokeStyle = C.accent; ctx.lineWidth = 6; ctx.stroke(); }
+      text(ctx, name, ax, ay + sz / 2 + 26, 20, { align: "center", weight: 700, color: C.ink2 });
+      out.push({ name, x: ax, y: ay });
+    });
+    return out;
+  };
+  // ujung jari yang menyentuh layar di (x,y); opt.press = sedang menekan (riak); opt.second = jari kedua
+  D.finger = function (ctx, x, y, opt = {}) {
+    const s = opt.s || 46;
+    ctx.save(); ctx.translate(x, y); ctx.rotate(opt.angle !== undefined ? opt.angle : 0.5);
+    ctx.fillStyle = "rgba(0,0,0,0.10)"; ctx.beginPath(); ctx.ellipse(0, s * 0.25, s * 0.7, s * 0.4, 0, 0, Math.PI * 2); ctx.fill();
+    ctx.fillStyle = C.skin; rr(ctx, -s * 0.5, -s * 0.3, s, s * 3.2, s * 0.5); ctx.fill();
+    ctx.fillStyle = "#F7D9BE"; ctx.beginPath(); ctx.ellipse(0, s * 0.1, s * 0.3, s * 0.42, 0, 0, Math.PI * 2); ctx.fill();
+    ctx.restore();
+    if (opt.press) { ctx.fillStyle = "rgba(46,126,154,0.25)"; ctx.beginPath(); ctx.arc(x, y, s * 0.8, 0, Math.PI * 2); ctx.fill(); }
+  };
+  // menu konteks (klik kanan / tekan lama)
+  D.menu = function (ctx, x, y, items, opt = {}) {
+    const w = opt.w || 300, rowH = 52; ctx.fillStyle = "#FFFFFF"; rr(ctx, x, y, w, rowH * items.length + 16, 12); ctx.fill(); ctx.strokeStyle = "#B7C4CC"; ctx.lineWidth = 3; ctx.stroke();
+    ctx.fillStyle = "rgba(0,0,0,0.08)";
+    items.forEach((it, i) => { if (opt.active === i) { ctx.fillStyle = "#FFF3D6"; rr(ctx, x + 8, y + 8 + i * rowH, w - 16, rowH, 8); ctx.fill(); } text(ctx, it, x + 24, y + 8 + i * rowH + 36, 28, { weight: 700 }); });
+  };
+  // kartu keterangan kecil di kanan/bawah adegan
+  D.note = function (ctx, x, y, w, s, opt = {}) { card(ctx, x, y, w, opt.h || 96, { fill: opt.fill || "#FFF3D6", stroke: opt.stroke || C.accent, lw: 4 }); text(ctx, s, x + w / 2, y + (opt.h || 96) / 2 + 14, opt.size || 36, { align: "center", weight: 900, color: opt.color || C.ink }); };
+
+  K.devices = D;
+})(typeof window !== "undefined" ? window : globalThis);
+
+/* Pembantu gambar D7.3: gembok & kunci, rumah akun, kotak sandi, pengukur kekuatan, penghitung tebakan, obrolan grup kelas,
+   jejak kaki digital, salinan di server. Muat setelah kiko-core.js dan kiko-devices.js. */
+(function (global) {
+  const K = global.Kiko, H = K.helpers, C = K.C, D = K.devices;
+  const { rr, text, wrap, card, kid, ease, clamp, lerp } = H;
+  const S = {};
+  S.lock = function (ctx, cx, cy, s, opt = {}) {
+    ctx.strokeStyle = opt.open ? C.bad : "#6B7B88"; ctx.lineWidth = s * 0.14; ctx.lineCap = "round";
+    ctx.beginPath(); ctx.arc(cx + (opt.open ? s * 0.2 : 0), cy - s * 0.35, s * 0.32, Math.PI, 0); if (!opt.open) ctx.lineTo(cx + s * 0.32, cy - s * 0.1); ctx.stroke();
+    ctx.fillStyle = opt.color || (opt.open ? C.badBg : C.accent); rr(ctx, cx - s * 0.5, cy - s * 0.1, s, s * 0.8, s * 0.14); ctx.fill();
+    ctx.fillStyle = opt.open ? C.bad : "#5E3E05"; ctx.beginPath(); ctx.arc(cx, cy + s * 0.25, s * 0.1, 0, Math.PI * 2); ctx.fill(); ctx.fillRect(cx - s * 0.04, cy + s * 0.25, s * 0.08, s * 0.22);
+  };
+  S.key = function (ctx, cx, cy, s, opt = {}) {
+    ctx.save(); ctx.translate(cx, cy); ctx.rotate(opt.rot || 0); ctx.strokeStyle = opt.color || "#B57A12"; ctx.fillStyle = opt.color || "#B57A12"; ctx.lineWidth = s * 0.16; ctx.lineCap = "round";
+    ctx.beginPath(); ctx.arc(-s * 0.55, 0, s * 0.28, 0, Math.PI * 2); ctx.stroke(); ctx.beginPath(); ctx.moveTo(-s * 0.27, 0); ctx.lineTo(s * 0.7, 0); ctx.moveTo(s * 0.45, 0); ctx.lineTo(s * 0.45, s * 0.25); ctx.moveTo(s * 0.65, 0); ctx.lineTo(s * 0.65, s * 0.3); ctx.stroke(); ctx.restore();
+    if (opt.label) { card(ctx, cx - s * 0.9, cy + s * 0.45, s * 1.8, s * 0.5, { fill: "#FFF3B0", stroke: "#B57A12", lw: 3, r: 8 }); text(ctx, opt.label, cx, cy + s * 0.8, s * 0.3, { align: "center", weight: 900 }); }
+  };
+  S.house = function (ctx, cx, cy, w, h, opt = {}) {
+    ctx.fillStyle = "#F1C9A5"; rr(ctx, cx - w / 2, cy - h * 0.1, w, h * 0.6, 10); ctx.fill();
+    ctx.fillStyle = "#C98A57"; ctx.beginPath(); ctx.moveTo(cx - w * 0.6, cy - h * 0.1); ctx.lineTo(cx, cy - h * 0.55); ctx.lineTo(cx + w * 0.6, cy - h * 0.1); ctx.closePath(); ctx.fill();
+    ctx.fillStyle = "#8E6BBF"; rr(ctx, cx - w * 0.12, cy + h * 0.1, w * 0.24, h * 0.4, 6); ctx.fill();
+    if (opt.label) text(ctx, opt.label, cx, cy - h * 0.2, 30, { align: "center", weight: 900, color: "#fff" });
+    S.lock(ctx, cx, cy + h * 0.28, w * 0.14, { open: opt.open });
+  };
+  // kotak kata sandi; mask = tampil sebagai titik
+  S.pwBox = function (ctx, x, y, w, s, opt = {}) {
+    card(ctx, x, y, w, opt.h || 90, { fill: C.panel, stroke: opt.stroke || "#B7C4CC", lw: 4, r: 14 });
+    text(ctx, opt.mask ? "•".repeat(s.length) : s, x + 24, y + (opt.h || 90) / 2 + 16, opt.size || 44, { weight: 800, color: opt.color || C.ink });
+    if (opt.count) text(ctx, s.length + " huruf", x + w - 20, y + (opt.h || 90) / 2 + 12, 28, { align: "right", weight: 800, color: C.ink2 });
+  };
+  // pengukur kekuatan 0..3 (lemah, sedang, kuat, sangat kuat)
+  S.meter = function (ctx, x, y, w, level) {
+    const names = ["lemah", "sedang", "kuat", "sangat kuat"], cols = [C.bad, "#F2B134", "#2E9E5B", "#1F5A6E"];
+    for (let i = 0; i < 4; i++) { ctx.fillStyle = i <= level ? cols[level] : C.bg2; rr(ctx, x + i * (w / 4), y, w / 4 - 8, 26, 8); ctx.fill(); }
+    text(ctx, names[level], x + w, y + 60, 30, { align: "right", weight: 900, color: cols[level] });
+  };
+  // penghitung tebakan yang berputar
+  S.counter = function (ctx, x, y, w, n, opt = {}) {
+    card(ctx, x, y, w, 100, { fill: "#1F2A33", r: 14 }); text(ctx, n, x + w / 2, y + 68, 48, { align: "center", color: opt.color || "#8FD0E6", weight: 900 });
+    if (opt.label) text(ctx, opt.label, x + w / 2, y - 16, 26, { align: "center", color: C.ink2, weight: 800 });
+  };
+  // obrolan grup kelas di layar HP; msgs: [{who, text, me, img, deleted}]
+  S.chat = function (ctx, sc, msgs, opt = {}) {
+    text(ctx, opt.title || "Grup Kelas 7A", sc.x + sc.w / 2, sc.y + 60, 26, { align: "center", weight: 900, color: C.ink2 });
+    ctx.fillStyle = C.bg2; ctx.fillRect(sc.x + 10, sc.y + 76, sc.w - 20, 3);
+    let y = sc.y + 110;
+    msgs.forEach(m => {
+      const w = sc.w - 80, lines = m.img ? [] : wrap(ctx, m.text, 22, 700, w - 30); const h = m.img ? 150 : lines.length * 28 + 44;
+      const x = m.me ? sc.x + sc.w - w - 16 : sc.x + 16;
+      ctx.fillStyle = m.deleted ? "#EEF1F0" : m.me ? "#DDF3E4" : "#FFFFFF"; rr(ctx, x, y, w, h, 14); ctx.fill(); ctx.strokeStyle = m.deleted ? "#C9D8D0" : "#D7E2DC"; ctx.lineWidth = 2; ctx.stroke();
+      if (!m.me) text(ctx, m.who, x + 14, y + 20, 18, { weight: 900, color: m.color || C.kiko });
+      if (m.img) { ctx.fillStyle = "#8FD0E6"; rr(ctx, x + 14, y + 30, w - 28, 100, 8); ctx.fill(); ctx.fillStyle = "#2E9E5B"; ctx.beginPath(); ctx.moveTo(x + 14, y + 130); ctx.lineTo(x + 70, y + 70); ctx.lineTo(x + 120, y + 110); ctx.lineTo(x + 160, y + 85); ctx.lineTo(x + w - 14, y + 130); ctx.closePath(); ctx.fill(); kid(ctx, x + w / 2 + 30, y + 95, 28, {}); }
+      else lines.forEach((ln, i) => text(ctx, ln, x + 14, y + 42 + i * 28, 22, { weight: m.deleted ? 600 : 700, color: m.deleted ? C.muted : C.ink }));
+      y += h + 12;
+    });
+  };
+  // jejak kaki
+  S.footprints = function (ctx, pts, opt = {}) {
+    pts.forEach(([x, y], i) => { const side = i % 2 ? 1 : -1; ctx.fillStyle = opt.color || "rgba(74,90,102,0.55)"; ctx.beginPath(); ctx.ellipse(x + side * 14, y, 12, 20, side * 0.2, 0, Math.PI * 2); ctx.fill(); for (let t = 0; t < 4; t++) { ctx.beginPath(); ctx.arc(x + side * 14 - 9 + t * 6, y - 26, 4, 0, Math.PI * 2); ctx.fill(); } });
+  };
+  // server (rak kotak) dengan label
+  S.server = function (ctx, cx, cy, s, opt = {}) {
+    for (let i = 0; i < 3; i++) { ctx.fillStyle = "#4A5A66"; rr(ctx, cx - s * 0.5, cy - s * 0.6 + i * s * 0.42, s, s * 0.36, 6); ctx.fill(); ctx.fillStyle = i === 1 ? C.good : "#8FD0E6"; ctx.beginPath(); ctx.arc(cx + s * 0.35, cy - s * 0.42 + i * s * 0.42, s * 0.05, 0, Math.PI * 2); ctx.fill(); }
+    if (opt.label) text(ctx, opt.label, cx, cy + s * 0.95, 26, { align: "center", weight: 800, color: C.ink2 });
+  };
+  // kartu foto kecil (salinan)
+  S.photo = function (ctx, cx, cy, s, opt = {}) { ctx.fillStyle = "#fff"; rr(ctx, cx - s / 2, cy - s / 2, s, s, 6); ctx.fill(); ctx.strokeStyle = "#B7C4CC"; ctx.lineWidth = 3; ctx.stroke(); ctx.fillStyle = "#8FD0E6"; rr(ctx, cx - s * 0.4, cy - s * 0.4, s * 0.8, s * 0.6, 4); ctx.fill(); ctx.fillStyle = "#2E9E5B"; ctx.fillRect(cx - s * 0.4, cy, s * 0.8, s * 0.2); if (opt.x) { ctx.strokeStyle = C.bad; ctx.lineWidth = 6; ctx.beginPath(); ctx.moveTo(cx - s * 0.4, cy - s * 0.4); ctx.lineTo(cx + s * 0.4, cy + s * 0.4); ctx.moveTo(cx + s * 0.4, cy - s * 0.4); ctx.lineTo(cx - s * 0.4, cy + s * 0.4); ctx.stroke(); } };
+  K.sandi = S;
+})(typeof window !== "undefined" ? window : globalThis);
+
+/* Adegan episode D7.3: Kata Sandi Aman dan Rekam Jejak Digital. Muat setelah kiko-core.js, kiko-devices.js, sandi.js. */
+(function (global) {
+  const K = global.Kiko, H = K.helpers, C = K.C, D = K.devices, S = K.sandi, SCENES = K.SCENES;
+  const { text, para, card, kiko, kid, bubble, rr, ease, clamp, lerp } = H;
+  const reveal = (l, t0, step, n) => clamp(Math.floor((l - t0) / step) + 1, 0, n);
+  const banner = (ctx, s, y = 800, w = 1000, opt = {}) => { card(ctx, 960 - w / 2, y, w, 80, { fill: opt.fill || "#FFF3D6", stroke: opt.stroke || C.accent, lw: 4 }); text(ctx, s, 960, y + 52, 34, { align: "center", weight: 900, color: opt.color || C.ink }); };
+
+  Object.assign(SCENES, {
+    title_story(ctx, b, l) {
+      card(ctx, 120, 150, 1680, 740);
+      kid(ctx, 420, 560, 200, {}); text(ctx, "Dito", 420, 830, 30, { align: "center", color: C.ink2, weight: 700 });
+      const sc = D.phone(ctx, 900, 520, 330, 600);
+      text(ctx, "Game Kiko Dash", sc.x + sc.w / 2, sc.y + 90, 26, { align: "center", weight: 900 });
+      S.pwBox(ctx, sc.x + 30, sc.y + 160, sc.w - 60, "dito2013", { mask: true, h: 70, size: 30, stroke: C.bad });
+      card(ctx, sc.x + 30, sc.y + 260, sc.w - 60, 90, { fill: C.badBg, stroke: C.bad, lw: 3 }); text(ctx, "Kata sandi salah", sc.x + sc.w / 2, sc.y + 300, 24, { align: "center", weight: 900, color: C.bad }); text(ctx, "sandi sudah diganti", sc.x + sc.w / 2, sc.y + 330, 20, { align: "center", weight: 700, color: C.bad });
+      S.lock(ctx, sc.x + sc.w / 2, sc.y + 460, 70, { open: true });
+      if (l > 2) bubble(ctx, 1280, 400, 440, "Ada yang masuk duluan!", 32, { tailX: 1300, tailDir: -40, fill: C.badBg, stroke: C.bad, color: C.bad });
+    },
+    prereq(ctx, b, l) {
+      card(ctx, 260, 200, 1400, 600);
+      text(ctx, "TONTON DULU: Episode D7.0 Cara Memakai Komputer dan HP", 960, 300, 32, { align: "center", color: C.accentDark, weight: 800 });
+      card(ctx, 380, 380, 1160, 300, { fill: C.badBg, stroke: C.bad, lw: 5 });
+      text(ctx, "Semua kata sandi di sini hanya CONTOH.", 960, 470, 40, { align: "center", weight: 900 });
+      text(ctx, "Jangan pernah menulis kata sandimu yang asli di mana pun,", 960, 550, 32, { align: "center", weight: 700, color: C.ink2 });
+      text(ctx, "termasuk di latihan.", 960, 600, 32, { align: "center", weight: 700, color: C.ink2 });
+      kiko(ctx, 1600, 760, 150, 0);
+    },
+    unplugged(ctx, b, l) {
+      card(ctx, 120, 150, 1680, 740);
+      text(ctx, "MAIN DULU TANPA KOMPUTER", 960, 230, 34, { align: "center", color: C.accentDark, weight: 800 });
+      kid(ctx, 380, 560, 200, { hair: "long" }); kid(ctx, 700, 560, 200, { point: true });
+      const ph = l < 3.5;
+      bubble(ctx, 540, 392, 300, ph ? "angkaku: 7" : "angkaku: 4 8 2", 34, { tailX: 600, tailDir: -40 });
+      card(ctx, 1000, 300, 700, 440, { fill: C.bg2 });
+      text(ctx, ph ? "1 digit" : "3 digit", 1350, 370, 36, { align: "center", weight: 900 });
+      text(ctx, "paling banyak", 1350, 440, 28, { align: "center", color: C.ink2, weight: 700 });
+      text(ctx, ph ? "10 tebakan" : "1.000 tebakan", 1350, 540, 72, { align: "center", weight: 900, color: ph ? C.good : C.accentDark });
+      text(ctx, ph ? "pasti kena" : "lama sekali kalau manusia", 1350, 640, 30, { align: "center", color: C.ink2, weight: 700 });
+    },
+    unplugged_long(ctx, b, l) {
+      card(ctx, 120, 150, 1680, 740);
+      text(ctx, "MAKIN PANJANG, MAKIN LAMA DITEBAK", 960, 230, 34, { align: "center", color: C.accentDark, weight: 800 });
+      const rows = [["1 digit", 10, 0.05], ["3 digit", 1000, 0.18], ["6 digit", "1 juta", 0.4], ["8 huruf+angka", "triliunan", 0.9]];
+      const n = reveal(l, 0.6, 0.9, 4);
+      rows.forEach(([lab, cnt, k], i) => { if (i >= n) return; const y = 300 + i * 110; text(ctx, lab, 420, y + 48, 32, { align: "right", weight: 900 }); ctx.fillStyle = i === 3 ? C.good : C.kiko; rr(ctx, 460, y + 10, 1100 * k, 60, 12); ctx.fill(); text(ctx, String(cnt) + " tebakan", 480 + 1100 * k, y + 50, 30, { weight: 900, color: C.ink }); });
+      if (n >= 4) { banner(ctx, "komputer menebak jutaan kali tiap detik → sandi harus jauh lebih panjang", 760, 1400); }
+    },
+
+    pw_house(ctx, b, l) {
+      card(ctx, 120, 150, 1680, 740);
+      S.house(ctx, 560, 520, 420, 420, { label: "AKUN" });
+      ["foto", "pesan", "teman", "uang game"].forEach((s, i) => { card(ctx, 400 + (i % 2) * 170, 300 + Math.floor(i / 2) * 60, 150, 46, { fill: "#FFF3B0", r: 8 }); text(ctx, s, 475 + (i % 2) * 170, 331 + Math.floor(i / 2) * 60, 22, { align: "center", weight: 800 }); });
+      const u = ease(clamp((l - 1.5) / 1.2, 0, 1)); S.key(ctx, lerp(1300, 620, u), lerp(520, 640, u), 90, { label: "kata sandi" });
+      kid(ctx, 1450, 560, 200, { point: true });
+      text(ctx, "kata sandi = kunci rumah digitalmu", 960, 830, 34, { align: "center", color: C.accentDark, weight: 800 });
+    },
+    pw_weak(ctx, b, l) {
+      card(ctx, 120, 150, 1680, 740);
+      S.house(ctx, 560, 520, 420, 420, { label: "AKUN", open: l > 3 });
+      S.key(ctx, 760, 420, 80, { label: "dito2013", rot: -0.4 }); ctx.strokeStyle = "#6B7B88"; ctx.lineWidth = 6; ctx.beginPath(); ctx.moveTo(760, 300); ctx.lineTo(760, 380); ctx.stroke();
+      card(ctx, 1000, 300, 700, 300, { fill: C.badBg, stroke: C.bad, lw: 4 });
+      text(ctx, "dito2013", 1350, 380, 56, { align: "center", weight: 900, color: C.bad });
+      text(ctx, "nama + tahun lahir", 1350, 450, 30, { align: "center", color: C.ink2, weight: 700 });
+      text(ctx, "teman sekelas pun bisa menebak", 1350, 540, 30, { align: "center", weight: 900, color: C.bad });
+      if (l > 3) { kid(ctx, 1560, 760, 140, { point: true }); text(ctx, "Ketebak!", 1350, 700, 40, { align: "center", weight: 900, color: C.bad }); }
+      text(ctx, "kunci yang digantung di depan pintu", 560, 840, 32, { align: "center", color: C.bad, weight: 800 });
+    },
+    pw_common(ctx, b, l) {
+      card(ctx, 120, 150, 1680, 740);
+      text(ctx, "KATA SANDI PALING SERING DIPAKAI", 560, 240, 32, { align: "center", color: C.accentDark, weight: 800 });
+      const list = ["123456", "password", "qwerty", "111111", "abc123"]; const n = reveal(l, 0.5, 0.5, 5);
+      list.forEach((s, i) => { if (i >= n) return; card(ctx, 260, 280 + i * 92, 600, 76, { fill: i < 3 ? C.badBg : C.bg2, stroke: i < 3 ? C.bad : "#D7E2DC", lw: 3 }); text(ctx, (i + 1) + ".", 300, 330 + i * 92, 32, { weight: 900, color: C.ink2 }); text(ctx, s, 360, 330 + i * 92, 36, { weight: 900 }); });
+      card(ctx, 1000, 280, 700, 200, { fill: C.bg2 }); text(ctx, "dipakai jutaan orang", 1350, 350, 32, { align: "center", weight: 800, color: C.ink2 }); text(ctx, "→ dicoba mesin pertama kali", 1350, 420, 32, { align: "center", weight: 900 });
+      if (l > 3.5) { S.counter(ctx, 1100, 560, 500, "tebakan ke-1", { label: "mesin mencoba:" }); text(ctx, "langsung masuk ✕", 1350, 740, 40, { align: "center", weight: 900, color: C.bad }); }
+    },
+    pw_bruteforce(ctx, b, l) {
+      card(ctx, 120, 150, 1680, 740);
+      const n = Math.floor(Math.max(0, l - 0.3) * 1234567) % 100000000; S.counter(ctx, 200, 300, 560, String(n).padStart(8, "0"), { label: "mencoba semua kombinasi…" });
+      text(ctx, "jutaan tebakan tiap detik", 480, 460, 28, { align: "center", color: C.ink2, weight: 700 });
+      const rows = [["4 angka", "sekejap", C.bad], ["8 huruf", "beberapa jam", "#B57A12"], ["12 huruf campur", "ratusan tahun", C.good]]; const m = reveal(l, 1.5, 1.2, 3);
+      rows.forEach(([a, c, col], i) => { if (i >= m) return; const y = 300 + i * 150; card(ctx, 880, y, 820, 120, { fill: C.panel, stroke: col, lw: 5 }); text(ctx, a, 920, y + 72, 36, { weight: 900 }); text(ctx, c, 1660, y + 72, 36, { align: "right", weight: 900, color: col }); });
+      if (m >= 3) text(ctx, "panjang menang", 1290, 800, 40, { align: "center", weight: 900, color: C.good });
+    },
+    pw_long(ctx, b, l) {
+      card(ctx, 120, 150, 1680, 740);
+      banner(ctx, "yang penting bukan rumit, melainkan PANJANG", 180, 1000);
+      card(ctx, 200, 290, 720, 470, { fill: C.bg2 }); card(ctx, 1000, 290, 720, 470, { fill: C.bg2 });
+      text(ctx, "pendek tapi rumit", 560, 350, 34, { align: "center", weight: 900, color: C.ink2 }); S.pwBox(ctx, 260, 390, 600, "S!n7a", { count: true }); S.meter(ctx, 260, 520, 600, 0); text(ctx, "susah diingat, cepat ketebak", 560, 700, 30, { align: "center", color: C.bad, weight: 800 });
+      text(ctx, "panjang dan mudah diingat", 1360, 350, 34, { align: "center", weight: 900, color: C.ink2 }); S.pwBox(ctx, 1060, 390, 600, "sepedakantinbiru", { count: true, size: 40 }); S.meter(ctx, 1060, 520, 600, 2); text(ctx, "mudah diingat, lama ditebak", 1360, 700, 30, { align: "center", color: C.good, weight: 800 });
+    },
+    pw_passphrase(ctx, b, l) {
+      card(ctx, 120, 150, 1680, 740);
+      text(ctx, "FRASA SANDI (passphrase): empat kata acak", 960, 240, 34, { align: "center", color: C.accentDark, weight: 800 });
+      const words = ["kucing", "angkot", "hujan", "bakso"]; const n = reveal(l, 0.8, 0.8, 4);
+      words.forEach((w, i) => { if (i >= n) return; card(ctx, 260 + i * 360, 300, 320, 130, { fill: ["#FFF3B0", "#DCEBFF", "#D6F5E3", "#FFD6E0"][i], r: 18 }); text(ctx, w, 420 + i * 360, 380, 44, { align: "center", weight: 900 }); if (i) text(ctx, "-", 240 + i * 360, 380, 44, { align: "center", weight: 900, color: C.ink2 }); });
+      if (n >= 4) { S.pwBox(ctx, 360, 500, 1200, "kucing-angkot-hujan-bakso", { count: true, size: 44 }); S.meter(ctx, 360, 630, 1200, 3); text(ctx, "mudah dibayangkan, sangat sulit ditebak", 960, 800, 32, { align: "center", color: C.good, weight: 900 }); }
+    },
+
+    rule_unique(ctx, b, l) {
+      card(ctx, 120, 150, 1680, 740);
+      text(ctx, "ATURAN 1: satu akun, satu sandi", 960, 240, 34, { align: "center", color: C.accentDark, weight: 800 });
+      const same = l < 3.2; const names = ["game", "email", "sekolah"];
+      names.forEach((nm, i) => { const x = 420 + i * 540; S.house(ctx, x, 520, 260, 260, { label: nm, open: same && l > 1.5 }); S.key(ctx, x, 720, 50, { label: same ? "sandi A" : "sandi " + "ABC"[i], color: same ? C.bad : "#B57A12" }); });
+      banner(ctx, same ? "satu kunci bocor → semua rumah terbuka" : "kunci berbeda → yang lain tetap aman", 820, 1000, same ? { fill: C.badBg, stroke: C.bad, color: C.bad } : { fill: C.goodBg, stroke: C.good, color: C.good });
+    },
+    rule_secret(ctx, b, l) {
+      card(ctx, 120, 150, 1680, 740);
+      text(ctx, "ATURAN 2: rahasia, bahkan dari teman dekat", 960, 240, 34, { align: "center", color: C.accentDark, weight: 800 });
+      const sc = D.phone(ctx, 520, 560, 340, 580);
+      S.chat(ctx, sc, [{ who: "Admin Game (?)", color: C.bad, text: "Halo, saya admin. Kirim kata sandimu untuk verifikasi hadiah." }, ...(l > 2 ? [{ me: true, text: "Tidak. Admin asli tidak pernah minta kata sandi." }] : [])], { title: "Pesan" });
+      card(ctx, 1000, 320, 700, 400, { fill: C.badBg, stroke: C.bad, lw: 4 });
+      text(ctx, "\"saya admin, kirim kata sandimu\"", 1350, 400, 30, { align: "center", weight: 800 });
+      text(ctx, "= PENIPUAN", 1350, 480, 56, { align: "center", weight: 900, color: C.bad });
+      text(ctx, "admin sungguhan tidak pernah", 1350, 580, 28, { align: "center", color: C.ink2, weight: 700 }); text(ctx, "meminta kata sandi", 1350, 620, 28, { align: "center", color: C.ink2, weight: 700 });
+    },
+    rule_2fa(ctx, b, l) {
+      card(ctx, 120, 150, 1680, 740);
+      text(ctx, "ATURAN 3: verifikasi dua langkah", 960, 240, 34, { align: "center", color: C.accentDark, weight: 800 });
+      card(ctx, 200, 300, 560, 420, { fill: C.bg2 }); text(ctx, "langkah 1", 480, 360, 28, { align: "center", color: C.ink2, weight: 800 }); S.pwBox(ctx, 240, 400, 480, "kucing-angkot…", { mask: false, h: 80, size: 30 }); text(ctx, "kata sandi", 480, 560, 32, { align: "center", weight: 900 });
+      H.arrowIcon(ctx, "east", 840, 500, 70, C.accentDark);
+      card(ctx, 920, 300, 560, 420, { fill: l > 1.5 ? "#FFF3D6" : C.bg2, stroke: l > 1.5 ? C.accent : "#D7E2DC", lw: 4 }); text(ctx, "langkah 2", 1200, 360, 28, { align: "center", color: C.ink2, weight: 800 });
+      const sc = D.phone(ctx, 1200, 540, 150, 240); if (l > 1.5) { text(ctx, "kode:", sc.x + sc.w / 2, sc.y + 90, 20, { align: "center", weight: 700, color: C.ink2 }); text(ctx, "482 913", sc.x + sc.w / 2, sc.y + 140, 30, { align: "center", weight: 900 }); }
+      text(ctx, "kode dikirim ke HP-mu", 1200, 700, 28, { align: "center", weight: 900 });
+      if (l > 3.5) { S.lock(ctx, 1630, 470, 80, {}); para(ctx, "pembobol punya sandi pun tetap tertahan", 1630, 600, 24, 240, { align: "center", color: C.good, weight: 900, lh: 1.3 }); }
+    },
+    rule_recap(ctx, b, l) {
+      card(ctx, 120, 150, 1680, 740);
+      kid(ctx, 400, 540, 200, { point: true }); text(ctx, "Dito", 400, 810, 30, { align: "center", color: C.ink2, weight: 700 });
+      const items = ["frasa sandi baru yang panjang", "beda dari akun lain", "tidak diberitahukan ke siapa pun", "verifikasi dua langkah menyala"]; const n = reveal(l, 0.6, 1.0, 4);
+      items.forEach((s, i) => { if (i >= n) return; card(ctx, 700, 280 + i * 120, 980, 96, { fill: C.goodBg, stroke: C.good, lw: 3 }); text(ctx, "✓", 760, 342 + i * 120, 44, { align: "center", weight: 900, color: C.good }); text(ctx, s, 820, 340 + i * 120, 34, { weight: 800 }); });
+      if (n >= 4) S.lock(ctx, 1560, 800, 60, {});
+    },
+
+    trace_intro(ctx, b, l) {
+      card(ctx, 120, 150, 1680, 740);
+      ctx.fillStyle = "#F1E3C8"; rr(ctx, 160, 520, 1600, 340, 20); ctx.fill();
+      const n = reveal(l, 0.8, 0.5, 8); const pts = Array.from({ length: n }, (_, i) => [300 + i * 170, 700 - (i % 2) * 20]); S.footprints(ctx, pts);
+      D.phone(ctx, 1640, 380, 140, 240); kid(ctx, 1440, 420, 160, { point: true });
+      text(ctx, "REKAM JEJAK DIGITAL (digital footprint)", 200, 300, 34, { color: C.accentDark, weight: 800 });
+      text(ctx, "setiap kali memakai HP, kamu meninggalkan jejak", 200, 380, 32, { weight: 800 });
+    },
+    trace_kinds(ctx, b, l) {
+      card(ctx, 120, 150, 1680, 740);
+      const n = reveal(l, 0.6, 1.6, 2);
+      if (n >= 1) { card(ctx, 180, 230, 760, 600, { fill: C.bg2 }); text(ctx, "JEJAK YANG KAMU BUAT", 560, 300, 30, { align: "center", color: C.accentDark, weight: 800 }); ["unggahan", "foto", "komentar", "like"].forEach((s, i) => { card(ctx, 240 + (i % 2) * 320, 350 + Math.floor(i / 2) * 110, 300, 90, { fill: C.panel }); text(ctx, s, 390 + (i % 2) * 320, 408 + Math.floor(i / 2) * 110, 32, { align: "center", weight: 900 }); }); text(ctx, "kamu sadar membuatnya", 560, 640, 28, { align: "center", color: C.ink2, weight: 700 }); }
+      if (n >= 2) { card(ctx, 980, 230, 760, 600, { fill: C.bg2 }); text(ctx, "JEJAK YANG TERCATAT DIAM-DIAM", 1360, 300, 30, { align: "center", color: C.bad, weight: 800 }); ["pencarian", "lokasi", "aplikasi yang dibuka", "jam online"].forEach((s, i) => { card(ctx, 1040 + (i % 2) * 320, 350 + Math.floor(i / 2) * 110, 300, 90, { fill: C.panel }); text(ctx, s, 1190 + (i % 2) * 320, 408 + Math.floor(i / 2) * 110, 28, { align: "center", weight: 900 }); }); text(ctx, "sering tanpa kamu sadari", 1360, 640, 28, { align: "center", color: C.ink2, weight: 700 }); }
+    },
+    trace_story(ctx, b, l) {
+      card(ctx, 120, 150, 1680, 740);
+      const sc = D.phone(ctx, 520, 530, 360, 640);
+      const ph = l < 2.2 ? 0 : l < 4 ? 1 : 2;
+      const msgs = [{ who: "Rama", text: "Besok bawa alat tulis ya" }, ph === 0 ? { me: true, img: true } : { me: true, text: "Pesan ini telah dihapus", deleted: true }];
+      S.chat(ctx, sc, msgs);
+      kid(ctx, 1200, 560, 200, { hair: "long" }); text(ctx, "Sinta", 1200, 830, 30, { align: "center", color: C.ink2, weight: 700 });
+      if (ph === 1) bubble(ctx, 1050, 350, 380, "Aduh, hapus saja…", 30, { tailX: 1200, tailDir: 0 });
+      if (ph === 2) { for (let i = 0; i < 3; i++) { S.photo(ctx, 1480 + (i % 2) * 120, 360 + Math.floor(i / 2) * 130, 100); } para(ctx, "3 teman sudah menyimpan tangkapan layarnya", 1560, 630, 26, 300, { align: "center", weight: 900, color: C.bad, lh: 1.3 }); }
+    },
+    trace_copies(ctx, b, l) {
+      card(ctx, 120, 150, 1680, 740);
+      const n = reveal(l, 0.5, 0.9, 4);
+      D.phone(ctx, 360, 520, 170, 300); text(ctx, "HP-mu", 360, 740, 28, { align: "center", weight: 900 }); S.photo(ctx, 360, 500, 90, { x: l > 4 });
+      if (n >= 2) { H.arrowIcon(ctx, "east", 600, 500, 70, C.ink2); S.server(ctx, 820, 500, 150, { label: "server aplikasi" }); S.photo(ctx, 900, 400, 70); }
+      if (n >= 3) { H.arrowIcon(ctx, "east", 1060, 500, 70, C.ink2); for (let i = 0; i < 3; i++) { D.phone(ctx, 1300 + i * 170, 520, 110, 200); S.photo(ctx, 1300 + i * 170, 500, 60); } text(ctx, "HP teman-teman", 1470, 700, 28, { align: "center", weight: 900 }); }
+      if (l > 4) banner(ctx, "tombol hapus hanya menghapus salinanmu", 800, 1000, { fill: C.badBg, stroke: C.bad, color: C.bad });
+    },
+    trace_future(ctx, b, l) {
+      card(ctx, 120, 150, 1680, 740);
+      ctx.strokeStyle = "#9AAFA6"; ctx.lineWidth = 8; ctx.beginPath(); ctx.moveTo(260, 500); ctx.lineTo(1660, 500); ctx.stroke();
+      const pts = [["kelas 7", "unggah foto", 360], ["kelas 10", "daftar SMA", 820], ["kuliah / kerja", "daftar & wawancara", 1400]]; const n = reveal(l, 0.6, 1.2, 3);
+      pts.forEach(([a, c, x], i) => { if (i >= n) return; ctx.fillStyle = i ? C.accent : C.kiko; ctx.beginPath(); ctx.arc(x, 500, 22, 0, Math.PI * 2); ctx.fill(); text(ctx, a, x, 440, 30, { align: "center", weight: 900 }); text(ctx, c, x, 570, 28, { align: "center", color: C.ink2, weight: 700 }); if (i) S.photo(ctx, x, 660, 80); });
+      if (n >= 3) banner(ctx, "foto yang sama masih bisa muncul bertahun-tahun kemudian", 790, 1200);
+    },
+    trace_think(ctx, b, l) {
+      card(ctx, 120, 150, 1680, 740);
+      text(ctx, "TIGA PERTANYAAN SEBELUM MENGUNGGAH", 960, 240, 34, { align: "center", color: C.accentDark, weight: 800 });
+      const qs = ["Bolehkah ini dilihat orang tua dan guruku?", "Apakah ini menyakiti orang lain?", "Masih mau ini terlihat lima tahun lagi?"]; const n = reveal(l, 0.8, 1.3, 3);
+      qs.forEach((q, i) => { if (i >= n) return; const x = 240 + i * 500; card(ctx, x, 300, 460, 400, { fill: "#FFF3D6", stroke: C.accent, lw: 4 }); ctx.fillStyle = C.accentDark; ctx.beginPath(); ctx.arc(x + 230, 380, 40, 0, Math.PI * 2); ctx.fill(); text(ctx, String(i + 1), x + 230, 395, 40, { align: "center", color: "#fff", weight: 900 }); para(ctx, q, x + 230, 480, 32, 400, { align: "center", weight: 800, lh: 1.3 }); });
+      if (n >= 3) text(ctx, "kalau ada satu jawaban \"tidak\": jangan unggah", 960, 800, 32, { align: "center", color: C.bad, weight: 900 });
+    },
+    trace_consent(ctx, b, l) {
+      card(ctx, 120, 150, 1680, 740);
+      kid(ctx, 500, 560, 200, { hair: "long", point: true }); kid(ctx, 960, 560, 200, {});
+      D.phone(ctx, 300, 400, 120, 200); S.photo(ctx, 300, 380, 70);
+      bubble(ctx, 560, 360, 420, "Boleh kuunggah fotomu?", 30, { tailX: 600, tailDir: -60 });
+      if (l > 2.2) bubble(ctx, 1010, 360, 260, l > 3.8 ? "Jangan, ya." : "Hmm…", 30, { tailX: 1050, tailDir: -60, fill: C.badBg, stroke: C.bad, color: C.bad });
+      card(ctx, 1310, 300, 430, 400, { fill: C.bg2 }); text(ctx, "foto temanmu", 1525, 400, 32, { align: "center", weight: 900 }); text(ctx, "= jejak digital temanmu", 1525, 460, 28, { align: "center", color: C.ink2, weight: 800 }); text(ctx, "minta izin dulu,", 1525, 560, 32, { align: "center", weight: 900, color: C.good }); text(ctx, "hormati jawabannya", 1525, 610, 32, { align: "center", weight: 900, color: C.good });
+    },
+    trace_good(ctx, b, l) {
+      card(ctx, 120, 150, 1680, 740);
+      ctx.fillStyle = "#F1E3C8"; rr(ctx, 160, 560, 1600, 300, 20); ctx.fill();
+      S.footprints(ctx, Array.from({ length: 7 }, (_, i) => [320 + i * 190, 720 - (i % 2) * 20]), { color: "rgba(46,158,91,0.6)" });
+      const items = ["karya", "prestasi", "hal yang kamu banggakan"]; const n = reveal(l, 0.8, 1.1, 3);
+      items.forEach((s, i) => { if (i >= n) return; card(ctx, 300 + i * 460, 280, 420, 200, { fill: C.goodBg, stroke: C.good, lw: 4 }); text(ctx, ["🏆", "🎨", "⭐"][i], 510 + i * 460, 370, 60, { align: "center" }); text(ctx, s, 510 + i * 460, 440, 30, { align: "center", weight: 900 }); });
+      if (n >= 3) text(ctx, "jejak yang justru ingin kamu tinggalkan", 960, 530, 32, { align: "center", color: C.good, weight: 900 });
+    },
+    make_show(ctx, b, l) {
+      card(ctx, 160, 150, 1600, 740);
+      text(ctx, "GILIRANMU", 960, 240, 34, { align: "center", color: C.accentDark, weight: 900 });
+      const items = [["Pengukur kata sandi", "contoh fiktif saja, bukan sandimu", (x, y) => { S.pwBox(ctx, x - 170, y - 50, 340, "contoh-sandi", { h: 60, size: 26 }); S.meter(ctx, x - 170, y + 30, 340, 2); }], ["Pilah jejak digital", "kamu buat sendiri, atau tercatat diam-diam?", (x, y) => S.footprints(ctx, [[x - 90, y], [x - 30, y - 10], [x + 30, y], [x + 90, y - 10]])], ["Di rumah bersama orang tua", "ganti sandi pendek, nyalakan dua langkah", (x, y) => { S.lock(ctx, x - 40, y, 60, {}); D.phone(ctx, x + 60, y, 70, 120); }]];
+      items.forEach(([t1, t2, draw], i) => { const x = 400 + i * 560; card(ctx, x - 250, 290, 500, 440, { fill: C.bg2 }); ctx.fillStyle = C.kiko; ctx.beginPath(); ctx.arc(x - 200, 340, 28, 0, Math.PI * 2); ctx.fill(); text(ctx, String(i + 1), x - 200, 352, 30, { align: "center", color: "#fff", weight: 900 }); draw(x, 470); text(ctx, t1, x, 610, 30, { align: "center", weight: 900 }); para(ctx, t2, x, 655, 22, 440, { align: "center", weight: 700, color: C.ink2, lh: 1.25 }); });
+      text(ctx, "di halaman latihan episode ini", 960, 820, 30, { align: "center", color: C.ink2, weight: 700 });
+    }
+  });
+})(typeof window !== "undefined" ? window : globalThis);
+</script>
+<script>/* Inti halaman latihan: pemutar (kanvas + narasi), tombol suara nyala/mati (berpindah antara timeline suara dan teks),
+   kuis dengan petunjuk, dan kemajuan di localStorage (perangkat ini saja).
+   Pakai:  const P = PageCore({ suara: TIMELINE_SUARA_atau_null, teks: TIMELINE_TEKS });
+   Episode menambahkan latihannya sendiri lewat P.$, P.K, P.H, P.progress, P.save(), P.speed(), P.onProgress(fn). */
+function PageCore(TLS, opt = {}) {
+  const $ = id => document.getElementById(id);
+  const K = Kiko, H = K.helpers;
+  let voice = !!TLS.suara; let TL = voice ? TLS.suara : TLS.teks;
+  // ---------- progress storage (per device only) ----------
+  const KEY = opt.key || TL.episode.replace(/\./g, "").toLowerCase() + "-progress";   // D7.5 -> "d75-progress"
+  let progress = { quiz: {} };
+  try { const s = localStorage.getItem(KEY); if (s) progress = { quiz: {}, ...JSON.parse(s) }; } catch (e) {}
+  const extras = [];
+  function renderProgress() {
+    const el = $("progress"); if (!el) return; el.innerHTML = "";
+    Object.keys(TL.quizzes).forEach((id, i) => { const s = document.createElement("span"); s.textContent = "Cek " + (i + 1); s.className = progress.quiz[id] ? "ok" : ""; el.appendChild(s); });
+    extras.forEach(f => f(el));
+  }
+  function save() { try { localStorage.setItem(KEY, JSON.stringify(progress)); } catch (e) {} renderProgress(); }
+
+  // ---------- player ----------
+  const cv = $("screen"), ctx = cv.getContext("2d");
+  let t = 0, playing = false, last = 0, speed = 1, hasAudio = false;
+  const nar = $("nar"); nar.addEventListener("canplay", () => { hasAudio = true; }); nar.addEventListener("error", () => { hasAudio = false; });
+  function fmt(s) { s = Math.max(0, Math.floor(s)); return Math.floor(s / 60) + ":" + String(s % 60).padStart(2, "0"); }
+  function segStart(i) { return TL.beats.find(b => b.seg === i).start; }
+  function syncAudio() { if (voice && hasAudio) { try { nar.currentTime = t; } catch (e) {} } }
+  function drawNow() {
+    const b = K.draw(ctx, Math.min(t, TL.total - 0.01), TL);
+    $("barfill").style.width = (t / TL.total * 100) + "%"; $("bar").setAttribute("aria-valuenow", Math.round(t / TL.total * 100));
+    $("timelabel").textContent = fmt(t) + " / " + fmt(TL.total);
+    [...$("chapters").children].forEach((c, i) => c.classList.toggle("now", i === b.seg));
+    return b;
+  }
+  function loop(now) {
+    if (!playing) return;
+    const dt = Math.min(0.1, (now - last) / 1000); last = now; if (voice && hasAudio && !nar.paused) t = nar.currentTime; else t += dt * speed;
+    if (t >= TL.total) { t = TL.total - 0.01; setPlaying(false); }
+    drawNow(); requestAnimationFrame(loop);
+  }
+  function setPlaying(p) {
+    playing = p; $("bigplay").hidden = p; $("playbtn").textContent = p ? "❚❚ Jeda" : "▶ Putar";
+    if (p) { last = performance.now(); if (voice && hasAudio) { try { nar.currentTime = t; nar.playbackRate = speed; nar.play().catch(() => {}); } catch (e) {} } requestAnimationFrame(loop); } else nar.pause();
+  }
+  $("bigplay").addEventListener("click", () => setPlaying(true));
+  $("playbtn").addEventListener("click", () => setPlaying(!playing));
+  $("replay").addEventListener("click", () => { const b = K.beatAt(TL, t); t = segStart(b.seg); syncAudio(); drawNow(); setPlaying(true); });
+  $("slow").addEventListener("click", e => { speed = speed === 1 ? 0.8 : 1; nar.playbackRate = speed; e.currentTarget.setAttribute("aria-pressed", speed !== 1); });
+  function seekFromBar(ev) { const r = $("bar").getBoundingClientRect(); const x = (ev.touches ? ev.touches[0].clientX : ev.clientX) - r.left; t = Math.max(0, Math.min(TL.total - 0.01, x / r.width * TL.total)); syncAudio(); drawNow(); }
+  $("bar").addEventListener("click", seekFromBar);
+  $("bar").addEventListener("keydown", e => { if (e.key === "ArrowRight") { t = Math.min(TL.total - 0.01, t + 5); syncAudio(); drawNow(); } if (e.key === "ArrowLeft") { t = Math.max(0, t - 5); syncAudio(); drawNow(); } });
+  TL.segments.forEach((name, i) => { const b = document.createElement("button"); b.textContent = (i + 1) + ". " + name; b.addEventListener("click", () => { t = segStart(i); syncAudio(); drawNow(); setPlaying(true); }); $("chapters").appendChild(b); });
+  // voice on/off: switches between the narrated timeline and the reading-paced one, staying on the same beat
+  const vb = $("voice");
+  function setVoice(on) {
+    const cur = K.beatAt(TL, t);
+    voice = on && !!TLS.suara; TL = voice ? TLS.suara : TLS.teks;
+    const nb = TL.beats.find(b => b.id === cur.id) || TL.beats[0]; t = nb.start;
+    if (vb) { vb.setAttribute("aria-pressed", voice); vb.textContent = voice ? "🔊 Suara: nyala" : "🔇 Suara: mati"; }
+    if (playing) { if (voice && hasAudio) { try { nar.currentTime = t; nar.playbackRate = speed; nar.play().catch(() => {}); } catch (e) {} } else nar.pause(); }
+    drawNow();
+  }
+  if (vb) { if (!TLS.suara || !TLS.teks) vb.hidden = true; else { vb.addEventListener("click", () => setVoice(!voice)); vb.setAttribute("aria-pressed", voice); vb.textContent = voice ? "🔊 Suara: nyala" : "🔇 Suara: mati"; } }
+  drawNow();
+
+  // ---------- quiz ----------
+  const quizEl = $("quiz");
+  if (quizEl) Object.entries(TL.quizzes).forEach(([id, q], qi) => {
+    const box = document.createElement("div"); box.className = "q";
+    box.innerHTML = `<h3>${qi + 1}. ${q.q}</h3><div class="opts"></div><div class="fb"></div>`;
+    const opts = box.querySelector(".opts"), fb = box.querySelector(".fb");
+    q.options.forEach((o, i) => {
+      const b = document.createElement("button"); b.innerHTML = `<b>${"ABC"[i]}</b><span>${o}</span>`;
+      b.addEventListener("click", () => {
+        [...opts.children].forEach(c => c.classList.remove("wrong"));
+        if (i === q.answer) { b.classList.add("right"); fb.className = "fb good"; fb.textContent = "Benar! " + (q.explain || ""); progress.quiz[id] = true; save(); [...opts.children].forEach(c => c.disabled = true); }
+        else { b.classList.add("wrong"); fb.className = "fb bad"; fb.textContent = "Belum tepat. Petunjuk: " + q.hint; }
+      });
+      opts.appendChild(b);
+    });
+    if (progress.quiz[id]) { opts.children[q.answer].classList.add("right"); [...opts.children].forEach(c => c.disabled = true); fb.className = "fb good"; fb.textContent = "Sudah dijawab benar."; }
+    quizEl.appendChild(box);
+  });
+  renderProgress();
+
+  return { $, K, H, progress, save, renderProgress, speed: () => speed, timeline: () => TL,
+           onProgress(fn) { extras.push(fn); renderProgress(); } };
+}
+</script>
+<script>
+(function () {
+  const P = PageCore({ suara: {"episode": "D7.3", "title": "Kata Sandi Aman dan Rekam Jejak Digital", "engine": ["../_alat/kiko-core.js", "../_alat/kiko-devices.js", "sandi.js", "scenes.js"], "parts": {"D7.3a": {"segs": [0, 1, 2, 3], "post": "Lanjut ke Bagian 2: Rekam Jejak Digital"}, "D7.3b": {"segs": [4, 5, 6], "pre": "Bagian 2: Rekam Jejak Digital"}}, "youtube": {"ringkas": "Akun game Dito dibobol karena kata sandinya mudah ditebak. Bersama Kiko kita lihat bagaimana kata sandi dicoba-coba oleh mesin, mengapa yang panjang lebih kuat daripada yang rumit, cara membuat frasa sandi yang mudah diingat, dan tiga aturan menjaganya. Lalu: rekam jejak digital — mengapa foto yang sudah 'dihapus' belum tentu hilang, jejak apa yang kita tinggalkan tanpa sadar, dan tiga pertanyaan sebelum mengunggah. Semua contoh memakai akun dan sandi fiktif.", "belajar": ["membuat kata sandi yang panjang, mudah diingat, dan sulit ditebak", "menjelaskan tiga aturan menjaga kata sandi", "menyebut jejak digital yang ditinggalkan saat memakai HP", "menjelaskan mengapa jejak digital sulit dihapus dan memutuskan sebelum mengunggah"], "bagian": {"D7.3a": "Kata Sandi Aman", "D7.3b": "Rekam Jejak Digital"}, "prasyarat": "episode D7.0 Cara Memakai Komputer dan HP", "jp": 6, "tagar": ["#KataSandi", "#Password", "#JejakDigital", "#KeamananDigital", "#LiterasiDigital", "#Kelas7", "#SMP"]}, "recap": ["Kata sandi: panjang, unik, rahasia.", "Yang diunggah bisa disalin dan tak bisa ditarik.", "Berpikir dulu sebelum unggah."], "next": {"code": "D7.4", "title": "Mesin Pencari: Cara Kerja dan Strategi", "note": "Pengukur kata sandi (contoh fiktif) ada di halaman episode ini."}, "segments": ["Pembuka", "Main dulu tanpa komputer", "Kata sandi yang kuat", "Tiga aturan menjaganya", "Jejak digital", "Berpikir sebelum unggah", "Giliranmu"], "quizzes": {"q1": {"q": "Mana kata sandi yang PALING kuat?", "options": ["Sinta2013", "S!n7a", "sepeda-kantin-biru-pagi"], "answer": 2, "hint": "Yang paling penting adalah PANJANG dan tidak memakai nama atau tanggal lahir. Hitung hurufnya."}, "q2": {"q": "Teman baikmu minta kata sandi akunmu, katanya cuma pinjam sebentar. Apa yang sebaiknya kamu lakukan?", "options": ["Memberinya, karena teman dekat", "Menolak dengan baik dan membantu dengan cara lain", "Memberinya, lalu menggantinya minggu depan"], "answer": 1, "hint": "Aturan dua: rahasia, bahkan dari teman dekat. Ada cara membantu teman tanpa memberikan kunci rumahmu."}, "q3": {"q": "Kamu menghapus unggahan satu menit setelah mengirimnya. Apakah unggahan itu pasti hilang dari semua tempat?", "options": ["Ya, hapus berarti hilang", "Belum tentu: salinan bisa ada di HP orang lain dan di server", "Ya, asalkan dihapus dalam lima menit"], "answer": 1, "hint": "Ingat cerita Sinta: siapa saja yang bisa sudah menyimpan salinannya dalam satu menit?"}, "q4": {"q": "Kamu punya foto lucu temanmu saat tidur di kelas. Apa yang sebaiknya kamu lakukan?", "options": ["Unggah ke grup kelas, kan lucu", "Tanya dulu temanmu; kalau ia tidak mau, jangan diunggah", "Unggah, lalu hapus kalau ia marah"], "answer": 1, "hint": "Foto temanmu adalah jejak digital temanmu. Dan ingat: yang sudah terkirim tidak bisa ditarik."}}, "beats": [{"id": "intro1", "seg": 0, "scene": "title", "text": "Halo! Aku Kiko. Hari ini tentang dua hal yang menjaga kita di dunia digital: kata sandi (password) dan rekam jejak digital.", "hold": 1.0, "start": 0.0, "speech": 0.4, "audio": 9.427, "dur": 12.54}, {"id": "intro2", "seg": 0, "scene": "title_story", "text": "Ceritanya begini. Pagi ini Dito tidak bisa masuk ke akun game-nya. Seseorang sudah masuk duluan dan mengganti kata sandinya.", "hold": 0.8, "start": 12.54, "speech": 12.94, "audio": 8.497, "dur": 11.34}, {"id": "intro3", "seg": 0, "scene": "prereq", "text": "Episode ini melanjutkan D7.0. Semua kata sandi dan akun di sini hanya contoh. Jangan pernah menulis kata sandimu yang asli di mana pun, termasuk di latihan.", "hold": 0.8, "start": 23.88, "speech": 24.28, "audio": 11.127, "dur": 14.84}, {"id": "play1", "seg": 1, "scene": "unplugged", "text": "Main dulu. Temanmu memilih angka rahasia satu digit, kamu menebak. Paling banyak sepuluh tebakan, pasti kena. Sekarang tiga digit: butuh sampai seribu tebakan.", "hold": 0.6, "start": 38.72, "speech": 39.12, "audio": 11.462, "dur": 13.14}, {"id": "play2", "seg": 1, "scene": "unplugged_long", "text": "Makin panjang rahasianya, makin lama menebaknya. Komputer bisa menebak jutaan kali tiap detik, jadi kata sandi kita harus jauh lebih panjang daripada tiga digit.", "hold": 1.0, "start": 51.86, "speech": 52.26, "audio": 10.326, "dur": 14.04}, {"id": "s1a", "seg": 2, "scene": "pw_house", "text": "Akun itu seperti rumah: ada isinya, dan kata sandi adalah kuncinya. Siapa pun yang punya kunci bisa masuk dan berbuat apa saja atas namamu.", "hold": 0.6, "start": 65.9, "speech": 66.3, "audio": 9.766, "dur": 13.64}, {"id": "s1b", "seg": 2, "scene": "pw_weak", "text": "Kata sandi Dito tadi: dito2013, nama dan tahun lahirnya. Itu kunci yang digantung di depan pintu. Teman sekelas pun bisa menebaknya.", "hold": 0.6, "start": 79.54, "speech": 79.94, "audio": 10.595, "dur": 12.14}, {"id": "s1c", "seg": 2, "scene": "pw_common", "text": "Yang lebih parah: 123456, password, qwerty. Jutaan orang memakainya, jadi itu yang dicoba mesin pertama kali. Tebakan pertama, langsung masuk.", "hold": 0.6, "start": 91.68, "speech": 92.08, "audio": 12.373, "dur": 13.673}, {"id": "s1d", "seg": 2, "scene": "pw_bruteforce", "text": "Kalau tidak ketebak, mesin mencoba semua kombinasi. Sandi empat angka habis dalam sekejap. Delapan huruf: beberapa jam. Dua belas huruf campur: ratusan tahun.", "hold": 0.8, "start": 105.353, "speech": 105.753, "audio": 11.887, "dur": 13.387}, {"id": "s1e", "seg": 2, "scene": "pw_long", "text": "Jadi yang paling penting bukan rumit, melainkan panjang. Sandi panjang yang mudah diingat lebih baik daripada sandi pendek yang rumit dan kamu lupa.", "hold": 0.6, "start": 118.74, "speech": 119.14, "audio": 9.418, "dur": 13.14}, {"id": "s1f", "seg": 2, "scene": "pw_passphrase", "text": "Caranya: frasa sandi (passphrase), empat kata acak yang digabung. Contoh: kucing-angkot-hujan-bakso. Dua puluh empat huruf, mudah dibayangkan, sangat sulit ditebak.", "hold": 1.0, "start": 131.88, "speech": 132.28, "audio": 14.32, "dur": 16.02}, {"id": "q1", "seg": 2, "scene": "quiz", "quiz": "q1", "text": "Cek pemahaman. Mana kata sandi yang paling kuat: Sinta2013, S!n7a, atau sepeda-kantin-biru-pagi? Pikirkan dulu.", "hold": 4.0, "start": 147.9, "speech": 148.3, "audio": 12.238, "dur": 16.938}, {"id": "q1a", "seg": 2, "scene": "quiz_answer", "quiz": "q1", "text": "Jawabannya: sepeda-kantin-biru-pagi. Paling panjang, tidak memakai nama atau tanggal lahir, dan tetap mudah diingat.", "hold": 1.0, "start": 164.838, "speech": 165.238, "audio": 9.609, "dur": 11.309}, {"id": "s2a", "seg": 3, "scene": "rule_unique", "text": "Tiga aturan menjaganya. Satu: satu akun, satu sandi. Kalau sandi game sama dengan sandi email, pembobol game langsung dapat email juga.", "hold": 0.6, "start": 176.147, "speech": 176.547, "audio": 9.69, "dur": 12.14}, {"id": "s2b", "seg": 3, "scene": "rule_secret", "text": "Dua: rahasia, bahkan dari teman dekat. Kalau ada pesan: saya admin, kirim kata sandimu, itu pasti penipuan. Admin sungguhan tidak pernah minta kata sandi.", "hold": 0.6, "start": 188.287, "speech": 188.687, "audio": 11.539, "dur": 13.64}, {"id": "s2c", "seg": 3, "scene": "rule_2fa", "text": "Tiga: nyalakan verifikasi dua langkah bila ada. Selain sandi, masuk butuh kode yang dikirim ke HP-mu. Pembobol punya sandi pun tetap tertahan.", "hold": 0.6, "start": 201.927, "speech": 202.327, "audio": 10.09, "dur": 12.64}, {"id": "s2d", "seg": 3, "scene": "rule_recap", "text": "Dito memperbaiki akunnya: frasa sandi baru, beda dari akun lain, tidak diberitahukan ke siapa pun, dan verifikasi dua langkah menyala.", "hold": 1.0, "start": 214.567, "speech": 214.967, "audio": 9.528, "dur": 12.04}, {"id": "q2", "seg": 3, "scene": "quiz", "quiz": "q2", "text": "Cek pemahaman. Teman baikmu minta kata sandi akunmu, katanya cuma pinjam sebentar. Apa yang sebaiknya kamu lakukan?", "hold": 4.0, "start": 226.607, "speech": 227.007, "audio": 8.068, "dur": 13.54}, {"id": "q2a", "seg": 3, "scene": "quiz_answer", "quiz": "q2", "text": "Jawabannya: tolak dengan baik, lalu bantu dengan cara lain. Kata sandi tetap rahasia, bahkan dari teman dekat. Kalau sudah terlanjur, segera ganti.", "hold": 1.0, "start": 240.147, "speech": 240.547, "audio": 11.2, "dur": 13.04}, {"id": "s3a", "seg": 4, "scene": "trace_intro", "text": "Bagian dua: rekam jejak digital (digital footprint). Setiap kali kamu memakai HP, kamu meninggalkan jejak, seperti jejak kaki di pasir basah.", "hold": 0.6, "start": 253.187, "speech": 253.587, "audio": 10.442, "dur": 12.14}, {"id": "s3b", "seg": 4, "scene": "trace_kinds", "text": "Jejak yang kamu buat sendiri: unggahan, foto, komentar, like. Jejak yang tercatat diam-diam: pencarian, lokasi, aplikasi yang dibuka, jam kamu online.", "hold": 0.6, "start": 265.327, "speech": 265.727, "audio": 12.403, "dur": 13.703}, {"id": "s3c", "seg": 4, "scene": "trace_story", "text": "Sinta mengunggah foto lucu temannya ke grup kelas. Lima menit kemudian ia menyesal dan menghapusnya. Tetapi tiga teman sudah menyimpan tangkapan layarnya.", "hold": 0.6, "start": 279.03, "speech": 279.43, "audio": 9.924, "dur": 12.64}, {"id": "s3d", "seg": 4, "scene": "trace_copies", "text": "Begitulah jejak digital: begitu terkirim, salinannya ada di HP orang lain dan di server aplikasi. Tombol hapus hanya menghapus salinanmu.", "hold": 0.8, "start": 291.67, "speech": 292.07, "audio": 9.482, "dur": 11.84}, {"id": "q3", "seg": 4, "scene": "quiz", "quiz": "q3", "text": "Cek pemahaman. Kamu menghapus unggahan satu menit setelah mengirimnya. Apakah unggahan itu pasti hilang dari semua tempat?", "hold": 4.0, "start": 303.51, "speech": 303.91, "audio": 7.776, "dur": 13.54}, {"id": "q3a", "seg": 4, "scene": "quiz_answer", "quiz": "q3", "text": "Jawabannya: belum tentu. Orang lain bisa sudah menyimpan atau menangkap layarnya, dan server menyimpan salinan. Yang pasti hilang hanya salinanmu.", "hold": 1.0, "start": 317.05, "speech": 317.45, "audio": 10.4, "dur": 12.1}, {"id": "s4a", "seg": 5, "scene": "trace_future", "text": "Jejak itu bertahan lama. Yang diunggah di kelas tujuh bisa dilihat lagi saat kamu mendaftar sekolah atau kerja bertahun-tahun kemudian.", "hold": 0.6, "start": 329.15, "speech": 329.55, "audio": 8.88, "dur": 11.64}, {"id": "s4b", "seg": 5, "scene": "trace_think", "text": "Jadi, sebelum mengunggah, tiga pertanyaan. Bolehkah ini dilihat orang tua dan guruku? Apakah ini menyakiti orang lain? Apakah aku masih mau ini terlihat lima tahun lagi?", "hold": 0.8, "start": 340.79, "speech": 341.19, "audio": 11.44, "dur": 14.84}, {"id": "s4c", "seg": 5, "scene": "trace_consent", "text": "Khusus foto orang lain: minta izin dulu. Foto temanmu adalah jejak digital temanmu, bukan milikmu untuk disebarkan.", "hold": 0.6, "start": 355.63, "speech": 356.03, "audio": 8.298, "dur": 10.14}, {"id": "s4d", "seg": 5, "scene": "trace_good", "text": "Jejak digital juga bisa baik: karya, prestasi, hal yang kamu banggakan. Jejak seperti itu justru ingin kamu tinggalkan.", "hold": 1.0, "start": 365.77, "speech": 366.17, "audio": 8.826, "dur": 11.04}, {"id": "q4", "seg": 5, "scene": "quiz", "quiz": "q4", "text": "Cek pemahaman. Kamu punya foto lucu temanmu saat tidur di kelas. Apa yang sebaiknya kamu lakukan?", "hold": 4.0, "start": 376.81, "speech": 377.21, "audio": 6.544, "dur": 13.04}, {"id": "q4a", "seg": 5, "scene": "quiz_answer", "quiz": "q4", "text": "Jawabannya: jangan diunggah; kalau mau, tanya dulu temanmu dan hormati jawabannya. Sekali tersebar, tidak bisa ditarik kembali.", "hold": 1.0, "start": 389.85, "speech": 390.25, "audio": 9.054, "dur": 10.754}, {"id": "s5a", "seg": 6, "scene": "make_show", "text": "Sekarang giliranmu. Di halaman latihan ada pengukur kekuatan kata sandi, pakai contoh fiktif saja, dan latihan memilah jejak digital.", "hold": 0.6, "start": 400.604, "speech": 401.004, "audio": 8.994, "dur": 11.14}, {"id": "s5b", "seg": 6, "scene": "make_show", "text": "Lalu di rumah: periksa akunmu bersama orang tua. Ganti sandi yang pendek atau kembar, dan nyalakan verifikasi dua langkah.", "hold": 1.5, "start": 411.744, "speech": 412.144, "audio": 8.114, "dur": 12.04}, {"id": "recap", "seg": 6, "scene": "recap", "text": "Tiga hal untuk diingat. Satu: kata sandi panjang, unik, dan rahasia. Dua: yang diunggah bisa disalin dan tak bisa ditarik. Tiga: berpikir dulu sebelum unggah.", "hold": 1.5, "start": 423.784, "speech": 424.184, "audio": 12.333, "dur": 15.04}, {"id": "outro", "seg": 6, "scene": "outro", "text": "Sampai jumpa di episode berikutnya: mesin pencari, bagaimana ia bekerja dan cara mencari yang jitu.", "hold": 2.5, "start": 438.824, "speech": 439.224, "audio": 6.745, "dur": 11.04}], "total": 449.864}, teks: {"episode": "D7.3", "title": "Kata Sandi Aman dan Rekam Jejak Digital", "engine": ["../_alat/kiko-core.js", "../_alat/kiko-devices.js", "sandi.js", "scenes.js"], "parts": {"D7.3a": {"segs": [0, 1, 2, 3], "post": "Lanjut ke Bagian 2: Rekam Jejak Digital"}, "D7.3b": {"segs": [4, 5, 6], "pre": "Bagian 2: Rekam Jejak Digital"}}, "youtube": {"ringkas": "Akun game Dito dibobol karena kata sandinya mudah ditebak. Bersama Kiko kita lihat bagaimana kata sandi dicoba-coba oleh mesin, mengapa yang panjang lebih kuat daripada yang rumit, cara membuat frasa sandi yang mudah diingat, dan tiga aturan menjaganya. Lalu: rekam jejak digital — mengapa foto yang sudah 'dihapus' belum tentu hilang, jejak apa yang kita tinggalkan tanpa sadar, dan tiga pertanyaan sebelum mengunggah. Semua contoh memakai akun dan sandi fiktif.", "belajar": ["membuat kata sandi yang panjang, mudah diingat, dan sulit ditebak", "menjelaskan tiga aturan menjaga kata sandi", "menyebut jejak digital yang ditinggalkan saat memakai HP", "menjelaskan mengapa jejak digital sulit dihapus dan memutuskan sebelum mengunggah"], "bagian": {"D7.3a": "Kata Sandi Aman", "D7.3b": "Rekam Jejak Digital"}, "prasyarat": "episode D7.0 Cara Memakai Komputer dan HP", "jp": 6, "tagar": ["#KataSandi", "#Password", "#JejakDigital", "#KeamananDigital", "#LiterasiDigital", "#Kelas7", "#SMP"]}, "recap": ["Kata sandi: panjang, unik, rahasia.", "Yang diunggah bisa disalin dan tak bisa ditarik.", "Berpikir dulu sebelum unggah."], "next": {"code": "D7.4", "title": "Mesin Pencari: Cara Kerja dan Strategi", "note": "Pengukur kata sandi (contoh fiktif) ada di halaman episode ini."}, "segments": ["Pembuka", "Main dulu tanpa komputer", "Kata sandi yang kuat", "Tiga aturan menjaganya", "Jejak digital", "Berpikir sebelum unggah", "Giliranmu"], "quizzes": {"q1": {"q": "Mana kata sandi yang PALING kuat?", "options": ["Sinta2013", "S!n7a", "sepeda-kantin-biru-pagi"], "answer": 2, "hint": "Yang paling penting adalah PANJANG dan tidak memakai nama atau tanggal lahir. Hitung hurufnya."}, "q2": {"q": "Teman baikmu minta kata sandi akunmu, katanya cuma pinjam sebentar. Apa yang sebaiknya kamu lakukan?", "options": ["Memberinya, karena teman dekat", "Menolak dengan baik dan membantu dengan cara lain", "Memberinya, lalu menggantinya minggu depan"], "answer": 1, "hint": "Aturan dua: rahasia, bahkan dari teman dekat. Ada cara membantu teman tanpa memberikan kunci rumahmu."}, "q3": {"q": "Kamu menghapus unggahan satu menit setelah mengirimnya. Apakah unggahan itu pasti hilang dari semua tempat?", "options": ["Ya, hapus berarti hilang", "Belum tentu: salinan bisa ada di HP orang lain dan di server", "Ya, asalkan dihapus dalam lima menit"], "answer": 1, "hint": "Ingat cerita Sinta: siapa saja yang bisa sudah menyimpan salinannya dalam satu menit?"}, "q4": {"q": "Kamu punya foto lucu temanmu saat tidur di kelas. Apa yang sebaiknya kamu lakukan?", "options": ["Unggah ke grup kelas, kan lucu", "Tanya dulu temanmu; kalau ia tidak mau, jangan diunggah", "Unggah, lalu hapus kalau ia marah"], "answer": 1, "hint": "Foto temanmu adalah jejak digital temanmu. Dan ingat: yang sudah terkirim tidak bisa ditarik."}}, "beats": [{"id": "intro1", "seg": 0, "scene": "title", "text": "Halo! Aku Kiko. Hari ini tentang dua hal yang menjaga kita di dunia digital: kata sandi (password) dan rekam jejak digital.", "hold": 1.0, "start": 0.0, "speech": 0.0, "audio": 13.925, "dur": 15.925}, {"id": "intro2", "seg": 0, "scene": "title_story", "text": "Ceritanya begini. Pagi ini Dito tidak bisa masuk ke akun game-nya. Seseorang sudah masuk duluan dan mengganti kata sandinya.", "hold": 0.8, "start": 15.925, "speech": 15.925, "audio": 12.675, "dur": 14.475}, {"id": "intro3", "seg": 0, "scene": "prereq", "text": "Episode ini melanjutkan D7.0. Semua kata sandi dan akun di sini hanya contoh. Jangan pernah menulis kata sandimu yang asli di mana pun, termasuk di latihan.", "hold": 0.8, "start": 30.4, "speech": 30.4, "audio": 17.05, "dur": 18.85}, {"id": "play1", "seg": 1, "scene": "unplugged", "text": "Main dulu. Temanmu memilih angka rahasia satu digit, kamu menebak. Paling banyak sepuluh tebakan, pasti kena. Sekarang tiga digit: butuh sampai seribu tebakan.", "hold": 0.6, "start": 49.25, "speech": 49.25, "audio": 15.175, "dur": 16.775}, {"id": "play2", "seg": 1, "scene": "unplugged_long", "text": "Makin panjang rahasianya, makin lama menebaknya. Komputer bisa menebak jutaan kali tiap detik, jadi kata sandi kita harus jauh lebih panjang daripada tiga digit.", "hold": 1.0, "start": 66.025, "speech": 66.025, "audio": 15.8, "dur": 17.8}, {"id": "s1a", "seg": 2, "scene": "pw_house", "text": "Akun itu seperti rumah: ada isinya, dan kata sandi adalah kuncinya. Siapa pun yang punya kunci bisa masuk dan berbuat apa saja atas namamu.", "hold": 0.6, "start": 83.825, "speech": 83.825, "audio": 15.8, "dur": 17.4}, {"id": "s1b", "seg": 2, "scene": "pw_weak", "text": "Kata sandi Dito tadi: dito2013, nama dan tahun lahirnya. Itu kunci yang digantung di depan pintu. Teman sekelas pun bisa menebaknya.", "hold": 0.6, "start": 101.225, "speech": 101.225, "audio": 13.925, "dur": 15.525}, {"id": "s1c", "seg": 2, "scene": "pw_common", "text": "Yang lebih parah: 123456, password, qwerty. Jutaan orang memakainya, jadi itu yang dicoba mesin pertama kali. Tebakan pertama, langsung masuk.", "hold": 0.6, "start": 116.75, "speech": 116.75, "audio": 13.3, "dur": 14.9}, {"id": "s1d", "seg": 2, "scene": "pw_bruteforce", "text": "Kalau tidak ketebak, mesin mencoba semua kombinasi. Sandi empat angka habis dalam sekejap. Delapan huruf: beberapa jam. Dua belas huruf campur: ratusan tahun.", "hold": 0.8, "start": 131.65, "speech": 131.65, "audio": 15.175, "dur": 16.975}, {"id": "s1e", "seg": 2, "scene": "pw_long", "text": "Jadi yang paling penting bukan rumit, melainkan panjang. Sandi panjang yang mudah diingat lebih baik daripada sandi pendek yang rumit dan kamu lupa.", "hold": 0.6, "start": 148.625, "speech": 148.625, "audio": 15.175, "dur": 16.775}, {"id": "s1f", "seg": 2, "scene": "pw_passphrase", "text": "Caranya: frasa sandi (passphrase), empat kata acak yang digabung. Contoh: kucing-angkot-hujan-bakso. Dua puluh empat huruf, mudah dibayangkan, sangat sulit ditebak.", "hold": 1.0, "start": 165.4, "speech": 165.4, "audio": 13.3, "dur": 15.3}, {"id": "q1", "seg": 2, "scene": "quiz", "quiz": "q1", "text": "Cek pemahaman. Mana kata sandi yang paling kuat: Sinta2013, S!n7a, atau sepeda-kantin-biru-pagi? Pikirkan dulu.", "hold": 4.0, "start": 180.7, "speech": 180.7, "audio": 9.55, "dur": 14.55}, {"id": "q1a", "seg": 2, "scene": "quiz_answer", "quiz": "q1", "text": "Jawabannya: sepeda-kantin-biru-pagi. Paling panjang, tidak memakai nama atau tanggal lahir, dan tetap mudah diingat.", "hold": 1.0, "start": 195.25, "speech": 195.25, "audio": 9.55, "dur": 11.55}, {"id": "s2a", "seg": 3, "scene": "rule_unique", "text": "Tiga aturan menjaganya. Satu: satu akun, satu sandi. Kalau sandi game sama dengan sandi email, pembobol game langsung dapat email juga.", "hold": 0.6, "start": 206.8, "speech": 206.8, "audio": 13.925, "dur": 15.525}, {"id": "s2b", "seg": 3, "scene": "rule_secret", "text": "Dua: rahasia, bahkan dari teman dekat. Kalau ada pesan: saya admin, kirim kata sandimu, itu pasti penipuan. Admin sungguhan tidak pernah minta kata sandi.", "hold": 0.6, "start": 222.325, "speech": 222.325, "audio": 15.8, "dur": 17.4}, {"id": "s2c", "seg": 3, "scene": "rule_2fa", "text": "Tiga: nyalakan verifikasi dua langkah bila ada. Selain sandi, masuk butuh kode yang dikirim ke HP-mu. Pembobol punya sandi pun tetap tertahan.", "hold": 0.6, "start": 239.725, "speech": 239.725, "audio": 14.55, "dur": 16.15}, {"id": "s2d", "seg": 3, "scene": "rule_recap", "text": "Dito memperbaiki akunnya: frasa sandi baru, beda dari akun lain, tidak diberitahukan ke siapa pun, dan verifikasi dua langkah menyala.", "hold": 1.0, "start": 255.875, "speech": 255.875, "audio": 13.3, "dur": 15.3}, {"id": "q2", "seg": 3, "scene": "quiz", "quiz": "q2", "text": "Cek pemahaman. Teman baikmu minta kata sandi akunmu, katanya cuma pinjam sebentar. Apa yang sebaiknya kamu lakukan?", "hold": 4.0, "start": 271.175, "speech": 271.175, "audio": 11.425, "dur": 16.425}, {"id": "q2a", "seg": 3, "scene": "quiz_answer", "quiz": "q2", "text": "Jawabannya: tolak dengan baik, lalu bantu dengan cara lain. Kata sandi tetap rahasia, bahkan dari teman dekat. Kalau sudah terlanjur, segera ganti.", "hold": 1.0, "start": 287.6, "speech": 287.6, "audio": 14.55, "dur": 16.55}, {"id": "s3a", "seg": 4, "scene": "trace_intro", "text": "Bagian dua: rekam jejak digital (digital footprint). Setiap kali kamu memakai HP, kamu meninggalkan jejak, seperti jejak kaki di pasir basah.", "hold": 0.6, "start": 304.15, "speech": 304.15, "audio": 13.925, "dur": 15.525}, {"id": "s3b", "seg": 4, "scene": "trace_kinds", "text": "Jejak yang kamu buat sendiri: unggahan, foto, komentar, like. Jejak yang tercatat diam-diam: pencarian, lokasi, aplikasi yang dibuka, jam kamu online.", "hold": 0.6, "start": 319.675, "speech": 319.675, "audio": 13.925, "dur": 15.525}, {"id": "s3c", "seg": 4, "scene": "trace_story", "text": "Sinta mengunggah foto lucu temannya ke grup kelas. Lima menit kemudian ia menyesal dan menghapusnya. Tetapi tiga teman sudah menyimpan tangkapan layarnya.", "hold": 0.6, "start": 335.2, "speech": 335.2, "audio": 14.55, "dur": 16.15}, {"id": "s3d", "seg": 4, "scene": "trace_copies", "text": "Begitulah jejak digital: begitu terkirim, salinannya ada di HP orang lain dan di server aplikasi. Tombol hapus hanya menghapus salinanmu.", "hold": 0.8, "start": 351.35, "speech": 351.35, "audio": 13.3, "dur": 15.1}, {"id": "q3", "seg": 4, "scene": "quiz", "quiz": "q3", "text": "Cek pemahaman. Kamu menghapus unggahan satu menit setelah mengirimnya. Apakah unggahan itu pasti hilang dari semua tempat?", "hold": 4.0, "start": 366.45, "speech": 366.45, "audio": 11.425, "dur": 16.425}, {"id": "q3a", "seg": 4, "scene": "quiz_answer", "quiz": "q3", "text": "Jawabannya: belum tentu. Orang lain bisa sudah menyimpan atau menangkap layarnya, dan server menyimpan salinan. Yang pasti hilang hanya salinanmu.", "hold": 1.0, "start": 382.875, "speech": 382.875, "audio": 13.3, "dur": 15.3}, {"id": "s4a", "seg": 5, "scene": "trace_future", "text": "Jejak itu bertahan lama. Yang diunggah di kelas tujuh bisa dilihat lagi saat kamu mendaftar sekolah atau kerja bertahun-tahun kemudian.", "hold": 0.6, "start": 398.175, "speech": 398.175, "audio": 13.3, "dur": 14.9}, {"id": "s4b", "seg": 5, "scene": "trace_think", "text": "Jadi, sebelum mengunggah, tiga pertanyaan. Bolehkah ini dilihat orang tua dan guruku? Apakah ini menyakiti orang lain? Apakah aku masih mau ini terlihat lima tahun lagi?", "hold": 0.8, "start": 413.075, "speech": 413.075, "audio": 17.05, "dur": 18.85}, {"id": "s4c", "seg": 5, "scene": "trace_consent", "text": "Khusus foto orang lain: minta izin dulu. Foto temanmu adalah jejak digital temanmu, bukan milikmu untuk disebarkan.", "hold": 0.6, "start": 431.925, "speech": 431.925, "audio": 11.425, "dur": 13.025}, {"id": "s4d", "seg": 5, "scene": "trace_good", "text": "Jejak digital juga bisa baik: karya, prestasi, hal yang kamu banggakan. Jejak seperti itu justru ingin kamu tinggalkan.", "hold": 1.0, "start": 444.95, "speech": 444.95, "audio": 12.05, "dur": 14.05}, {"id": "q4", "seg": 5, "scene": "quiz", "quiz": "q4", "text": "Cek pemahaman. Kamu punya foto lucu temanmu saat tidur di kelas. Apa yang sebaiknya kamu lakukan?", "hold": 4.0, "start": 459.0, "speech": 459.0, "audio": 10.8, "dur": 15.8}, {"id": "q4a", "seg": 5, "scene": "quiz_answer", "quiz": "q4", "text": "Jawabannya: jangan diunggah; kalau mau, tanya dulu temanmu dan hormati jawabannya. Sekali tersebar, tidak bisa ditarik kembali.", "hold": 1.0, "start": 474.8, "speech": 474.8, "audio": 11.425, "dur": 13.425}, {"id": "s5a", "seg": 6, "scene": "make_show", "text": "Sekarang giliranmu. Di halaman latihan ada pengukur kekuatan kata sandi, pakai contoh fiktif saja, dan latihan memilah jejak digital.", "hold": 0.6, "start": 488.225, "speech": 488.225, "audio": 12.675, "dur": 14.275}, {"id": "s5b", "seg": 6, "scene": "make_show", "text": "Lalu di rumah: periksa akunmu bersama orang tua. Ganti sandi yang pendek atau kembar, dan nyalakan verifikasi dua langkah.", "hold": 1.5, "start": 502.5, "speech": 502.5, "audio": 12.675, "dur": 15.175}, {"id": "recap", "seg": 6, "scene": "recap", "text": "Tiga hal untuk diingat. Satu: kata sandi panjang, unik, dan rahasia. Dua: yang diunggah bisa disalin dan tak bisa ditarik. Tiga: berpikir dulu sebelum unggah.", "hold": 1.5, "start": 517.675, "speech": 517.675, "audio": 16.425, "dur": 18.925}, {"id": "outro", "seg": 6, "scene": "outro", "text": "Sampai jumpa di episode berikutnya: mesin pencari, bagaimana ia bekerja dan cara mencari yang jitu.", "hold": 2.5, "start": 536.6, "speech": 536.6, "audio": 10.175, "dur": 13.675}], "total": 550.275} });
+  const { $, progress, save } = P; progress.levels = progress.levels || {};
+  const COMMON = ["123456", "password", "qwerty", "111111", "abc123", "12345678", "sandi", "katasandi", "iloveyou", "admin"];
+  function score(pw) {
+    const s = pw.trim(); const tips = [];
+    const common = COMMON.includes(s.toLowerCase()); const hasDigitsOnly = /^\d+$/.test(s); const nameYear = /^[a-z]+\d{2,4}$/i.test(s);
+    const words = s.split(/[\s\-_.]+/).filter(Boolean);
+    let lvl = 0; if (s.length >= 12) lvl = 1; if (s.length >= 16) lvl = 2; if (s.length >= 20 || (s.length >= 16 && words.length >= 3)) lvl = 3;
+    if (common) lvl = 0; if (hasDigitsOnly && s.length < 12) lvl = 0; if (nameYear) lvl = Math.min(lvl, 0);
+    tips.push([s.length >= 16, s.length >= 16 ? `Panjang ${s.length} huruf ✓` : `Baru ${s.length} huruf; usahakan 16 atau lebih`]);
+    tips.push([!common, common ? "Ini termasuk sandi yang paling sering dipakai; mesin mencobanya pertama kali" : "Bukan sandi yang umum ✓"]);
+    tips.push([!nameYear, nameYear ? "Pola nama + tahun mudah ditebak teman sekelas" : "Tidak berpola nama + tahun ✓"]);
+    tips.push([words.length >= 3, words.length >= 3 ? `Frasa ${words.length} kata ✓` : "Coba gabungkan 3–4 kata acak dengan tanda hubung"]);
+    return { lvl, tips };
+  }
+  const LEVELS = [
+    { id: "pengukur", name: "1 Pengukur sandi", kind: "meter", task: "Ketik kata sandi KARANGAN (bukan sandimu yang asli), lihat kekuatannya dan petunjuknya. Buat satu yang 'sangat kuat' untuk menyelesaikan latihan ini." },
+    { id: "jejak", name: "2 Pilah jejak", kind: "two", task: "Untuk tiap kejadian, ketuk: jejak yang kamu BUAT SENDIRI, atau jejak yang TERCATAT DIAM-DIAM.",
+      items: [["mengunggah foto ke grup kelas", 0], ["HP mencatat lokasimu saat jalan ke sekolah", 1], ["memberi like pada video", 0], ["aplikasi mencatat jam kamu online", 1], ["menulis komentar", 0], ["riwayat pencarianmu tersimpan", 1]],
+      hint: "Tanya: apakah aku sengaja melakukannya dan tahu itu akan terlihat? Kalau ya, itu jejak yang kubuat sendiri." },
+    { id: "keputusan", name: "3 Unggah atau tidak?", kind: "three", task: "Baca kejadiannya, lalu pilih tindakan yang paling tepat.",
+      items: [["Kamu punya video temanmu terjatuh di kantin, lucu sekali.", ["Unggah, kan lucu", "Tanya temanmu dulu; kalau ia keberatan, jangan", "Unggah lalu hapus setelah sejam"], 1, "Video temanmu adalah jejak digital temanmu, dan yang terkirim tak bisa ditarik."],
+              ["Kamu baru menang lomba menggambar dan ingin memamerkan karyamu.", ["Unggah, ini jejak baik yang ingin kamu tinggalkan", "Jangan, semua unggahan berbahaya", "Unggah bersama nomor HP-mu supaya orang bisa menghubungi"], 0, "Jejak digital bisa baik; yang perlu dijaga adalah data pribadi seperti nomor HP dan alamat."],
+              ["Ada pesan: \"Selamat, kamu menang! Kirim kata sandi akunmu untuk klaim hadiah.\"", ["Kirim, hadiahnya besar", "Abaikan dan laporkan ke orang tua/guru", "Kirim sandi lama saja"], 1, "Siapa pun yang meminta kata sandi adalah penipu. Admin sungguhan tidak pernah memintanya."]] }
+  ];
+  let L = 0, qi = 0;
+  const level = () => LEVELS[L];
+  function setResult(kind, msg) { $("result").innerHTML = msg ? `<div class="result ${kind}">${msg}</div>` : ""; }
+  function done(extra) { progress.levels[level().id] = true; save(); renderLevels(); setResult("good", `Latihan ${level().name} selesai! ` + (extra || "")); }
+  function wrong(hint) { setResult("bad", "Belum tepat. Petunjuk: " + hint); }
+  function renderMeter() {
+    const area = $("exarea"); area.innerHTML = `<div class="pwwrap"><div class="warn">Hanya contoh karangan. Jangan ketik kata sandi aslimu.</div><input id="pw" type="text" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="contoh: kucing-angkot-hujan-bakso" aria-label="Kata sandi contoh"><div class="meter l0" id="meter"><i></i><i></i><i></i><i></i></div><div class="qnum" id="mlabel"></div><div class="tips" id="tips"></div><div class="qnum" style="margin-top:8px">Coba contoh:</div><div class="samples" id="samples"></div></div>`;
+    const names = ["lemah", "sedang", "kuat", "sangat kuat"];
+    function update() {
+      const v = $("pw").value; if (!v) { $("meter").className = "meter"; $("mlabel").textContent = ""; $("tips").innerHTML = ""; return; }
+      const r = score(v); $("meter").className = "meter l" + r.lvl; $("mlabel").textContent = "Kekuatan: " + names[r.lvl];
+      $("tips").innerHTML = r.tips.map(([ok, t]) => `<div class="${ok ? "ok" : ""}">${ok ? "✓" : "•"} ${t}</div>`).join("");
+      if (r.lvl === 3 && !progress.levels[level().id]) done("Itulah frasa sandi: panjang, mudah diingat, sulit ditebak. (Jangan pakai contoh dari sini sebagai sandi sungguhan.)");
+    }
+    $("pw").addEventListener("input", update);
+    ["123456", "dito2013", "S!n7a", "sepeda-kantin-biru-pagi"].forEach(s => { const b = document.createElement("button"); b.textContent = s; b.addEventListener("click", () => { $("pw").value = s; update(); }); $("samples").appendChild(b); });
+  }
+  function renderTwo() {
+    const lv = level(), area = $("exarea");
+    if (qi >= lv.items.length) { area.innerHTML = `<div class="qtext">Semua sudah dipilah.</div>`; return; }
+    const [name, ans] = lv.items[qi];
+    area.innerHTML = `<div class="qnum">Kejadian ${qi + 1} dari ${lv.items.length}</div><div class="qtext">${name}</div><div class="two" id="opts"></div>`;
+    ["Kubuat sendiri", "Tercatat diam-diam"].forEach((o, i) => { const b = document.createElement("button"); b.textContent = o; b.addEventListener("click", () => { [...$("opts").children].forEach(c => c.classList.remove("wrong")); if (i === ans) { b.classList.add("right"); [...$("opts").children].forEach(c => c.disabled = true); setResult("good", "Benar!"); qi++; setTimeout(() => { if (qi >= lv.items.length) done("Keduanya jejakmu; yang diam-diam perlu kamu sadari juga."); else { setResult(); renderTwo(); } }, 800); } else { b.classList.add("wrong"); wrong(lv.hint); } }); $("opts").appendChild(b); });
+  }
+  function renderThree() {
+    const lv = level(), area = $("exarea");
+    if (qi >= lv.items.length) { area.innerHTML = `<div class="qtext">Semua keputusan sudah diambil.</div>`; return; }
+    const [q, opts, ans, hint] = lv.items[qi];
+    area.innerHTML = `<div class="qnum">Kejadian ${qi + 1} dari ${lv.items.length}</div><div class="qtext">${q}</div><div class="three" id="opts"></div>`;
+    opts.forEach((o, i) => { const b = document.createElement("button"); b.textContent = o; b.addEventListener("click", () => { [...$("opts").children].forEach(c => c.classList.remove("wrong")); if (i === ans) { b.classList.add("right"); [...$("opts").children].forEach(c => c.disabled = true); setResult("good", "Tepat. " + hint); qi++; setTimeout(() => { if (qi >= lv.items.length) done("Berpikir dulu sebelum unggah, dan kata sandi tetap rahasia."); else { setResult(); renderThree(); } }, 1400); } else { b.classList.add("wrong"); wrong(hint); } }); $("opts").appendChild(b); });
+  }
+  function loadLevel(i) { L = i; qi = 0; $("task").textContent = level().task; setResult(); renderLevels(); ({ meter: renderMeter, two: renderTwo, three: renderThree })[level().kind](); }
+  function renderLevels() { const el = $("levels"); el.innerHTML = ""; LEVELS.forEach((lv, i) => { const b = document.createElement("button"); b.textContent = lv.name; b.className = progress.levels[lv.id] ? "done" : ""; b.setAttribute("aria-pressed", i === L); b.addEventListener("click", () => loadLevel(i)); el.appendChild(b); }); }
+  $("redo").addEventListener("click", () => { progress.levels[level().id] = false; save(); loadLevel(L); });
+  P.onProgress(el => LEVELS.forEach(lv => { const s = document.createElement("span"); s.textContent = "Latihan " + lv.name.slice(0, 1); s.className = progress.levels[lv.id] ? "ok" : ""; el.appendChild(s); }));
+  loadLevel(0);
+})();
+</script>
