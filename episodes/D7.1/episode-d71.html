@@ -1,0 +1,869 @@
+<title>Kiko: Empat Jurus</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<style>
+/* Inti gaya halaman latihan: satu kolom, pemutar di atas, latihan di bawah; palet kantin sama dengan video. */
+:root {
+  --bg: #EAF2EE; --surface: #FFFFFF; --surface2: #DCE9E2; --ink: #1F2A33; --ink2: #4A5A66; --line: #C9D8D0;
+  --accent: #2E7E9A; --accent-ink: #FFFFFF; --warm: #F2B134; --warm-ink: #5E3E05; --good: #2E9E5B; --good-bg: #DDF3E4; --bad: #D9443B; --bad-bg: #FBE1DF;
+  --font: Inter, "Segoe UI", Roboto, Arial, sans-serif;
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) { --bg: #141C1A; --surface: #1E2926; --surface2: #273532; --ink: #EAF2EE; --ink2: #A9BBB3; --line: #3A4A45; --accent: #5FB3CE; --accent-ink: #0F1D22; --warm: #F2B134; --warm-ink: #2B1C02; --good: #5FCB8A; --good-bg: #1F3A2B; --bad: #F07A72; --bad-bg: #442523; color-scheme: dark } }
+:root[data-theme="dark"] { --bg: #141C1A; --surface: #1E2926; --surface2: #273532; --ink: #EAF2EE; --ink2: #A9BBB3; --line: #3A4A45; --accent: #5FB3CE; --accent-ink: #0F1D22; --warm: #F2B134; --warm-ink: #2B1C02; --good: #5FCB8A; --good-bg: #1F3A2B; --bad: #F07A72; --bad-bg: #442523; color-scheme: dark }
+* { box-sizing: border-box }
+body { background: var(--bg); color: var(--ink); font-family: var(--font); font-size: 17px; line-height: 1.5; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); padding-block: 16px 48px }
+.wrap { max-width: 980px; margin: 0 auto; display: grid; gap: 28px }
+h1 { font-size: clamp(26px, 5vw, 38px); line-height: 1.15; margin: 0; text-wrap: balance; font-weight: 900 }
+h2 { font-size: 22px; margin: 0 0 12px; font-weight: 800 }
+h3 { font-size: 18px; margin: 0 0 8px; font-weight: 800 }
+p { margin: 0 0 10px; max-width: 65ch }
+.eyebrow { font-size: 13px; letter-spacing: .08em; text-transform: uppercase; color: var(--ink2); font-weight: 800; margin-bottom: 6px }
+.card { background: var(--surface); border-radius: 18px; padding: 18px; border: 1px solid var(--line) }
+button { font: inherit; font-weight: 800; border: 0; border-radius: 12px; padding: 12px 16px; cursor: pointer; background: var(--surface2); color: var(--ink); min-height: 48px; touch-action: manipulation }
+button:focus-visible, [tabindex]:focus-visible { outline: 3px solid var(--warm); outline-offset: 2px }
+button.primary { background: var(--accent); color: var(--accent-ink) }
+button.warm { background: var(--warm); color: var(--warm-ink) }
+button[aria-pressed="true"] { box-shadow: inset 0 0 0 3px var(--accent) }
+button:disabled { opacity: .45; cursor: default }
+.row { display: flex; flex-wrap: wrap; gap: 10px; align-items: center }
+/* player */
+.player { display: grid; gap: 12px }
+.stage { position: relative; width: 100%; aspect-ratio: 16 / 9; max-width: 100%; background: #EAF2EE; border-radius: 14px; overflow: hidden; border: 1px solid var(--line) }
+.stage canvas { width: 100%; height: 100%; display: block }
+.bigplay { position: absolute; inset: 0; display: grid; place-items: center; background: rgba(31,42,51,.25); border: 0; border-radius: 0; color: #fff; font-size: 20px; min-height: 0 }
+.bigplay span { background: var(--accent); color: var(--accent-ink); padding: 14px 26px; border-radius: 999px; font-weight: 900 }
+.bar { height: 10px; background: var(--surface2); border-radius: 999px; overflow: hidden; cursor: pointer }
+.bar > i { display: block; height: 100%; width: 0; background: var(--warm) }
+.chapters { display: flex; flex-wrap: wrap; gap: 8px }
+.chapters button { font-size: 14px; padding: 8px 12px; min-height: 40px }
+.chapters button.now { background: var(--warm); color: var(--warm-ink) }
+.hint { color: var(--ink2); font-size: 15px }
+/* exercises (generic parts) */
+.levels { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 12px }
+.levels button { font-size: 14px; padding: 8px 12px; min-height: 40px }
+.levels button.done::after { content: " ✓"; color: var(--good) }
+.task { background: var(--surface2); border-radius: 12px; padding: 12px 14px; margin-bottom: 12px; font-weight: 700 }
+.result { border-radius: 12px; padding: 12px 14px; font-weight: 800; margin-top: 10px }
+.result.good { background: var(--good-bg); color: var(--good) }
+.result.bad { background: var(--bad-bg); color: var(--bad) }
+.result.info { background: var(--surface2); color: var(--ink) }
+/* quiz */
+.quiz { display: grid; gap: 16px }
+.q { border-top: 1px solid var(--line); padding-top: 14px }
+.q:first-child { border-top: 0; padding-top: 0 }
+.opts { display: grid; gap: 8px; margin-top: 8px }
+.opts button { text-align: left; font-weight: 700; background: var(--surface2); display: flex; gap: 10px; align-items: center }
+.opts button b { width: 30px; height: 30px; border-radius: 50%; background: var(--accent); color: var(--accent-ink); display: grid; place-items: center; flex: none }
+.opts button.right { background: var(--good-bg); box-shadow: inset 0 0 0 3px var(--good) }
+.opts button.wrong { background: var(--bad-bg) }
+.fb { margin-top: 8px; font-weight: 700 }
+.fb.good { color: var(--good) } .fb.bad { color: var(--bad) }
+details summary { cursor: pointer; font-weight: 800; font-size: 18px }
+details[open] summary { margin-bottom: 10px }
+ul.plain { padding-left: 20px; margin: 0 0 10px } ul.plain li { margin-bottom: 6px; max-width: 65ch }
+.progress { display: flex; gap: 8px; flex-wrap: wrap } .progress span { background: var(--surface2); border-radius: 999px; padding: 6px 12px; font-size: 14px; font-weight: 700 }
+.progress span.ok { background: var(--good-bg); color: var(--good) }
+@media (prefers-reduced-motion: reduce) { * { transition: none !important } }
+
+/* latihan gaya Bebras (khusus D7.1) */
+.qnum { font-weight: 800; color: var(--ink2); font-size: 14px; margin-bottom: 4px }
+.qtext { font-weight: 800; font-size: 18px; margin-bottom: 8px }
+.chips, .groups, .opts2, .seq { display: flex; flex-wrap: wrap; gap: 10px }
+.chips button { background: var(--surface); border: 2px solid var(--line); font-weight: 700 }
+.chips button[aria-pressed="true"] { box-shadow: inset 0 0 0 3px var(--warm); background: color-mix(in srgb, var(--warm) 18%, var(--surface)) }
+.groups { margin-top: 14px }
+.groups button { display: grid; justify-items: center; gap: 2px; min-width: 150px; background: var(--surface); border: 2px dashed var(--line) }
+.groups button .count { font-size: 13px; color: var(--ink2); font-weight: 600 }
+.groups button.wrong { border-color: var(--bad); background: var(--bad-bg) }
+.seq { align-items: center; margin: 8px 0 12px; font-size: 26px; font-weight: 900 }
+.seq span { background: var(--surface2); border-radius: 10px; padding: 6px 12px }
+.seq span.q { background: var(--warm); color: var(--warm-ink) }
+.opts2 button { min-width: 120px; font-size: 20px; border: 2px solid var(--line); background: var(--surface) }
+.opts2 button.right, .checks button.right { border-color: var(--good); background: var(--good-bg) }
+.opts2 button.wrong, .checks button.wrong { background: var(--bad-bg) }
+.checks { display: grid; gap: 8px; margin: 8px 0 12px }
+.checks button { text-align: left; background: var(--surface); border: 2px solid var(--line); font-weight: 700 }
+.checks button[aria-pressed="true"] { border-color: var(--accent); background: color-mix(in srgb, var(--accent) 14%, var(--surface)) }
+.steps { list-style: none; margin: 8px 0 12px; padding: 0; display: grid; gap: 6px }
+.steps li { display: flex; align-items: center; gap: 8px; background: var(--surface); border: 2px solid var(--line); border-radius: 10px; padding: 6px 8px; font-weight: 700 }
+.steps li .n { width: 28px; height: 28px; border-radius: 50%; background: var(--ink2); color: #fff; display: grid; place-items: center; font-size: 14px; flex: none }
+.steps li span.t { flex: 1 }
+.steps li button { min-height: 36px; padding: 4px 10px; font-size: 14px }
+.steps li.ok { border-color: var(--good); background: var(--good-bg) }
+.steps li.bad { border-color: var(--bad); background: var(--bad-bg) }
+</style>
+
+<div class="wrap">
+  <header>
+    <div class="eyebrow">Informatika · Fase D · Kelas VII · Episode D7.1</div>
+    <h1>Empat Jurus Berpikir Komputasional</h1>
+    <p class="hint">Tonton bagian demi bagian, lalu kerjakan empat soal gaya Bebras di bawahnya. Episode ini tidak memakai komputer; kalau belum pernah memakai komputer sama sekali, tonton dulu episode D7.0. Suara bisa dimatikan; teks selalu tampil di layar.</p>
+  </header>
+
+  <section class="card player" aria-label="Pemutar episode">
+    <div class="stage">
+      <canvas id="screen" width="1920" height="1080" aria-label="Animasi episode"></canvas>
+      <audio id="nar" preload="auto" src="narasi.mp3"></audio>
+      <button class="bigplay" id="bigplay" aria-label="Putar"><span>▶ Putar episode</span></button>
+    </div>
+    <div class="bar" id="bar" role="slider" aria-label="Posisi episode" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" tabindex="0"><i id="barfill"></i></div>
+    <div class="row">
+      <button class="primary" id="playbtn">▶ Putar</button>
+      <button id="replay">↺ Ulangi bagian ini</button>
+      <button id="voice" aria-pressed="true">🔊 Suara: nyala</button>
+      <button id="slow" aria-pressed="false">🐢 Mode lambat</button>
+      <span class="hint" id="timelabel">0:00 / 0:00</span>
+    </div>
+    <div>
+      <div class="eyebrow">Bagian</div>
+      <div class="chapters" id="chapters"></div>
+    </div>
+  </section>
+
+  <section class="card" aria-label="Cek pemahaman">
+    <h2>Cek pemahaman</h2>
+    <p class="hint">Pilih satu jawaban. Kalau salah, kamu dapat petunjuk, lalu coba lagi.</p>
+    <div class="quiz" id="quiz"></div>
+  </section>
+
+  <section class="card" aria-label="Latihan gaya Bebras">
+    <h2>Latihan: empat jurus, gaya Bebras</h2>
+    <p class="hint">Satu soal untuk tiap jurus. Jawaban salah memberi petunjuk, bukan nilai. Pikirkan dulu, baru ketuk.</p>
+    <div class="levels" id="levels"></div>
+    <div class="task" id="task"></div>
+    <div id="exarea"></div>
+    <div id="result"></div>
+    <div class="row" style="margin-top:10px"><button id="redo">↺ Ulangi soal ini</button></div>
+  </section>
+
+  <section class="card" aria-label="Kemajuan">
+    <h2>Kemajuanmu</h2>
+    <div class="progress" id="progress"></div>
+    <p class="hint" style="margin-top:8px">Kemajuan tersimpan di perangkat ini saja.</p>
+  </section>
+
+  <section class="card">
+    <details>
+      <summary>Untuk guru: cara memakai episode ini (10 JP)</summary>
+      <p><b>Tujuan pembelajaran (D7.1):</b> murid menerapkan dekomposisi, pengenalan pola, abstraksi, dan algoritma pada persoalan sehari-hari tipe Bebras. Elemen BK, Fase D. Episode ini menjadi fondasi semua unit berikutnya dan bahan remedial unit jembatan.</p>
+      <ul class="plain">
+        <li><b>Pertemuan 1 (2 JP), konkret:</b> kegiatan "kertas kecil": kelas merencanakan pentas (atau acara nyata sekolah), semua tugas ditulis satu per kertas, lalu dikelompokkan di papan. Tonton Bagian 1 segmen Dekomposisi.</li>
+        <li><b>Pertemuan 2 (2 JP), pola:</b> berburu pola di sekolah (jadwal, bel, susunan kursi, menu kantin); murid menulis tiga pola yang ditemukan dan menebak kelanjutannya. Tonton segmen Pola, kerjakan soal Lanjutkan pola.</li>
+        <li><b>Pertemuan 3 (2 JP), abstraksi:</b> tiap murid menggambar denah kelas untuk tamu: versi pertama bebas, versi kedua hanya yang penting. Diskusi apa yang dibuang. Tonton Bagian 2 segmen Abstraksi, kerjakan soal Pilih yang penting.</li>
+        <li><b>Pertemuan 4 (2 JP), algoritma:</b> murid menulis langkah suatu kegiatan (membuat teh, berangkat sekolah) lalu temannya mengikutinya persis; perbaiki yang kurang jelas. Tonton segmen Algoritma dan Empat jurus bersama, kerjakan soal Urutkan langkah.</li>
+        <li><b>Pertemuan 5 (2 JP), Bebras:</b> kerjakan 4–6 soal Bebras tingkat SMP (bebras.or.id, bisa dicetak) berpasangan; tiap jawaban harus menyebut jurus mana yang dipakai.</li>
+      </ul>
+      <p><b>Target minimum:</b> semua murid menyelesaikan keempat soal di halaman ini. <b>Pengayaan:</b> soal Bebras tahun sebelumnya, atau merancang soal gaya Bebras sendiri untuk teman.</p>
+      <p><b>Asesmen:</b> denah dua versi (abstraksi), daftar langkah yang bisa diikuti teman (algoritma), dan jawaban cek pemahaman. Indikator: murid dapat menyebut jurus yang dipakai saat menyelesaikan soal baru.</p>
+    </details>
+  </section>
+</div>
+
+<script>/* Kiko core: mesin gambar bersama untuk semua episode Fase D.
+   Kiko.draw(ctx, t, TL) menggambar frame pada detik t di kanvas 1920x1080 secara deterministik.
+   Berisi palet, pembantu gambar, tokoh (Kiko, murid), dan adegan umum (judul, kuis, ringkasan, penutup).
+   Setiap episode menambahkan adegannya sendiri di scenes.js: Object.assign(Kiko.SCENES, {...}). */
+(function (global) {
+  const W = 1920, H = 1080;
+  const FONT = "Inter, 'Segoe UI', Roboto, Arial, sans-serif";
+  const C = {
+    bg: "#EAF2EE", bg2: "#DCE9E2", ink: "#1F2A33", ink2: "#4A5A66", panel: "#FFFFFF",
+    tile: "#F7FAF8", tileLine: "#C9D8D0", table: "#A4653A", tableTop: "#C98A57",
+    kiko: "#2E7E9A", kikoDark: "#1F5A6E", kikoLight: "#8FD0E6", eye: "#FFFFFF", pupil: "#1F2A33",
+    accent: "#F2B134", accentDark: "#B57A12", good: "#2E9E5B", bad: "#D9443B", goodBg: "#DDF3E4", badBg: "#FBE1DF",
+    sub: "#1F2A33", subText: "#FFFFFF", star: "#F2B134", skin: "#F1C9A5", skin2: "#C98A57", hair: "#2B2118",
+    uniform: "#FFFFFF", pants: "#2F4E7D", bubble: "#FFFFFF", muted: "#9AAFA6"
+  };
+  const ease = u => u < 0 ? 0 : u > 1 ? 1 : u * u * (3 - 2 * u);
+  const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
+  const lerp = (a, b, u) => a + (b - a) * u;
+
+  // ---------- drawing helpers ----------
+  function rr(ctx, x, y, w, h, r) {
+    ctx.beginPath(); ctx.moveTo(x + r, y); ctx.arcTo(x + w, y, x + w, y + h, r); ctx.arcTo(x + w, y + h, x, y + h, r);
+    ctx.arcTo(x, y + h, x, y, r); ctx.arcTo(x, y, x + w, y, r); ctx.closePath();
+  }
+  function text(ctx, s, x, y, size, opt = {}) {
+    ctx.font = `${opt.weight || 600} ${size}px ${FONT}`; ctx.fillStyle = opt.color || C.ink;
+    ctx.textAlign = opt.align || "left"; ctx.textBaseline = opt.base || "alphabetic"; ctx.fillText(s, x, y);
+  }
+  function wrap(ctx, s, size, weight, maxW) {
+    ctx.font = `${weight} ${size}px ${FONT}`;
+    const words = s.split(" "), lines = []; let cur = "";
+    for (const w of words) {
+      const test = cur ? cur + " " + w : w;
+      if (ctx.measureText(test).width > maxW && cur) { lines.push(cur); cur = w; } else cur = test;
+    }
+    if (cur) lines.push(cur);
+    return lines;
+  }
+  function para(ctx, s, x, y, size, maxW, opt = {}) {
+    const lines = wrap(ctx, s, size, opt.weight || 500, maxW); const lh = size * (opt.lh || 1.35);
+    lines.forEach((l, i) => text(ctx, l, x, y + i * lh, size, opt));
+    return lines.length * lh;
+  }
+  function arrowIcon(ctx, kind, cx, cy, s, color) {
+    ctx.save(); ctx.translate(cx, cy); ctx.strokeStyle = color; ctx.fillStyle = color; ctx.lineWidth = s * 0.16; ctx.lineCap = "round"; ctx.lineJoin = "round";
+    if (kind === "up") {
+      ctx.beginPath(); ctx.moveTo(0, s * 0.45); ctx.lineTo(0, -s * 0.3); ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(-s * 0.32, -s * 0.05); ctx.lineTo(0, -s * 0.45); ctx.lineTo(s * 0.32, -s * 0.05); ctx.stroke();
+    } else if (kind === "left" || kind === "right") {
+      const k = kind === "left" ? -1 : 1;
+      ctx.beginPath(); ctx.moveTo(0, s * 0.45); ctx.lineTo(0, -s * 0.05); ctx.quadraticCurveTo(0, -s * 0.32, k * s * 0.28, -s * 0.32); ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(k * s * 0.12, -s * 0.5); ctx.lineTo(k * s * 0.4, -s * 0.32); ctx.lineTo(k * s * 0.12, -s * 0.14); ctx.stroke();
+    } else if (kind === "east") {
+      ctx.beginPath(); ctx.moveTo(-s * 0.4, 0); ctx.lineTo(s * 0.3, 0); ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(s * 0.05, -s * 0.28); ctx.lineTo(s * 0.4, 0); ctx.lineTo(s * 0.05, s * 0.28); ctx.stroke();
+    } else if (kind === "grab") {
+      ctx.beginPath(); ctx.arc(0, s * 0.12, s * 0.22, 0, Math.PI * 2); ctx.fill();
+      ctx.beginPath(); ctx.moveTo(-s * 0.4, -s * 0.42); ctx.lineTo(-s * 0.4, -s * 0.12); ctx.moveTo(s * 0.4, -s * 0.42); ctx.lineTo(s * 0.4, -s * 0.12);
+      ctx.moveTo(-s * 0.4, -s * 0.42); ctx.lineTo(s * 0.4, -s * 0.42); ctx.stroke();
+    }
+    ctx.restore();
+  }
+  function bakso(ctx, cx, cy, s, opt = {}) {
+    // a bowl of bakso: the goal
+    ctx.save(); ctx.translate(cx, cy);
+    if (opt.glow) { ctx.beginPath(); ctx.arc(0, 0, s * 0.62, 0, Math.PI * 2); ctx.fillStyle = "rgba(242,177,52,0.22)"; ctx.fill(); }
+    ctx.fillStyle = "#E4EEF5"; ctx.beginPath(); ctx.moveTo(-s * 0.46, -s * 0.05); ctx.quadraticCurveTo(-s * 0.4, s * 0.45, 0, s * 0.45); ctx.quadraticCurveTo(s * 0.4, s * 0.45, s * 0.46, -s * 0.05); ctx.closePath(); ctx.fill();
+    ctx.strokeStyle = "#8FA9BD"; ctx.lineWidth = s * 0.05; ctx.stroke();
+    ctx.fillStyle = "#C8B49A"; ctx.beginPath(); ctx.ellipse(0, -s * 0.05, s * 0.44, s * 0.14, 0, 0, Math.PI * 2); ctx.fill();
+    for (const [dx, dy, r] of [[-0.16, -0.1, 0.13], [0.14, -0.12, 0.13], [0, -0.22, 0.12]]) {
+      ctx.fillStyle = "#9A7B5B"; ctx.beginPath(); ctx.arc(dx * s, dy * s, r * s, 0, Math.PI * 2); ctx.fill();
+      ctx.fillStyle = "#B8977A"; ctx.beginPath(); ctx.arc(dx * s - r * s * 0.3, dy * s - r * s * 0.3, r * s * 0.4, 0, Math.PI * 2); ctx.fill();
+    }
+    ctx.fillStyle = "#4CA64C"; for (const dx of [-0.26, 0.1, 0.26]) { ctx.beginPath(); ctx.arc(dx * s, -s * 0.07, s * 0.045, 0, Math.PI * 2); ctx.fill(); }
+    ctx.restore();
+  }
+  function table(ctx, x, y, w, h) {
+    ctx.fillStyle = C.table; rr(ctx, x + w * 0.1, y + h * 0.3, w * 0.8, h * 0.55, 10); ctx.fill();
+    ctx.fillStyle = C.tableTop; rr(ctx, x + w * 0.06, y + h * 0.18, w * 0.88, h * 0.3, 10); ctx.fill();
+    ctx.fillStyle = "rgba(0,0,0,0.12)"; ctx.fillRect(x + w * 0.16, y + h * 0.5, w * 0.08, h * 0.35); ctx.fillRect(x + w * 0.76, y + h * 0.5, w * 0.08, h * 0.35);
+  }
+  function kiko(ctx, cx, cy, s, ang, opt = {}) {
+    ctx.save(); ctx.translate(cx, cy);
+    // shadow
+    ctx.fillStyle = "rgba(0,0,0,0.12)"; ctx.beginPath(); ctx.ellipse(0, s * 0.42, s * 0.42, s * 0.12, 0, 0, Math.PI * 2); ctx.fill();
+    ctx.rotate(ang);
+    // wheels
+    ctx.fillStyle = C.kikoDark; rr(ctx, -s * 0.46, -s * 0.2, s * 0.12, s * 0.5, 5); ctx.fill(); rr(ctx, s * 0.34, -s * 0.2, s * 0.12, s * 0.5, 5); ctx.fill();
+    // body
+    ctx.fillStyle = opt.flash ? `rgba(217,68,59,${0.5 + 0.5 * opt.flash})` : C.kiko; rr(ctx, -s * 0.38, -s * 0.36, s * 0.76, s * 0.72, s * 0.16); ctx.fill();
+    // visor (front, facing up)
+    ctx.fillStyle = C.kikoLight; rr(ctx, -s * 0.26, -s * 0.33, s * 0.52, s * 0.3, s * 0.1); ctx.fill();
+    // eyes
+    const mood = opt.mood || "happy";
+    ctx.fillStyle = C.pupil;
+    if (mood === "sad") { ctx.beginPath(); ctx.arc(-s * 0.12, -s * 0.18, s * 0.05, 0, Math.PI * 2); ctx.arc(s * 0.12, -s * 0.18, s * 0.05, 0, Math.PI * 2); ctx.fill(); ctx.strokeStyle = C.pupil; ctx.lineWidth = s * 0.03; ctx.beginPath(); ctx.arc(0, -s * 0.03, s * 0.08, Math.PI * 1.15, Math.PI * 1.85); ctx.stroke(); }
+    else if (mood === "confused") { ctx.beginPath(); ctx.arc(-s * 0.12, -s * 0.18, s * 0.05, 0, Math.PI * 2); ctx.arc(s * 0.12, -s * 0.18, s * 0.035, 0, Math.PI * 2); ctx.fill(); ctx.strokeStyle = C.pupil; ctx.lineWidth = s * 0.03; ctx.beginPath(); ctx.moveTo(-s * 0.08, -s * 0.06); ctx.lineTo(s * 0.08, -s * 0.09); ctx.stroke(); }
+    else { ctx.beginPath(); ctx.arc(-s * 0.12, -s * 0.18, s * 0.055, 0, Math.PI * 2); ctx.arc(s * 0.12, -s * 0.18, s * 0.055, 0, Math.PI * 2); ctx.fill(); ctx.strokeStyle = C.pupil; ctx.lineWidth = s * 0.03; ctx.beginPath(); ctx.arc(0, -s * 0.1, s * 0.08, Math.PI * 0.15, Math.PI * 0.85); ctx.stroke(); }
+    // front pointer
+    ctx.fillStyle = C.accent; ctx.beginPath(); ctx.moveTo(-s * 0.1, -s * 0.38); ctx.lineTo(s * 0.1, -s * 0.38); ctx.lineTo(0, -s * 0.5); ctx.closePath(); ctx.fill();
+    // antenna
+    ctx.strokeStyle = C.kikoDark; ctx.lineWidth = s * 0.04; ctx.beginPath(); ctx.moveTo(0, s * 0.36); ctx.lineTo(0, s * 0.5); ctx.stroke();
+    ctx.fillStyle = C.accent; ctx.beginPath(); ctx.arc(0, s * 0.52, s * 0.07, 0, Math.PI * 2); ctx.fill();
+    // tray with bakso when grabbed
+    if (opt.grabbed) bakso(ctx, 0, s * 0.05, s * 0.45);
+    ctx.restore();
+    if (opt.wave !== undefined) { // arm waving (title scene)
+      ctx.save(); ctx.translate(cx + s * 0.42, cy - s * 0.1); ctx.rotate(-0.6 + Math.sin(opt.wave * 6) * 0.4);
+      ctx.strokeStyle = C.kikoDark; ctx.lineWidth = s * 0.08; ctx.lineCap = "round"; ctx.beginPath(); ctx.moveTo(0, 0); ctx.lineTo(s * 0.3, -s * 0.3); ctx.stroke();
+      ctx.fillStyle = C.kikoLight; ctx.beginPath(); ctx.arc(s * 0.32, -s * 0.33, s * 0.09, 0, Math.PI * 2); ctx.fill(); ctx.restore();
+    }
+  }
+  function kid(ctx, cx, cy, s, opt = {}) {
+    // simple student figure, standing, facing viewer
+    ctx.save(); ctx.translate(cx, cy);
+    ctx.fillStyle = "rgba(0,0,0,0.12)"; ctx.beginPath(); ctx.ellipse(0, s * 1.02, s * 0.5, s * 0.1, 0, 0, Math.PI * 2); ctx.fill();
+    ctx.fillStyle = C.pants; rr(ctx, -s * 0.3, s * 0.35, s * 0.6, s * 0.5, s * 0.1); ctx.fill();
+    ctx.fillStyle = C.skin; ctx.fillRect(-s * 0.24, s * 0.8, s * 0.16, s * 0.2); ctx.fillRect(s * 0.08, s * 0.8, s * 0.16, s * 0.2);
+    ctx.fillStyle = C.uniform; rr(ctx, -s * 0.36, -s * 0.12, s * 0.72, s * 0.56, s * 0.12); ctx.fill();
+    ctx.strokeStyle = "#D5DDE2"; ctx.lineWidth = s * 0.025; rr(ctx, -s * 0.36, -s * 0.12, s * 0.72, s * 0.56, s * 0.12); ctx.stroke();
+    ctx.fillStyle = C.skin; ctx.beginPath(); ctx.arc(0, -s * 0.42, s * 0.32, 0, Math.PI * 2); ctx.fill();
+    ctx.fillStyle = opt.hairColor || C.hair; ctx.beginPath(); ctx.arc(0, -s * 0.5, s * 0.33, Math.PI, 0); ctx.fill();
+    if (opt.hair === "long") { ctx.fillRect(-s * 0.33, -s * 0.5, s * 0.12, s * 0.45); ctx.fillRect(s * 0.21, -s * 0.5, s * 0.12, s * 0.45); }
+    ctx.fillStyle = C.pupil; ctx.beginPath(); ctx.arc(-s * 0.11, -s * 0.4, s * 0.035, 0, Math.PI * 2); ctx.arc(s * 0.11, -s * 0.4, s * 0.035, 0, Math.PI * 2); ctx.fill();
+    ctx.strokeStyle = C.pupil; ctx.lineWidth = s * 0.025; ctx.beginPath(); ctx.arc(0, -s * 0.33, s * 0.08, Math.PI * 0.15, Math.PI * 0.85); ctx.stroke();
+    // arms
+    ctx.strokeStyle = C.skin; ctx.lineWidth = s * 0.11; ctx.lineCap = "round"; ctx.beginPath();
+    if (opt.point) { ctx.moveTo(s * 0.32, s * 0.02); ctx.lineTo(s * 0.75, -s * 0.2); } else { ctx.moveTo(s * 0.34, s * 0.02); ctx.lineTo(s * 0.42, s * 0.38); }
+    ctx.moveTo(-s * 0.34, s * 0.02); ctx.lineTo(-s * 0.42, s * 0.38); ctx.stroke();
+    ctx.restore();
+  }
+  function bubble(ctx, x, y, w, s, size, opt = {}) {
+    const lines = wrap(ctx, s, size, 600, w - 48); const h = lines.length * size * 1.3 + 40;
+    ctx.fillStyle = opt.fill || C.bubble; ctx.strokeStyle = opt.stroke || "#B7C7BF"; ctx.lineWidth = 3;
+    rr(ctx, x, y - h, w, h, 22); ctx.fill(); ctx.stroke();
+    const tx = opt.tailX !== undefined ? opt.tailX : x + 60;
+    ctx.beginPath(); ctx.moveTo(tx - 16, y); ctx.lineTo(tx + 16, y); ctx.lineTo(tx + (opt.tailDir || 0), y + 28); ctx.closePath(); ctx.fillStyle = opt.fill || C.bubble; ctx.fill();
+    ctx.strokeStyle = opt.stroke || "#B7C7BF"; ctx.beginPath(); ctx.moveTo(tx - 16, y); ctx.lineTo(tx + (opt.tailDir || 0), y + 28); ctx.lineTo(tx + 16, y); ctx.stroke();
+    lines.forEach((l, i) => text(ctx, l, x + 24, y - h + 24 + size + i * size * 1.3, size, { color: opt.color || C.ink, weight: 600 }));
+    return h;
+  }
+  function card(ctx, x, y, w, h, opt = {}) { ctx.fillStyle = opt.fill || C.panel; rr(ctx, x, y, w, h, opt.r || 26); ctx.fill(); if (opt.stroke) { ctx.strokeStyle = opt.stroke; ctx.lineWidth = opt.lw || 4; ctx.stroke(); } }
+
+  // ---------- adegan umum (semua episode) ----------
+  const SCENES = {
+    title(ctx, b, l, t, TL) {
+      card(ctx, 160, 160, 1600, 700, { fill: C.panel });
+      kiko(ctx, 420, 520, 260, 0, { wave: l, mood: "happy" });
+      text(ctx, "Informatika · Fase D · Episode " + TL.episode, 720, 330, 34, { color: C.ink2, weight: 700 });
+      para(ctx, TL.title, 720, 440, 92, 980, { weight: 900, lh: 1.1 });
+      text(ctx, "Dengarkan, atau baca teksnya pelan-pelan.", 720, 700, 36, { color: C.ink2, weight: 600 });
+      arrowIcon(ctx, "up", 1560, 360, 70, C.kikoLight); arrowIcon(ctx, "right", 1660, 360, 70, C.kikoLight);
+    },
+    quiz(ctx, b, l, t, TL, answered) {
+      const q = TL.quizzes[b.quiz]; card(ctx, 200, 150, 1520, 740, { stroke: C.accent, lw: 6 });
+      text(ctx, "CEK PEMAHAMAN", 960, 230, 32, { align: "center", color: C.accentDark, weight: 800 });
+      para(ctx, q.q, 960, 320, 44, 1360, { weight: 800, align: "center", lh: 1.3 });
+      q.options.forEach((o, i) => {
+        const y = 470 + i * 120; const right = answered && i === q.answer;
+        card(ctx, 320, y, 1280, 96, { fill: right ? C.goodBg : answered ? "#F4F6F5" : C.bg2, stroke: right ? C.good : "#CFDCD5", lw: right ? 6 : 3 });
+        ctx.fillStyle = right ? C.good : C.kiko; ctx.beginPath(); ctx.arc(380, y + 48, 30, 0, Math.PI * 2); ctx.fill();
+        text(ctx, "ABC"[i], 380, y + 61, 34, { align: "center", color: "#fff", weight: 900 });
+        text(ctx, o, 440, y + 62, 38, { weight: 700, color: answered && !right ? C.muted : C.ink });
+        if (right) text(ctx, "✓", 1540, y + 66, 54, { align: "center", color: C.good, weight: 900 });
+      });
+      if (!answered) { // thinking timer
+        const frac = clamp(l / b.dur, 0, 1); ctx.strokeStyle = "#D7E2DC"; ctx.lineWidth = 14; ctx.beginPath(); ctx.arc(1640, 230, 40, 0, Math.PI * 2); ctx.stroke();
+        ctx.strokeStyle = C.accent; ctx.beginPath(); ctx.arc(1640, 230, 40, -Math.PI / 2, -Math.PI / 2 + frac * Math.PI * 2); ctx.stroke();
+        text(ctx, "Pikirkan dulu, jangan buru-buru.", 960, 860, 32, { align: "center", color: C.ink2, weight: 600 });
+      }
+    },
+    quiz_answer(ctx, b, l, t, TL) { SCENES.quiz(ctx, b, l, t, TL, true); },
+    recap(ctx, b, l, t, TL) {
+      // TL.recap: tiga kalimat pendek dari script.json
+      card(ctx, 160, 140, 1600, 760);
+      text(ctx, "TIGA HAL UNTUK DIINGAT", 960, 230, 34, { align: "center", color: C.accentDark, weight: 900 });
+      const items = TL.recap || [];
+      const show = clamp(Math.floor((l - 0.6) / 2.2) + 1, 1, Math.max(1, items.length));
+      items.forEach((s, i) => { if (i >= show) return; card(ctx, 300, 290 + i * 180, 1320, 140, { fill: C.bg2 }); ctx.fillStyle = C.kiko; ctx.beginPath(); ctx.arc(380, 360 + i * 180, 40, 0, Math.PI * 2); ctx.fill(); text(ctx, String(i + 1), 380, 376 + i * 180, 40, { align: "center", color: "#fff", weight: 900 }); text(ctx, s, 450, 375 + i * 180, 42, { weight: 800 }); });
+      kiko(ctx, 1620, 820, 130, 0);
+    },
+    outro(ctx, b, l, t, TL) {
+      // TL.next: {code, title, note} episode berikutnya, dari script.json
+      const n = TL.next || {};
+      card(ctx, 260, 200, 1400, 600);
+      text(ctx, "EPISODE BERIKUTNYA", 960, 320, 34, { align: "center", color: C.accentDark, weight: 900 });
+      text(ctx, n.code || "", 960, 440, 60, { align: "center", weight: 900 });
+      text(ctx, n.title || "", 960, 530, 54, { align: "center", weight: 800, color: C.ink2 });
+      text(ctx, n.note || "", 960, 680, 34, { align: "center", color: C.ink2, weight: 600 });
+      kiko(ctx, 960, 760 + 20, 140, 0, { wave: l });
+    }
+  };
+
+  function beatAt(TL, t) {
+    let b = TL.beats[0];
+    for (const x of TL.beats) { if (t >= x.start) b = x; else break; }
+    return b;
+  }
+  function draw(ctx, t, TL, opt = {}) {
+    const b = beatAt(TL, t); const l = t - b.start;
+    ctx.save(); ctx.setTransform(1, 0, 0, 1, 0, 0);
+    ctx.fillStyle = C.bg; ctx.fillRect(0, 0, W, H);
+    // header
+    text(ctx, TL.episode + " · " + TL.title, 60, 78, 30, { color: C.ink2, weight: 700 });
+    text(ctx, TL.segments[b.seg], 1860, 78, 30, { color: C.accentDark, weight: 800, align: "right" });
+    ctx.fillStyle = C.bg2; ctx.fillRect(0, 100, W, 6); ctx.fillStyle = C.accent; ctx.fillRect(0, 100, W * clamp(t / TL.total, 0, 1), 6);
+    const fn = SCENES[b.scene]; if (fn) fn(ctx, b, l, t, TL);
+    // narration card (burned-in text the student reads)
+    if (opt.subtitles !== false) {
+      const size = 44; const lines = wrap(ctx, b.text, size, 700, 1660);
+      const h = lines.length * size * 1.3 + 44; const y0 = 1056 - h;
+      ctx.fillStyle = "rgba(31,42,51,0.92)"; rr(ctx, 100, y0, 1720, h, 20); ctx.fill();
+      // reading progress (how far along the text the reader should be)
+      const frac = clamp(l / b.audio, 0, 1); ctx.fillStyle = C.accent; rr(ctx, 100, y0 + h - 8, 1720 * frac, 8, 4); ctx.fill();
+      lines.forEach((ln, i) => text(ctx, ln, 960, y0 + 22 + size + i * size * 1.3, size, { align: "center", color: C.subText, weight: 700 }));
+    }
+    ctx.restore();
+    return b;
+  }
+
+  global.Kiko = { draw, beatAt, W, H, C, FONT, SCENES,
+    helpers: { rr, text, wrap, para, arrowIcon, bakso, table, kiko, kid, bubble, card, ease, clamp, lerp } };
+})(typeof window !== "undefined" ? window : globalThis);
+
+/* Pembantu gambar D7.1 (pentas kelas): kertas catatan, kotak & pohon pemecahan, kursi, jadwal, denah panggung, peta angkot,
+   daftar langkah, papan penampilan (soal Bebras), dan bilah "empat jurus". Muat setelah ../_alat/kiko-core.js. */
+(function (global) {
+  const K = global.Kiko, H = K.helpers, C = K.C;
+  const { rr, text, wrap, card, kid, kiko, ease, clamp, lerp } = H;
+  const P = {};
+  P.JURUS = [["1", "Dekomposisi", "pecah jadi kecil"], ["2", "Pola", "cari yang berulang"], ["3", "Abstraksi", "saring yang penting"], ["4", "Algoritma", "susun langkahnya"]];
+  const PAPER = ["#FFF3B0", "#FFD6E0", "#D6F5E3", "#DCEBFF", "#FFE2C2"];
+
+  // kertas catatan kecil (sticky note), boleh miring
+  P.note = function (ctx, x, y, w, h, s, opt = {}) {
+    ctx.save(); ctx.translate(x + w / 2, y + h / 2); ctx.rotate(opt.rot || 0);
+    ctx.fillStyle = "rgba(0,0,0,0.10)"; rr(ctx, -w / 2 + 6, -h / 2 + 8, w, h, 6); ctx.fill();
+    ctx.fillStyle = opt.fill || PAPER[(opt.i || 0) % PAPER.length]; rr(ctx, -w / 2, -h / 2, w, h, 6); ctx.fill();
+    if (opt.stroke) { ctx.strokeStyle = opt.stroke; ctx.lineWidth = 5; ctx.stroke(); }
+    const size = opt.size || 28, lines = wrap(ctx, s, size, 800, w - 24);
+    lines.forEach((ln, i) => text(ctx, ln, 0, -((lines.length - 1) * size * 1.2) / 2 + i * size * 1.2 + size * 0.35, size, { align: "center", weight: 800, color: opt.color || C.ink }));
+    ctx.restore();
+  };
+  // kotak berlabel untuk pohon pemecahan
+  P.box = function (ctx, x, y, w, h, s, opt = {}) {
+    card(ctx, x, y, w, h, { fill: opt.fill || C.panel, stroke: opt.stroke || "#D7E2DC", lw: opt.lw || 3, r: 16 });
+    const size = opt.size || 30, lines = wrap(ctx, s, size, 800, w - 20);
+    lines.forEach((ln, i) => text(ctx, ln, x + w / 2, y + h / 2 - ((lines.length - 1) * size * 1.2) / 2 + i * size * 1.2 + size * 0.35, size, { align: "center", weight: 800, color: opt.color || C.ink }));
+  };
+  P.link = function (ctx, x1, y1, x2, y2, color = "#9AAFA6") { ctx.strokeStyle = color; ctx.lineWidth = 5; ctx.lineCap = "round"; ctx.beginPath(); ctx.moveTo(x1, y1); ctx.lineTo(x1, (y1 + y2) / 2); ctx.lineTo(x2, (y1 + y2) / 2); ctx.lineTo(x2, y2); ctx.stroke(); };
+  // bilah empat jurus di atas adegan; learned = berapa jurus yang sudah dikenal (disorot), active = indeks jurus yang sedang dibahas
+  P.jurusBar = function (ctx, learned, active) {
+    P.JURUS.forEach(([n, name], i) => {
+      const x = 160 + i * 410, on = i < learned, act = i === active;
+      card(ctx, x, 128, 380, 64, { fill: act ? "#FFF3D6" : on ? C.goodBg : C.bg2, stroke: act ? C.accent : on ? C.good : "#D7E2DC", lw: act ? 4 : 2, r: 14 });
+      ctx.fillStyle = act ? C.accentDark : on ? C.good : C.muted; ctx.beginPath(); ctx.arc(x + 34, 160, 20, 0, Math.PI * 2); ctx.fill();
+      text(ctx, n, x + 34, 169, 24, { align: "center", color: "#fff", weight: 900 });
+      text(ctx, on || act ? name : "?", x + 70, 170, 28, { weight: 800, color: on || act ? C.ink : C.muted });
+    });
+  };
+  // kartu nama jurus (penutup tiap segmen)
+  P.jurusCard = function (ctx, i, en) {
+    const [n, name, desc] = P.JURUS[i];
+    card(ctx, 360, 300, 1200, 400, { stroke: C.accent, lw: 6 });
+    text(ctx, "JURUS " + n, 960, 380, 34, { align: "center", color: C.accentDark, weight: 800 });
+    text(ctx, name, 960, 480, 84, { align: "center", weight: 900 });
+    text(ctx, "(" + en + ")", 960, 540, 36, { align: "center", weight: 600, color: C.ink2 });
+    text(ctx, desc, 960, 630, 40, { align: "center", weight: 800, color: C.ink2 });
+  };
+  // kursi penonton tampak atas
+  P.chair = function (ctx, x, y, s, on = true) { ctx.fillStyle = on ? "#C98A57" : "#E6E0D8"; rr(ctx, x - s / 2, y - s / 2, s, s, s * 0.2); ctx.fill(); ctx.fillStyle = on ? "#A4653A" : "#D5CEC4"; rr(ctx, x - s / 2, y - s / 2, s, s * 0.3, s * 0.2); ctx.fill(); };
+  // jadwal mingguan: days = [[nama, kegiatan, warna]], highlight = indeks
+  P.schedule = function (ctx, x, y, days, opt = {}) {
+    const w = opt.w || 200, h = opt.h || 180;
+    days.forEach(([d, act, col], i) => {
+      const cx = x + i * (w + 14); card(ctx, cx, y, w, h, { fill: C.panel, stroke: opt.highlight === i ? C.accent : "#D7E2DC", lw: opt.highlight === i ? 6 : 3 });
+      text(ctx, d, cx + w / 2, y + 44, 28, { align: "center", weight: 800, color: C.ink2 });
+      if (act) { ctx.fillStyle = col; rr(ctx, cx + 20, y + 70, w - 40, 80, 14); ctx.fill(); text(ctx, act, cx + w / 2, y + 122, 32, { align: "center", weight: 900, color: "#fff" }); }
+      else text(ctx, "?", cx + w / 2, y + 128, 56, { align: "center", weight: 900, color: C.accentDark });
+    });
+  };
+  // denah panggung: detail = penuh pernak-pernik, atau hanya yang penting
+  P.stagePlan = function (ctx, x, y, w, h, detail) {
+    card(ctx, x, y, w, h, { fill: "#FBFDFC", stroke: "#B7C7BF", lw: 3 });
+    // panggung
+    ctx.fillStyle = detail ? "#8E6BBF" : C.bg2; rr(ctx, x + w * 0.25, y + 24, w * 0.5, h * 0.22, 12); ctx.fill();
+    if (detail) { ctx.fillStyle = "#D9443B"; for (let i = 0; i < 9; i++) { ctx.fillRect(x + w * 0.25 + i * w * 0.055, y + 24, w * 0.03, h * 0.22); } }
+    text(ctx, "PANGGUNG", x + w / 2, y + 24 + h * 0.13, 30, { align: "center", weight: 900, color: detail ? "#fff" : C.ink });
+    // kursi
+    for (let r = 0; r < 3; r++) for (let c = 0; c < 6; c++) P.chair(ctx, x + w * 0.3 + c * w * 0.08, y + h * 0.42 + r * h * 0.14, detail ? 26 : 22, true);
+    text(ctx, "kursi penonton", x + w / 2, y + h * 0.84, 24, { align: "center", weight: 700, color: C.ink2 });
+    // pintu & meja snack
+    ctx.fillStyle = C.good; rr(ctx, x + w - 60, y + h * 0.4, 36, 90, 8); ctx.fill(); text(ctx, "pintu", x + w - 42, y + h * 0.4 + 120, 22, { align: "center", weight: 700, color: C.ink2 });
+    ctx.fillStyle = C.accent; rr(ctx, x + 24, y + h * 0.45, 70, 44, 8); ctx.fill(); text(ctx, "snack", x + 59, y + h * 0.45 + 72, 22, { align: "center", weight: 700, color: C.ink2 });
+    if (detail) { // pernak-pernik yang tidak perlu
+      const notes = ["tirai merah marun", "lampu merek X 60 W", "karpet motif bunga", "kabel 12 meter", "vas bunga 3", "balon 40 buah"];
+      notes.forEach((s, i) => { ctx.fillStyle = PAPER[i % PAPER.length]; rr(ctx, x + 20 + (i % 3) * 150, y + h - 130 + Math.floor(i / 3) * 56, 140, 46, 8); ctx.fill(); text(ctx, s, x + 90 + (i % 3) * 150, y + h - 100 + Math.floor(i / 3) * 56, 18, { align: "center", weight: 700 }); });
+      ctx.strokeStyle = "#8E6BBF"; ctx.lineWidth = 3; for (let i = 0; i < 5; i++) { ctx.beginPath(); ctx.moveTo(x + w * 0.1, y + h * 0.3 + i * 10); ctx.bezierCurveTo(x + w * 0.5, y + h * 0.2 + i * 14, x + w * 0.6, y + h * 0.5, x + w * 0.9, y + h * 0.3 + i * 12); ctx.stroke(); }
+    }
+  };
+  // peta jalur angkot: abstract = hanya rute dan pemberhentian
+  P.angkotMap = function (ctx, x, y, w, h, abstract) {
+    card(ctx, x, y, w, h, { fill: abstract ? "#FBFDFC" : "#EEF4E8", stroke: "#B7C7BF", lw: 3 });
+    const pts = [[0.08, 0.75], [0.3, 0.6], [0.5, 0.7], [0.72, 0.35], [0.92, 0.3]].map(([a, b]) => [x + w * a, y + h * b]);
+    if (!abstract) {
+      // pohon, warung, rumah
+      for (let i = 0; i < 14; i++) { const px = x + 40 + (i * 131) % (w - 80), py = y + 40 + (i * 97) % (h - 80); ctx.fillStyle = "#6DBE6D"; ctx.beginPath(); ctx.arc(px, py, 18, 0, Math.PI * 2); ctx.fill(); }
+      for (let i = 0; i < 6; i++) { const px = x + 70 + i * (w - 140) / 5, py = y + h * 0.15 + (i % 2) * h * 0.65; ctx.fillStyle = "#C98A57"; rr(ctx, px - 30, py - 20, 60, 40, 6); ctx.fill(); text(ctx, ["warung", "rumah", "toko", "masjid", "sekolah", "pasar"][i], px, py + 40, 18, { align: "center", weight: 700, color: C.ink2 }); }
+      ctx.strokeStyle = "#9AAFA6"; ctx.lineWidth = 26; ctx.lineJoin = "round"; ctx.beginPath(); pts.forEach((p, i) => i ? ctx.quadraticCurveTo(p[0] - 60, p[1] + 40, p[0], p[1]) : ctx.moveTo(p[0], p[1])); ctx.stroke();
+      ctx.strokeStyle = "#fff"; ctx.lineWidth = 3; ctx.setLineDash([16, 14]); ctx.beginPath(); pts.forEach((p, i) => i ? ctx.quadraticCurveTo(p[0] - 60, p[1] + 40, p[0], p[1]) : ctx.moveTo(p[0], p[1])); ctx.stroke(); ctx.setLineDash([]);
+    } else {
+      ctx.strokeStyle = C.kiko; ctx.lineWidth = 14; ctx.lineCap = "round"; ctx.lineJoin = "round"; ctx.beginPath(); pts.forEach((p, i) => i ? ctx.lineTo(p[0], p[1]) : ctx.moveTo(p[0], p[1])); ctx.stroke();
+    }
+    const stops = ["Terminal", "Pasar", "Sekolah", "Puskesmas", "Alun-alun"];
+    pts.forEach((p, i) => { ctx.fillStyle = "#fff"; ctx.beginPath(); ctx.arc(p[0], p[1], 16, 0, Math.PI * 2); ctx.fill(); ctx.strokeStyle = C.kiko; ctx.lineWidth = 6; ctx.stroke(); text(ctx, stops[i], p[0], p[1] - 30, 24, { align: "center", weight: 800, color: abstract ? C.ink : C.ink2 }); });
+  };
+  // daftar langkah (kartu bernomor atau tanpa nomor); opt.state[i] = "good" | "bad" | "active"
+  P.steps = function (ctx, x, y, items, opt = {}) {
+    const w = opt.w || 640, rowH = opt.rowH || 76;
+    items.forEach((s, i) => {
+      const ry = y + i * rowH, st = (opt.state || [])[i];
+      card(ctx, x, ry, w, rowH - 12, { fill: st === "bad" ? C.badBg : st === "good" ? C.goodBg : st === "active" ? "#FFF3D6" : C.panel, stroke: st === "bad" ? C.bad : st === "good" ? C.good : st === "active" ? C.accent : "#D7E2DC", lw: st ? 5 : 2, r: 14 });
+      if (opt.numbered !== false) { ctx.fillStyle = st === "bad" ? C.bad : st === "good" ? C.good : C.ink2; ctx.beginPath(); ctx.arc(x + 36, ry + (rowH - 12) / 2, 22, 0, Math.PI * 2); ctx.fill(); text(ctx, String(i + 1), x + 36, ry + (rowH - 12) / 2 + 10, 26, { align: "center", color: "#fff", weight: 800 }); }
+      text(ctx, s, x + (opt.numbered !== false ? 76 : 24), ry + (rowH - 12) / 2 + 12, opt.size || 32, { weight: 700 });
+      if (opt.notes && opt.notes[i]) text(ctx, opt.notes[i], x + w + 20, ry + (rowH - 12) / 2 + 12, 28, { weight: 800, color: st === "bad" ? C.bad : C.good });
+    });
+  };
+  // token pemain (lingkaran berinisial)
+  P.PLAYER = { S: ["Sinta", "#D9443B"], D: ["Dito", "#2E7E9A"], R: ["Rama", "#2E9E5B"] };
+  P.token = function (ctx, x, y, who, r = 26) { ctx.fillStyle = P.PLAYER[who][1]; ctx.beginPath(); ctx.arc(x, y, r, 0, Math.PI * 2); ctx.fill(); text(ctx, who, x, y + r * 0.38, r * 1.1, { align: "center", color: "#fff", weight: 900 }); };
+  // kartu penampilan: nama + token pemain
+  P.show = function (ctx, x, y, w, h, name, players, opt = {}) {
+    card(ctx, x, y, w, h, { fill: opt.fill || C.panel, stroke: opt.stroke || "#D7E2DC", lw: opt.lw || 3, r: 16 });
+    text(ctx, name, x + w / 2, y + 44, 30, { align: "center", weight: 900 });
+    players.forEach((p, i) => P.token(ctx, x + w / 2 + (i - (players.length - 1) / 2) * 64, y + h - 46, p, 26));
+    if (opt.badge) { ctx.fillStyle = C.accent; ctx.beginPath(); ctx.arc(x + 28, y + 28, 22, 0, Math.PI * 2); ctx.fill(); text(ctx, opt.badge, x + 28, y + 38, 26, { align: "center", color: "#fff", weight: 900 }); }
+  };
+  P.SHOWS = [["Tari", ["S", "D"]], ["Musik", ["R"]], ["Drama", ["S", "R"]], ["Puisi", ["D"]]];
+  K.pentas = P;
+})(typeof window !== "undefined" ? window : globalThis);
+
+/* Adegan episode D7.1: Empat Jurus Berpikir Komputasional. Muat setelah ../_alat/kiko-core.js dan pentas.js. */
+(function (global) {
+  const K = global.Kiko, H = K.helpers, C = K.C, P = K.pentas, SCENES = K.SCENES;
+  const { text, para, card, kiko, kid, bubble, rr, ease, clamp, lerp } = H;
+  const reveal = (l, t0, step, n) => clamp(Math.floor((l - t0) / step) + 1, 0, n);
+  const TASKS = ["panggung", "kostum", "latihan tari", "snack", "undangan", "sound system", "dekorasi", "latihan drama", "kursi", "foto", "MC", "jadwal", "spanduk", "air minum", "latihan musik"];
+
+  Object.assign(SCENES, {
+    prereq(ctx, b, l) {
+      card(ctx, 260, 200, 1400, 600);
+      text(ctx, "KALAU PERLU, TONTON DULU", 960, 300, 34, { align: "center", color: C.accentDark, weight: 800 });
+      text(ctx, "Episode D7.0", 960, 420, 60, { align: "center", weight: 900 });
+      text(ctx, "Cara Memakai Komputer dan HP", 960, 500, 52, { align: "center", weight: 700, color: C.ink2 });
+      text(ctx, "Episode ini sendiri tidak memakai komputer sama sekali.", 960, 620, 36, { align: "center", weight: 600, color: C.ink2 });
+      kiko(ctx, 1600, 760, 150, 0);
+    },
+    unplugged(ctx, b, l) {
+      card(ctx, 120, 150, 1680, 740);
+      text(ctx, "MAIN DULU TANPA KOMPUTER", 960, 230, 34, { align: "center", color: C.accentDark, weight: 800 });
+      kid(ctx, 420, 560, 220, { point: true }); kid(ctx, 720, 560, 220, { hair: "long" });
+      bubble(ctx, 250, 372, 760, "Pentas kelas minggu depan! Apa saja yang harus disiapkan?", 32, { tailX: 420, tailDir: 0 });
+      const n = reveal(l, 1.5, 0.9, 4);
+      for (let i = 0; i < n; i++) P.note(ctx, 1000 + i * 190, 420, 170, 130, TASKS[i], { i, rot: (i % 2 ? 1 : -1) * 0.06, size: 26 });
+      text(ctx, "satu kertas, satu hal", 1380, 650, 32, { align: "center", color: C.ink2, weight: 700 });
+    },
+    unplugged_pile(ctx, b, l) {
+      card(ctx, 120, 150, 1680, 740);
+      const n = reveal(l, 0.3, 0.28, TASKS.length);
+      for (let i = 0; i < n; i++) { const r = Math.floor(i / 5), c = i % 5; P.note(ctx, 220 + c * 240 + (r % 2) * 40, 260 + r * 150, 190, 120, TASKS[i], { i, rot: ((i * 7) % 5 - 2) * 0.06, size: 26 }); }
+      kid(ctx, 1560, 560, 200, {}); text(ctx, "Dito", 1560, 830, 30, { align: "center", color: C.ink2, weight: 700 });
+      if (n >= TASKS.length) bubble(ctx, 1380, 330, 330, "Mulai dari mana, ya?", 32, { tailX: 1540, tailDir: 20, fill: C.badBg, stroke: C.bad, color: C.bad });
+    },
+    big_task(ctx, b, l) {
+      P.jurusBar(ctx, 0, -1);
+      P.box(ctx, 560, 300, 800, 170, "PENTAS KELAS", { size: 56, stroke: C.bad, lw: 6, fill: C.badBg });
+      const n = reveal(l, 1.0, 0.25, TASKS.length);
+      for (let i = 0; i < n; i++) P.note(ctx, 300 + (i * 97) % 1300, 500 + (i * 53) % 170, 180, 90, TASKS[i], { i, rot: ((i * 7) % 5 - 2) * 0.1, size: 24 });
+      if (n >= TASKS.length) { card(ctx, 560, 800, 800, 70, { fill: "#FFF3D6", stroke: C.accent, lw: 4 }); text(ctx, "terlalu besar untuk dikerjakan sekaligus", 960, 846, 32, { align: "center", weight: 900 }); }
+    },
+    decompose1(ctx, b, l) {
+      P.jurusBar(ctx, 0, 0);
+      P.box(ctx, 660, 240, 600, 110, "PENTAS KELAS", { size: 44, stroke: C.accent, lw: 5 });
+      const parts = ["Acara", "Panggung", "Kostum", "Konsumsi"]; const n = reveal(l, 1.2, 0.8, 4);
+      parts.forEach((s, i) => { if (i >= n) return; const x = 260 + i * 380; P.link(ctx, 960, 350, x + 160, 470); P.box(ctx, x, 470, 320, 120, s, { size: 40, fill: C.goodBg, stroke: C.good, lw: 4 }); });
+      if (n >= 4) text(ctx, "satu tugas besar → empat bagian", 960, 720, 36, { align: "center", color: C.ink2, weight: 800 });
+    },
+    decompose2(ctx, b, l) {
+      P.jurusBar(ctx, 0, 0);
+      P.box(ctx, 660, 240, 600, 100, "Konsumsi", { size: 40, fill: C.goodBg, stroke: C.good, lw: 4 });
+      const parts = ["hitung orang", "pilih snack", "beli", "bagikan"]; const n = reveal(l, 1.2, 0.8, 4);
+      parts.forEach((s, i) => { if (i >= n) return; const x = 260 + i * 380; P.link(ctx, 960, 340, x + 160, 450); P.box(ctx, x, 450, 320, 110, s, { size: 36, fill: "#FFF3D6", stroke: C.accent, lw: 4 }); });
+      if (n >= 4) { text(ctx, "tiap bagian kecil, jelas, bisa langsung dikerjakan", 960, 700, 36, { align: "center", color: C.ink2, weight: 800 }); }
+      ["Acara", "Panggung", "Kostum"].forEach((s, i) => P.box(ctx, 160 + i * 170, 790, 150, 60, s, { size: 24, fill: C.bg2, stroke: "#D7E2DC", color: C.ink2 }));
+      text(ctx, "← bagian lain dipecah dengan cara yang sama", 700, 830, 26, { color: C.ink2, weight: 700 });
+    },
+    decompose_assign(ctx, b, l) {
+      P.jurusBar(ctx, 0, 0);
+      const who = [["Panggung", (x, y) => kid(ctx, x, y, 170, { point: true }), "Dito"], ["Kostum", (x, y) => kid(ctx, x, y, 170, { hair: "long" }), "Sinta"], ["Konsumsi", (x, y) => kiko(ctx, x, y + 20, 160, 0), "Kiko"]];
+      const n = reveal(l, 1.0, 1.0, 3);
+      who.forEach(([task, draw, name], i) => { if (i >= n) return; const x = 330 + i * 520; P.box(ctx, x - 160, 240, 320, 100, task, { size: 36, fill: C.goodBg, stroke: C.good, lw: 4 }); P.link(ctx, x, 340, x, 400); draw(x, 540); text(ctx, name, x, 760, 32, { align: "center", color: C.ink2, weight: 800 }); });
+      if (n >= 3) text(ctx, "dikerjakan bersamaan, selesai lebih cepat", 960, 840, 34, { align: "center", color: C.ink2, weight: 800 });
+    },
+    decompose_name(ctx, b, l) { P.jurusBar(ctx, 1, 0); P.jurusCard(ctx, 0, "decomposition"); },
+
+    pattern_chairs(ctx, b, l) {
+      P.jurusBar(ctx, 1, 1);
+      const rows = reveal(l, 0.8, 1.2, 3);
+      for (let r = 0; r < 5; r++) for (let c = 0; c < 6; c++) P.chair(ctx, 500 + c * 110, 300 + r * 100, 70, r < rows);
+      kid(ctx, 1400, 520, 200, { hair: "long", point: true }); text(ctx, "Sinta", 1400, 790, 30, { align: "center", color: C.ink2, weight: 700 });
+      if (rows >= 3) { card(ctx, 1180, 240, 520, 80, { fill: "#FFF3D6", stroke: C.accent, lw: 4 }); text(ctx, "tiap baris: 6 kursi, berulang", 1440, 292, 30, { align: "center", weight: 900 }); }
+    },
+    pattern_count(ctx, b, l) {
+      P.jurusBar(ctx, 1, 1);
+      for (let r = 0; r < 5; r++) { for (let c = 0; c < 6; c++) P.chair(ctx, 500 + c * 110, 300 + r * 100, 70, true); text(ctx, "6", 1200, 312 + r * 100, 40, { weight: 900, color: C.accentDark }); }
+      ctx.strokeStyle = C.accent; ctx.lineWidth = 6; for (let r = 0; r < 5; r++) { ctx.beginPath(); ctx.moveTo(440, 300 + r * 100); ctx.lineTo(1120, 300 + r * 100); ctx.stroke(); }
+      if (l > 2.5) { card(ctx, 1300, 380, 460, 220, { fill: C.goodBg, stroke: C.good, lw: 5 }); text(ctx, "5 baris × 6 kursi", 1530, 460, 40, { align: "center", weight: 900 }); text(ctx, "= 30 kursi", 1530, 540, 56, { align: "center", weight: 900, color: C.good }); }
+      text(ctx, "tidak perlu dihitung satu per satu", 960, 850, 34, { align: "center", color: C.ink2, weight: 800 });
+    },
+    pattern_schedule(ctx, b, l) {
+      P.jurusBar(ctx, 1, 1);
+      text(ctx, "JADWAL LATIHAN", 960, 260, 34, { align: "center", color: C.accentDark, weight: 800 });
+      const days = [["Senin", "tari", "#D9443B"], ["Selasa", "musik", "#2E9E5B"], ["Rabu", "drama", "#8E6BBF"], ["Senin", "tari", "#D9443B"], ["Selasa", "musik", "#2E9E5B"], ["Rabu", "drama", "#8E6BBF"], ["Kamis", l > 5 ? "musik" : "", "#2E9E5B"]];
+      const n = reveal(l, 0.6, 0.55, 7);
+      P.schedule(ctx, 180, 300, days.slice(0, n).map((d, i) => i === 6 ? d : d), { w: 200, h: 180, highlight: n >= 7 ? 6 : -1 });
+      if (n >= 7) { text(ctx, "tari → musik → drama, berulang", 960, 560, 36, { align: "center", color: C.ink2, weight: 800 }); if (l > 5) text(ctx, "setelah tari (Rabu minggu depan) pasti musik ✓", 960, 620, 34, { align: "center", color: C.good, weight: 900 }); }
+    },
+    pattern_around(ctx, b, l) {
+      P.jurusBar(ctx, 1, 1);
+      const items = [["Bel sekolah", "tiap 40 menit", "🔔"], ["Angkot", "tiap 10 menit", "🚐"], ["Menu kantin", "berulang tiap minggu", "🍜"]];
+      const n = reveal(l, 0.8, 1.3, 3);
+      items.forEach(([t1, t2, ic], i) => { if (i >= n) return; const x = 200 + i * 530; card(ctx, x, 280, 480, 440, { fill: C.bg2 }); text(ctx, ic, x + 240, 440, 110, { align: "center" }); text(ctx, t1, x + 240, 560, 38, { align: "center", weight: 900 }); text(ctx, t2, x + 240, 630, 32, { align: "center", weight: 700, color: C.accentDark }); });
+      if (n >= 3) text(ctx, "pola ada di mana-mana", 960, 820, 36, { align: "center", color: C.ink2, weight: 800 });
+    },
+    pattern_name(ctx, b, l) { P.jurusBar(ctx, 2, 1); P.jurusCard(ctx, 1, "pattern recognition"); },
+
+    abstract_map(ctx, b, l) {
+      P.jurusBar(ctx, 2, 2);
+      P.stagePlan(ctx, 200, 230, 980, 620, true);
+      kid(ctx, 1450, 560, 190, {}); kid(ctx, 1680, 560, 190, { hair: "long" });
+      if (l > 2.5) bubble(ctx, 1300, 330, 420, "Yang mana panggungnya?", 30, { tailX: 1450, tailDir: 0, fill: C.badBg, stroke: C.bad, color: C.bad });
+      text(ctx, "denah 1: terlalu banyak hal", 690, 222, 30, { align: "center", color: C.bad, weight: 800 });
+    },
+    abstract_map2(ctx, b, l) {
+      P.jurusBar(ctx, 2, 2);
+      P.stagePlan(ctx, 200, 230, 980, 620, false);
+      kid(ctx, 1450, 560, 190, {}); kid(ctx, 1680, 560, 190, { hair: "long" });
+      if (l > 1.5) bubble(ctx, 1320, 330, 400, "Oh, paham!", 32, { tailX: 1450, tailDir: 0, fill: C.goodBg, stroke: C.good, color: C.good });
+      text(ctx, "denah 2: hanya yang penting", 690, 222, 30, { align: "center", color: C.good, weight: 800 });
+    },
+    abstract_angkot(ctx, b, l) {
+      P.jurusBar(ctx, 2, 2);
+      const k = ease(clamp((l - 2.5) / 1.2, 0, 1));
+      P.angkotMap(ctx, 140, 240, 780, 560, false); P.angkotMap(ctx, 1000, 240, 780, 560, true);
+      ctx.globalAlpha = 1 - k; card(ctx, 1000, 240, 780, 560, { fill: "#EAF2EE" }); ctx.globalAlpha = 1;
+      H.arrowIcon(ctx, "east", 960, 520, 70, C.accentDark);
+      text(ctx, "jalan sebenarnya", 530, 840, 30, { align: "center", color: C.ink2, weight: 800 }); if (k > 0.5) text(ctx, "peta jalur: rute + tempat berhenti", 1390, 840, 30, { align: "center", color: C.good, weight: 800 });
+    },
+    abstract_name(ctx, b, l) { P.jurusBar(ctx, 3, 2); P.jurusCard(ctx, 2, "abstraction"); if (l > 3) text(ctx, "yang penting tergantung tujuannya", 960, 780, 32, { align: "center", color: C.ink2, weight: 700 }); },
+
+    algo_messy(ctx, b, l) {
+      P.jurusBar(ctx, 3, 3);
+      const items = ["bagikan snack", "sambutan", "tari", "musik", "drama", "foto bersama"]; const n = reveal(l, 1.0, 0.6, 6);
+      items.forEach((s, i) => { if (i >= n) return; P.note(ctx, 240 + (i % 3) * 400 + (i % 2) * 30, 300 + Math.floor(i / 3) * 220, 330, 140, s, { i, rot: ((i * 7) % 5 - 2) * 0.08, size: 34 }); });
+      kiko(ctx, 1560, 560, 170, 0, { mood: n >= 6 ? "confused" : "happy" });
+      if (n >= 6) bubble(ctx, 1380, 360, 360, "Yang mana dulu?", 32, { tailX: 1540, tailDir: 20, fill: C.badBg, stroke: C.bad, color: C.bad });
+    },
+    algo_order(ctx, b, l) {
+      P.jurusBar(ctx, 3, 3);
+      const items = ["sambutan", "tari", "musik", "drama", "foto bersama", "bagikan snack"]; const n = reveal(l, 0.8, 0.75, 6);
+      P.steps(ctx, 560, 240, items.slice(0, Math.max(1, n)), { w: 800, rowH: 92, size: 36 });
+      if (n >= 6) text(ctx, "semua tahu gilirannya", 960, 830, 34, { align: "center", color: C.good, weight: 900 });
+    },
+    algo_matters(ctx, b, l) {
+      P.jurusBar(ctx, 3, 3);
+      text(ctx, "URUTAN A", 480, 250, 30, { align: "center", color: C.bad, weight: 900 }); text(ctx, "URUTAN B", 1440, 250, 30, { align: "center", color: C.good, weight: 900 });
+      P.steps(ctx, 180, 280, ["bagikan snack", "sambutan", "tari", "musik"], { w: 600, rowH: 80, size: 32, state: ["bad", "", "bad", ""] , notes: ["", "", "penonton sibuk makan", ""] });
+      P.steps(ctx, 1140, 280, ["sambutan", "tari", "musik", "bagikan snack"], { w: 600, rowH: 80, size: 32, state: ["", "good", "", "good"] });
+      if (l > 3) { card(ctx, 480, 680, 960, 80, { fill: "#FFF3D6", stroke: C.accent, lw: 4 }); text(ctx, "langkah sama, urutan beda, hasil beda", 960, 732, 36, { align: "center", weight: 900 }); }
+    },
+    algo_name(ctx, b, l) { P.jurusBar(ctx, 4, 3); P.jurusCard(ctx, 3, "algorithm"); if (l > 3.5) text(ctx, "resep masakan dan petunjuk jalan juga algoritma", 960, 780, 32, { align: "center", color: C.ink2, weight: 700 }); },
+
+    bebrasBoard(ctx, order, opt = {}) {
+      // kartu penampilan sesuai urutan (indeks ke P.SHOWS); opt.badges = nomor urut; opt.mark[i] = "good"|"bad"
+      order.forEach((si, i) => { const [name, players] = P.SHOWS[si]; const st = (opt.mark || [])[i]; P.show(ctx, 200 + i * 400, opt.y || 300, 340, 220, name, players, { badge: opt.badges ? String(i + 1) : null, fill: st === "bad" ? C.badBg : st === "good" ? C.goodBg : C.panel, stroke: st === "bad" ? C.bad : st === "good" ? C.good : "#D7E2DC", lw: st ? 5 : 3 }); });
+      if (opt.legend !== false) Object.entries(P.PLAYER).forEach(([k, [nm]], i) => { P.token(ctx, 560 + i * 280, 600, k, 22); text(ctx, nm, 600 + i * 280, 610, 30, { weight: 800 }); });
+    },
+    bebras_intro(ctx, b, l) {
+      P.jurusBar(ctx, 4, -1);
+      text(ctx, "SOAL GAYA BEBRAS", 960, 250, 34, { align: "center", color: C.accentDark, weight: 800 });
+      SCENES.bebrasBoard(ctx, [0, 1, 2, 3], { legend: true });
+      card(ctx, 360, 680, 1200, 110, { fill: "#FFF3D6", stroke: C.accent, lw: 4 }); para(ctx, "Pemain yang sama tidak boleh tampil dua kali berturut-turut: perlu waktu ganti kostum.", 960, 728, 30, 1120, { align: "center", weight: 800, lh: 1.25 });
+    },
+    bebras_decompose(ctx, b, l) {
+      P.jurusBar(ctx, 4, 0);
+      const n = reveal(l, 0.8, 1.0, 4); SCENES.bebrasBoard(ctx, [0, 1, 2, 3].slice(0, Math.max(1, n)), {});
+      text(ctx, "dekomposisi: daftar penampilan dan pemainnya", 960, 720, 34, { align: "center", color: C.ink2, weight: 800 });
+    },
+    bebras_pattern(ctx, b, l) {
+      P.jurusBar(ctx, 4, 1);
+      SCENES.bebrasBoard(ctx, [0, 1, 2, 3], { legend: false });
+      const pairs = [["S", [0, 2]], ["D", [0, 3]], ["R", [1, 2]]]; const n = reveal(l, 1.0, 1.1, 3);
+      pairs.forEach(([who, idx], i) => { if (i >= n) return; const y = 600 + i * 70; P.token(ctx, 400, y, who, 24); text(ctx, P.PLAYER[who][0] + ": " + idx.map(k => P.SHOWS[k][0]).join(" dan "), 450, y + 10, 32, { weight: 800 }); idx.forEach(k => { ctx.strokeStyle = P.PLAYER[who][1]; ctx.lineWidth = 6; ctx.beginPath(); ctx.arc(370 + k * 400 + (who === "S" ? -32 : who === "R" ? 32 : (k === 0 ? 32 : 0)), 474, 34, 0, Math.PI * 2); ctx.stroke(); }); });
+      if (n >= 3) text(ctx, "pola: tiap pemain muncul dua kali", 1400, 700, 32, { align: "center", color: C.accentDark, weight: 900 });
+    },
+    bebras_abstract(ctx, b, l) {
+      P.jurusBar(ctx, 4, 2);
+      const keep = l > 2.0;
+      const notes = [["lagu pengiring", true], ["warna kostum", true], ["pemain yang sama tidak berurutan", false], ["panjang acara", true], ["siapa MC", true]];
+      notes.forEach(([s, drop], i) => { const x = 220 + (i % 3) * 520, y = 300 + Math.floor(i / 3) * 200; const gone = drop && keep; ctx.globalAlpha = gone ? 0.25 : 1; P.note(ctx, x, y, 440, 130, s, { i, size: 30, stroke: !drop ? C.good : null, fill: !drop ? C.goodBg : undefined }); ctx.globalAlpha = 1; if (gone) { ctx.strokeStyle = C.bad; ctx.lineWidth = 8; ctx.beginPath(); ctx.moveTo(x + 20, y + 20); ctx.lineTo(x + 420, y + 110); ctx.stroke(); } });
+      text(ctx, keep ? "abstraksi: hanya satu syarat yang penting" : "mana yang penting?", 960, 760, 36, { align: "center", color: C.ink2, weight: 800 });
+    },
+    bebras_algo(ctx, b, l) {
+      P.jurusBar(ctx, 4, 3);
+      const n = reveal(l, 1.2, 1.3, 3); const mark = n >= 1 ? ["good", "good", "", ""] : []; if (n >= 2) { mark[1] = "bad"; mark[2] = "bad"; }
+      SCENES.bebrasBoard(ctx, [0, 1, 2, 3], { badges: true, mark, legend: false });
+      const notes = ["tari → musik: pemain beda, aman ✓", "musik → drama: Rama dua kali berurutan ✕"]; notes.slice(0, n).forEach((s, i) => text(ctx, s, 960, 620 + i * 60, 34, { align: "center", weight: 900, color: i ? C.bad : C.good }));
+      if (n >= 3) { card(ctx, 560, 740, 800, 80, { fill: C.badBg, stroke: C.bad, lw: 4 }); text(ctx, "urutan ini gagal, coba lagi", 960, 792, 34, { align: "center", weight: 900, color: C.bad }); }
+    },
+    bebras_solve(ctx, b, l) {
+      P.jurusBar(ctx, 4, 3);
+      const n = reveal(l, 1.2, 1.1, 4); const mark = ["", "", "", ""]; for (let i = 0; i < Math.min(n, 3) + (n >= 1 ? 1 : 0) && i < 4; i++) mark[i] = n > i ? "good" : "";
+      SCENES.bebrasBoard(ctx, [0, 1, 3, 2], { badges: true, mark: n >= 3 ? ["good", "good", "good", "good"] : mark, legend: false });
+      ["tari → musik ✓", "musik → puisi ✓", "puisi → drama ✓"].slice(0, n).forEach((s, i) => text(ctx, s, 560 + i * 400, 640, 34, { align: "center", weight: 900, color: C.good }));
+      if (n >= 4) { card(ctx, 560, 720, 800, 90, { fill: C.goodBg, stroke: C.good, lw: 5 }); text(ctx, "Berhasil! Tari, musik, puisi, drama.", 960, 778, 38, { align: "center", weight: 900, color: C.good }); }
+    },
+    bebras_wrap(ctx, b, l) {
+      P.jurusBar(ctx, 4, -1);
+      const n = reveal(l, 0.6, 1.0, 4);
+      P.JURUS.forEach(([num, name, desc], i) => { if (i >= n) return; const x = 160 + i * 410; card(ctx, x, 260, 380, 380, { fill: C.goodBg, stroke: C.good, lw: 4 }); text(ctx, num, x + 190, 370, 90, { align: "center", weight: 900, color: C.good }); text(ctx, name, x + 190, 470, 38, { align: "center", weight: 900 }); text(ctx, desc, x + 190, 540, 28, { align: "center", weight: 700, color: C.ink2 }); });
+      if (n >= 4) text(ctx, "bisa dipakai tanpa komputer", 960, 760, 36, { align: "center", color: C.accentDark, weight: 900 });
+      kiko(ctx, 960, 850, 90, 0, { wave: l });
+    },
+    make_show(ctx, b, l) {
+      card(ctx, 160, 150, 1600, 740);
+      text(ctx, "GILIRANMU", 960, 240, 34, { align: "center", color: C.accentDark, weight: 900 });
+      const items = [["Pecah tugas", "kelompokkan potongan tugas"], ["Lanjutkan pola", "tebak yang berikutnya"], ["Pilih yang penting", "buang yang tidak perlu"], ["Urutkan langkah", "susun jadi algoritma"]];
+      items.forEach(([t1, t2], i) => { const x = 230 + i * 370; card(ctx, x, 300, 330, 400, { fill: C.bg2 }); ctx.fillStyle = C.kiko; ctx.beginPath(); ctx.arc(x + 165, 400, 48, 0, Math.PI * 2); ctx.fill(); text(ctx, String(i + 1), x + 165, 418, 48, { align: "center", color: "#fff", weight: 900 }); text(ctx, t1, x + 165, 530, 32, { align: "center", weight: 900 }); text(ctx, t2, x + 165, 590, 26, { align: "center", weight: 700, color: C.ink2 }); });
+      text(ctx, "soal gaya Bebras di halaman latihan episode ini", 960, 800, 34, { align: "center", color: C.ink2, weight: 700 });
+    }
+  });
+})(typeof window !== "undefined" ? window : globalThis);
+</script>
+<script>/* Inti halaman latihan: pemutar (kanvas + narasi), tombol suara nyala/mati (berpindah antara timeline suara dan teks),
+   kuis dengan petunjuk, dan kemajuan di localStorage (perangkat ini saja).
+   Pakai:  const P = PageCore({ suara: TIMELINE_SUARA_atau_null, teks: TIMELINE_TEKS });
+   Episode menambahkan latihannya sendiri lewat P.$, P.K, P.H, P.progress, P.save(), P.speed(), P.onProgress(fn). */
+function PageCore(TLS, opt = {}) {
+  const $ = id => document.getElementById(id);
+  const K = Kiko, H = K.helpers;
+  let voice = !!TLS.suara; let TL = voice ? TLS.suara : TLS.teks;
+  // ---------- progress storage (per device only) ----------
+  const KEY = opt.key || TL.episode.replace(/\./g, "").toLowerCase() + "-progress";   // D7.5 -> "d75-progress"
+  let progress = { quiz: {} };
+  try { const s = localStorage.getItem(KEY); if (s) progress = { quiz: {}, ...JSON.parse(s) }; } catch (e) {}
+  const extras = [];
+  function renderProgress() {
+    const el = $("progress"); if (!el) return; el.innerHTML = "";
+    Object.keys(TL.quizzes).forEach((id, i) => { const s = document.createElement("span"); s.textContent = "Cek " + (i + 1); s.className = progress.quiz[id] ? "ok" : ""; el.appendChild(s); });
+    extras.forEach(f => f(el));
+  }
+  function save() { try { localStorage.setItem(KEY, JSON.stringify(progress)); } catch (e) {} renderProgress(); }
+
+  // ---------- player ----------
+  const cv = $("screen"), ctx = cv.getContext("2d");
+  let t = 0, playing = false, last = 0, speed = 1, hasAudio = false;
+  const nar = $("nar"); nar.addEventListener("canplay", () => { hasAudio = true; }); nar.addEventListener("error", () => { hasAudio = false; });
+  function fmt(s) { s = Math.max(0, Math.floor(s)); return Math.floor(s / 60) + ":" + String(s % 60).padStart(2, "0"); }
+  function segStart(i) { return TL.beats.find(b => b.seg === i).start; }
+  function syncAudio() { if (voice && hasAudio) { try { nar.currentTime = t; } catch (e) {} } }
+  function drawNow() {
+    const b = K.draw(ctx, Math.min(t, TL.total - 0.01), TL);
+    $("barfill").style.width = (t / TL.total * 100) + "%"; $("bar").setAttribute("aria-valuenow", Math.round(t / TL.total * 100));
+    $("timelabel").textContent = fmt(t) + " / " + fmt(TL.total);
+    [...$("chapters").children].forEach((c, i) => c.classList.toggle("now", i === b.seg));
+    return b;
+  }
+  function loop(now) {
+    if (!playing) return;
+    const dt = Math.min(0.1, (now - last) / 1000); last = now; if (voice && hasAudio && !nar.paused) t = nar.currentTime; else t += dt * speed;
+    if (t >= TL.total) { t = TL.total - 0.01; setPlaying(false); }
+    drawNow(); requestAnimationFrame(loop);
+  }
+  function setPlaying(p) {
+    playing = p; $("bigplay").hidden = p; $("playbtn").textContent = p ? "❚❚ Jeda" : "▶ Putar";
+    if (p) { last = performance.now(); if (voice && hasAudio) { try { nar.currentTime = t; nar.playbackRate = speed; nar.play().catch(() => {}); } catch (e) {} } requestAnimationFrame(loop); } else nar.pause();
+  }
+  $("bigplay").addEventListener("click", () => setPlaying(true));
+  $("playbtn").addEventListener("click", () => setPlaying(!playing));
+  $("replay").addEventListener("click", () => { const b = K.beatAt(TL, t); t = segStart(b.seg); syncAudio(); drawNow(); setPlaying(true); });
+  $("slow").addEventListener("click", e => { speed = speed === 1 ? 0.8 : 1; nar.playbackRate = speed; e.currentTarget.setAttribute("aria-pressed", speed !== 1); });
+  function seekFromBar(ev) { const r = $("bar").getBoundingClientRect(); const x = (ev.touches ? ev.touches[0].clientX : ev.clientX) - r.left; t = Math.max(0, Math.min(TL.total - 0.01, x / r.width * TL.total)); syncAudio(); drawNow(); }
+  $("bar").addEventListener("click", seekFromBar);
+  $("bar").addEventListener("keydown", e => { if (e.key === "ArrowRight") { t = Math.min(TL.total - 0.01, t + 5); syncAudio(); drawNow(); } if (e.key === "ArrowLeft") { t = Math.max(0, t - 5); syncAudio(); drawNow(); } });
+  TL.segments.forEach((name, i) => { const b = document.createElement("button"); b.textContent = (i + 1) + ". " + name; b.addEventListener("click", () => { t = segStart(i); syncAudio(); drawNow(); setPlaying(true); }); $("chapters").appendChild(b); });
+  // voice on/off: switches between the narrated timeline and the reading-paced one, staying on the same beat
+  const vb = $("voice");
+  function setVoice(on) {
+    const cur = K.beatAt(TL, t);
+    voice = on && !!TLS.suara; TL = voice ? TLS.suara : TLS.teks;
+    const nb = TL.beats.find(b => b.id === cur.id) || TL.beats[0]; t = nb.start;
+    if (vb) { vb.setAttribute("aria-pressed", voice); vb.textContent = voice ? "🔊 Suara: nyala" : "🔇 Suara: mati"; }
+    if (playing) { if (voice && hasAudio) { try { nar.currentTime = t; nar.playbackRate = speed; nar.play().catch(() => {}); } catch (e) {} } else nar.pause(); }
+    drawNow();
+  }
+  if (vb) { if (!TLS.suara || !TLS.teks) vb.hidden = true; else { vb.addEventListener("click", () => setVoice(!voice)); vb.setAttribute("aria-pressed", voice); vb.textContent = voice ? "🔊 Suara: nyala" : "🔇 Suara: mati"; } }
+  drawNow();
+
+  // ---------- quiz ----------
+  const quizEl = $("quiz");
+  if (quizEl) Object.entries(TL.quizzes).forEach(([id, q], qi) => {
+    const box = document.createElement("div"); box.className = "q";
+    box.innerHTML = `<h3>${qi + 1}. ${q.q}</h3><div class="opts"></div><div class="fb"></div>`;
+    const opts = box.querySelector(".opts"), fb = box.querySelector(".fb");
+    q.options.forEach((o, i) => {
+      const b = document.createElement("button"); b.innerHTML = `<b>${"ABC"[i]}</b><span>${o}</span>`;
+      b.addEventListener("click", () => {
+        [...opts.children].forEach(c => c.classList.remove("wrong"));
+        if (i === q.answer) { b.classList.add("right"); fb.className = "fb good"; fb.textContent = "Benar! " + (q.explain || ""); progress.quiz[id] = true; save(); [...opts.children].forEach(c => c.disabled = true); }
+        else { b.classList.add("wrong"); fb.className = "fb bad"; fb.textContent = "Belum tepat. Petunjuk: " + q.hint; }
+      });
+      opts.appendChild(b);
+    });
+    if (progress.quiz[id]) { opts.children[q.answer].classList.add("right"); [...opts.children].forEach(c => c.disabled = true); fb.className = "fb good"; fb.textContent = "Sudah dijawab benar."; }
+    quizEl.appendChild(box);
+  });
+  renderProgress();
+
+  return { $, K, H, progress, save, renderProgress, speed: () => speed, timeline: () => TL,
+           onProgress(fn) { extras.push(fn); renderProgress(); } };
+}
+</script>
+<script>
+(function () {
+  const P = PageCore({ suara: {"episode": "D7.1", "title": "Empat Jurus Berpikir Komputasional", "engine": ["../_alat/kiko-core.js", "pentas.js", "scenes.js"], "parts": {"D7.1a": {"segs": [0, 1, 2, 3], "post": "Lanjut ke Bagian 2: Abstraksi dan Algoritma"}, "D7.1b": {"segs": [4, 5, 6, 7], "pre": "Bagian 2: Abstraksi dan Algoritma"}}, "youtube": {"ringkas": "Kelas Dito dan Sinta akan mengadakan pentas kelas. Tugasnya besar dan membingungkan, sampai Kiko mengajarkan empat jurus berpikir komputasional: memecah masalah (dekomposisi), mencari pola, menyaring yang penting (abstraksi), dan menyusun langkah berurutan (algoritma). Semua tanpa komputer, dengan contoh pentas kelas, kantin, dan angkot. Empat cek pemahaman dengan jeda berpikir, ditutup soal gaya Bebras.", "belajar": ["memecah tugas besar menjadi bagian kecil yang bisa dikerjakan", "menemukan pola yang berulang dan memakainya untuk menghemat kerja", "membedakan hal yang penting dan yang bisa diabaikan", "menulis langkah-langkah berurutan yang bisa diikuti orang lain"], "bagian": {"D7.1a": "Memecah Masalah dan Mencari Pola", "D7.1b": "Abstraksi dan Algoritma"}, "prasyarat": "episode D7.0 Cara Memakai Komputer dan HP (hanya bila belum pernah memakai komputer)", "jp": 10, "tagar": ["#BerpikirKomputasional", "#Dekomposisi", "#Pola", "#Abstraksi", "#Algoritma", "#Bebras", "#Kelas7", "#SMP"]}, "recap": ["Pecah masalah besar jadi bagian kecil.", "Cari pola, saring yang penting.", "Susun langkahnya berurutan."], "next": {"code": "D7.2", "title": "Mengenal Komputer", "note": "Latihan empat jurus ada di halaman episode ini."}, "segments": ["Pembuka", "Main dulu tanpa komputer", "Jurus 1: Dekomposisi", "Jurus 2: Pola", "Jurus 3: Abstraksi", "Jurus 4: Algoritma", "Empat jurus bersama", "Giliranmu"], "quizzes": {"q1": {"q": "Kamu mendapat tugas membuat majalah dinding. Mana yang termasuk MEMECAH tugas (dekomposisi)?", "options": ["Mengerjakan semuanya sekaligus malam terakhir", "Membaginya jadi: tulisan, gambar, hiasan, menempel", "Menunggu teman yang lain mulai dulu"], "answer": 1, "hint": "Dekomposisi = tugas besar dipotong jadi bagian-bagian kecil yang jelas. Pilihan mana yang menghasilkan bagian-bagian?"}, "q2": {"q": "Kotak snack ditata: merah, hijau, hijau, merah, hijau, hijau, merah, … Warna kotak berikutnya?", "options": ["Merah", "Hijau", "Tidak bisa ditebak"], "answer": 1, "hint": "Tulis warnanya berkelompok tiga-tiga. Kelompok mana yang terus berulang?"}, "q3": {"q": "Kamu membuat daftar peserta lomba lari. Informasi mana yang PALING penting dicatat?", "options": ["Warna sepatu peserta", "Nama dan kelas peserta", "Makanan kesukaan peserta"], "answer": 1, "hint": "Abstraksi: tanya, 'untuk lomba lari, apa yang benar-benar dibutuhkan panitia?'"}, "q4": {"q": "Urutan membuat teh manis yang benar?", "options": ["Aduk → tuang air panas → masukkan gula → siapkan gelas", "Siapkan gelas dan teh celup → tuang air panas → masukkan gula → aduk", "Masukkan gula → aduk → siapkan gelas → tuang air panas"], "answer": 1, "hint": "Bayangkan melakukannya sungguhan. Bisakah mengaduk kalau gelasnya masih kosong?"}}, "beats": [{"id": "intro1", "seg": 0, "scene": "title", "text": "Halo! Aku Kiko. Hari ini kita tidak memakai komputer sama sekali. Kita belajar cara berpikirnya.", "hold": 1.0, "start": 0.0, "speech": 0.4, "audio": 7.363, "dur": 9.54}, {"id": "intro2", "seg": 0, "scene": "title", "text": "Namanya berpikir komputasional (computational thinking): cara memecahkan masalah yang dipakai orang yang membuat komputer bekerja.", "hold": 0.8, "start": 9.54, "speech": 9.94, "audio": 8.269, "dur": 9.769}, {"id": "intro3", "seg": 0, "scene": "prereq", "text": "Episode ini melanjutkan episode D7.0. Kalau belum pernah memegang komputer, tonton itu dulu. Kalau sudah, langsung saja.", "hold": 0.8, "start": 19.309, "speech": 19.709, "audio": 9.04, "dur": 10.54}, {"id": "play1", "seg": 1, "scene": "unplugged", "text": "Main dulu. Bayangkan kelasmu akan mengadakan pentas kelas minggu depan. Tulis di kertas kecil semua yang harus disiapkan. Satu kertas, satu hal.", "hold": 0.8, "start": 29.849, "speech": 30.249, "audio": 9.877, "dur": 12.84}, {"id": "play2", "seg": 1, "scene": "unplugged_pile", "text": "Biasanya kertasnya cepat menumpuk: panggung, kostum, latihan, snack, undangan, sound system. Pusing, ya? Dito dan Sinta juga.", "hold": 1.0, "start": 42.689, "speech": 43.089, "audio": 10.733, "dur": 12.433}, {"id": "s1a", "seg": 2, "scene": "big_task", "text": "Ini masalahnya: satu tugas besar, pentas kelas. Kalau dikerjakan sekaligus, tidak ada yang tahu harus mulai dari mana.", "hold": 0.6, "start": 55.122, "speech": 55.522, "audio": 8.56, "dur": 10.64}, {"id": "s1b", "seg": 2, "scene": "decompose1", "text": "Jurus pertama: pecah tugas besar jadi bagian kecil. Pentas kelas dipecah jadi empat: acara, panggung, kostum, dan konsumsi.", "hold": 0.6, "start": 65.762, "speech": 66.162, "audio": 9.798, "dur": 11.098}, {"id": "s1c", "seg": 2, "scene": "decompose2", "text": "Bagian yang masih besar dipecah lagi. Konsumsi dipecah jadi: hitung orang, pilih snack, beli, bagikan. Sekarang tiap bagian kecil dan jelas.", "hold": 0.6, "start": 76.86, "speech": 77.26, "audio": 11.36, "dur": 12.66}, {"id": "s1d", "seg": 2, "scene": "decompose_assign", "text": "Bagian kecil bisa dibagi ke orang. Dito mengurus panggung, Sinta kostum, Kiko konsumsi. Semua bisa dikerjakan bersamaan.", "hold": 0.6, "start": 89.52, "speech": 89.92, "audio": 9.459, "dur": 10.759}, {"id": "s1e", "seg": 2, "scene": "decompose_name", "text": "Memecah masalah besar menjadi bagian kecil namanya dekomposisi (decomposition). Jurus pertama dari empat.", "hold": 1.0, "start": 100.279, "speech": 100.679, "audio": 6.204, "dur": 8.54}, {"id": "q1", "seg": 2, "scene": "quiz", "quiz": "q1", "text": "Cek pemahaman. Kamu mendapat tugas membuat majalah dinding. Mana yang termasuk memecah tugas? Pikirkan dulu.", "hold": 4.0, "start": 108.819, "speech": 109.219, "audio": 7.524, "dur": 12.54}, {"id": "q1a", "seg": 2, "scene": "quiz_answer", "quiz": "q1", "text": "Jawabannya: membaginya jadi tulisan, gambar, hiasan, dan menempel. Menunda atau mengerjakan sekaligus tidak memecah apa pun.", "hold": 1.0, "start": 121.359, "speech": 121.759, "audio": 9.284, "dur": 10.984}, {"id": "s2a", "seg": 3, "scene": "pattern_chairs", "text": "Jurus kedua. Sinta menata kursi penonton: baris pertama enam kursi, baris kedua enam, baris ketiga enam. Ada yang berulang.", "hold": 0.6, "start": 132.343, "speech": 132.743, "audio": 9.902, "dur": 11.202}, {"id": "s2b", "seg": 3, "scene": "pattern_count", "text": "Karena berulang, Sinta tidak perlu menghitung satu per satu. Lima baris kali enam kursi: tiga puluh kursi. Selesai dalam sekejap.", "hold": 0.6, "start": 143.545, "speech": 143.945, "audio": 8.683, "dur": 11.64}, {"id": "s2c", "seg": 3, "scene": "pattern_schedule", "text": "Pola juga ada di jadwal latihan: Senin tari, Selasa musik, Rabu drama, lalu Senin tari lagi. Kalau polanya ketahuan, Kamis pasti musik.", "hold": 0.6, "start": 155.185, "speech": 155.585, "audio": 10.718, "dur": 12.64}, {"id": "s2d", "seg": 3, "scene": "pattern_around", "text": "Lihat di sekitarmu: bel sekolah berbunyi tiap empat puluh menit, angkot lewat tiap sepuluh menit, menu kantin berganti tiap hari dan berulang tiap minggu.", "hold": 0.6, "start": 167.825, "speech": 168.225, "audio": 9.863, "dur": 13.64}, {"id": "s2e", "seg": 3, "scene": "pattern_name", "text": "Menemukan hal yang berulang namanya pengenalan pola (pattern recognition). Pola membuat kerja lebih cepat dan hasilnya bisa ditebak.", "hold": 1.0, "start": 181.465, "speech": 181.865, "audio": 8.857, "dur": 11.04}, {"id": "q2", "seg": 3, "scene": "quiz", "quiz": "q2", "text": "Cek pemahaman. Kotak snack ditata: merah, hijau, hijau, merah, hijau, hijau, merah. Warna kotak berikutnya apa?", "hold": 4.0, "start": 192.505, "speech": 192.905, "audio": 10.658, "dur": 15.358}, {"id": "q2a", "seg": 3, "scene": "quiz_answer", "quiz": "q2", "text": "Jawabannya: hijau. Polanya merah, hijau, hijau, berulang terus. Setelah merah selalu datang hijau.", "hold": 1.0, "start": 207.863, "speech": 208.263, "audio": 8.817, "dur": 10.517}, {"id": "s3a", "seg": 4, "scene": "abstract_map", "text": "Jurus ketiga. Dito menggambar denah panggung untuk teman-teman. Denah pertama penuh: warna tirai, merek lampu, motif karpet. Tidak ada yang paham.", "hold": 0.6, "start": 218.38, "speech": 218.78, "audio": 10.96, "dur": 12.26}, {"id": "s3b", "seg": 4, "scene": "abstract_map2", "text": "Denah kedua hanya berisi yang penting: letak panggung, pintu masuk, kursi penonton, meja snack. Semua langsung paham.", "hold": 0.6, "start": 230.64, "speech": 231.04, "audio": 8.56, "dur": 10.14}, {"id": "s3c", "seg": 4, "scene": "abstract_angkot", "text": "Peta jalur angkot juga begitu. Jalan digambar lurus, warung dan pohon dibuang. Yang tersisa hanya: rute dan tempat berhenti. Itu cukup.", "hold": 0.6, "start": 240.78, "speech": 241.18, "audio": 9.617, "dur": 12.14}, {"id": "s3d", "seg": 4, "scene": "abstract_name", "text": "Menyaring yang penting dan membuang yang tidak perlu namanya abstraksi (abstraction). Yang penting tergantung tujuannya.", "hold": 1.0, "start": 252.92, "speech": 253.32, "audio": 6.603, "dur": 9.54}, {"id": "q3", "seg": 4, "scene": "quiz", "quiz": "q3", "text": "Cek pemahaman. Kamu membuat daftar peserta lomba lari. Informasi mana yang paling penting dicatat? Pikirkan dulu.", "hold": 4.0, "start": 262.46, "speech": 262.86, "audio": 7.789, "dur": 13.04}, {"id": "q3a", "seg": 4, "scene": "quiz_answer", "quiz": "q3", "text": "Jawabannya: nama dan kelas. Warna sepatu dan makanan kesukaan tidak perlu untuk lomba lari. Itu yang dibuang abstraksi.", "hold": 1.0, "start": 275.5, "speech": 275.9, "audio": 8.88, "dur": 11.04}, {"id": "s4a", "seg": 5, "scene": "algo_messy", "text": "Jurus keempat. Hari pentas tiba. Kiko mencatat yang harus dilakukan, tetapi acak: bagikan snack, sambutan, tari, musik, drama, foto bersama.", "hold": 0.6, "start": 286.54, "speech": 286.94, "audio": 11.992, "dur": 13.292}, {"id": "s4b", "seg": 5, "scene": "algo_order", "text": "Urutannya diperbaiki: satu, sambutan. Dua, tari. Tiga, musik. Empat, drama. Lima, foto bersama. Enam, bagikan snack. Sekarang semua tahu giliran.", "hold": 0.6, "start": 299.832, "speech": 300.232, "audio": 13.878, "dur": 15.178}, {"id": "s4c", "seg": 5, "scene": "algo_matters", "text": "Urutan itu penting. Kalau snack dibagikan di awal, penonton sibuk makan saat tari. Langkah yang sama, urutan beda, hasilnya beda.", "hold": 0.6, "start": 315.01, "speech": 315.41, "audio": 9.619, "dur": 11.64}, {"id": "s4d", "seg": 5, "scene": "algo_name", "text": "Daftar langkah yang urut dan jelas, sehingga orang lain bisa mengikutinya, namanya algoritma (algorithm). Resep masakan dan petunjuk jalan juga algoritma.", "hold": 1.0, "start": 326.65, "speech": 327.05, "audio": 10.85, "dur": 12.55}, {"id": "q4", "seg": 5, "scene": "quiz", "quiz": "q4", "text": "Cek pemahaman. Langkah membuat teh manis diacak: tuang air panas, masukkan gula, aduk, siapkan gelas dan teh celup. Mana urutan yang benar?", "hold": 4.0, "start": 339.2, "speech": 339.6, "audio": 11.05, "dur": 16.04}, {"id": "q4a", "seg": 5, "scene": "quiz_answer", "quiz": "q4", "text": "Jawabannya: siapkan gelas dan teh celup, tuang air panas, masukkan gula, aduk. Mengaduk sebelum ada air tidak ada gunanya.", "hold": 1.0, "start": 355.24, "speech": 355.64, "audio": 9.459, "dur": 11.54}, {"id": "s5a", "seg": 6, "scene": "bebras_intro", "text": "Sekarang empat jurus dipakai bersama. Ini soal gaya Bebras, lomba berpikir komputasional. Empat penampilan, tiga pemain. Satu pemain boleh tampil dua kali, tetapi perlu waktu ganti kostum.", "hold": 0.8, "start": 366.78, "speech": 367.18, "audio": 13.449, "dur": 15.34}, {"id": "s5b", "seg": 6, "scene": "bebras_decompose", "text": "Dekomposisi: daftar penampilannya. Tari: Sinta dan Dito. Musik: Rama. Drama: Sinta dan Rama. Puisi: Dito.", "hold": 0.6, "start": 382.12, "speech": 382.52, "audio": 10.922, "dur": 12.222}, {"id": "s5c", "seg": 6, "scene": "bebras_pattern", "text": "Pola: siapa yang muncul dua kali? Sinta di tari dan drama. Dito di tari dan puisi. Rama di musik dan drama. Semua butuh jeda ganti kostum.", "hold": 0.6, "start": 394.342, "speech": 394.742, "audio": 11.234, "dur": 14.64}, {"id": "s5d", "seg": 6, "scene": "bebras_abstract", "text": "Abstraksi: yang penting hanya satu hal. Dua penampilan dengan pemain yang sama tidak boleh berurutan. Lagu, warna kostum, dan panjang acara tidak perlu dipikirkan.", "hold": 0.6, "start": 408.982, "speech": 409.382, "audio": 11.32, "dur": 13.64}, {"id": "s5e", "seg": 6, "scene": "bebras_algo", "text": "Algoritma: coba urutannya. Tari, musik, drama, puisi. Tari lalu musik: pemainnya beda, aman. Musik lalu drama: Rama dua kali berurutan. Gagal.", "hold": 0.6, "start": 422.622, "speech": 423.022, "audio": 13.28, "dur": 14.58}, {"id": "s5f", "seg": 6, "scene": "bebras_solve", "text": "Coba lagi. Tari, musik, puisi, drama. Tari ke musik aman. Musik ke puisi aman. Puisi ke drama: Dito lalu Sinta dan Rama, aman. Berhasil!", "hold": 1.0, "start": 437.202, "speech": 437.602, "audio": 13.799, "dur": 15.499}, {"id": "s5g", "seg": 6, "scene": "bebras_wrap", "text": "Itulah berpikir komputasional: masalah besar jadi kecil, cari polanya, buang yang tidak penting, susun langkahnya. Bisa dipakai tanpa komputer.", "hold": 1.0, "start": 452.701, "speech": 453.101, "audio": 10.4, "dur": 12.1}, {"id": "s6a", "seg": 7, "scene": "make_show", "text": "Sekarang giliranmu. Di halaman latihan ada soal gaya Bebras: memecah tugas, melanjutkan pola, memilih yang penting, dan mengurutkan langkah.", "hold": 0.6, "start": 464.801, "speech": 465.201, "audio": 9.807, "dur": 11.14}, {"id": "s6b", "seg": 7, "scene": "make_show", "text": "Kerjakan pelan-pelan. Kalau salah, kamu dapat petunjuk, bukan nilai. Pikirkan dulu, baru pilih.", "hold": 1.5, "start": 475.941, "speech": 476.341, "audio": 7.215, "dur": 9.415}, {"id": "recap", "seg": 7, "scene": "recap", "text": "Tiga hal untuk diingat. Satu: pecah masalah besar jadi bagian kecil. Dua: cari pola, saring yang penting. Tiga: susun langkahnya berurutan.", "hold": 1.5, "start": 485.356, "speech": 485.756, "audio": 11.217, "dur": 13.417}, {"id": "outro", "seg": 7, "scene": "outro", "text": "Sampai jumpa di episode berikutnya: mengenal komputer, perjalanan satu ketukan tombol sampai muncul di layar.", "hold": 2.5, "start": 498.773, "speech": 499.173, "audio": 7.291, "dur": 11.04}], "total": 509.813}, teks: {"episode": "D7.1", "title": "Empat Jurus Berpikir Komputasional", "engine": ["../_alat/kiko-core.js", "pentas.js", "scenes.js"], "parts": {"D7.1a": {"segs": [0, 1, 2, 3], "post": "Lanjut ke Bagian 2: Abstraksi dan Algoritma"}, "D7.1b": {"segs": [4, 5, 6, 7], "pre": "Bagian 2: Abstraksi dan Algoritma"}}, "youtube": {"ringkas": "Kelas Dito dan Sinta akan mengadakan pentas kelas. Tugasnya besar dan membingungkan, sampai Kiko mengajarkan empat jurus berpikir komputasional: memecah masalah (dekomposisi), mencari pola, menyaring yang penting (abstraksi), dan menyusun langkah berurutan (algoritma). Semua tanpa komputer, dengan contoh pentas kelas, kantin, dan angkot. Empat cek pemahaman dengan jeda berpikir, ditutup soal gaya Bebras.", "belajar": ["memecah tugas besar menjadi bagian kecil yang bisa dikerjakan", "menemukan pola yang berulang dan memakainya untuk menghemat kerja", "membedakan hal yang penting dan yang bisa diabaikan", "menulis langkah-langkah berurutan yang bisa diikuti orang lain"], "bagian": {"D7.1a": "Memecah Masalah dan Mencari Pola", "D7.1b": "Abstraksi dan Algoritma"}, "prasyarat": "episode D7.0 Cara Memakai Komputer dan HP (hanya bila belum pernah memakai komputer)", "jp": 10, "tagar": ["#BerpikirKomputasional", "#Dekomposisi", "#Pola", "#Abstraksi", "#Algoritma", "#Bebras", "#Kelas7", "#SMP"]}, "recap": ["Pecah masalah besar jadi bagian kecil.", "Cari pola, saring yang penting.", "Susun langkahnya berurutan."], "next": {"code": "D7.2", "title": "Mengenal Komputer", "note": "Latihan empat jurus ada di halaman episode ini."}, "segments": ["Pembuka", "Main dulu tanpa komputer", "Jurus 1: Dekomposisi", "Jurus 2: Pola", "Jurus 3: Abstraksi", "Jurus 4: Algoritma", "Empat jurus bersama", "Giliranmu"], "quizzes": {"q1": {"q": "Kamu mendapat tugas membuat majalah dinding. Mana yang termasuk MEMECAH tugas (dekomposisi)?", "options": ["Mengerjakan semuanya sekaligus malam terakhir", "Membaginya jadi: tulisan, gambar, hiasan, menempel", "Menunggu teman yang lain mulai dulu"], "answer": 1, "hint": "Dekomposisi = tugas besar dipotong jadi bagian-bagian kecil yang jelas. Pilihan mana yang menghasilkan bagian-bagian?"}, "q2": {"q": "Kotak snack ditata: merah, hijau, hijau, merah, hijau, hijau, merah, … Warna kotak berikutnya?", "options": ["Merah", "Hijau", "Tidak bisa ditebak"], "answer": 1, "hint": "Tulis warnanya berkelompok tiga-tiga. Kelompok mana yang terus berulang?"}, "q3": {"q": "Kamu membuat daftar peserta lomba lari. Informasi mana yang PALING penting dicatat?", "options": ["Warna sepatu peserta", "Nama dan kelas peserta", "Makanan kesukaan peserta"], "answer": 1, "hint": "Abstraksi: tanya, 'untuk lomba lari, apa yang benar-benar dibutuhkan panitia?'"}, "q4": {"q": "Urutan membuat teh manis yang benar?", "options": ["Aduk → tuang air panas → masukkan gula → siapkan gelas", "Siapkan gelas dan teh celup → tuang air panas → masukkan gula → aduk", "Masukkan gula → aduk → siapkan gelas → tuang air panas"], "answer": 1, "hint": "Bayangkan melakukannya sungguhan. Bisakah mengaduk kalau gelasnya masih kosong?"}}, "beats": [{"id": "intro1", "seg": 0, "scene": "title", "text": "Halo! Aku Kiko. Hari ini kita tidak memakai komputer sama sekali. Kita belajar cara berpikirnya.", "hold": 1.0, "start": 0.0, "speech": 0.0, "audio": 10.175, "dur": 12.175}, {"id": "intro2", "seg": 0, "scene": "title", "text": "Namanya berpikir komputasional (computational thinking): cara memecahkan masalah yang dipakai orang yang membuat komputer bekerja.", "hold": 0.8, "start": 12.175, "speech": 12.175, "audio": 10.175, "dur": 11.975}, {"id": "intro3", "seg": 0, "scene": "prereq", "text": "Episode ini melanjutkan episode D7.0. Kalau belum pernah memegang komputer, tonton itu dulu. Kalau sudah, langsung saja.", "hold": 0.8, "start": 24.15, "speech": 24.15, "audio": 11.425, "dur": 13.225}, {"id": "play1", "seg": 1, "scene": "unplugged", "text": "Main dulu. Bayangkan kelasmu akan mengadakan pentas kelas minggu depan. Tulis di kertas kecil semua yang harus disiapkan. Satu kertas, satu hal.", "hold": 0.8, "start": 37.375, "speech": 37.375, "audio": 14.55, "dur": 16.35}, {"id": "play2", "seg": 1, "scene": "unplugged_pile", "text": "Biasanya kertasnya cepat menumpuk: panggung, kostum, latihan, snack, undangan, sound system. Pusing, ya? Dito dan Sinta juga.", "hold": 1.0, "start": 53.725, "speech": 53.725, "audio": 11.425, "dur": 13.425}, {"id": "s1a", "seg": 2, "scene": "big_task", "text": "Ini masalahnya: satu tugas besar, pentas kelas. Kalau dikerjakan sekaligus, tidak ada yang tahu harus mulai dari mana.", "hold": 0.6, "start": 67.15, "speech": 67.15, "audio": 12.05, "dur": 13.65}, {"id": "s1b", "seg": 2, "scene": "decompose1", "text": "Jurus pertama: pecah tugas besar jadi bagian kecil. Pentas kelas dipecah jadi empat: acara, panggung, kostum, dan konsumsi.", "hold": 0.6, "start": 80.8, "speech": 80.8, "audio": 12.05, "dur": 13.65}, {"id": "s1c", "seg": 2, "scene": "decompose2", "text": "Bagian yang masih besar dipecah lagi. Konsumsi dipecah jadi: hitung orang, pilih snack, beli, bagikan. Sekarang tiap bagian kecil dan jelas.", "hold": 0.6, "start": 94.45, "speech": 94.45, "audio": 13.925, "dur": 15.525}, {"id": "s1d", "seg": 2, "scene": "decompose_assign", "text": "Bagian kecil bisa dibagi ke orang. Dito mengurus panggung, Sinta kostum, Kiko konsumsi. Semua bisa dikerjakan bersamaan.", "hold": 0.6, "start": 109.975, "speech": 109.975, "audio": 11.425, "dur": 13.025}, {"id": "s1e", "seg": 2, "scene": "decompose_name", "text": "Memecah masalah besar menjadi bagian kecil namanya dekomposisi (decomposition). Jurus pertama dari empat.", "hold": 1.0, "start": 123.0, "speech": 123.0, "audio": 8.925, "dur": 10.925}, {"id": "q1", "seg": 2, "scene": "quiz", "quiz": "q1", "text": "Cek pemahaman. Kamu mendapat tugas membuat majalah dinding. Mana yang termasuk memecah tugas? Pikirkan dulu.", "hold": 4.0, "start": 133.925, "speech": 133.925, "audio": 10.175, "dur": 15.175}, {"id": "q1a", "seg": 2, "scene": "quiz_answer", "quiz": "q1", "text": "Jawabannya: membaginya jadi tulisan, gambar, hiasan, dan menempel. Menunda atau mengerjakan sekaligus tidak memecah apa pun.", "hold": 1.0, "start": 149.1, "speech": 149.1, "audio": 10.8, "dur": 12.8}, {"id": "s2a", "seg": 3, "scene": "pattern_chairs", "text": "Jurus kedua. Sinta menata kursi penonton: baris pertama enam kursi, baris kedua enam, baris ketiga enam. Ada yang berulang.", "hold": 0.6, "start": 161.9, "speech": 161.9, "audio": 12.675, "dur": 14.275}, {"id": "s2b", "seg": 3, "scene": "pattern_count", "text": "Karena berulang, Sinta tidak perlu menghitung satu per satu. Lima baris kali enam kursi: tiga puluh kursi. Selesai dalam sekejap.", "hold": 0.6, "start": 176.175, "speech": 176.175, "audio": 13.3, "dur": 14.9}, {"id": "s2c", "seg": 3, "scene": "pattern_schedule", "text": "Pola juga ada di jadwal latihan: Senin tari, Selasa musik, Rabu drama, lalu Senin tari lagi. Kalau polanya ketahuan, Kamis pasti musik.", "hold": 0.6, "start": 191.075, "speech": 191.075, "audio": 14.55, "dur": 16.15}, {"id": "s2d", "seg": 3, "scene": "pattern_around", "text": "Lihat di sekitarmu: bel sekolah berbunyi tiap empat puluh menit, angkot lewat tiap sepuluh menit, menu kantin berganti tiap hari dan berulang tiap minggu.", "hold": 0.6, "start": 207.225, "speech": 207.225, "audio": 15.8, "dur": 17.4}, {"id": "s2e", "seg": 3, "scene": "pattern_name", "text": "Menemukan hal yang berulang namanya pengenalan pola (pattern recognition). Pola membuat kerja lebih cepat dan hasilnya bisa ditebak.", "hold": 1.0, "start": 224.625, "speech": 224.625, "audio": 12.05, "dur": 14.05}, {"id": "q2", "seg": 3, "scene": "quiz", "quiz": "q2", "text": "Cek pemahaman. Kotak snack ditata: merah, hijau, hijau, merah, hijau, hijau, merah. Warna kotak berikutnya apa?", "hold": 4.0, "start": 238.675, "speech": 238.675, "audio": 10.8, "dur": 15.8}, {"id": "q2a", "seg": 3, "scene": "quiz_answer", "quiz": "q2", "text": "Jawabannya: hijau. Polanya merah, hijau, hijau, berulang terus. Setelah merah selalu datang hijau.", "hold": 1.0, "start": 254.475, "speech": 254.475, "audio": 8.925, "dur": 10.925}, {"id": "s3a", "seg": 4, "scene": "abstract_map", "text": "Jurus ketiga. Dito menggambar denah panggung untuk teman-teman. Denah pertama penuh: warna tirai, merek lampu, motif karpet. Tidak ada yang paham.", "hold": 0.6, "start": 265.4, "speech": 265.4, "audio": 13.925, "dur": 15.525}, {"id": "s3b", "seg": 4, "scene": "abstract_map2", "text": "Denah kedua hanya berisi yang penting: letak panggung, pintu masuk, kursi penonton, meja snack. Semua langsung paham.", "hold": 0.6, "start": 280.925, "speech": 280.925, "audio": 11.425, "dur": 13.025}, {"id": "s3c", "seg": 4, "scene": "abstract_angkot", "text": "Peta jalur angkot juga begitu. Jalan digambar lurus, warung dan pohon dibuang. Yang tersisa hanya: rute dan tempat berhenti. Itu cukup.", "hold": 0.6, "start": 293.95, "speech": 293.95, "audio": 13.925, "dur": 15.525}, {"id": "s3d", "seg": 4, "scene": "abstract_name", "text": "Menyaring yang penting dan membuang yang tidak perlu namanya abstraksi (abstraction). Yang penting tergantung tujuannya.", "hold": 1.0, "start": 309.475, "speech": 309.475, "audio": 10.175, "dur": 12.175}, {"id": "q3", "seg": 4, "scene": "quiz", "quiz": "q3", "text": "Cek pemahaman. Kamu membuat daftar peserta lomba lari. Informasi mana yang paling penting dicatat? Pikirkan dulu.", "hold": 4.0, "start": 321.65, "speech": 321.65, "audio": 10.8, "dur": 15.8}, {"id": "q3a", "seg": 4, "scene": "quiz_answer", "quiz": "q3", "text": "Jawabannya: nama dan kelas. Warna sepatu dan makanan kesukaan tidak perlu untuk lomba lari. Itu yang dibuang abstraksi.", "hold": 1.0, "start": 337.45, "speech": 337.45, "audio": 12.05, "dur": 14.05}, {"id": "s4a", "seg": 5, "scene": "algo_messy", "text": "Jurus keempat. Hari pentas tiba. Kiko mencatat yang harus dilakukan, tetapi acak: bagikan snack, sambutan, tari, musik, drama, foto bersama.", "hold": 0.6, "start": 351.5, "speech": 351.5, "audio": 13.3, "dur": 14.9}, {"id": "s4b", "seg": 5, "scene": "algo_order", "text": "Urutannya diperbaiki: satu, sambutan. Dua, tari. Tiga, musik. Empat, drama. Lima, foto bersama. Enam, bagikan snack. Sekarang semua tahu giliran.", "hold": 0.6, "start": 366.4, "speech": 366.4, "audio": 13.3, "dur": 14.9}, {"id": "s4c", "seg": 5, "scene": "algo_matters", "text": "Urutan itu penting. Kalau snack dibagikan di awal, penonton sibuk makan saat tari. Langkah yang sama, urutan beda, hasilnya beda.", "hold": 0.6, "start": 381.3, "speech": 381.3, "audio": 13.3, "dur": 14.9}, {"id": "s4d", "seg": 5, "scene": "algo_name", "text": "Daftar langkah yang urut dan jelas, sehingga orang lain bisa mengikutinya, namanya algoritma (algorithm). Resep masakan dan petunjuk jalan juga algoritma.", "hold": 1.0, "start": 396.2, "speech": 396.2, "audio": 13.925, "dur": 15.925}, {"id": "q4", "seg": 5, "scene": "quiz", "quiz": "q4", "text": "Cek pemahaman. Langkah membuat teh manis diacak: tuang air panas, masukkan gula, aduk, siapkan gelas dan teh celup. Mana urutan yang benar?", "hold": 4.0, "start": 412.125, "speech": 412.125, "audio": 14.55, "dur": 19.55}, {"id": "q4a", "seg": 5, "scene": "quiz_answer", "quiz": "q4", "text": "Jawabannya: siapkan gelas dan teh celup, tuang air panas, masukkan gula, aduk. Mengaduk sebelum ada air tidak ada gunanya.", "hold": 1.0, "start": 431.675, "speech": 431.675, "audio": 12.675, "dur": 14.675}, {"id": "s5a", "seg": 6, "scene": "bebras_intro", "text": "Sekarang empat jurus dipakai bersama. Ini soal gaya Bebras, lomba berpikir komputasional. Empat penampilan, tiga pemain. Satu pemain boleh tampil dua kali, tetapi perlu waktu ganti kostum.", "hold": 0.8, "start": 446.35, "speech": 446.35, "audio": 17.675, "dur": 19.475}, {"id": "s5b", "seg": 6, "scene": "bebras_decompose", "text": "Dekomposisi: daftar penampilannya. Tari: Sinta dan Dito. Musik: Rama. Drama: Sinta dan Rama. Puisi: Dito.", "hold": 0.6, "start": 465.825, "speech": 465.825, "audio": 10.175, "dur": 11.775}, {"id": "s5c", "seg": 6, "scene": "bebras_pattern", "text": "Pola: siapa yang muncul dua kali? Sinta di tari dan drama. Dito di tari dan puisi. Rama di musik dan drama. Semua butuh jeda ganti kostum.", "hold": 0.6, "start": 477.6, "speech": 477.6, "audio": 17.05, "dur": 18.65}, {"id": "s5d", "seg": 6, "scene": "bebras_abstract", "text": "Abstraksi: yang penting hanya satu hal. Dua penampilan dengan pemain yang sama tidak boleh berurutan. Lagu, warna kostum, dan panjang acara tidak perlu dipikirkan.", "hold": 0.6, "start": 496.25, "speech": 496.25, "audio": 15.8, "dur": 17.4}, {"id": "s5e", "seg": 6, "scene": "bebras_algo", "text": "Algoritma: coba urutannya. Tari, musik, drama, puisi. Tari lalu musik: pemainnya beda, aman. Musik lalu drama: Rama dua kali berurutan. Gagal.", "hold": 0.6, "start": 513.65, "speech": 513.65, "audio": 13.925, "dur": 15.525}, {"id": "s5f", "seg": 6, "scene": "bebras_solve", "text": "Coba lagi. Tari, musik, puisi, drama. Tari ke musik aman. Musik ke puisi aman. Puisi ke drama: Dito lalu Sinta dan Rama, aman. Berhasil!", "hold": 1.0, "start": 529.175, "speech": 529.175, "audio": 15.8, "dur": 17.8}, {"id": "s5g", "seg": 6, "scene": "bebras_wrap", "text": "Itulah berpikir komputasional: masalah besar jadi kecil, cari polanya, buang yang tidak penting, susun langkahnya. Bisa dipakai tanpa komputer.", "hold": 1.0, "start": 546.975, "speech": 546.975, "audio": 12.675, "dur": 14.675}, {"id": "s6a", "seg": 7, "scene": "make_show", "text": "Sekarang giliranmu. Di halaman latihan ada soal gaya Bebras: memecah tugas, melanjutkan pola, memilih yang penting, dan mengurutkan langkah.", "hold": 0.6, "start": 561.65, "speech": 561.65, "audio": 12.675, "dur": 14.275}, {"id": "s6b", "seg": 7, "scene": "make_show", "text": "Kerjakan pelan-pelan. Kalau salah, kamu dapat petunjuk, bukan nilai. Pikirkan dulu, baru pilih.", "hold": 1.5, "start": 575.925, "speech": 575.925, "audio": 8.925, "dur": 11.425}, {"id": "recap", "seg": 7, "scene": "recap", "text": "Tiga hal untuk diingat. Satu: pecah masalah besar jadi bagian kecil. Dua: cari pola, saring yang penting. Tiga: susun langkahnya berurutan.", "hold": 1.5, "start": 587.35, "speech": 587.35, "audio": 13.925, "dur": 16.425}, {"id": "outro", "seg": 7, "scene": "outro", "text": "Sampai jumpa di episode berikutnya: mengenal komputer, perjalanan satu ketukan tombol sampai muncul di layar.", "hold": 2.5, "start": 603.775, "speech": 603.775, "audio": 10.175, "dur": 13.675}], "total": 617.45} });
+  const { $, progress, save } = P; progress.levels = progress.levels || {};
+  const LEVELS = [
+    { id: "pecah", name: "1 Pecah tugas", task: "Pentas kelas dipecah jadi empat bagian. Ketuk satu tugas kecil, lalu ketuk bagian tempatnya.", kind: "sort",
+      groups: ["Acara", "Panggung", "Kostum", "Konsumsi"],
+      items: [["latihan tari", 0], ["pasang tirai", 1], ["jahit selendang", 2], ["hitung jumlah orang", 3], ["susun urutan acara", 0], ["atur kursi penonton", 1], ["pinjam topi petani", 2], ["beli snack", 3]],
+      hint: "Tanya: tugas kecil ini bagian dari urusan apa? Acara = isi pertunjukan, Panggung = tempat, Kostum = pakaian, Konsumsi = makanan." },
+    { id: "pola", name: "2 Lanjutkan pola", task: "Temukan yang berulang, lalu ketuk lanjutan yang tepat.", kind: "seq",
+      items: [[["🔴", "🟢", "🟢", "🔴", "🟢", "🟢", "🔴", "?"], ["🔴", "🟢"], 1, "Kelompokkan tiga-tiga: 🔴🟢🟢, 🔴🟢🟢, 🔴 … lalu apa?"],
+              [["2", "4", "6", "8", "?"], ["9", "10", "12"], 1, "Dari 2 ke 4 bertambah berapa? Dari 4 ke 6? Tambahkan yang sama."],
+              [["tari", "musik", "drama", "tari", "musik", "?"], ["tari", "drama", "musik"], 1, "Setelah tari selalu musik, setelah musik selalu …"],
+              [["Senin: bakso", "Selasa: soto", "Rabu: bakso", "Kamis: soto", "Jumat: ?"], ["bakso", "soto", "mi ayam"], 0, "Menunya bergantian dua-dua: bakso, soto, bakso, soto, …"]] },
+    { id: "penting", name: "3 Pilih yang penting", task: "Kamu membuat UNDANGAN pentas untuk orang tua. Ketuk semua informasi yang perlu ada di undangan, lalu tekan Periksa.", kind: "check",
+      items: [["Hari dan jam acara", true], ["Tempat acara", true], ["Warna sepatu pemain", false], ["Nama acara", true], ["Merek lampu panggung", false], ["Nomor sepatu Dito", false]],
+      hint: "Abstraksi: bayangkan jadi orang tua yang menerima undangan. Apa yang harus mereka tahu supaya bisa datang?" },
+    { id: "urut", name: "4 Urutkan langkah", task: "Langkah menanam biji di pot teracak. Pakai tombol ▲▼ sampai urutannya benar, lalu tekan Periksa.", kind: "order",
+      correct: ["Siapkan pot dan isi dengan tanah", "Buat lubang kecil di tanah", "Masukkan biji ke lubang", "Tutup lubang dengan tanah", "Siram dengan sedikit air"],
+      start: [2, 4, 0, 3, 1],
+      hint: "Bayangkan melakukannya sungguhan: biji tidak bisa dimasukkan sebelum ada lubang, dan lubang tidak bisa dibuat sebelum ada tanah." }
+  ];
+  let L = 0, sel = null, placed = {}, qi = 0, picked = new Set(), order = [];
+  const level = () => LEVELS[L];
+  function setResult(kind, msg) { $("result").innerHTML = msg ? `<div class="result ${kind}">${msg}</div>` : ""; }
+  function done(extra) { progress.levels[level().id] = true; save(); renderLevels(); setResult("good", `Soal ${level().name} selesai! ` + (extra || "")); }
+  function wrong(hint) { setResult("bad", "Belum tepat. Petunjuk: " + hint); }
+
+  function renderSort() {
+    const lv = level(), area = $("exarea"); area.innerHTML = `<div class="qnum">Tugas kecil yang belum dikelompokkan</div><div class="chips" id="chips"></div><div class="qnum" style="margin-top:14px">Bagian</div><div class="groups" id="groups"></div>`;
+    const left = lv.items.filter(([n]) => placed[n] === undefined);
+    if (!left.length) $("chips").innerHTML = `<span class="hint">Semua sudah dikelompokkan.</span>`;
+    left.forEach(([n]) => { const b = document.createElement("button"); b.textContent = n; b.setAttribute("aria-pressed", sel === n); b.addEventListener("click", () => { sel = sel === n ? null : n; setResult(sel ? "info" : "", sel ? `"${sel}" dipilih. Sekarang ketuk bagiannya.` : ""); renderSort(); }); $("chips").appendChild(b); });
+    lv.groups.forEach((g, gi) => {
+      const mine = lv.items.filter(([n]) => placed[n] === gi).map(([n]) => n);
+      const b = document.createElement("button"); b.innerHTML = `<b>${g}</b><span class="count">${mine.length ? mine.join(", ") : "belum ada"}</span>`;
+      b.addEventListener("click", () => {
+        if (!sel) { setResult("info", "Ketuk dulu tugas kecilnya."); return; }
+        const want = lv.items.find(([n]) => n === sel)[1];
+        if (want === gi) { placed[sel] = gi; sel = null; setResult("good", `Masuk ke bagian ${g}.`); renderSort(); if (lv.items.every(([n]) => placed[n] !== undefined)) done("Itulah dekomposisi: satu tugas besar jadi bagian-bagian yang jelas."); }
+        else { b.classList.add("wrong"); wrong(lv.hint); setTimeout(() => b.classList.remove("wrong"), 900); }
+      });
+      $("groups").appendChild(b);
+    });
+  }
+  function renderSeq() {
+    const lv = level(), area = $("exarea");
+    if (qi >= lv.items.length) { area.innerHTML = `<div class="qtext">Semua pola sudah dilanjutkan.</div>`; return; }
+    const [seq, opts, ans, hint] = lv.items[qi];
+    area.innerHTML = `<div class="qnum">Pola ${qi + 1} dari ${lv.items.length}</div><div class="seq">${seq.map(s => `<span class="${s === "?" || s.endsWith("?") ? "q" : ""}">${s}</span>`).join("")}</div><div class="opts2" id="opts"></div>`;
+    opts.forEach((o, i) => { const b = document.createElement("button"); b.textContent = o; b.addEventListener("click", () => { [...$("opts").children].forEach(c => c.classList.remove("wrong")); if (i === ans) { b.classList.add("right"); [...$("opts").children].forEach(c => c.disabled = true); setResult("good", "Benar!"); qi++; setTimeout(() => { if (qi >= lv.items.length) done("Pola yang ketemu membuat kelanjutannya bisa ditebak."); else { setResult(); renderSeq(); } }, 900); } else { b.classList.add("wrong"); wrong(hint); } }); $("opts").appendChild(b); });
+  }
+  function renderCheck() {
+    const lv = level(), area = $("exarea"); area.innerHTML = `<div class="checks" id="checks"></div><div class="row"><button class="warm" id="check">Periksa</button></div>`;
+    lv.items.forEach(([n], i) => { const b = document.createElement("button"); b.textContent = (picked.has(i) ? "☑ " : "☐ ") + n; b.setAttribute("aria-pressed", picked.has(i)); b.addEventListener("click", () => { picked.has(i) ? picked.delete(i) : picked.add(i); setResult(); renderCheck(); }); $("checks").appendChild(b); });
+    $("check").addEventListener("click", () => {
+      const ok = lv.items.every(([, need], i) => picked.has(i) === need);
+      [...$("checks").children].forEach((b, i) => { const need = lv.items[i][1]; b.classList.toggle("right", ok && need); b.classList.toggle("wrong", !ok && picked.has(i) !== need); });
+      if (ok) done("Tiga hal itu cukup; sisanya dibuang. Itulah abstraksi."); else { const extra = lv.items.filter(([, need], i) => picked.has(i) && !need).length, miss = lv.items.filter(([, need], i) => !picked.has(i) && need).length; wrong(lv.hint + (extra ? ` Ada ${extra} yang sebenarnya tidak perlu.` : "") + (miss ? ` Ada ${miss} yang penting tetapi belum dipilih.` : "")); }
+    });
+  }
+  function renderOrder() {
+    const lv = level(), area = $("exarea"); area.innerHTML = `<ol class="steps" id="steps"></ol><div class="row"><button class="warm" id="check">Periksa</button></div>`;
+    order.forEach((ci, pos) => { const li = document.createElement("li"); li.innerHTML = `<span class="n">${pos + 1}</span><span class="t">${lv.correct[ci]}</span>`; const up = document.createElement("button"); up.textContent = "▲"; up.disabled = pos === 0; up.addEventListener("click", () => { [order[pos - 1], order[pos]] = [order[pos], order[pos - 1]]; setResult(); renderOrder(); }); const dn = document.createElement("button"); dn.textContent = "▼"; dn.disabled = pos === order.length - 1; dn.addEventListener("click", () => { [order[pos + 1], order[pos]] = [order[pos], order[pos + 1]]; setResult(); renderOrder(); }); li.append(up, dn); $("steps").appendChild(li); });
+    $("check").addEventListener("click", () => {
+      const ok = order.every((ci, pos) => ci === pos); const firstBad = order.findIndex((ci, pos) => ci !== pos);
+      [...$("steps").children].forEach((li, pos) => { li.classList.toggle("ok", order[pos] === pos); li.classList.toggle("bad", !ok && pos === firstBad); });
+      if (ok) done("Urutan yang bisa diikuti orang lain: itulah algoritma."); else wrong(`Langkah ke-${firstBad + 1} belum pada tempatnya. ` + lv.hint);
+    });
+  }
+  function loadLevel(i) { L = i; sel = null; placed = {}; qi = 0; picked = new Set(); order = [...(level().start || [])]; $("task").textContent = level().task; setResult(); renderLevels(); ({ sort: renderSort, seq: renderSeq, check: renderCheck, order: renderOrder })[level().kind](); }
+  function renderLevels() { const el = $("levels"); el.innerHTML = ""; LEVELS.forEach((lv, i) => { const b = document.createElement("button"); b.textContent = lv.name; b.className = progress.levels[lv.id] ? "done" : ""; b.setAttribute("aria-pressed", i === L); b.addEventListener("click", () => loadLevel(i)); el.appendChild(b); }); }
+  $("redo").addEventListener("click", () => { progress.levels[level().id] = false; save(); loadLevel(L); });
+  P.onProgress(el => LEVELS.forEach(lv => { const s = document.createElement("span"); s.textContent = "Soal " + lv.name.slice(0, 1); s.className = progress.levels[lv.id] ? "ok" : ""; el.appendChild(s); }));
+  loadLevel(0);
+})();
+</script>
