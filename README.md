@@ -44,4 +44,5 @@ Peta kurikulum, alur belajar, dan daftar 52 episode ada di dokumen "Kurikulum Se
 | E.0 Jembatan ke Kelas X: Empat Bekal dari SMP | ✓ | ✓ Kak Ceria | ✓ (2 bagian × 2 versi) | ✓ |
 | E.1 Komputer Von Neumann: Simulasi Input–Proses–Output | ✓ | ✓ Kak Ceria | ✓ (2 bagian × 2 versi) | ✓ |
 | E.2 Peran Sistem Operasi | ✓ | ✓ Kak Ceria | ✓ (1 bagian × 2 versi) | ✓ |
+| E.3 Keamanan Akun dan Jaringan Dasar | ✓ | ✓ Kak Ceria | ✓ (2 bagian × 2 versi) | ✓ |
 | D7.5 Instruksi untuk Manusia dan Mesin | ✓ | ✓ Kak Ceria | ✓ (2 bagian × 2 versi) | ✓ |
