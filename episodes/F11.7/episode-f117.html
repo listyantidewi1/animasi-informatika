@@ -1,0 +1,906 @@
+<title>Kiko: Model Jaringan</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<style>
+/* Inti gaya halaman latihan: satu kolom, pemutar di atas, latihan di bawah; palet kantin sama dengan video. */
+:root {
+  --bg: #EAF2EE; --surface: #FFFFFF; --surface2: #DCE9E2; --ink: #1F2A33; --ink2: #4A5A66; --line: #C9D8D0;
+  --accent: #2E7E9A; --accent-ink: #FFFFFF; --warm: #F2B134; --warm-ink: #5E3E05; --good: #2E9E5B; --good-bg: #DDF3E4; --bad: #D9443B; --bad-bg: #FBE1DF;
+  --font: Inter, "Segoe UI", Roboto, Arial, sans-serif;
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) { --bg: #141C1A; --surface: #1E2926; --surface2: #273532; --ink: #EAF2EE; --ink2: #A9BBB3; --line: #3A4A45; --accent: #5FB3CE; --accent-ink: #0F1D22; --warm: #F2B134; --warm-ink: #2B1C02; --good: #5FCB8A; --good-bg: #1F3A2B; --bad: #F07A72; --bad-bg: #442523; color-scheme: dark } }
+:root[data-theme="dark"] { --bg: #141C1A; --surface: #1E2926; --surface2: #273532; --ink: #EAF2EE; --ink2: #A9BBB3; --line: #3A4A45; --accent: #5FB3CE; --accent-ink: #0F1D22; --warm: #F2B134; --warm-ink: #2B1C02; --good: #5FCB8A; --good-bg: #1F3A2B; --bad: #F07A72; --bad-bg: #442523; color-scheme: dark }
+* { box-sizing: border-box }
+body { background: var(--bg); color: var(--ink); font-family: var(--font); font-size: 17px; line-height: 1.5; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); padding-block: 16px 48px }
+.wrap { max-width: 980px; margin: 0 auto; display: grid; gap: 28px }
+h1 { font-size: clamp(26px, 5vw, 38px); line-height: 1.15; margin: 0; text-wrap: balance; font-weight: 900 }
+h2 { font-size: 22px; margin: 0 0 12px; font-weight: 800 }
+h3 { font-size: 18px; margin: 0 0 8px; font-weight: 800 }
+p { margin: 0 0 10px; max-width: 65ch }
+.eyebrow { font-size: 13px; letter-spacing: .08em; text-transform: uppercase; color: var(--ink2); font-weight: 800; margin-bottom: 6px }
+.card { background: var(--surface); border-radius: 18px; padding: 18px; border: 1px solid var(--line) }
+button { font: inherit; font-weight: 800; border: 0; border-radius: 12px; padding: 12px 16px; cursor: pointer; background: var(--surface2); color: var(--ink); min-height: 48px; touch-action: manipulation }
+button:focus-visible, [tabindex]:focus-visible { outline: 3px solid var(--warm); outline-offset: 2px }
+button.primary { background: var(--accent); color: var(--accent-ink) }
+button.warm { background: var(--warm); color: var(--warm-ink) }
+button[aria-pressed="true"] { box-shadow: inset 0 0 0 3px var(--accent) }
+button:disabled { opacity: .45; cursor: default }
+.row { display: flex; flex-wrap: wrap; gap: 10px; align-items: center }
+/* player */
+.player { display: grid; gap: 12px }
+.stage { position: relative; width: 100%; aspect-ratio: 16 / 9; max-width: 100%; background: #EAF2EE; border-radius: 14px; overflow: hidden; border: 1px solid var(--line) }
+.stage canvas { width: 100%; height: 100%; display: block }
+.bigplay { position: absolute; inset: 0; display: grid; place-items: center; background: rgba(31,42,51,.25); border: 0; border-radius: 0; color: #fff; font-size: 20px; min-height: 0 }
+.bigplay span { background: var(--accent); color: var(--accent-ink); padding: 14px 26px; border-radius: 999px; font-weight: 900 }
+.bar { height: 10px; background: var(--surface2); border-radius: 999px; overflow: hidden; cursor: pointer }
+.bar > i { display: block; height: 100%; width: 0; background: var(--warm) }
+.chapters { display: flex; flex-wrap: wrap; gap: 8px }
+.chapters button { font-size: 14px; padding: 8px 12px; min-height: 40px }
+.chapters button.now { background: var(--warm); color: var(--warm-ink) }
+.hint { color: var(--ink2); font-size: 15px }
+/* exercises (generic parts) */
+.levels { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 12px }
+.levels button { font-size: 14px; padding: 8px 12px; min-height: 40px }
+.levels button.done::after { content: " ✓"; color: var(--good) }
+.task { background: var(--surface2); border-radius: 12px; padding: 12px 14px; margin-bottom: 12px; font-weight: 700 }
+.result { border-radius: 12px; padding: 12px 14px; font-weight: 800; margin-top: 10px }
+.result.good { background: var(--good-bg); color: var(--good) }
+.result.bad { background: var(--bad-bg); color: var(--bad) }
+.result.info { background: var(--surface2); color: var(--ink) }
+/* quiz */
+.quiz { display: grid; gap: 16px }
+.q { border-top: 1px solid var(--line); padding-top: 14px }
+.q:first-child { border-top: 0; padding-top: 0 }
+.opts { display: grid; gap: 8px; margin-top: 8px }
+.opts button { text-align: left; font-weight: 700; background: var(--surface2); display: flex; gap: 10px; align-items: center }
+.opts button b { width: 30px; height: 30px; border-radius: 50%; background: var(--accent); color: var(--accent-ink); display: grid; place-items: center; flex: none }
+.opts button.right { background: var(--good-bg); box-shadow: inset 0 0 0 3px var(--good) }
+.opts button.wrong { background: var(--bad-bg) }
+.fb { margin-top: 8px; font-weight: 700 }
+.fb.good { color: var(--good) } .fb.bad { color: var(--bad) }
+details summary { cursor: pointer; font-weight: 800; font-size: 18px }
+details[open] summary { margin-bottom: 10px }
+ul.plain { padding-left: 20px; margin: 0 0 10px } ul.plain li { margin-bottom: 6px; max-width: 65ch }
+.progress { display: flex; gap: 8px; flex-wrap: wrap } .progress span { background: var(--surface2); border-radius: 999px; padding: 6px 12px; font-size: 14px; font-weight: 700 }
+.progress span.ok { background: var(--good-bg); color: var(--good) }
+@media (prefers-reduced-motion: reduce) { * { transition: none !important } }
+
+/* latihan F11.7 */
+.qnum { font-weight: 800; color: var(--ink2); font-size: 14px; margin-bottom: 4px }
+.qtext { font-weight: 800; font-size: 18px; margin-bottom: 8px }
+.opts { display: grid; gap: 8px; margin: 8px 0 }
+.opts button { text-align: left; font-size: 15px; min-height: 44px; padding: 10px 12px; background: var(--surface); border: 2px solid var(--line) }
+.opts button.right { border-color: var(--good); background: var(--good-bg) } .opts button.wrong { border-color: var(--bad); background: var(--bad-bg) } .opts button.used { opacity: .5 }
+.pkt { display: flex; gap: 4px; margin: 8px 0; min-height: 44px; align-items: stretch } .pkt span { flex: 0 0 auto; padding: 10px 8px; border-radius: 8px; color: #fff; font-size: 12px; font-weight: 900; display: flex; align-items: center } .pkt .d { background: #2E9E5B; flex: 1 } .pkt .t { background: #2E7E9A } .pkt .i { background: #8E6BBF } .pkt .l { background: #B57A12 }
+.pick { display: flex; flex-wrap: wrap; gap: 6px; margin: 8px 0 } .pick button { min-height: 40px; font-size: 14px; font-weight: 800; background: var(--surface); border: 2px solid var(--line); padding: 6px 12px } .pick button[aria-pressed="true"] { border-color: var(--accent); background: #FFF3D6 }
+.topo { width: 100%; height: 220px; background: var(--surface2); border-radius: 12px; margin: 8px 0 } .topo line { stroke: #7B8B95; stroke-width: 4; pointer-events: none } .topo line.cut { stroke: var(--bad); stroke-dasharray: 8 6 } .topo line.hit { stroke: transparent; stroke-width: 26; pointer-events: stroke; cursor: pointer } .topo circle { fill: #fff; stroke: var(--kiko, #2E7E9A); stroke-width: 3 } .topo circle.hub { fill: var(--kiko, #2E7E9A) } .topo circle.dead { fill: #E1E8E4; stroke: var(--bad) } .topo text { font-size: 12px; font-weight: 800; fill: var(--ink2) }
+.hops { display: grid; gap: 6px; margin: 8px 0 } .hops div { background: var(--surface); border: 2px solid var(--line); border-radius: 10px; padding: 8px 10px; font-size: 14px; font-weight: 800; display: flex; justify-content: space-between } .hops div.ok { border-color: var(--good); background: var(--good-bg) }
+.log { font-size: 13px; color: var(--ink2); margin: 6px 0 }
+.rev { display: grid; gap: 6px; margin-top: 8px } .rev div { font-size: 14px; padding: 8px 10px; border-radius: 10px; background: var(--surface2) } .rev div.bad { background: var(--bad-bg) }
+</style>
+
+<div class="wrap">
+  <header>
+    <div class="eyebrow">Informatika · Fase F · Kelas XI · Episode F11.7</div>
+    <h1>Model Jaringan dan Pengiriman Data</h1>
+    <p class="hint">Tonton videonya (dua bagian), lalu kerjakan tiga latihan: pembungkus paket, penghubung topologi, dan pelacak lompatan. Suara bisa dimatikan; teks selalu tampil di layar.</p>
+  </header>
+
+  <section class="card player" aria-label="Pemutar episode">
+    <div class="stage">
+      <canvas id="screen" width="1920" height="1080" aria-label="Animasi episode"></canvas>
+      <audio id="nar" preload="auto" src="narasi.mp3"></audio>
+      <button class="bigplay" id="bigplay" aria-label="Putar"><span>▶ Putar episode</span></button>
+    </div>
+    <div class="bar" id="bar" role="slider" aria-label="Posisi episode" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" tabindex="0"><i id="barfill"></i></div>
+    <div class="controls">
+      <button class="primary" id="playbtn">▶ Putar</button>
+      <button id="replay">↺ Ulangi bagian ini</button>
+      <button id="voice" aria-pressed="true">🔊 Suara: nyala</button>
+      <button id="slow" aria-pressed="false">🐢 Mode lambat</button>
+      <span class="hint" id="timelabel">0:00 / 0:00</span>
+    </div>
+    <div class="caption" id="caption"></div>
+    <div class="chapterwrap">
+      <div class="chapters" id="chapters"></div>
+    </div>
+  </section>
+
+  <section class="card" aria-label="Cek pemahaman">
+    <h2>Cek pemahaman</h2>
+    <p class="hint">Soal yang sama dengan di video. Jawaban salah memberi petunjuk, bukan kunci.</p>
+    <div class="quiz" id="quiz"></div>
+  </section>
+
+  <section class="card" aria-label="Latihan">
+    <h2>Pembungkus paket, penghubung topologi, pelacak lompatan</h2>
+    <p class="hint">Tiga latihan. Kemajuan tersimpan di perangkat ini.</p>
+    <div class="levels" id="levels"></div>
+    <div class="task" id="task"></div>
+    <div id="exarea"></div>
+    <div id="result"></div>
+    <div class="row" style="margin-top:10px"><button id="redo">↺ Ulangi bagian ini</button></div>
+  </section>
+
+  <section class="card" aria-label="Kemajuan">
+    <h2>Kemajuanmu</h2>
+    <div class="progress" id="progress"></div>
+    <p class="hint">Tersimpan di perangkat ini saja. Guru bisa memintamu menunjukkan halaman ini.</p>
+  </section>
+
+  <section class="card">
+    <details>
+      <summary>Untuk guru: cara memakai episode ini (16 JP)</summary>
+      <p><b>Tujuan (F11.7, elemen Berpikir Komputasional, Fase F):</b> murid mengenali topologi, model klien–server dan peer-to-peer, serta lapisan TCP/IP, lalu mengirim data antarperangkat di jaringan lokal. Praktik hanya di jaringan lab yang diizinkan; tidak ada pemindaian perangkat orang lain.</p>
+      <ul class="plain">
+        <li><b>Pertemuan 1–2 (4 JP), topologi:</b> permainan amplop berlapis dan benang. Tonton Bagian 1. Latihan 2 (penghubung topologi). Murid menggambar topologi jaringan sekolah dari pengamatan (lab, switch, router) dan menandai titik yang bila mati memutus paling banyak perangkat.</li>
+        <li><b>Pertemuan 3–4 (4 JP), peran perangkat:</b> segmen klien–server dan peer-to-peer. Murid mendaftar sepuluh aplikasi yang dipakai sehari-hari dan mengelompokkan modelnya; diskusi: apa yang terjadi bila server padam, dan mengapa panggilan video sering langsung antarperangkat.</li>
+        <li><b>Pertemuan 5–6 (4 JP), lapisan dan paket:</b> tonton Bagian 2. Latihan 1 (pembungkus paket) dan 3 (pelacak lompatan). Murid menggambar enkapsulasi satu pesan dan menjelaskan isi tiap header; ping ke beberapa alamat dan membaca waktunya, traceroute bila tersedia.</li>
+        <li><b>Pertemuan 7–8 (4 JP), mengirim data sungguhan:</b> berpasangan di satu Wi-Fi lab: lihat IP, ping, jalankan python -m http.server untuk membagikan satu halaman HTML buatan sendiri, teman membukanya; catat alamat, port, dan apa yang terjadi bila server dimatikan. Laporan singkat: topologi sekolah, tabel lapisan, hasil praktik.</li>
+      </ul>
+      <p><b>Penilaian:</b> gambar topologi sekolah, tabel empat lapisan dengan contoh header, dan laporan praktik klien–server. Hasil kuis tersimpan hanya di perangkat murid.</p>
+    </details>
+  </section>
+</div>
+
+<script>/* Kiko core: mesin gambar bersama untuk semua episode Fase D.
+   Kiko.draw(ctx, t, TL) menggambar frame pada detik t di kanvas 1920x1080 secara deterministik.
+   Berisi palet, pembantu gambar, tokoh (Kiko, murid), dan adegan umum (judul, kuis, ringkasan, penutup).
+   Setiap episode menambahkan adegannya sendiri di scenes.js: Object.assign(Kiko.SCENES, {...}). */
+(function (global) {
+  const W = 1920, H = 1080;
+  const FONT = "Inter, 'Segoe UI', Roboto, Arial, sans-serif";
+  const C = {
+    bg: "#EAF2EE", bg2: "#DCE9E2", ink: "#1F2A33", ink2: "#4A5A66", panel: "#FFFFFF",
+    tile: "#F7FAF8", tileLine: "#C9D8D0", table: "#A4653A", tableTop: "#C98A57",
+    kiko: "#2E7E9A", kikoDark: "#1F5A6E", kikoLight: "#8FD0E6", eye: "#FFFFFF", pupil: "#1F2A33",
+    accent: "#F2B134", accentDark: "#B57A12", good: "#2E9E5B", bad: "#D9443B", goodBg: "#DDF3E4", badBg: "#FBE1DF",
+    sub: "#1F2A33", subText: "#FFFFFF", star: "#F2B134", skin: "#F1C9A5", skin2: "#C98A57", hair: "#2B2118",
+    uniform: "#FFFFFF", pants: "#2F4E7D", bubble: "#FFFFFF", muted: "#9AAFA6"
+  };
+  const ease = u => u < 0 ? 0 : u > 1 ? 1 : u * u * (3 - 2 * u);
+  const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
+  const lerp = (a, b, u) => a + (b - a) * u;
+
+  // ---------- drawing helpers ----------
+  function rr(ctx, x, y, w, h, r) {
+    ctx.beginPath(); ctx.moveTo(x + r, y); ctx.arcTo(x + w, y, x + w, y + h, r); ctx.arcTo(x + w, y + h, x, y + h, r);
+    ctx.arcTo(x, y + h, x, y, r); ctx.arcTo(x, y, x + w, y, r); ctx.closePath();
+  }
+  function text(ctx, s, x, y, size, opt = {}) {
+    ctx.font = `${opt.weight || 600} ${size}px ${FONT}`; ctx.fillStyle = opt.color || C.ink;
+    ctx.textAlign = opt.align || "left"; ctx.textBaseline = opt.base || "alphabetic"; ctx.fillText(s, x, y);
+  }
+  function wrap(ctx, s, size, weight, maxW) {
+    ctx.font = `${weight} ${size}px ${FONT}`;
+    const words = s.split(" "), lines = []; let cur = "";
+    for (const w of words) {
+      const test = cur ? cur + " " + w : w;
+      if (ctx.measureText(test).width > maxW && cur) { lines.push(cur); cur = w; } else cur = test;
+    }
+    if (cur) lines.push(cur);
+    return lines;
+  }
+  function para(ctx, s, x, y, size, maxW, opt = {}) {
+    const lines = wrap(ctx, s, size, opt.weight || 500, maxW); const lh = size * (opt.lh || 1.35);
+    lines.forEach((l, i) => text(ctx, l, x, y + i * lh, size, opt));
+    return lines.length * lh;
+  }
+  function arrowIcon(ctx, kind, cx, cy, s, color) {
+    ctx.save(); ctx.translate(cx, cy); ctx.strokeStyle = color; ctx.fillStyle = color; ctx.lineWidth = s * 0.16; ctx.lineCap = "round"; ctx.lineJoin = "round";
+    if (kind === "up") {
+      ctx.beginPath(); ctx.moveTo(0, s * 0.45); ctx.lineTo(0, -s * 0.3); ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(-s * 0.32, -s * 0.05); ctx.lineTo(0, -s * 0.45); ctx.lineTo(s * 0.32, -s * 0.05); ctx.stroke();
+    } else if (kind === "left" || kind === "right") {
+      const k = kind === "left" ? -1 : 1;
+      ctx.beginPath(); ctx.moveTo(0, s * 0.45); ctx.lineTo(0, -s * 0.05); ctx.quadraticCurveTo(0, -s * 0.32, k * s * 0.28, -s * 0.32); ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(k * s * 0.12, -s * 0.5); ctx.lineTo(k * s * 0.4, -s * 0.32); ctx.lineTo(k * s * 0.12, -s * 0.14); ctx.stroke();
+    } else if (kind === "east") {
+      ctx.beginPath(); ctx.moveTo(-s * 0.4, 0); ctx.lineTo(s * 0.3, 0); ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(s * 0.05, -s * 0.28); ctx.lineTo(s * 0.4, 0); ctx.lineTo(s * 0.05, s * 0.28); ctx.stroke();
+    } else if (kind === "grab") {
+      ctx.beginPath(); ctx.arc(0, s * 0.12, s * 0.22, 0, Math.PI * 2); ctx.fill();
+      ctx.beginPath(); ctx.moveTo(-s * 0.4, -s * 0.42); ctx.lineTo(-s * 0.4, -s * 0.12); ctx.moveTo(s * 0.4, -s * 0.42); ctx.lineTo(s * 0.4, -s * 0.12);
+      ctx.moveTo(-s * 0.4, -s * 0.42); ctx.lineTo(s * 0.4, -s * 0.42); ctx.stroke();
+    }
+    ctx.restore();
+  }
+  function bakso(ctx, cx, cy, s, opt = {}) {
+    // a bowl of bakso: the goal
+    ctx.save(); ctx.translate(cx, cy);
+    if (opt.glow) { ctx.beginPath(); ctx.arc(0, 0, s * 0.62, 0, Math.PI * 2); ctx.fillStyle = "rgba(242,177,52,0.22)"; ctx.fill(); }
+    ctx.fillStyle = "#E4EEF5"; ctx.beginPath(); ctx.moveTo(-s * 0.46, -s * 0.05); ctx.quadraticCurveTo(-s * 0.4, s * 0.45, 0, s * 0.45); ctx.quadraticCurveTo(s * 0.4, s * 0.45, s * 0.46, -s * 0.05); ctx.closePath(); ctx.fill();
+    ctx.strokeStyle = "#8FA9BD"; ctx.lineWidth = s * 0.05; ctx.stroke();
+    ctx.fillStyle = "#C8B49A"; ctx.beginPath(); ctx.ellipse(0, -s * 0.05, s * 0.44, s * 0.14, 0, 0, Math.PI * 2); ctx.fill();
+    for (const [dx, dy, r] of [[-0.16, -0.1, 0.13], [0.14, -0.12, 0.13], [0, -0.22, 0.12]]) {
+      ctx.fillStyle = "#9A7B5B"; ctx.beginPath(); ctx.arc(dx * s, dy * s, r * s, 0, Math.PI * 2); ctx.fill();
+      ctx.fillStyle = "#B8977A"; ctx.beginPath(); ctx.arc(dx * s - r * s * 0.3, dy * s - r * s * 0.3, r * s * 0.4, 0, Math.PI * 2); ctx.fill();
+    }
+    ctx.fillStyle = "#4CA64C"; for (const dx of [-0.26, 0.1, 0.26]) { ctx.beginPath(); ctx.arc(dx * s, -s * 0.07, s * 0.045, 0, Math.PI * 2); ctx.fill(); }
+    ctx.restore();
+  }
+  function table(ctx, x, y, w, h) {
+    ctx.fillStyle = C.table; rr(ctx, x + w * 0.1, y + h * 0.3, w * 0.8, h * 0.55, 10); ctx.fill();
+    ctx.fillStyle = C.tableTop; rr(ctx, x + w * 0.06, y + h * 0.18, w * 0.88, h * 0.3, 10); ctx.fill();
+    ctx.fillStyle = "rgba(0,0,0,0.12)"; ctx.fillRect(x + w * 0.16, y + h * 0.5, w * 0.08, h * 0.35); ctx.fillRect(x + w * 0.76, y + h * 0.5, w * 0.08, h * 0.35);
+  }
+  function kiko(ctx, cx, cy, s, ang, opt = {}) {
+    ctx.save(); ctx.translate(cx, cy);
+    // shadow
+    ctx.fillStyle = "rgba(0,0,0,0.12)"; ctx.beginPath(); ctx.ellipse(0, s * 0.42, s * 0.42, s * 0.12, 0, 0, Math.PI * 2); ctx.fill();
+    ctx.rotate(ang);
+    // wheels
+    ctx.fillStyle = C.kikoDark; rr(ctx, -s * 0.46, -s * 0.2, s * 0.12, s * 0.5, 5); ctx.fill(); rr(ctx, s * 0.34, -s * 0.2, s * 0.12, s * 0.5, 5); ctx.fill();
+    // body
+    ctx.fillStyle = opt.flash ? `rgba(217,68,59,${0.5 + 0.5 * opt.flash})` : C.kiko; rr(ctx, -s * 0.38, -s * 0.36, s * 0.76, s * 0.72, s * 0.16); ctx.fill();
+    // visor (front, facing up)
+    ctx.fillStyle = C.kikoLight; rr(ctx, -s * 0.26, -s * 0.33, s * 0.52, s * 0.3, s * 0.1); ctx.fill();
+    // eyes
+    const mood = opt.mood || "happy";
+    ctx.fillStyle = C.pupil;
+    if (mood === "sad") { ctx.beginPath(); ctx.arc(-s * 0.12, -s * 0.18, s * 0.05, 0, Math.PI * 2); ctx.arc(s * 0.12, -s * 0.18, s * 0.05, 0, Math.PI * 2); ctx.fill(); ctx.strokeStyle = C.pupil; ctx.lineWidth = s * 0.03; ctx.beginPath(); ctx.arc(0, -s * 0.03, s * 0.08, Math.PI * 1.15, Math.PI * 1.85); ctx.stroke(); }
+    else if (mood === "confused") { ctx.beginPath(); ctx.arc(-s * 0.12, -s * 0.18, s * 0.05, 0, Math.PI * 2); ctx.arc(s * 0.12, -s * 0.18, s * 0.035, 0, Math.PI * 2); ctx.fill(); ctx.strokeStyle = C.pupil; ctx.lineWidth = s * 0.03; ctx.beginPath(); ctx.moveTo(-s * 0.08, -s * 0.06); ctx.lineTo(s * 0.08, -s * 0.09); ctx.stroke(); }
+    else { ctx.beginPath(); ctx.arc(-s * 0.12, -s * 0.18, s * 0.055, 0, Math.PI * 2); ctx.arc(s * 0.12, -s * 0.18, s * 0.055, 0, Math.PI * 2); ctx.fill(); ctx.strokeStyle = C.pupil; ctx.lineWidth = s * 0.03; ctx.beginPath(); ctx.arc(0, -s * 0.1, s * 0.08, Math.PI * 0.15, Math.PI * 0.85); ctx.stroke(); }
+    // front pointer
+    ctx.fillStyle = C.accent; ctx.beginPath(); ctx.moveTo(-s * 0.1, -s * 0.38); ctx.lineTo(s * 0.1, -s * 0.38); ctx.lineTo(0, -s * 0.5); ctx.closePath(); ctx.fill();
+    // antenna
+    ctx.strokeStyle = C.kikoDark; ctx.lineWidth = s * 0.04; ctx.beginPath(); ctx.moveTo(0, s * 0.36); ctx.lineTo(0, s * 0.5); ctx.stroke();
+    ctx.fillStyle = C.accent; ctx.beginPath(); ctx.arc(0, s * 0.52, s * 0.07, 0, Math.PI * 2); ctx.fill();
+    // tray with bakso when grabbed
+    if (opt.grabbed) bakso(ctx, 0, s * 0.05, s * 0.45);
+    ctx.restore();
+    if (opt.wave !== undefined) { // arm waving (title scene)
+      ctx.save(); ctx.translate(cx + s * 0.42, cy - s * 0.1); ctx.rotate(-0.6 + Math.sin(opt.wave * 6) * 0.4);
+      ctx.strokeStyle = C.kikoDark; ctx.lineWidth = s * 0.08; ctx.lineCap = "round"; ctx.beginPath(); ctx.moveTo(0, 0); ctx.lineTo(s * 0.3, -s * 0.3); ctx.stroke();
+      ctx.fillStyle = C.kikoLight; ctx.beginPath(); ctx.arc(s * 0.32, -s * 0.33, s * 0.09, 0, Math.PI * 2); ctx.fill(); ctx.restore();
+    }
+  }
+  function kid(ctx, cx, cy, s, opt = {}) {
+    // simple student figure, standing, facing viewer
+    ctx.save(); ctx.translate(cx, cy);
+    ctx.fillStyle = "rgba(0,0,0,0.12)"; ctx.beginPath(); ctx.ellipse(0, s * 1.02, s * 0.5, s * 0.1, 0, 0, Math.PI * 2); ctx.fill();
+    ctx.fillStyle = C.pants; rr(ctx, -s * 0.3, s * 0.35, s * 0.6, s * 0.5, s * 0.1); ctx.fill();
+    ctx.fillStyle = C.skin; ctx.fillRect(-s * 0.24, s * 0.8, s * 0.16, s * 0.2); ctx.fillRect(s * 0.08, s * 0.8, s * 0.16, s * 0.2);
+    ctx.fillStyle = C.uniform; rr(ctx, -s * 0.36, -s * 0.12, s * 0.72, s * 0.56, s * 0.12); ctx.fill();
+    ctx.strokeStyle = "#D5DDE2"; ctx.lineWidth = s * 0.025; rr(ctx, -s * 0.36, -s * 0.12, s * 0.72, s * 0.56, s * 0.12); ctx.stroke();
+    ctx.fillStyle = C.skin; ctx.beginPath(); ctx.arc(0, -s * 0.42, s * 0.32, 0, Math.PI * 2); ctx.fill();
+    ctx.fillStyle = opt.hairColor || C.hair; ctx.beginPath(); ctx.arc(0, -s * 0.5, s * 0.33, Math.PI, 0); ctx.fill();
+    if (opt.hair === "long") { ctx.fillRect(-s * 0.33, -s * 0.5, s * 0.12, s * 0.45); ctx.fillRect(s * 0.21, -s * 0.5, s * 0.12, s * 0.45); }
+    ctx.fillStyle = C.pupil; ctx.beginPath(); ctx.arc(-s * 0.11, -s * 0.4, s * 0.035, 0, Math.PI * 2); ctx.arc(s * 0.11, -s * 0.4, s * 0.035, 0, Math.PI * 2); ctx.fill();
+    ctx.strokeStyle = C.pupil; ctx.lineWidth = s * 0.025; ctx.beginPath(); ctx.arc(0, -s * 0.33, s * 0.08, Math.PI * 0.15, Math.PI * 0.85); ctx.stroke();
+    // arms
+    ctx.strokeStyle = C.skin; ctx.lineWidth = s * 0.11; ctx.lineCap = "round"; ctx.beginPath();
+    if (opt.point) { ctx.moveTo(s * 0.32, s * 0.02); ctx.lineTo(s * 0.75, -s * 0.2); } else { ctx.moveTo(s * 0.34, s * 0.02); ctx.lineTo(s * 0.42, s * 0.38); }
+    ctx.moveTo(-s * 0.34, s * 0.02); ctx.lineTo(-s * 0.42, s * 0.38); ctx.stroke();
+    ctx.restore();
+  }
+  function bubble(ctx, x, y, w, s, size, opt = {}) {
+    const lines = wrap(ctx, s, size, 600, w - 48); const h = lines.length * size * 1.3 + 40;
+    ctx.fillStyle = opt.fill || C.bubble; ctx.strokeStyle = opt.stroke || "#B7C7BF"; ctx.lineWidth = 3;
+    rr(ctx, x, y - h, w, h, 22); ctx.fill(); ctx.stroke();
+    const tx = opt.tailX !== undefined ? opt.tailX : x + 60;
+    ctx.beginPath(); ctx.moveTo(tx - 16, y); ctx.lineTo(tx + 16, y); ctx.lineTo(tx + (opt.tailDir || 0), y + 28); ctx.closePath(); ctx.fillStyle = opt.fill || C.bubble; ctx.fill();
+    ctx.strokeStyle = opt.stroke || "#B7C7BF"; ctx.beginPath(); ctx.moveTo(tx - 16, y); ctx.lineTo(tx + (opt.tailDir || 0), y + 28); ctx.lineTo(tx + 16, y); ctx.stroke();
+    lines.forEach((l, i) => text(ctx, l, x + 24, y - h + 24 + size + i * size * 1.3, size, { color: opt.color || C.ink, weight: 600 }));
+    return h;
+  }
+  function card(ctx, x, y, w, h, opt = {}) { ctx.fillStyle = opt.fill || C.panel; rr(ctx, x, y, w, h, opt.r || 26); ctx.fill(); if (opt.stroke) { ctx.strokeStyle = opt.stroke; ctx.lineWidth = opt.lw || 4; ctx.stroke(); } }
+
+  // ---------- adegan umum (semua episode) ----------
+  const SCENES = {
+    title(ctx, b, l, t, TL) {
+      card(ctx, 160, 160, 1600, 700, { fill: C.panel });
+      kiko(ctx, 420, 520, 260, 0, { wave: l, mood: "happy" });
+      text(ctx, "Informatika · Fase " + (TL.episode || "D")[0] + " · Episode " + TL.episode, 720, 330, 34, { color: C.ink2, weight: 700 });
+      const ts = TL.title.length > 34 ? 74 : 92; const th = para(ctx, TL.title, 720, 440, ts, 1000, { weight: 900, lh: 1.1 }); const hy = Math.max(640, 440 + th - ts * 0.35 + 30);
+      if (TL.hook) { text(ctx, "SETELAH MENONTON, KAMU BISA:", 720, hy, 26, { color: C.accentDark, weight: 800 }); para(ctx, TL.hook, 720, hy + 50, 34, 1000, { weight: 800, lh: 1.3 }); if (hy <= 660) text(ctx, "Dengarkan, atau baca teksnya pelan-pelan.", 720, 800, 26, { color: C.ink2, weight: 600 }); }
+      else text(ctx, "Dengarkan, atau baca teksnya pelan-pelan.", 720, 700, 36, { color: C.ink2, weight: 600 });
+      arrowIcon(ctx, "up", 1560, 250, 70, C.kikoLight); arrowIcon(ctx, "right", 1660, 250, 70, C.kikoLight);
+    },
+    quiz(ctx, b, l, t, TL, answered) {
+      const q = TL.quizzes[b.quiz]; card(ctx, 200, 150, 1520, 740, { stroke: C.accent, lw: 6 });
+      text(ctx, "CEK PEMAHAMAN", 960, 230, 32, { align: "center", color: C.accentDark, weight: 800 });
+      para(ctx, q.q, 960, 320, 44, 1360, { weight: 800, align: "center", lh: 1.3 });
+      q.options.forEach((o, i) => {
+        const y = 470 + i * 120; const right = answered && i === q.answer;
+        card(ctx, 320, y, 1280, 96, { fill: right ? C.goodBg : answered ? "#F4F6F5" : C.bg2, stroke: right ? C.good : "#CFDCD5", lw: right ? 6 : 3 });
+        ctx.fillStyle = right ? C.good : C.kiko; ctx.beginPath(); ctx.arc(380, y + 48, 30, 0, Math.PI * 2); ctx.fill();
+        text(ctx, "ABC"[i], 380, y + 61, 34, { align: "center", color: "#fff", weight: 900 });
+        text(ctx, o, 440, y + 62, 38, { weight: 700, color: answered && !right ? C.muted : C.ink });
+        if (right) text(ctx, "✓", 1540, y + 66, 54, { align: "center", color: C.good, weight: 900 });
+      });
+      if (!answered) { // thinking timer
+        const frac = clamp(l / b.dur, 0, 1); ctx.strokeStyle = "#D7E2DC"; ctx.lineWidth = 14; ctx.beginPath(); ctx.arc(1640, 230, 40, 0, Math.PI * 2); ctx.stroke();
+        ctx.strokeStyle = C.accent; ctx.beginPath(); ctx.arc(1640, 230, 40, -Math.PI / 2, -Math.PI / 2 + frac * Math.PI * 2); ctx.stroke();
+        text(ctx, "Pikirkan dulu, jangan buru-buru.", 960, 860, 32, { align: "center", color: C.ink2, weight: 600 });
+      }
+    },
+    quiz_answer(ctx, b, l, t, TL) { SCENES.quiz(ctx, b, l, t, TL, true); },
+    recap(ctx, b, l, t, TL) {
+      // TL.recap: tiga kalimat pendek dari script.json
+      card(ctx, 160, 140, 1600, 760);
+      text(ctx, "TIGA HAL UNTUK DIINGAT", 960, 230, 34, { align: "center", color: C.accentDark, weight: 900 });
+      const items = TL.recap || [];
+      const show = clamp(Math.floor((l - 0.6) / 2.2) + 1, 1, Math.max(1, items.length));
+      items.forEach((s, i) => { if (i >= show) return; card(ctx, 300, 290 + i * 180, 1320, 140, { fill: C.bg2 }); ctx.fillStyle = C.kiko; ctx.beginPath(); ctx.arc(380, 360 + i * 180, 40, 0, Math.PI * 2); ctx.fill(); text(ctx, String(i + 1), 380, 376 + i * 180, 40, { align: "center", color: "#fff", weight: 900 }); text(ctx, s, 450, 375 + i * 180, 42, { weight: 800 }); });
+      kiko(ctx, 1620, 820, 130, 0);
+    },
+    outro(ctx, b, l, t, TL) {
+      // TL.next: {code, title, note} episode berikutnya, dari script.json
+      const n = TL.next || {};
+      card(ctx, 260, 200, 1400, 600);
+      text(ctx, "EPISODE BERIKUTNYA", 960, 320, 34, { align: "center", color: C.accentDark, weight: 900 });
+      text(ctx, n.code || "", 960, 440, 60, { align: "center", weight: 900 });
+      text(ctx, n.title || "", 960, 530, 54, { align: "center", weight: 800, color: C.ink2 });
+      text(ctx, n.note || "", 960, 680, 34, { align: "center", color: C.ink2, weight: 600 });
+      kiko(ctx, 960, 760 + 20, 140, 0, { wave: l });
+    }
+  };
+
+  function beatAt(TL, t) {
+    let b = TL.beats[0];
+    for (const x of TL.beats) { if (t >= x.start) b = x; else break; }
+    return b;
+  }
+  function draw(ctx, t, TL, opt = {}) {
+    const b = beatAt(TL, t); const l = t - b.start;
+    ctx.save(); ctx.setTransform(1, 0, 0, 1, 0, 0);
+    ctx.fillStyle = C.bg; ctx.fillRect(0, 0, W, H);
+    // header
+    text(ctx, TL.episode + " · " + TL.title, 60, 78, 30, { color: C.ink2, weight: 700 });
+    text(ctx, TL.segments[b.seg], 1860, 78, 30, { color: C.accentDark, weight: 800, align: "right" });
+    ctx.fillStyle = C.bg2; ctx.fillRect(0, 100, W, 6); ctx.fillStyle = C.accent; ctx.fillRect(0, 100, W * clamp(t / TL.total, 0, 1), 6);
+    const fn = SCENES[b.scene]; if (fn) fn(ctx, b, l, t, TL);
+    // narration card (burned-in text the student reads)
+    if (opt.subtitles !== false) {
+      const size = 44; const lines = wrap(ctx, b.text, size, 700, 1660);
+      const h = lines.length * size * 1.3 + 44; const y0 = 1056 - h;
+      ctx.fillStyle = "rgba(31,42,51,0.92)"; rr(ctx, 100, y0, 1720, h, 20); ctx.fill();
+      // reading progress (how far along the text the reader should be)
+      const frac = clamp(l / b.audio, 0, 1); ctx.fillStyle = C.accent; rr(ctx, 100, y0 + h - 8, 1720 * frac, 8, 4); ctx.fill();
+      lines.forEach((ln, i) => text(ctx, ln, 960, y0 + 22 + size + i * size * 1.3, size, { align: "center", color: C.subText, weight: 700 }));
+    }
+    ctx.restore();
+    return b;
+  }
+
+  global.Kiko = { draw, beatAt, W, H, C, FONT, SCENES,
+    helpers: { rr, text, wrap, para, arrowIcon, bakso, table, kiko, kid, bubble, card, ease, clamp, lerp } };
+})(typeof window !== "undefined" ? window : globalThis);
+
+/* Pembantu gambar perangkat (dipakai D7.0, D7.2, …): monitor, mouse, pointer, keyboard, HP, jari, ikon file/folder, jendela.
+   Semua digambar dengan kode (tanpa aset unduhan). Muat setelah ../_alat/kiko-core.js; dipakai scenes.js. */
+(function (global) {
+  const K = global.Kiko, H = K.helpers, C = K.C;
+  const { rr, text, wrap, card, ease, clamp, lerp } = H;
+  const D = {};
+  const SCREEN_BG = "#F4F8FB", BEZEL = "#2B3A46", BEZEL2 = "#1A262F", SEL = "rgba(46,126,154,0.22)";
+
+  // ---------- komputer ----------
+  // monitor di atas meja; mengembalikan kotak layar {x,y,w,h}
+  D.monitor = function (ctx, x, y, w, h) {
+    ctx.fillStyle = BEZEL; rr(ctx, x - 18, y - 18, w + 36, h + 36, 22); ctx.fill();
+    ctx.fillStyle = SCREEN_BG; rr(ctx, x, y, w, h, 10); ctx.fill();
+    // kaki dan meja
+    ctx.fillStyle = BEZEL2; rr(ctx, x + w / 2 - 40, y + h + 18, 80, 36, 8); ctx.fill(); rr(ctx, x + w / 2 - 140, y + h + 50, 280, 16, 8); ctx.fill();
+    ctx.fillStyle = C.tableTop; rr(ctx, x - 80, y + h + 66, w + 160, 22, 8); ctx.fill();
+    return { x, y, w, h };
+  };
+  // panah pointer
+  D.pointer = function (ctx, x, y, s = 34, color = C.ink) {
+    ctx.save(); ctx.translate(x, y); ctx.fillStyle = color; ctx.strokeStyle = "#fff"; ctx.lineWidth = s * 0.08; ctx.lineJoin = "round";
+    ctx.beginPath(); ctx.moveTo(0, 0); ctx.lineTo(0, s); ctx.lineTo(s * 0.27, s * 0.78); ctx.lineTo(s * 0.45, s * 1.15); ctx.lineTo(s * 0.62, s * 1.07); ctx.lineTo(s * 0.45, s * 0.7); ctx.lineTo(s * 0.75, s * 0.7); ctx.closePath();
+    ctx.fill(); ctx.stroke(); ctx.restore();
+  };
+  // mouse tampak atas; opt.left / opt.right = tombol ditekan; opt.label = tulis "kiri/kanan"
+  D.mouse = function (ctx, cx, cy, s, opt = {}) {
+    ctx.save(); ctx.translate(cx, cy);
+    ctx.fillStyle = "rgba(0,0,0,0.12)"; ctx.beginPath(); ctx.ellipse(0, s * 0.62, s * 0.5, s * 0.1, 0, 0, Math.PI * 2); ctx.fill();
+    // kabel
+    ctx.strokeStyle = "#7B8B95"; ctx.lineWidth = s * 0.05; ctx.beginPath(); ctx.moveTo(0, -s * 0.6); ctx.quadraticCurveTo(0, -s * 1.0, s * 0.5, -s * 1.1); ctx.stroke();
+    // badan
+    ctx.fillStyle = "#E8EEF2"; rr(ctx, -s * 0.42, -s * 0.62, s * 0.84, s * 1.24, s * 0.4); ctx.fill(); ctx.strokeStyle = "#A9B7C0"; ctx.lineWidth = s * 0.04; ctx.stroke();
+    // dua tombol
+    const btn = (side, on) => { ctx.fillStyle = on ? C.accent : "#F7FAFC"; ctx.beginPath(); const sx = side === "left" ? -1 : 1;
+      ctx.moveTo(sx * s * 0.03, -s * 0.6); ctx.lineTo(sx * s * 0.03, -s * 0.1); ctx.lineTo(sx * s * 0.4, -s * 0.1); ctx.lineTo(sx * s * 0.4, -s * 0.28); ctx.quadraticCurveTo(sx * s * 0.4, -s * 0.6, sx * s * 0.1, -s * 0.6); ctx.closePath(); ctx.fill(); ctx.strokeStyle = "#A9B7C0"; ctx.lineWidth = s * 0.03; ctx.stroke(); };
+    btn("left", opt.left); btn("right", opt.right);
+    ctx.fillStyle = "#A9B7C0"; rr(ctx, -s * 0.04, -s * 0.5, s * 0.08, s * 0.26, s * 0.04); ctx.fill(); // roda
+    ctx.restore();
+    if (opt.label) { text(ctx, "kiri", cx - s * 0.22, cy - s * 0.72, 26, { align: "center", color: opt.left ? C.accentDark : C.ink2, weight: 800 }); text(ctx, "kanan", cx + s * 0.22, cy - s * 0.72, 26, { align: "center", color: opt.right ? C.accentDark : C.ink2, weight: 800 }); }
+  };
+  // riak "klik" di sekitar titik
+  D.ripple = function (ctx, x, y, u, color = C.accent) { if (u <= 0 || u >= 1) return; ctx.strokeStyle = color; ctx.globalAlpha = 1 - u; ctx.lineWidth = 6; ctx.beginPath(); ctx.arc(x, y, 12 + u * 60, 0, Math.PI * 2); ctx.stroke(); ctx.globalAlpha = 1; };
+
+  // ---------- ikon file & folder ----------
+  const KIND = { folder: "#F2B134", foto: "#5FA8D3", tulisan: "#7B8B95", lagu: "#8E6BBF", video: "#D9443B" };
+  D.fileIcon = function (ctx, cx, cy, s, kind, opt = {}) {
+    ctx.save(); ctx.translate(cx, cy);
+    if (opt.selected) { ctx.fillStyle = SEL; rr(ctx, -s * 0.62, -s * 0.62, s * 1.24, s * 1.24 + (opt.name ? s * 0.5 : 0), s * 0.14); ctx.fill(); }
+    if (kind === "folder") {
+      ctx.fillStyle = "#D99A1B"; rr(ctx, -s * 0.5, -s * 0.32, s * 0.45, s * 0.2, s * 0.06); ctx.fill();
+      ctx.fillStyle = opt.open ? "#F7C860" : KIND.folder; rr(ctx, -s * 0.5, -s * 0.22, s, s * 0.7, s * 0.08); ctx.fill();
+      if (opt.open) { ctx.fillStyle = "#D99A1B"; rr(ctx, -s * 0.46, -s * 0.02, s * 0.92, s * 0.5, s * 0.08); ctx.fill(); }
+    } else {
+      ctx.fillStyle = "#FFFFFF"; ctx.strokeStyle = "#B7C4CC"; ctx.lineWidth = s * 0.05;
+      ctx.beginPath(); ctx.moveTo(-s * 0.36, -s * 0.5); ctx.lineTo(s * 0.12, -s * 0.5); ctx.lineTo(s * 0.36, -s * 0.26); ctx.lineTo(s * 0.36, s * 0.5); ctx.lineTo(-s * 0.36, s * 0.5); ctx.closePath(); ctx.fill(); ctx.stroke();
+      ctx.fillStyle = KIND[kind] || KIND.tulisan;
+      if (kind === "foto") { rr(ctx, -s * 0.26, -s * 0.2, s * 0.52, s * 0.44, s * 0.04); ctx.fill(); ctx.fillStyle = "#fff"; ctx.beginPath(); ctx.arc(-s * 0.12, -s * 0.08, s * 0.06, 0, Math.PI * 2); ctx.fill(); ctx.beginPath(); ctx.moveTo(-s * 0.26, s * 0.24); ctx.lineTo(-s * 0.06, s * 0.02); ctx.lineTo(s * 0.06, s * 0.14); ctx.lineTo(s * 0.14, s * 0.06); ctx.lineTo(s * 0.26, s * 0.24); ctx.closePath(); ctx.fill(); }
+      else if (kind === "lagu") { ctx.beginPath(); ctx.arc(-s * 0.1, s * 0.22, s * 0.1, 0, Math.PI * 2); ctx.arc(s * 0.16, s * 0.16, s * 0.1, 0, Math.PI * 2); ctx.fill(); ctx.lineWidth = s * 0.06; ctx.strokeStyle = KIND.lagu; ctx.beginPath(); ctx.moveTo(0, s * 0.2); ctx.lineTo(0, -s * 0.2); ctx.lineTo(s * 0.26, -s * 0.26); ctx.lineTo(s * 0.26, s * 0.14); ctx.stroke(); }
+      else if (kind === "video") { rr(ctx, -s * 0.26, -s * 0.16, s * 0.52, s * 0.4, s * 0.04); ctx.fill(); ctx.fillStyle = "#fff"; ctx.beginPath(); ctx.moveTo(-s * 0.06, -s * 0.04); ctx.lineTo(s * 0.12, s * 0.04); ctx.lineTo(-s * 0.06, s * 0.12); ctx.closePath(); ctx.fill(); }
+      else { for (let i = 0; i < 4; i++) { rr(ctx, -s * 0.22, -s * 0.14 + i * s * 0.14, s * (i === 3 ? 0.26 : 0.44), s * 0.06, s * 0.03); ctx.fill(); } }
+    }
+    ctx.restore();
+    if (opt.name) { const lines = wrap(ctx, opt.name, opt.size || 24, 700, s * 1.6); lines.slice(0, 2).forEach((ln, i) => text(ctx, ln, cx, cy + s * 0.78 + i * (opt.size || 24) * 1.15, opt.size || 24, { align: "center", weight: 700, color: opt.color || C.ink })); }
+  };
+  D.KIND = KIND;
+
+  // jendela aplikasi (file manager / editor) di dalam layar; mengembalikan area isi
+  D.windowFrame = function (ctx, x, y, w, h, title, opt = {}) {
+    ctx.fillStyle = "#FFFFFF"; rr(ctx, x, y, w, h, 14); ctx.fill(); ctx.strokeStyle = "#C9D4DB"; ctx.lineWidth = 3; ctx.stroke();
+    ctx.fillStyle = "#E6EDF2"; rr(ctx, x, y, w, 54, 14); ctx.fill(); ctx.fillRect(x, y + 30, w, 24);
+    ["#E0655C", "#F2B134", "#2E9E5B"].forEach((c, i) => { ctx.fillStyle = c; ctx.beginPath(); ctx.arc(x + 26 + i * 26, y + 27, 8, 0, Math.PI * 2); ctx.fill(); });
+    if (title) text(ctx, title, x + w / 2, y + 36, 24, { align: "center", color: C.ink2, weight: 800 });
+    if (opt.path) { ctx.fillStyle = "#F4F8FB"; rr(ctx, x + 16, y + 66, w - 32, 44, 10); ctx.fill(); text(ctx, opt.path, x + 32, y + 96, 24, { color: C.ink2, weight: 700 }); }
+    return { x: x + 16, y: y + (opt.path ? 124 : 70), w: w - 32, h: h - (opt.path ? 140 : 86) };
+  };
+  // kotak teks dengan kursor berkedip; opt.cursor = posisi karakter (bawaan akhir)
+  D.textBox = function (ctx, x, y, w, h, lines, tt, opt = {}) {
+    ctx.fillStyle = "#FFFFFF"; rr(ctx, x, y, w, h, 14); ctx.fill(); ctx.strokeStyle = opt.stroke || "#C9D4DB"; ctx.lineWidth = 3; ctx.stroke();
+    const size = opt.size || 48, lh = size * 1.4;
+    lines.forEach((ln, i) => text(ctx, ln, x + 28, y + 24 + size + i * lh, size, { weight: 700, color: opt.color || C.ink }));
+    if (opt.cursor !== false) {
+      const li = lines.length - 1, s = lines[li] || ""; ctx.font = `700 ${size}px ${K.FONT}`; const cw = ctx.measureText(s).width;
+      if (Math.floor(tt * 2.5) % 2 === 0 || opt.cursorOn) { ctx.fillStyle = C.kiko; ctx.fillRect(x + 30 + cw, y + 22 + li * lh, 5, size * 1.15); }
+      return [x + 32 + cw, y + 22 + li * lh + size * 0.6];
+    }
+  };
+
+  // ---------- keyboard ----------
+  const ROWS = [["Q", "W", "E", "R", "T", "Y", "U", "I", "O", "P"], ["A", "S", "D", "F", "G", "H", "J", "K", "L"], ["Z", "X", "C", "V", "B", "N", "M"]];
+  // keyboard sederhana: 3 baris huruf + Shift, Spasi, Backspace, Enter. opt.pressed = [tombol], opt.glow = [tombol] disorot lembut
+  D.keyboard = function (ctx, x, y, w, opt = {}) {
+    const key = w / 11.6, gap = key * 0.12, k = key - gap, h = k * 4 + gap * 5;
+    ctx.fillStyle = BEZEL; rr(ctx, x - 16, y - 16, w + 32, h + 32, 22); ctx.fill();
+    const pressed = opt.pressed || [], glow = opt.glow || [];
+    const draw = (kx, ky, kw, label, small) => {
+      const on = pressed.includes(label), soft = glow.includes(label);
+      ctx.fillStyle = on ? C.accent : soft ? "#FFF3D6" : "#F7FAFC"; rr(ctx, kx, ky + (on ? 4 : 0), kw, k - (on ? 4 : 0), 10); ctx.fill();
+      ctx.strokeStyle = on ? C.accentDark : soft ? C.accent : "#B7C4CC"; ctx.lineWidth = on || soft ? 4 : 2; ctx.stroke();
+      // ukuran huruf mengikuti ukuran tombol; pada keyboard mini (tombol < 40 px) label tombol khusus tidak digambar
+      const fs = small ? Math.min(24, k * 0.45) : Math.min(32, k * 0.6);
+      if (small ? k >= 40 : k >= 18) text(ctx, label, kx + kw / 2, ky + k / 2 + fs * 0.38, fs, { align: "center", weight: 800, color: on ? "#fff" : C.ink });
+    };
+    ROWS.forEach((row, r) => { const off = r === 0 ? 0 : r === 1 ? key * 0.35 : key * 0.85; row.forEach((lab, i) => draw(x + gap + off + i * key, y + gap + r * key, k, lab)); });
+    draw(x + gap + key * 0.85 + 7 * key + gap, y + gap + 2 * key, key * 2.4 - gap, "Backspace", true);
+    draw(x + gap, y + gap + 3 * key, key * 1.9 - gap, "Shift", true);
+    draw(x + gap + key * 1.9, y + gap + 3 * key, key * 6.2 - gap, "Spasi", true);
+    draw(x + gap + key * 8.1, y + gap + 3 * key, key * 2.3 - gap, "Enter", true);
+    draw(x + gap + key * 0.35 + 9 * key, y + gap + 1 * key, key * 1.9 - gap, "Enter", true);
+    return { x, y, w, h };
+  };
+
+  // ---------- HP & jari ----------
+  // HP tegak; mengembalikan kotak layar
+  D.phone = function (ctx, cx, cy, w, h) {
+    ctx.fillStyle = BEZEL; rr(ctx, cx - w / 2 - 14, cy - h / 2 - 22, w + 28, h + 44, 40); ctx.fill();
+    ctx.fillStyle = SCREEN_BG; rr(ctx, cx - w / 2, cy - h / 2, w, h, 26); ctx.fill();
+    ctx.fillStyle = BEZEL2; rr(ctx, cx - 40, cy - h / 2 + 8, 80, 12, 6); ctx.fill();
+    return { x: cx - w / 2, y: cy - h / 2, w, h };
+  };
+  // kisi ikon aplikasi generik di layar HP; mengembalikan posisi tiap ikon
+  const APPS = [["Kamera", "#2E7E9A"], ["Galeri", "#5FA8D3"], ["Pesan", "#2E9E5B"], ["Musik", "#8E6BBF"], ["Kalkulator", "#7B8B95"], ["Peta", "#F2B134"], ["Catatan", "#E0A23B"], ["Jam", "#D9443B"], ["Cuaca", "#4C9BE0"]];
+  D.appGrid = function (ctx, sc, opt = {}) {
+    const cols = 3, cell = sc.w / cols, out = [];
+    APPS.forEach(([name, col], i) => {
+      const r = Math.floor(i / cols), c = i % cols; const ax = sc.x + cell * c + cell / 2, ay = sc.y + 90 + r * (cell + 26);
+      const on = opt.active === name; const sz = cell * 0.56 * (on && opt.scale ? opt.scale : 1);
+      ctx.fillStyle = col; rr(ctx, ax - sz / 2, ay - sz / 2, sz, sz, sz * 0.24); ctx.fill();
+      if (on) { ctx.strokeStyle = C.accent; ctx.lineWidth = 6; ctx.stroke(); }
+      text(ctx, name, ax, ay + sz / 2 + 26, 20, { align: "center", weight: 700, color: C.ink2 });
+      out.push({ name, x: ax, y: ay });
+    });
+    return out;
+  };
+  // ujung jari yang menyentuh layar di (x,y); opt.press = sedang menekan (riak); opt.second = jari kedua
+  D.finger = function (ctx, x, y, opt = {}) {
+    const s = opt.s || 46;
+    ctx.save(); ctx.translate(x, y); ctx.rotate(opt.angle !== undefined ? opt.angle : 0.5);
+    ctx.fillStyle = "rgba(0,0,0,0.10)"; ctx.beginPath(); ctx.ellipse(0, s * 0.25, s * 0.7, s * 0.4, 0, 0, Math.PI * 2); ctx.fill();
+    ctx.fillStyle = C.skin; rr(ctx, -s * 0.5, -s * 0.3, s, s * 3.2, s * 0.5); ctx.fill();
+    ctx.fillStyle = "#F7D9BE"; ctx.beginPath(); ctx.ellipse(0, s * 0.1, s * 0.3, s * 0.42, 0, 0, Math.PI * 2); ctx.fill();
+    ctx.restore();
+    if (opt.press) { ctx.fillStyle = "rgba(46,126,154,0.25)"; ctx.beginPath(); ctx.arc(x, y, s * 0.8, 0, Math.PI * 2); ctx.fill(); }
+  };
+  // menu konteks (klik kanan / tekan lama)
+  D.menu = function (ctx, x, y, items, opt = {}) {
+    const w = opt.w || 300, rowH = 52; ctx.fillStyle = "#FFFFFF"; rr(ctx, x, y, w, rowH * items.length + 16, 12); ctx.fill(); ctx.strokeStyle = "#B7C4CC"; ctx.lineWidth = 3; ctx.stroke();
+    ctx.fillStyle = "rgba(0,0,0,0.08)";
+    items.forEach((it, i) => { if (opt.active === i) { ctx.fillStyle = "#FFF3D6"; rr(ctx, x + 8, y + 8 + i * rowH, w - 16, rowH, 8); ctx.fill(); } text(ctx, it, x + 24, y + 8 + i * rowH + 36, 28, { weight: 700 }); });
+  };
+  // kartu keterangan kecil di kanan/bawah adegan
+  D.note = function (ctx, x, y, w, s, opt = {}) { card(ctx, x, y, w, opt.h || 96, { fill: opt.fill || "#FFF3D6", stroke: opt.stroke || C.accent, lw: 4 }); text(ctx, s, x + w / 2, y + (opt.h || 96) / 2 + 14, opt.size || 36, { align: "center", weight: 900, color: opt.color || C.ink }); };
+
+  K.devices = D;
+})(typeof window !== "undefined" ? window : globalThis);
+
+/* Pembantu gambar D9.2: router, titik akses Wi-Fi dengan gelombang, server/rak pusat data, awan ISP, kabel, paket data berjalan,
+   kartu alamat IP, rumah/gedung sekolah, laptop, printer. Muat setelah kiko-core.js dan kiko-devices.js. */
+(function (global) {
+  const K = global.Kiko, H = K.helpers, C = K.C, D = K.devices;
+  const { rr, text, wrap, card, clamp, lerp } = H;
+  const Q = {};
+  Q.router = function (ctx, cx, cy, s, opt = {}) {
+    ctx.fillStyle = "#2F3B45"; rr(ctx, cx - s * 0.6, cy - s * 0.18, s * 1.2, s * 0.36, s * 0.08); ctx.fill();
+    [-0.35, 0.35].forEach(dx => { ctx.strokeStyle = "#2F3B45"; ctx.lineWidth = s * 0.06; ctx.lineCap = "round"; ctx.beginPath(); ctx.moveTo(cx + dx * s, cy - s * 0.18); ctx.lineTo(cx + dx * s * 1.2, cy - s * 0.6); ctx.stroke(); });
+    [0, 1, 2, 3].forEach(i => { ctx.fillStyle = opt.off ? "#7B8B95" : i === 2 && opt.alert ? C.bad : C.good; ctx.beginPath(); ctx.arc(cx - s * 0.3 + i * s * 0.2, cy, s * 0.04, 0, Math.PI * 2); ctx.fill(); });
+    if (opt.label !== false) text(ctx, opt.label || "router", cx, cy + s * 0.5, 22, { align: "center", weight: 800, color: C.ink2 });
+  };
+  Q.waves = function (ctx, cx, cy, r, n, opt = {}) { for (let i = 1; i <= n; i++) { ctx.strokeStyle = opt.color || C.kiko; ctx.globalAlpha = opt.alpha != null ? opt.alpha : 1 - (i - 1) / (n + 1); ctx.lineWidth = 5; ctx.beginPath(); ctx.arc(cx, cy, r * i, -Math.PI * 0.75, -Math.PI * 0.25); ctx.stroke(); } ctx.globalAlpha = 1; };
+  Q.server = function (ctx, cx, cy, w, h, opt = {}) {
+    ctx.fillStyle = "#2F3B45"; rr(ctx, cx - w / 2, cy - h / 2, w, h, 10); ctx.fill();
+    const rows = Math.floor(h / 40); for (let i = 0; i < rows; i++) { ctx.fillStyle = "#4A5A66"; rr(ctx, cx - w / 2 + 10, cy - h / 2 + 10 + i * 40, w - 20, 28, 5); ctx.fill(); ctx.fillStyle = (i + (opt.tick || 0)) % 3 === 0 ? C.good : "#8FD0E6"; ctx.beginPath(); ctx.arc(cx + w / 2 - 24, cy - h / 2 + 24 + i * 40, 5, 0, Math.PI * 2); ctx.fill(); }
+    if (opt.label !== false) text(ctx, opt.label || "server", cx, cy + h / 2 + 30, 24, { align: "center", weight: 800, color: C.ink2 });
+  };
+  Q.cloud = function (ctx, cx, cy, s, label, opt = {}) {
+    ctx.fillStyle = opt.fill || "#DCEBF2"; ctx.strokeStyle = opt.stroke || C.kiko; ctx.lineWidth = 4; ctx.beginPath();
+    ctx.arc(cx - s * 0.5, cy + s * 0.1, s * 0.35, 0, Math.PI * 2); ctx.arc(cx - s * 0.1, cy - s * 0.2, s * 0.45, 0, Math.PI * 2); ctx.arc(cx + s * 0.4, cy, s * 0.4, 0, Math.PI * 2); ctx.arc(cx, cy + s * 0.25, s * 0.4, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
+    if (label) { const lines = wrap(ctx, label, opt.size || 26, 900, s * 1.6); lines.forEach((ln, i) => text(ctx, ln, cx, cy + 8 + (i - (lines.length - 1) / 2) * 30, opt.size || 26, { align: "center", weight: 900, color: opt.color || C.kiko })); }
+  };
+  Q.cable = function (ctx, pts, opt = {}) { ctx.strokeStyle = opt.color || "#7B8B95"; ctx.lineWidth = opt.lw || 6; ctx.lineJoin = "round"; ctx.setLineDash(opt.dash ? [12, 10] : []); ctx.beginPath(); pts.forEach((p, i) => i ? ctx.lineTo(p[0], p[1]) : ctx.moveTo(p[0], p[1])); ctx.stroke(); ctx.setLineDash([]); };
+  Q.along = function (path, u) { const segs = []; let total = 0; for (let i = 1; i < path.length; i++) { const d = Math.hypot(path[i][0] - path[i - 1][0], path[i][1] - path[i - 1][1]); segs.push(d); total += d; } let t = clamp(u, 0, 1) * total; for (let i = 1; i < path.length; i++) { if (t <= segs[i - 1] || i === path.length - 1) { const f = segs[i - 1] ? Math.min(1, t / segs[i - 1]) : 1; return [lerp(path[i - 1][0], path[i][0], f), lerp(path[i - 1][1], path[i][1], f)]; } t -= segs[i - 1]; } return path[path.length - 1]; };
+  Q.packet = function (ctx, x, y, n, opt = {}) { ctx.save(); ctx.shadowColor = "rgba(0,0,0,0.25)"; ctx.shadowBlur = 8; ctx.fillStyle = opt.color || C.accent; rr(ctx, x - 22, y - 16, 44, 32, 6); ctx.fill(); ctx.restore(); ctx.strokeStyle = "#fff"; ctx.lineWidth = 2; rr(ctx, x - 22, y - 16, 44, 32, 6); ctx.stroke(); if (n != null) text(ctx, String(n), x, y + 7, 18, { align: "center", weight: 900, color: "#fff" }); };
+  Q.ipTag = function (ctx, cx, cy, ip, opt = {}) { const w = opt.w || 190; card(ctx, cx - w / 2, cy - 18, w, 36, { fill: opt.fill || "#FFF9E0", stroke: opt.stroke || "#E0B04B", lw: 2, r: 8 }); text(ctx, ip, cx, cy + 7, 20, { align: "center", weight: 900, color: C.ink }); };
+  Q.house = function (ctx, cx, baseY, w, h, label, opt = {}) { ctx.fillStyle = opt.fill || "#FFF9E0"; ctx.strokeStyle = opt.stroke || "#E0B04B"; ctx.lineWidth = 4; ctx.beginPath(); ctx.moveTo(cx - w / 2, baseY); ctx.lineTo(cx - w / 2, baseY - h); ctx.lineTo(cx, baseY - h - w * 0.3); ctx.lineTo(cx + w / 2, baseY - h); ctx.lineTo(cx + w / 2, baseY); ctx.closePath(); ctx.fill(); ctx.stroke(); if (label) text(ctx, label, cx, baseY + 30, 24, { align: "center", weight: 800, color: C.ink2 }); };
+  Q.laptop = function (ctx, cx, cy, s) { ctx.fillStyle = "#2F3B45"; rr(ctx, cx - s * 0.5, cy - s * 0.4, s, s * 0.62, 6); ctx.fill(); ctx.fillStyle = "#DCEBF2"; rr(ctx, cx - s * 0.44, cy - s * 0.34, s * 0.88, s * 0.5, 4); ctx.fill(); ctx.fillStyle = "#4A5A66"; rr(ctx, cx - s * 0.6, cy + s * 0.22, s * 1.2, s * 0.08, 3); ctx.fill(); };
+  Q.printer = function (ctx, cx, cy, s) { ctx.fillStyle = "#7B8B95"; rr(ctx, cx - s * 0.5, cy - s * 0.2, s, s * 0.4, 6); ctx.fill(); ctx.fillStyle = "#4A5A66"; rr(ctx, cx - s * 0.35, cy - s * 0.4, s * 0.7, s * 0.22, 4); ctx.fill(); ctx.fillStyle = "#fff"; rr(ctx, cx - s * 0.3, cy + s * 0.15, s * 0.6, s * 0.3, 3); ctx.fill(); };
+  Q.phoneSmall = function (ctx, cx, cy, s, opt = {}) { ctx.fillStyle = "#2F3B45"; rr(ctx, cx - s * 0.28, cy - s * 0.5, s * 0.56, s, s * 0.1); ctx.fill(); ctx.fillStyle = opt.screen || "#DCEBF2"; rr(ctx, cx - s * 0.23, cy - s * 0.42, s * 0.46, s * 0.84, s * 0.06); ctx.fill(); if (opt.label) text(ctx, opt.label, cx, cy + s * 0.5 + 28, 22, { align: "center", weight: 800, color: C.ink2 }); };
+  Q.tower = function (ctx, cx, baseY, h) { ctx.strokeStyle = "#7B8B95"; ctx.lineWidth = 5; ctx.beginPath(); ctx.moveTo(cx - 24, baseY); ctx.lineTo(cx, baseY - h); ctx.lineTo(cx + 24, baseY); ctx.moveTo(cx - 14, baseY - h * 0.4); ctx.lineTo(cx + 14, baseY - h * 0.4); ctx.moveTo(cx - 8, baseY - h * 0.7); ctx.lineTo(cx + 8, baseY - h * 0.7); ctx.stroke(); Q.waves(ctx, cx, baseY - h, 18, 3, { color: C.accent }); };
+  K.jaringan = Q;
+})(typeof window !== "undefined" ? window : globalThis);
+
+/* Pembantu gambar F11.7: tumpukan empat lapisan TCP/IP, paket berheader (enkapsulasi), topologi bus/bintang/mesh/pohon
+   dengan kabel putus, jalur lompatan paket, amplop berlapis. Gaya diagram Fase F. Muat setelah kiko-core.js, kiko-devices.js, jaringan.js. */
+(function (global) {
+  const K = global.Kiko, H = K.helpers, C = K.C, J = K.jaringan;
+  const { rr, text, para, card, clamp } = H;
+  const Lp = {};
+  Lp.LAYERS = [["aplikasi", "HTTP, pesan, isi berkas", "#2E9E5B"], ["transport", "TCP/UDP: segmen bernomor, port", "#2E7E9A"], ["internet", "IP: alamat tujuan, jalur", "#8E6BBF"], ["tautan", "MAC, kabel atau Wi-Fi", "#B57A12"]];
+  // tumpukan lapisan: n tampil dari atas, active disorot
+  Lp.stack = function (ctx, x, y, w, n, opt = {}) {
+    Lp.LAYERS.forEach(([nm, s, col], i) => { ctx.save(); if (i >= n) ctx.globalAlpha = 0.2; const ry = y + i * (opt.h || 90); const on = opt.active === i; card(ctx, x, ry, w, (opt.h || 90) - 10, { fill: on ? "#FFF3D6" : "#fff", stroke: col, lw: on ? 6 : 4, r: 12 }); ctx.fillStyle = col; rr(ctx, x, ry, 14, (opt.h || 90) - 10, 6); ctx.fill(); text(ctx, (4 - i) + ". " + nm, x + 30, ry + 34, 24, { weight: 900, color: col }); text(ctx, s, x + 30, ry + 62, 18, { weight: 700, color: C.ink2 }); ctx.restore(); });
+  };
+  // paket berheader: k = jumlah header (0..3) dari kanan ke kiri: [MAC][IP][TCP][DATA]
+  Lp.packet = function (ctx, x, y, k, opt = {}) {
+    const hw = opt.hw || 110, dw = opt.dw || 220, h = opt.h || 56; const heads = [["port 8080 · no. 3", Lp.LAYERS[1][2]], ["ke 10.0.3.12", Lp.LAYERS[2][2]], ["MAC 5A:2F:…", Lp.LAYERS[3][2]]];
+    let cx = x + 3 * hw; card(ctx, cx, y, dw, h, { fill: Lp.LAYERS[0][2], r: 8 }); text(ctx, opt.data || "DATA: foto.jpg (bagian 3)", cx + dw / 2, y + h / 2 + 7, 18, { align: "center", weight: 900, color: "#fff" });
+    for (let i = 0; i < k; i++) { cx -= hw; card(ctx, cx, y, hw - 4, h, { fill: heads[i][1], r: 8 }); text(ctx, heads[i][0], cx + (hw - 4) / 2, y + h / 2 + 6, 14, { align: "center", weight: 900, color: "#fff" }); }
+  };
+  // amplop: nested rectangles with labels; depth = jumlah amplop (0..3)
+  Lp.envelope = function (ctx, cx, cy, depth, opt = {}) {
+    const labels = ["untuk: aplikasi Chat", "pintu: 8080", "alamat: Jl. Melati 12", "kurir: jalur A"]; const cols = [Lp.LAYERS[0][2], Lp.LAYERS[1][2], Lp.LAYERS[2][2], Lp.LAYERS[3][2]];
+    for (let i = depth; i >= 0; i--) { const w = 200 + i * 90, h = 120 + i * 60; card(ctx, cx - w / 2, cy - h / 2, w, h, { fill: i === 0 ? "#FFF9E0" : "#fff", stroke: cols[i], lw: 4, r: 10 }); text(ctx, i === 0 ? "pesan" : labels[i], cx, cy - h / 2 + 24, 16, { align: "center", weight: 900, color: cols[i] }); if (i === 0) text(ctx, opt.msg || "“Hai, Dito!”", cx, cy + 12, 22, { align: "center", weight: 900 }); }
+  };
+  // topologi: kind "bus"|"star"|"mesh"|"tree"; opt.cut = indeks kabel yang diputus; menggambar simpul dan menandai yang terputus dari simpul 0
+  Lp.TOPO = {
+    bus: { nodes: [[-240, -60], [-120, 60], [0, -60], [120, 60], [240, -60]], links: [[0, 1], [1, 2], [2, 3], [3, 4]] },
+    star: { nodes: [[0, 0], [-200, -90], [200, -90], [-200, 90], [200, 90]], links: [[0, 1], [0, 2], [0, 3], [0, 4]], hub: 0 },
+    mesh: { nodes: [[-200, -90], [200, -90], [-200, 90], [200, 90], [0, 0]], links: [[0, 1], [0, 2], [0, 4], [1, 3], [1, 4], [2, 3], [2, 4], [3, 4]] },
+    tree: { nodes: [[0, -110], [-180, 0], [180, 0], [-260, 100], [-100, 100], [100, 100], [260, 100]], links: [[0, 1], [0, 2], [1, 3], [1, 4], [2, 5], [2, 6]] }
+  };
+  Lp.reach = function (kind, cut) { const t = Lp.TOPO[kind]; const adj = t.nodes.map(() => []); t.links.forEach(([a, b], i) => { if (i === cut) return; adj[a].push(b); adj[b].push(a); }); const seen = new Set([0]); const q = [0]; while (q.length) { const u = q.shift(); adj[u].forEach(v => { if (!seen.has(v)) { seen.add(v); q.push(v); } }); } return seen; };
+  Lp.topo = function (ctx, cx, cy, kind, opt = {}) {
+    const t = Lp.TOPO[kind]; const sc = opt.scale || 1; const P = t.nodes.map(([x, y]) => [cx + x * sc, cy + y * sc]); const reach = opt.cut != null ? Lp.reach(kind, opt.cut) : null;
+    t.links.forEach(([a, b], i) => { const cutHere = opt.cut === i; ctx.strokeStyle = cutHere ? C.bad : "#7B8B95"; ctx.lineWidth = 5 * sc; ctx.setLineDash(cutHere ? [10, 10] : []); ctx.beginPath(); ctx.moveTo(P[a][0], P[a][1]); ctx.lineTo(P[b][0], P[b][1]); ctx.stroke(); ctx.setLineDash([]); if (cutHere) text(ctx, "✂", (P[a][0] + P[b][0]) / 2, (P[a][1] + P[b][1]) / 2 + 10, 30 * sc, { align: "center", weight: 900, color: C.bad }); });
+    P.forEach(([x, y], i) => { const dead = reach && !reach.has(i); const hub = t.hub === i || (kind === "tree" && i < 3); ctx.fillStyle = dead ? "#E1E8E4" : hub ? C.kiko : "#fff"; ctx.strokeStyle = dead ? C.bad : hub ? C.kikoDark : C.kiko; ctx.lineWidth = 4; ctx.beginPath(); ctx.arc(x, y, (hub ? 22 : 18) * sc, 0, Math.PI * 2); ctx.fill(); ctx.stroke(); if (dead) text(ctx, "✕", x, y + 7 * sc, 20 * sc, { align: "center", weight: 900, color: C.bad }); });
+    if (opt.label) text(ctx, opt.label, cx, cy + 150 * sc, 24, { align: "center", weight: 900, color: C.ink2 });
+    return reach;
+  };
+  // jalur lompatan: hops [[label, icon fn or null]], pos 0..hops.length-1 (posisi paket, boleh pecahan)
+  Lp.hops = function (ctx, x, y, w, hops, pos, opt = {}) {
+    const step = w / (hops.length - 1); const pts = hops.map((_, i) => [x + i * step, y]);
+    J.cable(ctx, pts, { color: "#B7C4CC", lw: 6 });
+    hops.forEach(([lab, kind], i) => { const px = x + i * step; ctx.fillStyle = "#fff"; ctx.strokeStyle = C.kiko; ctx.lineWidth = 4; ctx.beginPath(); ctx.arc(px, y, 30, 0, Math.PI * 2); ctx.fill(); ctx.stroke(); text(ctx, kind || "•", px, y + 10, 26, { align: "center" }); para(ctx, lab, px, y + 60, 17, 150, { align: "center", weight: 800, color: C.ink2 }); });
+    if (pos != null) { const [px, py] = J.along(pts, clamp(pos / (hops.length - 1), 0, 1)); J.packet(ctx, px, py - 50, 1, { color: opt.color || C.accent }); }
+  };
+  K.lapisan = Lp;
+})(typeof window !== "undefined" ? window : globalThis);
+
+/* Adegan episode F11.7: Model Jaringan dan Pengiriman Data. Gaya diagram Fase F. Muat setelah kiko-core.js, kiko-devices.js, jaringan.js, lapisan.js. */
+(function (global) {
+  const K = global.Kiko, H = K.helpers, C = K.C, J = K.jaringan, Lp = K.lapisan, SCENES = K.SCENES;
+  const { text, para, card, kiko, kid, bubble, rr, ease, clamp, lerp, arrowIcon } = H;
+  const reveal = (l, t0, step, n) => clamp(Math.floor((l - t0) / step) + 1, 0, n);
+  const banner = (ctx, s, y = 745, w = 1000, opt = {}) => { card(ctx, 960 - w / 2, y, w, 80, { fill: opt.fill || "#FFF3D6", stroke: opt.stroke || C.accent, lw: 4 }); text(ctx, s, 960, y + 52, opt.size || 34, { align: "center", weight: 900, color: opt.color || C.accentDark }); };
+  const label = (ctx, s, x, y, opt = {}) => text(ctx, s, x, y, opt.size || 28, { align: "center", weight: 900, color: opt.color || C.accentDark });
+  const heading = (ctx, s, y = 230) => text(ctx, s, 960, y, 34, { align: "center", color: C.accentDark, weight: 800 });
+  const HOPS_LAN = [["HP Sinta", "📱"], ["titik akses Wi-Fi", "📶"], ["switch lab", "🔀"], ["laptop Dito", "💻"]];
+  const HOPS_NET = [["HP Sinta", "📱"], ["router sekolah", "📡"], ["penyedia internet", "🏢"], ["router antarkota", "🔀"], ["router benua lain", "🔀"], ["server", "🗄️"]];
+
+  Object.assign(SCENES, {
+    title_q(ctx, b, l) {
+      card(ctx, 120, 150, 1680, 740);
+      kiko(ctx, 260, 560, 160, 0, { mood: "happy" });
+      const n = reveal(l, 1.5, 2.0, 4);
+      [["🕸️", "topologi", "bentuk sambungan"], ["🤝", "klien–server & P2P", "peran perangkat"], ["✉️", "lapisan TCP/IP", "surat berlapis amplop"]].forEach(([ic, t, s], i) => { ctx.save(); if (i >= n) ctx.globalAlpha = 0.2; const x = 500 + i * 420; card(ctx, x, 280, 400, 300, { fill: i === n - 1 ? "#FFF3D6" : C.bg2, stroke: i === n - 1 ? C.accent : undefined, lw: 3, r: 18 }); text(ctx, ic, x + 200, 380, 64, { align: "center" }); para(ctx, t, x + 200, 450, 28, 370, { align: "center", weight: 900 }); text(ctx, s, x + 200, 520, 22, { align: "center", weight: 800, color: C.ink2 }); ctx.restore(); });
+      if (n >= 4) banner(ctx, "dari HP Sinta ke laptop Dito, lalu ke server jauh", 640, 1000);
+    },
+    prereq(ctx, b, l) {
+      card(ctx, 260, 200, 1400, 600);
+      text(ctx, "TONTON DULU", 960, 290, 34, { align: "center", color: C.accentDark, weight: 800 });
+      [["D9.2", "Jaringan Lokal dan Internet"], ["E.3", "Keamanan Akun dan Jaringan Dasar"]].forEach(([c, t], i) => { const x = 360 + i * 640; card(ctx, x, 340, 580, 280, { fill: C.bg2 }); text(ctx, "Episode " + c, x + 290, 430, 50, { align: "center", weight: 900 }); para(ctx, t, x + 290, 500, 28, 520, { align: "center", weight: 700, color: C.ink2 }); });
+      kiko(ctx, 1600, 760, 150, 0);
+    },
+    unplugged_amplop(ctx, b, l) {
+      card(ctx, 120, 150, 1680, 740); heading(ctx, "MAIN DULU: SURAT BERLAPIS AMPLOP", 215);
+      const n = reveal(l, 1.5, 1.9, 6);
+      Lp.envelope(ctx, 560, 500, clamp(n - 1, 0, 3));
+      [["pesan", "isi surat", Lp.LAYERS[0][2]], ["amplop kecil: nama aplikasi", "untuk aplikasi Chat", Lp.LAYERS[0][2]], ["amplop sedang: nomor pintu", "port 8080", Lp.LAYERS[1][2]], ["amplop besar: alamat rumah", "alamat IP", Lp.LAYERS[2][2]], ["tas kurir: jalur", "kabel atau Wi-Fi", Lp.LAYERS[3][2]]].forEach(([t, s, col], i) => { ctx.save(); if (i >= n) ctx.globalAlpha = 0.2; card(ctx, 1000, 270 + i * 84, 680, 72, { fill: i === n - 1 ? "#FFF3D6" : C.bg2, stroke: i === n - 1 ? C.accent : undefined, lw: 3, r: 12 }); ctx.fillStyle = col; rr(ctx, 1000, 270 + i * 84, 12, 72, 6); ctx.fill(); text(ctx, t, 1030, 300 + i * 84, 22, { weight: 900 }); text(ctx, s, 1030, 328 + i * 84, 17, { weight: 700, color: C.ink2 }); ctx.restore(); });
+      if (n >= 6) label(ctx, "penerima membuka lapis demi lapis: enkapsulasi", 960, 720, { size: 26 });
+    },
+    unplugged_benang(ctx, b, l) {
+      card(ctx, 120, 150, 1680, 740); heading(ctx, "TOPOLOGI DENGAN BENANG: GUNTING SATU, SIAPA TERPUTUS?", 215);
+      const n = reveal(l, 1.5, 2.4, 5);
+      Lp.topo(ctx, 520, 480, "star", { cut: n >= 3 ? 1 : null, label: "bintang: satu di tengah", scale: 1.1 });
+      ctx.save(); if (n < 2) ctx.globalAlpha = 0.25; Lp.topo(ctx, 1380, 480, "mesh", { cut: n >= 4 ? 0 : null, label: "mesh: semua saling terhubung", scale: 1.1 }); ctx.restore();
+      if (n >= 5) label(ctx, "bintang: satu murid terputus; mesh: tidak ada yang terputus", 960, 720, { size: 26 });
+    },
+    topologi(ctx, b, l) {
+      card(ctx, 120, 150, 1680, 740); heading(ctx, "TOPOLOGI: BENTUK SAMBUNGAN", 215);
+      const n = reveal(l, 1.5, 2.6, 4);
+      [["bus", "bus · satu kabel bersama", "murah; putus satu, putus semua", 1], ["star", "bintang · semua ke satu switch", "mudah dikelola; switch mati, semua mati", 1], ["mesh", "mesh · saling terhubung", "tahan putus; mahal", 2]].forEach(([k, t, s, cut], i) => { ctx.save(); if (i >= n) ctx.globalAlpha = 0.2; const cx = 440 + i * 520; card(ctx, cx - 250, 270, 500, 420, { fill: i === n - 1 ? "#FFF3D6" : C.bg2, stroke: i === n - 1 ? C.accent : undefined, lw: 3, r: 16 }); Lp.topo(ctx, cx, 440, k, { cut: n >= 4 ? cut : null, scale: 0.75 }); text(ctx, t, cx, 580, 22, { align: "center", weight: 900 }); para(ctx, s, cx, 615, 18, 460, { align: "center", weight: 700, color: C.ink2 }); ctx.restore(); });
+      if (n >= 4) label(ctx, "✂ satu kabel putus: lihat siapa yang ✕", 960, 735, { size: 24 });
+    },
+    pohon_sekolah(ctx, b, l) {
+      card(ctx, 120, 150, 1680, 740); heading(ctx, "JARINGAN SEKOLAH: POHON DARI LAB-LAB BINTANG", 215);
+      const n = reveal(l, 1.5, 2.4, 5);
+      J.cloud(ctx, 960, 290, 60, "ISP", { size: 20 });
+      J.cable(ctx, [[960, 330], [960, 380]]); J.router(ctx, 960, 400, 60, { label: "router sekolah" });
+      J.cable(ctx, [[960, 420], [960, 470]]); card(ctx, 880, 470, 160, 44, { fill: "#2F3B45", r: 8 }); text(ctx, "switch gedung", 960, 498, 16, { align: "center", weight: 900, color: "#fff" });
+      ["Lab 1", "Lab 2", "Perpustakaan", "Ruang guru"].forEach((lab, i) => { ctx.save(); if (n < i + 2) ctx.globalAlpha = 0.2; const cx = 420 + i * 360; J.cable(ctx, [[960, 514], [cx, 560], [cx, 590]]); card(ctx, cx - 70, 590, 140, 40, { fill: "#4A5A66", r: 8 }); text(ctx, "switch " + lab, cx, 616, 14, { align: "center", weight: 900, color: "#fff" }); [-100, -33, 33, 100].forEach(dx => { J.cable(ctx, [[cx, 630], [cx + dx, 670]]); J.laptop(ctx, cx + dx, 700, 44); }); ctx.restore(); });
+      if (n >= 5) label(ctx, "bertingkat: gangguan di satu lab tidak menjalar", 960, 770, { size: 24 });
+    },
+    klien_server(ctx, b, l) {
+      card(ctx, 120, 150, 1680, 740); heading(ctx, "KLIEN MEMINTA, SERVER MELAYANI", 215);
+      const n = reveal(l, 1.5, 2.0, 6);
+      J.server(ctx, 1300, 440, 160, 220, { label: "server web", tick: Math.floor(l * 3) });
+      [[400, 340, "📱 HP-mu"], [400, 500, "💻 laptop Dito"], [400, 660, "📱 HP Sinta"]].forEach(([x, y, t], i) => { ctx.save(); if (i >= n) ctx.globalAlpha = 0.2; card(ctx, x - 120, y - 30, 260, 60, { fill: "#fff", stroke: C.kiko, lw: 3, r: 12 }); text(ctx, t, x + 10, y + 9, 22, { align: "center", weight: 900 }); J.cable(ctx, [[x + 140, y], [1220, 440]], { color: "#B7C4CC" }); ctx.restore(); });
+      if (n >= 2) { J.packet(ctx, 700, 395, 1, { color: C.accent }); text(ctx, "minta: GET /jadwal", 700, 360, 18, { align: "center", weight: 900, color: C.accentDark }); }
+      if (n >= 3) { J.packet(ctx, 980, 405, 1, { color: C.good }); text(ctx, "layani: halaman jadwal", 980, 460, 18, { align: "center", weight: 900, color: C.good }); }
+      if (n >= 4) { card(ctx, 1500, 320, 200, 250, { fill: C.bg2, r: 12 }); ["web", "email", "gim daring", "streaming"].forEach((s, i) => text(ctx, "• " + s, 1520, 360 + i * 44, 20, { weight: 800 })); }
+      if (n >= 5) { card(ctx, 240, 740, 1440, 0, {}); label(ctx, "terpusat, mudah dikelola", 500, 760, { size: 22, color: C.good }); label(ctx, "server padam: semua klien terhenti", 1300, 760, { size: 22, color: C.bad }); }
+    },
+    p2p(ctx, b, l) {
+      card(ctx, 120, 150, 1680, 740); heading(ctx, "PEER-TO-PEER: SEMUA SETARA", 215);
+      const n = reveal(l, 1.5, 2.0, 6);
+      const P = [[560, 330], [1360, 330], [560, 620], [1360, 620], [960, 475]];
+      [[0, 1], [0, 2], [1, 3], [2, 3], [0, 4], [1, 4], [2, 4], [3, 4]].forEach(([a, b2]) => J.cable(ctx, [P[a], P[b2]], { color: "#B7C4CC" }));
+      P.forEach(([x, y], i) => { card(ctx, x - 90, y - 30, 180, 60, { fill: "#fff", stroke: C.kiko, lw: 3, r: 12 }); text(ctx, ["📱 HP A", "💻 laptop B", "📱 HP C", "💻 laptop D", "📱 HP E"][i], x, y + 9, 20, { align: "center", weight: 900 }); });
+      if (n >= 2) { const u = (l % 2) / 2; const [px, py] = J.along([P[0], P[4]], u); J.packet(ctx, px, py - 40, 1, { color: C.accent }); const [qx, qy] = J.along([P[3], P[1]], u); J.packet(ctx, qx, qy - 40, 1, { color: C.good }); }
+      if (n >= 3) { card(ctx, 240, 700, 560, 60, { fill: C.goodBg, stroke: C.good, lw: 2, r: 10 }); text(ctx, "✓ tahan: tidak ada pusat yang bisa padam", 520, 738, 20, { align: "center", weight: 900, color: C.good }); }
+      if (n >= 4) { card(ctx, 1120, 700, 560, 60, { fill: C.badBg, stroke: C.bad, lw: 2, r: 10 }); text(ctx, "✕ sulit dikendalikan dan diamankan", 1400, 738, 20, { align: "center", weight: 900, color: C.bad }); }
+      if (n >= 5) label(ctx, "berbagi berkas langsung · panggilan video langsung", 960, 280, { size: 22, color: C.ink2 });
+    },
+    lapisan(ctx, b, l) {
+      card(ctx, 120, 150, 1680, 740); heading(ctx, "EMPAT LAPISAN TCP/IP", 215);
+      const n = reveal(l, 1.5, 2.2, 5);
+      Lp.stack(ctx, 240, 270, 700, Math.min(4, n), { active: Math.min(3, n - 1) });
+      const ex = [["HTTP: GET /foto.jpg", "pesan dan aturannya"], ["segmen no. 1, 2, 3… → port 8080", "pecah, beri nomor, tandai aplikasi"], ["dari 10.0.3.5 ke 10.0.3.12", "alamat dan jalur"], ["sinyal Wi-Fi / listrik di kabel", "bit menjadi gelombang"]];
+      ex.forEach(([t, s], i) => { ctx.save(); if (i >= n) ctx.globalAlpha = 0.2; card(ctx, 1000, 270 + i * 90, 680, 80, { fill: i === n - 1 ? "#FFF3D6" : C.bg2, stroke: i === n - 1 ? C.accent : undefined, lw: 3, r: 12 }); text(ctx, t, 1024, 305 + i * 90, 22, { weight: 900, color: Lp.LAYERS[i][2] }); text(ctx, s, 1024, 334 + i * 90, 17, { weight: 700, color: C.ink2 }); ctx.restore(); });
+      if (n >= 5) label(ctx, "tiap lapisan hanya mengurus urusannya", 960, 690, { size: 26 });
+    },
+    enkapsulasi(ctx, b, l) {
+      card(ctx, 120, 150, 1680, 740); heading(ctx, "ENKAPSULASI: DIBUNGKUS TURUN, DIBUKA NAIK", 215);
+      const n = reveal(l, 1.5, 1.6, 8);
+      const k = n <= 4 ? clamp(n - 1, 0, 3) : clamp(8 - n, 0, 3);
+      text(ctx, n <= 4 ? "pengirim: turun, tiap lapisan menambah header" : "penerima: naik, tiap header dibuka", 960, 290, 26, { align: "center", weight: 900, color: n <= 4 ? C.kiko : C.good });
+      Lp.packet(ctx, 520, 340, k, { hw: 160, dw: 420, h: 70 });
+      Lp.LAYERS.forEach(([nm, s, col], i) => { const on = n <= 4 ? i === n - 1 : i === 8 - n; ctx.save(); if (!on) ctx.globalAlpha = 0.45; card(ctx, 240 + i * 370, 460, 340, 110, { fill: on ? "#FFF3D6" : "#fff", stroke: col, lw: on ? 6 : 3, r: 12 }); text(ctx, nm, 410 + i * 370, 500, 24, { align: "center", weight: 900, color: col }); text(ctx, ["isi pesan", "+ port, nomor urut", "+ alamat IP", "+ alamat MAC"][i], 410 + i * 370, 540, 18, { align: "center", weight: 800, color: C.ink2 }); ctx.restore(); });
+      arrowIcon(ctx, n <= 4 ? "right" : "left", 960, 620, 44, C.accent);
+      if (n >= 8) label(ctx, "amplop tidak perlu tahu isi surat: tiap lapisan mandiri", 960, 700, { size: 26 });
+    },
+    paket_lokal(ctx, b, l) {
+      card(ctx, 120, 150, 1680, 740); heading(ctx, "PERJALANAN DI JARINGAN LOKAL", 215);
+      const n = reveal(l, 1.5, 1.4, 9);
+      Lp.hops(ctx, 320, 380, 1280, HOPS_LAN, n >= 2 ? clamp((n - 2) * 0.6, 0, 3) : null);
+      [["alamat MAC", "switch meneruskan ke kartu jaringan laptop Dito", Lp.LAYERS[3][2]], ["alamat IP lokal 10.0.3.12", "menunjuk laptop Dito di jaringan sekolah", Lp.LAYERS[2][2]], ["port 8080", "menunjuk aplikasi penerima di laptop itu", Lp.LAYERS[1][2]]].forEach(([t, s, col], i) => { ctx.save(); if (n < i + 5) ctx.globalAlpha = 0.2; card(ctx, 240 + i * 490, 520, 460, 110, { fill: n === i + 5 ? "#FFF3D6" : C.bg2, stroke: col, lw: 3, r: 12 }); text(ctx, t, 264 + i * 490, 560, 22, { weight: 900, color: col }); para(ctx, s, 264 + i * 490, 592, 17, 420, { weight: 700, color: C.ink2 }); ctx.restore(); });
+      if (n >= 9) label(ctx, "foto dipecah menjadi paket-paket bernomor", 960, 700, { size: 26 });
+    },
+    paket_internet(ctx, b, l) {
+      card(ctx, 120, 150, 1680, 740); heading(ctx, "KE INTERNET: LOMPAT DARI ROUTER KE ROUTER", 215);
+      const n = reveal(l, 1.5, 1.4, 10);
+      Lp.hops(ctx, 280, 380, 1360, HOPS_NET, n >= 2 ? clamp((n - 2) * 0.8, 0, 5) : null);
+      if (n >= 3) { card(ctx, 420, 470, 420, 70, { fill: "#FFF3D6", stroke: C.accent, lw: 2, r: 10 }); text(ctx, "NAT: 10.0.3.5 → alamat publik sekolah", 630, 513, 18, { align: "center", weight: 900, color: C.accentDark }); }
+      if (n >= 7) { card(ctx, 240, 580, 700, 130, { fill: C.badBg, stroke: C.bad, lw: 3, r: 12 }); text(ctx, "paket no. 3 hilang di tengah jalan", 590, 625, 22, { align: "center", weight: 900, color: C.bad }); text(ctx, "tidak ada tanda terima untuk no. 3", 590, 660, 18, { align: "center", weight: 800, color: C.ink2 }); }
+      if (n >= 8) { arrowIcon(ctx, "right", 970, 645, 40, C.good); card(ctx, 1020, 580, 660, 130, { fill: C.goodBg, stroke: C.good, lw: 3, r: 12 }); text(ctx, "TCP mengirim ulang no. 3", 1350, 625, 22, { align: "center", weight: 900, color: C.good }); text(ctx, "aplikasi tidak perlu tahu", 1350, 660, 18, { align: "center", weight: 800, color: C.ink2 }); }
+      if (n >= 10) label(ctx, "ping: bolak-balik berapa ms · traceroute: lewat router mana saja", 960, 745, { size: 22 });
+    },
+    praktik_kirim(ctx, b, l) {
+      card(ctx, 120, 150, 1680, 740); heading(ctx, "KIRIM DATA SUNGGUHAN: DUA LAPTOP, SATU WI-FI", 215);
+      const n = reveal(l, 1.5, 2.0, 6);
+      J.laptop(ctx, 400, 460, 180); J.ipTag(ctx, 400, 580, "10.0.3.5", { w: 160 }); J.laptop(ctx, 1520, 460, 180); J.ipTag(ctx, 1520, 580, "10.0.3.12", { w: 160 }); J.router(ctx, 960, 300, 70, { label: "titik akses Wi-Fi" }); J.waves(ctx, 960, 300, 40, 3, { alpha: 0.4 });
+      [["1. lihat alamat IP", "ipconfig / ifconfig"], ["2. ping 10.0.3.12", "balasan: 4 ms, 0% hilang"], ["3. jalankan server kecil", "python -m http.server 8000"], ["4. teman membuka di browser", "http://10.0.3.5:8000"]].forEach(([t, s], i) => { ctx.save(); if (n < i + 2) ctx.globalAlpha = 0.2; card(ctx, 620, 380 + i * 80, 680, 68, { fill: n === i + 2 ? "#FFF3D6" : "#1F2A33", stroke: n === i + 2 ? C.accent : undefined, lw: 3, r: 10 }); text(ctx, t, 644, 408 + i * 80, 20, { weight: 900, color: n === i + 2 ? C.ink : "#8FD0E6" }); text(ctx, s, 644, 434 + i * 80, 17, { weight: 800, color: n === i + 2 ? C.ink2 : "#fff" }); ctx.restore(); });
+      if (n >= 6) label(ctx, "klien–server buatanmu sendiri", 960, 740, { size: 26 });
+    },
+    aturan(ctx, b, l) {
+      card(ctx, 120, 150, 1680, 740); heading(ctx, "ATURAN MAIN DI JARINGAN", 215);
+      const n = reveal(l, 1.5, 2.6, 4);
+      [["✅", "hanya jaringan yang diizinkan guru", "lab atau hotspot kelas, bukan jaringan orang lain"], ["🚫", "tidak memindai atau menyadap", "perangkat orang lain bukan bahan percobaan"], ["🔌", "matikan server setelah selesai", "pintu yang terbuka adalah tanggung jawabmu"]].forEach(([ic, t, s], i) => { ctx.save(); if (i >= n) ctx.globalAlpha = 0.2; const x = 240 + i * 490; card(ctx, x, 280, 460, 320, { fill: i === n - 1 ? "#FFF3D6" : C.bg2, stroke: i === n - 1 ? C.accent : undefined, lw: 3, r: 18 }); text(ctx, ic, x + 230, 370, 60, { align: "center" }); para(ctx, t, x + 230, 435, 24, 420, { align: "center", weight: 900 }); para(ctx, s, x + 230, 510, 19, 420, { align: "center", weight: 700, color: C.ink2 }); ctx.restore(); });
+      if (n >= 4) banner(ctx, "memahami jaringan adalah tanggung jawab; keamanannya di episode berikutnya", 650, 1300, { size: 26 });
+    },
+    make_show(ctx, b, l) {
+      card(ctx, 160, 150, 1600, 740);
+      text(ctx, "GILIRANMU", 960, 240, 34, { align: "center", color: C.accentDark, weight: 900 });
+      const items = [["Pembungkus paket", "susun header tiap lapisan", (x, y) => { ctx.save(); ctx.translate(x - 230, y - 100); ctx.scale(0.6, 0.6); Lp.packet(ctx, 0, 0, 3, { hw: 150, dw: 300, h: 70 }); ctx.restore(); Lp.stack(ctx, x - 220, y - 20, 440, 4, { h: 36 }); }],
+        ["Penghubung topologi", "pilih bentuk, putuskan kabel", (x, y) => Lp.topo(ctx, x, y - 20, "star", { cut: 2, scale: 0.6 })],
+        ["Pelacak lompatan", "ikuti paket dari HP ke server", (x, y) => Lp.hops(ctx, x - 200, y - 40, 400, [["HP", "📱"], ["router", "📡"], ["ISP", "🏢"], ["server", "🗄️"]], 1.5)]];
+      items.forEach(([t1, t2, draw], i) => { const x = 400 + i * 560; card(ctx, x - 250, 290, 500, 440, { fill: C.bg2 }); ctx.fillStyle = C.kiko; ctx.beginPath(); ctx.arc(x - 200, 340, 28, 0, Math.PI * 2); ctx.fill(); text(ctx, String(i + 1), x - 200, 352, 30, { align: "center", color: "#fff", weight: 900 }); text(ctx, t1, x - 160, 352, 26, { weight: 900 }); para(ctx, t2, x - 160, 386, 20, 400, { weight: 700, color: C.ink2 }); draw(x, 560); });
+      text(ctx, "di halaman latihan episode ini — lalu ping dan server web kecil di lab", 960, 820, 26, { align: "center", color: C.ink2, weight: 700 });
+    }
+  });
+})(typeof window !== "undefined" ? window : globalThis);
+</script>
+<script>/* Inti halaman latihan: pemutar (kanvas + narasi), tombol suara nyala/mati (berpindah antara timeline suara dan teks),
+   kuis dengan petunjuk, dan kemajuan di localStorage (perangkat ini saja).
+   Pakai:  const P = PageCore({ suara: TIMELINE_SUARA_atau_null, teks: TIMELINE_TEKS });
+   Episode menambahkan latihannya sendiri lewat P.$, P.K, P.H, P.progress, P.save(), P.speed(), P.onProgress(fn). */
+function PageCore(TLS, opt = {}) {
+  const $ = id => document.getElementById(id);
+  const K = Kiko, H = K.helpers;
+  let voice = !!TLS.suara; let TL = voice ? TLS.suara : TLS.teks;
+  // ---------- progress storage (per device only) ----------
+  const KEY = opt.key || TL.episode.replace(/\./g, "").toLowerCase() + "-progress";   // D7.5 -> "d75-progress"
+  let progress = { quiz: {} };
+  try { const s = localStorage.getItem(KEY); if (s) progress = { quiz: {}, ...JSON.parse(s) }; } catch (e) {}
+  const extras = [];
+  function renderProgress() {
+    const el = $("progress"); if (!el) return; el.innerHTML = "";
+    Object.keys(TL.quizzes).forEach((id, i) => { const s = document.createElement("span"); s.textContent = "Cek " + (i + 1); s.className = progress.quiz[id] ? "ok" : ""; el.appendChild(s); });
+    extras.forEach(f => f(el));
+  }
+  function save() { try { localStorage.setItem(KEY, JSON.stringify(progress)); } catch (e) {} renderProgress(); }
+
+  // ---------- player ----------
+  const cv = $("screen"), ctx = cv.getContext("2d");
+  let t = 0, playing = false, last = 0, speed = 1, hasAudio = false;
+  const nar = $("nar"); nar.addEventListener("canplay", () => { hasAudio = true; }); nar.addEventListener("error", () => { hasAudio = false; });
+  function fmt(s) { s = Math.max(0, Math.floor(s)); return Math.floor(s / 60) + ":" + String(s % 60).padStart(2, "0"); }
+  function segStart(i) { return TL.beats.find(b => b.seg === i).start; }
+  function syncAudio() { if (voice && hasAudio) { try { nar.currentTime = t; } catch (e) {} } }
+  function drawNow() {
+    const b = K.draw(ctx, Math.min(t, TL.total - 0.01), TL);
+    $("barfill").style.width = (t / TL.total * 100) + "%"; $("bar").setAttribute("aria-valuenow", Math.round(t / TL.total * 100));
+    $("timelabel").textContent = fmt(t) + " / " + fmt(TL.total);
+    [...$("chapters").children].forEach((c, i) => c.classList.toggle("now", i === b.seg));
+    return b;
+  }
+  function loop(now) {
+    if (!playing) return;
+    const dt = Math.min(0.1, (now - last) / 1000); last = now; if (voice && hasAudio && !nar.paused) t = nar.currentTime; else t += dt * speed;
+    if (t >= TL.total) { t = TL.total - 0.01; setPlaying(false); }
+    drawNow(); requestAnimationFrame(loop);
+  }
+  function setPlaying(p) {
+    playing = p; $("bigplay").hidden = p; $("playbtn").textContent = p ? "❚❚ Jeda" : "▶ Putar";
+    if (p) { last = performance.now(); if (voice && hasAudio) { try { nar.currentTime = t; nar.playbackRate = speed; nar.play().catch(() => {}); } catch (e) {} } requestAnimationFrame(loop); } else nar.pause();
+  }
+  $("bigplay").addEventListener("click", () => setPlaying(true));
+  $("playbtn").addEventListener("click", () => setPlaying(!playing));
+  $("replay").addEventListener("click", () => { const b = K.beatAt(TL, t); t = segStart(b.seg); syncAudio(); drawNow(); setPlaying(true); });
+  $("slow").addEventListener("click", e => { speed = speed === 1 ? 0.8 : 1; nar.playbackRate = speed; e.currentTarget.setAttribute("aria-pressed", speed !== 1); });
+  function seekFromBar(ev) { const r = $("bar").getBoundingClientRect(); const x = (ev.touches ? ev.touches[0].clientX : ev.clientX) - r.left; t = Math.max(0, Math.min(TL.total - 0.01, x / r.width * TL.total)); syncAudio(); drawNow(); }
+  $("bar").addEventListener("click", seekFromBar);
+  $("bar").addEventListener("keydown", e => { if (e.key === "ArrowRight") { t = Math.min(TL.total - 0.01, t + 5); syncAudio(); drawNow(); } if (e.key === "ArrowLeft") { t = Math.max(0, t - 5); syncAudio(); drawNow(); } });
+  TL.segments.forEach((name, i) => { const b = document.createElement("button"); b.textContent = (i + 1) + ". " + name; b.addEventListener("click", () => { t = segStart(i); syncAudio(); drawNow(); setPlaying(true); }); $("chapters").appendChild(b); });
+  // voice on/off: switches between the narrated timeline and the reading-paced one, staying on the same beat
+  const vb = $("voice");
+  function setVoice(on) {
+    const cur = K.beatAt(TL, t);
+    voice = on && !!TLS.suara; TL = voice ? TLS.suara : TLS.teks;
+    const nb = TL.beats.find(b => b.id === cur.id) || TL.beats[0]; t = nb.start;
+    if (vb) { vb.setAttribute("aria-pressed", voice); vb.textContent = voice ? "🔊 Suara: nyala" : "🔇 Suara: mati"; }
+    if (playing) { if (voice && hasAudio) { try { nar.currentTime = t; nar.playbackRate = speed; nar.play().catch(() => {}); } catch (e) {} } else nar.pause(); }
+    drawNow();
+  }
+  if (vb) { if (!TLS.suara || !TLS.teks) vb.hidden = true; else { vb.addEventListener("click", () => setVoice(!voice)); vb.setAttribute("aria-pressed", voice); vb.textContent = voice ? "🔊 Suara: nyala" : "🔇 Suara: mati"; } }
+  drawNow();
+
+  // ---------- quiz ----------
+  const quizEl = $("quiz");
+  if (quizEl) Object.entries(TL.quizzes).forEach(([id, q], qi) => {
+    const box = document.createElement("div"); box.className = "q";
+    box.innerHTML = `<h3>${qi + 1}. ${q.q}</h3><div class="opts"></div><div class="fb"></div>`;
+    const opts = box.querySelector(".opts"), fb = box.querySelector(".fb");
+    q.options.forEach((o, i) => {
+      const b = document.createElement("button"); b.innerHTML = `<b>${"ABC"[i]}</b><span>${o}</span>`;
+      b.addEventListener("click", () => {
+        [...opts.children].forEach(c => c.classList.remove("wrong"));
+        if (i === q.answer) { b.classList.add("right"); fb.className = "fb good"; fb.textContent = "Benar! " + (q.explain || ""); progress.quiz[id] = true; save(); [...opts.children].forEach(c => c.disabled = true); }
+        else { b.classList.add("wrong"); fb.className = "fb bad"; fb.textContent = "Belum tepat. Petunjuk: " + q.hint; }
+      });
+      opts.appendChild(b);
+    });
+    if (progress.quiz[id]) { opts.children[q.answer].classList.add("right"); [...opts.children].forEach(c => c.disabled = true); fb.className = "fb good"; fb.textContent = "Sudah dijawab benar."; }
+    quizEl.appendChild(box);
+  });
+  renderProgress();
+
+  return { $, K, H, progress, save, renderProgress, speed: () => speed, timeline: () => TL,
+           onProgress(fn) { extras.push(fn); renderProgress(); } };
+}
+</script>
+<script>
+(function () {
+  const P = PageCore({ suara: {"episode": "F11.7", "title": "Model Jaringan dan Pengiriman Data", "hook": "menjelaskan topologi, klien–server, dan lapisan TCP/IP, lalu mengirim data antarperangkat.", "engine": ["../_alat/kiko-core.js", "../_alat/kiko-devices.js", "../D9.2/jaringan.js", "lapisan.js", "scenes.js"], "parts": {"F11.7a": {"segs": [0, 1, 2, 3], "post": "Lanjut ke Bagian 2: Lapisan TCP/IP dan Perjalanan Paket"}, "F11.7b": {"segs": [4, 5, 6, 7], "pre": "Bagian 2: Lapisan TCP/IP dan Perjalanan Paket"}}, "youtube": {"ringkas": "Bagaimana foto dari HP-mu sampai ke laptop teman, lalu ke server di benua lain? Bersama Kiko kita susun modelnya: topologi (bus, bintang, mesh, pohon; jaringan sekolah sebagai pohon dari lab bintang), model klien–server dan peer-to-peer, empat lapisan TCP/IP (aplikasi, transport, internet, tautan), enkapsulasi: pesan dibungkus header tiap lapisan lalu dibuka lapis demi lapis di penerima, serta perjalanan paket di jaringan lokal (MAC, IP lokal, port) dan ke internet (router, hop, TCP yang meminta kirim ulang). Ditutup praktik mengirim data antarperangkat dengan ping dan server web kecil dari Python. Gaya diagram Fase F. Empat cek pemahaman; pembungkus paket dan penghubung topologi di halaman latihan.", "belajar": ["membandingkan topologi bus, bintang, mesh, dan pohon beserta dampak satu kabel putus", "membedakan model klien–server dan peer-to-peer dengan contoh sehari-hari", "menjelaskan empat lapisan TCP/IP dan enkapsulasi paket", "mengirim data antarperangkat di jaringan lokal dengan ping dan server web kecil"], "bagian": {"F11.7a": "Topologi dan Model Jaringan", "F11.7b": "Lapisan TCP/IP dan Perjalanan Paket"}, "cari": ["lapisan tcp ip dijelaskan sederhana kelas 11", "topologi jaringan bintang mesh bus pohon", "klien server vs peer to peer contoh", "cara paket data dikirim di jaringan"], "prasyarat": "episode D9.2 Jaringan Lokal dan Internet dan E.3 Keamanan Akun dan Jaringan Dasar", "jp": 16, "tagar": ["#Jaringan", "#TCPIP", "#Topologi", "#ClientServer", "#Kelas11", "#SMA"]}, "recap": ["Topologi: bintang di lab, pohon di sekolah, mesh tahan.", "Klien meminta, server melayani; P2P semua setara.", "TCP/IP berlapis: aplikasi, transport, internet, tautan."], "next": {"code": "F11.8", "title": "Troubleshooting dan Keamanan Lanjut Jaringan", "note": "Pembungkus paket dan penghubung topologi ada di halaman episode ini."}, "segments": ["Pembuka", "Main dulu tanpa komputer", "Topologi", "Klien–server dan peer-to-peer", "Lapisan TCP/IP", "Perjalanan paket", "Mengirim data sungguhan", "Giliranmu"], "quizzes": {"q1": {"q": "Di lab berbentuk bintang, switch pusatnya mati. Dampaknya?", "options": ["Hanya satu komputer terputus", "Semua komputer di lab itu terputus", "Seluruh sekolah terputus"], "answer": 1, "hint": "Lewat apa semua komputer di lab itu terhubung?"}, "q2": {"q": "Kamu membuka situs sekolah di HP. Dalam model klien–server, HP-mu berperan sebagai?", "options": ["Server", "Klien", "Router"], "answer": 1, "hint": "Siapa yang meminta, siapa yang melayani?"}, "q3": {"q": "Lapisan mana yang menambahkan alamat IP tujuan ke paket?", "options": ["Aplikasi", "Transport", "Internet"], "answer": 2, "hint": "Port di transport, IP di internet, MAC di tautan."}, "q4": {"q": "Satu paket hilang di tengah jalan. Siapa yang menyadari dan meminta kirim ulang?", "options": ["Lapisan aplikasi", "TCP di lapisan transport", "Kabelnya sendiri"], "answer": 1, "hint": "Segmen bernomor dan tanda terima ada di lapisan mana?"}}, "beats": [{"id": "intro1", "seg": 0, "scene": "title", "text": "Halo, kelas sebelas! Aku Kiko. Sinta mengirim foto ke laptop Dito lewat Wi-Fi, lalu mengunggahnya ke server jauh. Apa yang terjadi di tengahnya? Setelah menonton, kamu bisa menjelaskan model jaringan dan mengirim data antarperangkat.", "hold": 1.0, "start": 0.0, "speech": 0.4, "audio": 14.979, "dur": 19.04}, {"id": "intro2", "seg": 0, "scene": "title_q", "text": "Tiga model hari ini: bentuk jaringan, atau topologi; peran perangkat, klien–server dan peer-to-peer; dan lapisan TCP/IP yang membungkus tiap pesan seperti surat berlapis amplop.", "hold": 0.8, "start": 19.04, "speech": 19.44, "audio": 13.527, "dur": 15.027}, {"id": "intro3", "seg": 0, "scene": "prereq", "text": "Episode ini melanjutkan D9.2 tentang jaringan lokal dan internet serta E.3 tentang router rumah. Kalau belum menontonnya, tonton dulu, ya.", "hold": 0.8, "start": 34.067, "speech": 34.467, "audio": 10.282, "dur": 11.84}, {"id": "play1", "seg": 1, "scene": "unplugged_amplop", "text": "Main dulu. Tulis pesan. Masukkan ke amplop kecil bertuliskan nama aplikasi, lalu amplop sedang bertuliskan nomor pintu, lalu amplop besar bertuliskan alamat rumah, lalu tas kurir. Penerima membukanya lapis demi lapis: enkapsulasi.", "hold": 1.0, "start": 45.907, "speech": 46.307, "audio": 17.075, "dur": 18.775}, {"id": "play2", "seg": 1, "scene": "unplugged_benang", "text": "Lalu topologi dengan benang. Lima murid menjadi perangkat, benang menjadi kabel. Susun bentuk bintang dengan satu murid di tengah, lalu bentuk mesh yang semua saling terhubung. Guru menggunting satu benang: siapa yang terputus?", "hold": 1.0, "start": 64.682, "speech": 65.082, "audio": 14.88, "dur": 18.54}, {"id": "s1a", "seg": 2, "scene": "topologi", "text": "Topologi adalah bentuk sambungan. Bus: satu kabel bersama, murah, tetapi putus satu, putus semua. Bintang: semua ke satu switch, mudah dikelola, tetapi switch mati berarti semua mati. Mesh: saling terhubung, tahan putus, tetapi mahal.", "hold": 1.0, "start": 83.222, "speech": 83.622, "audio": 19.514, "dur": 21.214}, {"id": "s1b", "seg": 2, "scene": "pohon_sekolah", "text": "Jaringan sekolah biasanya pohon: tiap lab berbentuk bintang ke switch-nya, switch-switch itu naik ke switch gedung, lalu ke router dan penyedia internet. Bertingkat, sehingga gangguan di satu lab tidak menjalar ke lab lain.", "hold": 1.0, "start": 104.436, "speech": 104.836, "audio": 14.097, "dur": 18.54}, {"id": "q1", "seg": 2, "scene": "quiz", "quiz": "q1", "text": "Cek pemahaman. Di lab berbentuk bintang, switch pusatnya mati. Dampaknya: hanya satu komputer terputus, semua komputer di lab itu terputus, atau seluruh sekolah terputus? Pikirkan dulu.", "hold": 4.0, "start": 122.976, "speech": 123.376, "audio": 14.477, "dur": 19.177}, {"id": "q1a", "seg": 2, "scene": "quiz_answer", "quiz": "q1", "text": "Jawabannya: semua komputer di lab itu terputus, karena semuanya lewat switch itu. Lab lain aman: itulah gunanya pohon yang bertingkat.", "hold": 1.0, "start": 142.153, "speech": 142.553, "audio": 9.528, "dur": 12.04}, {"id": "s2a", "seg": 3, "scene": "klien_server", "text": "Model peran pertama: klien–server. Klien meminta, server melayani: HP-mu meminta halaman, server web mengirimnya; begitu juga email dan gim daring. Terpusat dan mudah dikelola, tetapi kalau server padam, semua klien ikut terhenti.", "hold": 1.0, "start": 154.193, "speech": 154.593, "audio": 16.84, "dur": 18.54}, {"id": "s2b", "seg": 3, "scene": "p2p", "text": "Model kedua: peer-to-peer. Semua perangkat setara, saling meminta dan melayani: berbagi berkas langsung antar-HP, atau panggilan video yang mengalir langsung. Tahan karena tidak ada pusat, tetapi lebih sulit dikendalikan dan diamankan.", "hold": 1.0, "start": 172.733, "speech": 173.133, "audio": 16.05, "dur": 17.75}, {"id": "q2", "seg": 3, "scene": "quiz", "quiz": "q2", "text": "Cek pemahaman. Kamu membuka situs sekolah di HP. Dalam model klien–server, HP-mu berperan sebagai: server, klien, atau router? Pikirkan dulu.", "hold": 4.0, "start": 190.483, "speech": 190.883, "audio": 11.44, "dur": 16.14}, {"id": "q2a", "seg": 3, "scene": "quiz_answer", "quiz": "q2", "text": "Jawabannya: klien. HP-mu meminta, server situs sekolah melayani. Satu perangkat bisa berganti peran: saat kamu membagikan berkas ke teman, HP-mu yang melayani.", "hold": 1.0, "start": 206.623, "speech": 207.023, "audio": 11.896, "dur": 13.596}, {"id": "s3a", "seg": 4, "scene": "lapisan", "text": "Bagian dua. Empat lapisan TCP/IP: aplikasi, isi pesan dan aturannya seperti HTTP; transport, memecah pesan jadi segmen bernomor dengan port; internet, memberi alamat IP dan memilih jalur; tautan, menjadikannya sinyal di kabel atau Wi-Fi.", "hold": 1.0, "start": 220.219, "speech": 220.619, "audio": 20.944, "dur": 22.644}, {"id": "s3b", "seg": 4, "scene": "enkapsulasi", "text": "Enkapsulasi: pesan turun lapis demi lapis, tiap lapisan menambah header: port, IP, MAC. Di penerima, naik lapis demi lapis, tiap header dibuka. Tiap lapisan mengurus urusannya sendiri, seperti amplop yang tak perlu tahu isi surat.", "hold": 1.0, "start": 242.863, "speech": 243.263, "audio": 17.253, "dur": 19.54}, {"id": "q3", "seg": 4, "scene": "quiz", "quiz": "q3", "text": "Cek pemahaman. Lapisan mana yang menambahkan alamat IP tujuan ke paket: aplikasi, transport, atau internet? Pikirkan dulu.", "hold": 4.0, "start": 262.403, "speech": 262.803, "audio": 9.458, "dur": 14.158}, {"id": "q3a", "seg": 4, "scene": "quiz_answer", "quiz": "q3", "text": "Jawabannya: lapisan internet. Transport menambah nomor port dan urutan segmen; tautan menambah alamat MAC untuk lompatan berikutnya.", "hold": 1.0, "start": 276.561, "speech": 276.961, "audio": 9.017, "dur": 10.717}, {"id": "s4a", "seg": 5, "scene": "paket_lokal", "text": "Perjalanan di jaringan lokal: foto dari HP Sinta dipecah menjadi paket, dikirim lewat Wi-Fi ke titik akses, diteruskan switch ke laptop Dito berdasarkan alamat MAC-nya. Alamat IP lokal menunjuk laptopnya, port menunjuk aplikasinya.", "hold": 1.0, "start": 287.278, "speech": 287.678, "audio": 15.952, "dur": 18.54}, {"id": "s4b", "seg": 5, "scene": "paket_internet", "text": "Ke internet: router sekolah mengganti alamat lokal dengan alamat publik, paket melompat dari router ke router sampai server. Paket yang hilang tak mendapat tanda terima, dan TCP mengirimnya ulang. Ping dan traceroute memperlihatkannya.", "hold": 1.0, "start": 305.818, "speech": 306.218, "audio": 15.365, "dur": 18.54}, {"id": "q4", "seg": 5, "scene": "quiz", "quiz": "q4", "text": "Cek pemahaman. Satu paket hilang di tengah jalan. Siapa yang menyadari dan meminta kirim ulang: lapisan aplikasi, TCP di lapisan transport, atau kabelnya sendiri? Pikirkan dulu.", "hold": 4.0, "start": 324.358, "speech": 324.758, "audio": 12.745, "dur": 18.04}, {"id": "q4a", "seg": 5, "scene": "quiz_answer", "quiz": "q4", "text": "Jawabannya: TCP di lapisan transport. Segmen bernomor dan tanda terima membuat yang hilang ketahuan dan dikirim ulang, tanpa aplikasi perlu tahu.", "hold": 1.0, "start": 342.398, "speech": 342.798, "audio": 9.962, "dur": 12.54}, {"id": "s5a", "seg": 6, "scene": "praktik_kirim", "text": "Kirim data sungguhan. Dua laptop di satu Wi-Fi: lihat alamat IP masing-masing, ping dari satu ke yang lain, lalu jalankan server web kecil: python minus m http titik server. Teman membuka alamatmu di browser: klien–server buatanmu sendiri.", "hold": 1.0, "start": 354.938, "speech": 355.338, "audio": 17.68, "dur": 20.54}, {"id": "s5b", "seg": 6, "scene": "aturan", "text": "Aturannya: hanya di jaringan yang diizinkan guru, tidak memindai atau menyadap perangkat orang lain, dan matikan server setelah selesai. Memahami jaringan adalah tanggung jawab; keamanannya kita dalami di episode berikutnya.", "hold": 1.0, "start": 375.478, "speech": 375.878, "audio": 14.8, "dur": 17.04}, {"id": "s6a", "seg": 7, "scene": "make_show", "text": "Sekarang giliranmu. Di halaman latihan: pembungkus paket, susun header tiap lapisan dengan urutan benar; penghubung topologi, pilih bentuk tiap kebutuhan, lihat dampak kabel putus; lalu pelacak lompatan, ikuti paket dari HP ke server.", "hold": 1.0, "start": 392.518, "speech": 392.918, "audio": 16.438, "dur": 18.54}, {"id": "s6b", "seg": 7, "scene": "make_show", "text": "Lalu di lab: gambar topologi jaringan sekolahmu dari pengamatan, catat alamat IP dan hasil ping, dan jalankan server web kecil untuk membagikan satu halaman ke teman. Itu model jaringan yang kamu pegang sendiri.", "hold": 1.0, "start": 411.058, "speech": 411.458, "audio": 13.858, "dur": 18.54}, {"id": "recap", "seg": 7, "scene": "recap", "text": "Tiga hal untuk diingat. Satu: bintang di lab, pohon di sekolah, mesh tahan putus. Dua: klien meminta, server melayani; di peer-to-peer semua setara. Tiga: TCP/IP berlapis: aplikasi, transport, internet, tautan; dibungkus, lalu dibuka.", "hold": 1.5, "start": 429.598, "speech": 429.998, "audio": 20.96, "dur": 23.16}, {"id": "outro", "seg": 7, "scene": "outro", "text": "Sampai jumpa di episode berikutnya: troubleshooting dan keamanan lanjut jaringan. Menjadi detektif jaringan: memilih uji diagnosis dan mempersempit penyebabnya. Sampai jumpa!", "hold": 1.0, "start": 452.758, "speech": 453.158, "audio": 12.008, "dur": 13.708}], "total": 466.466}, teks: {"episode": "F11.7", "title": "Model Jaringan dan Pengiriman Data", "hook": "menjelaskan topologi, klien–server, dan lapisan TCP/IP, lalu mengirim data antarperangkat.", "engine": ["../_alat/kiko-core.js", "../_alat/kiko-devices.js", "../D9.2/jaringan.js", "lapisan.js", "scenes.js"], "parts": {"F11.7a": {"segs": [0, 1, 2, 3], "post": "Lanjut ke Bagian 2: Lapisan TCP/IP dan Perjalanan Paket"}, "F11.7b": {"segs": [4, 5, 6, 7], "pre": "Bagian 2: Lapisan TCP/IP dan Perjalanan Paket"}}, "youtube": {"ringkas": "Bagaimana foto dari HP-mu sampai ke laptop teman, lalu ke server di benua lain? Bersama Kiko kita susun modelnya: topologi (bus, bintang, mesh, pohon; jaringan sekolah sebagai pohon dari lab bintang), model klien–server dan peer-to-peer, empat lapisan TCP/IP (aplikasi, transport, internet, tautan), enkapsulasi: pesan dibungkus header tiap lapisan lalu dibuka lapis demi lapis di penerima, serta perjalanan paket di jaringan lokal (MAC, IP lokal, port) dan ke internet (router, hop, TCP yang meminta kirim ulang). Ditutup praktik mengirim data antarperangkat dengan ping dan server web kecil dari Python. Gaya diagram Fase F. Empat cek pemahaman; pembungkus paket dan penghubung topologi di halaman latihan.", "belajar": ["membandingkan topologi bus, bintang, mesh, dan pohon beserta dampak satu kabel putus", "membedakan model klien–server dan peer-to-peer dengan contoh sehari-hari", "menjelaskan empat lapisan TCP/IP dan enkapsulasi paket", "mengirim data antarperangkat di jaringan lokal dengan ping dan server web kecil"], "bagian": {"F11.7a": "Topologi dan Model Jaringan", "F11.7b": "Lapisan TCP/IP dan Perjalanan Paket"}, "cari": ["lapisan tcp ip dijelaskan sederhana kelas 11", "topologi jaringan bintang mesh bus pohon", "klien server vs peer to peer contoh", "cara paket data dikirim di jaringan"], "prasyarat": "episode D9.2 Jaringan Lokal dan Internet dan E.3 Keamanan Akun dan Jaringan Dasar", "jp": 16, "tagar": ["#Jaringan", "#TCPIP", "#Topologi", "#ClientServer", "#Kelas11", "#SMA"]}, "recap": ["Topologi: bintang di lab, pohon di sekolah, mesh tahan.", "Klien meminta, server melayani; P2P semua setara.", "TCP/IP berlapis: aplikasi, transport, internet, tautan."], "next": {"code": "F11.8", "title": "Troubleshooting dan Keamanan Lanjut Jaringan", "note": "Pembungkus paket dan penghubung topologi ada di halaman episode ini."}, "segments": ["Pembuka", "Main dulu tanpa komputer", "Topologi", "Klien–server dan peer-to-peer", "Lapisan TCP/IP", "Perjalanan paket", "Mengirim data sungguhan", "Giliranmu"], "quizzes": {"q1": {"q": "Di lab berbentuk bintang, switch pusatnya mati. Dampaknya?", "options": ["Hanya satu komputer terputus", "Semua komputer di lab itu terputus", "Seluruh sekolah terputus"], "answer": 1, "hint": "Lewat apa semua komputer di lab itu terhubung?"}, "q2": {"q": "Kamu membuka situs sekolah di HP. Dalam model klien–server, HP-mu berperan sebagai?", "options": ["Server", "Klien", "Router"], "answer": 1, "hint": "Siapa yang meminta, siapa yang melayani?"}, "q3": {"q": "Lapisan mana yang menambahkan alamat IP tujuan ke paket?", "options": ["Aplikasi", "Transport", "Internet"], "answer": 2, "hint": "Port di transport, IP di internet, MAC di tautan."}, "q4": {"q": "Satu paket hilang di tengah jalan. Siapa yang menyadari dan meminta kirim ulang?", "options": ["Lapisan aplikasi", "TCP di lapisan transport", "Kabelnya sendiri"], "answer": 1, "hint": "Segmen bernomor dan tanda terima ada di lapisan mana?"}}, "beats": [{"id": "intro1", "seg": 0, "scene": "title", "text": "Halo, kelas sebelas! Aku Kiko. Sinta mengirim foto ke laptop Dito lewat Wi-Fi, lalu mengunggahnya ke server jauh. Apa yang terjadi di tengahnya? Setelah menonton, kamu bisa menjelaskan model jaringan dan mengirim data antarperangkat.", "hold": 1.0, "start": 0.0, "speech": 0.0, "audio": 22.05, "dur": 24.05}, {"id": "intro2", "seg": 0, "scene": "title_q", "text": "Tiga model hari ini: bentuk jaringan, atau topologi; peran perangkat, klien–server dan peer-to-peer; dan lapisan TCP/IP yang membungkus tiap pesan seperti surat berlapis amplop.", "hold": 0.8, "start": 24.05, "speech": 24.05, "audio": 15.8, "dur": 17.6}, {"id": "intro3", "seg": 0, "scene": "prereq", "text": "Episode ini melanjutkan D9.2 tentang jaringan lokal dan internet serta E.3 tentang router rumah. Kalau belum menontonnya, tonton dulu, ya.", "hold": 0.8, "start": 41.65, "speech": 41.65, "audio": 13.3, "dur": 15.1}, {"id": "play1", "seg": 1, "scene": "unplugged_amplop", "text": "Main dulu. Tulis pesan. Masukkan ke amplop kecil bertuliskan nama aplikasi, lalu amplop sedang bertuliskan nomor pintu, lalu amplop besar bertuliskan alamat rumah, lalu tas kurir. Penerima membukanya lapis demi lapis: enkapsulasi.", "hold": 1.0, "start": 56.75, "speech": 56.75, "audio": 20.8, "dur": 22.8}, {"id": "play2", "seg": 1, "scene": "unplugged_benang", "text": "Lalu topologi dengan benang. Lima murid menjadi perangkat, benang menjadi kabel. Susun bentuk bintang dengan satu murid di tengah, lalu bentuk mesh yang semua saling terhubung. Guru menggunting satu benang: siapa yang terputus?", "hold": 1.0, "start": 79.55, "speech": 79.55, "audio": 21.425, "dur": 23.425}, {"id": "s1a", "seg": 2, "scene": "topologi", "text": "Topologi adalah bentuk sambungan. Bus: satu kabel bersama, murah, tetapi putus satu, putus semua. Bintang: semua ke satu switch, mudah dikelola, tetapi switch mati berarti semua mati. Mesh: saling terhubung, tahan putus, tetapi mahal.", "hold": 1.0, "start": 102.975, "speech": 102.975, "audio": 22.05, "dur": 24.05}, {"id": "s1b", "seg": 2, "scene": "pohon_sekolah", "text": "Jaringan sekolah biasanya pohon: tiap lab berbentuk bintang ke switch-nya, switch-switch itu naik ke switch gedung, lalu ke router dan penyedia internet. Bertingkat, sehingga gangguan di satu lab tidak menjalar ke lab lain.", "hold": 1.0, "start": 127.025, "speech": 127.025, "audio": 21.425, "dur": 23.425}, {"id": "q1", "seg": 2, "scene": "quiz", "quiz": "q1", "text": "Cek pemahaman. Di lab berbentuk bintang, switch pusatnya mati. Dampaknya: hanya satu komputer terputus, semua komputer di lab itu terputus, atau seluruh sekolah terputus? Pikirkan dulu.", "hold": 4.0, "start": 150.45, "speech": 150.45, "audio": 17.05, "dur": 22.05}, {"id": "q1a", "seg": 2, "scene": "quiz_answer", "quiz": "q1", "text": "Jawabannya: semua komputer di lab itu terputus, karena semuanya lewat switch itu. Lab lain aman: itulah gunanya pohon yang bertingkat.", "hold": 1.0, "start": 172.5, "speech": 172.5, "audio": 13.3, "dur": 15.3}, {"id": "s2a", "seg": 3, "scene": "klien_server", "text": "Model peran pertama: klien–server. Klien meminta, server melayani: HP-mu meminta halaman, server web mengirimnya; begitu juga email dan gim daring. Terpusat dan mudah dikelola, tetapi kalau server padam, semua klien ikut terhenti.", "hold": 1.0, "start": 187.8, "speech": 187.8, "audio": 20.8, "dur": 22.8}, {"id": "s2b", "seg": 3, "scene": "p2p", "text": "Model kedua: peer-to-peer. Semua perangkat setara, saling meminta dan melayani: berbagi berkas langsung antar-HP, atau panggilan video yang mengalir langsung. Tahan karena tidak ada pusat, tetapi lebih sulit dikendalikan dan diamankan.", "hold": 1.0, "start": 210.6, "speech": 210.6, "audio": 20.175, "dur": 22.175}, {"id": "q2", "seg": 3, "scene": "quiz", "quiz": "q2", "text": "Cek pemahaman. Kamu membuka situs sekolah di HP. Dalam model klien–server, HP-mu berperan sebagai: server, klien, atau router? Pikirkan dulu.", "hold": 4.0, "start": 232.775, "speech": 232.775, "audio": 13.3, "dur": 18.3}, {"id": "q2a", "seg": 3, "scene": "quiz_answer", "quiz": "q2", "text": "Jawabannya: klien. HP-mu meminta, server situs sekolah melayani. Satu perangkat bisa berganti peran: saat kamu membagikan berkas ke teman, HP-mu yang melayani.", "hold": 1.0, "start": 251.075, "speech": 251.075, "audio": 14.55, "dur": 16.55}, {"id": "s3a", "seg": 4, "scene": "lapisan", "text": "Bagian dua. Empat lapisan TCP/IP: aplikasi, isi pesan dan aturannya seperti HTTP; transport, memecah pesan jadi segmen bernomor dengan port; internet, memberi alamat IP dan memilih jalur; tautan, menjadikannya sinyal di kabel atau Wi-Fi.", "hold": 1.0, "start": 267.625, "speech": 267.625, "audio": 22.05, "dur": 24.05}, {"id": "s3b", "seg": 4, "scene": "enkapsulasi", "text": "Enkapsulasi: pesan turun lapis demi lapis, tiap lapisan menambah header: port, IP, MAC. Di penerima, naik lapis demi lapis, tiap header dibuka. Tiap lapisan mengurus urusannya sendiri, seperti amplop yang tak perlu tahu isi surat.", "hold": 1.0, "start": 291.675, "speech": 291.675, "audio": 22.675, "dur": 24.675}, {"id": "q3", "seg": 4, "scene": "quiz", "quiz": "q3", "text": "Cek pemahaman. Lapisan mana yang menambahkan alamat IP tujuan ke paket: aplikasi, transport, atau internet? Pikirkan dulu.", "hold": 4.0, "start": 316.35, "speech": 316.35, "audio": 11.425, "dur": 16.425}, {"id": "q3a", "seg": 4, "scene": "quiz_answer", "quiz": "q3", "text": "Jawabannya: lapisan internet. Transport menambah nomor port dan urutan segmen; tautan menambah alamat MAC untuk lompatan berikutnya.", "hold": 1.0, "start": 332.775, "speech": 332.775, "audio": 11.425, "dur": 13.425}, {"id": "s4a", "seg": 5, "scene": "paket_lokal", "text": "Perjalanan di jaringan lokal: foto dari HP Sinta dipecah menjadi paket, dikirim lewat Wi-Fi ke titik akses, diteruskan switch ke laptop Dito berdasarkan alamat MAC-nya. Alamat IP lokal menunjuk laptopnya, port menunjuk aplikasinya.", "hold": 1.0, "start": 346.2, "speech": 346.2, "audio": 21.425, "dur": 23.425}, {"id": "s4b", "seg": 5, "scene": "paket_internet", "text": "Ke internet: router sekolah mengganti alamat lokal dengan alamat publik, paket melompat dari router ke router sampai server. Paket yang hilang tak mendapat tanda terima, dan TCP mengirimnya ulang. Ping dan traceroute memperlihatkannya.", "hold": 1.0, "start": 369.625, "speech": 369.625, "audio": 21.425, "dur": 23.425}, {"id": "q4", "seg": 5, "scene": "quiz", "quiz": "q4", "text": "Cek pemahaman. Satu paket hilang di tengah jalan. Siapa yang menyadari dan meminta kirim ulang: lapisan aplikasi, TCP di lapisan transport, atau kabelnya sendiri? Pikirkan dulu.", "hold": 4.0, "start": 393.05, "speech": 393.05, "audio": 17.05, "dur": 22.05}, {"id": "q4a", "seg": 5, "scene": "quiz_answer", "quiz": "q4", "text": "Jawabannya: TCP di lapisan transport. Segmen bernomor dan tanda terima membuat yang hilang ketahuan dan dikirim ulang, tanpa aplikasi perlu tahu.", "hold": 1.0, "start": 415.1, "speech": 415.1, "audio": 13.925, "dur": 15.925}, {"id": "s5a", "seg": 6, "scene": "praktik_kirim", "text": "Kirim data sungguhan. Dua laptop di satu Wi-Fi: lihat alamat IP masing-masing, ping dari satu ke yang lain, lalu jalankan server web kecil: python minus m http titik server. Teman membuka alamatmu di browser: klien–server buatanmu sendiri.", "hold": 1.0, "start": 431.025, "speech": 431.025, "audio": 23.925, "dur": 25.925}, {"id": "s5b", "seg": 6, "scene": "aturan", "text": "Aturannya: hanya di jaringan yang diizinkan guru, tidak memindai atau menyadap perangkat orang lain, dan matikan server setelah selesai. Memahami jaringan adalah tanggung jawab; keamanannya kita dalami di episode berikutnya.", "hold": 1.0, "start": 456.95, "speech": 456.95, "audio": 19.55, "dur": 21.55}, {"id": "s6a", "seg": 7, "scene": "make_show", "text": "Sekarang giliranmu. Di halaman latihan: pembungkus paket, susun header tiap lapisan dengan urutan benar; penghubung topologi, pilih bentuk tiap kebutuhan, lihat dampak kabel putus; lalu pelacak lompatan, ikuti paket dari HP ke server.", "hold": 1.0, "start": 478.5, "speech": 478.5, "audio": 21.425, "dur": 23.425}, {"id": "s6b", "seg": 7, "scene": "make_show", "text": "Lalu di lab: gambar topologi jaringan sekolahmu dari pengamatan, catat alamat IP dan hasil ping, dan jalankan server web kecil untuk membagikan satu halaman ke teman. Itu model jaringan yang kamu pegang sendiri.", "hold": 1.0, "start": 501.925, "speech": 501.925, "audio": 21.425, "dur": 23.425}, {"id": "recap", "seg": 7, "scene": "recap", "text": "Tiga hal untuk diingat. Satu: bintang di lab, pohon di sekolah, mesh tahan putus. Dua: klien meminta, server melayani; di peer-to-peer semua setara. Tiga: TCP/IP berlapis: aplikasi, transport, internet, tautan; dibungkus, lalu dibuka.", "hold": 1.5, "start": 525.35, "speech": 525.35, "audio": 21.425, "dur": 23.925}, {"id": "outro", "seg": 7, "scene": "outro", "text": "Sampai jumpa di episode berikutnya: troubleshooting dan keamanan lanjut jaringan. Menjadi detektif jaringan: memilih uji diagnosis dan mempersempit penyebabnya. Sampai jumpa!", "hold": 1.0, "start": 549.275, "speech": 549.275, "audio": 13.925, "dur": 15.925}], "total": 565.2} });
+  const { $, progress, save } = P; progress.levels = progress.levels || {};
+  const esc = s => String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;");
+  // ---- Latihan 1: pembungkus paket
+  const LAY = [["aplikasi", "isi pesan: foto.jpg bagian 3", "d"], ["transport", "port 8080, segmen no. 3", "t"], ["internet", "IP tujuan 10.0.3.12", "i"], ["tautan", "MAC 5A:2F:…", "l"]];
+  const HQ = [["Nomor port ada di header lapisan mana?", ["transport", "internet", "tautan"], 0], ["Alamat IP tujuan ditambahkan oleh lapisan?", ["aplikasi", "internet", "tautan"], 1], ["Di penerima, header yang dibuka paling dulu?", ["tautan (MAC)", "transport (port)", "aplikasi"], 0], ["Alamat MAC dipakai untuk?", ["lompatan ke perangkat berikutnya di jaringan lokal", "memilih aplikasi", "menandai urutan segmen"], 0]];
+  let wrapStep = 0, unwrapStep = 0, hq = 0, phase = 0;
+  function renderBungkus() {
+    const area = $("exarea");
+    const headers = phase === 0 ? wrapStep : 3 - unwrapStep;
+    const pkt = `<div class="pkt">${LAY.slice(1, 1 + headers).reverse().map(l => `<span class="${l[2]}">${esc(l[1])}</span>`).join("")}<span class="d">${esc(LAY[0][1])}</span></div>`;
+    if (phase === 0) {
+      area.innerHTML = `<div class="qnum">Langkah 1: pengirim. Ketuk lapisan berikutnya yang membungkus (dari atas ke bawah).</div>${pkt}<div class="opts" id="opts">${LAY.slice(1).map((l, i) => `<button data-i="${i + 1}" class="${i + 1 <= wrapStep ? "used" : ""}" ${i + 1 <= wrapStep ? "disabled" : ""}>${esc(l[0])}: tambah ${esc(l[1])}</button>`).join("")}</div>`;
+      [...area.querySelectorAll("#opts button")].forEach(b => b.addEventListener("click", () => { if (+b.dataset.i === wrapStep + 1) { wrapStep++; setResult("good", "Tepat: " + LAY[wrapStep][0] + " menambah headernya."); if (wrapStep === 3) { phase = 1; setTimeout(() => { setResult(); renderBungkus(); }, 1000); } else renderBungkus(); } else { b.classList.add("wrong"); setResult("bad", "Belum. Petunjuk: urutan turun adalah aplikasi → transport → internet → tautan; header baru selalu ditambahkan di luar yang sudah ada."); } }));
+      return;
+    }
+    if (phase === 1) {
+      area.innerHTML = `<div class="qnum">Langkah 2: penerima. Ketuk header yang dibuka berikutnya (dari luar ke dalam).</div>${pkt}<div class="opts" id="opts">${[3, 2, 1].map(i => `<button data-i="${i}" class="${i > 3 - unwrapStep ? "used" : ""}" ${i > 3 - unwrapStep ? "disabled" : ""}>buka header ${esc(LAY[i][0])}</button>`).join("")}</div>`;
+      [...area.querySelectorAll("#opts button")].forEach(b => b.addEventListener("click", () => { if (+b.dataset.i === 3 - unwrapStep) { unwrapStep++; setResult("good", "Tepat."); if (unwrapStep === 3) { phase = 2; setTimeout(() => { setResult(); renderBungkus(); }, 900); } else renderBungkus(); } else { b.classList.add("wrong"); setResult("bad", "Belum. Petunjuk: yang terluar dibuka lebih dulu: tautan, lalu internet, lalu transport."); } }));
+      return;
+    }
+    if (hq >= HQ.length) { area.innerHTML = pkt; done("Dibungkus turun, dibuka naik: tiap lapisan mengurus headernya sendiri."); return; }
+    const [t, opts, a] = HQ[hq];
+    area.innerHTML = `${pkt}<div class="qnum">Pertanyaan ${hq + 1} dari ${HQ.length}</div><div class="qtext">${esc(t)}</div><div class="opts" id="opts">${opts.map((o, i) => `<button data-i="${i}">${esc(o)}</button>`).join("")}</div>`;
+    [...area.querySelectorAll("#opts button")].forEach(b => b.addEventListener("click", () => { if (+b.dataset.i === a) { b.classList.add("right"); [...area.querySelectorAll("#opts button")].forEach(x => x.disabled = true); setResult("good", "Tepat."); hq++; setTimeout(() => { setResult(); renderBungkus(); }, 900); } else { b.classList.add("wrong"); setResult("bad", "Belum tepat. Petunjuk: port di transport, IP di internet, MAC di tautan; yang terluar dibuka dulu."); } }));
+  }
+  // ---- Latihan 2: topologi
+  const TOPO = { bus: { nodes: [[40, 60], [120, 160], [200, 60], [280, 160], [360, 60]], links: [[0, 1], [1, 2], [2, 3], [3, 4]] }, bintang: { nodes: [[200, 110], [60, 40], [340, 40], [60, 180], [340, 180]], links: [[0, 1], [0, 2], [0, 3], [0, 4]], hub: 0 }, mesh: { nodes: [[60, 40], [340, 40], [60, 180], [340, 180], [200, 110]], links: [[0, 1], [0, 2], [0, 4], [1, 3], [1, 4], [2, 3], [2, 4], [3, 4]] }, pohon: { nodes: [[200, 30], [100, 100], [300, 100], [50, 180], [150, 180], [250, 180], [350, 180]], links: [[0, 1], [0, 2], [1, 3], [1, 4], [2, 5], [2, 6]], hubs: [0, 1, 2] } };
+  const TQ = [["Lab komputer dengan 20 PC dan satu switch: topologinya?", ["bintang", "bus", "mesh"], 0], ["Jaringan sekolah: beberapa lab bintang yang naik ke switch gedung lalu router: topologinya?", ["mesh", "pohon", "bus"], 1], ["Butuh jaringan yang tetap jalan walau satu kabel putus, biaya bukan masalah:", ["mesh", "bus", "bintang"], 0], ["Satu kabel bersama untuk semua, paling murah tetapi rapuh:", ["bus", "pohon", "bintang"], 0]];
+  let tkind = "bintang", tcut = null, tq = 0, cuts = {};
+  function reach(kind, cut) { const t = TOPO[kind]; const adj = t.nodes.map(() => []); t.links.forEach(([a, b], i) => { if (i === cut) return; adj[a].push(b); adj[b].push(a); }); const seen = new Set([0]); const q = [0]; while (q.length) { const u = q.shift(); adj[u].forEach(v => { if (!seen.has(v)) { seen.add(v); q.push(v); } }); } return seen; }
+  function renderTopo() {
+    const area = $("exarea"); progress.cuts = progress.cuts || {}; cuts = progress.cuts; const t = TOPO[tkind]; const r = tcut != null ? reach(tkind, tcut) : null; const dead = r ? t.nodes.length - r.size : 0;
+    const svg = `<svg class="topo" viewBox="0 0 400 220">${t.links.map(([a, b], i) => `<line class="${tcut === i ? "cut" : ""}" x1="${t.nodes[a][0]}" y1="${t.nodes[a][1]}" x2="${t.nodes[b][0]}" y2="${t.nodes[b][1]}"/><line class="hit" data-i="${i}" x1="${t.nodes[a][0]}" y1="${t.nodes[a][1]}" x2="${t.nodes[b][0]}" y2="${t.nodes[b][1]}"/>`).join("")}${t.nodes.map(([x, y], i) => `<circle cx="${x}" cy="${y}" r="${(t.hub === i || (t.hubs || []).includes(i)) ? 16 : 13}" class="${r && !r.has(i) ? "dead" : (t.hub === i || (t.hubs || []).includes(i)) ? "hub" : ""}"/>`).join("")}<text x="8" y="212">simpul 0 = pengirim · ketuk kabel untuk memutus</text></svg>`;
+    area.innerHTML = `<div class="qnum">Langkah 1: pilih topologi, ketuk satu kabel untuk memutusnya, lihat siapa yang terputus.</div><div class="pick">${Object.keys(TOPO).map(k => `<button data-k="${k}" aria-pressed="${k === tkind}">${k}</button>`).join("")}</div>${svg}<div class="log">${tcut == null ? "belum ada kabel diputus" : dead + " dari " + (t.nodes.length - 1) + " perangkat lain terputus dari simpul 0"} · sudah dicoba di ${Object.keys(cuts).length} dari 4 topologi</div><div id="qs"></div>`;
+    [...area.querySelectorAll("[data-k]")].forEach(b => b.addEventListener("click", () => { tkind = b.dataset.k; tcut = null; renderTopo(); }));
+    [...area.querySelectorAll("line.hit")].forEach(ln => ln.addEventListener("click", () => { tcut = +ln.dataset.i; cuts[tkind] = true; save(); renderTopo(); }));
+    if (Object.keys(cuts).length >= 4) renderTopoQ();
+  }
+  function renderTopoQ() {
+    const q = $("qs"); if (tq >= TQ.length) { done("Bentuk menentukan ketahanan: bintang bergantung pada pusat, mesh tahan putus."); return; }
+    const [t, opts, a] = TQ[tq];
+    q.innerHTML = `<div class="qnum">Langkah 2: pertanyaan ${tq + 1} dari ${TQ.length}</div><div class="qtext">${esc(t)}</div><div class="opts" id="opts">${opts.map((o, i) => `<button data-i="${i}">${esc(o)}</button>`).join("")}</div>`;
+    [...q.querySelectorAll("button")].forEach(b => b.addEventListener("click", () => { if (+b.dataset.i === a) { b.classList.add("right"); [...q.querySelectorAll("button")].forEach(x => x.disabled = true); setResult("good", "Tepat."); tq++; setTimeout(() => { setResult(); renderTopoQ(); }, 900); } else { b.classList.add("wrong"); setResult("bad", "Belum tepat. Petunjuk: coba putuskan kabel di tiap topologi dan bandingkan berapa yang terputus."); } }));
+  }
+  // ---- Latihan 3: pelacak lompatan
+  const HOPS = ["HP Sinta (10.0.3.5)", "titik akses Wi-Fi", "switch lab", "router sekolah (NAT → alamat publik)", "penyedia internet", "router antarkota", "server tujuan"];
+  const LQ = [["Di router sekolah, alamat 10.0.3.5 diganti alamat publik. Nama prosesnya?", ["NAT", "DNS", "MAC"], 0], ["Paket no. 3 hilang di router antarkota. Yang meminta kirim ulang?", ["TCP di lapisan transport", "lapisan aplikasi", "switch lab"], 0], ["ping menunjukkan 180 ms ke server itu. Artinya?", ["waktu bolak-balik paket", "ukuran paket", "jumlah router"], 0]];
+  let hopDone = 0, lq = 0, shuffled = [];
+  function renderHop() {
+    const area = $("exarea"); if (!shuffled.length) shuffled = [3, 0, 5, 1, 6, 2, 4];
+    if (hopDone < HOPS.length) {
+      area.innerHTML = `<div class="qnum">Langkah 1: ketuk lompatan berikutnya secara berurutan (${hopDone} dari ${HOPS.length}).</div><div class="hops">${HOPS.slice(0, hopDone).map((h, i) => `<div class="ok"><span>${i + 1}. ${esc(h)}</span><span>✓</span></div>`).join("")}</div><div class="opts" id="opts">${shuffled.filter(i => i >= hopDone).map(i => `<button data-i="${i}">${esc(HOPS[i])}</button>`).join("")}</div>`;
+      [...area.querySelectorAll("#opts button")].forEach(b => b.addEventListener("click", () => { if (+b.dataset.i === hopDone) { hopDone++; setResult(); renderHop(); } else { b.classList.add("wrong"); setResult("bad", "Belum. Petunjuk: dari perangkat pengirim ke jaringan lokal dulu (titik akses, switch), lalu keluar lewat router sekolah, penyedia internet, router-router, sampai server."); } }));
+      return;
+    }
+    if (lq >= LQ.length) { area.innerHTML = `<div class="hops">${HOPS.map((h, i) => `<div class="ok"><span>${i + 1}. ${esc(h)}</span><span>✓</span></div>`).join("")}</div>`; done("Setiap lompatan membaca header yang menjadi urusannya."); return; }
+    const [t, opts, a] = LQ[lq];
+    area.innerHTML = `<div class="qnum">Langkah 2: pertanyaan ${lq + 1} dari ${LQ.length}</div><div class="qtext">${esc(t)}</div><div class="opts" id="opts">${opts.map((o, i) => `<button data-i="${i}">${esc(o)}</button>`).join("")}</div>`;
+    [...area.querySelectorAll("#opts button")].forEach(b => b.addEventListener("click", () => { if (+b.dataset.i === a) { b.classList.add("right"); [...area.querySelectorAll("#opts button")].forEach(x => x.disabled = true); setResult("good", "Tepat."); lq++; setTimeout(() => { setResult(); renderHop(); }, 900); } else { b.classList.add("wrong"); setResult("bad", "Belum tepat. Petunjuk: lihat lagi segmen perjalanan paket di Bagian 2."); } }));
+  }
+  const LEVELS = [
+    { id: "bungkus", name: "1 Pembungkus paket", kind: "bungkus", task: "Bungkus pesan lapis demi lapis di pengirim, buka lapis demi lapis di penerima, lalu jawab empat pertanyaan header." },
+    { id: "topo", name: "2 Penghubung topologi", kind: "topo", task: "Pilih topologi dan putuskan satu kabel; lihat siapa yang terputus. Coba keempat topologi, lalu jawab empat pertanyaan." },
+    { id: "hop", name: "3 Pelacak lompatan", kind: "hop", task: "Susun urutan lompatan paket dari HP Sinta sampai server, lalu jawab tiga pertanyaan." }];
+  let L = 0; const level = () => LEVELS[L];
+  function setResult(kind, msg) { $("result").innerHTML = msg ? `<div class="result ${kind}">${msg}</div>` : ""; }
+  function done(extra) { progress.levels[level().id] = true; save(); renderLevels(); setResult("good", `${level().name} selesai! ` + (extra || "")); }
+  function loadLevel(i) { L = i; wrapStep = 0; unwrapStep = 0; hq = 0; phase = 0; tcut = null; tq = 0; hopDone = 0; lq = 0; $("task").textContent = level().task; setResult(); renderLevels(); ({ bungkus: renderBungkus, topo: renderTopo, hop: renderHop })[level().kind](); }
+  function renderLevels() { const el = $("levels"); el.innerHTML = ""; LEVELS.forEach((lv, i) => { const b = document.createElement("button"); b.textContent = lv.name; b.className = progress.levels[lv.id] ? "done" : ""; b.setAttribute("aria-pressed", i === L); b.addEventListener("click", () => loadLevel(i)); el.appendChild(b); }); }
+  $("redo").addEventListener("click", () => { const lv = level(); progress.levels[lv.id] = false; if (lv.kind === "topo") progress.cuts = {}; save(); loadLevel(L); });
+  P.onProgress(el => LEVELS.forEach(lv => { const s = document.createElement("span"); s.textContent = lv.name.slice(2); s.className = progress.levels[lv.id] ? "ok" : ""; el.appendChild(s); }));
+  loadLevel(0);
+})();
+</script>

@@ -1,0 +1,161 @@
+<title>Kiko: Model Jaringan</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<style>
+__PAGE_CSS__
+/* latihan F11.7 */
+.qnum { font-weight: 800; color: var(--ink2); font-size: 14px; margin-bottom: 4px }
+.qtext { font-weight: 800; font-size: 18px; margin-bottom: 8px }
+.opts { display: grid; gap: 8px; margin: 8px 0 }
+.opts button { text-align: left; font-size: 15px; min-height: 44px; padding: 10px 12px; background: var(--surface); border: 2px solid var(--line) }
+.opts button.right { border-color: var(--good); background: var(--good-bg) } .opts button.wrong { border-color: var(--bad); background: var(--bad-bg) } .opts button.used { opacity: .5 }
+.pkt { display: flex; gap: 4px; margin: 8px 0; min-height: 44px; align-items: stretch } .pkt span { flex: 0 0 auto; padding: 10px 8px; border-radius: 8px; color: #fff; font-size: 12px; font-weight: 900; display: flex; align-items: center } .pkt .d { background: #2E9E5B; flex: 1 } .pkt .t { background: #2E7E9A } .pkt .i { background: #8E6BBF } .pkt .l { background: #B57A12 }
+.pick { display: flex; flex-wrap: wrap; gap: 6px; margin: 8px 0 } .pick button { min-height: 40px; font-size: 14px; font-weight: 800; background: var(--surface); border: 2px solid var(--line); padding: 6px 12px } .pick button[aria-pressed="true"] { border-color: var(--accent); background: #FFF3D6 }
+.topo { width: 100%; height: 220px; background: var(--surface2); border-radius: 12px; margin: 8px 0 } .topo line { stroke: #7B8B95; stroke-width: 4; pointer-events: none } .topo line.cut { stroke: var(--bad); stroke-dasharray: 8 6 } .topo line.hit { stroke: transparent; stroke-width: 26; pointer-events: stroke; cursor: pointer } .topo circle { fill: #fff; stroke: var(--kiko, #2E7E9A); stroke-width: 3 } .topo circle.hub { fill: var(--kiko, #2E7E9A) } .topo circle.dead { fill: #E1E8E4; stroke: var(--bad) } .topo text { font-size: 12px; font-weight: 800; fill: var(--ink2) }
+.hops { display: grid; gap: 6px; margin: 8px 0 } .hops div { background: var(--surface); border: 2px solid var(--line); border-radius: 10px; padding: 8px 10px; font-size: 14px; font-weight: 800; display: flex; justify-content: space-between } .hops div.ok { border-color: var(--good); background: var(--good-bg) }
+.log { font-size: 13px; color: var(--ink2); margin: 6px 0 }
+.rev { display: grid; gap: 6px; margin-top: 8px } .rev div { font-size: 14px; padding: 8px 10px; border-radius: 10px; background: var(--surface2) } .rev div.bad { background: var(--bad-bg) }
+</style>
+
+<div class="wrap">
+  <header>
+    <div class="eyebrow">Informatika · Fase F · Kelas XI · Episode F11.7</div>
+    <h1>Model Jaringan dan Pengiriman Data</h1>
+    <p class="hint">Tonton videonya (dua bagian), lalu kerjakan tiga latihan: pembungkus paket, penghubung topologi, dan pelacak lompatan. Suara bisa dimatikan; teks selalu tampil di layar.</p>
+  </header>
+
+  <section class="card player" aria-label="Pemutar episode">
+    <div class="stage">
+      <canvas id="screen" width="1920" height="1080" aria-label="Animasi episode"></canvas>
+      <audio id="nar" preload="auto" src="narasi.mp3"></audio>
+      <button class="bigplay" id="bigplay" aria-label="Putar"><span>▶ Putar episode</span></button>
+    </div>
+    <div class="bar" id="bar" role="slider" aria-label="Posisi episode" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" tabindex="0"><i id="barfill"></i></div>
+    <div class="controls">
+      <button class="primary" id="playbtn">▶ Putar</button>
+      <button id="replay">↺ Ulangi bagian ini</button>
+      <button id="voice" aria-pressed="true">🔊 Suara: nyala</button>
+      <button id="slow" aria-pressed="false">🐢 Mode lambat</button>
+      <span class="hint" id="timelabel">0:00 / 0:00</span>
+    </div>
+    <div class="caption" id="caption"></div>
+    <div class="chapterwrap">
+      <div class="chapters" id="chapters"></div>
+    </div>
+  </section>
+
+  <section class="card" aria-label="Cek pemahaman">
+    <h2>Cek pemahaman</h2>
+    <p class="hint">Soal yang sama dengan di video. Jawaban salah memberi petunjuk, bukan kunci.</p>
+    <div class="quiz" id="quiz"></div>
+  </section>
+
+  <section class="card" aria-label="Latihan">
+    <h2>Pembungkus paket, penghubung topologi, pelacak lompatan</h2>
+    <p class="hint">Tiga latihan. Kemajuan tersimpan di perangkat ini.</p>
+    <div class="levels" id="levels"></div>
+    <div class="task" id="task"></div>
+    <div id="exarea"></div>
+    <div id="result"></div>
+    <div class="row" style="margin-top:10px"><button id="redo">↺ Ulangi bagian ini</button></div>
+  </section>
+
+  <section class="card" aria-label="Kemajuan">
+    <h2>Kemajuanmu</h2>
+    <div class="progress" id="progress"></div>
+    <p class="hint">Tersimpan di perangkat ini saja. Guru bisa memintamu menunjukkan halaman ini.</p>
+  </section>
+
+  <section class="card">
+    <details>
+      <summary>Untuk guru: cara memakai episode ini (16 JP)</summary>
+      <p><b>Tujuan (F11.7, elemen Berpikir Komputasional, Fase F):</b> murid mengenali topologi, model klien–server dan peer-to-peer, serta lapisan TCP/IP, lalu mengirim data antarperangkat di jaringan lokal. Praktik hanya di jaringan lab yang diizinkan; tidak ada pemindaian perangkat orang lain.</p>
+      <ul class="plain">
+        <li><b>Pertemuan 1–2 (4 JP), topologi:</b> permainan amplop berlapis dan benang. Tonton Bagian 1. Latihan 2 (penghubung topologi). Murid menggambar topologi jaringan sekolah dari pengamatan (lab, switch, router) dan menandai titik yang bila mati memutus paling banyak perangkat.</li>
+        <li><b>Pertemuan 3–4 (4 JP), peran perangkat:</b> segmen klien–server dan peer-to-peer. Murid mendaftar sepuluh aplikasi yang dipakai sehari-hari dan mengelompokkan modelnya; diskusi: apa yang terjadi bila server padam, dan mengapa panggilan video sering langsung antarperangkat.</li>
+        <li><b>Pertemuan 5–6 (4 JP), lapisan dan paket:</b> tonton Bagian 2. Latihan 1 (pembungkus paket) dan 3 (pelacak lompatan). Murid menggambar enkapsulasi satu pesan dan menjelaskan isi tiap header; ping ke beberapa alamat dan membaca waktunya, traceroute bila tersedia.</li>
+        <li><b>Pertemuan 7–8 (4 JP), mengirim data sungguhan:</b> berpasangan di satu Wi-Fi lab: lihat IP, ping, jalankan python -m http.server untuk membagikan satu halaman HTML buatan sendiri, teman membukanya; catat alamat, port, dan apa yang terjadi bila server dimatikan. Laporan singkat: topologi sekolah, tabel lapisan, hasil praktik.</li>
+      </ul>
+      <p><b>Penilaian:</b> gambar topologi sekolah, tabel empat lapisan dengan contoh header, dan laporan praktik klien–server. Hasil kuis tersimpan hanya di perangkat murid.</p>
+    </details>
+  </section>
+</div>
+
+<script>__ENGINE__</script>
+<script>__PAGE_JS__</script>
+<script>
+(function () {
+  const P = PageCore({ suara: __TIMELINE__, teks: __TIMELINE_TEKS__ });
+  const { $, progress, save } = P; progress.levels = progress.levels || {};
+  const esc = s => String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;");
+  // ---- Latihan 1: pembungkus paket
+  const LAY = [["aplikasi", "isi pesan: foto.jpg bagian 3", "d"], ["transport", "port 8080, segmen no. 3", "t"], ["internet", "IP tujuan 10.0.3.12", "i"], ["tautan", "MAC 5A:2F:…", "l"]];
+  const HQ = [["Nomor port ada di header lapisan mana?", ["transport", "internet", "tautan"], 0], ["Alamat IP tujuan ditambahkan oleh lapisan?", ["aplikasi", "internet", "tautan"], 1], ["Di penerima, header yang dibuka paling dulu?", ["tautan (MAC)", "transport (port)", "aplikasi"], 0], ["Alamat MAC dipakai untuk?", ["lompatan ke perangkat berikutnya di jaringan lokal", "memilih aplikasi", "menandai urutan segmen"], 0]];
+  let wrapStep = 0, unwrapStep = 0, hq = 0, phase = 0;
+  function renderBungkus() {
+    const area = $("exarea");
+    const headers = phase === 0 ? wrapStep : 3 - unwrapStep;
+    const pkt = `<div class="pkt">${LAY.slice(1, 1 + headers).reverse().map(l => `<span class="${l[2]}">${esc(l[1])}</span>`).join("")}<span class="d">${esc(LAY[0][1])}</span></div>`;
+    if (phase === 0) {
+      area.innerHTML = `<div class="qnum">Langkah 1: pengirim. Ketuk lapisan berikutnya yang membungkus (dari atas ke bawah).</div>${pkt}<div class="opts" id="opts">${LAY.slice(1).map((l, i) => `<button data-i="${i + 1}" class="${i + 1 <= wrapStep ? "used" : ""}" ${i + 1 <= wrapStep ? "disabled" : ""}>${esc(l[0])}: tambah ${esc(l[1])}</button>`).join("")}</div>`;
+      [...area.querySelectorAll("#opts button")].forEach(b => b.addEventListener("click", () => { if (+b.dataset.i === wrapStep + 1) { wrapStep++; setResult("good", "Tepat: " + LAY[wrapStep][0] + " menambah headernya."); if (wrapStep === 3) { phase = 1; setTimeout(() => { setResult(); renderBungkus(); }, 1000); } else renderBungkus(); } else { b.classList.add("wrong"); setResult("bad", "Belum. Petunjuk: urutan turun adalah aplikasi → transport → internet → tautan; header baru selalu ditambahkan di luar yang sudah ada."); } }));
+      return;
+    }
+    if (phase === 1) {
+      area.innerHTML = `<div class="qnum">Langkah 2: penerima. Ketuk header yang dibuka berikutnya (dari luar ke dalam).</div>${pkt}<div class="opts" id="opts">${[3, 2, 1].map(i => `<button data-i="${i}" class="${i > 3 - unwrapStep ? "used" : ""}" ${i > 3 - unwrapStep ? "disabled" : ""}>buka header ${esc(LAY[i][0])}</button>`).join("")}</div>`;
+      [...area.querySelectorAll("#opts button")].forEach(b => b.addEventListener("click", () => { if (+b.dataset.i === 3 - unwrapStep) { unwrapStep++; setResult("good", "Tepat."); if (unwrapStep === 3) { phase = 2; setTimeout(() => { setResult(); renderBungkus(); }, 900); } else renderBungkus(); } else { b.classList.add("wrong"); setResult("bad", "Belum. Petunjuk: yang terluar dibuka lebih dulu: tautan, lalu internet, lalu transport."); } }));
+      return;
+    }
+    if (hq >= HQ.length) { area.innerHTML = pkt; done("Dibungkus turun, dibuka naik: tiap lapisan mengurus headernya sendiri."); return; }
+    const [t, opts, a] = HQ[hq];
+    area.innerHTML = `${pkt}<div class="qnum">Pertanyaan ${hq + 1} dari ${HQ.length}</div><div class="qtext">${esc(t)}</div><div class="opts" id="opts">${opts.map((o, i) => `<button data-i="${i}">${esc(o)}</button>`).join("")}</div>`;
+    [...area.querySelectorAll("#opts button")].forEach(b => b.addEventListener("click", () => { if (+b.dataset.i === a) { b.classList.add("right"); [...area.querySelectorAll("#opts button")].forEach(x => x.disabled = true); setResult("good", "Tepat."); hq++; setTimeout(() => { setResult(); renderBungkus(); }, 900); } else { b.classList.add("wrong"); setResult("bad", "Belum tepat. Petunjuk: port di transport, IP di internet, MAC di tautan; yang terluar dibuka dulu."); } }));
+  }
+  // ---- Latihan 2: topologi
+  const TOPO = { bus: { nodes: [[40, 60], [120, 160], [200, 60], [280, 160], [360, 60]], links: [[0, 1], [1, 2], [2, 3], [3, 4]] }, bintang: { nodes: [[200, 110], [60, 40], [340, 40], [60, 180], [340, 180]], links: [[0, 1], [0, 2], [0, 3], [0, 4]], hub: 0 }, mesh: { nodes: [[60, 40], [340, 40], [60, 180], [340, 180], [200, 110]], links: [[0, 1], [0, 2], [0, 4], [1, 3], [1, 4], [2, 3], [2, 4], [3, 4]] }, pohon: { nodes: [[200, 30], [100, 100], [300, 100], [50, 180], [150, 180], [250, 180], [350, 180]], links: [[0, 1], [0, 2], [1, 3], [1, 4], [2, 5], [2, 6]], hubs: [0, 1, 2] } };
+  const TQ = [["Lab komputer dengan 20 PC dan satu switch: topologinya?", ["bintang", "bus", "mesh"], 0], ["Jaringan sekolah: beberapa lab bintang yang naik ke switch gedung lalu router: topologinya?", ["mesh", "pohon", "bus"], 1], ["Butuh jaringan yang tetap jalan walau satu kabel putus, biaya bukan masalah:", ["mesh", "bus", "bintang"], 0], ["Satu kabel bersama untuk semua, paling murah tetapi rapuh:", ["bus", "pohon", "bintang"], 0]];
+  let tkind = "bintang", tcut = null, tq = 0, cuts = {};
+  function reach(kind, cut) { const t = TOPO[kind]; const adj = t.nodes.map(() => []); t.links.forEach(([a, b], i) => { if (i === cut) return; adj[a].push(b); adj[b].push(a); }); const seen = new Set([0]); const q = [0]; while (q.length) { const u = q.shift(); adj[u].forEach(v => { if (!seen.has(v)) { seen.add(v); q.push(v); } }); } return seen; }
+  function renderTopo() {
+    const area = $("exarea"); progress.cuts = progress.cuts || {}; cuts = progress.cuts; const t = TOPO[tkind]; const r = tcut != null ? reach(tkind, tcut) : null; const dead = r ? t.nodes.length - r.size : 0;
+    const svg = `<svg class="topo" viewBox="0 0 400 220">${t.links.map(([a, b], i) => `<line class="${tcut === i ? "cut" : ""}" x1="${t.nodes[a][0]}" y1="${t.nodes[a][1]}" x2="${t.nodes[b][0]}" y2="${t.nodes[b][1]}"/><line class="hit" data-i="${i}" x1="${t.nodes[a][0]}" y1="${t.nodes[a][1]}" x2="${t.nodes[b][0]}" y2="${t.nodes[b][1]}"/>`).join("")}${t.nodes.map(([x, y], i) => `<circle cx="${x}" cy="${y}" r="${(t.hub === i || (t.hubs || []).includes(i)) ? 16 : 13}" class="${r && !r.has(i) ? "dead" : (t.hub === i || (t.hubs || []).includes(i)) ? "hub" : ""}"/>`).join("")}<text x="8" y="212">simpul 0 = pengirim · ketuk kabel untuk memutus</text></svg>`;
+    area.innerHTML = `<div class="qnum">Langkah 1: pilih topologi, ketuk satu kabel untuk memutusnya, lihat siapa yang terputus.</div><div class="pick">${Object.keys(TOPO).map(k => `<button data-k="${k}" aria-pressed="${k === tkind}">${k}</button>`).join("")}</div>${svg}<div class="log">${tcut == null ? "belum ada kabel diputus" : dead + " dari " + (t.nodes.length - 1) + " perangkat lain terputus dari simpul 0"} · sudah dicoba di ${Object.keys(cuts).length} dari 4 topologi</div><div id="qs"></div>`;
+    [...area.querySelectorAll("[data-k]")].forEach(b => b.addEventListener("click", () => { tkind = b.dataset.k; tcut = null; renderTopo(); }));
+    [...area.querySelectorAll("line.hit")].forEach(ln => ln.addEventListener("click", () => { tcut = +ln.dataset.i; cuts[tkind] = true; save(); renderTopo(); }));
+    if (Object.keys(cuts).length >= 4) renderTopoQ();
+  }
+  function renderTopoQ() {
+    const q = $("qs"); if (tq >= TQ.length) { done("Bentuk menentukan ketahanan: bintang bergantung pada pusat, mesh tahan putus."); return; }
+    const [t, opts, a] = TQ[tq];
+    q.innerHTML = `<div class="qnum">Langkah 2: pertanyaan ${tq + 1} dari ${TQ.length}</div><div class="qtext">${esc(t)}</div><div class="opts" id="opts">${opts.map((o, i) => `<button data-i="${i}">${esc(o)}</button>`).join("")}</div>`;
+    [...q.querySelectorAll("button")].forEach(b => b.addEventListener("click", () => { if (+b.dataset.i === a) { b.classList.add("right"); [...q.querySelectorAll("button")].forEach(x => x.disabled = true); setResult("good", "Tepat."); tq++; setTimeout(() => { setResult(); renderTopoQ(); }, 900); } else { b.classList.add("wrong"); setResult("bad", "Belum tepat. Petunjuk: coba putuskan kabel di tiap topologi dan bandingkan berapa yang terputus."); } }));
+  }
+  // ---- Latihan 3: pelacak lompatan
+  const HOPS = ["HP Sinta (10.0.3.5)", "titik akses Wi-Fi", "switch lab", "router sekolah (NAT → alamat publik)", "penyedia internet", "router antarkota", "server tujuan"];
+  const LQ = [["Di router sekolah, alamat 10.0.3.5 diganti alamat publik. Nama prosesnya?", ["NAT", "DNS", "MAC"], 0], ["Paket no. 3 hilang di router antarkota. Yang meminta kirim ulang?", ["TCP di lapisan transport", "lapisan aplikasi", "switch lab"], 0], ["ping menunjukkan 180 ms ke server itu. Artinya?", ["waktu bolak-balik paket", "ukuran paket", "jumlah router"], 0]];
+  let hopDone = 0, lq = 0, shuffled = [];
+  function renderHop() {
+    const area = $("exarea"); if (!shuffled.length) shuffled = [3, 0, 5, 1, 6, 2, 4];
+    if (hopDone < HOPS.length) {
+      area.innerHTML = `<div class="qnum">Langkah 1: ketuk lompatan berikutnya secara berurutan (${hopDone} dari ${HOPS.length}).</div><div class="hops">${HOPS.slice(0, hopDone).map((h, i) => `<div class="ok"><span>${i + 1}. ${esc(h)}</span><span>✓</span></div>`).join("")}</div><div class="opts" id="opts">${shuffled.filter(i => i >= hopDone).map(i => `<button data-i="${i}">${esc(HOPS[i])}</button>`).join("")}</div>`;
+      [...area.querySelectorAll("#opts button")].forEach(b => b.addEventListener("click", () => { if (+b.dataset.i === hopDone) { hopDone++; setResult(); renderHop(); } else { b.classList.add("wrong"); setResult("bad", "Belum. Petunjuk: dari perangkat pengirim ke jaringan lokal dulu (titik akses, switch), lalu keluar lewat router sekolah, penyedia internet, router-router, sampai server."); } }));
+      return;
+    }
+    if (lq >= LQ.length) { area.innerHTML = `<div class="hops">${HOPS.map((h, i) => `<div class="ok"><span>${i + 1}. ${esc(h)}</span><span>✓</span></div>`).join("")}</div>`; done("Setiap lompatan membaca header yang menjadi urusannya."); return; }
+    const [t, opts, a] = LQ[lq];
+    area.innerHTML = `<div class="qnum">Langkah 2: pertanyaan ${lq + 1} dari ${LQ.length}</div><div class="qtext">${esc(t)}</div><div class="opts" id="opts">${opts.map((o, i) => `<button data-i="${i}">${esc(o)}</button>`).join("")}</div>`;
+    [...area.querySelectorAll("#opts button")].forEach(b => b.addEventListener("click", () => { if (+b.dataset.i === a) { b.classList.add("right"); [...area.querySelectorAll("#opts button")].forEach(x => x.disabled = true); setResult("good", "Tepat."); lq++; setTimeout(() => { setResult(); renderHop(); }, 900); } else { b.classList.add("wrong"); setResult("bad", "Belum tepat. Petunjuk: lihat lagi segmen perjalanan paket di Bagian 2."); } }));
+  }
+  const LEVELS = [
+    { id: "bungkus", name: "1 Pembungkus paket", kind: "bungkus", task: "Bungkus pesan lapis demi lapis di pengirim, buka lapis demi lapis di penerima, lalu jawab empat pertanyaan header." },
+    { id: "topo", name: "2 Penghubung topologi", kind: "topo", task: "Pilih topologi dan putuskan satu kabel; lihat siapa yang terputus. Coba keempat topologi, lalu jawab empat pertanyaan." },
+    { id: "hop", name: "3 Pelacak lompatan", kind: "hop", task: "Susun urutan lompatan paket dari HP Sinta sampai server, lalu jawab tiga pertanyaan." }];
+  let L = 0; const level = () => LEVELS[L];
+  function setResult(kind, msg) { $("result").innerHTML = msg ? `<div class="result ${kind}">${msg}</div>` : ""; }
+  function done(extra) { progress.levels[level().id] = true; save(); renderLevels(); setResult("good", `${level().name} selesai! ` + (extra || "")); }
+  function loadLevel(i) { L = i; wrapStep = 0; unwrapStep = 0; hq = 0; phase = 0; tcut = null; tq = 0; hopDone = 0; lq = 0; $("task").textContent = level().task; setResult(); renderLevels(); ({ bungkus: renderBungkus, topo: renderTopo, hop: renderHop })[level().kind](); }
+  function renderLevels() { const el = $("levels"); el.innerHTML = ""; LEVELS.forEach((lv, i) => { const b = document.createElement("button"); b.textContent = lv.name; b.className = progress.levels[lv.id] ? "done" : ""; b.setAttribute("aria-pressed", i === L); b.addEventListener("click", () => loadLevel(i)); el.appendChild(b); }); }
+  $("redo").addEventListener("click", () => { const lv = level(); progress.levels[lv.id] = false; if (lv.kind === "topo") progress.cuts = {}; save(); loadLevel(L); });
+  P.onProgress(el => LEVELS.forEach(lv => { const s = document.createElement("span"); s.textContent = lv.name.slice(2); s.className = progress.levels[lv.id] ? "ok" : ""; el.appendChild(s); }));
+  loadLevel(0);
+})();
+</script>
