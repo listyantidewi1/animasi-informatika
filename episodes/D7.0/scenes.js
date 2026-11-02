@@ -19,8 +19,8 @@
     selfcheck(ctx, b, l) {
       card(ctx, 160, 150, 1600, 740);
       text(ctx, "CEK DIRI DULU", 960, 240, 34, { align: "center", color: C.accentDark, weight: 800 });
-      para(ctx, "Mana yang sudah pernah kamu lakukan?", 960, 350, 64, 1300, { align: "center", weight: 900, lh: 1.15 });
-      text(ctx, "Hitung dalam hati. Tidak perlu ditulis, tidak dinilai.", 960, 460, 36, { align: "center", color: C.ink2, weight: 600 });
+      para(ctx, "Mana yang sudah pernah kamu lakukan?", 960, 350, 64, 1460, { align: "center", weight: 900, lh: 1.15 });
+      text(ctx, "Hitung dalam hati. Tidak perlu ditulis, tidak dinilai.", 960, 480, 36, { align: "center", color: C.ink2, weight: 600 });
       kiko(ctx, 960, 680, 200, 0, { wave: l, mood: "happy" });
     },
     selfcheck_list(ctx, b, l) {
@@ -123,8 +123,9 @@
   function kbScene(ctx, b, l, lines, st = {}) {
     const boxH = st.twoLines ? 170 : 130;
     const cur = D.textBox(ctx, 260, 160, 1400, boxH, lines, l, { size: st.twoLines ? 44 : 56, cursorOn: st.cursorOn });
-    D.keyboard(ctx, 310, 160 + boxH + 40, 1300, { pressed: st.pressed || [], glow: st.glow || [] });
-    if (st.note) text(ctx, st.note, 960, 848, 34, { align: "center", color: C.accentDark, weight: 800 });
+    const kw = st.twoLines ? 1180 : 1300;
+    const kb = D.keyboard(ctx, 960 - kw / 2, 160 + boxH + 40, kw, { pressed: st.pressed || [], glow: st.glow || [] });
+    if (st.note) text(ctx, st.note, 960, kb.y + kb.h + 52, 34, { align: "center", color: C.accentDark, weight: 800 });
     return cur;
   }
   const LETTERS = "QWERTYUIOPASDFGHJKLZXCVBNM".split("");
@@ -175,7 +176,7 @@
     ctx.save(); ctx.beginPath(); rr(ctx, sc.x, sc.y, sc.w, sc.h, 26); ctx.clip();
     text(ctx, "Galeri", sc.x + sc.w / 2, sc.y + 60 - (opt.scroll || 0) * 0, 28, { align: "center", weight: 900, color: C.ink2 });
     const cell = (sc.w - 40) / 3, off = opt.scroll || 0;
-    for (let i = 0; i < 12; i++) { const r = Math.floor(i / 3), c = i % 3; const px = sc.x + 20 + c * cell, py = sc.y + 90 + r * cell - off; ctx.fillStyle = PHOTO_COLORS[i]; rr(ctx, px + 4, py + 4, cell - 8, cell - 8, 10); ctx.fill(); ctx.fillStyle = "rgba(255,255,255,0.5)"; ctx.beginPath(); ctx.arc(px + cell * 0.3, py + cell * 0.32, cell * 0.1, 0, Math.PI * 2); ctx.fill(); }
+    for (let i = 0; i < 24; i++) { const r = Math.floor(i / 3), c = i % 3; const px = sc.x + 20 + c * cell, py = sc.y + 90 + r * cell - off; ctx.fillStyle = PHOTO_COLORS[(i * 5 + r) % PHOTO_COLORS.length]; rr(ctx, px + 4, py + 4, cell - 8, cell - 8, 10); ctx.fill(); ctx.fillStyle = "rgba(255,255,255,0.5)"; ctx.beginPath(); ctx.arc(px + cell * 0.3, py + cell * 0.32, cell * 0.1, 0, Math.PI * 2); ctx.fill(); }
     ctx.restore();
   }
   function touchScene(ctx, b, l, drawScreen, note, pair) {

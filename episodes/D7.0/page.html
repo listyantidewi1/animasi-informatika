@@ -1,0 +1,193 @@
+<title>Kiko: Komputer dan HP</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<style>
+__PAGE_CSS__
+/* kuis bergambar (khusus D7.0) */
+.pick { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; margin-top: 10px }
+@media (min-width: 720px) { .pick { grid-template-columns: repeat(4, minmax(0, 1fr)) } }
+.pick button { display: grid; justify-items: center; gap: 6px; padding: 10px; background: var(--surface2); font-size: 15px }
+.pick canvas { width: 100%; max-width: 150px; aspect-ratio: 1; background: #F4F8FB; border-radius: 12px }
+.pick button.right { box-shadow: inset 0 0 0 3px var(--good); background: var(--good-bg) }
+.pick button.wrong { background: var(--bad-bg) }
+.keys { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 10px }
+.keys button { min-width: 120px; border: 2px solid var(--line); background: var(--surface); font-size: 18px }
+.keys button.right { border-color: var(--good); background: var(--good-bg) }
+.keys button.wrong { background: var(--bad-bg) }
+.sortex { display: grid; gap: 14px; margin-top: 10px }
+.files, .folders { display: flex; flex-wrap: wrap; gap: 10px }
+.files button, .folders button { display: grid; justify-items: center; gap: 4px; padding: 8px 10px; min-width: 118px; font-size: 14px }
+.files canvas, .folders canvas { width: 64px; height: 64px }
+.files button[aria-pressed="true"] { box-shadow: inset 0 0 0 3px var(--warm); background: color-mix(in srgb, var(--warm) 18%, var(--surface)) }
+.folders button { background: var(--surface); border: 2px dashed var(--line) }
+.folders button.wrong { border-color: var(--bad); background: var(--bad-bg) }
+.folders .count { font-size: 13px; color: var(--ink2) }
+.qnum { font-weight: 800; color: var(--ink2); font-size: 14px; margin-bottom: 4px }
+.qtext { font-weight: 800; font-size: 18px }
+.diag { display: grid; gap: 8px }
+.diag div { padding: 10px 12px; border-radius: 12px; background: var(--surface2); font-weight: 700; display: flex; justify-content: space-between; align-items: center; gap: 10px; flex-wrap: wrap }
+.diag div.ok { background: var(--good-bg) } .diag div.redo { background: var(--bad-bg) }
+.diag button { min-height: 40px; padding: 8px 12px; font-size: 14px }
+</style>
+
+<div class="wrap">
+  <header>
+    <div class="eyebrow">Informatika · Fase D · Kelas VII · Episode D7.0 · Jembatan</div>
+    <h1>Cara Memakai Komputer dan HP</h1>
+    <p class="hint">Episode pertama, tidak ada prasyarat. Tonton bagian demi bagian, lalu kerjakan kuis bergambar di bawahnya. Suara bisa dimatikan; teks selalu tampil di layar.</p>
+  </header>
+
+  <section class="card player" aria-label="Pemutar episode">
+    <div class="stage">
+      <canvas id="screen" width="1920" height="1080" aria-label="Animasi episode"></canvas>
+      <audio id="nar" preload="auto" src="narasi.mp3"></audio>
+      <button class="bigplay" id="bigplay" aria-label="Putar"><span>▶ Putar episode</span></button>
+    </div>
+    <div class="bar" id="bar" role="slider" aria-label="Posisi episode" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" tabindex="0"><i id="barfill"></i></div>
+    <div class="row">
+      <button class="primary" id="playbtn">▶ Putar</button>
+      <button id="replay">↺ Ulangi bagian ini</button>
+      <button id="voice" aria-pressed="true">🔊 Suara: nyala</button>
+      <button id="slow" aria-pressed="false">🐢 Mode lambat</button>
+      <span class="hint" id="timelabel">0:00 / 0:00</span>
+    </div>
+    <div>
+      <div class="eyebrow">Bagian</div>
+      <div class="chapters" id="chapters"></div>
+    </div>
+  </section>
+
+  <section class="card" aria-label="Cek pemahaman">
+    <h2>Cek pemahaman</h2>
+    <p class="hint">Pilih satu jawaban. Kalau salah, kamu dapat petunjuk, lalu coba lagi.</p>
+    <div class="quiz" id="quiz"></div>
+  </section>
+
+  <section class="card" aria-label="Kuis bergambar">
+    <h2>Kuis bergambar</h2>
+    <p class="hint">Tiga bagian: gerakan mouse, tombol keyboard, dan menyusun file ke folder. Jawaban salah memberi petunjuk, bukan nilai jelek. Hasilnya menjadi peta: bagian mana yang perlu kamu tonton lagi.</p>
+    <div class="levels" id="levels"></div>
+    <div class="task" id="task"></div>
+    <div id="exarea"></div>
+    <div id="result"></div>
+    <div class="row" style="margin-top:10px"><button id="redo">↺ Ulangi bagian ini</button></div>
+  </section>
+
+  <section class="card" aria-label="Peta belajar">
+    <h2>Peta belajarmu</h2>
+    <p class="hint">Lancar = salah paling banyak satu kali. Kalau perlu diulang, tonton lagi bagian videonya, lalu coba kuisnya sekali lagi.</p>
+    <div class="diag" id="diag"></div>
+  </section>
+
+  <section class="card" aria-label="Kemajuan">
+    <h2>Kemajuanmu</h2>
+    <div class="progress" id="progress"></div>
+    <p class="hint" style="margin-top:8px">Kemajuan tersimpan di perangkat ini saja.</p>
+  </section>
+
+  <section class="card">
+    <details>
+      <summary>Untuk guru: cara memakai episode ini (6 JP)</summary>
+      <p><b>Tujuan (D7.0, unit jembatan):</b> memetakan kemampuan awal murid, lalu mengoperasikan komputer dan HP: mouse, keyboard, layar sentuh, file, dan folder. Bukan butir CP; penguatan prasyarat untuk seluruh kelas VII.</p>
+      <ul class="plain">
+        <li><b>Pertemuan 1 (2 JP), konkret:</b> murid memegang mouse dan keyboard sungguhan (bergantian bila alat terbatas; HP sendiri boleh dipakai untuk bagian layar sentuh). Permainan "jari jadi pointer": satu murid menunjuk benda di kelas, temannya menyebut gerakannya (klik, double click, klik kanan, drag). Isi "Cek diri dulu" di kertas: lima kemampuan, centang yang sudah pernah.</li>
+        <li><b>Pertemuan 2 (2 JP), gambar:</b> tonton Bagian 1 (cek diri, mouse, keyboard) per segmen; berhenti di tiap "Cek pemahaman". Kerjakan kuis bergambar bagian Mouse dan Keyboard; murid yang lancar membantu temannya.</li>
+        <li><b>Pertemuan 3 (2 JP), simbol:</b> tonton Bagian 2 (layar sentuh, file, folder, save). Kerjakan bagian Folder. Tugas: buat folder bernama kelas sendiri di komputer sekolah atau HP, simpan satu file dengan nama yang jelas, lalu cari lagi lewat kotak search.</li>
+      </ul>
+      <p><b>Asesmen diagnostik:</b> "Peta belajarmu" di halaman ini (per murid, tersimpan di perangkat) ditambah pengamatan guru saat pertemuan 1. Murid dengan dua bagian "perlu diulang" diberi pendampingan sebelum D7.1. <b>Target minimum:</b> semua murid lancar di Mouse dan Folder.</p>
+    </details>
+  </section>
+</div>
+
+<script>__ENGINE__</script>
+<script>__PAGE_JS__</script>
+<script>
+(function () {
+  const P = PageCore({ suara: __TIMELINE__, teks: __TIMELINE_TEKS__ });
+  const { $, K, H, progress, save } = P; const D = K.devices;
+  progress.levels = progress.levels || {}; progress.diag = progress.diag || {};
+
+  // gambar kecil dari devices.js (ikon mouse, file, folder)
+  function thumb(draw, size = 200) { const c = document.createElement("canvas"); c.width = c.height = size; const x = c.getContext("2d"); x.fillStyle = "#F4F8FB"; x.fillRect(0, 0, size, size); draw(x); return c; }
+  const MOUSE = {
+    klik: ["Klik", x => D.mouse(x, 100, 105, 70, { left: true })],
+    double: ["Double click", x => { D.mouse(x, 100, 105, 70, { left: true }); H.text(x, "×2", 160, 70, 30, { color: "#B57A12", weight: 900 }); }],
+    kanan: ["Klik kanan", x => D.mouse(x, 100, 105, 70, { right: true })],
+    drag: ["Drag", x => { D.mouse(x, 90, 110, 70, { left: true }); x.strokeStyle = "#B57A12"; x.lineWidth = 6; x.lineCap = "round"; x.beginPath(); x.moveTo(135, 70); x.lineTo(175, 35); x.stroke(); x.beginPath(); x.moveTo(150, 32); x.lineTo(178, 32); x.lineTo(178, 60); x.stroke(); }]
+  };
+  const LEVELS = [
+    { id: "mouse", name: "Mouse", seg: 2, kind: "pick", task: "Baca kejadiannya, lalu ketuk gambar gerakan mouse yang tepat.",
+      items: [["Dito ingin MEMBUKA folder Tugas.", "double"], ["Sinta hanya ingin MEMILIH (menyorot) satu file.", "klik"], ["Dito ingin melihat MENU PILIHAN sebuah file.", "kanan"], ["Sinta ingin MEMINDAHKAN file ke folder Foto.", "drag"]],
+      hints: { double: "Satu klik hanya memilih. Untuk membuka perlu dua klik cepat.", klik: "Memilih cukup satu klik. Double click justru membukanya.", kanan: "Menu pilihan muncul dari tombol KANAN, ditekan satu kali.", drag: "Memindahkan = tekan tombol kiri, tahan, geser, lalu lepas." } },
+    { id: "keyboard", name: "Keyboard", seg: 3, kind: "keys", task: "Baca kejadiannya, lalu ketuk tombol keyboard yang tepat.",
+      items: [["Kamu mengetik 'Sintaa'. Hapus huruf a yang terakhir.", "Backspace"], ["Kamu ingin huruf D besar pada 'dito'.", "Shift"], ["'DitoSinta' menempel. Beri jarak antar kata.", "Spasi"], ["Pindah ke baris berikutnya.", "Enter"]],
+      hints: { Backspace: "Enter membuat baris baru, Spasi membuat jarak. Yang menghapus ke kiri adalah…", Shift: "Huruf besar: tahan tombol di pojok kiri bawah sambil menekan hurufnya.", Spasi: "Tombol yang paling panjang di bawah.", Enter: "Tombol untuk turun ke baris baru." } },
+    { id: "folder", name: "Folder", seg: 6, kind: "sort", task: "Ketuk sebuah file, lalu ketuk folder tempatnya. Lihat ikonnya untuk tahu jenis filenya.",
+      files: [["PR Matematika", "tulisan"], ["foto pramuka", "foto"], ["lagu sekolah", "lagu"], ["Puisi Ibu", "tulisan"], ["foto kelas", "foto"], ["lagu daerah", "lagu"]],
+      folders: [["Tugas", "tulisan"], ["Foto", "foto"], ["Lagu", "lagu"]],
+      hint: "Lihat ikonnya. Foto → folder Foto, tulisan atau tugas → folder Tugas, lagu → folder Lagu." }
+  ];
+  let L = 0, idx = 0, sel = null, placed = {};
+  const level = () => LEVELS[L];
+  const diag = id => progress.diag[id] || (progress.diag[id] = { salah: 0 });
+  function setResult(kind, msg) { $("result").innerHTML = msg ? `<div class="result ${kind}">${msg}</div>` : ""; }
+  function wrong(hint) { diag(level().id).salah++; save(); setResult("bad", "Belum tepat. Petunjuk: " + hint); renderDiag(); }
+  function done() { progress.levels[level().id] = true; save(); renderLevels(); renderDiag(); setResult("good", `Bagian ${level().name} selesai! ` + (diag(level().id).salah <= 1 ? "Lancar." : "Coba tonton lagi bagian videonya, lalu ulangi sekali lagi.")); }
+
+  function renderPickOrKeys() {
+    const lv = level(), area = $("exarea"); area.innerHTML = "";
+    if (idx >= lv.items.length) { area.innerHTML = `<div class="qtext">Semua soal ${lv.name} sudah dijawab.</div>`; return; }
+    const [q, ans] = lv.items[idx];
+    area.innerHTML = `<div class="qnum">Soal ${idx + 1} dari ${lv.items.length}</div><div class="qtext">${q}</div><div class="${lv.kind === "pick" ? "pick" : "keys"}" id="opts"></div>`;
+    const opts = $("opts");
+    const keys = lv.kind === "pick" ? Object.keys(MOUSE) : ["Shift", "Spasi", "Backspace", "Enter"];
+    keys.forEach(k => {
+      const b = document.createElement("button");
+      if (lv.kind === "pick") { b.appendChild(thumb(MOUSE[k][1])); b.appendChild(Object.assign(document.createElement("span"), { textContent: MOUSE[k][0] })); } else b.textContent = k;
+      b.addEventListener("click", () => {
+        [...opts.children].forEach(c => c.classList.remove("wrong"));
+        if (k === ans) { b.classList.add("right"); [...opts.children].forEach(c => c.disabled = true); setResult("good", "Benar!"); idx++; setTimeout(() => { if (idx >= lv.items.length) done(); else { setResult(); renderPickOrKeys(); } }, 900); }
+        else { b.classList.add("wrong"); wrong(lv.hints[ans]); }
+      });
+      opts.appendChild(b);
+    });
+  }
+  function renderSort() {
+    const lv = level(), area = $("exarea"); area.innerHTML = `<div class="sortex"><div><div class="qnum">File yang belum disusun</div><div class="files" id="files"></div></div><div><div class="qnum">Folder</div><div class="folders" id="folders"></div></div></div>`;
+    const files = $("files"), folders = $("folders");
+    const left = lv.files.filter(f => !placed[f[0]]);
+    if (!left.length) files.innerHTML = `<span class="hint">Semua file sudah rapi.</span>`;
+    left.forEach(([name, kind]) => {
+      const b = document.createElement("button"); b.setAttribute("aria-pressed", sel === name); b.appendChild(thumb(x => D.fileIcon(x, 100, 100, 110, kind, {}), 200)); b.appendChild(Object.assign(document.createElement("span"), { textContent: name }));
+      b.addEventListener("click", () => { sel = sel === name ? null : name; setResult(sel ? "info" : "", sel ? `"${sel}" dipilih. Sekarang ketuk foldernya.` : ""); renderSort(); });
+      files.appendChild(b);
+    });
+    lv.folders.forEach(([fname, fkind]) => {
+      const n = lv.files.filter(f => placed[f[0]] === fname).length;
+      const b = document.createElement("button"); b.appendChild(thumb(x => D.fileIcon(x, 100, 100, 120, "folder", { open: n > 0 }), 200)); b.appendChild(Object.assign(document.createElement("span"), { textContent: fname })); b.appendChild(Object.assign(document.createElement("span"), { className: "count", textContent: n + " file" }));
+      b.addEventListener("click", () => {
+        if (!sel) { setResult("info", "Ketuk dulu file yang mau dipindahkan."); return; }
+        const kind = lv.files.find(f => f[0] === sel)[1];
+        if (kind === fkind) { placed[sel] = fname; sel = null; setResult("good", `Masuk ke folder ${fname}.`); renderSort(); if (lv.files.every(f => placed[f[0]])) done(); }
+        else { b.classList.add("wrong"); wrong(lv.hint); setTimeout(() => b.classList.remove("wrong"), 900); }
+      });
+      folders.appendChild(b);
+    });
+  }
+  function loadLevel(i) { L = i; idx = 0; sel = null; placed = {}; $("task").textContent = level().task; setResult(); renderLevels(); if (level().kind === "sort") renderSort(); else renderPickOrKeys(); }
+  function renderLevels() { const el = $("levels"); el.innerHTML = ""; LEVELS.forEach((lv, i) => { const b = document.createElement("button"); b.textContent = lv.name; b.className = progress.levels[lv.id] ? "done" : ""; b.setAttribute("aria-pressed", i === L); b.addEventListener("click", () => loadLevel(i)); el.appendChild(b); }); }
+  function renderDiag() {
+    const el = $("diag"); el.innerHTML = "";
+    LEVELS.forEach(lv => {
+      const d = progress.diag[lv.id] || { salah: 0 }, ok = progress.levels[lv.id]; const row = document.createElement("div");
+      const status = !ok ? (d.salah ? `belum selesai, salah ${d.salah} kali` : "belum dikerjakan") : d.salah <= 1 ? "lancar ✓" : `perlu diulang (salah ${d.salah} kali)`;
+      row.className = ok ? (d.salah <= 1 ? "ok" : "redo") : "";
+      row.innerHTML = `<span>${lv.name}: ${status}</span>`;
+      if (d.salah > 1) { const b = document.createElement("button"); b.textContent = `▶ Tonton lagi bagian ${lv.seg + 1}`; b.addEventListener("click", () => { $("chapters").children[lv.seg].click(); window.scrollTo({ top: 0, behavior: "smooth" }); }); row.appendChild(b); }
+      el.appendChild(row);
+    });
+  }
+  $("redo").addEventListener("click", () => { progress.levels[level().id] = false; progress.diag[level().id] = { salah: 0 }; save(); loadLevel(L); renderDiag(); });
+  P.onProgress(el => LEVELS.forEach(lv => { const s = document.createElement("span"); s.textContent = "Kuis " + lv.name; s.className = progress.levels[lv.id] ? "ok" : ""; el.appendChild(s); }));
+  renderDiag(); loadLevel(0);
+})();
+</script>
