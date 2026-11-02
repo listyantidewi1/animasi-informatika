@@ -1,0 +1,1013 @@
+<title>Kiko: Membaca Lateral</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<style>
+/* Inti gaya halaman latihan: satu kolom, pemutar di atas, latihan di bawah; palet kantin sama dengan video. */
+:root {
+  --bg: #EAF2EE; --surface: #FFFFFF; --surface2: #DCE9E2; --ink: #1F2A33; --ink2: #4A5A66; --line: #C9D8D0;
+  --accent: #2E7E9A; --accent-ink: #FFFFFF; --warm: #F2B134; --warm-ink: #5E3E05; --good: #2E9E5B; --good-bg: #DDF3E4; --bad: #D9443B; --bad-bg: #FBE1DF;
+  --font: Inter, "Segoe UI", Roboto, Arial, sans-serif;
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) { --bg: #141C1A; --surface: #1E2926; --surface2: #273532; --ink: #EAF2EE; --ink2: #A9BBB3; --line: #3A4A45; --accent: #5FB3CE; --accent-ink: #0F1D22; --warm: #F2B134; --warm-ink: #2B1C02; --good: #5FCB8A; --good-bg: #1F3A2B; --bad: #F07A72; --bad-bg: #442523; color-scheme: dark } }
+:root[data-theme="dark"] { --bg: #141C1A; --surface: #1E2926; --surface2: #273532; --ink: #EAF2EE; --ink2: #A9BBB3; --line: #3A4A45; --accent: #5FB3CE; --accent-ink: #0F1D22; --warm: #F2B134; --warm-ink: #2B1C02; --good: #5FCB8A; --good-bg: #1F3A2B; --bad: #F07A72; --bad-bg: #442523; color-scheme: dark }
+* { box-sizing: border-box }
+body { background: var(--bg); color: var(--ink); font-family: var(--font); font-size: 17px; line-height: 1.5; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); padding-block: 16px 48px }
+.wrap { max-width: 980px; margin: 0 auto; display: grid; gap: 28px }
+h1 { font-size: clamp(26px, 5vw, 38px); line-height: 1.15; margin: 0; text-wrap: balance; font-weight: 900 }
+h2 { font-size: 22px; margin: 0 0 12px; font-weight: 800 }
+h3 { font-size: 18px; margin: 0 0 8px; font-weight: 800 }
+p { margin: 0 0 10px; max-width: 65ch }
+.eyebrow { font-size: 13px; letter-spacing: .08em; text-transform: uppercase; color: var(--ink2); font-weight: 800; margin-bottom: 6px }
+.card { background: var(--surface); border-radius: 18px; padding: 18px; border: 1px solid var(--line) }
+button { font: inherit; font-weight: 800; border: 0; border-radius: 12px; padding: 12px 16px; cursor: pointer; background: var(--surface2); color: var(--ink); min-height: 48px; touch-action: manipulation }
+button:focus-visible, [tabindex]:focus-visible { outline: 3px solid var(--warm); outline-offset: 2px }
+button.primary { background: var(--accent); color: var(--accent-ink) }
+button.warm { background: var(--warm); color: var(--warm-ink) }
+button[aria-pressed="true"] { box-shadow: inset 0 0 0 3px var(--accent) }
+button:disabled { opacity: .45; cursor: default }
+.row { display: flex; flex-wrap: wrap; gap: 10px; align-items: center }
+/* player */
+.player { display: grid; gap: 12px }
+.stage { position: relative; width: 100%; aspect-ratio: 16 / 9; max-width: 100%; background: #EAF2EE; border-radius: 14px; overflow: hidden; border: 1px solid var(--line) }
+.stage canvas { width: 100%; height: 100%; display: block }
+.bigplay { position: absolute; inset: 0; display: grid; place-items: center; background: rgba(31,42,51,.25); border: 0; border-radius: 0; color: #fff; font-size: 20px; min-height: 0 }
+.bigplay span { background: var(--accent); color: var(--accent-ink); padding: 14px 26px; border-radius: 999px; font-weight: 900 }
+.bar { height: 10px; background: var(--surface2); border-radius: 999px; overflow: hidden; cursor: pointer }
+.bar > i { display: block; height: 100%; width: 0; background: var(--warm) }
+.chapters { display: flex; flex-wrap: wrap; gap: 8px }
+.chapters button { font-size: 14px; padding: 8px 12px; min-height: 40px }
+.chapters button.now { background: var(--warm); color: var(--warm-ink) }
+.hint { color: var(--ink2); font-size: 15px }
+/* exercises (generic parts) */
+.levels { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 12px }
+.levels button { font-size: 14px; padding: 8px 12px; min-height: 40px }
+.levels button.done::after { content: " ✓"; color: var(--good) }
+.task { background: var(--surface2); border-radius: 12px; padding: 12px 14px; margin-bottom: 12px; font-weight: 700 }
+.result { border-radius: 12px; padding: 12px 14px; font-weight: 800; margin-top: 10px }
+.result.good { background: var(--good-bg); color: var(--good) }
+.result.bad { background: var(--bad-bg); color: var(--bad) }
+.result.info { background: var(--surface2); color: var(--ink) }
+/* quiz */
+.quiz { display: grid; gap: 16px }
+.q { border-top: 1px solid var(--line); padding-top: 14px }
+.q:first-child { border-top: 0; padding-top: 0 }
+.opts { display: grid; gap: 8px; margin-top: 8px }
+.opts button { text-align: left; font-weight: 700; background: var(--surface2); display: flex; gap: 10px; align-items: center }
+.opts button b { width: 30px; height: 30px; border-radius: 50%; background: var(--accent); color: var(--accent-ink); display: grid; place-items: center; flex: none }
+.opts button.right { background: var(--good-bg); box-shadow: inset 0 0 0 3px var(--good) }
+.opts button.wrong { background: var(--bad-bg) }
+.fb { margin-top: 8px; font-weight: 700 }
+.fb.good { color: var(--good) } .fb.bad { color: var(--bad) }
+details summary { cursor: pointer; font-weight: 800; font-size: 18px }
+details[open] summary { margin-bottom: 10px }
+ul.plain { padding-left: 20px; margin: 0 0 10px } ul.plain li { margin-bottom: 6px; max-width: 65ch }
+.progress { display: flex; gap: 8px; flex-wrap: wrap } .progress span { background: var(--surface2); border-radius: 999px; padding: 6px 12px; font-size: 14px; font-weight: 700 }
+.progress span.ok { background: var(--good-bg); color: var(--good) }
+@media (prefers-reduced-motion: reduce) { * { transition: none !important } }
+
+/* latihan E.4 */
+.qnum { font-weight: 800; color: var(--ink2); font-size: 14px; margin-bottom: 4px }
+.qtext { font-weight: 800; font-size: 18px; margin-bottom: 8px }
+.ex { background: var(--surface2); border-radius: 12px; padding: 12px 14px; font-weight: 800; font-size: 17px; margin: 8px 0 }
+.opts { display: grid; gap: 8px; margin: 8px 0 }
+.opts button { text-align: left; font-size: 15px; min-height: 44px; padding: 10px 12px; background: var(--surface); border: 2px solid var(--line) }
+.opts button.right { border-color: var(--good); background: var(--good-bg) } .opts button.wrong { border-color: var(--bad); background: var(--bad-bg) }
+.q { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; background: var(--surface); border: 2px solid var(--line); border-radius: 30px; padding: 8px 14px; min-height: 48px; margin: 8px 0; font-weight: 800 } .q .tok { background: #FFF3D6; border-radius: 8px; padding: 2px 8px; color: #B57A12 }
+.toks { display: flex; flex-wrap: wrap; gap: 6px; margin: 8px 0 } .toks button { font-size: 14px; font-weight: 900; min-height: 40px; padding: 6px 10px; border: 2px solid var(--line) } .toks button[aria-pressed="true"] { background: var(--accent); color: #fff; border-color: var(--accent) }
+.tabs { display: flex; gap: 4px; margin: 8px 0 0; flex-wrap: wrap } .tabs button { font-size: 13px; font-weight: 800; min-height: 36px; padding: 4px 10px; border-radius: 10px 10px 0 0; border: 2px solid var(--line); border-bottom: 0; background: var(--surface2) } .tabs button[aria-pressed="true"] { background: var(--surface) }
+.page { background: var(--surface); border: 2px solid var(--line); border-radius: 0 12px 12px 12px; padding: 12px; font-size: 14px; font-weight: 700; min-height: 120px } .page h4 { margin: 0 0 6px; font-size: 16px } .page .url { font-size: 12px; color: var(--ink2); margin-bottom: 6px } .page .res { background: var(--surface2); border-radius: 10px; padding: 8px 10px; margin: 6px 0 } .page .res b { display: block } .page .res small { color: var(--ink2) }
+.rows { display: grid; gap: 6px; margin: 8px 0 }
+.rw { display: grid; grid-template-columns: 1fr auto; gap: 8px; align-items: center; background: var(--surface); border: 2px solid var(--line); border-radius: 12px; padding: 8px 10px; font-weight: 700; font-size: 15px }
+.rw select { min-height: 40px; border-radius: 10px; border: 2px solid var(--line); font: inherit; font-weight: 800; padding: 4px 6px; background: var(--surface2); color: var(--ink); max-width: 150px } .rw.ok { border-color: var(--good); background: var(--good-bg) } .rw.bad { border-color: var(--bad); background: var(--bad-bg) }
+</style>
+
+<div class="wrap">
+  <header>
+    <div class="eyebrow">Informatika · Fase E · Kelas X · Episode E.4</div>
+    <h1>Mencari, Memeriksa, Membaca Lateral</h1>
+    <p class="hint">Tonton videonya (dua bagian), lalu kerjakan tiga latihan di bawahnya. Semua situs dan klaim fiktif. Prasyarat: episode D7.4, D8.4, D8.5. Suara bisa dimatikan; teks selalu tampil di layar.</p>
+  </header>
+  <section class="card player" aria-label="Pemutar episode">
+    <div class="stage">
+      <canvas id="screen" width="1920" height="1080" aria-label="Animasi episode"></canvas>
+      <audio id="nar" preload="auto" src="narasi.mp3"></audio>
+      <button class="bigplay" id="bigplay" aria-label="Putar"><span>▶ Putar episode</span></button>
+    </div>
+    <div class="bar" id="bar" role="slider" aria-label="Posisi episode" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" tabindex="0"><i id="barfill"></i></div>
+    <div class="row">
+      <button class="primary" id="playbtn">▶ Putar</button>
+      <button id="replay">↺ Ulangi bagian ini</button>
+      <button id="voice" aria-pressed="true">🔊 Suara: nyala</button>
+      <button id="slow" aria-pressed="false">🐢 Mode lambat</button>
+      <span class="hint" id="timelabel">0:00 / 0:00</span>
+    </div>
+    <div>
+      <div class="eyebrow">Bagian</div>
+      <div class="chapters" id="chapters"></div>
+    </div>
+  </section>
+
+  <section class="card" aria-label="Cek pemahaman">
+    <h2>Cek pemahaman</h2>
+    <p class="hint">Pilih satu jawaban. Kalau salah, kamu dapat petunjuk, lalu coba lagi.</p>
+    <div class="quiz" id="quiz"></div>
+  </section>
+
+  <section class="card" aria-label="Latihan">
+    <h2>Latihan: buka tab baru</h2>
+    <p class="hint">Tiga latihan. Jawaban salah memberi petunjuk, bukan nilai.</p>
+    <div class="levels" id="levels"></div>
+    <div class="task" id="task"></div>
+    <div id="exarea"></div>
+    <div id="result"></div>
+    <div class="row" style="margin-top:10px"><button id="redo">↺ Ulangi latihan ini</button></div>
+  </section>
+
+  <section class="card" aria-label="Kemajuan">
+    <h2>Kemajuanmu</h2>
+    <div class="progress" id="progress"></div>
+    <p class="hint" style="margin-top:8px">Kemajuan tersimpan di perangkat ini saja.</p>
+  </section>
+
+  <section class="card">
+    <details>
+      <summary>Untuk guru: cara memakai episode ini (6 JP)</summary>
+      <p><b>Tujuan pembelajaran (E.4):</b> murid memakai mesin pencari dengan lebih banyak variabel, mengenal ekosistem periksa fakta, membaca lateral, dan menyaring konten negatif. Elemen LD, Fase E. Semua situs dan klaim dalam materi fiktif; praktik dengan klaim nyata dilakukan di bawah bimbingan guru.</p>
+      <ul class="plain">
+        <li><b>Pertemuan 1 (2 JP), mencari lebih tajam:</b> permainan dua pembaca satu kartu tanpa komputer. Tonton Bagian 1. Latihan 1 Susun kueri. Praktik di lab: lima tugas pencarian dengan operator (frasa persis, minus, site:, filter waktu, gambar terbalik), murid mencatat kueri yang berhasil.</li>
+        <li><b>Pertemuan 2 (2 JP), membaca lateral:</b> tonton Bagian 2 sampai segmen Telusuri klaim. Latihan 2 Simulasi membaca lateral. Praktik berpasangan: satu klaim viral pekan ini (dipilih guru), tiga langkah lateral, tulis tiga kalimat: sumbernya, kata pemeriksa fakta, kesimpulan.</li>
+        <li><b>Pertemuan 3 (2 JP), konten negatif dan refleksi:</b> tonton segmen Konten negatif. Latihan 3 Pilah konten. Diskusi kelas: pengalaman bertemu konten negatif dan apa yang dilakukan; demonstrasi tombol lapor dan blokir serta pengaturan umpan. Asesmen: laporan baca lateral tiga kalimat dan kueri beroperator.</li>
+      </ul>
+      <p><b>Target minimum:</b> memakai dua operator pencarian, menjelaskan tiga langkah membaca lateral, dan menyebut empat langkah menghadapi konten negatif. <b>Pengayaan:</b> membandingkan dua artikel periksa fakta tentang klaim yang sama: bagaimana mereka menelusuri sumber aslinya.</p>
+    </details>
+  </section>
+</div>
+
+<script>/* Kiko core: mesin gambar bersama untuk semua episode Fase D.
+   Kiko.draw(ctx, t, TL) menggambar frame pada detik t di kanvas 1920x1080 secara deterministik.
+   Berisi palet, pembantu gambar, tokoh (Kiko, murid), dan adegan umum (judul, kuis, ringkasan, penutup).
+   Setiap episode menambahkan adegannya sendiri di scenes.js: Object.assign(Kiko.SCENES, {...}). */
+(function (global) {
+  const W = 1920, H = 1080;
+  const FONT = "Inter, 'Segoe UI', Roboto, Arial, sans-serif";
+  const C = {
+    bg: "#EAF2EE", bg2: "#DCE9E2", ink: "#1F2A33", ink2: "#4A5A66", panel: "#FFFFFF",
+    tile: "#F7FAF8", tileLine: "#C9D8D0", table: "#A4653A", tableTop: "#C98A57",
+    kiko: "#2E7E9A", kikoDark: "#1F5A6E", kikoLight: "#8FD0E6", eye: "#FFFFFF", pupil: "#1F2A33",
+    accent: "#F2B134", accentDark: "#B57A12", good: "#2E9E5B", bad: "#D9443B", goodBg: "#DDF3E4", badBg: "#FBE1DF",
+    sub: "#1F2A33", subText: "#FFFFFF", star: "#F2B134", skin: "#F1C9A5", skin2: "#C98A57", hair: "#2B2118",
+    uniform: "#FFFFFF", pants: "#2F4E7D", bubble: "#FFFFFF", muted: "#9AAFA6"
+  };
+  const ease = u => u < 0 ? 0 : u > 1 ? 1 : u * u * (3 - 2 * u);
+  const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
+  const lerp = (a, b, u) => a + (b - a) * u;
+
+  // ---------- drawing helpers ----------
+  function rr(ctx, x, y, w, h, r) {
+    ctx.beginPath(); ctx.moveTo(x + r, y); ctx.arcTo(x + w, y, x + w, y + h, r); ctx.arcTo(x + w, y + h, x, y + h, r);
+    ctx.arcTo(x, y + h, x, y, r); ctx.arcTo(x, y, x + w, y, r); ctx.closePath();
+  }
+  function text(ctx, s, x, y, size, opt = {}) {
+    ctx.font = `${opt.weight || 600} ${size}px ${FONT}`; ctx.fillStyle = opt.color || C.ink;
+    ctx.textAlign = opt.align || "left"; ctx.textBaseline = opt.base || "alphabetic"; ctx.fillText(s, x, y);
+  }
+  function wrap(ctx, s, size, weight, maxW) {
+    ctx.font = `${weight} ${size}px ${FONT}`;
+    const words = s.split(" "), lines = []; let cur = "";
+    for (const w of words) {
+      const test = cur ? cur + " " + w : w;
+      if (ctx.measureText(test).width > maxW && cur) { lines.push(cur); cur = w; } else cur = test;
+    }
+    if (cur) lines.push(cur);
+    return lines;
+  }
+  function para(ctx, s, x, y, size, maxW, opt = {}) {
+    const lines = wrap(ctx, s, size, opt.weight || 500, maxW); const lh = size * (opt.lh || 1.35);
+    lines.forEach((l, i) => text(ctx, l, x, y + i * lh, size, opt));
+    return lines.length * lh;
+  }
+  function arrowIcon(ctx, kind, cx, cy, s, color) {
+    ctx.save(); ctx.translate(cx, cy); ctx.strokeStyle = color; ctx.fillStyle = color; ctx.lineWidth = s * 0.16; ctx.lineCap = "round"; ctx.lineJoin = "round";
+    if (kind === "up") {
+      ctx.beginPath(); ctx.moveTo(0, s * 0.45); ctx.lineTo(0, -s * 0.3); ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(-s * 0.32, -s * 0.05); ctx.lineTo(0, -s * 0.45); ctx.lineTo(s * 0.32, -s * 0.05); ctx.stroke();
+    } else if (kind === "left" || kind === "right") {
+      const k = kind === "left" ? -1 : 1;
+      ctx.beginPath(); ctx.moveTo(0, s * 0.45); ctx.lineTo(0, -s * 0.05); ctx.quadraticCurveTo(0, -s * 0.32, k * s * 0.28, -s * 0.32); ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(k * s * 0.12, -s * 0.5); ctx.lineTo(k * s * 0.4, -s * 0.32); ctx.lineTo(k * s * 0.12, -s * 0.14); ctx.stroke();
+    } else if (kind === "east") {
+      ctx.beginPath(); ctx.moveTo(-s * 0.4, 0); ctx.lineTo(s * 0.3, 0); ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(s * 0.05, -s * 0.28); ctx.lineTo(s * 0.4, 0); ctx.lineTo(s * 0.05, s * 0.28); ctx.stroke();
+    } else if (kind === "grab") {
+      ctx.beginPath(); ctx.arc(0, s * 0.12, s * 0.22, 0, Math.PI * 2); ctx.fill();
+      ctx.beginPath(); ctx.moveTo(-s * 0.4, -s * 0.42); ctx.lineTo(-s * 0.4, -s * 0.12); ctx.moveTo(s * 0.4, -s * 0.42); ctx.lineTo(s * 0.4, -s * 0.12);
+      ctx.moveTo(-s * 0.4, -s * 0.42); ctx.lineTo(s * 0.4, -s * 0.42); ctx.stroke();
+    }
+    ctx.restore();
+  }
+  function bakso(ctx, cx, cy, s, opt = {}) {
+    // a bowl of bakso: the goal
+    ctx.save(); ctx.translate(cx, cy);
+    if (opt.glow) { ctx.beginPath(); ctx.arc(0, 0, s * 0.62, 0, Math.PI * 2); ctx.fillStyle = "rgba(242,177,52,0.22)"; ctx.fill(); }
+    ctx.fillStyle = "#E4EEF5"; ctx.beginPath(); ctx.moveTo(-s * 0.46, -s * 0.05); ctx.quadraticCurveTo(-s * 0.4, s * 0.45, 0, s * 0.45); ctx.quadraticCurveTo(s * 0.4, s * 0.45, s * 0.46, -s * 0.05); ctx.closePath(); ctx.fill();
+    ctx.strokeStyle = "#8FA9BD"; ctx.lineWidth = s * 0.05; ctx.stroke();
+    ctx.fillStyle = "#C8B49A"; ctx.beginPath(); ctx.ellipse(0, -s * 0.05, s * 0.44, s * 0.14, 0, 0, Math.PI * 2); ctx.fill();
+    for (const [dx, dy, r] of [[-0.16, -0.1, 0.13], [0.14, -0.12, 0.13], [0, -0.22, 0.12]]) {
+      ctx.fillStyle = "#9A7B5B"; ctx.beginPath(); ctx.arc(dx * s, dy * s, r * s, 0, Math.PI * 2); ctx.fill();
+      ctx.fillStyle = "#B8977A"; ctx.beginPath(); ctx.arc(dx * s - r * s * 0.3, dy * s - r * s * 0.3, r * s * 0.4, 0, Math.PI * 2); ctx.fill();
+    }
+    ctx.fillStyle = "#4CA64C"; for (const dx of [-0.26, 0.1, 0.26]) { ctx.beginPath(); ctx.arc(dx * s, -s * 0.07, s * 0.045, 0, Math.PI * 2); ctx.fill(); }
+    ctx.restore();
+  }
+  function table(ctx, x, y, w, h) {
+    ctx.fillStyle = C.table; rr(ctx, x + w * 0.1, y + h * 0.3, w * 0.8, h * 0.55, 10); ctx.fill();
+    ctx.fillStyle = C.tableTop; rr(ctx, x + w * 0.06, y + h * 0.18, w * 0.88, h * 0.3, 10); ctx.fill();
+    ctx.fillStyle = "rgba(0,0,0,0.12)"; ctx.fillRect(x + w * 0.16, y + h * 0.5, w * 0.08, h * 0.35); ctx.fillRect(x + w * 0.76, y + h * 0.5, w * 0.08, h * 0.35);
+  }
+  function kiko(ctx, cx, cy, s, ang, opt = {}) {
+    ctx.save(); ctx.translate(cx, cy);
+    // shadow
+    ctx.fillStyle = "rgba(0,0,0,0.12)"; ctx.beginPath(); ctx.ellipse(0, s * 0.42, s * 0.42, s * 0.12, 0, 0, Math.PI * 2); ctx.fill();
+    ctx.rotate(ang);
+    // wheels
+    ctx.fillStyle = C.kikoDark; rr(ctx, -s * 0.46, -s * 0.2, s * 0.12, s * 0.5, 5); ctx.fill(); rr(ctx, s * 0.34, -s * 0.2, s * 0.12, s * 0.5, 5); ctx.fill();
+    // body
+    ctx.fillStyle = opt.flash ? `rgba(217,68,59,${0.5 + 0.5 * opt.flash})` : C.kiko; rr(ctx, -s * 0.38, -s * 0.36, s * 0.76, s * 0.72, s * 0.16); ctx.fill();
+    // visor (front, facing up)
+    ctx.fillStyle = C.kikoLight; rr(ctx, -s * 0.26, -s * 0.33, s * 0.52, s * 0.3, s * 0.1); ctx.fill();
+    // eyes
+    const mood = opt.mood || "happy";
+    ctx.fillStyle = C.pupil;
+    if (mood === "sad") { ctx.beginPath(); ctx.arc(-s * 0.12, -s * 0.18, s * 0.05, 0, Math.PI * 2); ctx.arc(s * 0.12, -s * 0.18, s * 0.05, 0, Math.PI * 2); ctx.fill(); ctx.strokeStyle = C.pupil; ctx.lineWidth = s * 0.03; ctx.beginPath(); ctx.arc(0, -s * 0.03, s * 0.08, Math.PI * 1.15, Math.PI * 1.85); ctx.stroke(); }
+    else if (mood === "confused") { ctx.beginPath(); ctx.arc(-s * 0.12, -s * 0.18, s * 0.05, 0, Math.PI * 2); ctx.arc(s * 0.12, -s * 0.18, s * 0.035, 0, Math.PI * 2); ctx.fill(); ctx.strokeStyle = C.pupil; ctx.lineWidth = s * 0.03; ctx.beginPath(); ctx.moveTo(-s * 0.08, -s * 0.06); ctx.lineTo(s * 0.08, -s * 0.09); ctx.stroke(); }
+    else { ctx.beginPath(); ctx.arc(-s * 0.12, -s * 0.18, s * 0.055, 0, Math.PI * 2); ctx.arc(s * 0.12, -s * 0.18, s * 0.055, 0, Math.PI * 2); ctx.fill(); ctx.strokeStyle = C.pupil; ctx.lineWidth = s * 0.03; ctx.beginPath(); ctx.arc(0, -s * 0.1, s * 0.08, Math.PI * 0.15, Math.PI * 0.85); ctx.stroke(); }
+    // front pointer
+    ctx.fillStyle = C.accent; ctx.beginPath(); ctx.moveTo(-s * 0.1, -s * 0.38); ctx.lineTo(s * 0.1, -s * 0.38); ctx.lineTo(0, -s * 0.5); ctx.closePath(); ctx.fill();
+    // antenna
+    ctx.strokeStyle = C.kikoDark; ctx.lineWidth = s * 0.04; ctx.beginPath(); ctx.moveTo(0, s * 0.36); ctx.lineTo(0, s * 0.5); ctx.stroke();
+    ctx.fillStyle = C.accent; ctx.beginPath(); ctx.arc(0, s * 0.52, s * 0.07, 0, Math.PI * 2); ctx.fill();
+    // tray with bakso when grabbed
+    if (opt.grabbed) bakso(ctx, 0, s * 0.05, s * 0.45);
+    ctx.restore();
+    if (opt.wave !== undefined) { // arm waving (title scene)
+      ctx.save(); ctx.translate(cx + s * 0.42, cy - s * 0.1); ctx.rotate(-0.6 + Math.sin(opt.wave * 6) * 0.4);
+      ctx.strokeStyle = C.kikoDark; ctx.lineWidth = s * 0.08; ctx.lineCap = "round"; ctx.beginPath(); ctx.moveTo(0, 0); ctx.lineTo(s * 0.3, -s * 0.3); ctx.stroke();
+      ctx.fillStyle = C.kikoLight; ctx.beginPath(); ctx.arc(s * 0.32, -s * 0.33, s * 0.09, 0, Math.PI * 2); ctx.fill(); ctx.restore();
+    }
+  }
+  function kid(ctx, cx, cy, s, opt = {}) {
+    // simple student figure, standing, facing viewer
+    ctx.save(); ctx.translate(cx, cy);
+    ctx.fillStyle = "rgba(0,0,0,0.12)"; ctx.beginPath(); ctx.ellipse(0, s * 1.02, s * 0.5, s * 0.1, 0, 0, Math.PI * 2); ctx.fill();
+    ctx.fillStyle = C.pants; rr(ctx, -s * 0.3, s * 0.35, s * 0.6, s * 0.5, s * 0.1); ctx.fill();
+    ctx.fillStyle = C.skin; ctx.fillRect(-s * 0.24, s * 0.8, s * 0.16, s * 0.2); ctx.fillRect(s * 0.08, s * 0.8, s * 0.16, s * 0.2);
+    ctx.fillStyle = C.uniform; rr(ctx, -s * 0.36, -s * 0.12, s * 0.72, s * 0.56, s * 0.12); ctx.fill();
+    ctx.strokeStyle = "#D5DDE2"; ctx.lineWidth = s * 0.025; rr(ctx, -s * 0.36, -s * 0.12, s * 0.72, s * 0.56, s * 0.12); ctx.stroke();
+    ctx.fillStyle = C.skin; ctx.beginPath(); ctx.arc(0, -s * 0.42, s * 0.32, 0, Math.PI * 2); ctx.fill();
+    ctx.fillStyle = opt.hairColor || C.hair; ctx.beginPath(); ctx.arc(0, -s * 0.5, s * 0.33, Math.PI, 0); ctx.fill();
+    if (opt.hair === "long") { ctx.fillRect(-s * 0.33, -s * 0.5, s * 0.12, s * 0.45); ctx.fillRect(s * 0.21, -s * 0.5, s * 0.12, s * 0.45); }
+    ctx.fillStyle = C.pupil; ctx.beginPath(); ctx.arc(-s * 0.11, -s * 0.4, s * 0.035, 0, Math.PI * 2); ctx.arc(s * 0.11, -s * 0.4, s * 0.035, 0, Math.PI * 2); ctx.fill();
+    ctx.strokeStyle = C.pupil; ctx.lineWidth = s * 0.025; ctx.beginPath(); ctx.arc(0, -s * 0.33, s * 0.08, Math.PI * 0.15, Math.PI * 0.85); ctx.stroke();
+    // arms
+    ctx.strokeStyle = C.skin; ctx.lineWidth = s * 0.11; ctx.lineCap = "round"; ctx.beginPath();
+    if (opt.point) { ctx.moveTo(s * 0.32, s * 0.02); ctx.lineTo(s * 0.75, -s * 0.2); } else { ctx.moveTo(s * 0.34, s * 0.02); ctx.lineTo(s * 0.42, s * 0.38); }
+    ctx.moveTo(-s * 0.34, s * 0.02); ctx.lineTo(-s * 0.42, s * 0.38); ctx.stroke();
+    ctx.restore();
+  }
+  function bubble(ctx, x, y, w, s, size, opt = {}) {
+    const lines = wrap(ctx, s, size, 600, w - 48); const h = lines.length * size * 1.3 + 40;
+    ctx.fillStyle = opt.fill || C.bubble; ctx.strokeStyle = opt.stroke || "#B7C7BF"; ctx.lineWidth = 3;
+    rr(ctx, x, y - h, w, h, 22); ctx.fill(); ctx.stroke();
+    const tx = opt.tailX !== undefined ? opt.tailX : x + 60;
+    ctx.beginPath(); ctx.moveTo(tx - 16, y); ctx.lineTo(tx + 16, y); ctx.lineTo(tx + (opt.tailDir || 0), y + 28); ctx.closePath(); ctx.fillStyle = opt.fill || C.bubble; ctx.fill();
+    ctx.strokeStyle = opt.stroke || "#B7C7BF"; ctx.beginPath(); ctx.moveTo(tx - 16, y); ctx.lineTo(tx + (opt.tailDir || 0), y + 28); ctx.lineTo(tx + 16, y); ctx.stroke();
+    lines.forEach((l, i) => text(ctx, l, x + 24, y - h + 24 + size + i * size * 1.3, size, { color: opt.color || C.ink, weight: 600 }));
+    return h;
+  }
+  function card(ctx, x, y, w, h, opt = {}) { ctx.fillStyle = opt.fill || C.panel; rr(ctx, x, y, w, h, opt.r || 26); ctx.fill(); if (opt.stroke) { ctx.strokeStyle = opt.stroke; ctx.lineWidth = opt.lw || 4; ctx.stroke(); } }
+
+  // ---------- adegan umum (semua episode) ----------
+  const SCENES = {
+    title(ctx, b, l, t, TL) {
+      card(ctx, 160, 160, 1600, 700, { fill: C.panel });
+      kiko(ctx, 420, 520, 260, 0, { wave: l, mood: "happy" });
+      text(ctx, "Informatika · Fase " + (TL.episode || "D")[0] + " · Episode " + TL.episode, 720, 330, 34, { color: C.ink2, weight: 700 });
+      const ts = TL.title.length > 34 ? 74 : 92; const th = para(ctx, TL.title, 720, 440, ts, 1000, { weight: 900, lh: 1.1 }); const hy = Math.max(640, 440 + th - ts * 0.35 + 30);
+      if (TL.hook) { text(ctx, "SETELAH MENONTON, KAMU BISA:", 720, hy, 26, { color: C.accentDark, weight: 800 }); para(ctx, TL.hook, 720, hy + 50, 34, 1000, { weight: 800, lh: 1.3 }); if (hy <= 660) text(ctx, "Dengarkan, atau baca teksnya pelan-pelan.", 720, 800, 26, { color: C.ink2, weight: 600 }); }
+      else text(ctx, "Dengarkan, atau baca teksnya pelan-pelan.", 720, 700, 36, { color: C.ink2, weight: 600 });
+      arrowIcon(ctx, "up", 1560, 250, 70, C.kikoLight); arrowIcon(ctx, "right", 1660, 250, 70, C.kikoLight);
+    },
+    quiz(ctx, b, l, t, TL, answered) {
+      const q = TL.quizzes[b.quiz]; card(ctx, 200, 150, 1520, 740, { stroke: C.accent, lw: 6 });
+      text(ctx, "CEK PEMAHAMAN", 960, 230, 32, { align: "center", color: C.accentDark, weight: 800 });
+      para(ctx, q.q, 960, 320, 44, 1360, { weight: 800, align: "center", lh: 1.3 });
+      q.options.forEach((o, i) => {
+        const y = 470 + i * 120; const right = answered && i === q.answer;
+        card(ctx, 320, y, 1280, 96, { fill: right ? C.goodBg : answered ? "#F4F6F5" : C.bg2, stroke: right ? C.good : "#CFDCD5", lw: right ? 6 : 3 });
+        ctx.fillStyle = right ? C.good : C.kiko; ctx.beginPath(); ctx.arc(380, y + 48, 30, 0, Math.PI * 2); ctx.fill();
+        text(ctx, "ABC"[i], 380, y + 61, 34, { align: "center", color: "#fff", weight: 900 });
+        text(ctx, o, 440, y + 62, 38, { weight: 700, color: answered && !right ? C.muted : C.ink });
+        if (right) text(ctx, "✓", 1540, y + 66, 54, { align: "center", color: C.good, weight: 900 });
+      });
+      if (!answered) { // thinking timer
+        const frac = clamp(l / b.dur, 0, 1); ctx.strokeStyle = "#D7E2DC"; ctx.lineWidth = 14; ctx.beginPath(); ctx.arc(1640, 230, 40, 0, Math.PI * 2); ctx.stroke();
+        ctx.strokeStyle = C.accent; ctx.beginPath(); ctx.arc(1640, 230, 40, -Math.PI / 2, -Math.PI / 2 + frac * Math.PI * 2); ctx.stroke();
+        text(ctx, "Pikirkan dulu, jangan buru-buru.", 960, 860, 32, { align: "center", color: C.ink2, weight: 600 });
+      }
+    },
+    quiz_answer(ctx, b, l, t, TL) { SCENES.quiz(ctx, b, l, t, TL, true); },
+    recap(ctx, b, l, t, TL) {
+      // TL.recap: tiga kalimat pendek dari script.json
+      card(ctx, 160, 140, 1600, 760);
+      text(ctx, "TIGA HAL UNTUK DIINGAT", 960, 230, 34, { align: "center", color: C.accentDark, weight: 900 });
+      const items = TL.recap || [];
+      const show = clamp(Math.floor((l - 0.6) / 2.2) + 1, 1, Math.max(1, items.length));
+      items.forEach((s, i) => { if (i >= show) return; card(ctx, 300, 290 + i * 180, 1320, 140, { fill: C.bg2 }); ctx.fillStyle = C.kiko; ctx.beginPath(); ctx.arc(380, 360 + i * 180, 40, 0, Math.PI * 2); ctx.fill(); text(ctx, String(i + 1), 380, 376 + i * 180, 40, { align: "center", color: "#fff", weight: 900 }); text(ctx, s, 450, 375 + i * 180, 42, { weight: 800 }); });
+      kiko(ctx, 1620, 820, 130, 0);
+    },
+    outro(ctx, b, l, t, TL) {
+      // TL.next: {code, title, note} episode berikutnya, dari script.json
+      const n = TL.next || {};
+      card(ctx, 260, 200, 1400, 600);
+      text(ctx, "EPISODE BERIKUTNYA", 960, 320, 34, { align: "center", color: C.accentDark, weight: 900 });
+      text(ctx, n.code || "", 960, 440, 60, { align: "center", weight: 900 });
+      text(ctx, n.title || "", 960, 530, 54, { align: "center", weight: 800, color: C.ink2 });
+      text(ctx, n.note || "", 960, 680, 34, { align: "center", color: C.ink2, weight: 600 });
+      kiko(ctx, 960, 760 + 20, 140, 0, { wave: l });
+    }
+  };
+
+  function beatAt(TL, t) {
+    let b = TL.beats[0];
+    for (const x of TL.beats) { if (t >= x.start) b = x; else break; }
+    return b;
+  }
+  function draw(ctx, t, TL, opt = {}) {
+    const b = beatAt(TL, t); const l = t - b.start;
+    ctx.save(); ctx.setTransform(1, 0, 0, 1, 0, 0);
+    ctx.fillStyle = C.bg; ctx.fillRect(0, 0, W, H);
+    // header
+    text(ctx, TL.episode + " · " + TL.title, 60, 78, 30, { color: C.ink2, weight: 700 });
+    text(ctx, TL.segments[b.seg], 1860, 78, 30, { color: C.accentDark, weight: 800, align: "right" });
+    ctx.fillStyle = C.bg2; ctx.fillRect(0, 100, W, 6); ctx.fillStyle = C.accent; ctx.fillRect(0, 100, W * clamp(t / TL.total, 0, 1), 6);
+    const fn = SCENES[b.scene]; if (fn) fn(ctx, b, l, t, TL);
+    // narration card (burned-in text the student reads)
+    if (opt.subtitles !== false) {
+      const size = 44; const lines = wrap(ctx, b.text, size, 700, 1660);
+      const h = lines.length * size * 1.3 + 44; const y0 = 1056 - h;
+      ctx.fillStyle = "rgba(31,42,51,0.92)"; rr(ctx, 100, y0, 1720, h, 20); ctx.fill();
+      // reading progress (how far along the text the reader should be)
+      const frac = clamp(l / b.audio, 0, 1); ctx.fillStyle = C.accent; rr(ctx, 100, y0 + h - 8, 1720 * frac, 8, 4); ctx.fill();
+      lines.forEach((ln, i) => text(ctx, ln, 960, y0 + 22 + size + i * size * 1.3, size, { align: "center", color: C.subText, weight: 700 }));
+    }
+    ctx.restore();
+    return b;
+  }
+
+  global.Kiko = { draw, beatAt, W, H, C, FONT, SCENES,
+    helpers: { rr, text, wrap, para, arrowIcon, bakso, table, kiko, kid, bubble, card, ease, clamp, lerp } };
+})(typeof window !== "undefined" ? window : globalThis);
+
+/* Pembantu gambar perangkat (dipakai D7.0, D7.2, …): monitor, mouse, pointer, keyboard, HP, jari, ikon file/folder, jendela.
+   Semua digambar dengan kode (tanpa aset unduhan). Muat setelah ../_alat/kiko-core.js; dipakai scenes.js. */
+(function (global) {
+  const K = global.Kiko, H = K.helpers, C = K.C;
+  const { rr, text, wrap, card, ease, clamp, lerp } = H;
+  const D = {};
+  const SCREEN_BG = "#F4F8FB", BEZEL = "#2B3A46", BEZEL2 = "#1A262F", SEL = "rgba(46,126,154,0.22)";
+
+  // ---------- komputer ----------
+  // monitor di atas meja; mengembalikan kotak layar {x,y,w,h}
+  D.monitor = function (ctx, x, y, w, h) {
+    ctx.fillStyle = BEZEL; rr(ctx, x - 18, y - 18, w + 36, h + 36, 22); ctx.fill();
+    ctx.fillStyle = SCREEN_BG; rr(ctx, x, y, w, h, 10); ctx.fill();
+    // kaki dan meja
+    ctx.fillStyle = BEZEL2; rr(ctx, x + w / 2 - 40, y + h + 18, 80, 36, 8); ctx.fill(); rr(ctx, x + w / 2 - 140, y + h + 50, 280, 16, 8); ctx.fill();
+    ctx.fillStyle = C.tableTop; rr(ctx, x - 80, y + h + 66, w + 160, 22, 8); ctx.fill();
+    return { x, y, w, h };
+  };
+  // panah pointer
+  D.pointer = function (ctx, x, y, s = 34, color = C.ink) {
+    ctx.save(); ctx.translate(x, y); ctx.fillStyle = color; ctx.strokeStyle = "#fff"; ctx.lineWidth = s * 0.08; ctx.lineJoin = "round";
+    ctx.beginPath(); ctx.moveTo(0, 0); ctx.lineTo(0, s); ctx.lineTo(s * 0.27, s * 0.78); ctx.lineTo(s * 0.45, s * 1.15); ctx.lineTo(s * 0.62, s * 1.07); ctx.lineTo(s * 0.45, s * 0.7); ctx.lineTo(s * 0.75, s * 0.7); ctx.closePath();
+    ctx.fill(); ctx.stroke(); ctx.restore();
+  };
+  // mouse tampak atas; opt.left / opt.right = tombol ditekan; opt.label = tulis "kiri/kanan"
+  D.mouse = function (ctx, cx, cy, s, opt = {}) {
+    ctx.save(); ctx.translate(cx, cy);
+    ctx.fillStyle = "rgba(0,0,0,0.12)"; ctx.beginPath(); ctx.ellipse(0, s * 0.62, s * 0.5, s * 0.1, 0, 0, Math.PI * 2); ctx.fill();
+    // kabel
+    ctx.strokeStyle = "#7B8B95"; ctx.lineWidth = s * 0.05; ctx.beginPath(); ctx.moveTo(0, -s * 0.6); ctx.quadraticCurveTo(0, -s * 1.0, s * 0.5, -s * 1.1); ctx.stroke();
+    // badan
+    ctx.fillStyle = "#E8EEF2"; rr(ctx, -s * 0.42, -s * 0.62, s * 0.84, s * 1.24, s * 0.4); ctx.fill(); ctx.strokeStyle = "#A9B7C0"; ctx.lineWidth = s * 0.04; ctx.stroke();
+    // dua tombol
+    const btn = (side, on) => { ctx.fillStyle = on ? C.accent : "#F7FAFC"; ctx.beginPath(); const sx = side === "left" ? -1 : 1;
+      ctx.moveTo(sx * s * 0.03, -s * 0.6); ctx.lineTo(sx * s * 0.03, -s * 0.1); ctx.lineTo(sx * s * 0.4, -s * 0.1); ctx.lineTo(sx * s * 0.4, -s * 0.28); ctx.quadraticCurveTo(sx * s * 0.4, -s * 0.6, sx * s * 0.1, -s * 0.6); ctx.closePath(); ctx.fill(); ctx.strokeStyle = "#A9B7C0"; ctx.lineWidth = s * 0.03; ctx.stroke(); };
+    btn("left", opt.left); btn("right", opt.right);
+    ctx.fillStyle = "#A9B7C0"; rr(ctx, -s * 0.04, -s * 0.5, s * 0.08, s * 0.26, s * 0.04); ctx.fill(); // roda
+    ctx.restore();
+    if (opt.label) { text(ctx, "kiri", cx - s * 0.22, cy - s * 0.72, 26, { align: "center", color: opt.left ? C.accentDark : C.ink2, weight: 800 }); text(ctx, "kanan", cx + s * 0.22, cy - s * 0.72, 26, { align: "center", color: opt.right ? C.accentDark : C.ink2, weight: 800 }); }
+  };
+  // riak "klik" di sekitar titik
+  D.ripple = function (ctx, x, y, u, color = C.accent) { if (u <= 0 || u >= 1) return; ctx.strokeStyle = color; ctx.globalAlpha = 1 - u; ctx.lineWidth = 6; ctx.beginPath(); ctx.arc(x, y, 12 + u * 60, 0, Math.PI * 2); ctx.stroke(); ctx.globalAlpha = 1; };
+
+  // ---------- ikon file & folder ----------
+  const KIND = { folder: "#F2B134", foto: "#5FA8D3", tulisan: "#7B8B95", lagu: "#8E6BBF", video: "#D9443B" };
+  D.fileIcon = function (ctx, cx, cy, s, kind, opt = {}) {
+    ctx.save(); ctx.translate(cx, cy);
+    if (opt.selected) { ctx.fillStyle = SEL; rr(ctx, -s * 0.62, -s * 0.62, s * 1.24, s * 1.24 + (opt.name ? s * 0.5 : 0), s * 0.14); ctx.fill(); }
+    if (kind === "folder") {
+      ctx.fillStyle = "#D99A1B"; rr(ctx, -s * 0.5, -s * 0.32, s * 0.45, s * 0.2, s * 0.06); ctx.fill();
+      ctx.fillStyle = opt.open ? "#F7C860" : KIND.folder; rr(ctx, -s * 0.5, -s * 0.22, s, s * 0.7, s * 0.08); ctx.fill();
+      if (opt.open) { ctx.fillStyle = "#D99A1B"; rr(ctx, -s * 0.46, -s * 0.02, s * 0.92, s * 0.5, s * 0.08); ctx.fill(); }
+    } else {
+      ctx.fillStyle = "#FFFFFF"; ctx.strokeStyle = "#B7C4CC"; ctx.lineWidth = s * 0.05;
+      ctx.beginPath(); ctx.moveTo(-s * 0.36, -s * 0.5); ctx.lineTo(s * 0.12, -s * 0.5); ctx.lineTo(s * 0.36, -s * 0.26); ctx.lineTo(s * 0.36, s * 0.5); ctx.lineTo(-s * 0.36, s * 0.5); ctx.closePath(); ctx.fill(); ctx.stroke();
+      ctx.fillStyle = KIND[kind] || KIND.tulisan;
+      if (kind === "foto") { rr(ctx, -s * 0.26, -s * 0.2, s * 0.52, s * 0.44, s * 0.04); ctx.fill(); ctx.fillStyle = "#fff"; ctx.beginPath(); ctx.arc(-s * 0.12, -s * 0.08, s * 0.06, 0, Math.PI * 2); ctx.fill(); ctx.beginPath(); ctx.moveTo(-s * 0.26, s * 0.24); ctx.lineTo(-s * 0.06, s * 0.02); ctx.lineTo(s * 0.06, s * 0.14); ctx.lineTo(s * 0.14, s * 0.06); ctx.lineTo(s * 0.26, s * 0.24); ctx.closePath(); ctx.fill(); }
+      else if (kind === "lagu") { ctx.beginPath(); ctx.arc(-s * 0.1, s * 0.22, s * 0.1, 0, Math.PI * 2); ctx.arc(s * 0.16, s * 0.16, s * 0.1, 0, Math.PI * 2); ctx.fill(); ctx.lineWidth = s * 0.06; ctx.strokeStyle = KIND.lagu; ctx.beginPath(); ctx.moveTo(0, s * 0.2); ctx.lineTo(0, -s * 0.2); ctx.lineTo(s * 0.26, -s * 0.26); ctx.lineTo(s * 0.26, s * 0.14); ctx.stroke(); }
+      else if (kind === "video") { rr(ctx, -s * 0.26, -s * 0.16, s * 0.52, s * 0.4, s * 0.04); ctx.fill(); ctx.fillStyle = "#fff"; ctx.beginPath(); ctx.moveTo(-s * 0.06, -s * 0.04); ctx.lineTo(s * 0.12, s * 0.04); ctx.lineTo(-s * 0.06, s * 0.12); ctx.closePath(); ctx.fill(); }
+      else { for (let i = 0; i < 4; i++) { rr(ctx, -s * 0.22, -s * 0.14 + i * s * 0.14, s * (i === 3 ? 0.26 : 0.44), s * 0.06, s * 0.03); ctx.fill(); } }
+    }
+    ctx.restore();
+    if (opt.name) { const lines = wrap(ctx, opt.name, opt.size || 24, 700, s * 1.6); lines.slice(0, 2).forEach((ln, i) => text(ctx, ln, cx, cy + s * 0.78 + i * (opt.size || 24) * 1.15, opt.size || 24, { align: "center", weight: 700, color: opt.color || C.ink })); }
+  };
+  D.KIND = KIND;
+
+  // jendela aplikasi (file manager / editor) di dalam layar; mengembalikan area isi
+  D.windowFrame = function (ctx, x, y, w, h, title, opt = {}) {
+    ctx.fillStyle = "#FFFFFF"; rr(ctx, x, y, w, h, 14); ctx.fill(); ctx.strokeStyle = "#C9D4DB"; ctx.lineWidth = 3; ctx.stroke();
+    ctx.fillStyle = "#E6EDF2"; rr(ctx, x, y, w, 54, 14); ctx.fill(); ctx.fillRect(x, y + 30, w, 24);
+    ["#E0655C", "#F2B134", "#2E9E5B"].forEach((c, i) => { ctx.fillStyle = c; ctx.beginPath(); ctx.arc(x + 26 + i * 26, y + 27, 8, 0, Math.PI * 2); ctx.fill(); });
+    if (title) text(ctx, title, x + w / 2, y + 36, 24, { align: "center", color: C.ink2, weight: 800 });
+    if (opt.path) { ctx.fillStyle = "#F4F8FB"; rr(ctx, x + 16, y + 66, w - 32, 44, 10); ctx.fill(); text(ctx, opt.path, x + 32, y + 96, 24, { color: C.ink2, weight: 700 }); }
+    return { x: x + 16, y: y + (opt.path ? 124 : 70), w: w - 32, h: h - (opt.path ? 140 : 86) };
+  };
+  // kotak teks dengan kursor berkedip; opt.cursor = posisi karakter (bawaan akhir)
+  D.textBox = function (ctx, x, y, w, h, lines, tt, opt = {}) {
+    ctx.fillStyle = "#FFFFFF"; rr(ctx, x, y, w, h, 14); ctx.fill(); ctx.strokeStyle = opt.stroke || "#C9D4DB"; ctx.lineWidth = 3; ctx.stroke();
+    const size = opt.size || 48, lh = size * 1.4;
+    lines.forEach((ln, i) => text(ctx, ln, x + 28, y + 24 + size + i * lh, size, { weight: 700, color: opt.color || C.ink }));
+    if (opt.cursor !== false) {
+      const li = lines.length - 1, s = lines[li] || ""; ctx.font = `700 ${size}px ${K.FONT}`; const cw = ctx.measureText(s).width;
+      if (Math.floor(tt * 2.5) % 2 === 0 || opt.cursorOn) { ctx.fillStyle = C.kiko; ctx.fillRect(x + 30 + cw, y + 22 + li * lh, 5, size * 1.15); }
+      return [x + 32 + cw, y + 22 + li * lh + size * 0.6];
+    }
+  };
+
+  // ---------- keyboard ----------
+  const ROWS = [["Q", "W", "E", "R", "T", "Y", "U", "I", "O", "P"], ["A", "S", "D", "F", "G", "H", "J", "K", "L"], ["Z", "X", "C", "V", "B", "N", "M"]];
+  // keyboard sederhana: 3 baris huruf + Shift, Spasi, Backspace, Enter. opt.pressed = [tombol], opt.glow = [tombol] disorot lembut
+  D.keyboard = function (ctx, x, y, w, opt = {}) {
+    const key = w / 11.6, gap = key * 0.12, k = key - gap, h = k * 4 + gap * 5;
+    ctx.fillStyle = BEZEL; rr(ctx, x - 16, y - 16, w + 32, h + 32, 22); ctx.fill();
+    const pressed = opt.pressed || [], glow = opt.glow || [];
+    const draw = (kx, ky, kw, label, small) => {
+      const on = pressed.includes(label), soft = glow.includes(label);
+      ctx.fillStyle = on ? C.accent : soft ? "#FFF3D6" : "#F7FAFC"; rr(ctx, kx, ky + (on ? 4 : 0), kw, k - (on ? 4 : 0), 10); ctx.fill();
+      ctx.strokeStyle = on ? C.accentDark : soft ? C.accent : "#B7C4CC"; ctx.lineWidth = on || soft ? 4 : 2; ctx.stroke();
+      // ukuran huruf mengikuti ukuran tombol; pada keyboard mini (tombol < 40 px) label tombol khusus tidak digambar
+      const fs = small ? Math.min(24, k * 0.45) : Math.min(32, k * 0.6);
+      if (small ? k >= 40 : k >= 18) text(ctx, label, kx + kw / 2, ky + k / 2 + fs * 0.38, fs, { align: "center", weight: 800, color: on ? "#fff" : C.ink });
+    };
+    ROWS.forEach((row, r) => { const off = r === 0 ? 0 : r === 1 ? key * 0.35 : key * 0.85; row.forEach((lab, i) => draw(x + gap + off + i * key, y + gap + r * key, k, lab)); });
+    draw(x + gap + key * 0.85 + 7 * key + gap, y + gap + 2 * key, key * 2.4 - gap, "Backspace", true);
+    draw(x + gap, y + gap + 3 * key, key * 1.9 - gap, "Shift", true);
+    draw(x + gap + key * 1.9, y + gap + 3 * key, key * 6.2 - gap, "Spasi", true);
+    draw(x + gap + key * 8.1, y + gap + 3 * key, key * 2.3 - gap, "Enter", true);
+    draw(x + gap + key * 0.35 + 9 * key, y + gap + 1 * key, key * 1.9 - gap, "Enter", true);
+    return { x, y, w, h };
+  };
+
+  // ---------- HP & jari ----------
+  // HP tegak; mengembalikan kotak layar
+  D.phone = function (ctx, cx, cy, w, h) {
+    ctx.fillStyle = BEZEL; rr(ctx, cx - w / 2 - 14, cy - h / 2 - 22, w + 28, h + 44, 40); ctx.fill();
+    ctx.fillStyle = SCREEN_BG; rr(ctx, cx - w / 2, cy - h / 2, w, h, 26); ctx.fill();
+    ctx.fillStyle = BEZEL2; rr(ctx, cx - 40, cy - h / 2 + 8, 80, 12, 6); ctx.fill();
+    return { x: cx - w / 2, y: cy - h / 2, w, h };
+  };
+  // kisi ikon aplikasi generik di layar HP; mengembalikan posisi tiap ikon
+  const APPS = [["Kamera", "#2E7E9A"], ["Galeri", "#5FA8D3"], ["Pesan", "#2E9E5B"], ["Musik", "#8E6BBF"], ["Kalkulator", "#7B8B95"], ["Peta", "#F2B134"], ["Catatan", "#E0A23B"], ["Jam", "#D9443B"], ["Cuaca", "#4C9BE0"]];
+  D.appGrid = function (ctx, sc, opt = {}) {
+    const cols = 3, cell = sc.w / cols, out = [];
+    APPS.forEach(([name, col], i) => {
+      const r = Math.floor(i / cols), c = i % cols; const ax = sc.x + cell * c + cell / 2, ay = sc.y + 90 + r * (cell + 26);
+      const on = opt.active === name; const sz = cell * 0.56 * (on && opt.scale ? opt.scale : 1);
+      ctx.fillStyle = col; rr(ctx, ax - sz / 2, ay - sz / 2, sz, sz, sz * 0.24); ctx.fill();
+      if (on) { ctx.strokeStyle = C.accent; ctx.lineWidth = 6; ctx.stroke(); }
+      text(ctx, name, ax, ay + sz / 2 + 26, 20, { align: "center", weight: 700, color: C.ink2 });
+      out.push({ name, x: ax, y: ay });
+    });
+    return out;
+  };
+  // ujung jari yang menyentuh layar di (x,y); opt.press = sedang menekan (riak); opt.second = jari kedua
+  D.finger = function (ctx, x, y, opt = {}) {
+    const s = opt.s || 46;
+    ctx.save(); ctx.translate(x, y); ctx.rotate(opt.angle !== undefined ? opt.angle : 0.5);
+    ctx.fillStyle = "rgba(0,0,0,0.10)"; ctx.beginPath(); ctx.ellipse(0, s * 0.25, s * 0.7, s * 0.4, 0, 0, Math.PI * 2); ctx.fill();
+    ctx.fillStyle = C.skin; rr(ctx, -s * 0.5, -s * 0.3, s, s * 3.2, s * 0.5); ctx.fill();
+    ctx.fillStyle = "#F7D9BE"; ctx.beginPath(); ctx.ellipse(0, s * 0.1, s * 0.3, s * 0.42, 0, 0, Math.PI * 2); ctx.fill();
+    ctx.restore();
+    if (opt.press) { ctx.fillStyle = "rgba(46,126,154,0.25)"; ctx.beginPath(); ctx.arc(x, y, s * 0.8, 0, Math.PI * 2); ctx.fill(); }
+  };
+  // menu konteks (klik kanan / tekan lama)
+  D.menu = function (ctx, x, y, items, opt = {}) {
+    const w = opt.w || 300, rowH = 52; ctx.fillStyle = "#FFFFFF"; rr(ctx, x, y, w, rowH * items.length + 16, 12); ctx.fill(); ctx.strokeStyle = "#B7C4CC"; ctx.lineWidth = 3; ctx.stroke();
+    ctx.fillStyle = "rgba(0,0,0,0.08)";
+    items.forEach((it, i) => { if (opt.active === i) { ctx.fillStyle = "#FFF3D6"; rr(ctx, x + 8, y + 8 + i * rowH, w - 16, rowH, 8); ctx.fill(); } text(ctx, it, x + 24, y + 8 + i * rowH + 36, 28, { weight: 700 }); });
+  };
+  // kartu keterangan kecil di kanan/bawah adegan
+  D.note = function (ctx, x, y, w, s, opt = {}) { card(ctx, x, y, w, opt.h || 96, { fill: opt.fill || "#FFF3D6", stroke: opt.stroke || C.accent, lw: 4 }); text(ctx, s, x + w / 2, y + (opt.h || 96) / 2 + 14, opt.size || 36, { align: "center", weight: 900, color: opt.color || C.ink }); };
+
+  K.devices = D;
+})(typeof window !== "undefined" ? window : globalThis);
+
+/* Pembantu gambar D7.4: halaman web mini, laba-laba perayap, tautan, lemari & kartu indeks, papan peringkat, kotak pencarian,
+   daftar hasil, rak buku. Muat setelah kiko-core.js dan kiko-devices.js. */
+(function (global) {
+  const K = global.Kiko, H = K.helpers, C = K.C, D = K.devices;
+  const { rr, text, wrap, card, ease, clamp, lerp } = H;
+  const Q = {};
+  // halaman web mini: judul + garis teks; opt.words = kata yang disorot
+  Q.page = function (ctx, x, y, w, h, title, opt = {}) {
+    card(ctx, x, y, w, h, { fill: opt.fill || "#FFFFFF", stroke: opt.stroke || "#C9D4DB", lw: opt.lw || 3, r: 12 });
+    ctx.fillStyle = "#E6EDF2"; rr(ctx, x, y, w, 26, 12); ctx.fill(); ctx.fillRect(x, y + 14, w, 12);
+    text(ctx, title, x + 12, y + 56, Math.min(24, w * 0.09), { weight: 900 });
+    const lines = Math.floor((h - 80) / 18);
+    for (let i = 0; i < lines; i++) { ctx.fillStyle = "#D7E2DC"; rr(ctx, x + 12, y + 72 + i * 18, (w - 24) * (0.6 + ((i * 7) % 5) * 0.08), 8, 4); ctx.fill(); }
+    (opt.words || []).forEach((wd, i) => { ctx.fillStyle = "#FFF3B0"; rr(ctx, x + 12 + (i % 2) * (w / 2 - 10), y + 72 + Math.floor(i / 2) * 36, w / 2 - 24, 24, 6); ctx.fill(); text(ctx, wd, x + 16 + (i % 2) * (w / 2 - 10), y + 90 + Math.floor(i / 2) * 36, 18, { weight: 800 }); });
+  };
+  // laba-laba perayap
+  Q.spider = function (ctx, cx, cy, s, opt = {}) {
+    ctx.save(); ctx.translate(cx, cy); ctx.strokeStyle = C.kikoDark; ctx.lineWidth = s * 0.08; ctx.lineCap = "round";
+    for (let i = 0; i < 4; i++) { const a = -0.9 + i * 0.6; [1, -1].forEach(sg => { ctx.beginPath(); ctx.moveTo(0, 0); ctx.lineTo(sg * s * 0.6 * Math.cos(a), s * 0.5 * Math.sin(a) + s * 0.1); ctx.lineTo(sg * s * 0.8 * Math.cos(a), s * 0.5 * Math.sin(a) + s * 0.45); ctx.stroke(); }); }
+    ctx.fillStyle = C.kiko; ctx.beginPath(); ctx.ellipse(0, 0, s * 0.42, s * 0.34, 0, 0, Math.PI * 2); ctx.fill();
+    ctx.fillStyle = C.kikoLight; ctx.beginPath(); ctx.arc(-s * 0.12, -s * 0.08, s * 0.08, 0, Math.PI * 2); ctx.arc(s * 0.12, -s * 0.08, s * 0.08, 0, Math.PI * 2); ctx.fill();
+    ctx.fillStyle = C.pupil; ctx.beginPath(); ctx.arc(-s * 0.12, -s * 0.08, s * 0.04, 0, Math.PI * 2); ctx.arc(s * 0.12, -s * 0.08, s * 0.04, 0, Math.PI * 2); ctx.fill();
+    ctx.restore();
+    if (opt.label) text(ctx, opt.label, cx, opt.above ? cy - s * 0.75 : cy + s * 0.85, 24, { align: "center", weight: 800, color: C.ink2 });
+  };
+  Q.link = function (ctx, x1, y1, x2, y2, on) { ctx.strokeStyle = on ? C.accent : "#B7C4CC"; ctx.lineWidth = on ? 6 : 4; ctx.setLineDash(on ? [] : [10, 10]); ctx.beginPath(); ctx.moveTo(x1, y1); ctx.lineTo(x2, y2); ctx.stroke(); ctx.setLineDash([]); };
+  // lemari indeks dengan laci berlabel
+  Q.cabinet = function (ctx, x, y, w, h, labels, opt = {}) {
+    ctx.fillStyle = "#A4653A"; rr(ctx, x, y, w, h, 14); ctx.fill();
+    const rows = labels.length, dh = (h - 20) / rows;
+    labels.forEach((lab, i) => { const dy = y + 10 + i * dh; const on = opt.open === i; ctx.fillStyle = on ? "#F2B134" : "#C98A57"; rr(ctx, x + 12 + (on ? 20 : 0), dy + 6, w - 24, dh - 12, 8); ctx.fill(); ctx.fillStyle = "#fff"; rr(ctx, x + w / 2 - 70 + (on ? 20 : 0), dy + dh / 2 - 16, 140, 32, 6); ctx.fill(); text(ctx, lab, x + w / 2 + (on ? 20 : 0), dy + dh / 2 + 9, 24, { align: "center", weight: 900 }); });
+  };
+  // kartu indeks: kata -> daftar halaman
+  Q.indexCard = function (ctx, x, y, w, word, pages, opt = {}) {
+    card(ctx, x, y, w, 60 + 44 * Math.ceil(pages.length / 1), { fill: "#FFF9E0", stroke: "#E0B04B", lw: 3, r: 10 });
+    text(ctx, word, x + 20, y + 40, 32, { weight: 900, color: C.accentDark });
+    pages.forEach((p, i) => { const on = (opt.hl || []).includes(p); if (on) { ctx.fillStyle = C.goodBg; rr(ctx, x + 12, y + 56 + i * 44, w - 24, 40, 8); ctx.fill(); } text(ctx, "halaman " + p, x + 24, y + 84 + i * 44, 26, { weight: on ? 900 : 700, color: on ? C.good : C.ink }); });
+  };
+  // kotak pencarian
+  Q.searchBox = function (ctx, x, y, w, s, opt = {}) {
+    card(ctx, x, y, w, 80, { fill: C.panel, stroke: opt.stroke || "#B7C4CC", lw: 4, r: 40 });
+    text(ctx, "🔍", x + 24, y + 54, 30);
+    text(ctx, s, x + 80, y + 52, opt.size || 32, { weight: 700, color: opt.color || C.ink });
+  };
+  // daftar hasil pencarian; items: [{title, url, ad, date, bad}], hl = indeks disorot
+  Q.results = function (ctx, x, y, w, items, opt = {}) {
+    items.forEach((it, i) => {
+      const ry = y + i * 118; const on = opt.hl === i;
+      card(ctx, x, ry, w, 104, { fill: it.ad ? "#FFF9E0" : on ? C.goodBg : C.panel, stroke: on ? C.good : it.ad ? "#E0B04B" : "#D7E2DC", lw: on ? 5 : 3, r: 14 });
+      if (it.ad) { ctx.fillStyle = "#E0B04B"; rr(ctx, x + 16, ry + 14, 70, 26, 6); ctx.fill(); text(ctx, "Iklan", x + 51, ry + 33, 18, { align: "center", weight: 900, color: "#fff" }); }
+      text(ctx, it.title, x + (it.ad ? 100 : 20), ry + 40, 28, { weight: 900, color: it.bad ? C.ink2 : C.kiko });
+      text(ctx, it.url + (it.date ? "  ·  " + it.date : ""), x + 20, ry + 78, 22, { weight: 700, color: C.ink2 });
+      if (opt.scores) text(ctx, opt.scores[i], x + w - 20, ry + 60, 30, { align: "right", weight: 900, color: C.accentDark });
+      if (it.mark) text(ctx, it.mark, x + w - 20, ry + 62, 36, { align: "right", weight: 900, color: it.mark === "✓" ? C.good : C.bad });
+    });
+  };
+  // rak buku
+  Q.shelf = function (ctx, x, y, w, rows, opt = {}) {
+    for (let r = 0; r < rows; r++) { const ry = y + r * 120; ctx.fillStyle = "#A4653A"; ctx.fillRect(x, ry + 100, w, 14); let bx = x + 10; let i = 0; while (bx < x + w - 30) { const bw = 22 + ((i * 7) % 4) * 6, on = opt.hl && opt.hl.includes(r * 100 + i); ctx.fillStyle = on ? C.accent : ["#8E6BBF", "#2E7E9A", "#D9443B", "#2E9E5B", "#C98A57"][(i + r) % 5]; rr(ctx, bx, ry + 20 + ((i * 3) % 3) * 6, bw, 80 - ((i * 3) % 3) * 6, 3); ctx.fill(); bx += bw + 6; i++; } }
+  };
+  K.pencari = Q;
+})(typeof window !== "undefined" ? window : globalThis);
+
+/* Pembantu gambar D8.4: kartu berita (portal, akun, pesan grup), lencana centang/tanya, pohon tumbang, kamera wartawan, meja redaksi,
+   daftar empat pertanyaan, bilah perjalanan berita. Muat setelah kiko-core.js dan kiko-devices.js. */
+(function (global) {
+  const K = global.Kiko, H = K.helpers, C = K.C;
+  const { rr, text, wrap, card, clamp } = H;
+  const Q = {};
+  // kartu kabar: kind "pers" | "akun" | "grup"; opt.title, by, time, body, photo (bool), badge "ok"|"bad"|null, hl
+  Q.news = function (ctx, x, y, w, h, kind, opt = {}) {
+    const col = kind === "pers" ? C.kiko : kind === "akun" ? "#D9443B" : "#2E9E5B";
+    card(ctx, x, y, w, h, { fill: "#FFFFFF", stroke: opt.hl || "#B7C4CC", lw: opt.hl ? 6 : 3, r: 16 });
+    ctx.fillStyle = col; rr(ctx, x, y, w, 44, 16); ctx.fill(); ctx.fillRect(x, y + 22, w, 22);
+    text(ctx, kind === "pers" ? "PORTAL BERITA" : kind === "akun" ? "AKUN GOSIP" : "GRUP KELAS", x + 16, y + 30, 20, { weight: 900, color: "#fff" });
+    let cy = y + 80; const size = opt.size || 24;
+    if (opt.title) { const lines = wrap(ctx, opt.title, size, 900, w - 32); lines.forEach(ln => { text(ctx, ln, x + 16, cy, size, { weight: 900 }); cy += size * 1.25; }); cy += 6; }
+    if (opt.by != null) { text(ctx, opt.by, x + 16, cy, 20, { weight: 700, color: opt.by ? C.ink2 : C.bad }); cy += 28; }
+    if (opt.time != null) { text(ctx, opt.time, x + 16, cy, 20, { weight: 700, color: opt.time ? C.ink2 : C.bad }); cy += 28; }
+    if (opt.photo) { ctx.fillStyle = "#DCEBF2"; rr(ctx, x + 16, cy + 4, w - 32, 110, 8); ctx.fill(); ctx.fillStyle = "#C9D4DB"; ctx.fillRect(x + 16, cy + 90, w - 32, 24); Q.tree(ctx, x + w / 2 - 50, cy + 92, 70, { fallen: true }); if (opt.photoNote) { ctx.fillStyle = C.bad; rr(ctx, x + w - 150, cy + 10, 128, 26, 6); ctx.fill(); text(ctx, opt.photoNote, x + w - 86, cy + 29, 16, { align: "center", weight: 900, color: "#fff" }); } cy += 128; }
+    if (opt.body) { const lines = wrap(ctx, opt.body, 20, 700, w - 32); lines.forEach(ln => { text(ctx, ln, x + 16, cy, 20, { weight: 700, color: C.ink2 }); cy += 26; }); }
+    if (opt.badge) Q.badge(ctx, x + w - 30, y + 22, opt.badge);
+    return cy;
+  };
+  Q.badge = function (ctx, cx, cy, kind) { ctx.fillStyle = kind === "ok" ? C.good : kind === "bad" ? C.bad : C.accent; ctx.beginPath(); ctx.arc(cx, cy, 20, 0, Math.PI * 2); ctx.fill(); text(ctx, kind === "ok" ? "✓" : kind === "bad" ? "✕" : "?", cx, cy + 9, 26, { align: "center", weight: 900, color: "#fff" }); };
+  // pohon; fallen = tumbang
+  Q.tree = function (ctx, x, y, s, opt = {}) {
+    ctx.save(); ctx.translate(x, y); if (opt.fallen) { ctx.rotate(-1.35); ctx.translate(0, s * 0.1); }
+    ctx.fillStyle = "#8B5A2B"; rr(ctx, -s * 0.12, -s * 1.1, s * 0.24, s * 1.1, s * 0.05); ctx.fill();
+    if (opt.fallen) { ctx.fillStyle = "#6B4423"; ctx.beginPath(); ctx.moveTo(-s * 0.3, s * 0.05); ctx.lineTo(0, -s * 0.15); ctx.lineTo(s * 0.3, s * 0.05); ctx.lineTo(s * 0.15, s * 0.2); ctx.lineTo(-s * 0.15, s * 0.2); ctx.closePath(); ctx.fill(); }
+    ctx.fillStyle = "#2E9E5B"; ctx.beginPath(); ctx.arc(0, -s * 1.2, s * 0.45, 0, Math.PI * 2); ctx.arc(-s * 0.3, -s * 0.95, s * 0.35, 0, Math.PI * 2); ctx.arc(s * 0.3, -s * 0.95, s * 0.35, 0, Math.PI * 2); ctx.fill();
+    ctx.restore();
+  };
+  // kamera (wartawan)
+  Q.camera = function (ctx, x, y, s) { ctx.fillStyle = "#1F2A33"; rr(ctx, x - s * 0.5, y - s * 0.3, s, s * 0.6, s * 0.1); ctx.fill(); ctx.fillStyle = "#7B8B95"; ctx.beginPath(); ctx.arc(x, y, s * 0.2, 0, Math.PI * 2); ctx.fill(); ctx.fillStyle = "#DCEBF2"; ctx.beginPath(); ctx.arc(x, y, s * 0.1, 0, Math.PI * 2); ctx.fill(); };
+  // buku catatan
+  Q.notepad = function (ctx, x, y, w, h, lines = []) { ctx.fillStyle = "#FFF9E0"; rr(ctx, x, y, w, h, 8); ctx.fill(); ctx.strokeStyle = "#E0B04B"; ctx.lineWidth = 3; rr(ctx, x, y, w, h, 8); ctx.stroke(); lines.forEach((ln, i) => text(ctx, ln, x + 14, y + 32 + i * 28, 18, { weight: 700, color: C.ink2 })); };
+  // bilah perjalanan: steps [label], n aktif
+  Q.journey = function (ctx, x, y, w, steps, opt = {}) {
+    const n = opt.n == null ? steps.length : opt.n; const sw = w / steps.length;
+    steps.forEach((s, i) => { const cx = x + sw * i + sw / 2; const on = i < n; ctx.save(); ctx.globalAlpha = on ? 1 : 0.25; card(ctx, cx - sw / 2 + 12, y, sw - 24, 110, { fill: i === n - 1 && opt.hlLast ? "#FFF3D6" : C.bg2, stroke: i === n - 1 && opt.hlLast ? C.accent : undefined, lw: 4, r: 16 }); ctx.fillStyle = C.kiko; ctx.beginPath(); ctx.arc(cx - sw / 2 + 44, y + 32, 20, 0, Math.PI * 2); ctx.fill(); text(ctx, String(i + 1), cx - sw / 2 + 44, y + 40, 20, { align: "center", color: "#fff", weight: 900 }); const lines = wrap(ctx, s, 22, 900, sw - 50); lines.forEach((ln, k) => text(ctx, ln, cx, y + 76 + k * 26, 22, { align: "center", weight: 900 })); ctx.restore(); if (i && i < n) { ctx.fillStyle = C.ink2; ctx.beginPath(); ctx.moveTo(cx - sw / 2 - 12, y + 45); ctx.lineTo(cx - sw / 2 + 8, y + 55); ctx.lineTo(cx - sw / 2 - 12, y + 65); ctx.closePath(); ctx.fill(); } });
+  };
+  // daftar empat pertanyaan: answers = [null|"ok"|"bad"], hl indeks
+  Q.fourQ = function (ctx, x, y, w, answers = [], opt = {}) {
+    const Qs = ["Siapa sumbernya?", "Apa buktinya?", "Kapan terjadi?", "Sumber lain sepakat?"];
+    Qs.forEach((q, i) => { const ry = y + i * 86; const on = opt.hl === i; card(ctx, x, ry, w, 72, { fill: on ? "#FFF3D6" : C.bg2, stroke: on ? C.accent : undefined, lw: 4, r: 14 }); ctx.fillStyle = C.kiko; ctx.beginPath(); ctx.arc(x + 36, ry + 36, 20, 0, Math.PI * 2); ctx.fill(); text(ctx, String(i + 1), x + 36, ry + 44, 20, { align: "center", color: "#fff", weight: 900 }); text(ctx, q, x + 70, ry + 45, 26, { weight: 900 }); if (answers[i]) Q.badge(ctx, x + w - 36, ry + 36, answers[i]); if (opt.notes && opt.notes[i]) text(ctx, opt.notes[i], x + w - 70, ry + 45, 20, { align: "right", weight: 700, color: answers[i] === "ok" ? C.good : C.bad }); });
+  };
+  K.pers = Q;
+})(typeof window !== "undefined" ? window : globalThis);
+
+/* Pembantu gambar D8.5: kartu kalimat (fakta/opini/hoaks), gelembung pesan, daftar lima ciri, pohon penyebaran (jaringan pertemanan),
+   penghitung orang. Muat setelah kiko-core.js dan kiko-devices.js. */
+(function (global) {
+  const K = global.Kiko, H = K.helpers, C = K.C;
+  const { rr, text, wrap, card, clamp } = H;
+  const Q = {};
+  const COL = { fakta: C.good, opini: C.kiko, hoaks: C.bad };
+  // kartu kalimat; kind null = belum dipilah
+  Q.sentence = function (ctx, x, y, w, s, kind, opt = {}) {
+    const col = kind ? COL[kind] : "#B7C4CC"; const size = opt.size || 24; const lines = wrap(ctx, s, size, 800, w - 40); const h = opt.h || 40 + lines.length * size * 1.3;
+    card(ctx, x, y, w, h, { fill: kind === "fakta" ? C.goodBg : kind === "opini" ? "#DCEBF2" : kind === "hoaks" ? C.badBg : "#FFFFFF", stroke: col, lw: kind ? 5 : 3, r: 14 });
+    lines.forEach((ln, i) => text(ctx, ln, x + 20, y + 32 + i * size * 1.3, size, { weight: 800 }));
+    if (kind && opt.label !== false) { ctx.fillStyle = col; rr(ctx, x + w - 96, y - 14, 86, 28, 8); ctx.fill(); text(ctx, kind.toUpperCase(), x + w - 53, y + 6, 16, { align: "center", weight: 900, color: "#fff" }); }
+    return h;
+  };
+  // gelembung pesan chat
+  Q.msg = function (ctx, x, y, w, s, opt = {}) {
+    const size = opt.size || 24; const lines = wrap(ctx, s, size, 700, w - 40); const h = 36 + lines.length * size * 1.3;
+    ctx.fillStyle = opt.fill || "#FFFFFF"; ctx.strokeStyle = opt.stroke || "#D7E2DC"; ctx.lineWidth = 3; rr(ctx, x, y, w, h, 16); ctx.fill(); ctx.stroke();
+    if (opt.who) text(ctx, opt.who, x + 16, y + 22, 16, { weight: 900, color: C.ink2 });
+    lines.forEach((ln, i) => text(ctx, ln, x + 16, y + (opt.who ? 48 : 36) + i * size * 1.3, size, { weight: 700, color: opt.color || C.ink }));
+    return h + (opt.who ? 12 : 0);
+  };
+  // lima ciri hoaks; checks = [bool], hl indeks
+  Q.signs = function (ctx, x, y, w, checks = [], opt = {}) {
+    const S = ["Mendesak: sekarang juga!", "Tanpa sumber yang jelas", "Menyentuh emosi: takut, marah, senang", "Minta disebarkan", "Tidak bisa dicek"];
+    S.forEach((s, i) => { const ry = y + i * 74; const on = opt.hl === i; const dim = opt.n != null && i >= opt.n; ctx.save(); if (dim) ctx.globalAlpha = 0.2; card(ctx, x, ry, w, 62, { fill: on ? "#FFF3D6" : C.bg2, stroke: on ? C.accent : undefined, lw: 4, r: 14 }); ctx.fillStyle = C.bad; ctx.beginPath(); ctx.arc(x + 32, ry + 31, 18, 0, Math.PI * 2); ctx.fill(); text(ctx, String(i + 1), x + 32, ry + 39, 18, { align: "center", color: "#fff", weight: 900 }); text(ctx, s, x + 62, ry + 39, 24, { weight: 900 }); if (checks[i] != null) { ctx.fillStyle = checks[i] ? C.bad : C.good; ctx.beginPath(); ctx.arc(x + w - 32, ry + 31, 18, 0, Math.PI * 2); ctx.fill(); text(ctx, checks[i] ? "✓" : "–", x + w - 32, ry + 40, 22, { align: "center", weight: 900, color: "#fff" }); } ctx.restore(); });
+  };
+  // pohon penyebaran: levels aktif n (0..4), branching 3; opt.stopAt = {level, index} cabang yang berhenti; opt.checkers = set level (semua periksa dulu)
+  Q.spreadTree = function (ctx, x, y, w, h, n, opt = {}) {
+    const L = 5; const rows = [1, 3, 9, 27, 81]; const dy = h / (L - 1);
+    const pos = (lvl, i) => [x + (i + 0.5) * (w / rows[lvl]), y + lvl * dy];
+    const dead = new Set(); // "lvl:i" yang tidak menerima
+    if (opt.stop) { const [sl, si] = opt.stop; for (let lvl = sl + 1; lvl < L; lvl++) { const span = Math.pow(3, lvl - sl); for (let k = 0; k < span; k++) dead.add(lvl + ":" + (si * span + k)); } }
+    for (let lvl = 1; lvl < L; lvl++) { if (lvl > n) break; for (let i = 0; i < rows[lvl]; i++) { const p = pos(lvl, i), q = pos(lvl - 1, Math.floor(i / 3)); const isDead = dead.has(lvl + ":" + i); ctx.strokeStyle = isDead ? "#E1E8E4" : opt.color || C.bad; ctx.lineWidth = isDead ? 1 : lvl < 3 ? 3 : 1.5; ctx.beginPath(); ctx.moveTo(q[0], q[1]); ctx.lineTo(p[0], p[1]); ctx.stroke(); } }
+    for (let lvl = 0; lvl < L; lvl++) { if (lvl > n) break; for (let i = 0; i < rows[lvl]; i++) { const p = pos(lvl, i); const isDead = dead.has(lvl + ":" + i); const r = lvl === 0 ? 16 : lvl === 1 ? 12 : lvl === 2 ? 9 : lvl === 3 ? 6 : 4; const isStop = opt.stop && opt.stop[0] === lvl && opt.stop[1] === i; ctx.fillStyle = isDead ? "#E1E8E4" : isStop ? C.good : opt.color || C.bad; ctx.beginPath(); ctx.arc(p[0], p[1], isStop ? r + 6 : r, 0, Math.PI * 2); ctx.fill(); if (isStop) { ctx.strokeStyle = "#fff"; ctx.lineWidth = 3; ctx.stroke(); } } }
+    if (opt.counts) for (let lvl = 0; lvl <= Math.min(n, L - 1); lvl++) { const alive = rows[lvl] - [...dead].filter(k => k.startsWith(lvl + ":")).length; text(ctx, String(alive), x - 30, y + lvl * dy + 8, 24, { align: "right", weight: 900, color: alive ? (opt.color || C.bad) : C.muted }); }
+    return { rows, dead };
+  };
+  // penghitung besar
+  Q.counter = function (ctx, x, y, w, n, label, color) { card(ctx, x, y, w, 120, { fill: "#FFFFFF", stroke: color, lw: 5, r: 16 }); text(ctx, String(n), x + w / 2, y + 66, 56, { align: "center", weight: 900, color }); text(ctx, label, x + w / 2, y + 104, 22, { align: "center", weight: 800, color: C.ink2 }); };
+  K.hoaks = Q;
+})(typeof window !== "undefined" ? window : globalThis);
+
+/* Pembantu gambar E.4: jendela peramban dengan tab, halaman situs fiktif, kueri pencarian beroperator, kartu hasil,
+   kartu tab lateral, lencana tanda bahaya, kartu konten negatif. Gaya diagram Fase E. Semua situs fiktif. Muat setelah kiko-core.js, kiko-devices.js, pencari.js. */
+(function (global) {
+  const K = global.Kiko, H = K.helpers, C = K.C, D = K.devices, Pc = K.pencari;
+  const { rr, text, wrap, card, clamp } = H;
+  const L = {};
+  // jendela peramban dengan deretan tab; tabs = [{title, active}]; mengembalikan area isi
+  L.browser = function (ctx, x, y, w, h, tabs, url, opt = {}) {
+    card(ctx, x, y, w, h, { fill: "#fff", stroke: "#C9D4DB", lw: 3, r: 14 });
+    ctx.fillStyle = "#E6EDF2"; rr(ctx, x, y, w, 50, 14); ctx.fill(); ctx.fillRect(x, y + 25, w, 25);
+    let tx = x + 12; tabs.forEach(t => { const tw = Math.min(260, t.title.length * 11 + 40); ctx.fillStyle = t.active ? "#fff" : "#D5DEE4"; rr(ctx, tx, y + 10, tw, 40, 8); ctx.fill(); if (t.hl) { ctx.strokeStyle = C.accent; ctx.lineWidth = 4; rr(ctx, tx, y + 10, tw, 40, 8); ctx.stroke(); } text(ctx, t.title, tx + 12, y + 36, 17, { weight: t.active ? 900 : 700, color: t.active ? C.ink : C.ink2 }); tx += tw + 6; });
+    if (opt.plus) { ctx.fillStyle = "#D5DEE4"; rr(ctx, tx, y + 10, 40, 40, 8); ctx.fill(); text(ctx, "+", tx + 20, y + 38, 26, { align: "center", weight: 900, color: C.ink2 }); }
+    ctx.fillStyle = "#F4F8FB"; rr(ctx, x + 12, y + 60, w - 24, 36, 10); ctx.fill(); text(ctx, (opt.https !== false ? "🔒 " : "⚠ ") + url, x + 26, y + 85, 17, { weight: 700, color: opt.https === false ? C.bad : C.ink2 });
+    return { x: x + 12, y: y + 108, w: w - 24, h: h - 120 };
+  };
+  // halaman situs fiktif: logo + judul + paragraf palsu + kutipan; opt.flags = [{x,y,label}] tanda bahaya
+  L.site = function (ctx, a, opt = {}) {
+    ctx.fillStyle = opt.color || "#1F5A6E"; rr(ctx, a.x, a.y, a.w, 54, 8); ctx.fill(); text(ctx, opt.logo || "🏛️ Institut Sehat Nusantara", a.x + 16, a.y + 36, 20, { weight: 900, color: "#fff" });
+    const lines = wrap(ctx, opt.title || "Vaksin X Terbukti Berbahaya, Kata Dewan Pakar", 24, 900, a.w - 32); let cy = a.y + 94; lines.forEach(ln => { text(ctx, ln, a.x + 16, cy, 24, { weight: 900 }); cy += 30; });
+    text(ctx, opt.by || "oleh: Tim Redaksi · tanpa tanggal", a.x + 16, cy + 6, 15, { weight: 700, color: C.muted }); cy += 28;
+    for (let i = 0; i < (opt.paras || 6); i++) { ctx.fillStyle = "#D7E2DC"; rr(ctx, a.x + 16, cy + i * 20, (a.w - 32) * (0.55 + ((i * 7) % 5) * 0.09), 10, 5); ctx.fill(); }
+    cy += (opt.paras || 6) * 20 + 10;
+    if (opt.quote) { ctx.fillStyle = "#FFF9E0"; rr(ctx, a.x + 16, cy, a.w - 32, 46, 8); ctx.fill(); text(ctx, "“" + opt.quote + "”", a.x + 28, cy + 30, 16, { weight: 800, color: C.ink2 }); cy += 56; }
+    if (opt.share) { ctx.fillStyle = C.bad; rr(ctx, a.x + 16, cy, 220, 40, 8); ctx.fill(); text(ctx, "BAGIKAN SEKARANG!", a.x + 126, cy + 27, 16, { align: "center", weight: 900, color: "#fff" }); }
+    return cy;
+  };
+  // kueri dengan operator disorot: parts = [[teks, jenis]] jenis: "kw"|"op"
+  L.query = function (ctx, x, y, w, parts, opt = {}) {
+    card(ctx, x, y, w, 70, { fill: C.panel, stroke: opt.stroke || "#B7C4CC", lw: 4, r: 35 }); text(ctx, "🔍", x + 22, y + 47, 26);
+    let cx = x + 70; parts.forEach(([t, k]) => { ctx.font = `${k === "op" ? 900 : 700} 26px Inter, sans-serif`; const tw = ctx.measureText(t).width; if (k === "op") { ctx.fillStyle = "#FFF3D6"; rr(ctx, cx - 6, y + 16, tw + 12, 40, 8); ctx.fill(); } text(ctx, t, cx, y + 45, 26, { weight: k === "op" ? 900 : 700, color: k === "op" ? C.accentDark : C.ink }); cx += tw + 14; });
+  };
+  // lencana tanda bahaya kecil
+  L.flag = function (ctx, x, y, label) { ctx.fillStyle = C.badBg; ctx.strokeStyle = C.bad; ctx.lineWidth = 3; const w = label.length * 10 + 40; rr(ctx, x, y, w, 34, 8); ctx.fill(); ctx.stroke(); text(ctx, "⚠ " + label, x + 10, y + 24, 16, { weight: 900, color: C.bad }); return w; };
+  // kartu konten negatif / tindakan
+  L.action = function (ctx, x, y, w, icon, title, sub, opt = {}) { ctx.save(); if (opt.dim) ctx.globalAlpha = 0.2; card(ctx, x, y, w, 120, { fill: opt.on ? "#FFF3D6" : C.bg2, stroke: opt.on ? C.accent : undefined, lw: 4, r: 16 }); text(ctx, icon, x + 50, y + 75, 44, { align: "center" }); text(ctx, title, x + 100, y + 52, 26, { weight: 900 }); text(ctx, sub, x + 100, y + 88, 19, { weight: 700, color: C.ink2 }); ctx.restore(); };
+  K.lateral = L;
+})(typeof window !== "undefined" ? window : globalThis);
+
+/* Adegan episode E.4: Mencari, Memeriksa, Membaca Lateral. Gaya diagram Fase E. Muat setelah kiko-core.js, kiko-devices.js, pencari.js, pers.js, hoaks.js, lateral.js. */
+(function (global) {
+  const K = global.Kiko, H = K.helpers, C = K.C, D = K.devices, Pc = K.pencari, Pr = K.pers, Hx = K.hoaks, Lt = K.lateral, SCENES = K.SCENES;
+  const { text, para, card, kiko, kid, bubble, rr, ease, clamp, lerp, arrowIcon } = H;
+  const reveal = (l, t0, step, n) => clamp(Math.floor((l - t0) / step) + 1, 0, n);
+  const banner = (ctx, s, y = 745, w = 1000, opt = {}) => { card(ctx, 960 - w / 2, y, w, 80, { fill: opt.fill || "#FFF3D6", stroke: opt.stroke || C.accent, lw: 4 }); text(ctx, s, 960, y + 52, opt.size || 34, { align: "center", weight: 900, color: opt.color || C.accentDark }); };
+  const label = (ctx, s, x, y, opt = {}) => text(ctx, s, x, y, opt.size || 28, { align: "center", weight: 900, color: opt.color || C.accentDark });
+  const heading = (ctx, s, y = 230) => text(ctx, s, 960, y, 34, { align: "center", color: C.accentDark, weight: 800 });
+  const SITE = "sehatnusantara-info.example";
+  const OPS = [["\"…\"", "frasa persis", [["\"beasiswa", "op"], ["kuliah", "kw"], ["2027\"", "op"]]], ["-kata", "buang kata pengganggu", [["jaguar", "kw"], ["-mobil", "op"]]], ["site:", "hanya situs tertentu", [["beasiswa", "kw"], ["site:go.id", "op"]]], ["waktu", "hanya hasil terbaru", [["gempa", "kw"], ["⏱ setahun terakhir", "op"]]]];
+
+  Object.assign(SCENES, {
+    title_q(ctx, b, l) {
+      card(ctx, 120, 150, 1680, 740);
+      kiko(ctx, 300, 560, 180, 0, { mood: "happy" });
+      card(ctx, 520, 260, 1200, 90, { fill: C.bg2, r: 16 }); text(ctx, "SMP: cara kerja mesin pencari · ciri hoaks · empat pertanyaan", 1120, 315, 26, { align: "center", weight: 900, color: C.ink2 });
+      arrowIcon(ctx, "down", 1120, 385, 26, C.ink2);
+      const n = reveal(l, 3.0, 1.4, 3);
+      [["🔍", "Operator pencarian", "kutip, minus, site:, waktu, gambar"], ["↔️", "Membaca lateral", "tab baru: siapa di baliknya?"], ["🛡️", "Menyaring konten negatif", "kenali, jangan sebar, lapor, blokir"]].forEach(([ic, t, s], i) => { ctx.save(); if (i >= n) ctx.globalAlpha = 0.2; const x = 540 + i * 400; card(ctx, x, 420, 370, 240, { fill: "#FFF3D6", stroke: C.accent, lw: 3, r: 16 }); text(ctx, ic, x + 185, 500, 56, { align: "center" }); text(ctx, t, x + 185, 560, 24, { align: "center", weight: 900 }); para(ctx, s, x + 185, 600, 19, 330, { align: "center", weight: 700, color: C.ink2 }); ctx.restore(); });
+      if (n >= 3) label(ctx, "SMA: seperti pemeriksa fakta profesional", 1120, 720);
+    },
+    prereq(ctx, b, l) {
+      card(ctx, 200, 200, 1520, 600);
+      text(ctx, "TONTON DULU", 960, 290, 34, { align: "center", color: C.accentDark, weight: 800 });
+      [["D7.4", "Mesin Pencari: Cara Kerja dan Strategi"], ["D8.4", "Menilai Informasi dan Ekosistem Pers Digital"], ["D8.5", "Fakta, Opini, dan Hoaks"]].forEach(([c, t], i) => { const x = 260 + i * 470; card(ctx, x, 340, 440, 280, { fill: C.bg2 }); text(ctx, "Episode " + c, x + 220, 420, 44, { align: "center", weight: 900 }); para(ctx, t, x + 220, 480, 26, 400, { align: "center", weight: 700, color: C.ink2 }); });
+      if (l > 6) label(ctx, "semua situs dan klaim di sini fiktif", 960, 690, { size: 24, color: C.ink2 });
+      kiko(ctx, 1660, 820, 120, 0);
+    },
+    unplugged_dua_pembaca(ctx, b, l) {
+      card(ctx, 120, 150, 1680, 740);
+      heading(ctx, "MAIN DULU TANPA KOMPUTER: DUA PEMBACA, SATU KARTU");
+      const cardSite = (x, y, w, h) => { card(ctx, x, y, w, h, { fill: "#fff", stroke: "#B7C4CC", lw: 3, r: 10 }); ctx.fillStyle = "#1F5A6E"; rr(ctx, x, y, w, 30, 8); ctx.fill(); text(ctx, "🏛️ Institut Sehat", x + 10, y + 21, 14, { weight: 900, color: "#fff" }); for (let i = 0; i < 5; i++) { ctx.fillStyle = "#D7E2DC"; rr(ctx, x + 10, y + 44 + i * 16, (w - 20) * (0.6 + (i % 3) * 0.13), 8, 4); ctx.fill(); } };
+      kid(ctx, 420, 560, 150, { hair: "long" }); cardSite(340, 300, 160, 140); text(ctx, "PEMBACA 1", 420, 720, 22, { align: "center", weight: 900, color: C.ink2 }); text(ctx, "hanya kartu ini", 420, 750, 18, { align: "center", weight: 700, color: C.ink2 });
+      kid(ctx, 920, 560, 150); cardSite(840, 300, 160, 140); text(ctx, "PEMBACA 2", 920, 720, 22, { align: "center", weight: 900, color: C.ink2 }); text(ctx, "boleh bertanya ke tiga teman", 920, 750, 18, { align: "center", weight: 700, color: C.ink2 });
+      const n = reveal(l, 4, 1.6, 3);
+      [["siapa pemiliknya?", "PT Suplemen Jaya"], ["apa kata sumber lain?", "lembaga kesehatan: tidak benar"], ["kapan dibuat?", "dua minggu lalu"]].forEach(([q, a], i) => { ctx.save(); if (i >= n) ctx.globalAlpha = 0.2; kid(ctx, 1300 + i * 160, 440 + (i % 2) * 180, 90, { hair: i === 1 ? "long" : null }); card(ctx, 1220 + i * 160, 300 + (i % 2) * 180, 170, 70, { fill: "#FFF9E0", stroke: "#E0B04B", lw: 2, r: 8 }); para(ctx, q, 1305 + i * 160, 325 + (i % 2) * 180, 14, 150, { align: "center", weight: 900 }); ctx.restore(); if (i < n) { ctx.strokeStyle = C.accent; ctx.lineWidth = 3; ctx.setLineDash([6, 6]); ctx.beginPath(); ctx.moveTo(990, 520); ctx.lineTo(1260 + i * 160, 470 + (i % 2) * 180); ctx.stroke(); ctx.setLineDash([]); } });
+    },
+    unplugged_hasil(ctx, b, l) {
+      card(ctx, 120, 150, 1680, 740);
+      heading(ctx, "SATU MENIT KEMUDIAN", 215);
+      const n = reveal(l, 1.5, 3.5, 2);
+      [["PEMBACA 1 · vertikal", "\"Logonya resmi, artikelnya panjang, ada dewan pakar. Bisa dipercaya.\"", "terkecoh tampilan", C.bad, "long"], ["PEMBACA 2 · lateral", "\"Pemiliknya penjual suplemen, lembaga kesehatan bilang sebaliknya. Tidak dipercaya.\"", "menemukan siapa di baliknya", C.good, null]].forEach(([t, q, v, col, hair], i) => { ctx.save(); if (i >= n) ctx.globalAlpha = 0.2; const x = 230 + i * 780; card(ctx, x, 270, 700, 400, { fill: C.bg2, r: 18 }); text(ctx, t, x + 350, 315, 24, { align: "center", weight: 900, color: col }); kid(ctx, x + 110, 480, 120, { hair }); bubble(ctx, x + 200, 500, 470, q, 20, { tailX: x + 240 }); text(ctx, v, x + 350, 640, 22, { align: "center", weight: 900, color: col }); ctx.restore(); });
+      if (n >= 2) label(ctx, "vertikal: menilai dari dalam halaman · lateral: bertanya ke luar", 960, 730, { size: 26 });
+    },
+
+    operator(ctx, b, l) {
+      card(ctx, 120, 150, 1680, 740);
+      heading(ctx, "MENCARI LEBIH TAJAM: EMPAT OPERATOR", 215);
+      const n = reveal(l, 1.5, 2.6, 4);
+      OPS.forEach(([op, s, q], i) => { ctx.save(); if (i >= n) ctx.globalAlpha = 0.2; const y = 265 + i * 120; card(ctx, 220, y, 1480, 104, { fill: i === n - 1 ? "#FFF3D6" : C.bg2, stroke: i === n - 1 ? C.accent : undefined, lw: 4, r: 14 }); text(ctx, op, 250, y + 50, 30, { weight: 900, color: C.accentDark }); text(ctx, s, 250, y + 84, 19, { weight: 700, color: C.ink2 }); Lt.query(ctx, 640, y + 17, 1040, q); ctx.restore(); });
+    },
+    gambar_terbalik(ctx, b, l) {
+      card(ctx, 120, 150, 1680, 740);
+      heading(ctx, "PENCARIAN GAMBAR TERBALIK", 215);
+      const n = reveal(l, 1.5, 2.6, 3);
+      ctx.save(); if (n < 1) ctx.globalAlpha = 0.2; card(ctx, 240, 280, 440, 360, { fill: "#fff", stroke: C.bad, lw: 4, r: 14 }); ctx.fillStyle = "#9FD6EA"; rr(ctx, 260, 300, 400, 200, 8); ctx.fill(); ctx.fillStyle = "#4C9BE0"; rr(ctx, 260, 400, 400, 100, 0); ctx.fill(); ctx.fillStyle = "#7B8B95"; rr(ctx, 300, 330, 80, 120, 4); ctx.fill(); rr(ctx, 420, 350, 100, 100, 4); ctx.fill(); text(ctx, "\"Banjir di kota kita HARI INI!\"", 460, 540, 20, { align: "center", weight: 900, color: C.bad }); text(ctx, "pesan viral di grup", 460, 580, 16, { align: "center", weight: 700, color: C.ink2 }); text(ctx, "📤 unggah foto ke pencarian gambar", 460, 620, 16, { align: "center", weight: 800, color: C.kiko }); ctx.restore();
+      if (n >= 2) arrowIcon(ctx, "right", 740, 450, 40, C.ink2);
+      ctx.save(); if (n < 2) ctx.globalAlpha = 0.2; Pc.results(ctx, 820, 290, 860, [{ title: "Banjir melanda Kota Y, 2021", url: "arsip-berita.example · 5 tahun lalu", date: "" }, { title: "Foto banjir Kota Y dipakai ulang untuk hoaks", url: "cekfakta.example · tahun lalu", date: "" }, { title: "Galeri: banjir 2021", url: "fotonews.example", date: "" }], { hl: n >= 3 ? 1 : -1 }); ctx.restore();
+      if (n >= 3) label(ctx, "foto lama, kota lain: klaim \"hari ini\" gugur", 1250, 680, { size: 24, color: C.bad });
+    },
+    vertikal(ctx, b, l) {
+      card(ctx, 120, 150, 1680, 740);
+      const a = Lt.browser(ctx, 200, 230, 820, 640, [{ title: "Vaksin X Terbukti Berbahaya…", active: true }], SITE + "/artikel/vaksin-x");
+      Lt.site(ctx, a, { paras: 7, quote: "Dewan pakar kami menemukan…", share: true });
+      const n = reveal(l, 2.5, 2.2, 4);
+      text(ctx, "PEMBACA VERTIKAL MELIHAT:", 1360, 300, 24, { align: "center", weight: 900, color: C.ink2 });
+      [["🏛️", "logo lembaga"], ["📄", "artikel panjang"], ["👥", "halaman \"tentang kami\": dewan pakar"], ["❝", "banyak kutipan"]].forEach(([ic, t], i) => { ctx.save(); if (i >= n) ctx.globalAlpha = 0.2; card(ctx, 1080, 330 + i * 80, 600, 66, { fill: C.bg2, r: 12 }); text(ctx, ic, 1120, 374 + i * 80, 30, { align: "center" }); text(ctx, t, 1160, 372 + i * 80, 22, { weight: 800 }); ctx.restore(); });
+      if (l > 12) { card(ctx, 1080, 670, 600, 90, { fill: C.badBg, stroke: C.bad, lw: 3, r: 12 }); para(ctx, "semua itu bisa dibuat siapa saja dalam satu sore", 1380, 710, 22, 560, { align: "center", weight: 900, color: C.bad }); }
+    },
+    lateral(ctx, b, l) {
+      card(ctx, 120, 150, 1680, 740);
+      const n = reveal(l, 1.0, 3.0, 3);
+      const tabs = [{ title: "Vaksin X Terbukti…", active: n < 1 }, { title: "siapa pemilik " + SITE.split(".")[0], active: n === 1 || n === 2, hl: n === 1 }, { title: "vaksin X lembaga kesehatan", active: n >= 3, hl: n === 3 }].slice(0, n >= 3 ? 3 : n >= 1 ? 2 : 1);
+      const a = Lt.browser(ctx, 200, 230, 1000, 640, tabs, n >= 3 ? "cari.example/?q=vaksin+X+lembaga+kesehatan" : n >= 1 ? "cari.example/?q=siapa+pemilik+" + SITE.split(".")[0] : SITE, { plus: true });
+      if (n < 1) Lt.site(ctx, a, { paras: 7, quote: "Dewan pakar kami menemukan…" });
+      else if (n < 3) { Lt.query(ctx, a.x + 10, a.y + 6, a.w - 20, [["siapa pemilik", "kw"], [SITE.split(".")[0], "op"]]); Pc.results(ctx, a.x + 10, a.y + 96, a.w - 20, [{ title: "Situs sehatnusantara-info dimiliki PT Suplemen Jaya", url: "cekmedia.example", date: "" }, { title: "Daftar situs kesehatan yang menjual produk sendiri", url: "pemeriksafakta.example", date: "" }, { title: "Dewan pakar yang tidak pernah ada", url: "jurnalisme.example", date: "" }], { hl: n === 2 ? 0 : -1 }); }
+      else { Lt.query(ctx, a.x + 10, a.y + 6, a.w - 20, [["vaksin X", "kw"], ["site:go.id", "op"]]); Pc.results(ctx, a.x + 10, a.y + 96, a.w - 20, [{ title: "Lembaga kesehatan: vaksin X aman, telah diuji", url: "kesehatan.go.id (fiktif)", date: "" }, { title: "Tanya jawab resmi tentang vaksin X", url: "kesehatan.go.id (fiktif)", date: "" }], { hl: 0 }); }
+      const steps = [["tab baru", "cari: siapa pemilik situs ini"], ["hasil", "milik PT Suplemen Jaya"], ["tab lain", "lembaga resmi berkata sebaliknya"]];
+      steps.forEach(([t, s], i) => { ctx.save(); if (i + 1 > n) ctx.globalAlpha = 0.2; card(ctx, 1240, 300 + i * 120, 480, 100, { fill: i + 1 === n ? "#FFF3D6" : C.bg2, stroke: i + 1 === n ? C.accent : undefined, lw: 4, r: 14 }); text(ctx, (i + 1) + ". " + t, 1264, 340 + i * 120, 24, { weight: 900 }); text(ctx, s, 1264, 374 + i * 120, 19, { weight: 700, color: C.ink2 }); ctx.restore(); });
+      if (l > 11) { card(ctx, 1240, 680, 480, 80, { fill: C.goodBg, stroke: C.good, lw: 3, r: 12 }); text(ctx, "dua menit, satu kesimpulan: tidak dipercaya", 1480, 728, 20, { align: "center", weight: 900, color: C.good }); }
+    },
+
+    tiga_langkah(ctx, b, l) {
+      card(ctx, 120, 150, 1680, 740);
+      heading(ctx, "TIGA LANGKAH MEMBACA LATERAL");
+      const n = reveal(l, 2.0, 3.2, 3);
+      [["✋", "1. BERHENTI", "jangan langsung percaya atau membagikan"], ["🗂️", "2. TAB BARU", "siapa di balik sumber ini? apa kata sumber lain?"], ["🧵", "3. TELUSURI KLAIM", "cari sumber aslinya"]].forEach(([ic, t, s], i) => { ctx.save(); if (i >= n) ctx.globalAlpha = 0.2; const x = 230 + i * 500; card(ctx, x, 290, 460, 360, { fill: i === n - 1 ? "#FFF3D6" : C.bg2, stroke: i === n - 1 ? C.accent : undefined, lw: 5, r: 18 }); text(ctx, ic, x + 230, 390, 72, { align: "center" }); text(ctx, t, x + 230, 460, 28, { align: "center", weight: 900 }); para(ctx, s, x + 230, 510, 22, 400, { align: "center", weight: 700, color: C.ink2 }); if (i < 2) arrowIcon(ctx, "right", x + 480, 470, 30, C.ink2); ctx.restore(); });
+      if (n >= 3) label(ctx, "cara kerja pemeriksa fakta profesional", 960, 720);
+    },
+    ekosistem(ctx, b, l) {
+      card(ctx, 120, 150, 1680, 740);
+      heading(ctx, "EKOSISTEM PERIKSA FAKTA: KAMU TIDAK SENDIRIAN", 215);
+      const n = reveal(l, 1.5, 1.8, 4);
+      [["📰", "tim periksa fakta di media"], ["🤝", "jaringan pemeriksa fakta Indonesia"], ["🏛️", "kanal aduan hoaks pemerintah"], ["🏷️", "label periksa fakta di platform"]].forEach(([ic, t], i) => { ctx.save(); if (i >= n) ctx.globalAlpha = 0.2; const x = 230 + (i % 2) * 740, y = 270 + Math.floor(i / 2) * 130; card(ctx, x, y, 700, 110, { fill: C.bg2, r: 14 }); text(ctx, ic, x + 55, y + 72, 44, { align: "center" }); text(ctx, t, x + 110, y + 68, 26, { weight: 900 }); ctx.restore(); });
+      if (l > 9) { Lt.query(ctx, 360, 560, 1200, [["\"air rebusan daun X sembuhkan diabetes\"", "kw"], ["cek fakta", "op"]], { stroke: C.accent }); Pr.badge(ctx, 1500, 670, "bad"); text(ctx, "[SALAH] Klaim air rebusan daun X menyembuhkan diabetes", 1000, 680, 22, { align: "center", weight: 900, color: C.bad }); }
+    },
+    telusuri_klaim(ctx, b, l) {
+      card(ctx, 120, 150, 1680, 740);
+      heading(ctx, "TELUSURI KLAIM KE SUMBER ASLINYA", 215);
+      card(ctx, 220, 280, 620, 190, { fill: "#fff", stroke: "#B7C4CC", lw: 3, r: 14 }); text(ctx, "artikel:", 240, 312, 18, { weight: 800, color: C.ink2 }); para(ctx, "\"Menurut penelitian Universitas X, vaksin ini berbahaya.\"", 530, 350, 22, 580, { align: "center", weight: 900 });
+      if (l > 2) { Lt.flag(ctx, 250, 418, "tanpa tautan"); Lt.flag(ctx, 430, 418, "tanpa nama peneliti"); }
+      arrowIcon(ctx, "right", 900, 355, 40, C.ink2); text(ctx, "cari penelitiannya", 900, 410, 18, { align: "center", weight: 800, color: C.ink2 });
+      const n = reveal(l, 4, 2.2, 3);
+      [["🐭", "ternyata tentang hal lain", "penelitian itu soal dosis pada 10 tikus"], ["🔍", "sampelnya terlalu kecil", "tidak bisa disimpulkan untuk manusia"], ["👻", "tidak pernah ada", "nama universitas dipinjam"]].forEach(([ic, t, s], i) => { ctx.save(); if (i >= n) ctx.globalAlpha = 0.2; card(ctx, 980, 280 + i * 130, 720, 112, { fill: C.badBg, stroke: C.bad, lw: 3, r: 14 }); text(ctx, ic, 1030, 350 + i * 130, 40, { align: "center" }); text(ctx, t, 1080, 325 + i * 130, 24, { weight: 900 }); text(ctx, s, 1080, 360 + i * 130, 19, { weight: 700, color: C.ink2 }); ctx.restore(); });
+      if (n >= 3) label(ctx, "kutipan tanpa tautan adalah tanda bahaya", 960, 720, { color: C.bad });
+    },
+    tanda_bahaya(ctx, b, l) {
+      card(ctx, 120, 150, 1680, 740);
+      heading(ctx, "TANDA BAHAYA LAIN", 215);
+      const n = reveal(l, 1.5, 2.2, 4);
+      const items = [["🔗", "alamat meniru media besar", "kompas-news.example vs kornpas-news.example"], ["📅", "tanggal tidak ada", "kapan ditulis? tidak tahu"], ["👤", "penulis tanpa nama", "\"Tim Redaksi\" tanpa orang"], ["🚨", "desakan membagikan sekarang", "BAGIKAN SEBELUM DIHAPUS!"]];
+      items.forEach(([ic, t, s], i) => { ctx.save(); if (i >= n) ctx.globalAlpha = 0.2; const x = 230 + (i % 2) * 740, y = 270 + Math.floor(i / 2) * 180; card(ctx, x, y, 700, 160, { fill: C.badBg, stroke: C.bad, lw: 3, r: 14 }); text(ctx, ic, x + 55, y + 90, 48, { align: "center" }); text(ctx, t, x + 110, y + 70, 26, { weight: 900 }); text(ctx, s, x + 110, y + 110, 19, { weight: 700, color: C.ink2 }); ctx.restore(); });
+      if (n >= 4) label(ctx, "satu tanda saja cukup untuk membuka tab baru", 960, 700);
+    },
+    konten_negatif(ctx, b, l) {
+      card(ctx, 120, 150, 1680, 740);
+      heading(ctx, "MENYARING KONTEN NEGATIF: EMPAT LANGKAH", 215);
+      const kinds = ["ujaran kebencian", "perundungan", "pornografi", "ajakan kekerasan", "penipuan"];
+      kinds.forEach((k, i) => { card(ctx, 230 + i * 300, 270, 280, 60, { fill: C.badBg, stroke: C.bad, lw: 2, r: 10 }); text(ctx, k, 370 + i * 300, 308, 20, { align: "center", weight: 900, color: C.bad }); });
+      const n = reveal(l, 3, 2.2, 4);
+      [["👀", "Kenali", "tandanya: merendahkan, mengancam, memancing"], ["🚫", "Jangan sebarkan", "walau untuk mengecam: itu memperluasnya"], ["🚩", "Laporkan", "tombol lapor di platform atau kanal resmi"], ["⛔", "Blokir", "akunnya tidak bisa menjangkaumu lagi"]].forEach(([ic, t, s], i) => Lt.action(ctx, 230 + (i % 2) * 740, 360 + Math.floor(i / 2) * 140, 700, ic, t, s, { dim: i >= n, on: i === n - 1 }));
+      if (n >= 4) label(ctx, "mengecam dengan membagikan tetap menyebarkan", 960, 680, { size: 24, color: C.ink2 });
+    },
+    atur_umpan(ctx, b, l) {
+      card(ctx, 120, 150, 1680, 740);
+      heading(ctx, "ATUR UMPANMU: BERI ALGORITMA SINYAL YANG KAMU MAU", 215);
+      const sc = D.phone(ctx, 500, 540, 300, 480);
+      [["👎 Tidak tertarik", true], ["🔕 Berhenti ikuti", true], ["🔒 Saring sensitif", true]].forEach(([t, on], i) => { card(ctx, sc.x + 20, sc.y + 60 + i * 110, sc.w - 40, 80, { fill: "#F7FAF8", stroke: "#C9D4DB", lw: 2, r: 12 }); text(ctx, t, sc.x + 32, sc.y + 110 + i * 110, 17, { weight: 900 }); ctx.fillStyle = l > 2 + i * 2 ? C.good : "#9AAFA6"; rr(ctx, sc.x + sc.w - 90, sc.y + 86 + i * 110, 50, 26, 13); ctx.fill(); ctx.fillStyle = "#fff"; ctx.beginPath(); ctx.arc(sc.x + sc.w - 90 + (l > 2 + i * 2 ? 37 : 13), sc.y + 99 + i * 110, 10, 0, Math.PI * 2); ctx.fill(); });
+      const n = reveal(l, 2, 2.2, 3);
+      [["umpan mengikuti yang kamu klik", "klik marah → lebih banyak yang memancing marah"], ["tandai tidak tertarik, berhenti ikuti", "sinyal: ini bukan yang kumau"], ["umpan berubah dalam beberapa hari", "lebih tenang, lebih berguna"]].forEach(([t, s], i) => { ctx.save(); if (i >= n) ctx.globalAlpha = 0.2; card(ctx, 760, 300 + i * 150, 940, 120, { fill: i === n - 1 ? "#FFF3D6" : C.bg2, stroke: i === n - 1 ? C.accent : undefined, lw: 4, r: 14 }); text(ctx, (i + 1) + ". " + t, 790, 348 + i * 150, 26, { weight: 900 }); text(ctx, s, 790, 386 + i * 150, 20, { weight: 700, color: C.ink2 }); ctx.restore(); });
+    },
+    make_show(ctx, b, l) {
+      card(ctx, 160, 150, 1600, 740);
+      text(ctx, "GILIRANMU", 960, 240, 34, { align: "center", color: C.accentDark, weight: 900 });
+      const items = [["Susun kueri", "operator yang tepat", (x, y) => { ctx.save(); ctx.translate(x - 210, y - 90); ctx.scale(0.42, 0.42); Lt.query(ctx, 0, 0, 1000, [["beasiswa", "kw"], ["site:go.id", "op"]]); Lt.query(ctx, 0, 110, 1000, [["\"gempa", "op"], ["hari ini\"", "op"], ["-film", "op"]]); ctx.restore(); }],
+        ["Simulasi membaca lateral", "tab-tab fiktif, temukan pemiliknya", (x, y) => { ctx.save(); ctx.translate(x - 210, y - 100); ctx.scale(0.46, 0.46); Lt.browser(ctx, 0, 0, 900, 380, [{ title: "artikel" }, { title: "siapa pemilik…", active: true, hl: true }, { title: "cek fakta" }], "cari.example", { plus: true }); ctx.restore(); }],
+        ["Pilah konten", "tindakan yang tepat", (x, y) => [["kenali", "🚫 jangan sebar"], ["🚩 lapor", "⛔ blokir"]].forEach((row, r) => row.forEach((t, c) => { card(ctx, x - 200 + c * 205, y - 90 + r * 80, 195, 66, { fill: "#fff", stroke: "#B7C4CC", lw: 2, r: 10 }); text(ctx, t, x - 102 + c * 205, y - 48 + r * 80, 20, { align: "center", weight: 900 }); }))]];
+      items.forEach(([t1, t2, draw], i) => { const x = 400 + i * 560; card(ctx, x - 250, 290, 500, 440, { fill: C.bg2 }); ctx.fillStyle = C.kiko; ctx.beginPath(); ctx.arc(x - 200, 340, 28, 0, Math.PI * 2); ctx.fill(); text(ctx, String(i + 1), x - 200, 352, 30, { align: "center", color: "#fff", weight: 900 }); text(ctx, t1, x - 160, 352, 26, { weight: 900 }); text(ctx, t2, x - 160, 386, 20, { weight: 700, color: C.ink2 }); draw(x, 560); });
+      text(ctx, "di halaman latihan episode ini — lalu baca lateral satu klaim viral minggu ini", 960, 820, 28, { align: "center", color: C.ink2, weight: 700 });
+    }
+  });
+})(typeof window !== "undefined" ? window : globalThis);
+</script>
+<script>/* Inti halaman latihan: pemutar (kanvas + narasi), tombol suara nyala/mati (berpindah antara timeline suara dan teks),
+   kuis dengan petunjuk, dan kemajuan di localStorage (perangkat ini saja).
+   Pakai:  const P = PageCore({ suara: TIMELINE_SUARA_atau_null, teks: TIMELINE_TEKS });
+   Episode menambahkan latihannya sendiri lewat P.$, P.K, P.H, P.progress, P.save(), P.speed(), P.onProgress(fn). */
+function PageCore(TLS, opt = {}) {
+  const $ = id => document.getElementById(id);
+  const K = Kiko, H = K.helpers;
+  let voice = !!TLS.suara; let TL = voice ? TLS.suara : TLS.teks;
+  // ---------- progress storage (per device only) ----------
+  const KEY = opt.key || TL.episode.replace(/\./g, "").toLowerCase() + "-progress";   // D7.5 -> "d75-progress"
+  let progress = { quiz: {} };
+  try { const s = localStorage.getItem(KEY); if (s) progress = { quiz: {}, ...JSON.parse(s) }; } catch (e) {}
+  const extras = [];
+  function renderProgress() {
+    const el = $("progress"); if (!el) return; el.innerHTML = "";
+    Object.keys(TL.quizzes).forEach((id, i) => { const s = document.createElement("span"); s.textContent = "Cek " + (i + 1); s.className = progress.quiz[id] ? "ok" : ""; el.appendChild(s); });
+    extras.forEach(f => f(el));
+  }
+  function save() { try { localStorage.setItem(KEY, JSON.stringify(progress)); } catch (e) {} renderProgress(); }
+
+  // ---------- player ----------
+  const cv = $("screen"), ctx = cv.getContext("2d");
+  let t = 0, playing = false, last = 0, speed = 1, hasAudio = false;
+  const nar = $("nar"); nar.addEventListener("canplay", () => { hasAudio = true; }); nar.addEventListener("error", () => { hasAudio = false; });
+  function fmt(s) { s = Math.max(0, Math.floor(s)); return Math.floor(s / 60) + ":" + String(s % 60).padStart(2, "0"); }
+  function segStart(i) { return TL.beats.find(b => b.seg === i).start; }
+  function syncAudio() { if (voice && hasAudio) { try { nar.currentTime = t; } catch (e) {} } }
+  function drawNow() {
+    const b = K.draw(ctx, Math.min(t, TL.total - 0.01), TL);
+    $("barfill").style.width = (t / TL.total * 100) + "%"; $("bar").setAttribute("aria-valuenow", Math.round(t / TL.total * 100));
+    $("timelabel").textContent = fmt(t) + " / " + fmt(TL.total);
+    [...$("chapters").children].forEach((c, i) => c.classList.toggle("now", i === b.seg));
+    return b;
+  }
+  function loop(now) {
+    if (!playing) return;
+    const dt = Math.min(0.1, (now - last) / 1000); last = now; if (voice && hasAudio && !nar.paused) t = nar.currentTime; else t += dt * speed;
+    if (t >= TL.total) { t = TL.total - 0.01; setPlaying(false); }
+    drawNow(); requestAnimationFrame(loop);
+  }
+  function setPlaying(p) {
+    playing = p; $("bigplay").hidden = p; $("playbtn").textContent = p ? "❚❚ Jeda" : "▶ Putar";
+    if (p) { last = performance.now(); if (voice && hasAudio) { try { nar.currentTime = t; nar.playbackRate = speed; nar.play().catch(() => {}); } catch (e) {} } requestAnimationFrame(loop); } else nar.pause();
+  }
+  $("bigplay").addEventListener("click", () => setPlaying(true));
+  $("playbtn").addEventListener("click", () => setPlaying(!playing));
+  $("replay").addEventListener("click", () => { const b = K.beatAt(TL, t); t = segStart(b.seg); syncAudio(); drawNow(); setPlaying(true); });
+  $("slow").addEventListener("click", e => { speed = speed === 1 ? 0.8 : 1; nar.playbackRate = speed; e.currentTarget.setAttribute("aria-pressed", speed !== 1); });
+  function seekFromBar(ev) { const r = $("bar").getBoundingClientRect(); const x = (ev.touches ? ev.touches[0].clientX : ev.clientX) - r.left; t = Math.max(0, Math.min(TL.total - 0.01, x / r.width * TL.total)); syncAudio(); drawNow(); }
+  $("bar").addEventListener("click", seekFromBar);
+  $("bar").addEventListener("keydown", e => { if (e.key === "ArrowRight") { t = Math.min(TL.total - 0.01, t + 5); syncAudio(); drawNow(); } if (e.key === "ArrowLeft") { t = Math.max(0, t - 5); syncAudio(); drawNow(); } });
+  TL.segments.forEach((name, i) => { const b = document.createElement("button"); b.textContent = (i + 1) + ". " + name; b.addEventListener("click", () => { t = segStart(i); syncAudio(); drawNow(); setPlaying(true); }); $("chapters").appendChild(b); });
+  // voice on/off: switches between the narrated timeline and the reading-paced one, staying on the same beat
+  const vb = $("voice");
+  function setVoice(on) {
+    const cur = K.beatAt(TL, t);
+    voice = on && !!TLS.suara; TL = voice ? TLS.suara : TLS.teks;
+    const nb = TL.beats.find(b => b.id === cur.id) || TL.beats[0]; t = nb.start;
+    if (vb) { vb.setAttribute("aria-pressed", voice); vb.textContent = voice ? "🔊 Suara: nyala" : "🔇 Suara: mati"; }
+    if (playing) { if (voice && hasAudio) { try { nar.currentTime = t; nar.playbackRate = speed; nar.play().catch(() => {}); } catch (e) {} } else nar.pause(); }
+    drawNow();
+  }
+  if (vb) { if (!TLS.suara || !TLS.teks) vb.hidden = true; else { vb.addEventListener("click", () => setVoice(!voice)); vb.setAttribute("aria-pressed", voice); vb.textContent = voice ? "🔊 Suara: nyala" : "🔇 Suara: mati"; } }
+  drawNow();
+
+  // ---------- quiz ----------
+  const quizEl = $("quiz");
+  if (quizEl) Object.entries(TL.quizzes).forEach(([id, q], qi) => {
+    const box = document.createElement("div"); box.className = "q";
+    box.innerHTML = `<h3>${qi + 1}. ${q.q}</h3><div class="opts"></div><div class="fb"></div>`;
+    const opts = box.querySelector(".opts"), fb = box.querySelector(".fb");
+    q.options.forEach((o, i) => {
+      const b = document.createElement("button"); b.innerHTML = `<b>${"ABC"[i]}</b><span>${o}</span>`;
+      b.addEventListener("click", () => {
+        [...opts.children].forEach(c => c.classList.remove("wrong"));
+        if (i === q.answer) { b.classList.add("right"); fb.className = "fb good"; fb.textContent = "Benar! " + (q.explain || ""); progress.quiz[id] = true; save(); [...opts.children].forEach(c => c.disabled = true); }
+        else { b.classList.add("wrong"); fb.className = "fb bad"; fb.textContent = "Belum tepat. Petunjuk: " + q.hint; }
+      });
+      opts.appendChild(b);
+    });
+    if (progress.quiz[id]) { opts.children[q.answer].classList.add("right"); [...opts.children].forEach(c => c.disabled = true); fb.className = "fb good"; fb.textContent = "Sudah dijawab benar."; }
+    quizEl.appendChild(box);
+  });
+  renderProgress();
+
+  return { $, K, H, progress, save, renderProgress, speed: () => speed, timeline: () => TL,
+           onProgress(fn) { extras.push(fn); renderProgress(); } };
+}
+</script>
+<script>
+(function () {
+  const P = PageCore({ suara: {"episode": "E.4", "title": "Mencari, Memeriksa, Membaca Lateral", "hook": "mencari dengan operator pencarian, membaca lateral untuk mengecek siapa di balik sebuah situs, dan memakai situs periksa fakta.", "engine": ["../_alat/kiko-core.js", "../_alat/kiko-devices.js", "../D7.4/pencari.js", "../D8.4/pers.js", "../D8.5/hoaks.js", "lateral.js", "scenes.js"], "parts": {"E.4a": {"segs": [0, 1, 2, 3], "post": "Lanjut ke Bagian 2: Membaca Lateral dan Periksa Fakta"}, "E.4b": {"segs": [4, 5, 6, 7], "pre": "Bagian 2: Membaca Lateral dan Periksa Fakta"}}, "youtube": {"ringkas": "Sebuah situs tampak rapi, punya logo lembaga, dan menulis artikel panjang tentang bahaya vaksin. Percaya? Pembaca vertikal menilai dari halaman itu sendiri; pembaca lateral membuka tab baru dan bertanya: siapa di balik situs ini, apa kata sumber lain? Bersama Kiko kita tajamkan pencarian dengan operator (tanda kutip, minus, site:, filter waktu, pencarian gambar terbalik), kenali ekosistem periksa fakta di Indonesia, praktikkan membaca lateral tiga langkah, dan saring konten negatif: kenali, jangan sebarkan, laporkan, blokir. Gaya diagram Fase E. Empat cek pemahaman; simulasi membaca lateral di halaman latihan.", "belajar": ["memakai operator pencarian: tanda kutip, minus, site:, filter waktu, dan pencarian gambar terbalik", "membedakan membaca vertikal dan lateral, lalu menerapkan tiga langkah membaca lateral", "mengenal ekosistem periksa fakta dan memakai situs periksa fakta untuk klaim viral", "menyaring konten negatif: mengenali, tidak menyebarkan, melaporkan, memblokir"], "bagian": {"E.4a": "Mencari Lebih Tajam", "E.4b": "Membaca Lateral dan Periksa Fakta"}, "cari": ["membaca lateral literasi digital", "operator pencarian google untuk pelajar", "cara cek fakta berita viral", "informatika kelas 10 literasi digital"], "prasyarat": "episode D7.4 Mesin Pencari serta D8.4 dan D8.5 tentang menilai informasi dan hoaks", "jp": 6, "tagar": ["#MembacaLateral", "#PeriksaFakta", "#LiterasiDigital", "#MesinPencari", "#Kelas10", "#SMA"]}, "recap": ["Pencarian tajam: kutip, minus, site:, waktu, gambar.", "Lateral: tinggalkan halaman, cari siapa di baliknya.", "Konten negatif: kenali, jangan sebar, lapor, blokir."], "next": {"code": "E.5", "title": "Struktur Data Standar", "note": "Simulasi membaca lateral ada di halaman episode ini."}, "segments": ["Pembuka", "Main dulu tanpa komputer", "Mencari lebih tajam", "Vertikal dan lateral", "Tiga langkah dan ekosistem periksa fakta", "Telusuri klaim dan tanda bahaya", "Konten negatif", "Giliranmu"], "quizzes": {"q1": {"q": "Kamu ingin hasil tentang beasiswa hanya dari situs resmi pemerintah (akhiran .go.id). Operator mana yang dipakai?", "options": ["Tanda kutip \"…\"", "site:go.id", "Tanda minus -"], "answer": 1, "hint": "Operator yang membatasi hasil pada domain tertentu."}, "q2": {"q": "Mana yang termasuk membaca lateral?", "options": ["Membaca halaman 'Tentang kami' di situs itu", "Membuka tab baru dan mencari siapa pemilik situs itu", "Memeriksa apakah tampilannya rapi"], "answer": 1, "hint": "Lateral berarti keluar dari halaman itu dan bertanya kepada sumber lain."}, "q3": {"q": "Pesan viral: 'air rebusan daun tertentu menyembuhkan diabetes'. Langkah paling cepat?", "options": ["Tanya di grup", "Cari judul klaim + 'cek fakta'", "Coba sendiri"], "answer": 1, "hint": "Klaim viral hampir selalu sudah diperiksa oleh pemeriksa fakta."}, "q4": {"q": "Artikel menyebut 'menurut penelitian universitas ternama', tanpa tautan dan nama peneliti. Sikap yang tepat?", "options": ["Percaya, universitasnya ternama", "Cari penelitiannya dulu", "Bagikan dengan catatan"], "answer": 1, "hint": "Telusuri klaim ke sumber aslinya; nama besar sering dipinjam."}}, "beats": [{"id": "intro1", "seg": 0, "scene": "title", "text": "Halo, kelas sepuluh! Aku Kiko. Sinta menemukan situs rapi berlogo lembaga dengan artikel panjang tentang bahaya suatu vaksin. Percaya? Setelah menonton, kamu bisa mencari lebih tajam dan membaca lateral: mengecek siapa di balik sebuah situs.", "hold": 1.0, "start": 0.0, "speech": 0.4, "audio": 16.514, "dur": 19.54}, {"id": "intro2", "seg": 0, "scene": "title_q", "text": "Di SMP kita belajar cara kerja mesin pencari dan ciri hoaks. Sekarang naik tingkat: operator pencarian, membaca lateral seperti pemeriksa fakta profesional, dan cara menyaring konten negatif.", "hold": 0.8, "start": 19.54, "speech": 19.94, "audio": 12.873, "dur": 15.34}, {"id": "intro3", "seg": 0, "scene": "prereq", "text": "Episode ini melanjutkan D7.4 tentang mesin pencari, serta D8.4 dan D8.5 tentang menilai informasi dan hoaks. Semua situs dan klaim di sini fiktif. Kalau belum menontonnya, tonton dulu, ya.", "hold": 0.8, "start": 34.88, "speech": 35.28, "audio": 15.152, "dur": 16.652}, {"id": "play1", "seg": 1, "scene": "unplugged_dua_pembaca", "text": "Main dulu. Dua murid membaca kartu situs fiktif yang sama. Pembaca satu hanya boleh membaca kartu itu. Pembaca dua boleh bertanya ke tiga teman yang memegang kartu lain: siapa pemilik situs, apa kata sumber lain, kapan dibuat.", "hold": 1.0, "start": 51.532, "speech": 51.932, "audio": 15.84, "dur": 20.54}, {"id": "play2", "seg": 1, "scene": "unplugged_hasil", "text": "Setelah satu menit, keduanya menilai: situs ini bisa dipercaya atau tidak? Biasanya pembaca satu terkecoh oleh tampilan, pembaca dua menemukan pemiliknya penjual obat. Itulah bedanya membaca vertikal dan lateral.", "hold": 1.0, "start": 72.072, "speech": 72.472, "audio": 14.446, "dur": 16.54}, {"id": "s1a", "seg": 2, "scene": "operator", "text": "Mencari lebih tajam. Tanda kutip: frasa persis. Tanda minus: buang kata yang mengganggu. Site titik dua: hanya dari situs tertentu, misalnya situs resmi pemerintah atau sekolah. Filter waktu: hanya hasil setahun terakhir.", "hold": 1.0, "start": 88.612, "speech": 89.012, "audio": 16.761, "dur": 18.461}, {"id": "s1b", "seg": 2, "scene": "gambar_terbalik", "text": "Untuk gambar, pakai pencarian gambar terbalik: unggah fotonya, mesin pencari mencari di mana lagi foto itu pernah muncul. Foto banjir yang viral hari ini sering ternyata foto kota lain lima tahun lalu.", "hold": 1.0, "start": 107.073, "speech": 107.473, "audio": 12.755, "dur": 18.04}, {"id": "q1", "seg": 2, "scene": "quiz", "quiz": "q1", "text": "Cek pemahaman. Kamu ingin hasil tentang beasiswa hanya dari situs resmi pemerintah dengan akhiran go id. Operator mana yang dipakai: tanda kutip, site titik dua, atau tanda minus? Pikirkan dulu.", "hold": 4.0, "start": 125.113, "speech": 125.513, "audio": 14.788, "dur": 20.04}, {"id": "q1a", "seg": 2, "scene": "quiz_answer", "quiz": "q1", "text": "Jawabannya: site titik dua go titik id. Operator itu membatasi hasil hanya dari domain tersebut.", "hold": 1.0, "start": 145.153, "speech": 145.553, "audio": 7.772, "dur": 9.54}, {"id": "s2a", "seg": 3, "scene": "vertikal", "text": "Kembali ke situs Sinta. Pembaca vertikal menilai dari dalam halaman: tampilannya rapi, ada logo, ada halaman tentang kami yang menyebut dewan pakar, banyak kutipan. Semua itu bisa dibuat siapa saja dalam satu sore.", "hold": 1.0, "start": 154.693, "speech": 155.093, "audio": 14.778, "dur": 18.54}, {"id": "s2b", "seg": 3, "scene": "lateral", "text": "Pembaca lateral meninggalkan halaman itu. Tab baru: cari nama situsnya ditambah kata siapa pemiliknya. Hasilnya: situs itu milik perusahaan penjual suplemen. Tab lain: lembaga kesehatan resmi berkata sebaliknya. Dua menit, satu kesimpulan.", "hold": 1.0, "start": 173.233, "speech": 173.633, "audio": 17.79, "dur": 19.49}, {"id": "q2", "seg": 3, "scene": "quiz", "quiz": "q2", "text": "Cek pemahaman. Mana yang termasuk membaca lateral: membaca halaman tentang kami di situs itu, membuka tab baru dan mencari siapa pemilik situs itu, atau memeriksa apakah tampilannya rapi? Pikirkan dulu.", "hold": 4.0, "start": 192.723, "speech": 193.123, "audio": 14.414, "dur": 20.04}, {"id": "q2a", "seg": 3, "scene": "quiz_answer", "quiz": "q2", "text": "Jawabannya: membuka tab baru dan mencari siapa pemiliknya. Halaman tentang kami dan tampilan dibuat oleh situs itu sendiri; sumber lain yang menilainya.", "hold": 1.0, "start": 212.763, "speech": 213.163, "audio": 10.153, "dur": 13.04}, {"id": "s3a", "seg": 4, "scene": "tiga_langkah", "text": "Bagian dua. Tiga langkah membaca lateral. Satu: berhenti, jangan langsung percaya atau membagikan. Dua: buka tab baru, cari siapa di balik sumber ini dan apa kata sumber lain tentangnya. Tiga: telusuri klaimnya ke sumber aslinya.", "hold": 1.0, "start": 225.803, "speech": 226.203, "audio": 17.821, "dur": 19.54}, {"id": "s3b", "seg": 4, "scene": "ekosistem", "text": "Kamu tidak sendirian. Ada ekosistem periksa fakta: tim periksa fakta di media, jaringan pemeriksa fakta Indonesia, kanal aduan hoaks pemerintah, dan label periksa fakta di platform. Klaim viral biasanya sudah diperiksa: cari judulnya ditambah cek fakta.", "hold": 1.0, "start": 245.343, "speech": 245.743, "audio": 17.468, "dur": 20.04}, {"id": "q3", "seg": 4, "scene": "quiz", "quiz": "q3", "text": "Cek pemahaman. Pesan viral: air rebusan daun tertentu menyembuhkan diabetes. Langkah paling cepat: tanya di grup, cari judul klaim ditambah cek fakta, atau coba sendiri? Pikirkan dulu.", "hold": 4.0, "start": 265.383, "speech": 265.783, "audio": 13.999, "dur": 18.699}, {"id": "q3a", "seg": 4, "scene": "quiz_answer", "quiz": "q3", "text": "Jawabannya: cari judul klaimnya ditambah kata cek fakta. Klaim viral hampir selalu sudah diperiksa oleh pemeriksa fakta.", "hold": 1.0, "start": 284.082, "speech": 284.482, "audio": 8.487, "dur": 10.54}, {"id": "s4a", "seg": 5, "scene": "telusuri_klaim", "text": "Menelusuri klaim ke sumber asli. Artikel berkata: menurut penelitian universitas X. Cari penelitiannya. Sering ternyata penelitian itu tentang hal lain, sampelnya sepuluh tikus, atau tidak pernah ada. Kutipan tanpa tautan adalah tanda bahaya.", "hold": 1.0, "start": 294.622, "speech": 295.022, "audio": 17.748, "dur": 19.448}, {"id": "s4b", "seg": 5, "scene": "tanda_bahaya", "text": "Tanda bahaya lain: alamat situs yang meniru media besar dengan satu huruf berbeda, tanggal artikel yang tidak ada, penulis tanpa nama, dan desakan untuk membagikan sekarang. Satu tanda saja cukup untuk membuka tab baru.", "hold": 1.0, "start": 314.07, "speech": 314.47, "audio": 14.966, "dur": 19.04}, {"id": "q4", "seg": 5, "scene": "quiz", "quiz": "q4", "text": "Cek pemahaman. Artikel menyebut menurut penelitian universitas ternama, tanpa tautan dan tanpa nama peneliti. Sikap yang tepat: percaya karena universitasnya ternama, cari penelitiannya dulu, atau bagikan dengan catatan? Pikirkan dulu.", "hold": 4.0, "start": 333.11, "speech": 333.51, "audio": 16.711, "dur": 21.411}, {"id": "q4a", "seg": 5, "scene": "quiz_answer", "quiz": "q4", "text": "Jawabannya: cari penelitiannya dulu. Nama lembaga besar sering dipinjam tanpa izin; yang dicek adalah sumber aslinya.", "hold": 1.0, "start": 354.521, "speech": 354.921, "audio": 8.602, "dur": 10.302}, {"id": "s5a", "seg": 6, "scene": "konten_negatif", "text": "Menyaring konten negatif: ujaran kebencian, perundungan, pornografi, ajakan kekerasan, penipuan. Empat langkah: kenali tandanya, jangan sebarkan walau untuk mengecam, laporkan lewat tombol lapor di platform atau kanal resmi, lalu blokir.", "hold": 1.0, "start": 364.823, "speech": 365.223, "audio": 17.92, "dur": 19.62}, {"id": "s5b", "seg": 6, "scene": "atur_umpan", "text": "Umpanmu juga bisa diatur: tandai tidak tertarik, berhenti mengikuti akun yang memancing emosi, dan nyalakan penyaring konten sensitif. Algoritma mengikuti yang kamu klik; beri ia sinyal yang kamu mau.", "hold": 1.0, "start": 384.443, "speech": 384.843, "audio": 13.76, "dur": 16.54}, {"id": "s6a", "seg": 7, "scene": "make_show", "text": "Sekarang giliranmu. Di halaman latihan: susun kueri pencarian dengan operator yang tepat; jalani simulasi membaca lateral dengan tab-tab fiktif sampai menemukan siapa pemilik situsnya; lalu pilah konten dan tentukan tindakannya.", "hold": 1.0, "start": 400.983, "speech": 401.383, "audio": 15.857, "dur": 17.557}, {"id": "s6b", "seg": 7, "scene": "make_show", "text": "Lalu praktik sungguhan: ambil satu klaim viral minggu ini, baca lateral, dan tulis dalam tiga kalimat siapa sumbernya, apa kata pemeriksa fakta, dan kesimpulanmu.", "hold": 1.0, "start": 418.54, "speech": 418.94, "audio": 11.071, "dur": 14.04}, {"id": "recap", "seg": 7, "scene": "recap", "text": "Tiga hal untuk diingat. Satu: pencarian tajam dengan tanda kutip, minus, site titik dua, filter waktu, dan gambar terbalik. Dua: membaca lateral: tinggalkan halaman, cari siapa di baliknya. Tiga: konten negatif: kenali, jangan sebar, lapor, blokir.", "hold": 1.5, "start": 432.58, "speech": 432.98, "audio": 19.938, "dur": 22.138}, {"id": "outro", "seg": 7, "scene": "outro", "text": "Sampai jumpa di semester dua dengan episode berikutnya: struktur data standar. Larik, rekaman, tumpukan, dan antrean, dipakai di dalam program. Sampai jumpa!", "hold": 1.0, "start": 454.718, "speech": 455.118, "audio": 11.854, "dur": 13.554}], "total": 468.272}, teks: {"episode": "E.4", "title": "Mencari, Memeriksa, Membaca Lateral", "hook": "mencari dengan operator pencarian, membaca lateral untuk mengecek siapa di balik sebuah situs, dan memakai situs periksa fakta.", "engine": ["../_alat/kiko-core.js", "../_alat/kiko-devices.js", "../D7.4/pencari.js", "../D8.4/pers.js", "../D8.5/hoaks.js", "lateral.js", "scenes.js"], "parts": {"E.4a": {"segs": [0, 1, 2, 3], "post": "Lanjut ke Bagian 2: Membaca Lateral dan Periksa Fakta"}, "E.4b": {"segs": [4, 5, 6, 7], "pre": "Bagian 2: Membaca Lateral dan Periksa Fakta"}}, "youtube": {"ringkas": "Sebuah situs tampak rapi, punya logo lembaga, dan menulis artikel panjang tentang bahaya vaksin. Percaya? Pembaca vertikal menilai dari halaman itu sendiri; pembaca lateral membuka tab baru dan bertanya: siapa di balik situs ini, apa kata sumber lain? Bersama Kiko kita tajamkan pencarian dengan operator (tanda kutip, minus, site:, filter waktu, pencarian gambar terbalik), kenali ekosistem periksa fakta di Indonesia, praktikkan membaca lateral tiga langkah, dan saring konten negatif: kenali, jangan sebarkan, laporkan, blokir. Gaya diagram Fase E. Empat cek pemahaman; simulasi membaca lateral di halaman latihan.", "belajar": ["memakai operator pencarian: tanda kutip, minus, site:, filter waktu, dan pencarian gambar terbalik", "membedakan membaca vertikal dan lateral, lalu menerapkan tiga langkah membaca lateral", "mengenal ekosistem periksa fakta dan memakai situs periksa fakta untuk klaim viral", "menyaring konten negatif: mengenali, tidak menyebarkan, melaporkan, memblokir"], "bagian": {"E.4a": "Mencari Lebih Tajam", "E.4b": "Membaca Lateral dan Periksa Fakta"}, "cari": ["membaca lateral literasi digital", "operator pencarian google untuk pelajar", "cara cek fakta berita viral", "informatika kelas 10 literasi digital"], "prasyarat": "episode D7.4 Mesin Pencari serta D8.4 dan D8.5 tentang menilai informasi dan hoaks", "jp": 6, "tagar": ["#MembacaLateral", "#PeriksaFakta", "#LiterasiDigital", "#MesinPencari", "#Kelas10", "#SMA"]}, "recap": ["Pencarian tajam: kutip, minus, site:, waktu, gambar.", "Lateral: tinggalkan halaman, cari siapa di baliknya.", "Konten negatif: kenali, jangan sebar, lapor, blokir."], "next": {"code": "E.5", "title": "Struktur Data Standar", "note": "Simulasi membaca lateral ada di halaman episode ini."}, "segments": ["Pembuka", "Main dulu tanpa komputer", "Mencari lebih tajam", "Vertikal dan lateral", "Tiga langkah dan ekosistem periksa fakta", "Telusuri klaim dan tanda bahaya", "Konten negatif", "Giliranmu"], "quizzes": {"q1": {"q": "Kamu ingin hasil tentang beasiswa hanya dari situs resmi pemerintah (akhiran .go.id). Operator mana yang dipakai?", "options": ["Tanda kutip \"…\"", "site:go.id", "Tanda minus -"], "answer": 1, "hint": "Operator yang membatasi hasil pada domain tertentu."}, "q2": {"q": "Mana yang termasuk membaca lateral?", "options": ["Membaca halaman 'Tentang kami' di situs itu", "Membuka tab baru dan mencari siapa pemilik situs itu", "Memeriksa apakah tampilannya rapi"], "answer": 1, "hint": "Lateral berarti keluar dari halaman itu dan bertanya kepada sumber lain."}, "q3": {"q": "Pesan viral: 'air rebusan daun tertentu menyembuhkan diabetes'. Langkah paling cepat?", "options": ["Tanya di grup", "Cari judul klaim + 'cek fakta'", "Coba sendiri"], "answer": 1, "hint": "Klaim viral hampir selalu sudah diperiksa oleh pemeriksa fakta."}, "q4": {"q": "Artikel menyebut 'menurut penelitian universitas ternama', tanpa tautan dan nama peneliti. Sikap yang tepat?", "options": ["Percaya, universitasnya ternama", "Cari penelitiannya dulu", "Bagikan dengan catatan"], "answer": 1, "hint": "Telusuri klaim ke sumber aslinya; nama besar sering dipinjam."}}, "beats": [{"id": "intro1", "seg": 0, "scene": "title", "text": "Halo, kelas sepuluh! Aku Kiko. Sinta menemukan situs rapi berlogo lembaga dengan artikel panjang tentang bahaya suatu vaksin. Percaya? Setelah menonton, kamu bisa mencari lebih tajam dan membaca lateral: mengecek siapa di balik sebuah situs.", "hold": 1.0, "start": 0.0, "speech": 0.0, "audio": 22.675, "dur": 24.675}, {"id": "intro2", "seg": 0, "scene": "title_q", "text": "Di SMP kita belajar cara kerja mesin pencari dan ciri hoaks. Sekarang naik tingkat: operator pencarian, membaca lateral seperti pemeriksa fakta profesional, dan cara menyaring konten negatif.", "hold": 0.8, "start": 24.675, "speech": 24.675, "audio": 17.675, "dur": 19.475}, {"id": "intro3", "seg": 0, "scene": "prereq", "text": "Episode ini melanjutkan D7.4 tentang mesin pencari, serta D8.4 dan D8.5 tentang menilai informasi dan hoaks. Semua situs dan klaim di sini fiktif. Kalau belum menontonnya, tonton dulu, ya.", "hold": 0.8, "start": 44.15, "speech": 44.15, "audio": 18.925, "dur": 20.725}, {"id": "play1", "seg": 1, "scene": "unplugged_dua_pembaca", "text": "Main dulu. Dua murid membaca kartu situs fiktif yang sama. Pembaca satu hanya boleh membaca kartu itu. Pembaca dua boleh bertanya ke tiga teman yang memegang kartu lain: siapa pemilik situs, apa kata sumber lain, kapan dibuat.", "hold": 1.0, "start": 64.875, "speech": 64.875, "audio": 23.925, "dur": 25.925}, {"id": "play2", "seg": 1, "scene": "unplugged_hasil", "text": "Setelah satu menit, keduanya menilai: situs ini bisa dipercaya atau tidak? Biasanya pembaca satu terkecoh oleh tampilan, pembaca dua menemukan pemiliknya penjual obat. Itulah bedanya membaca vertikal dan lateral.", "hold": 1.0, "start": 90.8, "speech": 90.8, "audio": 18.925, "dur": 20.925}, {"id": "s1a", "seg": 2, "scene": "operator", "text": "Mencari lebih tajam. Tanda kutip: frasa persis. Tanda minus: buang kata yang mengganggu. Site titik dua: hanya dari situs tertentu, misalnya situs resmi pemerintah atau sekolah. Filter waktu: hanya hasil setahun terakhir.", "hold": 1.0, "start": 111.725, "speech": 111.725, "audio": 20.8, "dur": 22.8}, {"id": "s1b", "seg": 2, "scene": "gambar_terbalik", "text": "Untuk gambar, pakai pencarian gambar terbalik: unggah fotonya, mesin pencari mencari di mana lagi foto itu pernah muncul. Foto banjir yang viral hari ini sering ternyata foto kota lain lima tahun lalu.", "hold": 1.0, "start": 134.525, "speech": 134.525, "audio": 20.8, "dur": 22.8}, {"id": "q1", "seg": 2, "scene": "quiz", "quiz": "q1", "text": "Cek pemahaman. Kamu ingin hasil tentang beasiswa hanya dari situs resmi pemerintah dengan akhiran go id. Operator mana yang dipakai: tanda kutip, site titik dua, atau tanda minus? Pikirkan dulu.", "hold": 4.0, "start": 157.325, "speech": 157.325, "audio": 19.55, "dur": 24.55}, {"id": "q1a", "seg": 2, "scene": "quiz_answer", "quiz": "q1", "text": "Jawabannya: site titik dua go titik id. Operator itu membatasi hasil hanya dari domain tersebut.", "hold": 1.0, "start": 181.875, "speech": 181.875, "audio": 10.175, "dur": 12.175}, {"id": "s2a", "seg": 3, "scene": "vertikal", "text": "Kembali ke situs Sinta. Pembaca vertikal menilai dari dalam halaman: tampilannya rapi, ada logo, ada halaman tentang kami yang menyebut dewan pakar, banyak kutipan. Semua itu bisa dibuat siapa saja dalam satu sore.", "hold": 1.0, "start": 194.05, "speech": 194.05, "audio": 21.425, "dur": 23.425}, {"id": "s2b", "seg": 3, "scene": "lateral", "text": "Pembaca lateral meninggalkan halaman itu. Tab baru: cari nama situsnya ditambah kata siapa pemiliknya. Hasilnya: situs itu milik perusahaan penjual suplemen. Tab lain: lembaga kesehatan resmi berkata sebaliknya. Dua menit, satu kesimpulan.", "hold": 1.0, "start": 217.475, "speech": 217.475, "audio": 20.8, "dur": 22.8}, {"id": "q2", "seg": 3, "scene": "quiz", "quiz": "q2", "text": "Cek pemahaman. Mana yang termasuk membaca lateral: membaca halaman tentang kami di situs itu, membuka tab baru dan mencari siapa pemilik situs itu, atau memeriksa apakah tampilannya rapi? Pikirkan dulu.", "hold": 4.0, "start": 240.275, "speech": 240.275, "audio": 19.55, "dur": 24.55}, {"id": "q2a", "seg": 3, "scene": "quiz_answer", "quiz": "q2", "text": "Jawabannya: membuka tab baru dan mencari siapa pemiliknya. Halaman tentang kami dan tampilan dibuat oleh situs itu sendiri; sumber lain yang menilainya.", "hold": 1.0, "start": 264.825, "speech": 264.825, "audio": 14.55, "dur": 16.55}, {"id": "s3a", "seg": 4, "scene": "tiga_langkah", "text": "Bagian dua. Tiga langkah membaca lateral. Satu: berhenti, jangan langsung percaya atau membagikan. Dua: buka tab baru, cari siapa di balik sumber ini dan apa kata sumber lain tentangnya. Tiga: telusuri klaimnya ke sumber aslinya.", "hold": 1.0, "start": 281.375, "speech": 281.375, "audio": 22.675, "dur": 24.675}, {"id": "s3b", "seg": 4, "scene": "ekosistem", "text": "Kamu tidak sendirian. Ada ekosistem periksa fakta: tim periksa fakta di media, jaringan pemeriksa fakta Indonesia, kanal aduan hoaks pemerintah, dan label periksa fakta di platform. Klaim viral biasanya sudah diperiksa: cari judul klaimnya ditambah kata cek fakta.", "hold": 1.0, "start": 306.05, "speech": 306.05, "audio": 24.55, "dur": 26.55}, {"id": "q3", "seg": 4, "scene": "quiz", "quiz": "q3", "text": "Cek pemahaman. Pesan viral: air rebusan daun tertentu menyembuhkan diabetes. Langkah paling cepat: tanya di grup, cari judul klaim ditambah cek fakta, atau coba sendiri? Pikirkan dulu.", "hold": 4.0, "start": 332.6, "speech": 332.6, "audio": 17.675, "dur": 22.675}, {"id": "q3a", "seg": 4, "scene": "quiz_answer", "quiz": "q3", "text": "Jawabannya: cari judul klaimnya ditambah kata cek fakta. Klaim viral hampir selalu sudah diperiksa oleh pemeriksa fakta.", "hold": 1.0, "start": 355.275, "speech": 355.275, "audio": 11.425, "dur": 13.425}, {"id": "s4a", "seg": 5, "scene": "telusuri_klaim", "text": "Menelusuri klaim ke sumber asli. Artikel berkata: menurut penelitian universitas X. Cari penelitiannya. Sering ternyata penelitian itu tentang hal lain, sampelnya sepuluh tikus, atau tidak pernah ada. Kutipan tanpa tautan adalah tanda bahaya.", "hold": 1.0, "start": 368.7, "speech": 368.7, "audio": 21.425, "dur": 23.425}, {"id": "s4b", "seg": 5, "scene": "tanda_bahaya", "text": "Tanda bahaya lain: alamat situs yang meniru media besar dengan satu huruf berbeda, tanggal artikel yang tidak ada, penulis tanpa nama, dan desakan untuk membagikan sekarang. Satu tanda saja cukup untuk membuka tab baru.", "hold": 1.0, "start": 392.125, "speech": 392.125, "audio": 22.05, "dur": 24.05}, {"id": "q4", "seg": 5, "scene": "quiz", "quiz": "q4", "text": "Cek pemahaman. Artikel menyebut menurut penelitian universitas ternama, tanpa tautan dan tanpa nama peneliti. Sikap yang tepat: percaya karena universitasnya ternama, cari penelitiannya dulu, atau bagikan dengan catatan? Pikirkan dulu.", "hold": 4.0, "start": 416.175, "speech": 416.175, "audio": 19.55, "dur": 24.55}, {"id": "q4a", "seg": 5, "scene": "quiz_answer", "quiz": "q4", "text": "Jawabannya: cari penelitiannya dulu. Nama lembaga besar sering dipinjam tanpa izin; yang dicek adalah sumber aslinya.", "hold": 1.0, "start": 440.725, "speech": 440.725, "audio": 10.8, "dur": 12.8}, {"id": "s5a", "seg": 6, "scene": "konten_negatif", "text": "Menyaring konten negatif: ujaran kebencian, perundungan, pornografi, ajakan kekerasan, penipuan. Empat langkah: kenali tandanya, jangan sebarkan walau untuk mengecam, laporkan lewat tombol lapor di platform atau kanal resmi, lalu blokir.", "hold": 1.0, "start": 453.525, "speech": 453.525, "audio": 19.55, "dur": 21.55}, {"id": "s5b", "seg": 6, "scene": "atur_umpan", "text": "Umpanmu juga bisa diatur: tandai tidak tertarik, berhenti mengikuti akun yang memancing emosi, dan nyalakan penyaring konten sensitif. Algoritma mengikuti yang kamu klik; beri ia sinyal yang kamu mau.", "hold": 1.0, "start": 475.075, "speech": 475.075, "audio": 18.925, "dur": 20.925}, {"id": "s6a", "seg": 7, "scene": "make_show", "text": "Sekarang giliranmu. Di halaman latihan: susun kueri pencarian dengan operator yang tepat; jalani simulasi membaca lateral dengan tab-tab fiktif sampai menemukan siapa pemilik situsnya; lalu pilah konten dan tentukan tindakannya.", "hold": 1.0, "start": 496.0, "speech": 496.0, "audio": 19.55, "dur": 21.55}, {"id": "s6b", "seg": 7, "scene": "make_show", "text": "Lalu praktik sungguhan: ambil satu klaim viral minggu ini, baca lateral, dan tulis dalam tiga kalimat siapa sumbernya, apa kata pemeriksa fakta, dan kesimpulanmu.", "hold": 1.0, "start": 517.55, "speech": 517.55, "audio": 15.8, "dur": 17.8}, {"id": "recap", "seg": 7, "scene": "recap", "text": "Tiga hal untuk diingat. Satu: pencarian tajam dengan tanda kutip, minus, site titik dua, filter waktu, dan gambar terbalik. Dua: membaca lateral: tinggalkan halaman, cari siapa di baliknya. Tiga: konten negatif: kenali, jangan sebar, lapor, blokir.", "hold": 1.5, "start": 535.35, "speech": 535.35, "audio": 23.3, "dur": 25.8}, {"id": "outro", "seg": 7, "scene": "outro", "text": "Sampai jumpa di semester dua dengan episode berikutnya: struktur data standar. Larik, rekaman, tumpukan, dan antrean, dipakai di dalam program. Sampai jumpa!", "hold": 1.0, "start": 561.15, "speech": 561.15, "audio": 14.55, "dur": 16.55}], "total": 577.7} });
+  const { $, progress, save } = P; progress.levels = progress.levels || {};
+  const QT = [
+    { goal: "Hasil tentang beasiswa hanya dari situs pemerintah (.go.id).", toks: ["beasiswa", "site:go.id", "-gratis", "\"beasiswa\""], need: ["beasiswa", "site:go.id"], hint: "Pakai kata kuncinya, lalu operator yang membatasi domain." },
+    { goal: "Cari hewan jaguar, bukan mobil jaguar.", toks: ["jaguar", "-mobil", "site:go.id", "\"mobil\""], need: ["jaguar", "-mobil"], hint: "Buang kata yang mengganggu dengan tanda minus." },
+    { goal: "Frasa persis 'jadwal ujian nasional 2027', dari setahun terakhir.", toks: ["\"jadwal ujian nasional 2027\"", "jadwal ujian", "⏱ setahun terakhir", "-2027"], need: ["\"jadwal ujian nasional 2027\"", "⏱ setahun terakhir"], hint: "Tanda kutip untuk frasa persis, lalu filter waktu." },
+    { goal: "Cari tahu di mana lagi sebuah foto viral pernah muncul.", toks: ["📷 gambar terbalik", "\"foto viral\"", "site:go.id", "-lama"], need: ["📷 gambar terbalik"], hint: "Untuk gambar, bukan kata kunci: unggah fotonya ke pencarian gambar." }];
+  const TABS = [
+    { t: "Artikel", url: "sehatnusantara-info.example/artikel", html: `<h4>Vaksin X Terbukti Berbahaya, Kata Dewan Pakar</h4><div class="url">oleh Tim Redaksi · tanpa tanggal</div><p>Artikel panjang dengan logo lembaga, banyak kutipan, dan tombol BAGIKAN SEKARANG. Halaman "Tentang kami" menyebut dewan pakar.</p>` },
+    { t: "Tentang kami", url: "sehatnusantara-info.example/tentang", html: `<h4>Tentang Institut Sehat Nusantara</h4><p>"Lembaga independen dengan dewan pakar internasional." Tidak ada nama, alamat, atau nomor telepon.</p>` },
+    { t: "🔍 siapa pemilik situs", url: "cari.example/?q=siapa+pemilik+sehatnusantara-info", html: `<div class="res"><b>Situs sehatnusantara-info dimiliki PT Suplemen Jaya</b><small>cekmedia.example · tahun lalu</small></div><div class="res"><b>Dewan pakar yang tidak pernah ada</b><small>jurnalisme.example</small></div>` },
+    { t: "🔍 vaksin X site:go.id", url: "cari.example/?q=vaksin+X+site:go.id", html: `<div class="res"><b>Lembaga kesehatan: vaksin X aman dan telah diuji</b><small>kesehatan.go.id (fiktif)</small></div><div class="res"><b>Tanya jawab resmi tentang vaksin X</b><small>kesehatan.go.id (fiktif)</small></div>` },
+    { t: "🔍 klaim + cek fakta", url: "cari.example/?q=vaksin+X+berbahaya+cek+fakta", html: `<div class="res"><b>[SALAH] Klaim vaksin X berbahaya dari situs penjual suplemen</b><small>pemeriksafakta.example</small></div>` }];
+  const LQ = [
+    ["Kamu baru membuka tab Artikel. Langkah pertama membaca lateral?", ["Bagikan dulu supaya teman ikut menilai", "Berhenti: jangan percaya atau membagikan dulu", "Baca halaman 'Tentang kami' sampai habis"], 1, "Berhenti dulu. Halaman itu sendiri belum bisa dipercaya."],
+    ["Tab mana yang membantu menjawab 'siapa di balik situs ini'?", ["Tentang kami", "🔍 siapa pemilik situs", "Artikel"], 1, "Halaman 'Tentang kami' ditulis oleh situs itu sendiri; sumber lain yang menilainya."],
+    ["Dari tab pencarian, siapa pemilik situsnya?", ["Lembaga kesehatan pemerintah", "PT Suplemen Jaya", "Dewan pakar internasional"], 1, "Buka tab 🔍 siapa pemilik situs dan baca hasil pertamanya."],
+    ["Apa kata sumber resmi dan pemeriksa fakta?", ["Vaksin X berbahaya", "Vaksin X aman; klaim itu dinilai SALAH", "Belum ada yang memeriksa"], 1, "Lihat tab site:go.id dan tab cek fakta."],
+    ["Kesimpulanmu tentang artikel itu?", ["Dipercaya: tampilannya rapi", "Tidak dipercaya: pemiliknya penjual suplemen dan sumber resmi berkata sebaliknya", "Ragu, bagikan dengan catatan"], 1, "Dua menit membaca lateral: siapa di baliknya, apa kata sumber lain."]];
+  const CONTENT = [
+    ["Komentar yang mengejek warna kulit seorang teman", "lapor", "Ujaran kebencian: laporkan dan blokir, jangan dibalas di depan umum."],
+    ["Pesan berantai 'bagikan ke 10 grup atau akunmu diblokir'", "abaikan", "Hoaks berantai: jangan sebarkan; cukup abaikan atau beri tahu pengirimnya."],
+    ["Video kekerasan yang viral, teman memintamu meneruskannya 'biar orang tahu'", "jangan", "Meneruskan tetap menyebarkan. Laporkan ke platform bila perlu, jangan diteruskan."],
+    ["Akun tak dikenal terus mengirim pesan tidak pantas", "blokir", "Blokir dan laporkan; simpan bukti bila perlu untuk orang dewasa yang dipercaya."],
+    ["Unggahan menuduh seseorang tanpa bukti, memintamu ikut mengecam", "jangan", "Mengecam dengan membagikan tetap menyebarkan tuduhan; cek dulu, jangan sebar."],
+    ["Iklan 'investasi untung 50% per minggu' dari akun baru", "lapor", "Ciri penipuan: laporkan sebagai penipuan, jangan klik."]];
+  const ACTS = [["abaikan", "Abaikan"], ["jangan", "Jangan sebarkan"], ["lapor", "Laporkan"], ["blokir", "Blokir"]];
+  const LEVELS = [
+    { id: "kueri", name: "1 Susun kueri", kind: "query", task: "Empat tugas pencarian. Ketuk potongan kueri yang dibutuhkan (boleh lebih dari satu), lalu Periksa." },
+    { id: "lateral", name: "2 Simulasi membaca lateral", kind: "lateral", task: "Peramban fiktif dengan lima tab. Buka tab-tab itu, lalu jawab lima pertanyaan." },
+    { id: "pilah", name: "3 Pilah konten", kind: "sort", task: "Enam situasi. Pilih tindakan yang paling tepat untuk masing-masing, lalu Periksa." }];
+  let L = 0, qi = 0, picked = new Set(), tab = 0, pick = {};
+  const level = () => LEVELS[L];
+  function setResult(kind, msg) { $("result").innerHTML = msg ? `<div class="result ${kind}">${msg}</div>` : ""; }
+  function done(extra) { progress.levels[level().id] = true; save(); renderLevels(); setResult("good", `Latihan ${level().name} selesai! ` + (extra || "")); }
+  function wrong(hint) { setResult("bad", "Belum tepat. Petunjuk: " + hint); }
+  function renderQuery() {
+    const area = $("exarea"); if (qi >= QT.length) { area.innerHTML = `<div class="qtext">Empat kueri tersusun.</div>`; return; }
+    const q = QT[qi];
+    area.innerHTML = `<div class="qnum">Tugas ${qi + 1} dari ${QT.length}</div><div class="ex">${q.goal}</div><div class="q" id="q">🔍 ${[...picked].map(t => `<span class="tok">${t}</span>`).join(" ") || "<span style='color:var(--ink2)'>kueri kosong</span>"}</div><div class="toks" id="toks"></div><div class="row"><button class="warm" id="check">Periksa</button></div>`;
+    q.toks.forEach(t => { const b = document.createElement("button"); b.textContent = t; b.setAttribute("aria-pressed", picked.has(t)); b.addEventListener("click", () => { if (picked.has(t)) picked.delete(t); else picked.add(t); setResult(); renderQuery(); }); $("toks").appendChild(b); });
+    $("check").addEventListener("click", () => { const ok = q.need.every(t => picked.has(t)) && [...picked].every(t => q.need.includes(t)); if (ok) { setResult("good", "Tepat: " + [...q.need].join(" ")); qi++; picked = new Set(); setTimeout(() => { setResult(); if (qi >= QT.length) done("Kutip, minus, site:, waktu, gambar terbalik."); else renderQuery(); }, 1400); } else wrong(q.hint + (picked.size > q.need.length ? " Ada potongan yang tidak perlu." : "")); });
+  }
+  function renderLateral() {
+    const area = $("exarea");
+    area.innerHTML = `<div class="tabs" id="tabs"></div><div class="page" id="page"></div><div id="qs"></div>`;
+    const drawTabs = () => { const el = $("tabs"); el.innerHTML = ""; TABS.forEach((t, i) => { const b = document.createElement("button"); b.textContent = t.t; b.setAttribute("aria-pressed", i === tab); b.addEventListener("click", () => { tab = i; drawTabs(); }); el.appendChild(b); }); $("page").innerHTML = `<div class="url">🔒 ${TABS[tab].url}</div>` + TABS[tab].html; };
+    drawTabs();
+    const renderQ = () => { const q = $("qs"); if (qi >= LQ.length) { q.innerHTML = ""; return; } const [t, opts, a, why] = LQ[qi]; q.innerHTML = `<div class="qnum">Pertanyaan ${qi + 1} dari ${LQ.length}</div><div class="ex">${t}</div><div class="opts" id="opts"></div>`; opts.forEach((o, i) => { const b = document.createElement("button"); b.textContent = o; b.addEventListener("click", () => { if (i === a) { b.classList.add("right"); [...q.querySelectorAll("#opts button")].forEach(x => x.disabled = true); setResult("good", "Tepat. " + why); qi++; setTimeout(() => { setResult(); if (qi >= LQ.length) done("Berhenti, tab baru, telusuri klaim."); renderQ(); }, 1600); } else { b.classList.add("wrong"); wrong(why); } }); q.querySelector("#opts").appendChild(b); }); };
+    renderQ();
+  }
+  function renderSort() {
+    const area = $("exarea"); area.innerHTML = `<div class="rows" id="rows"></div><div class="row"><button class="warm" id="check">Periksa</button></div>`;
+    CONTENT.forEach(([t], i) => { const d = document.createElement("div"); d.className = "rw"; d.dataset.i = i; d.innerHTML = `<span>${t}</span>`; const s = document.createElement("select"); s.innerHTML = `<option value="">tindakan…</option>` + ACTS.map(([v, lab]) => `<option value="${v}" ${pick[i] === v ? "selected" : ""}>${lab}</option>`).join(""); s.addEventListener("change", () => { pick[i] = s.value; d.classList.remove("ok", "bad"); setResult(); }); d.appendChild(s); $("rows").appendChild(d); });
+    $("check").addEventListener("click", () => { let empty = 0, bad = null; CONTENT.forEach(([t, k], i) => { const d = area.querySelector(`[data-i="${i}"]`); if (!pick[i]) { empty++; d.classList.remove("ok", "bad"); return; } const ok = pick[i] === k; d.classList.toggle("ok", ok); d.classList.toggle("bad", !ok); if (!ok && bad == null) bad = i; }); if (empty) { setResult("info", `Masih ada ${empty} situasi yang belum dipilih.`); return; } if (bad == null) done("Kenali, jangan sebar, lapor, blokir."); else wrong(`"${CONTENT[bad][0]}": ` + CONTENT[bad][2]); });
+  }
+  function loadLevel(i) { L = i; qi = 0; picked = new Set(); tab = 0; pick = {}; $("task").textContent = level().task; setResult(); renderLevels(); ({ query: renderQuery, lateral: renderLateral, sort: renderSort })[level().kind](); }
+  function renderLevels() { const el = $("levels"); el.innerHTML = ""; LEVELS.forEach((lv, i) => { const b = document.createElement("button"); b.textContent = lv.name; b.className = progress.levels[lv.id] ? "done" : ""; b.setAttribute("aria-pressed", i === L); b.addEventListener("click", () => loadLevel(i)); el.appendChild(b); }); }
+  $("redo").addEventListener("click", () => { progress.levels[level().id] = false; save(); loadLevel(L); });
+  P.onProgress(el => LEVELS.forEach(lv => { const s = document.createElement("span"); s.textContent = "Latihan " + lv.name.slice(0, 1); s.className = progress.levels[lv.id] ? "ok" : ""; el.appendChild(s); }));
+  loadLevel(0);
+})();
+</script>
