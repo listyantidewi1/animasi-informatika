@@ -55,8 +55,35 @@ def pick_voice(name_or_id, auth):
         if v["voice_id"] == name_or_id: return v
     hits = [v for v in vs if name_or_id.lower() in v["name"].lower()]
     if len(hits) == 1: return hits[0]
-    if not hits: raise SystemExit(f"Suara '{name_or_id}' tidak ditemukan. Lihat --daftar.")
+    if not hits: raise SystemExit(f"Suara '{name_or_id}' tidak ditemukan di akun ini. Lihat --daftar; suara dari perpustakaan harus ditambahkan dulu ke 'My Voices'.")
     raise SystemExit("Nama cocok dengan beberapa suara, pakai ID-nya: " + ", ".join(f"{v['name']} = {v['voice_id']}" for v in hits))
+
+def pick_model(ref):
+    """Model dicari di /v1/models: cocok ID persis, atau namanya memuat teks (mis. "v4" -> "Eleven v4"). Hanya model TTS."""
+    ms = [m for m in call("GET", "/models") if m.get("can_do_text_to_speech", True)]
+    for m in ms:
+        if m["model_id"] == ref: return m
+    hits = [m for m in ms if ref.lower().replace("eleven_", "").replace("_", " ") in m.get("name", "").lower() or ref.lower() in m["model_id"].lower()]
+    if len(hits) == 1: return hits[0]
+    daftar = "\n".join(f"  {m['model_id']:28} {m.get('name', '')}" + ("  (Indonesia)" if any(l.get("language_id") == "id" for l in m.get("languages", [])) else "") for m in ms)
+    raise SystemExit((f"Model '{ref}' tidak jelas ({len(hits)} cocok)." if hits else f"Model '{ref}' tidak ada.") + " Model TTS yang tersedia:\n" + daftar)
+
+def tts(voice_id, body):
+    """Kirim permintaan; bila model menolak pengaturan opsional (400), coba lagi tanpa speed/style, lalu tanpa konteks."""
+    attempts = [body,
+                {**body, "voice_settings": {"stability": body["voice_settings"]["stability"]}},
+                {k: v for k, v in body.items() if k not in ("previous_text", "next_text", "voice_settings")}]
+    last = None
+    for i, b in enumerate(attempts):
+        try:
+            audio = call("POST", f"/text-to-speech/{voice_id}?output_format=mp3_44100_128", b, raw=True)
+            if i and not tts.noted: print(f"  (catatan: model ini menolak sebagian pengaturan; dikirim tanpa {'speed/style/similarity' if i == 1 else 'speed/style/similarity dan konteks antarbeat'})"); tts.noted = True
+            return audio
+        except SystemExit as e:
+            last = e
+            if "(400)" not in str(e) or i == len(attempts) - 1: raise
+    raise last
+tts.noted = False
 
 def main():
     ap = argparse.ArgumentParser(add_help=False)
@@ -87,11 +114,12 @@ def main():
         for b in todo: print(f"  {b['id']:8} {len(b['text']):4} kar  {b['text'][:70]}")
         if not todo: print("Semua MP3 sudah ada. Pakai --ulang <id> untuk membuat ulang.")
         return
-    voice_ref = a.voice or cfg.get("voice_id")
+    voice_ref = a.voice or cfg.get("voice_id") or cfg.get("voice_name")
     if not voice_ref: raise SystemExit("Sebut suaranya: --voice \"Nama atau ID\" (lihat --daftar). Pilihan tersimpan di tts-kit/suara.json untuk lain kali.")
     v = pick_voice(voice_ref, auth=True); cfg["voice_id"] = v["voice_id"]; cfg["voice_name"] = v["name"]
+    m = pick_model(cfg["model"]); cfg["model"] = m["model_id"]; cfg["model_name"] = m.get("name", "")
     E.save_json(cfg, cfg_path)
-    print(f"suara: {v['name']} ({v['voice_id']}) -> {out_dir}")
+    print(f"suara: {v['name']} ({v['voice_id']}), model: {cfg['model_name']} ({cfg['model']}) -> {out_dir}")
     for b in todo:
         i = ids.index(b["id"])
         body = {"text": b["text"], "model_id": cfg["model"],
@@ -99,7 +127,7 @@ def main():
                 "previous_text": beats[i - 1]["text"] if i > 0 else None, "next_text": beats[i + 1]["text"] if i + 1 < len(beats) else None}
         if cfg["model"] in LANG_CODE_MODELS: body["language_code"] = "id"
         body = {k: val for k, val in body.items() if val is not None}
-        audio = call("POST", f"/text-to-speech/{v['voice_id']}?output_format=mp3_44100_128", body, raw=True)
+        audio = tts(v["voice_id"], body)
         tmp = os.path.join(out_dir, b["id"] + ".tmp"); open(tmp, "wb").write(audio); os.replace(tmp, os.path.join(out_dir, b["id"] + ".mp3"))
         print(f"  ok {b['id']} ({len(audio) // 1024} KB)", flush=True)
     print(f"Selesai. Lanjut: python3 episodes/_alat/voice.py {script['episode']}  (nada {cfg['pitch']} dari tts-kit/suara.json)")
