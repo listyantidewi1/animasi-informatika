@@ -1,0 +1,168 @@
+<title>Kiko: Von Neumann</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<style>
+__PAGE_CSS__
+/* latihan E.1 */
+.qnum { font-weight: 800; color: var(--ink2); font-size: 14px; margin-bottom: 4px }
+.qtext { font-weight: 800; font-size: 18px; margin-bottom: 8px }
+.ex { background: var(--surface2); border-radius: 12px; padding: 12px 14px; font-weight: 800; font-size: 17px; margin: 8px 0 }
+.opts { display: grid; gap: 8px; margin: 8px 0 }
+.opts button { text-align: left; font-size: 15px; min-height: 44px; padding: 10px 12px; background: var(--surface); border: 2px solid var(--line) }
+.opts button.right { border-color: var(--good); background: var(--good-bg) } .opts button.wrong { border-color: var(--bad); background: var(--bad-bg) }
+.sim { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin: 8px 0 }
+.regs { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; grid-column: 1 / -1 }
+.reg { background: var(--surface); border: 2px solid var(--line); border-radius: 10px; padding: 6px; text-align: center } .reg b { display: block; font-size: 12px; color: var(--ink2) } .reg span { font-size: 20px; font-weight: 900 } .reg.hl { border-color: var(--accent); background: #FFF3D6 }
+.mem { background: var(--surface); border: 2px solid var(--line); border-radius: 10px; padding: 6px; font-family: ui-monospace, monospace; font-size: 13px; line-height: 1.5 }
+.mem div { display: flex; gap: 6px; padding: 0 4px; border-radius: 4px } .mem div i { width: 22px; color: var(--ink2); font-style: normal; text-align: right } .mem div.prog { background: #EDE6F7 } .mem div.data { background: var(--good-bg) } .mem div.hl { outline: 2px solid var(--accent) } .mem div.pc i::after { content: "▸"; color: var(--accent) }
+.mem input { width: 48px; font: inherit; font-weight: 900; border: 1px solid var(--line); border-radius: 4px; padding: 0 4px }
+.panel { background: var(--surface); border: 2px solid var(--line); border-radius: 10px; padding: 8px; display: grid; gap: 6px; align-content: start }
+.panel .phase { font-weight: 900; font-size: 14px; color: var(--accent) } .panel .screen { background: #1F2A33; color: #fff; border-radius: 8px; min-height: 56px; display: grid; place-items: center; font-size: 28px; font-weight: 900 }
+.panel .note { font-size: 13px; color: var(--ink2); font-weight: 700 }
+.prog { display: grid; gap: 6px; margin: 8px 0 } .prog .row { display: flex; align-items: center; gap: 6px; background: var(--surface); border: 2px solid var(--line); border-radius: 10px; padding: 6px 8px; font-weight: 800 } .prog .row i { width: 22px; font-style: normal; color: var(--ink2) } .prog select { font: inherit; font-weight: 800; min-height: 40px; border-radius: 8px; border: 2px solid var(--line); background: var(--surface2); flex: 1 }
+.prog .row.ok { border-color: var(--good); background: var(--good-bg) } .prog .row.bad { border-color: var(--bad); background: var(--bad-bg) }
+</style>
+
+<div class="wrap">
+  <header>
+    <div class="eyebrow">Informatika · Fase E · Kelas X · Episode E.1</div>
+    <h1>Komputer Von Neumann: Simulasi Input–Proses–Output</h1>
+    <p class="hint">Tonton videonya (dua bagian), lalu jalankan simulator komputer mini di bawahnya. Prasyarat: episode D7.2 dan E.0. Suara bisa dimatikan; teks selalu tampil di layar.</p>
+  </header>
+  <section class="card player" aria-label="Pemutar episode">
+    <div class="stage">
+      <canvas id="screen" width="1920" height="1080" aria-label="Animasi episode"></canvas>
+      <audio id="nar" preload="auto" src="narasi.mp3"></audio>
+      <button class="bigplay" id="bigplay" aria-label="Putar"><span>▶ Putar episode</span></button>
+    </div>
+    <div class="bar" id="bar" role="slider" aria-label="Posisi episode" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" tabindex="0"><i id="barfill"></i></div>
+    <div class="row">
+      <button class="primary" id="playbtn">▶ Putar</button>
+      <button id="replay">↺ Ulangi bagian ini</button>
+      <button id="voice" aria-pressed="true">🔊 Suara: nyala</button>
+      <button id="slow" aria-pressed="false">🐢 Mode lambat</button>
+      <span class="hint" id="timelabel">0:00 / 0:00</span>
+    </div>
+    <div>
+      <div class="eyebrow">Bagian</div>
+      <div class="chapters" id="chapters"></div>
+    </div>
+  </section>
+
+  <section class="card" aria-label="Cek pemahaman">
+    <h2>Cek pemahaman</h2>
+    <p class="hint">Pilih satu jawaban. Kalau salah, kamu dapat petunjuk, lalu coba lagi.</p>
+    <div class="quiz" id="quiz"></div>
+  </section>
+
+  <section class="card" aria-label="Latihan">
+    <h2>Simulator komputer mini</h2>
+    <p class="hint">Tiga latihan dengan simulator yang sama. Jawaban salah memberi petunjuk, bukan nilai.</p>
+    <div class="levels" id="levels"></div>
+    <div class="task" id="task"></div>
+    <div id="exarea"></div>
+    <div id="result"></div>
+    <div class="row" style="margin-top:10px"><button id="redo">↺ Ulangi latihan ini</button></div>
+  </section>
+
+  <section class="card" aria-label="Kemajuan">
+    <h2>Kemajuanmu</h2>
+    <div class="progress" id="progress"></div>
+    <p class="hint" style="margin-top:8px">Kemajuan tersimpan di perangkat ini saja.</p>
+  </section>
+
+  <section class="card">
+    <details>
+      <summary>Untuk guru: cara memakai episode ini (10 JP)</summary>
+      <p><b>Tujuan pembelajaran (E.1):</b> murid memahami model Von Neumann (unit kendali, ALU, register, memori, masukan/keluaran, bus) dan menyimulasikan siklus ambil, terjemahkan, jalankan (fetch, decode, execute). Elemen BK, Fase E. Komputer mini di sini memakai enam instruksi: MUAT, TAMBAH, KURANG, SIMPAN, KELUAR, BERHENTI, dengan satu akumulator (AKU), PC, IR, dan memori 16 sel.</p>
+      <ul class="plain">
+        <li><b>Pertemuan 1 (2 JP), konkret:</b> permainan komputer manusia lima peran dengan kartu 0–15 (program di kartu 0–4, data di 10–11). Tonton Bagian 1 sampai segmen Lima bagian. Murid menggambar diagram lima bagian dengan kata-kata sendiri.</li>
+        <li><b>Pertemuan 2 (2 JP), siklus mesin:</b> tonton segmen Siklus mesin. Di kertas, murid menelusuri siklus pertama (PC, IR, AKU) lalu membandingkan dengan Latihan 1 di simulator: tebak dulu, baru tekan Langkah.</li>
+        <li><b>Pertemuan 3 (2 JP), program lima instruksi:</b> tonton Bagian 2 sampai segmen Simpan, keluar, ganti data. Latihan 1 selesai sampai BERHENTI; Latihan 2 mengubah data untuk target keluaran. Diskusi: mengapa program tidak perlu diubah?</li>
+        <li><b>Pertemuan 4 (2 JP), program sendiri:</b> Latihan 3 menyusun program pengurang. Pengayaan: program yang menambah tiga angka (butuh dua TAMBAH), lalu menelusuri jumlah siklusnya.</li>
+        <li><b>Pertemuan 5 (2 JP), bus, detak, perangkat nyata:</b> tonton segmen terakhir. Murid membuka (atau melihat foto) bagian dalam komputer lab atau HP bekas: menunjuk CPU, RAM, penyimpanan, masukan, keluaran. Asesmen: lembar penelusuran satu program baru per murid (tabel PC, IR, AKU, memori, layar tiap siklus).</li>
+      </ul>
+      <p><b>Target minimum:</b> menyebut lima bagian, menjelaskan tiga langkah siklus, dan menelusuri program lima instruksi dengan benar. <b>Pengayaan:</b> menjelaskan mengapa bus menjadi "leher botol" dan apa arti 3 GHz.</p>
+    </details>
+  </section>
+</div>
+
+<script>__ENGINE__</script>
+<script>__PAGE_JS__</script>
+<script>
+(function () {
+  const P = PageCore({ suara: __TIMELINE__, teks: __TIMELINE_TEKS__ });
+  const { $, progress, save } = P; progress.levels = progress.levels || {};
+  const OPS = { MUAT: "salin isi alamat ke AKU", TAMBAH: "AKU + isi alamat → AKU", KURANG: "AKU − isi alamat → AKU", SIMPAN: "AKU → alamat", KELUAR: "isi alamat → layar", BERHENTI: "selesai" };
+  const PROG = ["MUAT 10", "TAMBAH 11", "SIMPAN 12", "KELUAR 12", "BERHENTI"];
+  function newMachine(prog, a, b) { const mem = new Array(16).fill(""); prog.forEach((p, i) => mem[i] = p); mem[10] = a; mem[11] = b; return { pc: 0, ir: "", aku: "", mem, out: "", halted: false, phase: 0, hl: {}, cycles: 0, err: "" }; }
+  function step(m) {
+    if (m.halted || m.err) return;
+    if (m.phase === 0) { const ins = m.mem[m.pc]; if (typeof ins !== "string" || !ins) { m.err = "Alamat " + m.pc + " tidak berisi instruksi. Program harus diakhiri BERHENTI."; return; } m.ir = ins; m.hl = { pc: 1, ir: 1, mem: m.pc }; m.phase = 1; return; }
+    if (m.phase === 1) { m.hl = { ir: 1, ctrl: 1 }; m.phase = 2; return; }
+    const [op, as] = m.ir.split(" "); const a = +as;
+    m.hl = {};
+    if (op === "MUAT") { m.aku = +m.mem[a] || 0; m.hl = { mem: a, aku: 1 }; }
+    else if (op === "TAMBAH") { m.aku = (+m.aku || 0) + (+m.mem[a] || 0); m.hl = { mem: a, aku: 1, alu: 1 }; }
+    else if (op === "KURANG") { m.aku = (+m.aku || 0) - (+m.mem[a] || 0); m.hl = { mem: a, aku: 1, alu: 1 }; }
+    else if (op === "SIMPAN") { m.mem[a] = +m.aku || 0; m.hl = { mem: a, aku: 1 }; }
+    else if (op === "KELUAR") { m.out = m.mem[a]; m.hl = { mem: a, out: 1 }; }
+    else if (op === "BERHENTI") { m.halted = true; m.hl = { ctrl: 1 }; }
+    if (!m.halted) m.pc += 1; m.phase = 0; m.cycles += 1;
+  }
+  function runAll(m) { for (let i = 0; i < 60 && !m.halted && !m.err; i++) step(m); return m; }
+  const PH = ["siap: tekan Langkah", "1 AMBIL: isi alamat PC → IR", "2 TERJEMAHKAN: ", "3 JALANKAN"];
+  function renderSim(m, host, opt = {}) {
+    const phaseText = m.err ? "⚠ " + m.err : m.halted ? "BERHENTI: program selesai" : m.phase === 2 ? PH[2] + m.ir.split(" ")[0] + " = " + OPS[m.ir.split(" ")[0]] : m.phase === 1 ? "berikutnya: TERJEMAHKAN" : PH[0];
+    host.innerHTML = `<div class="sim"><div class="regs"><div class="reg ${m.hl.pc ? "hl" : ""}"><b>PC</b><span>${m.pc}</span></div><div class="reg ${m.hl.ir ? "hl" : ""}"><b>IR</b><span style="font-size:15px">${m.ir || "–"}</span></div><div class="reg ${m.hl.aku ? "hl" : ""}"><b>AKU</b><span>${m.aku === "" ? "–" : m.aku}</span></div></div><div class="mem" id="mem"></div><div class="panel"><div class="phase">${phaseText}</div><div class="screen ${m.hl.out ? "hl" : ""}">${m.out === "" ? "" : m.out}</div><div class="note">layar (keluaran) · siklus selesai: ${m.cycles}</div><div class="row"><button class="warm" id="stepbtn" ${m.halted || m.err ? "disabled" : ""}>▶ Langkah</button><button id="resetbtn">↺ Reset</button></div></div></div>`;
+    const memEl = host.querySelector("#mem");
+    for (let a = 0; a < 16; a++) { const d = document.createElement("div"); d.className = (a < 5 && typeof m.mem[a] === "string" && m.mem[a] ? "prog " : (a >= 10 && a <= 12) ? "data " : "") + (m.hl.mem === a ? "hl " : "") + (a === m.pc && !m.halted ? "pc" : ""); if (opt.editable && (a === 10 || a === 11) && m.cycles === 0 && m.phase === 0) { d.innerHTML = `<i>${a}</i>`; const inp = document.createElement("input"); inp.type = "number"; inp.value = m.mem[a]; inp.addEventListener("change", () => { m.mem[a] = +inp.value; opt.onEdit && opt.onEdit(); }); d.appendChild(inp); } else d.innerHTML = `<i>${a}</i><span>${m.mem[a] === "" ? "" : m.mem[a]}</span>`; memEl.appendChild(d); }
+    host.querySelector("#stepbtn").addEventListener("click", () => { step(m); opt.onStep && opt.onStep(m); renderSim(m, host, opt); });
+    host.querySelector("#resetbtn").addEventListener("click", () => { opt.onReset && opt.onReset(); });
+  }
+  const LEVELS = [
+    { id: "jalan", name: "1 Jalankan dan amati", kind: "watch", task: "Program lima instruksi, alamat 10 = 7 dan 11 = 5. Sebelum tiap Langkah, tebak PC dan AKU. Jalankan sampai BERHENTI, lalu jawab tiga pertanyaan." },
+    { id: "data", name: "2 Ubah datanya", kind: "data", task: "Program tidak boleh diubah. Isi alamat 10 dan 11 supaya layar menampilkan 20, lalu jalankan sampai BERHENTI." },
+    { id: "susun", name: "3 Susun program", kind: "build", task: "Alamat 10 = 9, alamat 11 = 4. Pilih lima instruksi supaya layar menampilkan 5 (sembilan dikurangi empat), lalu jalankan." }];
+  let L = 0, m = null, qi = 0;
+  const level = () => LEVELS[L];
+  function setResult(kind, msg) { $("result").innerHTML = msg ? `<div class="result ${kind}">${msg}</div>` : ""; }
+  function done(extra) { progress.levels[level().id] = true; save(); renderLevels(); setResult("good", `Latihan ${level().name} selesai! ` + (extra || "")); }
+  function wrong(hint) { setResult("bad", "Belum tepat. Petunjuk: " + hint); }
+  const WATCHQ = [["Setelah siklus 1 (MUAT 10), berapa isi AKU?", ["5", "7", "12"], 1, "MUAT menyalin isi alamat 10 ke AKU."], ["Setelah siklus 2 (TAMBAH 11), berapa isi PC?", ["1", "2", "11"], 1, "PC naik satu setelah tiap instruksi; dua instruksi selesai berarti PC = 2."], ["Instruksi mana yang mengirim angka ke layar?", ["SIMPAN 12", "KELUAR 12", "BERHENTI"], 1, "SIMPAN menulis ke memori; yang ke layar adalah KELUAR."]];
+  function renderWatch() {
+    const area = $("exarea"); if (!m) m = newMachine(PROG, 7, 5);
+    area.innerHTML = `<div id="sim"></div><div id="qs"></div>`;
+    const draw = () => renderSim(m, area.querySelector("#sim"), { onStep: () => { if (m.halted) renderQs(); }, onReset: () => { m = newMachine(PROG, 7, 5); qi = 0; setResult(); renderWatch(); } });
+    const renderQs = () => { const q = area.querySelector("#qs"); if (qi >= WATCHQ.length) { q.innerHTML = ""; return; } const [t, opts, a, why] = WATCHQ[qi]; q.innerHTML = `<div class="qnum">Pertanyaan ${qi + 1} dari 3</div><div class="ex">${t}</div><div class="opts" id="opts"></div>`; opts.forEach((o, i) => { const b = document.createElement("button"); b.textContent = o; b.addEventListener("click", () => { if (i === a) { b.classList.add("right"); [...q.querySelectorAll("#opts button")].forEach(x => x.disabled = true); setResult("good", "Tepat. " + why); qi++; setTimeout(() => { setResult(); if (qi >= WATCHQ.length) { done("Ambil, terjemahkan, jalankan, PC naik satu: lima kali."); renderQs(); } else renderQs(); }, 1500); } else { b.classList.add("wrong"); wrong("Lihat lagi register di simulator (Reset lalu Langkah pelan-pelan). " + why); } }); q.querySelector("#opts").appendChild(b); }); };
+    draw(); if (m.halted) renderQs();
+  }
+  function renderData() {
+    const area = $("exarea"); if (!m) m = newMachine(PROG, 7, 5);
+    area.innerHTML = `<div class="qnum">Ubah angka di alamat 10 dan 11 (sebelum Langkah pertama), target layar: <b>20</b></div><div id="sim"></div>`;
+    const draw = () => renderSim(m, area.querySelector("#sim"), { editable: true, onEdit: () => setResult(), onStep: () => { if (m.halted) { if (+m.out === 20) done("Program tetap, data berubah, hasil berubah: " + m.mem[10] + " + " + m.mem[11] + " = 20."); else wrong("Layar menampilkan " + m.out + ", bukan 20. Program menjumlahkan isi alamat 10 dan 11; Reset lalu pilih dua angka yang jumlahnya 20."); } }, onReset: () => { const a = m.mem[10], b = m.mem[11]; m = newMachine(PROG, a, b); setResult(); renderData(); } });
+    draw();
+  }
+  const CHOICES = ["MUAT 10", "MUAT 11", "TAMBAH 11", "KURANG 11", "KURANG 10", "SIMPAN 12", "KELUAR 12", "KELUAR 10", "BERHENTI"];
+  let pick = ["", "", "", "", ""];
+  function renderBuild() {
+    const area = $("exarea");
+    let h = `<div class="prog" id="prog"></div><div class="row"><button class="warm" id="load">Masukkan ke memori dan jalankan</button></div><div id="sim"></div>`; area.innerHTML = h;
+    pick.forEach((v, i) => { const row = document.createElement("div"); row.className = "row"; row.innerHTML = `<i>${i}</i>`; const sel = document.createElement("select"); sel.innerHTML = `<option value="">pilih instruksi…</option>` + CHOICES.map(c => `<option ${c === v ? "selected" : ""}>${c}</option>`).join(""); sel.addEventListener("change", () => { pick[i] = sel.value; row.classList.remove("ok", "bad"); setResult(); }); row.appendChild(sel); area.querySelector("#prog").appendChild(row); });
+    area.querySelector("#load").addEventListener("click", () => {
+      if (pick.some(p => !p)) { setResult("info", "Isi kelima baris dulu."); return; }
+      m = newMachine(pick, 9, 4); runAll(m); renderSim(m, area.querySelector("#sim"), { onReset: () => { m = null; setResult(); renderBuild(); } });
+      const rows = [...area.querySelectorAll("#prog .row")];
+      if (m.err) { wrong(m.err); return; }
+      if (+m.out === 5 && m.halted) { rows.forEach(r => r.classList.add("ok")); done("MUAT 10, KURANG 11, SIMPAN 12, KELUAR 12, BERHENTI: 9 − 4 = 5."); return; }
+      const want = ["MUAT 10", "KURANG 11", "SIMPAN 12", "KELUAR 12", "BERHENTI"]; const fb = pick.findIndex((p, i) => p !== want[i]);
+      if (fb >= 0) rows[fb].classList.add("bad");
+      wrong((m.out === "" ? "Layar kosong: tidak ada KELUAR yang dijalankan sebelum BERHENTI. " : "Layar menampilkan " + m.out + ", bukan 5. ") + ["Mulai dengan memuat angka pertama (alamat 10) ke AKU.", "Baris kedua harus mengurangi AKU dengan isi alamat 11.", "Hasil di AKU perlu disimpan ke alamat 12 sebelum ditampilkan.", "KELUAR menampilkan isi alamat tempat hasil disimpan.", "Program harus diakhiri BERHENTI."][Math.max(0, fb)]);
+    });
+  }
+  function loadLevel(i) { L = i; m = null; qi = 0; pick = ["", "", "", "", ""]; $("task").textContent = level().task; setResult(); renderLevels(); ({ watch: renderWatch, data: renderData, build: renderBuild })[level().kind](); }
+  function renderLevels() { const el = $("levels"); el.innerHTML = ""; LEVELS.forEach((lv, i) => { const b = document.createElement("button"); b.textContent = lv.name; b.className = progress.levels[lv.id] ? "done" : ""; b.setAttribute("aria-pressed", i === L); b.addEventListener("click", () => loadLevel(i)); el.appendChild(b); }); }
+  $("redo").addEventListener("click", () => { progress.levels[level().id] = false; save(); loadLevel(L); });
+  P.onProgress(el => LEVELS.forEach(lv => { const s = document.createElement("span"); s.textContent = "Latihan " + lv.name.slice(0, 1); s.className = progress.levels[lv.id] ? "ok" : ""; el.appendChild(s); }));
+  loadLevel(0);
+})();
+</script>
