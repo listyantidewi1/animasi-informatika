@@ -36,4 +36,5 @@ Peta kurikulum, alur belajar, dan daftar 52 episode ada di dokumen "Kurikulum Se
 | D8.6 Proyek: Cek Data, Cek Fakta | ✓ | ✓ Kak Ceria | ✓ (2 bagian × 2 versi) | ✓ |
 | D9.0 Jembatan Kelas IX: Flowchart, Pseudocode, dan Tabel | ✓ | ✓ Kak Ceria | ✓ (1 bagian × 2 versi) | ✓ |
 | D9.1 Pseudocode Lengkap: Perulangan dan Data | ✓ | ✓ Kak Ceria | ✓ (2 bagian × 2 versi) | ✓ |
+| D9.2 Jaringan Lokal dan Internet | ✓ | ✓ Kak Ceria | ✓ (2 bagian × 2 versi) | ✓ |
 | D7.5 Instruksi untuk Manusia dan Mesin | ✓ | ✓ Kak Ceria | ✓ (2 bagian × 2 versi) | ✓ |
