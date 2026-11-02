@@ -1,4 +1,6 @@
-"""Render the episode to two YouTube-ready MP4s (1080p30, burnt-in text, silent audio track) plus SRT files."""
+"""Render the episode to two YouTube-ready MP4s (1080p30, burnt-in text, narration track) plus SRT files.
+python3 render.py            semua bagian;   python3 render.py D7.5a   satu bagian saja.
+Tambahkan --mux bila hanya suara/subtitel yang berubah: berkas segmen di video/ dipakai ulang, gambar tidak dirender ulang."""
 import json, os, base64, subprocess, sys
 from playwright.sync_api import sync_playwright
 
@@ -14,7 +16,8 @@ PARTS = {
     "D7.5a": {"t0": 0.0, "t1": SPLIT, "segs": [0, 1, 2, 3], "pre": None, "post": ("Lanjut ke Bagian 2: Tebak, Jalankan, Perbaiki", 3)},
     "D7.5b": {"t0": SPLIT, "t1": TL["total"], "segs": [4, 5, 6, 7], "pre": ("Bagian 2: Tebak, Jalankan, Perbaiki", 4), "post": None},
 }
-only = sys.argv[1:]  # optional part names
+MUX = "--mux" in sys.argv  # reuse the segment files already in video/: only join + narration + .srt
+only = [a for a in sys.argv[1:] if not a.startswith("--")]  # optional part names
 
 def enc(path):
     return subprocess.Popen(["ffmpeg", "-v", "error", "-y", "-f", "image2pipe", "-framerate", str(FPS), "-c:v", "mjpeg", "-i", "-",
@@ -38,22 +41,28 @@ with sync_playwright() as p:
         # optional opening card
         if part["pre"]:
             txt, secs = part["pre"]; tmp = os.path.join(OUT, f"{name}_pre.tmp.mp4"); final = tmp.replace(".tmp.mp4", ".mp4")
-            frame = base64.b64decode(pg.evaluate("a => window.__card(a[0], a[1])", [txt, part["segs"][0]]).split(",", 1)[1])
-            pr = enc(tmp)
-            for _ in range(secs * FPS): pr.stdin.write(frame)
-            finish(pr, tmp, final); files.append(final); offset += secs
+            if not MUX:
+                frame = base64.b64decode(pg.evaluate("a => window.__card(a[0], a[1])", [txt, part["segs"][0]]).split(",", 1)[1])
+                pr = enc(tmp)
+                for _ in range(secs * FPS): pr.stdin.write(frame)
+                finish(pr, tmp, final)
+            files.append(final); offset += secs
         # one file per segment
         for seg in part["segs"]:
             sb = [b for b in beats if b["seg"] == seg]
             t0, t1 = sb[0]["start"], sb[-1]["start"] + sb[-1]["dur"]
             n = int(round((t1 - t0) * FPS))
             tmp = os.path.join(OUT, f"{name}_seg{seg}.tmp.mp4"); final = tmp.replace(".tmp.mp4", ".mp4")
-            pr = enc(tmp)
-            for i in range(n):
-                t = t0 + i / FPS
-                data = pg.evaluate("t => window.__seek(t)", t)
-                pr.stdin.write(base64.b64decode(data.split(",", 1)[1]))
-            finish(pr, tmp, final); files.append(final)
+            if MUX:
+                if not os.path.exists(final): raise SystemExit(f"--mux: {final} belum ada; render dulu tanpa --mux")
+            else:
+                pr = enc(tmp)
+                for i in range(n):
+                    t = t0 + i / FPS
+                    data = pg.evaluate("t => window.__seek(t)", t)
+                    pr.stdin.write(base64.b64decode(data.split(",", 1)[1]))
+                finish(pr, tmp, final)
+            files.append(final)
             for b in sb:
                 s = offset + (b["start"] - t0); e = s + b["audio"] + 1.0
                 srt.append(f"{len(srt) + 1}\n{srt_time(s)} --> {srt_time(e)}\n{b['text']}\n")
@@ -61,10 +70,12 @@ with sync_playwright() as p:
             print(f"{name} seg{seg} done ({n} frames)", flush=True)
         if part["post"]:
             txt, secs = part["post"]; tmp = os.path.join(OUT, f"{name}_post.tmp.mp4"); final = tmp.replace(".tmp.mp4", ".mp4")
-            frame = base64.b64decode(pg.evaluate("a => window.__card(a[0], a[1])", [txt, part["segs"][-1]]).split(",", 1)[1])
-            pr = enc(tmp)
-            for _ in range(secs * FPS): pr.stdin.write(frame)
-            finish(pr, tmp, final); files.append(final)
+            if not MUX:
+                frame = base64.b64decode(pg.evaluate("a => window.__card(a[0], a[1])", [txt, part["segs"][-1]]).split(",", 1)[1])
+                pr = enc(tmp)
+                for _ in range(secs * FPS): pr.stdin.write(frame)
+                finish(pr, tmp, final)
+            files.append(final)
         # join + silent audio track
         lst = os.path.join(OUT, f"{name}_list.txt")
         open(lst, "w").write("".join(f"file '{f}'\n" for f in files))

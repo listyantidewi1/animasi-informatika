@@ -4,7 +4,7 @@ import json, subprocess, wave, os, re, sys
 ROOT = os.path.dirname(os.path.abspath(__file__))
 SRC = os.path.join(ROOT, "suara_in", "suara")
 OUT = os.path.join(ROOT, "audio"); os.makedirs(OUT, exist_ok=True)
-PITCH = float(sys.argv[1]) if len(sys.argv) > 1 else 1.07
+PITCH = float(sys.argv[1]) if len(sys.argv) > 1 else 1.18
 script = json.load(open(os.path.join(ROOT, "script.json")))
 RATE = 22050; LEAD = 0.4; WPS = 1.6
 
