@@ -1,7 +1,10 @@
 """Buat narasi per beat dengan ElevenLabs (API) langsung ke <episode>/suara_in/suara/<id>.mp3.
 
-Kunci API dibaca dari variabel lingkungan ELEVENLABS_API_KEY (di laptop: export dulu; di sesi cloud Claude Code: simpan
-sebagai secret lingkungan dengan nama itu). Kunci tidak pernah ditulis ke berkas mana pun.
+Kunci API, salah satu dari:
+  (a) sesi cloud Claude Code: secret jaringan lingkungan (Add secret): Allowed websites api.elevenlabs.io, Custom header
+      xi-api-key tanpa prefix. Proxy menyisipkan kuncinya ke tiap permintaan; skrip ini tidak pernah melihat kuncinya.
+  (b) laptop: export ELEVENLABS_API_KEY=...  (dikirim sebagai header xi-api-key).
+Kunci tidak pernah ditulis ke berkas mana pun.
 
   python3 episodes/_alat/suara_elevenlabs.py --daftar                      daftar suara (milik akun bila ada kunci)
   python3 episodes/_alat/suara_elevenlabs.py D7.0 --voice "Nama atau ID"   buat semua beat yang MP3-nya belum ada
@@ -20,16 +23,16 @@ import episode as E
 API = "https://api.elevenlabs.io/v1"
 LANG_CODE_MODELS = ("eleven_turbo_v2_5", "eleven_flash_v2_5")   # hanya model ini menerima language_code
 
+KUNCI_HELP = ("ElevenLabs menolak permintaan (401): kunci tidak terkirim atau salah. Di sesi cloud: tambahkan secret jaringan di "
+              "pengaturan lingkungan (Allowed websites: api.elevenlabs.io; Custom header: xi-api-key, prefix kosong, value = API key), "
+              "lalu mulai sesi baru. Di laptop: export ELEVENLABS_API_KEY=...")
+
 def key():
-    k = os.environ.get("ELEVENLABS_API_KEY", "").strip()
-    if not k:
-        raise SystemExit("ELEVENLABS_API_KEY belum ada. Di laptop: export ELEVENLABS_API_KEY=...  Di sesi cloud: simpan sebagai secret lingkungan "
-                         "bernama ELEVENLABS_API_KEY (menu lingkungan cloud di judul sesi -> Edit), lalu mulai sesi baru.")
-    return k
+    return os.environ.get("ELEVENLABS_API_KEY", "").strip() or None   # None = andalkan secret jaringan (proxy) di sesi cloud
 
 def call(method, path, body=None, auth=True, raw=False, tries=4):
     headers = {"accept": "audio/mpeg" if raw else "application/json"}
-    if auth: headers["xi-api-key"] = key()
+    if auth and key(): headers["xi-api-key"] = key()
     if body is not None: headers["content-type"] = "application/json"
     req = urllib.request.Request(API + path, data=json.dumps(body).encode() if body is not None else None, headers=headers, method=method)
     for attempt in range(tries):
@@ -39,7 +42,7 @@ def call(method, path, body=None, auth=True, raw=False, tries=4):
         except urllib.error.HTTPError as e:
             detail = e.read().decode(errors="replace")[:300]
             if e.code == 429 and attempt < tries - 1: time.sleep(2 ** (attempt + 1)); continue
-            if e.code == 401: raise SystemExit(f"ElevenLabs menolak kunci (401). Periksa ELEVENLABS_API_KEY. {detail}")
+            if e.code == 401: raise SystemExit(f"{KUNCI_HELP} Rincian: {detail}")
             if e.code == 402: raise SystemExit(f"Kuota karakter ElevenLabs habis (402). {detail}")
             raise SystemExit(f"ElevenLabs gagal ({e.code}) pada {path}: {detail}")
         except urllib.error.URLError as e:
@@ -93,10 +96,10 @@ def main():
     ap.add_argument("--hanya", nargs="+", default=[]); ap.add_argument("--ulang", nargs="+", default=[]); ap.add_argument("-h", "--help", action="store_true")
     a = ap.parse_args()
     if a.help: print(__doc__); return
-    has_key = bool(os.environ.get("ELEVENLABS_API_KEY", "").strip())
     if a.daftar:
-        for v in voices(auth=has_key): print(f"{v['voice_id']}  {v['name']}  [{v.get('category', '')}]" + ("  " + ", ".join(f"{k}={val}" for k, val in (v.get("labels") or {}).items()) if v.get("labels") else ""))
-        if not has_key: print("(tanpa ELEVENLABS_API_KEY hanya suara bawaan yang tampil; suara buatan/klon akun muncul setelah kunci diset)")
+        vs = voices(auth=True)
+        for v in vs: print(f"{v['voice_id']}  {v['name']}  [{v.get('category', '')}]" + ("  " + ", ".join(f"{k}={val}" for k, val in (v.get("labels") or {}).items()) if v.get("labels") else ""))
+        if all(v.get("category") == "premade" for v in vs): print("(hanya suara bawaan yang tampil: kunci belum terkirim, jadi suara akun seperti Kak Ceria belum terlihat. Lihat petunjuk kunci di --help.)")
         return
     root, _ = E.find_root(a.sisa); script = E.load_script(root)
     kit = os.path.join(root, "tts-kit"); os.makedirs(kit, exist_ok=True); cfg_path = os.path.join(kit, "suara.json")
