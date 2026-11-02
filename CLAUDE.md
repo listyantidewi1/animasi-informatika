@@ -14,7 +14,8 @@ Bahasa kerja: Bahasa Indonesia. Pemilik: Bu Dewi (guru Informatika, penulis buku
 - Narasi suara: id-ID-GadisNeural lewat edge-tts (`episodes/D7.5/tts-kit/buat_suara.py`), nada dinaikkan 18% dengan rubberband di `voice.py` (`python3 voice.py 1.18`). Suara dibuat lokal, bukan oleh Claude. Tanpa musik latar.
 - Gaya visual Fase D: tokoh orisinal (robot Kiko, murid Dito dan Sinta), latar kantin sekolah, palet di `engine.js` (objek C). Fase E–F: gaya diagram. Font Inter.
 - Halaman latihan: satu berkas HTML, bisa dipakai luring dan di ponsel (lebar 400 px), kemajuan di localStorage, ada bagian "Untuk guru" dengan pembagian JP.
-- Bahasa naskah: kalimat pendek, kata sehari-hari, istilah Indonesia dulu lalu istilah Inggris dalam kurung, konteks lokal (kantin, warung, angkot, grup kelas). Setiap episode menyebut episode prasyaratnya.
+- Bahasa naskah: kalimat pendek, kata sehari-hari, konteks lokal (kantin, warung, angkot, grup kelas). Setiap episode menyebut episode prasyaratnya.
+- Istilah: pakai bentuk yang paling akrab bagi murid. Istilah umum yang murid kenal dalam bahasa Inggris (mouse, keyboard, file, pointer, double click, drag, tap, swipe, pinch, scroll, zoom, save, search, download, login, touch screen, dan istilah populer lainnya; daftar ini contoh, bukan batas) tetap ditulis Inggris, boleh disertai terjemahan Indonesia dalam kurung pada penyebutan pertama: mouse (tetikus). Istilah populer yang bukan bahasa Inggris baku juga dipakai apa adanya (HP, lab komputer, galeri, menu). Istilah yang bentuk Indonesianya sudah umum (klik, klik kanan, spasi, kursor, folder, aplikasi, ikon) tetap Indonesia. Istilah konsep (algoritma, bug, pseudocode) dikenalkan lewat contoh dulu, baru namanya.
 
 ## Alur kerja per episode
 1. Tulis `episodes/<kode>/script.json` (format sama dengan D7.5: beats dengan id, seg, scene, text, hold; segments; quizzes). Minta Bu Dewi membaca naskah sebelum lanjut.

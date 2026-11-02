@@ -18,5 +18,5 @@ Peta kurikulum, alur belajar, dan daftar 52 episode ada di dokumen "Kurikulum Se
 ## Status
 | Episode | Naskah | Suara | Video | Halaman |
 | --- | --- | --- | --- | --- |
-| D7.0 Jembatan: Cara Memakai Komputer dan Ponsel | draf (menunggu tinjauan) | – | – | – |
+| D7.0 Jembatan: Cara Memakai Komputer dan HP | draf (menunggu tinjauan) | – | – | – |
 | D7.5 Instruksi untuk Manusia dan Mesin | ✓ | ✓ | ✓ (2 bagian) | ✓ |
