@@ -121,7 +121,7 @@
       drawRobotOnGrid(ctx, g, p, WORLD_P);
       drawProgram(ctx, 1000, 190, PROG_P, { title: "Program", rowH: 72, w: 560, active: opt.run && !p.done ? p.step : -1, done: opt.run ? (p.done ? PROG_P.length : p.step) : 0 });
       if (opt.wait) { card(ctx, 980, 720, 620, 110, { fill: "#FFF3D6", stroke: C.accent, lw: 4 }); text(ctx, "Kiko berhenti di kotak mana?", 1290, 790, 40, { align: "center", weight: 900 }); }
-      if (opt.result) { text(ctx, "Kiko berhenti di sini", 1290, 790, 40, { align: "center", color: C.good, weight: 900 }); text(ctx, "Tebak → Jalankan → Bandingkan", 1290, 860, 32, { align: "center", color: C.ink2, weight: 700 }); }
+      if (opt.result) { text(ctx, "Kiko berhenti di sini", 1290, 760, 40, { align: "center", color: C.good, weight: 900 }); text(ctx, "Tebak → Jalankan → Bandingkan", 1290, 815, 32, { align: "center", color: C.ink2, weight: 700 }); }
     },
     predict_show(ctx, b, l) { SCENES.predictScene(ctx, b, l, 0, {}); },
     predict_wait(ctx, b, l) { SCENES.predictScene(ctx, b, l, 0, { wait: true }); },
@@ -166,7 +166,7 @@
       const show = b.id === "s5c" ? 6 : clamp(Math.floor((l - 0.5) / 0.9) + 1, 0, 6);
       drawProgram(ctx, 1000, 250, PROG_FIX.slice(0, Math.max(1, show)), { style: "words", rowH: 72, w: 620 });
       for (let i = 0; i < Math.max(1, show); i++) { arrowIcon(ctx, "east", 860, 281 + i * 72, 44, C.muted); }
-      if (b.id === "s5c") { card(ctx, 1000, 720, 620, 150, { fill: "#FFF3D6", stroke: C.accent, lw: 4 }); text(ctx, "PSEUDOCODE", 1310, 780, 40, { align: "center", weight: 900 }); text(ctx, "urut, jelas, mudah jadi program", 1310, 835, 30, { align: "center", color: C.ink2, weight: 700 }); }
+      if (b.id === "s5c") { card(ctx, 1000, 690, 620, 140, { fill: "#FFF3D6", stroke: C.accent, lw: 4 }); text(ctx, "PSEUDOCODE", 1310, 745, 40, { align: "center", weight: 900 }); text(ctx, "urut, jelas, mudah jadi program", 1310, 800, 30, { align: "center", color: C.ink2, weight: 700 }); }
     },
     symbol_rule(ctx, b, l) {
       card(ctx, 160, 160, 1600, 720);
