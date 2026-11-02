@@ -49,4 +49,5 @@ Peta kurikulum, alur belajar, dan daftar 52 episode ada di dokumen "Kurikulum Se
 | E.5 Struktur Data Standar | ✓ | ✓ Kak Ceria | ✓ (2 bagian × 2 versi) | ✓ |
 | E.6 Algoritma Standar: Pencarian dan Pengurutan | ✓ | ✓ Kak Ceria | ✓ (2 bagian × 2 versi) | ✓ |
 | E.7 Pseudocode Dekat Bahasa Komputer | ✓ | ✓ Kak Ceria | ✓ (2 bagian × 2 versi) | ✓ |
+| E.8 Data Berkualitas dari Komputasi Manusia | ✓ | ✓ Kak Ceria | ✓ (1 bagian × 2 versi) | ✓ |
 | D7.5 Instruksi untuk Manusia dan Mesin | ✓ | ✓ Kak Ceria | ✓ (2 bagian × 2 versi) | ✓ |
