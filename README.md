@@ -34,4 +34,5 @@ Peta kurikulum, alur belajar, dan daftar 52 episode ada di dokumen "Kurikulum Se
 | D8.4 Menilai Informasi dan Ekosistem Pers Digital | ✓ | ✓ Kak Ceria | ✓ (2 bagian × 2 versi) | ✓ |
 | D8.5 Fakta, Opini, dan Hoaks | ✓ | ✓ Kak Ceria | ✓ (2 bagian × 2 versi) | ✓ |
 | D8.6 Proyek: Cek Data, Cek Fakta | ✓ | ✓ Kak Ceria | ✓ (2 bagian × 2 versi) | ✓ |
+| D9.0 Jembatan Kelas IX: Flowchart, Pseudocode, dan Tabel | ✓ | ✓ Kak Ceria | ✓ (1 bagian × 2 versi) | ✓ |
 | D7.5 Instruksi untuk Manusia dan Mesin | ✓ | ✓ Kak Ceria | ✓ (2 bagian × 2 versi) | ✓ |
