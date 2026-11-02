@@ -55,4 +55,5 @@ Peta kurikulum, alur belajar, dan daftar 52 episode ada di dokumen "Kurikulum Se
 | F11.1 Alur Pengembangan Program dan Produk Digital | ✓ | ✓ Kak Ceria | ✓ (2 bagian × 2 versi) | ✓ |
 | F11.2 Dari Pseudocode ke Kode | ✓ | ✓ Kak Ceria | ✓ (2 bagian × 2 versi) | ✓ |
 | F11.3 Algoritma Standar dalam Kode dan Kualitas Program | ✓ | ✓ Kak Ceria | ✓ (2 bagian × 2 versi) | ✓ |
+| F11.4 Riset Digital dan Verifikasi Konten | ✓ | ✓ Kak Ceria | ✓ (2 bagian × 2 versi) | ✓ |
 | D7.5 Instruksi untuk Manusia dan Mesin | ✓ | ✓ Kak Ceria | ✓ (2 bagian × 2 versi) | ✓ |
