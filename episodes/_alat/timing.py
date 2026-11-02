@@ -1,8 +1,10 @@
-"""Build the timeline from reading time (no narration audio): slow pace for beginner readers."""
-import json, os, re
+"""Timeline versi TEKS (tanpa suara): durasi tiap beat dari waktu baca pembaca pemula (1,6 kata/detik) -> timeline-teks.json
+  python3 episodes/_alat/timing.py D7.0"""
+import re, sys
+import episode as E
 
-ROOT = os.path.dirname(os.path.abspath(__file__))
-script = json.load(open(os.path.join(ROOT, "script.json")))
+ROOT, _ = E.find_root(sys.argv[1:])
+script = E.load_script(ROOT)
 
 WPS = 1.6      # words per second a slow reader manages comfortably
 MIN = 3.5      # shortest time a line stays on screen
@@ -17,9 +19,7 @@ for b in script["beats"]:
     timeline.append({**b, "start": round(t, 3), "speech": round(t, 3), "audio": round(read, 3), "dur": total})
     t += total
 
-out = {"title": script["title"], "episode": script["episode"], "segments": script["segments"],
-       "quizzes": script["quizzes"], "beats": timeline, "total": round(t, 3)}
-json.dump(out, open(os.path.join(ROOT, "timeline.json"), "w"), ensure_ascii=False, indent=1)
-print(f"beats={len(timeline)} total={t:.1f}s")
+E.save_json(E.timeline_from(script, timeline, t), E.timeline_path(ROOT, "teks"))
+print(f"[teks] beats={len(timeline)} total={t:.1f}s -> {E.TIMELINE_FILE['teks']}")
 for x in timeline:
     print(f"{x['start']:7.2f} {x['dur']:5.2f}s  {x['id']:8} {x['text'][:60]}")
