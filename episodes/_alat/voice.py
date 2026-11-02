@@ -14,16 +14,28 @@ PITCH = float(args[0]) if args else float(E.load_json(CFG).get("pitch", 1.18)) i
 script = E.load_script(ROOT)
 RATE = 22050; LEAD = 0.4; WPS = 1.6
 
+import numpy as np
+SILENCE_DB, PAD_S, TARGET_RMS_DB, PEAK_DB = -45.0, 0.05, -17.0, -1.5
+
 def prep(src, dst):
-    """Dua langkah: (1) decode + nada -> WAV mono 22,05 kHz; (2) potong hening awal/akhir + normalisasi pada WAV.
-    Dipisah karena rantai penuh langsung dari MP3 (ElevenLabs 44,1 kHz) kadang membuat ffmpeg menggantung di EOF."""
-    tmp = dst + ".tmp.wav"
-    trim = ("silenceremove=start_periods=1:start_silence=0.05:start_threshold=-45dB,areverse,"
-            "silenceremove=start_periods=1:start_silence=0.05:start_threshold=-45dB,areverse,loudnorm=I=-17:TP=-1.5")
-    subprocess.run(["ffmpeg", "-nostdin", "-v", "error", "-y", "-i", src, "-ac", "1", "-ar", str(RATE), "-af", f"rubberband=pitch={PITCH}:pitchq=quality", tmp], check=True, timeout=120)
-    subprocess.run(["ffmpeg", "-nostdin", "-v", "error", "-y", "-i", tmp, "-af", trim, dst], check=True, timeout=120)
-    os.remove(tmp)
-    with wave.open(dst) as w: return w.getnframes() / w.getframerate()
+    """(1) ffmpeg: decode + nada -> WAV mono 22,05 kHz 16 bit. (2) numpy: potong hening awal/akhir (< -45 dBFS, sisakan 50 ms)
+    dan normalisasi ke RMS -17 dBFS dengan puncak maksimum -1,5 dBFS. Dulu memakai filter silenceremove/areverse/loudnorm
+    ffmpeg, tetapi pada beberapa MP3 ElevenLabs rantai itu menggantung dan loudnorm diam-diam mengubah laju sampel ke 192 kHz."""
+    subprocess.run(["ffmpeg", "-nostdin", "-v", "error", "-y", "-i", src, "-ac", "1", "-ar", str(RATE), "-c:a", "pcm_s16le",
+                    "-af", f"rubberband=pitch={PITCH}:pitchq=quality", dst], check=True, timeout=120)
+    with wave.open(dst) as w:
+        if (w.getframerate(), w.getnchannels(), w.getsampwidth()) != (RATE, 1, 2):
+            raise SystemExit(f"{dst}: format {w.getframerate()} Hz/{w.getnchannels()} kanal/{w.getsampwidth()*8} bit, seharusnya {RATE} Hz mono 16 bit")
+        x = np.frombuffer(w.readframes(w.getnframes()), dtype=np.int16).astype(np.float32) / 32768.0
+    loud = np.flatnonzero(np.abs(x) > 10 ** (SILENCE_DB / 20))
+    if len(loud):
+        pad = int(PAD_S * RATE); x = x[max(0, loud[0] - pad): min(len(x), loud[-1] + pad)]
+    rms = float(np.sqrt(np.mean(x ** 2))) or 1e-6
+    gain = min(10 ** (TARGET_RMS_DB / 20) / rms, 10 ** (PEAK_DB / 20) / (float(np.max(np.abs(x))) or 1e-6))
+    y = np.clip(x * gain, -1.0, 1.0)
+    with wave.open(dst, "wb") as w:
+        w.setnchannels(1); w.setsampwidth(2); w.setframerate(RATE); w.writeframes((y * 32767).astype(np.int16).tobytes())
+    return len(y) / RATE
 
 def src_for(bid):
     """Berkas suara untuk satu beat: <id>.mp3 (dari edge-tts) atau .wav/.m4a/.ogg (dari TTS lain)."""

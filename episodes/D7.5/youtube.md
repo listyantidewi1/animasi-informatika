@@ -52,7 +52,7 @@ Bab:
 0:04 Tebak dulu
 0:57 Mencari kesalahan
 2:30 Dari simbol ke kata
-3:12 Giliranmu
+3:13 Giliranmu
 
 Latihan interaktif (kuis dengan petunjuk, bisa dipakai luring di HP): berkas episode-d75.html di repositori proyek. Prasyarat: episode D7.1 Berpikir Komputasional di Sekitar Kita.
 
