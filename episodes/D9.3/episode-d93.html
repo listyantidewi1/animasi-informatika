@@ -1,0 +1,861 @@
+<title>Kiko: Malware</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<style>
+/* Inti gaya halaman latihan: satu kolom, pemutar di atas, latihan di bawah; palet kantin sama dengan video. */
+:root {
+  --bg: #EAF2EE; --surface: #FFFFFF; --surface2: #DCE9E2; --ink: #1F2A33; --ink2: #4A5A66; --line: #C9D8D0;
+  --accent: #2E7E9A; --accent-ink: #FFFFFF; --warm: #F2B134; --warm-ink: #5E3E05; --good: #2E9E5B; --good-bg: #DDF3E4; --bad: #D9443B; --bad-bg: #FBE1DF;
+  --font: Inter, "Segoe UI", Roboto, Arial, sans-serif;
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) { --bg: #141C1A; --surface: #1E2926; --surface2: #273532; --ink: #EAF2EE; --ink2: #A9BBB3; --line: #3A4A45; --accent: #5FB3CE; --accent-ink: #0F1D22; --warm: #F2B134; --warm-ink: #2B1C02; --good: #5FCB8A; --good-bg: #1F3A2B; --bad: #F07A72; --bad-bg: #442523; color-scheme: dark } }
+:root[data-theme="dark"] { --bg: #141C1A; --surface: #1E2926; --surface2: #273532; --ink: #EAF2EE; --ink2: #A9BBB3; --line: #3A4A45; --accent: #5FB3CE; --accent-ink: #0F1D22; --warm: #F2B134; --warm-ink: #2B1C02; --good: #5FCB8A; --good-bg: #1F3A2B; --bad: #F07A72; --bad-bg: #442523; color-scheme: dark }
+* { box-sizing: border-box }
+body { background: var(--bg); color: var(--ink); font-family: var(--font); font-size: 17px; line-height: 1.5; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); padding-block: 16px 48px }
+.wrap { max-width: 980px; margin: 0 auto; display: grid; gap: 28px }
+h1 { font-size: clamp(26px, 5vw, 38px); line-height: 1.15; margin: 0; text-wrap: balance; font-weight: 900 }
+h2 { font-size: 22px; margin: 0 0 12px; font-weight: 800 }
+h3 { font-size: 18px; margin: 0 0 8px; font-weight: 800 }
+p { margin: 0 0 10px; max-width: 65ch }
+.eyebrow { font-size: 13px; letter-spacing: .08em; text-transform: uppercase; color: var(--ink2); font-weight: 800; margin-bottom: 6px }
+.card { background: var(--surface); border-radius: 18px; padding: 18px; border: 1px solid var(--line) }
+button { font: inherit; font-weight: 800; border: 0; border-radius: 12px; padding: 12px 16px; cursor: pointer; background: var(--surface2); color: var(--ink); min-height: 48px; touch-action: manipulation }
+button:focus-visible, [tabindex]:focus-visible { outline: 3px solid var(--warm); outline-offset: 2px }
+button.primary { background: var(--accent); color: var(--accent-ink) }
+button.warm { background: var(--warm); color: var(--warm-ink) }
+button[aria-pressed="true"] { box-shadow: inset 0 0 0 3px var(--accent) }
+button:disabled { opacity: .45; cursor: default }
+.row { display: flex; flex-wrap: wrap; gap: 10px; align-items: center }
+/* player */
+.player { display: grid; gap: 12px }
+.stage { position: relative; width: 100%; aspect-ratio: 16 / 9; max-width: 100%; background: #EAF2EE; border-radius: 14px; overflow: hidden; border: 1px solid var(--line) }
+.stage canvas { width: 100%; height: 100%; display: block }
+.bigplay { position: absolute; inset: 0; display: grid; place-items: center; background: rgba(31,42,51,.25); border: 0; border-radius: 0; color: #fff; font-size: 20px; min-height: 0 }
+.bigplay span { background: var(--accent); color: var(--accent-ink); padding: 14px 26px; border-radius: 999px; font-weight: 900 }
+.bar { height: 10px; background: var(--surface2); border-radius: 999px; overflow: hidden; cursor: pointer }
+.bar > i { display: block; height: 100%; width: 0; background: var(--warm) }
+.chapters { display: flex; flex-wrap: wrap; gap: 8px }
+.chapters button { font-size: 14px; padding: 8px 12px; min-height: 40px }
+.chapters button.now { background: var(--warm); color: var(--warm-ink) }
+.hint { color: var(--ink2); font-size: 15px }
+/* exercises (generic parts) */
+.levels { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 12px }
+.levels button { font-size: 14px; padding: 8px 12px; min-height: 40px }
+.levels button.done::after { content: " ✓"; color: var(--good) }
+.task { background: var(--surface2); border-radius: 12px; padding: 12px 14px; margin-bottom: 12px; font-weight: 700 }
+.result { border-radius: 12px; padding: 12px 14px; font-weight: 800; margin-top: 10px }
+.result.good { background: var(--good-bg); color: var(--good) }
+.result.bad { background: var(--bad-bg); color: var(--bad) }
+.result.info { background: var(--surface2); color: var(--ink) }
+/* quiz */
+.quiz { display: grid; gap: 16px }
+.q { border-top: 1px solid var(--line); padding-top: 14px }
+.q:first-child { border-top: 0; padding-top: 0 }
+.opts { display: grid; gap: 8px; margin-top: 8px }
+.opts button { text-align: left; font-weight: 700; background: var(--surface2); display: flex; gap: 10px; align-items: center }
+.opts button b { width: 30px; height: 30px; border-radius: 50%; background: var(--accent); color: var(--accent-ink); display: grid; place-items: center; flex: none }
+.opts button.right { background: var(--good-bg); box-shadow: inset 0 0 0 3px var(--good) }
+.opts button.wrong { background: var(--bad-bg) }
+.fb { margin-top: 8px; font-weight: 700 }
+.fb.good { color: var(--good) } .fb.bad { color: var(--bad) }
+details summary { cursor: pointer; font-weight: 800; font-size: 18px }
+details[open] summary { margin-bottom: 10px }
+ul.plain { padding-left: 20px; margin: 0 0 10px } ul.plain li { margin-bottom: 6px; max-width: 65ch }
+.progress { display: flex; gap: 8px; flex-wrap: wrap } .progress span { background: var(--surface2); border-radius: 999px; padding: 6px 12px; font-size: 14px; font-weight: 700 }
+.progress span.ok { background: var(--good-bg); color: var(--good) }
+@media (prefers-reduced-motion: reduce) { * { transition: none !important } }
+
+/* latihan D9.3 */
+.qnum { font-weight: 800; color: var(--ink2); font-size: 14px; margin-bottom: 4px }
+.qtext { font-weight: 800; font-size: 18px; margin-bottom: 8px }
+.ex { background: var(--surface2); border-radius: 12px; padding: 12px 14px; font-weight: 800; font-size: 17px; margin: 8px 0 }
+.opts { display: grid; gap: 8px; margin: 8px 0 }
+.opts button { text-align: left; font-size: 15px; min-height: 44px; padding: 10px 12px; background: var(--surface); border: 2px solid var(--line) }
+.opts button.right { border-color: var(--good); background: var(--good-bg) } .opts button.wrong { border-color: var(--bad); background: var(--bad-bg) }
+.pairs { display: grid; gap: 8px; margin: 8px 0 }
+.pair { display: grid; grid-template-columns: 1fr auto; gap: 8px; align-items: center; background: var(--surface); border: 2px solid var(--line); border-radius: 12px; padding: 8px 10px }
+.pair .who { font-weight: 900; display: flex; align-items: center; gap: 8px } .pair .dot { width: 18px; height: 18px; border-radius: 50%; flex: none }
+.pair select { min-height: 40px; border-radius: 10px; border: 2px solid var(--line); font: inherit; font-weight: 700; padding: 4px 8px; background: var(--surface2); color: var(--ink); max-width: 190px }
+.pair.ok { border-color: var(--good); background: var(--good-bg) } .pair.bad { border-color: var(--bad); background: var(--bad-bg) }
+.two { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin: 8px 0 }
+.two button { min-height: 52px; font-size: 16px; font-weight: 900 }
+.two .safe { background: var(--good-bg); border: 2px solid var(--good); color: var(--good) } .two .danger { background: var(--bad-bg); border: 2px solid var(--bad); color: var(--bad) }
+.permcard { background: var(--surface); border: 2px solid var(--line); border-radius: 12px; padding: 10px 12px; margin: 8px 0 }
+.permcard h3 { margin: 0 0 6px; font-size: 17px }
+.perm { display: flex; align-items: center; justify-content: space-between; gap: 8px; padding: 6px 0; border-top: 1px dashed var(--line); font-weight: 700; font-size: 15px }
+.perm .pb { display: flex; gap: 6px } .perm .pb button { min-height: 36px; padding: 4px 10px; font-size: 14px }
+.perm .pb button[aria-pressed="true"] { background: var(--accent); color: #fff; border-color: var(--accent) }
+.perm.ok { color: var(--good) } .perm.bad { color: var(--bad) }
+</style>
+
+<div class="wrap">
+  <header>
+    <div class="eyebrow">Informatika · Fase D · Kelas IX · Episode D9.3</div>
+    <h1>Melindungi Perangkat dari Malware</h1>
+    <p class="hint">Tonton videonya (dua bagian), lalu kerjakan tiga latihan di bawahnya. Prasyarat: episode D9.2. Suara bisa dimatikan; teks selalu tampil di layar.</p>
+  </header>
+  <section class="card player" aria-label="Pemutar episode">
+    <div class="stage">
+      <canvas id="screen" width="1920" height="1080" aria-label="Animasi episode"></canvas>
+      <audio id="nar" preload="auto" src="narasi.mp3"></audio>
+      <button class="bigplay" id="bigplay" aria-label="Putar"><span>▶ Putar episode</span></button>
+    </div>
+    <div class="bar" id="bar" role="slider" aria-label="Posisi episode" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" tabindex="0"><i id="barfill"></i></div>
+    <div class="row">
+      <button class="primary" id="playbtn">▶ Putar</button>
+      <button id="replay">↺ Ulangi bagian ini</button>
+      <button id="voice" aria-pressed="true">🔊 Suara: nyala</button>
+      <button id="slow" aria-pressed="false">🐢 Mode lambat</button>
+      <span class="hint" id="timelabel">0:00 / 0:00</span>
+    </div>
+    <div>
+      <div class="eyebrow">Bagian</div>
+      <div class="chapters" id="chapters"></div>
+    </div>
+  </section>
+
+  <section class="card" aria-label="Cek pemahaman">
+    <h2>Cek pemahaman</h2>
+    <p class="hint">Pilih satu jawaban. Kalau salah, kamu dapat petunjuk, lalu coba lagi.</p>
+    <div class="quiz" id="quiz"></div>
+  </section>
+
+  <section class="card" aria-label="Latihan">
+    <h2>Latihan: tutup pintunya</h2>
+    <p class="hint">Tiga latihan. Jawaban salah memberi petunjuk, bukan nilai.</p>
+    <div class="levels" id="levels"></div>
+    <div class="task" id="task"></div>
+    <div id="exarea"></div>
+    <div id="result"></div>
+    <div class="row" style="margin-top:10px"><button id="redo">↺ Ulangi latihan ini</button></div>
+  </section>
+
+  <section class="card" aria-label="Kemajuan">
+    <h2>Kemajuanmu</h2>
+    <div class="progress" id="progress"></div>
+    <p class="hint" style="margin-top:8px">Kemajuan tersimpan di perangkat ini saja.</p>
+  </section>
+
+  <section class="card">
+    <details>
+      <summary>Untuk guru: cara memakai episode ini (6 JP)</summary>
+      <p><b>Tujuan pembelajaran (D9.3):</b> murid mengenal jenis-jenis malware (virus, worm, trojan, ransomware, spyware) dari cara masuk dan dampaknya, serta menerapkan kebiasaan melindungi perangkat. Elemen LD dan DSI, Fase D. Semua contoh bersifat konseptual; tidak ada kode atau alat berbahaya.</p>
+      <ul class="plain">
+        <li><b>Pertemuan 1 (2 JP), konkret:</b> permainan "rumah lima pintu": murid menggambar rumah dengan pintu berkas, jaringan, unduhan, tautan, dan izin aplikasi, lalu menulis satu penjaga di tiap pintu. Tonton Bagian 1. Diskusi: gejala perangkat yang pernah mereka alami (lambat, iklan, baterai boros).</li>
+        <li><b>Pertemuan 2 (2 JP), lima tamu lima pintu:</b> tonton Bagian 2 sampai segmen Klik, antivirus, cadangan. Latihan 1 Pasangkan dan Latihan 2 Aman atau bahaya. Bermain peran: satu murid membacakan pesan mencurigakan, murid lain memutuskan tindakannya dan alasannya.</li>
+        <li><b>Pertemuan 3 (2 JP), izin dan cek perangkat:</b> tonton segmen Izin aplikasi. Latihan 3 Periksa izin. Tugas rumah bersama orang tua: cek pembaruan tertunda, aplikasi dari luar toko resmi, dan izin berlebihan; tulis tiga temuan dan tindakannya. Asesmen lewat lembar temuan.</li>
+      </ul>
+      <p><b>Target minimum:</b> menyebut arti malware, membedakan tiga jenis dari cara masuknya, dan menyebut tiga kebiasaan pengaman. <b>Pengayaan:</b> menjelaskan mengapa cadangan menjadi penyelamat dari ransomware dan mengapa membayar tebusan bukan jalan keluar; membuat poster kelas "lima penjaga pintu".</p>
+    </details>
+  </section>
+</div>
+
+<script>/* Kiko core: mesin gambar bersama untuk semua episode Fase D.
+   Kiko.draw(ctx, t, TL) menggambar frame pada detik t di kanvas 1920x1080 secara deterministik.
+   Berisi palet, pembantu gambar, tokoh (Kiko, murid), dan adegan umum (judul, kuis, ringkasan, penutup).
+   Setiap episode menambahkan adegannya sendiri di scenes.js: Object.assign(Kiko.SCENES, {...}). */
+(function (global) {
+  const W = 1920, H = 1080;
+  const FONT = "Inter, 'Segoe UI', Roboto, Arial, sans-serif";
+  const C = {
+    bg: "#EAF2EE", bg2: "#DCE9E2", ink: "#1F2A33", ink2: "#4A5A66", panel: "#FFFFFF",
+    tile: "#F7FAF8", tileLine: "#C9D8D0", table: "#A4653A", tableTop: "#C98A57",
+    kiko: "#2E7E9A", kikoDark: "#1F5A6E", kikoLight: "#8FD0E6", eye: "#FFFFFF", pupil: "#1F2A33",
+    accent: "#F2B134", accentDark: "#B57A12", good: "#2E9E5B", bad: "#D9443B", goodBg: "#DDF3E4", badBg: "#FBE1DF",
+    sub: "#1F2A33", subText: "#FFFFFF", star: "#F2B134", skin: "#F1C9A5", skin2: "#C98A57", hair: "#2B2118",
+    uniform: "#FFFFFF", pants: "#2F4E7D", bubble: "#FFFFFF", muted: "#9AAFA6"
+  };
+  const ease = u => u < 0 ? 0 : u > 1 ? 1 : u * u * (3 - 2 * u);
+  const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
+  const lerp = (a, b, u) => a + (b - a) * u;
+
+  // ---------- drawing helpers ----------
+  function rr(ctx, x, y, w, h, r) {
+    ctx.beginPath(); ctx.moveTo(x + r, y); ctx.arcTo(x + w, y, x + w, y + h, r); ctx.arcTo(x + w, y + h, x, y + h, r);
+    ctx.arcTo(x, y + h, x, y, r); ctx.arcTo(x, y, x + w, y, r); ctx.closePath();
+  }
+  function text(ctx, s, x, y, size, opt = {}) {
+    ctx.font = `${opt.weight || 600} ${size}px ${FONT}`; ctx.fillStyle = opt.color || C.ink;
+    ctx.textAlign = opt.align || "left"; ctx.textBaseline = opt.base || "alphabetic"; ctx.fillText(s, x, y);
+  }
+  function wrap(ctx, s, size, weight, maxW) {
+    ctx.font = `${weight} ${size}px ${FONT}`;
+    const words = s.split(" "), lines = []; let cur = "";
+    for (const w of words) {
+      const test = cur ? cur + " " + w : w;
+      if (ctx.measureText(test).width > maxW && cur) { lines.push(cur); cur = w; } else cur = test;
+    }
+    if (cur) lines.push(cur);
+    return lines;
+  }
+  function para(ctx, s, x, y, size, maxW, opt = {}) {
+    const lines = wrap(ctx, s, size, opt.weight || 500, maxW); const lh = size * (opt.lh || 1.35);
+    lines.forEach((l, i) => text(ctx, l, x, y + i * lh, size, opt));
+    return lines.length * lh;
+  }
+  function arrowIcon(ctx, kind, cx, cy, s, color) {
+    ctx.save(); ctx.translate(cx, cy); ctx.strokeStyle = color; ctx.fillStyle = color; ctx.lineWidth = s * 0.16; ctx.lineCap = "round"; ctx.lineJoin = "round";
+    if (kind === "up") {
+      ctx.beginPath(); ctx.moveTo(0, s * 0.45); ctx.lineTo(0, -s * 0.3); ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(-s * 0.32, -s * 0.05); ctx.lineTo(0, -s * 0.45); ctx.lineTo(s * 0.32, -s * 0.05); ctx.stroke();
+    } else if (kind === "left" || kind === "right") {
+      const k = kind === "left" ? -1 : 1;
+      ctx.beginPath(); ctx.moveTo(0, s * 0.45); ctx.lineTo(0, -s * 0.05); ctx.quadraticCurveTo(0, -s * 0.32, k * s * 0.28, -s * 0.32); ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(k * s * 0.12, -s * 0.5); ctx.lineTo(k * s * 0.4, -s * 0.32); ctx.lineTo(k * s * 0.12, -s * 0.14); ctx.stroke();
+    } else if (kind === "east") {
+      ctx.beginPath(); ctx.moveTo(-s * 0.4, 0); ctx.lineTo(s * 0.3, 0); ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(s * 0.05, -s * 0.28); ctx.lineTo(s * 0.4, 0); ctx.lineTo(s * 0.05, s * 0.28); ctx.stroke();
+    } else if (kind === "grab") {
+      ctx.beginPath(); ctx.arc(0, s * 0.12, s * 0.22, 0, Math.PI * 2); ctx.fill();
+      ctx.beginPath(); ctx.moveTo(-s * 0.4, -s * 0.42); ctx.lineTo(-s * 0.4, -s * 0.12); ctx.moveTo(s * 0.4, -s * 0.42); ctx.lineTo(s * 0.4, -s * 0.12);
+      ctx.moveTo(-s * 0.4, -s * 0.42); ctx.lineTo(s * 0.4, -s * 0.42); ctx.stroke();
+    }
+    ctx.restore();
+  }
+  function bakso(ctx, cx, cy, s, opt = {}) {
+    // a bowl of bakso: the goal
+    ctx.save(); ctx.translate(cx, cy);
+    if (opt.glow) { ctx.beginPath(); ctx.arc(0, 0, s * 0.62, 0, Math.PI * 2); ctx.fillStyle = "rgba(242,177,52,0.22)"; ctx.fill(); }
+    ctx.fillStyle = "#E4EEF5"; ctx.beginPath(); ctx.moveTo(-s * 0.46, -s * 0.05); ctx.quadraticCurveTo(-s * 0.4, s * 0.45, 0, s * 0.45); ctx.quadraticCurveTo(s * 0.4, s * 0.45, s * 0.46, -s * 0.05); ctx.closePath(); ctx.fill();
+    ctx.strokeStyle = "#8FA9BD"; ctx.lineWidth = s * 0.05; ctx.stroke();
+    ctx.fillStyle = "#C8B49A"; ctx.beginPath(); ctx.ellipse(0, -s * 0.05, s * 0.44, s * 0.14, 0, 0, Math.PI * 2); ctx.fill();
+    for (const [dx, dy, r] of [[-0.16, -0.1, 0.13], [0.14, -0.12, 0.13], [0, -0.22, 0.12]]) {
+      ctx.fillStyle = "#9A7B5B"; ctx.beginPath(); ctx.arc(dx * s, dy * s, r * s, 0, Math.PI * 2); ctx.fill();
+      ctx.fillStyle = "#B8977A"; ctx.beginPath(); ctx.arc(dx * s - r * s * 0.3, dy * s - r * s * 0.3, r * s * 0.4, 0, Math.PI * 2); ctx.fill();
+    }
+    ctx.fillStyle = "#4CA64C"; for (const dx of [-0.26, 0.1, 0.26]) { ctx.beginPath(); ctx.arc(dx * s, -s * 0.07, s * 0.045, 0, Math.PI * 2); ctx.fill(); }
+    ctx.restore();
+  }
+  function table(ctx, x, y, w, h) {
+    ctx.fillStyle = C.table; rr(ctx, x + w * 0.1, y + h * 0.3, w * 0.8, h * 0.55, 10); ctx.fill();
+    ctx.fillStyle = C.tableTop; rr(ctx, x + w * 0.06, y + h * 0.18, w * 0.88, h * 0.3, 10); ctx.fill();
+    ctx.fillStyle = "rgba(0,0,0,0.12)"; ctx.fillRect(x + w * 0.16, y + h * 0.5, w * 0.08, h * 0.35); ctx.fillRect(x + w * 0.76, y + h * 0.5, w * 0.08, h * 0.35);
+  }
+  function kiko(ctx, cx, cy, s, ang, opt = {}) {
+    ctx.save(); ctx.translate(cx, cy);
+    // shadow
+    ctx.fillStyle = "rgba(0,0,0,0.12)"; ctx.beginPath(); ctx.ellipse(0, s * 0.42, s * 0.42, s * 0.12, 0, 0, Math.PI * 2); ctx.fill();
+    ctx.rotate(ang);
+    // wheels
+    ctx.fillStyle = C.kikoDark; rr(ctx, -s * 0.46, -s * 0.2, s * 0.12, s * 0.5, 5); ctx.fill(); rr(ctx, s * 0.34, -s * 0.2, s * 0.12, s * 0.5, 5); ctx.fill();
+    // body
+    ctx.fillStyle = opt.flash ? `rgba(217,68,59,${0.5 + 0.5 * opt.flash})` : C.kiko; rr(ctx, -s * 0.38, -s * 0.36, s * 0.76, s * 0.72, s * 0.16); ctx.fill();
+    // visor (front, facing up)
+    ctx.fillStyle = C.kikoLight; rr(ctx, -s * 0.26, -s * 0.33, s * 0.52, s * 0.3, s * 0.1); ctx.fill();
+    // eyes
+    const mood = opt.mood || "happy";
+    ctx.fillStyle = C.pupil;
+    if (mood === "sad") { ctx.beginPath(); ctx.arc(-s * 0.12, -s * 0.18, s * 0.05, 0, Math.PI * 2); ctx.arc(s * 0.12, -s * 0.18, s * 0.05, 0, Math.PI * 2); ctx.fill(); ctx.strokeStyle = C.pupil; ctx.lineWidth = s * 0.03; ctx.beginPath(); ctx.arc(0, -s * 0.03, s * 0.08, Math.PI * 1.15, Math.PI * 1.85); ctx.stroke(); }
+    else if (mood === "confused") { ctx.beginPath(); ctx.arc(-s * 0.12, -s * 0.18, s * 0.05, 0, Math.PI * 2); ctx.arc(s * 0.12, -s * 0.18, s * 0.035, 0, Math.PI * 2); ctx.fill(); ctx.strokeStyle = C.pupil; ctx.lineWidth = s * 0.03; ctx.beginPath(); ctx.moveTo(-s * 0.08, -s * 0.06); ctx.lineTo(s * 0.08, -s * 0.09); ctx.stroke(); }
+    else { ctx.beginPath(); ctx.arc(-s * 0.12, -s * 0.18, s * 0.055, 0, Math.PI * 2); ctx.arc(s * 0.12, -s * 0.18, s * 0.055, 0, Math.PI * 2); ctx.fill(); ctx.strokeStyle = C.pupil; ctx.lineWidth = s * 0.03; ctx.beginPath(); ctx.arc(0, -s * 0.1, s * 0.08, Math.PI * 0.15, Math.PI * 0.85); ctx.stroke(); }
+    // front pointer
+    ctx.fillStyle = C.accent; ctx.beginPath(); ctx.moveTo(-s * 0.1, -s * 0.38); ctx.lineTo(s * 0.1, -s * 0.38); ctx.lineTo(0, -s * 0.5); ctx.closePath(); ctx.fill();
+    // antenna
+    ctx.strokeStyle = C.kikoDark; ctx.lineWidth = s * 0.04; ctx.beginPath(); ctx.moveTo(0, s * 0.36); ctx.lineTo(0, s * 0.5); ctx.stroke();
+    ctx.fillStyle = C.accent; ctx.beginPath(); ctx.arc(0, s * 0.52, s * 0.07, 0, Math.PI * 2); ctx.fill();
+    // tray with bakso when grabbed
+    if (opt.grabbed) bakso(ctx, 0, s * 0.05, s * 0.45);
+    ctx.restore();
+    if (opt.wave !== undefined) { // arm waving (title scene)
+      ctx.save(); ctx.translate(cx + s * 0.42, cy - s * 0.1); ctx.rotate(-0.6 + Math.sin(opt.wave * 6) * 0.4);
+      ctx.strokeStyle = C.kikoDark; ctx.lineWidth = s * 0.08; ctx.lineCap = "round"; ctx.beginPath(); ctx.moveTo(0, 0); ctx.lineTo(s * 0.3, -s * 0.3); ctx.stroke();
+      ctx.fillStyle = C.kikoLight; ctx.beginPath(); ctx.arc(s * 0.32, -s * 0.33, s * 0.09, 0, Math.PI * 2); ctx.fill(); ctx.restore();
+    }
+  }
+  function kid(ctx, cx, cy, s, opt = {}) {
+    // simple student figure, standing, facing viewer
+    ctx.save(); ctx.translate(cx, cy);
+    ctx.fillStyle = "rgba(0,0,0,0.12)"; ctx.beginPath(); ctx.ellipse(0, s * 1.02, s * 0.5, s * 0.1, 0, 0, Math.PI * 2); ctx.fill();
+    ctx.fillStyle = C.pants; rr(ctx, -s * 0.3, s * 0.35, s * 0.6, s * 0.5, s * 0.1); ctx.fill();
+    ctx.fillStyle = C.skin; ctx.fillRect(-s * 0.24, s * 0.8, s * 0.16, s * 0.2); ctx.fillRect(s * 0.08, s * 0.8, s * 0.16, s * 0.2);
+    ctx.fillStyle = C.uniform; rr(ctx, -s * 0.36, -s * 0.12, s * 0.72, s * 0.56, s * 0.12); ctx.fill();
+    ctx.strokeStyle = "#D5DDE2"; ctx.lineWidth = s * 0.025; rr(ctx, -s * 0.36, -s * 0.12, s * 0.72, s * 0.56, s * 0.12); ctx.stroke();
+    ctx.fillStyle = C.skin; ctx.beginPath(); ctx.arc(0, -s * 0.42, s * 0.32, 0, Math.PI * 2); ctx.fill();
+    ctx.fillStyle = opt.hairColor || C.hair; ctx.beginPath(); ctx.arc(0, -s * 0.5, s * 0.33, Math.PI, 0); ctx.fill();
+    if (opt.hair === "long") { ctx.fillRect(-s * 0.33, -s * 0.5, s * 0.12, s * 0.45); ctx.fillRect(s * 0.21, -s * 0.5, s * 0.12, s * 0.45); }
+    ctx.fillStyle = C.pupil; ctx.beginPath(); ctx.arc(-s * 0.11, -s * 0.4, s * 0.035, 0, Math.PI * 2); ctx.arc(s * 0.11, -s * 0.4, s * 0.035, 0, Math.PI * 2); ctx.fill();
+    ctx.strokeStyle = C.pupil; ctx.lineWidth = s * 0.025; ctx.beginPath(); ctx.arc(0, -s * 0.33, s * 0.08, Math.PI * 0.15, Math.PI * 0.85); ctx.stroke();
+    // arms
+    ctx.strokeStyle = C.skin; ctx.lineWidth = s * 0.11; ctx.lineCap = "round"; ctx.beginPath();
+    if (opt.point) { ctx.moveTo(s * 0.32, s * 0.02); ctx.lineTo(s * 0.75, -s * 0.2); } else { ctx.moveTo(s * 0.34, s * 0.02); ctx.lineTo(s * 0.42, s * 0.38); }
+    ctx.moveTo(-s * 0.34, s * 0.02); ctx.lineTo(-s * 0.42, s * 0.38); ctx.stroke();
+    ctx.restore();
+  }
+  function bubble(ctx, x, y, w, s, size, opt = {}) {
+    const lines = wrap(ctx, s, size, 600, w - 48); const h = lines.length * size * 1.3 + 40;
+    ctx.fillStyle = opt.fill || C.bubble; ctx.strokeStyle = opt.stroke || "#B7C7BF"; ctx.lineWidth = 3;
+    rr(ctx, x, y - h, w, h, 22); ctx.fill(); ctx.stroke();
+    const tx = opt.tailX !== undefined ? opt.tailX : x + 60;
+    ctx.beginPath(); ctx.moveTo(tx - 16, y); ctx.lineTo(tx + 16, y); ctx.lineTo(tx + (opt.tailDir || 0), y + 28); ctx.closePath(); ctx.fillStyle = opt.fill || C.bubble; ctx.fill();
+    ctx.strokeStyle = opt.stroke || "#B7C7BF"; ctx.beginPath(); ctx.moveTo(tx - 16, y); ctx.lineTo(tx + (opt.tailDir || 0), y + 28); ctx.lineTo(tx + 16, y); ctx.stroke();
+    lines.forEach((l, i) => text(ctx, l, x + 24, y - h + 24 + size + i * size * 1.3, size, { color: opt.color || C.ink, weight: 600 }));
+    return h;
+  }
+  function card(ctx, x, y, w, h, opt = {}) { ctx.fillStyle = opt.fill || C.panel; rr(ctx, x, y, w, h, opt.r || 26); ctx.fill(); if (opt.stroke) { ctx.strokeStyle = opt.stroke; ctx.lineWidth = opt.lw || 4; ctx.stroke(); } }
+
+  // ---------- adegan umum (semua episode) ----------
+  const SCENES = {
+    title(ctx, b, l, t, TL) {
+      card(ctx, 160, 160, 1600, 700, { fill: C.panel });
+      kiko(ctx, 420, 520, 260, 0, { wave: l, mood: "happy" });
+      text(ctx, "Informatika · Fase D · Episode " + TL.episode, 720, 330, 34, { color: C.ink2, weight: 700 });
+      const ts = TL.title.length > 34 ? 74 : 92; const th = para(ctx, TL.title, 720, 440, ts, 1000, { weight: 900, lh: 1.1 }); const hy = Math.max(640, 440 + th - ts * 0.35 + 30);
+      if (TL.hook) { text(ctx, "SETELAH MENONTON, KAMU BISA:", 720, hy, 26, { color: C.accentDark, weight: 800 }); para(ctx, TL.hook, 720, hy + 50, 34, 1000, { weight: 800, lh: 1.3 }); if (hy <= 660) text(ctx, "Dengarkan, atau baca teksnya pelan-pelan.", 720, 800, 26, { color: C.ink2, weight: 600 }); }
+      else text(ctx, "Dengarkan, atau baca teksnya pelan-pelan.", 720, 700, 36, { color: C.ink2, weight: 600 });
+      arrowIcon(ctx, "up", 1560, 250, 70, C.kikoLight); arrowIcon(ctx, "right", 1660, 250, 70, C.kikoLight);
+    },
+    quiz(ctx, b, l, t, TL, answered) {
+      const q = TL.quizzes[b.quiz]; card(ctx, 200, 150, 1520, 740, { stroke: C.accent, lw: 6 });
+      text(ctx, "CEK PEMAHAMAN", 960, 230, 32, { align: "center", color: C.accentDark, weight: 800 });
+      para(ctx, q.q, 960, 320, 44, 1360, { weight: 800, align: "center", lh: 1.3 });
+      q.options.forEach((o, i) => {
+        const y = 470 + i * 120; const right = answered && i === q.answer;
+        card(ctx, 320, y, 1280, 96, { fill: right ? C.goodBg : answered ? "#F4F6F5" : C.bg2, stroke: right ? C.good : "#CFDCD5", lw: right ? 6 : 3 });
+        ctx.fillStyle = right ? C.good : C.kiko; ctx.beginPath(); ctx.arc(380, y + 48, 30, 0, Math.PI * 2); ctx.fill();
+        text(ctx, "ABC"[i], 380, y + 61, 34, { align: "center", color: "#fff", weight: 900 });
+        text(ctx, o, 440, y + 62, 38, { weight: 700, color: answered && !right ? C.muted : C.ink });
+        if (right) text(ctx, "✓", 1540, y + 66, 54, { align: "center", color: C.good, weight: 900 });
+      });
+      if (!answered) { // thinking timer
+        const frac = clamp(l / b.dur, 0, 1); ctx.strokeStyle = "#D7E2DC"; ctx.lineWidth = 14; ctx.beginPath(); ctx.arc(1640, 230, 40, 0, Math.PI * 2); ctx.stroke();
+        ctx.strokeStyle = C.accent; ctx.beginPath(); ctx.arc(1640, 230, 40, -Math.PI / 2, -Math.PI / 2 + frac * Math.PI * 2); ctx.stroke();
+        text(ctx, "Pikirkan dulu, jangan buru-buru.", 960, 860, 32, { align: "center", color: C.ink2, weight: 600 });
+      }
+    },
+    quiz_answer(ctx, b, l, t, TL) { SCENES.quiz(ctx, b, l, t, TL, true); },
+    recap(ctx, b, l, t, TL) {
+      // TL.recap: tiga kalimat pendek dari script.json
+      card(ctx, 160, 140, 1600, 760);
+      text(ctx, "TIGA HAL UNTUK DIINGAT", 960, 230, 34, { align: "center", color: C.accentDark, weight: 900 });
+      const items = TL.recap || [];
+      const show = clamp(Math.floor((l - 0.6) / 2.2) + 1, 1, Math.max(1, items.length));
+      items.forEach((s, i) => { if (i >= show) return; card(ctx, 300, 290 + i * 180, 1320, 140, { fill: C.bg2 }); ctx.fillStyle = C.kiko; ctx.beginPath(); ctx.arc(380, 360 + i * 180, 40, 0, Math.PI * 2); ctx.fill(); text(ctx, String(i + 1), 380, 376 + i * 180, 40, { align: "center", color: "#fff", weight: 900 }); text(ctx, s, 450, 375 + i * 180, 42, { weight: 800 }); });
+      kiko(ctx, 1620, 820, 130, 0);
+    },
+    outro(ctx, b, l, t, TL) {
+      // TL.next: {code, title, note} episode berikutnya, dari script.json
+      const n = TL.next || {};
+      card(ctx, 260, 200, 1400, 600);
+      text(ctx, "EPISODE BERIKUTNYA", 960, 320, 34, { align: "center", color: C.accentDark, weight: 900 });
+      text(ctx, n.code || "", 960, 440, 60, { align: "center", weight: 900 });
+      text(ctx, n.title || "", 960, 530, 54, { align: "center", weight: 800, color: C.ink2 });
+      text(ctx, n.note || "", 960, 680, 34, { align: "center", color: C.ink2, weight: 600 });
+      kiko(ctx, 960, 760 + 20, 140, 0, { wave: l });
+    }
+  };
+
+  function beatAt(TL, t) {
+    let b = TL.beats[0];
+    for (const x of TL.beats) { if (t >= x.start) b = x; else break; }
+    return b;
+  }
+  function draw(ctx, t, TL, opt = {}) {
+    const b = beatAt(TL, t); const l = t - b.start;
+    ctx.save(); ctx.setTransform(1, 0, 0, 1, 0, 0);
+    ctx.fillStyle = C.bg; ctx.fillRect(0, 0, W, H);
+    // header
+    text(ctx, TL.episode + " · " + TL.title, 60, 78, 30, { color: C.ink2, weight: 700 });
+    text(ctx, TL.segments[b.seg], 1860, 78, 30, { color: C.accentDark, weight: 800, align: "right" });
+    ctx.fillStyle = C.bg2; ctx.fillRect(0, 100, W, 6); ctx.fillStyle = C.accent; ctx.fillRect(0, 100, W * clamp(t / TL.total, 0, 1), 6);
+    const fn = SCENES[b.scene]; if (fn) fn(ctx, b, l, t, TL);
+    // narration card (burned-in text the student reads)
+    if (opt.subtitles !== false) {
+      const size = 44; const lines = wrap(ctx, b.text, size, 700, 1660);
+      const h = lines.length * size * 1.3 + 44; const y0 = 1056 - h;
+      ctx.fillStyle = "rgba(31,42,51,0.92)"; rr(ctx, 100, y0, 1720, h, 20); ctx.fill();
+      // reading progress (how far along the text the reader should be)
+      const frac = clamp(l / b.audio, 0, 1); ctx.fillStyle = C.accent; rr(ctx, 100, y0 + h - 8, 1720 * frac, 8, 4); ctx.fill();
+      lines.forEach((ln, i) => text(ctx, ln, 960, y0 + 22 + size + i * size * 1.3, size, { align: "center", color: C.subText, weight: 700 }));
+    }
+    ctx.restore();
+    return b;
+  }
+
+  global.Kiko = { draw, beatAt, W, H, C, FONT, SCENES,
+    helpers: { rr, text, wrap, para, arrowIcon, bakso, table, kiko, kid, bubble, card, ease, clamp, lerp } };
+})(typeof window !== "undefined" ? window : globalThis);
+
+/* Pembantu gambar perangkat (dipakai D7.0, D7.2, …): monitor, mouse, pointer, keyboard, HP, jari, ikon file/folder, jendela.
+   Semua digambar dengan kode (tanpa aset unduhan). Muat setelah ../_alat/kiko-core.js; dipakai scenes.js. */
+(function (global) {
+  const K = global.Kiko, H = K.helpers, C = K.C;
+  const { rr, text, wrap, card, ease, clamp, lerp } = H;
+  const D = {};
+  const SCREEN_BG = "#F4F8FB", BEZEL = "#2B3A46", BEZEL2 = "#1A262F", SEL = "rgba(46,126,154,0.22)";
+
+  // ---------- komputer ----------
+  // monitor di atas meja; mengembalikan kotak layar {x,y,w,h}
+  D.monitor = function (ctx, x, y, w, h) {
+    ctx.fillStyle = BEZEL; rr(ctx, x - 18, y - 18, w + 36, h + 36, 22); ctx.fill();
+    ctx.fillStyle = SCREEN_BG; rr(ctx, x, y, w, h, 10); ctx.fill();
+    // kaki dan meja
+    ctx.fillStyle = BEZEL2; rr(ctx, x + w / 2 - 40, y + h + 18, 80, 36, 8); ctx.fill(); rr(ctx, x + w / 2 - 140, y + h + 50, 280, 16, 8); ctx.fill();
+    ctx.fillStyle = C.tableTop; rr(ctx, x - 80, y + h + 66, w + 160, 22, 8); ctx.fill();
+    return { x, y, w, h };
+  };
+  // panah pointer
+  D.pointer = function (ctx, x, y, s = 34, color = C.ink) {
+    ctx.save(); ctx.translate(x, y); ctx.fillStyle = color; ctx.strokeStyle = "#fff"; ctx.lineWidth = s * 0.08; ctx.lineJoin = "round";
+    ctx.beginPath(); ctx.moveTo(0, 0); ctx.lineTo(0, s); ctx.lineTo(s * 0.27, s * 0.78); ctx.lineTo(s * 0.45, s * 1.15); ctx.lineTo(s * 0.62, s * 1.07); ctx.lineTo(s * 0.45, s * 0.7); ctx.lineTo(s * 0.75, s * 0.7); ctx.closePath();
+    ctx.fill(); ctx.stroke(); ctx.restore();
+  };
+  // mouse tampak atas; opt.left / opt.right = tombol ditekan; opt.label = tulis "kiri/kanan"
+  D.mouse = function (ctx, cx, cy, s, opt = {}) {
+    ctx.save(); ctx.translate(cx, cy);
+    ctx.fillStyle = "rgba(0,0,0,0.12)"; ctx.beginPath(); ctx.ellipse(0, s * 0.62, s * 0.5, s * 0.1, 0, 0, Math.PI * 2); ctx.fill();
+    // kabel
+    ctx.strokeStyle = "#7B8B95"; ctx.lineWidth = s * 0.05; ctx.beginPath(); ctx.moveTo(0, -s * 0.6); ctx.quadraticCurveTo(0, -s * 1.0, s * 0.5, -s * 1.1); ctx.stroke();
+    // badan
+    ctx.fillStyle = "#E8EEF2"; rr(ctx, -s * 0.42, -s * 0.62, s * 0.84, s * 1.24, s * 0.4); ctx.fill(); ctx.strokeStyle = "#A9B7C0"; ctx.lineWidth = s * 0.04; ctx.stroke();
+    // dua tombol
+    const btn = (side, on) => { ctx.fillStyle = on ? C.accent : "#F7FAFC"; ctx.beginPath(); const sx = side === "left" ? -1 : 1;
+      ctx.moveTo(sx * s * 0.03, -s * 0.6); ctx.lineTo(sx * s * 0.03, -s * 0.1); ctx.lineTo(sx * s * 0.4, -s * 0.1); ctx.lineTo(sx * s * 0.4, -s * 0.28); ctx.quadraticCurveTo(sx * s * 0.4, -s * 0.6, sx * s * 0.1, -s * 0.6); ctx.closePath(); ctx.fill(); ctx.strokeStyle = "#A9B7C0"; ctx.lineWidth = s * 0.03; ctx.stroke(); };
+    btn("left", opt.left); btn("right", opt.right);
+    ctx.fillStyle = "#A9B7C0"; rr(ctx, -s * 0.04, -s * 0.5, s * 0.08, s * 0.26, s * 0.04); ctx.fill(); // roda
+    ctx.restore();
+    if (opt.label) { text(ctx, "kiri", cx - s * 0.22, cy - s * 0.72, 26, { align: "center", color: opt.left ? C.accentDark : C.ink2, weight: 800 }); text(ctx, "kanan", cx + s * 0.22, cy - s * 0.72, 26, { align: "center", color: opt.right ? C.accentDark : C.ink2, weight: 800 }); }
+  };
+  // riak "klik" di sekitar titik
+  D.ripple = function (ctx, x, y, u, color = C.accent) { if (u <= 0 || u >= 1) return; ctx.strokeStyle = color; ctx.globalAlpha = 1 - u; ctx.lineWidth = 6; ctx.beginPath(); ctx.arc(x, y, 12 + u * 60, 0, Math.PI * 2); ctx.stroke(); ctx.globalAlpha = 1; };
+
+  // ---------- ikon file & folder ----------
+  const KIND = { folder: "#F2B134", foto: "#5FA8D3", tulisan: "#7B8B95", lagu: "#8E6BBF", video: "#D9443B" };
+  D.fileIcon = function (ctx, cx, cy, s, kind, opt = {}) {
+    ctx.save(); ctx.translate(cx, cy);
+    if (opt.selected) { ctx.fillStyle = SEL; rr(ctx, -s * 0.62, -s * 0.62, s * 1.24, s * 1.24 + (opt.name ? s * 0.5 : 0), s * 0.14); ctx.fill(); }
+    if (kind === "folder") {
+      ctx.fillStyle = "#D99A1B"; rr(ctx, -s * 0.5, -s * 0.32, s * 0.45, s * 0.2, s * 0.06); ctx.fill();
+      ctx.fillStyle = opt.open ? "#F7C860" : KIND.folder; rr(ctx, -s * 0.5, -s * 0.22, s, s * 0.7, s * 0.08); ctx.fill();
+      if (opt.open) { ctx.fillStyle = "#D99A1B"; rr(ctx, -s * 0.46, -s * 0.02, s * 0.92, s * 0.5, s * 0.08); ctx.fill(); }
+    } else {
+      ctx.fillStyle = "#FFFFFF"; ctx.strokeStyle = "#B7C4CC"; ctx.lineWidth = s * 0.05;
+      ctx.beginPath(); ctx.moveTo(-s * 0.36, -s * 0.5); ctx.lineTo(s * 0.12, -s * 0.5); ctx.lineTo(s * 0.36, -s * 0.26); ctx.lineTo(s * 0.36, s * 0.5); ctx.lineTo(-s * 0.36, s * 0.5); ctx.closePath(); ctx.fill(); ctx.stroke();
+      ctx.fillStyle = KIND[kind] || KIND.tulisan;
+      if (kind === "foto") { rr(ctx, -s * 0.26, -s * 0.2, s * 0.52, s * 0.44, s * 0.04); ctx.fill(); ctx.fillStyle = "#fff"; ctx.beginPath(); ctx.arc(-s * 0.12, -s * 0.08, s * 0.06, 0, Math.PI * 2); ctx.fill(); ctx.beginPath(); ctx.moveTo(-s * 0.26, s * 0.24); ctx.lineTo(-s * 0.06, s * 0.02); ctx.lineTo(s * 0.06, s * 0.14); ctx.lineTo(s * 0.14, s * 0.06); ctx.lineTo(s * 0.26, s * 0.24); ctx.closePath(); ctx.fill(); }
+      else if (kind === "lagu") { ctx.beginPath(); ctx.arc(-s * 0.1, s * 0.22, s * 0.1, 0, Math.PI * 2); ctx.arc(s * 0.16, s * 0.16, s * 0.1, 0, Math.PI * 2); ctx.fill(); ctx.lineWidth = s * 0.06; ctx.strokeStyle = KIND.lagu; ctx.beginPath(); ctx.moveTo(0, s * 0.2); ctx.lineTo(0, -s * 0.2); ctx.lineTo(s * 0.26, -s * 0.26); ctx.lineTo(s * 0.26, s * 0.14); ctx.stroke(); }
+      else if (kind === "video") { rr(ctx, -s * 0.26, -s * 0.16, s * 0.52, s * 0.4, s * 0.04); ctx.fill(); ctx.fillStyle = "#fff"; ctx.beginPath(); ctx.moveTo(-s * 0.06, -s * 0.04); ctx.lineTo(s * 0.12, s * 0.04); ctx.lineTo(-s * 0.06, s * 0.12); ctx.closePath(); ctx.fill(); }
+      else { for (let i = 0; i < 4; i++) { rr(ctx, -s * 0.22, -s * 0.14 + i * s * 0.14, s * (i === 3 ? 0.26 : 0.44), s * 0.06, s * 0.03); ctx.fill(); } }
+    }
+    ctx.restore();
+    if (opt.name) { const lines = wrap(ctx, opt.name, opt.size || 24, 700, s * 1.6); lines.slice(0, 2).forEach((ln, i) => text(ctx, ln, cx, cy + s * 0.78 + i * (opt.size || 24) * 1.15, opt.size || 24, { align: "center", weight: 700, color: opt.color || C.ink })); }
+  };
+  D.KIND = KIND;
+
+  // jendela aplikasi (file manager / editor) di dalam layar; mengembalikan area isi
+  D.windowFrame = function (ctx, x, y, w, h, title, opt = {}) {
+    ctx.fillStyle = "#FFFFFF"; rr(ctx, x, y, w, h, 14); ctx.fill(); ctx.strokeStyle = "#C9D4DB"; ctx.lineWidth = 3; ctx.stroke();
+    ctx.fillStyle = "#E6EDF2"; rr(ctx, x, y, w, 54, 14); ctx.fill(); ctx.fillRect(x, y + 30, w, 24);
+    ["#E0655C", "#F2B134", "#2E9E5B"].forEach((c, i) => { ctx.fillStyle = c; ctx.beginPath(); ctx.arc(x + 26 + i * 26, y + 27, 8, 0, Math.PI * 2); ctx.fill(); });
+    if (title) text(ctx, title, x + w / 2, y + 36, 24, { align: "center", color: C.ink2, weight: 800 });
+    if (opt.path) { ctx.fillStyle = "#F4F8FB"; rr(ctx, x + 16, y + 66, w - 32, 44, 10); ctx.fill(); text(ctx, opt.path, x + 32, y + 96, 24, { color: C.ink2, weight: 700 }); }
+    return { x: x + 16, y: y + (opt.path ? 124 : 70), w: w - 32, h: h - (opt.path ? 140 : 86) };
+  };
+  // kotak teks dengan kursor berkedip; opt.cursor = posisi karakter (bawaan akhir)
+  D.textBox = function (ctx, x, y, w, h, lines, tt, opt = {}) {
+    ctx.fillStyle = "#FFFFFF"; rr(ctx, x, y, w, h, 14); ctx.fill(); ctx.strokeStyle = opt.stroke || "#C9D4DB"; ctx.lineWidth = 3; ctx.stroke();
+    const size = opt.size || 48, lh = size * 1.4;
+    lines.forEach((ln, i) => text(ctx, ln, x + 28, y + 24 + size + i * lh, size, { weight: 700, color: opt.color || C.ink }));
+    if (opt.cursor !== false) {
+      const li = lines.length - 1, s = lines[li] || ""; ctx.font = `700 ${size}px ${K.FONT}`; const cw = ctx.measureText(s).width;
+      if (Math.floor(tt * 2.5) % 2 === 0 || opt.cursorOn) { ctx.fillStyle = C.kiko; ctx.fillRect(x + 30 + cw, y + 22 + li * lh, 5, size * 1.15); }
+      return [x + 32 + cw, y + 22 + li * lh + size * 0.6];
+    }
+  };
+
+  // ---------- keyboard ----------
+  const ROWS = [["Q", "W", "E", "R", "T", "Y", "U", "I", "O", "P"], ["A", "S", "D", "F", "G", "H", "J", "K", "L"], ["Z", "X", "C", "V", "B", "N", "M"]];
+  // keyboard sederhana: 3 baris huruf + Shift, Spasi, Backspace, Enter. opt.pressed = [tombol], opt.glow = [tombol] disorot lembut
+  D.keyboard = function (ctx, x, y, w, opt = {}) {
+    const key = w / 11.6, gap = key * 0.12, k = key - gap, h = k * 4 + gap * 5;
+    ctx.fillStyle = BEZEL; rr(ctx, x - 16, y - 16, w + 32, h + 32, 22); ctx.fill();
+    const pressed = opt.pressed || [], glow = opt.glow || [];
+    const draw = (kx, ky, kw, label, small) => {
+      const on = pressed.includes(label), soft = glow.includes(label);
+      ctx.fillStyle = on ? C.accent : soft ? "#FFF3D6" : "#F7FAFC"; rr(ctx, kx, ky + (on ? 4 : 0), kw, k - (on ? 4 : 0), 10); ctx.fill();
+      ctx.strokeStyle = on ? C.accentDark : soft ? C.accent : "#B7C4CC"; ctx.lineWidth = on || soft ? 4 : 2; ctx.stroke();
+      // ukuran huruf mengikuti ukuran tombol; pada keyboard mini (tombol < 40 px) label tombol khusus tidak digambar
+      const fs = small ? Math.min(24, k * 0.45) : Math.min(32, k * 0.6);
+      if (small ? k >= 40 : k >= 18) text(ctx, label, kx + kw / 2, ky + k / 2 + fs * 0.38, fs, { align: "center", weight: 800, color: on ? "#fff" : C.ink });
+    };
+    ROWS.forEach((row, r) => { const off = r === 0 ? 0 : r === 1 ? key * 0.35 : key * 0.85; row.forEach((lab, i) => draw(x + gap + off + i * key, y + gap + r * key, k, lab)); });
+    draw(x + gap + key * 0.85 + 7 * key + gap, y + gap + 2 * key, key * 2.4 - gap, "Backspace", true);
+    draw(x + gap, y + gap + 3 * key, key * 1.9 - gap, "Shift", true);
+    draw(x + gap + key * 1.9, y + gap + 3 * key, key * 6.2 - gap, "Spasi", true);
+    draw(x + gap + key * 8.1, y + gap + 3 * key, key * 2.3 - gap, "Enter", true);
+    draw(x + gap + key * 0.35 + 9 * key, y + gap + 1 * key, key * 1.9 - gap, "Enter", true);
+    return { x, y, w, h };
+  };
+
+  // ---------- HP & jari ----------
+  // HP tegak; mengembalikan kotak layar
+  D.phone = function (ctx, cx, cy, w, h) {
+    ctx.fillStyle = BEZEL; rr(ctx, cx - w / 2 - 14, cy - h / 2 - 22, w + 28, h + 44, 40); ctx.fill();
+    ctx.fillStyle = SCREEN_BG; rr(ctx, cx - w / 2, cy - h / 2, w, h, 26); ctx.fill();
+    ctx.fillStyle = BEZEL2; rr(ctx, cx - 40, cy - h / 2 + 8, 80, 12, 6); ctx.fill();
+    return { x: cx - w / 2, y: cy - h / 2, w, h };
+  };
+  // kisi ikon aplikasi generik di layar HP; mengembalikan posisi tiap ikon
+  const APPS = [["Kamera", "#2E7E9A"], ["Galeri", "#5FA8D3"], ["Pesan", "#2E9E5B"], ["Musik", "#8E6BBF"], ["Kalkulator", "#7B8B95"], ["Peta", "#F2B134"], ["Catatan", "#E0A23B"], ["Jam", "#D9443B"], ["Cuaca", "#4C9BE0"]];
+  D.appGrid = function (ctx, sc, opt = {}) {
+    const cols = 3, cell = sc.w / cols, out = [];
+    APPS.forEach(([name, col], i) => {
+      const r = Math.floor(i / cols), c = i % cols; const ax = sc.x + cell * c + cell / 2, ay = sc.y + 90 + r * (cell + 26);
+      const on = opt.active === name; const sz = cell * 0.56 * (on && opt.scale ? opt.scale : 1);
+      ctx.fillStyle = col; rr(ctx, ax - sz / 2, ay - sz / 2, sz, sz, sz * 0.24); ctx.fill();
+      if (on) { ctx.strokeStyle = C.accent; ctx.lineWidth = 6; ctx.stroke(); }
+      text(ctx, name, ax, ay + sz / 2 + 26, 20, { align: "center", weight: 700, color: C.ink2 });
+      out.push({ name, x: ax, y: ay });
+    });
+    return out;
+  };
+  // ujung jari yang menyentuh layar di (x,y); opt.press = sedang menekan (riak); opt.second = jari kedua
+  D.finger = function (ctx, x, y, opt = {}) {
+    const s = opt.s || 46;
+    ctx.save(); ctx.translate(x, y); ctx.rotate(opt.angle !== undefined ? opt.angle : 0.5);
+    ctx.fillStyle = "rgba(0,0,0,0.10)"; ctx.beginPath(); ctx.ellipse(0, s * 0.25, s * 0.7, s * 0.4, 0, 0, Math.PI * 2); ctx.fill();
+    ctx.fillStyle = C.skin; rr(ctx, -s * 0.5, -s * 0.3, s, s * 3.2, s * 0.5); ctx.fill();
+    ctx.fillStyle = "#F7D9BE"; ctx.beginPath(); ctx.ellipse(0, s * 0.1, s * 0.3, s * 0.42, 0, 0, Math.PI * 2); ctx.fill();
+    ctx.restore();
+    if (opt.press) { ctx.fillStyle = "rgba(46,126,154,0.25)"; ctx.beginPath(); ctx.arc(x, y, s * 0.8, 0, Math.PI * 2); ctx.fill(); }
+  };
+  // menu konteks (klik kanan / tekan lama)
+  D.menu = function (ctx, x, y, items, opt = {}) {
+    const w = opt.w || 300, rowH = 52; ctx.fillStyle = "#FFFFFF"; rr(ctx, x, y, w, rowH * items.length + 16, 12); ctx.fill(); ctx.strokeStyle = "#B7C4CC"; ctx.lineWidth = 3; ctx.stroke();
+    ctx.fillStyle = "rgba(0,0,0,0.08)";
+    items.forEach((it, i) => { if (opt.active === i) { ctx.fillStyle = "#FFF3D6"; rr(ctx, x + 8, y + 8 + i * rowH, w - 16, rowH, 8); ctx.fill(); } text(ctx, it, x + 24, y + 8 + i * rowH + 36, 28, { weight: 700 }); });
+  };
+  // kartu keterangan kecil di kanan/bawah adegan
+  D.note = function (ctx, x, y, w, s, opt = {}) { card(ctx, x, y, w, opt.h || 96, { fill: opt.fill || "#FFF3D6", stroke: opt.stroke || C.accent, lw: 4 }); text(ctx, s, x + w / 2, y + (opt.h || 96) / 2 + 14, opt.size || 36, { align: "center", weight: 900, color: opt.color || C.ink }); };
+
+  K.devices = D;
+})(typeof window !== "undefined" ? window : globalThis);
+
+/* Pembantu gambar D9.3: tokoh malware konseptual (virus, worm, trojan, ransomware, spyware), berkas, pintu rumah, gembok, perisai,
+   kartu kebiasaan, daftar izin aplikasi. Semua simbolik; tidak ada kode. Muat setelah kiko-core.js dan kiko-devices.js. */
+(function (global) {
+  const K = global.Kiko, H = K.helpers, C = K.C, D = K.devices;
+  const { rr, text, wrap, card, clamp } = H;
+  const Q = {};
+  const COL = { virus: "#D9443B", worm: "#8E6BBF", trojan: "#C98A57", ransomware: "#1F2A33", spyware: "#2E7E9A" };
+  Q.color = k => COL[k];
+  // tokoh malware kecil: lingkaran bermata jahat dengan ciri
+  Q.bug = function (ctx, cx, cy, s, kind, opt = {}) {
+    ctx.save(); const col = COL[kind] || C.bad;
+    if (kind === "worm") { for (let i = 0; i < 4; i++) { ctx.fillStyle = i ? "#B497D6" : col; ctx.beginPath(); ctx.arc(cx - i * s * 0.45, cy + Math.sin(i * 1.3 + (opt.t || 0)) * s * 0.15, s * 0.3 - i * s * 0.03, 0, Math.PI * 2); ctx.fill(); } }
+    else if (kind === "trojan") { ctx.fillStyle = "#FFF3D6"; rr(ctx, cx - s * 0.45, cy - s * 0.45, s * 0.9, s * 0.9, s * 0.18); ctx.fill(); ctx.strokeStyle = "#E0B04B"; ctx.lineWidth = 3; rr(ctx, cx - s * 0.45, cy - s * 0.45, s * 0.9, s * 0.9, s * 0.18); ctx.stroke(); text(ctx, "🎁", cx, cy + s * 0.18, s * 0.6, { align: "center" }); if (opt.reveal) { ctx.fillStyle = col; ctx.beginPath(); ctx.arc(cx + s * 0.3, cy + s * 0.3, s * 0.22, 0, Math.PI * 2); ctx.fill(); } ctx.restore(); return; }
+    else if (kind === "ransomware") { ctx.fillStyle = col; rr(ctx, cx - s * 0.35, cy - s * 0.2, s * 0.7, s * 0.55, s * 0.1); ctx.fill(); ctx.strokeStyle = col; ctx.lineWidth = s * 0.1; ctx.beginPath(); ctx.arc(cx, cy - s * 0.2, s * 0.25, Math.PI, 0); ctx.stroke(); ctx.fillStyle = C.accent; ctx.beginPath(); ctx.arc(cx, cy + s * 0.08, s * 0.08, 0, Math.PI * 2); ctx.fill(); ctx.restore(); return; }
+    else if (kind === "spyware") { ctx.fillStyle = col; ctx.beginPath(); ctx.arc(cx, cy, s * 0.4, 0, Math.PI * 2); ctx.fill(); ctx.fillStyle = "#fff"; ctx.beginPath(); ctx.ellipse(cx, cy, s * 0.3, s * 0.18, 0, 0, Math.PI * 2); ctx.fill(); ctx.fillStyle = C.ink; ctx.beginPath(); ctx.arc(cx + (opt.look || 0) * s * 0.1, cy, s * 0.1, 0, Math.PI * 2); ctx.fill(); ctx.restore(); return; }
+    else { ctx.fillStyle = col; ctx.beginPath(); ctx.arc(cx, cy, s * 0.36, 0, Math.PI * 2); ctx.fill(); for (let i = 0; i < 8; i++) { const a = i * Math.PI / 4; ctx.strokeStyle = col; ctx.lineWidth = s * 0.07; ctx.beginPath(); ctx.moveTo(cx + Math.cos(a) * s * 0.36, cy + Math.sin(a) * s * 0.36); ctx.lineTo(cx + Math.cos(a) * s * 0.5, cy + Math.sin(a) * s * 0.5); ctx.stroke(); } }
+    if (kind === "virus" || kind === "worm") { const ex = kind === "worm" ? cx : cx; ctx.fillStyle = "#fff"; ctx.beginPath(); ctx.arc(ex - s * 0.12, cy - s * 0.08, s * 0.08, 0, Math.PI * 2); ctx.arc(ex + s * 0.12, cy - s * 0.08, s * 0.08, 0, Math.PI * 2); ctx.fill(); ctx.fillStyle = C.ink; ctx.beginPath(); ctx.arc(ex - s * 0.12, cy - s * 0.08, s * 0.04, 0, Math.PI * 2); ctx.arc(ex + s * 0.12, cy - s * 0.08, s * 0.04, 0, Math.PI * 2); ctx.fill(); }
+    ctx.restore();
+  };
+  // berkas dokumen; opt.infected (tanda virus), opt.locked (gembok), opt.name
+  Q.file = function (ctx, cx, cy, s, opt = {}) {
+    ctx.fillStyle = "#fff"; ctx.strokeStyle = "#B7C4CC"; ctx.lineWidth = 3; ctx.beginPath(); ctx.moveTo(cx - s * 0.35, cy - s * 0.5); ctx.lineTo(cx + s * 0.15, cy - s * 0.5); ctx.lineTo(cx + s * 0.35, cy - s * 0.3); ctx.lineTo(cx + s * 0.35, cy + s * 0.5); ctx.lineTo(cx - s * 0.35, cy + s * 0.5); ctx.closePath(); ctx.fill(); ctx.stroke();
+    for (let i = 0; i < 4; i++) { ctx.fillStyle = "#D7E2DC"; rr(ctx, cx - s * 0.25, cy - s * 0.2 + i * s * 0.15, s * 0.5 * (0.6 + (i % 2) * 0.3), s * 0.06, 2); ctx.fill(); }
+    if (opt.infected) Q.bug(ctx, cx + s * 0.22, cy + s * 0.28, s * 0.5, "virus");
+    if (opt.locked) { ctx.fillStyle = C.ink; rr(ctx, cx - s * 0.18, cy - s * 0.02, s * 0.36, s * 0.3, s * 0.05); ctx.fill(); ctx.strokeStyle = C.ink; ctx.lineWidth = s * 0.06; ctx.beginPath(); ctx.arc(cx, cy - s * 0.04, s * 0.13, Math.PI, 0); ctx.stroke(); }
+    if (opt.name) text(ctx, opt.name, cx, cy + s * 0.5 + 26, 20, { align: "center", weight: 800, color: opt.locked ? C.bad : C.ink2 });
+  };
+  // pintu berlabel; opt.open, opt.guard (kebiasaan), opt.hl
+  Q.door = function (ctx, cx, baseY, w, h, label, opt = {}) {
+    ctx.fillStyle = opt.hl ? "#FFF3D6" : "#C98A57"; ctx.strokeStyle = opt.hl ? C.accent : "#8B5A2B"; ctx.lineWidth = 4; ctx.beginPath(); ctx.moveTo(cx - w / 2, baseY); ctx.lineTo(cx - w / 2, baseY - h + w / 2); ctx.arc(cx, baseY - h + w / 2, w / 2, Math.PI, 0); ctx.lineTo(cx + w / 2, baseY); ctx.closePath(); ctx.fill(); ctx.stroke();
+    if (opt.guard) { ctx.fillStyle = C.good; ctx.beginPath(); ctx.arc(cx, baseY - h * 0.55, w * 0.28, 0, Math.PI * 2); ctx.fill(); text(ctx, "✓", cx, baseY - h * 0.55 + 10, w * 0.4, { align: "center", weight: 900, color: "#fff" }); } else { ctx.fillStyle = C.accent; ctx.beginPath(); ctx.arc(cx + w * 0.3, baseY - h * 0.45, 5, 0, Math.PI * 2); ctx.fill(); }
+    text(ctx, label, cx, baseY + 28, 20, { align: "center", weight: 900, color: C.ink2 });
+    if (opt.sub) text(ctx, opt.sub, cx, baseY + 54, 18, { align: "center", weight: 700, color: opt.guard ? C.good : C.ink2 });
+  };
+  Q.shield = function (ctx, cx, cy, s, opt = {}) { ctx.fillStyle = opt.color || C.good; ctx.beginPath(); ctx.moveTo(cx, cy - s * 0.5); ctx.lineTo(cx + s * 0.42, cy - s * 0.32); ctx.quadraticCurveTo(cx + s * 0.42, cy + s * 0.25, cx, cy + s * 0.5); ctx.quadraticCurveTo(cx - s * 0.42, cy + s * 0.25, cx - s * 0.42, cy - s * 0.32); ctx.closePath(); ctx.fill(); text(ctx, "✓", cx, cy + s * 0.14, s * 0.45, { align: "center", weight: 900, color: "#fff" }); };
+  Q.habit = function (ctx, x, y, w, n, title, sub, opt = {}) { ctx.save(); if (opt.dim) ctx.globalAlpha = 0.25; card(ctx, x, y, w, 130, { fill: opt.on ? "#FFF3D6" : C.goodBg, stroke: opt.on ? C.accent : C.good, lw: 4, r: 16 }); ctx.fillStyle = C.good; ctx.beginPath(); ctx.arc(x + 40, y + 40, 24, 0, Math.PI * 2); ctx.fill(); text(ctx, String(n), x + 40, y + 49, 24, { align: "center", color: "#fff", weight: 900 }); text(ctx, title, x + 80, y + 50, 26, { weight: 900 }); const lines = wrap(ctx, sub, 20, 700, w - 40); lines.forEach((ln, i) => text(ctx, ln, x + 20, y + 90 + i * 26, 20, { weight: 700, color: C.ink2 })); ctx.restore(); };
+  // daftar izin aplikasi: items [[izin, ok(bool)]]
+  Q.perms = function (ctx, x, y, w, app, items, opt = {}) { card(ctx, x, y, w, 70 + items.length * 56, { fill: "#fff", stroke: "#B7C4CC", lw: 3, r: 14 }); text(ctx, app + " meminta izin:", x + 20, y + 42, 24, { weight: 900 }); items.forEach(([t, ok], i) => { const ry = y + 70 + i * 56; const show = opt.n == null || i < opt.n; ctx.save(); if (!show) ctx.globalAlpha = 0.2; ctx.fillStyle = ok ? C.goodBg : C.badBg; rr(ctx, x + 14, ry, w - 28, 46, 10); ctx.fill(); text(ctx, t, x + 30, ry + 31, 22, { weight: 800 }); text(ctx, ok ? "masuk akal ✓" : "tidak masuk akal ✕", x + w - 30, ry + 31, 20, { align: "right", weight: 900, color: ok ? C.good : C.bad }); ctx.restore(); }); };
+  K.malware = Q;
+})(typeof window !== "undefined" ? window : globalThis);
+
+/* Adegan episode D9.3: Melindungi Perangkat dari Malware. Muat setelah kiko-core.js, kiko-devices.js, malware.js. */
+(function (global) {
+  const K = global.Kiko, H = K.helpers, C = K.C, D = K.devices, Mw = K.malware, SCENES = K.SCENES;
+  const { text, para, card, kiko, kid, bubble, rr, ease, clamp, lerp, arrowIcon } = H;
+  const reveal = (l, t0, step, n) => clamp(Math.floor((l - t0) / step) + 1, 0, n);
+  const banner = (ctx, s, y = 745, w = 1000, opt = {}) => { card(ctx, 960 - w / 2, y, w, 80, { fill: opt.fill || "#FFF3D6", stroke: opt.stroke || C.accent, lw: 4 }); text(ctx, s, 960, y + 52, opt.size || 34, { align: "center", weight: 900, color: opt.color || C.ink }); };
+  const label = (ctx, s, x, y, opt = {}) => text(ctx, s, x, y, opt.size || 28, { align: "center", weight: 900, color: opt.color || C.accentDark });
+  const KINDS = [["virus", "Virus", "menumpang berkas"], ["worm", "Worm", "menjalar lewat jaringan"], ["trojan", "Trojan", "menyamar jadi aplikasi"], ["ransomware", "Ransomware", "mengunci berkas"], ["spyware", "Spyware", "mengintip diam-diam"]];
+  const DOORS = ["berkas", "jaringan", "unduhan", "tautan", "izin aplikasi"];
+  const HABITS = [["Perbarui", "sistem dan aplikasi selalu versi terbaru"], ["Sumber resmi", "unduh hanya dari toko aplikasi resmi"], ["Jangan klik sembarangan", "tautan dan lampiran tak dikenal: lewati"], ["Antivirus", "nyalakan antivirus bawaan"], ["Cadangan", "salin berkas penting ke tempat lain"]];
+  const kindCard = (ctx, x, y, w, h, i, opt = {}) => { const [k, t, s] = KINDS[i]; ctx.save(); if (opt.dim) ctx.globalAlpha = 0.2; card(ctx, x, y, w, h, { fill: opt.on ? "#FFF3D6" : C.bg2, stroke: opt.on ? C.accent : undefined, lw: 5, r: 16 }); Mw.bug(ctx, x + w / 2, y + h * 0.38, Math.min(90, h * 0.4), k, { t: opt.t }); text(ctx, t, x + w / 2, y + h * 0.72, 26, { align: "center", weight: 900, color: Mw.color(k) }); text(ctx, s, x + w / 2, y + h * 0.88, 18, { align: "center", weight: 700, color: C.ink2 }); ctx.restore(); };
+
+  Object.assign(SCENES, {
+    title_q(ctx, b, l) {
+      card(ctx, 120, 150, 1680, 740);
+      kiko(ctx, 330, 560, 200, 0, { mood: "happy" });
+      const n = reveal(l, 0.6, 0.9, 5);
+      KINDS.forEach((k, i) => kindCard(ctx, 620 + i * 230, 260, 210, 240, i, { dim: i >= n, t: l }));
+      if (l > 5.5) { text(ctx, "malware = malicious software: perangkat lunak jahat", 1195, 580, 28, { align: "center", weight: 900, color: C.accentDark }); banner(ctx, "kenali pintunya, tutup pintunya", 640, 700); }
+    },
+    prereq(ctx, b, l) {
+      card(ctx, 260, 200, 1400, 600);
+      text(ctx, "TONTON DULU", 960, 300, 34, { align: "center", color: C.accentDark, weight: 800 });
+      text(ctx, "Episode D9.2", 960, 420, 60, { align: "center", weight: 900 });
+      text(ctx, "Jaringan Lokal dan Internet", 960, 500, 48, { align: "center", weight: 700, color: C.ink2 });
+      ["LAN dan Wi-Fi", "Router dan ISP", "Paket data"].forEach((s, i) => { card(ctx, 480 + i * 340, 580, 300, 120, { fill: C.bg2 }); text(ctx, s, 630 + i * 340, 652, 30, { align: "center", weight: 800 }); });
+      kiko(ctx, 1600, 760, 150, 0);
+    },
+    unplugged_doors(ctx, b, l) {
+      card(ctx, 120, 150, 1680, 740);
+      text(ctx, "MAIN DULU TANPA KOMPUTER: RUMAH DENGAN LIMA PINTU", 960, 230, 34, { align: "center", color: C.accentDark, weight: 800 });
+      ctx.fillStyle = "#FFF9E0"; ctx.strokeStyle = "#E0B04B"; ctx.lineWidth = 4; ctx.beginPath(); ctx.moveTo(240, 700); ctx.lineTo(240, 360); ctx.lineTo(960, 260); ctx.lineTo(1680, 360); ctx.lineTo(1680, 700); ctx.closePath(); ctx.fill(); ctx.stroke();
+      const n = reveal(l, 1.0, 0.9, 5);
+      DOORS.forEach((d, i) => { if (i < n) Mw.door(ctx, 400 + i * 280, 690, 110, 220, "pintu " + d, { hl: i === n - 1 }); });
+      if (n >= 5) { for (let i = 0; i < 5; i++) Mw.bug(ctx, 400 + i * 280, 430, 54, KINDS[i][0], { t: l }); label(ctx, "tiap tamu jahat punya pintu kesukaannya", 960, 820, { size: 26, color: C.ink2 }); }
+    },
+    unplugged_guard(ctx, b, l) {
+      card(ctx, 120, 150, 1680, 740);
+      ctx.fillStyle = "#FFF9E0"; ctx.strokeStyle = "#E0B04B"; ctx.lineWidth = 4; ctx.beginPath(); ctx.moveTo(240, 700); ctx.lineTo(240, 360); ctx.lineTo(960, 260); ctx.lineTo(1680, 360); ctx.lineTo(1680, 700); ctx.closePath(); ctx.fill(); ctx.stroke();
+      const n = reveal(l, 0.8, 1.0, 5);
+      DOORS.forEach((d, i) => Mw.door(ctx, 400 + i * 280, 690, 110, 220, "pintu " + d, { guard: i < n, sub: i < n ? HABITS[[3, 0, 1, 2, 4][i]][0] : "" }));
+      if (n >= 5) banner(ctx, "pintu yang dijaga sulit dimasuki", 745, 800, { fill: C.goodBg, stroke: C.good, color: C.good });
+    },
+
+    malware_def(ctx, b, l) {
+      card(ctx, 120, 150, 1680, 740);
+      text(ctx, "MALWARE = MALICIOUS + SOFTWARE", 960, 230, 34, { align: "center", color: C.accentDark, weight: 800 });
+      text(ctx, "perangkat lunak jahat: merusak, mencuri, mengunci", 960, 280, 26, { align: "center", weight: 800, color: C.ink2 });
+      D.phone(ctx, 420, 560, 300, 440);
+      const n = reveal(l, 1.5, 1.1, 4);
+      const sym = [["🐢", "perangkat lambat"], ["📢", "iklan muncul sendiri"], ["🔋", "baterai cepat habis"], ["📄", "berkas hilang / berubah"]];
+      sym.forEach(([e, t], i) => { if (i < n) { card(ctx, 700 + (i % 2) * 520, 330 + Math.floor(i / 2) * 170, 480, 140, { fill: C.badBg, stroke: C.bad, lw: 3, r: 14 }); text(ctx, e, 760 + (i % 2) * 520, 415 + Math.floor(i / 2) * 170, 50, { align: "center" }); text(ctx, t, 820 + (i % 2) * 520, 410 + Math.floor(i / 2) * 170, 26, { weight: 900 }); } });
+      if (n >= 4) label(ctx, "gejala ada tamu tak diundang", 1220, 720, { size: 26, color: C.bad });
+    },
+    virus_worm(ctx, b, l) {
+      card(ctx, 120, 150, 1680, 740);
+      card(ctx, 200, 230, 740, 480, { fill: C.bg2 }); text(ctx, "VIRUS: menumpang berkas", 570, 290, 30, { align: "center", weight: 900, color: Mw.color("virus") });
+      const p = clamp((l - 1) / 3, 0, 1); Mw.file(ctx, 380, 450, 150, { infected: true, name: "tugas.docx" }); if (p > 0.4) Mw.file(ctx, 620, 450, 150, { infected: p > 0.9, name: "foto.jpg" }); if (p > 0.4 && p < 0.9) Mw.bug(ctx, lerp(410, 650, (p - 0.4) / 0.5), 490, 60, "virus");
+      text(ctx, "aktif saat berkas dibuka, lalu menular", 570, 640, 24, { align: "center", weight: 800, color: C.ink2 });
+      if (l > 4) { card(ctx, 980, 230, 740, 480, { fill: C.bg2 }); text(ctx, "WORM: menjalar sendiri lewat jaringan", 1350, 290, 30, { align: "center", weight: 900, color: Mw.color("worm") }); const pts = [[1100, 450], [1350, 380], [1600, 450], [1350, 560]]; pts.forEach(pt => { ctx.strokeStyle = "#B7C4CC"; ctx.lineWidth = 4; ctx.setLineDash([8, 8]); ctx.beginPath(); ctx.moveTo(1350, 470); ctx.lineTo(pt[0], pt[1]); ctx.stroke(); ctx.setLineDash([]); D.monitor(ctx, pt[0] - 40, pt[1] - 30, 80, 60); }); const k = Math.floor((l - 4) / 0.8); pts.slice(0, Math.min(4, k)).forEach(pt => Mw.bug(ctx, pt[0], pt[1] - 10, 44, "worm", { t: l })); text(ctx, "tanpa dibuka, tanpa menumpang: lewat Wi-Fi atau kabel", 1350, 640, 22, { align: "center", weight: 800, color: C.ink2 }); }
+      if (l > 8) label(ctx, "dua tamu pertama: menumpang vs menjalar", 960, 700);
+    },
+
+    trojan(ctx, b, l) {
+      card(ctx, 120, 150, 1680, 740);
+      text(ctx, "TROJAN: MENYAMAR JADI YANG KAMU INGINKAN", 960, 230, 34, { align: "center", color: Mw.color("trojan"), weight: 800 });
+      const ph = D.phone(ctx, 420, 540, 320, 520); card(ctx, ph.x + 20, ph.y + 60, ph.w - 40, 140, { fill: "#FFF9E0", stroke: "#E0B04B", lw: 3, r: 14 }); text(ctx, "Kuota GRATIS 50GB!", ph.x + ph.w / 2, ph.y + 110, 22, { align: "center", weight: 900, color: C.accentDark }); card(ctx, ph.x + 60, ph.y + 140, ph.w - 120, 44, { fill: C.good, r: 10 }); text(ctx, "PASANG", ph.x + ph.w / 2, ph.y + 170, 20, { align: "center", weight: 900, color: "#fff" });
+      if (l > 1.5) D.finger(ctx, ph.x + ph.w / 2 + 10, ph.y + 190, {});
+      const rev = l > 3.5; Mw.bug(ctx, 960, 480, 220, "trojan", { reveal: rev });
+      if (rev) { text(ctx, "di dalamnya: program jahat", 960, 640, 26, { align: "center", weight: 900, color: C.bad }); }
+      if (l > 5.5) { card(ctx, 1240, 330, 460, 260, { fill: C.badBg, stroke: C.bad, lw: 4 }); ["kamu sendiri yang memasangnya", "sering dari luar toko resmi", "contoh: game bajakan, penambah kuota"].forEach((s, i) => text(ctx, "• " + s, 1270, 390 + i * 60, 22, { weight: 800 })); }
+      if (l > 8) banner(ctx, "hadiah yang terlalu bagus biasanya jebakan", 745, 900);
+    },
+    ransom_spy(ctx, b, l) {
+      card(ctx, 120, 150, 1680, 740);
+      card(ctx, 200, 230, 740, 480, { fill: C.bg2 }); text(ctx, "RANSOMWARE: mengunci berkas", 570, 290, 30, { align: "center", weight: 900, color: C.ink });
+      const lock = l > 1.5; ["tugas", "foto", "video"].forEach((nm, i) => Mw.file(ctx, 380 + i * 190, 430, 140, { locked: lock, name: lock ? nm + ".xq7" : nm }));
+      if (l > 3) { card(ctx, 300, 560, 540, 90, { fill: C.badBg, stroke: C.bad, lw: 3, r: 12 }); text(ctx, "\"Bayar untuk membuka berkasmu\"", 570, 615, 24, { align: "center", weight: 900, color: C.bad }); }
+      if (l > 4.5) { card(ctx, 980, 230, 740, 480, { fill: C.bg2 }); text(ctx, "SPYWARE: mengintip diam-diam", 1350, 290, 30, { align: "center", weight: 900, color: Mw.color("spyware") }); D.keyboard(ctx, 1060, 380, 420, { small: true }); Mw.bug(ctx, 1600, 420, 80, "spyware", { look: Math.sin(l * 3) }); const typed = "kata sandi: ra***"; text(ctx, typed, 1270, 540, 26, { align: "center", weight: 800 }); arrowIcon(ctx, "right", 1480, 530, 36, C.bad); text(ctx, "dikirim ke pembuatnya", 1350, 640, 22, { align: "center", weight: 800, color: C.bad }); }
+      if (l > 8) banner(ctx, "lima tamu: menumpang, menjalar, menyamar, mengunci, mengintip", 745, 1200, { size: 30 });
+    },
+
+    doors_map(ctx, b, l) {
+      card(ctx, 120, 150, 1680, 740);
+      text(ctx, "LIMA TAMU, LIMA PINTU", 960, 230, 34, { align: "center", color: C.accentDark, weight: 800 });
+      const n = reveal(l, 1.0, 1.3, 5);
+      KINDS.forEach(([k, t], i) => { const x = 400 + i * 280; ctx.save(); ctx.globalAlpha = i < n ? 1 : 0.2; Mw.bug(ctx, x, 320, 60, k, { t: l }); text(ctx, t, x, 390, 22, { align: "center", weight: 900, color: Mw.color(k) }); arrowIcon(ctx, "down", x, 430, 30, C.ink2); Mw.door(ctx, x, 680, 100, 190, "pintu " + DOORS[i], { hl: i === n - 1 }); ctx.restore(); });
+      if (n >= 5) label(ctx, "kenali pintunya dulu, baru kita jaga", 960, 820, { size: 26, color: C.ink2 });
+    },
+    habit_update(ctx, b, l) {
+      card(ctx, 120, 150, 1680, 740);
+      const n = reveal(l, 0.8, 3.0, 2);
+      Mw.habit(ctx, 200, 240, 740, 1, HABITS[0][0], HABITS[0][1], { on: n === 1, dim: n < 1 });
+      Mw.habit(ctx, 980, 240, 740, 2, HABITS[1][0], HABITS[1][1], { on: n === 2, dim: n < 2 });
+      if (n >= 1) { D.phone(ctx, 420, 600, 220, 300); card(ctx, 330, 520, 180, 60, { fill: C.goodBg, stroke: C.good, lw: 3, r: 10 }); text(ctx, "Perbarui sekarang", 420, 558, 18, { align: "center", weight: 900, color: C.good }); text(ctx, "menambal lubang yang dipakai worm", 760, 600, 22, { align: "center", weight: 800, color: C.ink2 }); }
+      if (n >= 2) { card(ctx, 1060, 420, 260, 200, { fill: C.goodBg, stroke: C.good, lw: 4, r: 14 }); text(ctx, "toko resmi", 1190, 470, 24, { align: "center", weight: 900, color: C.good }); text(ctx, "★★★★☆ 12 rb ulasan", 1190, 520, 20, { align: "center", weight: 800 }); card(ctx, 1380, 420, 300, 200, { fill: C.badBg, stroke: C.bad, lw: 4, r: 14 }); text(ctx, "unduh dari tautan grup", 1530, 470, 22, { align: "center", weight: 900, color: C.bad }); text(ctx, "tanpa ulasan, tanpa nama pembuat", 1530, 520, 18, { align: "center", weight: 800 }); text(ctx, "trojan paling sering dari sini", 1370, 680, 22, { align: "center", weight: 800, color: C.bad }); }
+    },
+
+    habit_click(ctx, b, l) {
+      card(ctx, 120, 150, 1680, 740);
+      Mw.habit(ctx, 200, 230, 1520, 3, HABITS[2][0], HABITS[2][1], { on: true });
+      const n = reveal(l, 1.2, 1.3, 3);
+      const traps = [["pesan dari nomor tak dikenal", "\"Selamat! Kamu menang hadiah, klik di sini\""], ["lampiran tak terduga", "\"nilai_rapor_final.exe\""], ["tombol unduh raksasa", "DOWNLOAD NOW di situs gratisan"]];
+      traps.forEach(([t, s], i) => { if (i < n) { card(ctx, 200 + i * 520, 400, 480, 200, { fill: C.badBg, stroke: C.bad, lw: 3, r: 14 }); text(ctx, "✕ " + t, 440 + i * 520, 450, 24, { align: "center", weight: 900, color: C.bad }); para(ctx, s, 440 + i * 520, 500, 20, 440, { align: "center", weight: 700, color: C.ink2, lh: 1.3 }); text(ctx, "→ lewati", 440 + i * 520, 575, 22, { align: "center", weight: 900, color: C.good }); } });
+      if (n >= 3) banner(ctx, "ragu? tanya pengirimnya lewat jalur lain", 745, 900, { fill: C.goodBg, stroke: C.good, color: C.good });
+    },
+    habit_av_backup(ctx, b, l) {
+      card(ctx, 120, 150, 1680, 740);
+      const n = reveal(l, 0.8, 3.0, 2);
+      Mw.habit(ctx, 200, 240, 740, 4, HABITS[3][0], HABITS[3][1], { on: n === 1, dim: n < 1 });
+      Mw.habit(ctx, 980, 240, 740, 5, HABITS[4][0], HABITS[4][1], { on: n === 2, dim: n < 2 });
+      if (n >= 1) { Mw.shield(ctx, 420, 560, 160); text(ctx, "memindai dan menghentikan malware", 570, 690, 22, { align: "center", weight: 800, color: C.ink2 }); Mw.bug(ctx, 620, 540, 50, "virus"); ctx.strokeStyle = C.bad; ctx.lineWidth = 6; ctx.beginPath(); ctx.moveTo(595, 515); ctx.lineTo(645, 565); ctx.moveTo(645, 515); ctx.lineTo(595, 565); ctx.stroke(); }
+      if (n >= 2) { Mw.file(ctx, 1150, 540, 130, { name: "tugas" }); arrowIcon(ctx, "right", 1280, 530, 40, C.good); D.fileIcon(ctx, 1420, 520, 70, "folder", {}); text(ctx, "awan / flashdisk", 1420, 590, 20, { align: "center", weight: 800, color: C.ink2 }); text(ctx, "ransomware mengunci? pulihkan, tak perlu bayar", 1350, 690, 22, { align: "center", weight: 900, color: C.good }); }
+    },
+
+    izin(ctx, b, l) {
+      card(ctx, 120, 150, 1680, 740);
+      text(ctx, "IZIN APLIKASI: BACA SEBELUM MENYETUJUI", 960, 230, 34, { align: "center", color: C.accentDark, weight: 800 });
+      const n = reveal(l, 1.0, 1.2, 4);
+      Mw.perms(ctx, 300, 290, 760, "Aplikasi Senter", [["menyalakan lampu kilat", true], ["membaca pesan SMS", false], ["mengakses kontak", false], ["lokasi setiap saat", false]], { n });
+      if (n >= 4) { Mw.bug(ctx, 1300, 420, 110, "spyware", { look: Math.sin(l * 2) }); text(ctx, "spyware hidup dari izin", 1300, 540, 26, { align: "center", weight: 900, color: Mw.color("spyware") }); text(ctx, "yang diberikan tanpa dibaca", 1300, 580, 26, { align: "center", weight: 900, color: Mw.color("spyware") }); card(ctx, 1150, 630, 300, 70, { fill: C.badBg, stroke: C.bad, lw: 3, r: 12 }); text(ctx, "TOLAK", 1300, 676, 28, { align: "center", weight: 900, color: C.bad }); }
+    },
+    checklist(ctx, b, l) {
+      card(ctx, 120, 150, 1680, 740);
+      text(ctx, "ENAM KEBIASAAN PENJAGA PINTU", 960, 230, 34, { align: "center", color: C.accentDark, weight: 800 });
+      const all = [...HABITS.map(h => h[0]), "Baca izin aplikasi"]; const n = reveal(l, 0.8, 0.9, 6);
+      all.forEach((t, i) => { const x = 260 + (i % 3) * 480, y = 290 + Math.floor(i / 3) * 170; ctx.save(); ctx.globalAlpha = i < n ? 1 : 0.2; card(ctx, x, y, 440, 130, { fill: C.goodBg, stroke: C.good, lw: 4, r: 16 }); Mw.shield(ctx, x + 60, y + 65, 70); text(ctx, t, x + 120, y + 75, 26, { weight: 900 }); ctx.restore(); });
+      if (n >= 6) banner(ctx, "enam kebiasaan kecil, perangkat jauh lebih aman", 745, 1000, { fill: C.goodBg, stroke: C.good, color: C.good, size: 30 });
+    },
+    make_show(ctx, b, l) {
+      card(ctx, 160, 150, 1600, 740);
+      text(ctx, "GILIRANMU", 960, 240, 34, { align: "center", color: C.accentDark, weight: 900 });
+      const items = [["Pasangkan tamu dan pintu", "lima jenis, lima cara masuk", (x, y) => { [0, 2, 4].forEach((k, i) => { Mw.bug(ctx, x - 150 + i * 150, y - 60, 50, KINDS[k][0]); arrowIcon(ctx, "down", x - 150 + i * 150, y - 10, 24, C.ink2); Mw.door(ctx, x - 150 + i * 150, y + 90, 50, 80, DOORS[k], {}); }); }],
+        ["Aman atau bahaya?", "sepuluh situasi", (x, y) => { card(ctx, x - 200, y - 80, 400, 60, { fill: C.goodBg, stroke: C.good, lw: 3, r: 12 }); text(ctx, "✓ unduh dari toko resmi", x, y - 42, 22, { align: "center", weight: 900, color: C.good }); card(ctx, x - 200, y, 400, 60, { fill: C.badBg, stroke: C.bad, lw: 3, r: 12 }); text(ctx, "✕ klik tautan hadiah", x, y + 38, 22, { align: "center", weight: 900, color: C.bad }); }],
+        ["Periksa izin aplikasi", "masuk akal atau tidak", (x, y) => { ctx.save(); ctx.translate(x - 200, y - 100); ctx.scale(0.65, 0.65); Mw.perms(ctx, 0, 0, 600, "Kalkulator", [["tidak perlu izin", true], ["mengakses kamera", false]], {}); ctx.restore(); }]];
+      items.forEach(([t1, t2, draw], i) => { const x = 400 + i * 560; card(ctx, x - 250, 290, 500, 440, { fill: C.bg2 }); ctx.fillStyle = C.kiko; ctx.beginPath(); ctx.arc(x - 200, 340, 28, 0, Math.PI * 2); ctx.fill(); text(ctx, String(i + 1), x - 200, 352, 30, { align: "center", color: "#fff", weight: 900 }); draw(x, 470); text(ctx, t1, x, 630, 26, { align: "center", weight: 900 }); text(ctx, t2, x, 668, 22, { align: "center", weight: 700, color: C.ink2 }); });
+      text(ctx, "di halaman latihan episode ini — lalu rapikan HP-mu bersama orang tua", 960, 820, 28, { align: "center", color: C.ink2, weight: 700 });
+    }
+  });
+})(typeof window !== "undefined" ? window : globalThis);
+</script>
+<script>/* Inti halaman latihan: pemutar (kanvas + narasi), tombol suara nyala/mati (berpindah antara timeline suara dan teks),
+   kuis dengan petunjuk, dan kemajuan di localStorage (perangkat ini saja).
+   Pakai:  const P = PageCore({ suara: TIMELINE_SUARA_atau_null, teks: TIMELINE_TEKS });
+   Episode menambahkan latihannya sendiri lewat P.$, P.K, P.H, P.progress, P.save(), P.speed(), P.onProgress(fn). */
+function PageCore(TLS, opt = {}) {
+  const $ = id => document.getElementById(id);
+  const K = Kiko, H = K.helpers;
+  let voice = !!TLS.suara; let TL = voice ? TLS.suara : TLS.teks;
+  // ---------- progress storage (per device only) ----------
+  const KEY = opt.key || TL.episode.replace(/\./g, "").toLowerCase() + "-progress";   // D7.5 -> "d75-progress"
+  let progress = { quiz: {} };
+  try { const s = localStorage.getItem(KEY); if (s) progress = { quiz: {}, ...JSON.parse(s) }; } catch (e) {}
+  const extras = [];
+  function renderProgress() {
+    const el = $("progress"); if (!el) return; el.innerHTML = "";
+    Object.keys(TL.quizzes).forEach((id, i) => { const s = document.createElement("span"); s.textContent = "Cek " + (i + 1); s.className = progress.quiz[id] ? "ok" : ""; el.appendChild(s); });
+    extras.forEach(f => f(el));
+  }
+  function save() { try { localStorage.setItem(KEY, JSON.stringify(progress)); } catch (e) {} renderProgress(); }
+
+  // ---------- player ----------
+  const cv = $("screen"), ctx = cv.getContext("2d");
+  let t = 0, playing = false, last = 0, speed = 1, hasAudio = false;
+  const nar = $("nar"); nar.addEventListener("canplay", () => { hasAudio = true; }); nar.addEventListener("error", () => { hasAudio = false; });
+  function fmt(s) { s = Math.max(0, Math.floor(s)); return Math.floor(s / 60) + ":" + String(s % 60).padStart(2, "0"); }
+  function segStart(i) { return TL.beats.find(b => b.seg === i).start; }
+  function syncAudio() { if (voice && hasAudio) { try { nar.currentTime = t; } catch (e) {} } }
+  function drawNow() {
+    const b = K.draw(ctx, Math.min(t, TL.total - 0.01), TL);
+    $("barfill").style.width = (t / TL.total * 100) + "%"; $("bar").setAttribute("aria-valuenow", Math.round(t / TL.total * 100));
+    $("timelabel").textContent = fmt(t) + " / " + fmt(TL.total);
+    [...$("chapters").children].forEach((c, i) => c.classList.toggle("now", i === b.seg));
+    return b;
+  }
+  function loop(now) {
+    if (!playing) return;
+    const dt = Math.min(0.1, (now - last) / 1000); last = now; if (voice && hasAudio && !nar.paused) t = nar.currentTime; else t += dt * speed;
+    if (t >= TL.total) { t = TL.total - 0.01; setPlaying(false); }
+    drawNow(); requestAnimationFrame(loop);
+  }
+  function setPlaying(p) {
+    playing = p; $("bigplay").hidden = p; $("playbtn").textContent = p ? "❚❚ Jeda" : "▶ Putar";
+    if (p) { last = performance.now(); if (voice && hasAudio) { try { nar.currentTime = t; nar.playbackRate = speed; nar.play().catch(() => {}); } catch (e) {} } requestAnimationFrame(loop); } else nar.pause();
+  }
+  $("bigplay").addEventListener("click", () => setPlaying(true));
+  $("playbtn").addEventListener("click", () => setPlaying(!playing));
+  $("replay").addEventListener("click", () => { const b = K.beatAt(TL, t); t = segStart(b.seg); syncAudio(); drawNow(); setPlaying(true); });
+  $("slow").addEventListener("click", e => { speed = speed === 1 ? 0.8 : 1; nar.playbackRate = speed; e.currentTarget.setAttribute("aria-pressed", speed !== 1); });
+  function seekFromBar(ev) { const r = $("bar").getBoundingClientRect(); const x = (ev.touches ? ev.touches[0].clientX : ev.clientX) - r.left; t = Math.max(0, Math.min(TL.total - 0.01, x / r.width * TL.total)); syncAudio(); drawNow(); }
+  $("bar").addEventListener("click", seekFromBar);
+  $("bar").addEventListener("keydown", e => { if (e.key === "ArrowRight") { t = Math.min(TL.total - 0.01, t + 5); syncAudio(); drawNow(); } if (e.key === "ArrowLeft") { t = Math.max(0, t - 5); syncAudio(); drawNow(); } });
+  TL.segments.forEach((name, i) => { const b = document.createElement("button"); b.textContent = (i + 1) + ". " + name; b.addEventListener("click", () => { t = segStart(i); syncAudio(); drawNow(); setPlaying(true); }); $("chapters").appendChild(b); });
+  // voice on/off: switches between the narrated timeline and the reading-paced one, staying on the same beat
+  const vb = $("voice");
+  function setVoice(on) {
+    const cur = K.beatAt(TL, t);
+    voice = on && !!TLS.suara; TL = voice ? TLS.suara : TLS.teks;
+    const nb = TL.beats.find(b => b.id === cur.id) || TL.beats[0]; t = nb.start;
+    if (vb) { vb.setAttribute("aria-pressed", voice); vb.textContent = voice ? "🔊 Suara: nyala" : "🔇 Suara: mati"; }
+    if (playing) { if (voice && hasAudio) { try { nar.currentTime = t; nar.playbackRate = speed; nar.play().catch(() => {}); } catch (e) {} } else nar.pause(); }
+    drawNow();
+  }
+  if (vb) { if (!TLS.suara || !TLS.teks) vb.hidden = true; else { vb.addEventListener("click", () => setVoice(!voice)); vb.setAttribute("aria-pressed", voice); vb.textContent = voice ? "🔊 Suara: nyala" : "🔇 Suara: mati"; } }
+  drawNow();
+
+  // ---------- quiz ----------
+  const quizEl = $("quiz");
+  if (quizEl) Object.entries(TL.quizzes).forEach(([id, q], qi) => {
+    const box = document.createElement("div"); box.className = "q";
+    box.innerHTML = `<h3>${qi + 1}. ${q.q}</h3><div class="opts"></div><div class="fb"></div>`;
+    const opts = box.querySelector(".opts"), fb = box.querySelector(".fb");
+    q.options.forEach((o, i) => {
+      const b = document.createElement("button"); b.innerHTML = `<b>${"ABC"[i]}</b><span>${o}</span>`;
+      b.addEventListener("click", () => {
+        [...opts.children].forEach(c => c.classList.remove("wrong"));
+        if (i === q.answer) { b.classList.add("right"); fb.className = "fb good"; fb.textContent = "Benar! " + (q.explain || ""); progress.quiz[id] = true; save(); [...opts.children].forEach(c => c.disabled = true); }
+        else { b.classList.add("wrong"); fb.className = "fb bad"; fb.textContent = "Belum tepat. Petunjuk: " + q.hint; }
+      });
+      opts.appendChild(b);
+    });
+    if (progress.quiz[id]) { opts.children[q.answer].classList.add("right"); [...opts.children].forEach(c => c.disabled = true); fb.className = "fb good"; fb.textContent = "Sudah dijawab benar."; }
+    quizEl.appendChild(box);
+  });
+  renderProgress();
+
+  return { $, K, H, progress, save, renderProgress, speed: () => speed, timeline: () => TL,
+           onProgress(fn) { extras.push(fn); renderProgress(); } };
+}
+</script>
+<script>
+(function () {
+  const P = PageCore({ suara: {"episode": "D9.3", "title": "Melindungi Perangkat dari Malware", "hook": "membedakan virus, worm, trojan, ransomware, dan spyware dari cara masuknya, lalu menutup pintunya.", "engine": ["../_alat/kiko-core.js", "../_alat/kiko-devices.js", "malware.js", "scenes.js"], "parts": {"D9.3a": {"segs": [0, 1, 2, 3], "post": "Lanjut ke Bagian 2: Menutup Pintu Masuk"}, "D9.3b": {"segs": [4, 5, 6, 7], "pre": "Bagian 2: Menutup Pintu Masuk"}}, "youtube": {"ringkas": "Laptop Dito tiba-tiba lambat, muncul iklan, dan sebuah berkas tugas berubah nama. Ada tamu tak diundang: malware. Bersama Kiko kita bedakan lima jenisnya dari cara masuk dan ulahnya: virus menumpang berkas, worm menjalar sendiri lewat jaringan, trojan menyamar jadi aplikasi gratis, ransomware mengunci berkas dan minta tebusan, spyware mengintip diam-diam. Lalu lima kebiasaan menutup pintunya: perbarui, unduh dari sumber resmi, jangan klik sembarangan, antivirus, dan cadangan. Semua digambarkan secara konseptual, tanpa kode berbahaya. Empat cek pemahaman dengan jeda berpikir.", "belajar": ["menjelaskan arti malware dan gejala perangkat yang terinfeksi", "membedakan virus, worm, trojan, ransomware, dan spyware dari cara masuk dan ulahnya", "menyebut lima kebiasaan pengaman: pembaruan, sumber resmi, tidak klik sembarangan, antivirus, cadangan", "memutuskan tindakan yang tepat saat menemukan tautan, lampiran, atau aplikasi mencurigakan"], "bagian": {"D9.3a": "Lima Jenis Malware", "D9.3b": "Menutup Pintu Masuk"}, "cari": ["jenis malware kelas 9", "perbedaan virus worm trojan untuk pelajar", "cara melindungi hp dan laptop dari virus", "materi informatika kelas 9 keamanan perangkat"], "prasyarat": "episode D9.2 Jaringan Lokal dan Internet", "jp": 6, "tagar": ["#Malware", "#KeamananDigital", "#Antivirus", "#LiterasiDigital", "#Kelas9", "#SMP"]}, "recap": ["Malware: program jahat; lima jenis, lima cara masuk.", "Menumpang, menjalar, menyamar, mengunci, mengintip.", "Tutup pintu: perbarui, sumber resmi, antivirus, cadangan."], "next": {"code": "D9.4", "title": "Data Pribadi, Identitas Digital, dan Kesadaran Penuh", "note": "Latihan pilah aman atau bahaya ada di halaman episode ini."}, "segments": ["Pembuka", "Main dulu tanpa komputer", "Virus dan worm", "Trojan, ransomware, spyware", "Pintu dan pembaruan", "Klik, antivirus, cadangan", "Izin aplikasi", "Giliranmu"], "quizzes": {"q1": {"q": "Malware menyebar sendiri ke semua laptop lab lewat Wi-Fi tanpa ada yang membuka apa pun. Jenis apa?", "options": ["Virus", "Worm", "Trojan"], "answer": 1, "hint": "Menjalar sendiri lewat jaringan, tidak menumpang berkas, tidak perlu dibuka."}, "q2": {"q": "Dito memasang 'aplikasi penambah kuota gratis' dari tautan di grup; HP jadi lambat dan penuh iklan. Jenis apa?", "options": ["Worm", "Trojan", "Ransomware"], "answer": 1, "hint": "Menyamar jadi aplikasi yang diinginkan, dipasang sendiri oleh pengguna."}, "q3": {"q": "HP menampilkan: 'pembaruan sistem tersedia'. Apa yang sebaiknya kamu lakukan?", "options": ["Abaikan, nanti HP jadi lambat", "Pasang pembaruannya", "Hapus aplikasi pengaturan"], "answer": 1, "hint": "Pembaruan menambal lubang keamanan yang dipakai malware, terutama worm."}, "q4": {"q": "Berkas tugasmu terkunci ransomware yang minta tebusan. Langkah paling tepat?", "options": ["Bayar supaya cepat selesai", "Jangan bayar; lapor, bersihkan, pulihkan dari cadangan", "Matikan HP selamanya"], "answer": 1, "hint": "Membayar tidak menjamin berkas kembali. Cadangan adalah penyelamatnya."}}, "beats": [{"id": "intro1", "seg": 0, "scene": "title", "text": "Halo! Aku Kiko. Laptop Dito tiba-tiba lambat, iklan muncul sendiri, dan berkas tugasnya berubah nama menjadi huruf-huruf aneh. Ada tamu tak diundang di dalamnya.", "hold": 1.0, "start": 0.0, "speech": 0.4, "audio": 11.061, "dur": 14.04}, {"id": "intro2", "seg": 0, "scene": "title_q", "text": "Tamu itu disebut malware: program jahat. Hari ini kita bedakan lima jenisnya dari cara masuknya, lalu belajar lima kebiasaan untuk menutup pintunya.", "hold": 0.8, "start": 14.04, "speech": 14.44, "audio": 10.477, "dur": 12.84}, {"id": "intro3", "seg": 0, "scene": "prereq", "text": "Episode ini melanjutkan D9.2 tentang jaringan, karena banyak malware masuk lewat jaringan. Kalau belum menontonnya, tonton dulu, ya.", "hold": 0.8, "start": 26.88, "speech": 27.28, "audio": 9.405, "dur": 10.905}, {"id": "play1", "seg": 1, "scene": "unplugged_doors", "text": "Main dulu. Gambar sebuah rumah dengan lima pintu: pintu berkas, pintu jaringan, pintu unduhan, pintu tautan, dan pintu izin aplikasi. Tiap tamu jahat punya pintu kesukaannya.", "hold": 0.6, "start": 37.785, "speech": 38.185, "audio": 13.072, "dur": 14.64}, {"id": "play2", "seg": 1, "scene": "unplugged_guard", "text": "Lalu tulis satu kebiasaan penjaga di tiap pintu. Pintu yang dijaga sulit dimasuki. Itulah inti episode ini: kenali pintunya, tutup pintunya.", "hold": 1.0, "start": 52.425, "speech": 52.825, "audio": 10.48, "dur": 12.54}, {"id": "s1a", "seg": 2, "scene": "malware_def", "text": "Malware adalah gabungan kata malicious dan software: perangkat lunak yang dibuat untuk merusak, mencuri, atau mengunci. Gejalanya: perangkat lambat, iklan muncul sendiri, baterai cepat habis, berkas hilang atau berubah.", "hold": 0.6, "start": 64.965, "speech": 65.365, "audio": 16.16, "dur": 17.46}, {"id": "s1b", "seg": 2, "scene": "virus_worm", "text": "Jenis pertama, virus: menumpang pada berkas, misalnya dokumen atau program. Ia aktif saat berkasnya dibuka, lalu menular ke berkas lain. Jenis kedua, worm: tidak perlu ditumpangi dan tidak perlu dibuka. Ia menjalar sendiri dari perangkat ke perangkat lewat jaringan.", "hold": 0.8, "start": 82.425, "speech": 82.825, "audio": 19.231, "dur": 21.34}, {"id": "q1", "seg": 2, "scene": "quiz", "quiz": "q1", "text": "Cek pemahaman. Malware menyebar sendiri ke semua laptop di lab lewat Wi-Fi tanpa ada yang membuka apa pun. Jenis apa itu? Pikirkan dulu.", "hold": 4.0, "start": 103.765, "speech": 104.165, "audio": 9.682, "dur": 16.54}, {"id": "q1a", "seg": 2, "scene": "quiz_answer", "quiz": "q1", "text": "Jawabannya: worm. Menjalar sendiri lewat jaringan, tanpa menumpang berkas dan tanpa dibuka.", "hold": 1.0, "start": 120.305, "speech": 120.705, "audio": 6.683, "dur": 8.383}, {"id": "s2a", "seg": 3, "scene": "trojan", "text": "Jenis ketiga, trojan: menyamar jadi sesuatu yang kamu inginkan, misalnya aplikasi game gratis atau penambah kuota. Kamu sendiri yang memasangnya. Di dalamnya ada program jahat yang diam-diam bekerja.", "hold": 0.6, "start": 128.688, "speech": 129.088, "audio": 13.643, "dur": 15.64}, {"id": "s2b", "seg": 3, "scene": "ransom_spy", "text": "Jenis keempat, ransomware: mengunci berkasmu dengan sandi, lalu minta tebusan. Jenis kelima, spyware: mengintip diam-diam, mencatat apa yang kamu ketik, termasuk kata sandi, lalu mengirimkannya ke pembuatnya.", "hold": 0.8, "start": 144.328, "speech": 144.728, "audio": 15.519, "dur": 17.019}, {"id": "q2", "seg": 3, "scene": "quiz", "quiz": "q2", "text": "Cek pemahaman. Dito memasang aplikasi penambah kuota gratis dari tautan di grup. Sejak itu HP-nya lambat dan iklan bermunculan. Jenis apa yang paling mungkin?", "hold": 4.0, "start": 161.347, "speech": 161.747, "audio": 11.68, "dur": 17.04}, {"id": "q2a", "seg": 3, "scene": "quiz_answer", "quiz": "q2", "text": "Jawabannya: trojan. Menyamar jadi aplikasi yang diinginkan, dipasang sendiri oleh pengguna.", "hold": 1.0, "start": 178.387, "speech": 178.787, "audio": 6.61, "dur": 8.31}, {"id": "s3a", "seg": 4, "scene": "doors_map", "text": "Bagian dua. Lima tamu, lima pintu. Virus lewat pintu berkas. Worm lewat pintu jaringan. Trojan lewat pintu unduhan. Ransomware sering lewat pintu tautan dan lampiran. Spyware lewat pintu izin aplikasi yang berlebihan.", "hold": 0.8, "start": 186.697, "speech": 187.097, "audio": 16.639, "dur": 18.139}, {"id": "s3b", "seg": 4, "scene": "habit_update", "text": "Kebiasaan satu: perbarui sistem dan aplikasi. Pembaruan menambal lubang yang dipakai worm. Kebiasaan dua: unduh hanya dari toko aplikasi resmi, dan baca ulasannya. Trojan paling sering datang dari luar toko resmi.", "hold": 0.8, "start": 204.836, "speech": 205.236, "audio": 15.698, "dur": 17.34}, {"id": "q3", "seg": 4, "scene": "quiz", "quiz": "q3", "text": "Cek pemahaman. HP-mu menampilkan pemberitahuan: pembaruan sistem tersedia. Apa yang sebaiknya kamu lakukan?", "hold": 4.0, "start": 222.176, "speech": 222.576, "audio": 7.713, "dur": 12.413}, {"id": "q3a", "seg": 4, "scene": "quiz_answer", "quiz": "q3", "text": "Jawabannya: pasang pembaruannya, karena pembaruan menambal lubang keamanan yang dipakai malware.", "hold": 1.0, "start": 234.589, "speech": 234.989, "audio": 6.431, "dur": 8.131}, {"id": "s4a", "seg": 5, "scene": "habit_click", "text": "Kebiasaan tiga: jangan klik sembarangan. Tautan dari pengirim tak dikenal, lampiran tak terduga, dan tombol unduh raksasa di situs gratisan: lewati. Kalau ragu, tanya pengirimnya lewat jalur lain.", "hold": 0.6, "start": 242.72, "speech": 243.12, "audio": 13.929, "dur": 15.64}, {"id": "s4b", "seg": 5, "scene": "habit_av_backup", "text": "Kebiasaan empat: nyalakan antivirus bawaan dan biarkan ia memindai. Kebiasaan lima: cadangkan berkas penting ke tempat lain, misalnya penyimpanan awan atau flashdisk. Kalau ransomware mengunci, kamu tidak perlu membayar.", "hold": 0.8, "start": 258.36, "speech": 258.76, "audio": 15.27, "dur": 16.77}, {"id": "q4", "seg": 5, "scene": "quiz", "quiz": "q4", "text": "Cek pemahaman. Berkas tugasmu terkunci oleh ransomware yang minta tebusan. Mana langkah yang paling tepat?", "hold": 4.0, "start": 275.13, "speech": 275.53, "audio": 7.072, "dur": 12.54}, {"id": "q4a", "seg": 5, "scene": "quiz_answer", "quiz": "q4", "text": "Jawabannya: jangan bayar, lapor ke orang dewasa atau guru, bersihkan perangkat, lalu pulihkan dari cadangan.", "hold": 1.0, "start": 287.67, "speech": 288.07, "audio": 8.48, "dur": 10.18}, {"id": "s5a", "seg": 6, "scene": "izin", "text": "Satu hal lagi: izin aplikasi. Aplikasi senter tidak perlu izin membaca pesanmu. Kalau aplikasi meminta izin yang tidak masuk akal, tolak. Spyware hidup dari izin yang diberikan tanpa dibaca.", "hold": 0.8, "start": 297.85, "speech": 298.25, "audio": 13.177, "dur": 16.34}, {"id": "s5b", "seg": 6, "scene": "checklist", "text": "Rangkuman penjaga pintu: perbarui, unduh dari sumber resmi, jangan klik sembarangan, antivirus menyala, cadangan rutin, dan izin aplikasi dibaca. Enam kebiasaan kecil, perangkat jauh lebih aman.", "hold": 1.0, "start": 314.19, "speech": 314.59, "audio": 14.96, "dur": 16.66}, {"id": "s6a", "seg": 7, "scene": "make_show", "text": "Sekarang giliranmu. Di halaman latihan: pasangkan lima jenis malware dengan cara masuknya, pilah aman atau bahaya dari sepuluh situasi, dan periksa izin aplikasi yang masuk akal.", "hold": 0.6, "start": 330.85, "speech": 331.25, "audio": 12.354, "dur": 14.64}, {"id": "s6b", "seg": 7, "scene": "make_show", "text": "Lalu cek HP-mu hari ini: ada pembaruan yang tertunda? aplikasi dari luar toko resmi? izin yang berlebihan? Rapikan bersama orang tua.", "hold": 1.5, "start": 345.49, "speech": 345.89, "audio": 9.082, "dur": 13.04}, {"id": "recap", "seg": 7, "scene": "recap", "text": "Tiga hal untuk diingat. Satu: malware adalah program jahat, lima jenis dengan lima cara masuk. Dua: virus menumpang, worm menjalar, trojan menyamar, ransomware mengunci, spyware mengintip. Tiga: tutup pintunya dengan perbarui, sumber resmi, jangan klik sembarangan, antivirus, dan cadangan.", "hold": 1.5, "start": 358.53, "speech": 358.93, "audio": 21.24, "dur": 23.44}, {"id": "outro", "seg": 7, "scene": "outro", "text": "Sampai jumpa di episode berikutnya: data pribadi dan identitas digital. Apa yang boleh kubagikan?", "hold": 2.5, "start": 381.97, "speech": 382.37, "audio": 6.77, "dur": 10.54}], "total": 392.51}, teks: {"episode": "D9.3", "title": "Melindungi Perangkat dari Malware", "hook": "membedakan virus, worm, trojan, ransomware, dan spyware dari cara masuknya, lalu menutup pintunya.", "engine": ["../_alat/kiko-core.js", "../_alat/kiko-devices.js", "malware.js", "scenes.js"], "parts": {"D9.3a": {"segs": [0, 1, 2, 3], "post": "Lanjut ke Bagian 2: Menutup Pintu Masuk"}, "D9.3b": {"segs": [4, 5, 6, 7], "pre": "Bagian 2: Menutup Pintu Masuk"}}, "youtube": {"ringkas": "Laptop Dito tiba-tiba lambat, muncul iklan, dan sebuah berkas tugas berubah nama. Ada tamu tak diundang: malware. Bersama Kiko kita bedakan lima jenisnya dari cara masuk dan ulahnya: virus menumpang berkas, worm menjalar sendiri lewat jaringan, trojan menyamar jadi aplikasi gratis, ransomware mengunci berkas dan minta tebusan, spyware mengintip diam-diam. Lalu lima kebiasaan menutup pintunya: perbarui, unduh dari sumber resmi, jangan klik sembarangan, antivirus, dan cadangan. Semua digambarkan secara konseptual, tanpa kode berbahaya. Empat cek pemahaman dengan jeda berpikir.", "belajar": ["menjelaskan arti malware dan gejala perangkat yang terinfeksi", "membedakan virus, worm, trojan, ransomware, dan spyware dari cara masuk dan ulahnya", "menyebut lima kebiasaan pengaman: pembaruan, sumber resmi, tidak klik sembarangan, antivirus, cadangan", "memutuskan tindakan yang tepat saat menemukan tautan, lampiran, atau aplikasi mencurigakan"], "bagian": {"D9.3a": "Lima Jenis Malware", "D9.3b": "Menutup Pintu Masuk"}, "cari": ["jenis malware kelas 9", "perbedaan virus worm trojan untuk pelajar", "cara melindungi hp dan laptop dari virus", "materi informatika kelas 9 keamanan perangkat"], "prasyarat": "episode D9.2 Jaringan Lokal dan Internet", "jp": 6, "tagar": ["#Malware", "#KeamananDigital", "#Antivirus", "#LiterasiDigital", "#Kelas9", "#SMP"]}, "recap": ["Malware: program jahat; lima jenis, lima cara masuk.", "Menumpang, menjalar, menyamar, mengunci, mengintip.", "Tutup pintu: perbarui, sumber resmi, antivirus, cadangan."], "next": {"code": "D9.4", "title": "Data Pribadi, Identitas Digital, dan Kesadaran Penuh", "note": "Latihan pilah aman atau bahaya ada di halaman episode ini."}, "segments": ["Pembuka", "Main dulu tanpa komputer", "Virus dan worm", "Trojan, ransomware, spyware", "Pintu dan pembaruan", "Klik, antivirus, cadangan", "Izin aplikasi", "Giliranmu"], "quizzes": {"q1": {"q": "Malware menyebar sendiri ke semua laptop lab lewat Wi-Fi tanpa ada yang membuka apa pun. Jenis apa?", "options": ["Virus", "Worm", "Trojan"], "answer": 1, "hint": "Menjalar sendiri lewat jaringan, tidak menumpang berkas, tidak perlu dibuka."}, "q2": {"q": "Dito memasang 'aplikasi penambah kuota gratis' dari tautan di grup; HP jadi lambat dan penuh iklan. Jenis apa?", "options": ["Worm", "Trojan", "Ransomware"], "answer": 1, "hint": "Menyamar jadi aplikasi yang diinginkan, dipasang sendiri oleh pengguna."}, "q3": {"q": "HP menampilkan: 'pembaruan sistem tersedia'. Apa yang sebaiknya kamu lakukan?", "options": ["Abaikan, nanti HP jadi lambat", "Pasang pembaruannya", "Hapus aplikasi pengaturan"], "answer": 1, "hint": "Pembaruan menambal lubang keamanan yang dipakai malware, terutama worm."}, "q4": {"q": "Berkas tugasmu terkunci ransomware yang minta tebusan. Langkah paling tepat?", "options": ["Bayar supaya cepat selesai", "Jangan bayar; lapor, bersihkan, pulihkan dari cadangan", "Matikan HP selamanya"], "answer": 1, "hint": "Membayar tidak menjamin berkas kembali. Cadangan adalah penyelamatnya."}}, "beats": [{"id": "intro1", "seg": 0, "scene": "title", "text": "Halo! Aku Kiko. Laptop Dito tiba-tiba lambat, iklan muncul sendiri, dan berkas tugasnya berubah nama menjadi huruf-huruf aneh. Ada tamu tak diundang di dalamnya.", "hold": 1.0, "start": 0.0, "speech": 0.0, "audio": 15.8, "dur": 17.8}, {"id": "intro2", "seg": 0, "scene": "title_q", "text": "Tamu itu disebut malware: program jahat. Hari ini kita bedakan lima jenisnya dari cara masuknya, lalu belajar lima kebiasaan untuk menutup pintunya.", "hold": 0.8, "start": 17.8, "speech": 17.8, "audio": 14.55, "dur": 16.35}, {"id": "intro3", "seg": 0, "scene": "prereq", "text": "Episode ini melanjutkan D9.2 tentang jaringan, karena banyak malware masuk lewat jaringan. Kalau belum menontonnya, tonton dulu, ya.", "hold": 0.8, "start": 34.15, "speech": 34.15, "audio": 12.05, "dur": 13.85}, {"id": "play1", "seg": 1, "scene": "unplugged_doors", "text": "Main dulu. Gambar sebuah rumah dengan lima pintu: pintu berkas, pintu jaringan, pintu unduhan, pintu tautan, dan pintu izin aplikasi. Tiap tamu jahat punya pintu kesukaannya.", "hold": 0.6, "start": 48.0, "speech": 48.0, "audio": 17.05, "dur": 18.65}, {"id": "play2", "seg": 1, "scene": "unplugged_guard", "text": "Lalu tulis satu kebiasaan penjaga di tiap pintu. Pintu yang dijaga sulit dimasuki. Itulah inti episode ini: kenali pintunya, tutup pintunya.", "hold": 1.0, "start": 66.65, "speech": 66.65, "audio": 13.925, "dur": 15.925}, {"id": "s1a", "seg": 2, "scene": "malware_def", "text": "Malware adalah gabungan kata malicious dan software: perangkat lunak yang dibuat untuk merusak, mencuri, atau mengunci. Gejalanya: perangkat lambat, iklan muncul sendiri, baterai cepat habis, berkas hilang atau berubah.", "hold": 0.6, "start": 82.575, "speech": 82.575, "audio": 18.925, "dur": 20.525}, {"id": "s1b", "seg": 2, "scene": "virus_worm", "text": "Jenis pertama, virus: menumpang pada berkas, misalnya dokumen atau program. Ia aktif saat berkasnya dibuka, lalu menular ke berkas lain. Jenis kedua, worm: tidak perlu ditumpangi dan tidak perlu dibuka. Ia menjalar sendiri dari perangkat ke perangkat lewat jaringan.", "hold": 0.8, "start": 103.1, "speech": 103.1, "audio": 25.175, "dur": 26.975}, {"id": "q1", "seg": 2, "scene": "quiz", "quiz": "q1", "text": "Cek pemahaman. Malware menyebar sendiri ke semua laptop di lab lewat Wi-Fi tanpa ada yang membuka apa pun. Jenis apa itu? Pikirkan dulu.", "hold": 4.0, "start": 130.075, "speech": 130.075, "audio": 15.175, "dur": 20.175}, {"id": "q1a", "seg": 2, "scene": "quiz_answer", "quiz": "q1", "text": "Jawabannya: worm. Menjalar sendiri lewat jaringan, tanpa menumpang berkas dan tanpa dibuka.", "hold": 1.0, "start": 150.25, "speech": 150.25, "audio": 8.3, "dur": 10.3}, {"id": "s2a", "seg": 3, "scene": "trojan", "text": "Jenis ketiga, trojan: menyamar jadi sesuatu yang kamu inginkan, misalnya aplikasi game gratis atau penambah kuota. Kamu sendiri yang memasangnya. Di dalamnya ada program jahat yang diam-diam bekerja.", "hold": 0.6, "start": 160.55, "speech": 160.55, "audio": 18.3, "dur": 19.9}, {"id": "s2b", "seg": 3, "scene": "ransom_spy", "text": "Jenis keempat, ransomware: mengunci berkasmu dengan sandi, lalu minta tebusan. Jenis kelima, spyware: mengintip diam-diam, mencatat apa yang kamu ketik, termasuk kata sandi, lalu mengirimkannya ke pembuatnya.", "hold": 0.8, "start": 180.45, "speech": 180.45, "audio": 17.675, "dur": 19.475}, {"id": "q2", "seg": 3, "scene": "quiz", "quiz": "q2", "text": "Cek pemahaman. Dito memasang aplikasi penambah kuota gratis dari tautan di grup. Sejak itu HP-nya lambat dan iklan bermunculan. Jenis apa yang paling mungkin?", "hold": 4.0, "start": 199.925, "speech": 199.925, "audio": 15.8, "dur": 20.8}, {"id": "q2a", "seg": 3, "scene": "quiz_answer", "quiz": "q2", "text": "Jawabannya: trojan. Menyamar jadi aplikasi yang diinginkan, dipasang sendiri oleh pengguna.", "hold": 1.0, "start": 220.725, "speech": 220.725, "audio": 7.675, "dur": 9.675}, {"id": "s3a", "seg": 4, "scene": "doors_map", "text": "Bagian dua. Lima tamu, lima pintu. Virus lewat pintu berkas. Worm lewat pintu jaringan. Trojan lewat pintu unduhan. Ransomware sering lewat pintu tautan dan lampiran. Spyware lewat pintu izin aplikasi yang berlebihan.", "hold": 0.8, "start": 230.4, "speech": 230.4, "audio": 20.8, "dur": 22.6}, {"id": "s3b", "seg": 4, "scene": "habit_update", "text": "Kebiasaan satu: perbarui sistem dan aplikasi. Pembaruan menambal lubang yang dipakai worm. Kebiasaan dua: unduh hanya dari toko aplikasi resmi, dan baca ulasannya. Trojan paling sering datang dari luar toko resmi.", "hold": 0.8, "start": 253.0, "speech": 253.0, "audio": 20.175, "dur": 21.975}, {"id": "q3", "seg": 4, "scene": "quiz", "quiz": "q3", "text": "Cek pemahaman. HP-mu menampilkan pemberitahuan: pembaruan sistem tersedia. Apa yang sebaiknya kamu lakukan?", "hold": 4.0, "start": 274.975, "speech": 274.975, "audio": 8.925, "dur": 13.925}, {"id": "q3a", "seg": 4, "scene": "quiz_answer", "quiz": "q3", "text": "Jawabannya: pasang pembaruannya, karena pembaruan menambal lubang keamanan yang dipakai malware.", "hold": 1.0, "start": 288.9, "speech": 288.9, "audio": 7.675, "dur": 9.675}, {"id": "s4a", "seg": 5, "scene": "habit_click", "text": "Kebiasaan tiga: jangan klik sembarangan. Tautan dari pengirim tak dikenal, lampiran tak terduga, dan tombol unduh raksasa di situs gratisan: lewati. Kalau ragu, tanya pengirimnya lewat jalur lain.", "hold": 0.6, "start": 298.575, "speech": 298.575, "audio": 18.3, "dur": 19.9}, {"id": "s4b", "seg": 5, "scene": "habit_av_backup", "text": "Kebiasaan empat: nyalakan antivirus bawaan dan biarkan ia memindai. Kebiasaan lima: cadangkan berkas penting ke tempat lain, misalnya penyimpanan awan atau flashdisk. Kalau ransomware mengunci, kamu tidak perlu membayar.", "hold": 0.8, "start": 318.475, "speech": 318.475, "audio": 18.925, "dur": 20.725}, {"id": "q4", "seg": 5, "scene": "quiz", "quiz": "q4", "text": "Cek pemahaman. Berkas tugasmu terkunci oleh ransomware yang minta tebusan. Mana langkah yang paling tepat?", "hold": 4.0, "start": 339.2, "speech": 339.2, "audio": 10.175, "dur": 15.175}, {"id": "q4a", "seg": 5, "scene": "quiz_answer", "quiz": "q4", "text": "Jawabannya: jangan bayar, lapor ke orang dewasa atau guru, bersihkan perangkat, lalu pulihkan dari cadangan.", "hold": 1.0, "start": 354.375, "speech": 354.375, "audio": 10.175, "dur": 12.175}, {"id": "s5a", "seg": 6, "scene": "izin", "text": "Satu hal lagi: izin aplikasi. Aplikasi senter tidak perlu izin membaca pesanmu. Kalau aplikasi meminta izin yang tidak masuk akal, tolak. Spyware hidup dari izin yang diberikan tanpa dibaca.", "hold": 0.8, "start": 366.55, "speech": 366.55, "audio": 18.925, "dur": 20.725}, {"id": "s5b", "seg": 6, "scene": "checklist", "text": "Rangkuman penjaga pintu: perbarui, unduh dari sumber resmi, jangan klik sembarangan, antivirus menyala, cadangan rutin, dan izin aplikasi dibaca. Enam kebiasaan kecil, perangkat jauh lebih aman.", "hold": 1.0, "start": 387.275, "speech": 387.275, "audio": 17.05, "dur": 19.05}, {"id": "s6a", "seg": 7, "scene": "make_show", "text": "Sekarang giliranmu. Di halaman latihan: pasangkan lima jenis malware dengan cara masuknya, pilah aman atau bahaya dari sepuluh situasi, dan periksa izin aplikasi yang masuk akal.", "hold": 0.6, "start": 406.325, "speech": 406.325, "audio": 17.05, "dur": 18.65}, {"id": "s6b", "seg": 7, "scene": "make_show", "text": "Lalu cek HP-mu hari ini: ada pembaruan yang tertunda? aplikasi dari luar toko resmi? izin yang berlebihan? Rapikan bersama orang tua.", "hold": 1.5, "start": 424.975, "speech": 424.975, "audio": 13.925, "dur": 16.425}, {"id": "recap", "seg": 7, "scene": "recap", "text": "Tiga hal untuk diingat. Satu: malware adalah program jahat, lima jenis dengan lima cara masuk. Dua: virus menumpang, worm menjalar, trojan menyamar, ransomware mengunci, spyware mengintip. Tiga: tutup pintunya dengan perbarui, sumber resmi, jangan klik sembarangan, antivirus, dan cadangan.", "hold": 1.5, "start": 441.4, "speech": 441.4, "audio": 25.175, "dur": 27.675}, {"id": "outro", "seg": 7, "scene": "outro", "text": "Sampai jumpa di episode berikutnya: data pribadi dan identitas digital. Apa yang boleh kubagikan?", "hold": 2.5, "start": 469.075, "speech": 469.075, "audio": 9.55, "dur": 13.05}], "total": 482.125} });
+  const { $, progress, save } = P; progress.levels = progress.levels || {};
+  const KINDS = [["virus", "Virus", "#D9443B"], ["worm", "Worm", "#8E6BBF"], ["trojan", "Trojan", "#C98A57"], ["ransomware", "Ransomware", "#1F2A33"], ["spyware", "Spyware", "#2E7E9A"]];
+  const DOORS = [["berkas", "Pintu berkas: menumpang dokumen atau program"], ["jaringan", "Pintu jaringan: menjalar sendiri lewat Wi-Fi"], ["unduhan", "Pintu unduhan: menyamar jadi aplikasi gratis"], ["tautan", "Pintu tautan dan lampiran: mengunci berkas, minta tebusan"], ["izin", "Pintu izin aplikasi: mengintip diam-diam"]];
+  const KEY = { virus: "berkas", worm: "jaringan", trojan: "unduhan", ransomware: "tautan", spyware: "izin" };
+  const HINT = { virus: "Virus tidak bisa jalan sendiri; ia menumpang pada berkas yang kamu buka.", worm: "Worm tidak perlu dibuka siapa pun; ia menjalar lewat jaringan.", trojan: "Trojan menyamar jadi hadiah: aplikasi gratis yang kamu pasang sendiri.", ransomware: "Ransomware sering datang lewat tautan atau lampiran yang diklik, lalu mengunci berkas.", spyware: "Spyware hidup dari izin yang kamu berikan tanpa dibaca." };
+  const SIT = [
+    ["Memasang pembaruan sistem saat HP menampilkan pemberitahuan pembaruan tersedia.", true, "Pembaruan menambal lubang keamanan. Ini kebiasaan satu."],
+    ["Mengunduh aplikasi penambah kuota gratis dari tautan yang dikirim di grup kelas.", false, "Aplikasi dari luar toko resmi, dijanjikan gratis dan ajaib: ciri trojan."],
+    ["Membuka lampiran bernama tagihan.zip dari pengirim yang tidak kamu kenal.", false, "Lampiran tak terduga dari orang tak dikenal: pintu tautan dan lampiran. Lewati."],
+    ["Mengunduh aplikasi dari toko resmi dan membaca ulasannya dulu.", true, "Sumber resmi dan membaca ulasan: kebiasaan dua."],
+    ["Menyalin berkas tugas penting ke flashdisk atau penyimpanan awan setiap minggu.", true, "Itu cadangan. Kalau ransomware datang, kamu tidak perlu membayar."],
+    ["Mematikan antivirus bawaan supaya game berjalan lebih cepat.", false, "Antivirus bawaan adalah penjaga pintu. Jangan dimatikan hanya demi sedikit kecepatan."],
+    ["Menerima pesan 'kamu menang hadiah, klik di sini' dan langsung mengetuknya.", false, "Hadiah tiba-tiba dari pengirim tak dikenal: jangan klik sembarangan."],
+    ["Aplikasi senter meminta izin membaca pesan; kamu menolaknya.", true, "Izin yang tidak masuk akal ditolak. Spyware hidup dari izin yang diberikan sembarangan."],
+    ["Menekan tombol unduh raksasa di situs film gratisan.", false, "Tombol unduh raksasa di situs gratisan biasanya bukan berkas yang kamu cari."],
+    ["Mendapat tautan aneh dari akun teman, lalu menanyakannya lewat telepon dulu.", true, "Kalau ragu, tanya pengirimnya lewat jalur lain. Akun teman bisa saja diambil alih."]];
+  const APPS = [
+    ["Aplikasi senter", [["Menyalakan lampu kilat", true], ["Membaca pesan SMS", false], ["Mengakses daftar kontak", false]]],
+    ["Aplikasi kamera", [["Memakai kamera", true], ["Menyimpan foto ke galeri", true], ["Mengetahui lokasi setiap saat, walau tidak dipakai", false]]],
+    ["Aplikasi kalkulator", [["Mengakses mikrofon", false], ["Mengirim pesan SMS", false], ["Tanpa izin apa pun", true]]],
+    ["Aplikasi peta", [["Mengetahui lokasi saat dipakai", true], ["Membaca semua berkas di HP", false], ["Memakai internet", true]]]];
+  const LEVELS = [
+    { id: "pasang", name: "1 Pasangkan", kind: "match", task: "Pasangkan tiap jenis malware dengan pintu masuk kesukaannya, lalu tekan Periksa." },
+    { id: "pilah", name: "2 Aman atau bahaya", kind: "sort", task: "Baca situasinya, lalu putuskan: aman atau bahaya? Ada sepuluh situasi." },
+    { id: "izin", name: "3 Periksa izin", kind: "perm", task: "Untuk tiap izin yang diminta aplikasi, tandai masuk akal atau tidak masuk akal, lalu Periksa." }];
+  let L = 0, qi = 0, pick = {}, marks = {};
+  const level = () => LEVELS[L];
+  function setResult(kind, msg) { $("result").innerHTML = msg ? `<div class="result ${kind}">${msg}</div>` : ""; }
+  function done(extra) { progress.levels[level().id] = true; save(); renderLevels(); setResult("good", `Latihan ${level().name} selesai! ` + (extra || "")); }
+  function wrong(hint) { setResult("bad", "Belum tepat. Petunjuk: " + hint); }
+  function renderMatch() {
+    const area = $("exarea"); area.innerHTML = `<div class="pairs" id="pairs"></div><div class="row"><button class="warm" id="check">Periksa</button></div>`;
+    KINDS.forEach(([k, name, col]) => { const d = document.createElement("div"); d.className = "pair"; d.dataset.k = k; d.innerHTML = `<span class="who"><span class="dot" style="background:${col}"></span>${name}</span>`; const sel = document.createElement("select"); sel.setAttribute("aria-label", "Pintu untuk " + name); sel.innerHTML = `<option value="">pilih pintu…</option>` + DOORS.map(([id, t]) => `<option value="${id}">${t.split(":")[0]}</option>`).join(""); sel.value = pick[k] || ""; sel.addEventListener("change", () => { pick[k] = sel.value; d.classList.remove("ok", "bad"); setResult(); }); d.appendChild(sel); $("pairs").appendChild(d); });
+    $("check").addEventListener("click", () => { let bad = null, empty = 0; [...$("pairs").children].forEach(d => { const k = d.dataset.k; if (!pick[k]) { empty++; d.classList.remove("ok", "bad"); return; } const ok = pick[k] === KEY[k]; d.classList.toggle("ok", ok); d.classList.toggle("bad", !ok); if (!ok && !bad) bad = k; }); if (empty) { setResult("info", `Masih ada ${empty} jenis yang belum dipasangkan.`); return; } if (!bad) done("Lima tamu, lima pintu: berkas, jaringan, unduhan, tautan, izin."); else wrong(HINT[bad]); });
+  }
+  function renderSort() {
+    const area = $("exarea");
+    if (qi >= SIT.length) { area.innerHTML = `<div class="qtext">Sepuluh situasi sudah dipilah.</div>`; return; }
+    const [t, safe, why] = SIT[qi];
+    area.innerHTML = `<div class="qnum">Situasi ${qi + 1} dari ${SIT.length}</div><div class="ex">${t}</div><div class="two"><button class="safe" id="bsafe">✓ Aman</button><button class="danger" id="bdanger">⚠ Bahaya</button></div>`;
+    const answer = (v) => { if (v === safe) { $("bsafe").disabled = $("bdanger").disabled = true; setResult("good", "Tepat. " + why); qi++; setTimeout(() => { if (qi >= SIT.length) done("Lima penjaga pintu: perbarui, sumber resmi, jangan klik sembarangan, antivirus, cadangan."); else { setResult(); renderSort(); } }, 1700); } else wrong(safe ? "Tanya: dari mana sumbernya, dan apakah ini salah satu kebiasaan penjaga pintu? " + why.split(".")[0] + "." : "Tanya: siapa pengirimnya, dari mana asalnya, dan apa yang dijanjikan? " + why.split(".")[0] + "."); };
+    $("bsafe").addEventListener("click", () => answer(true)); $("bdanger").addEventListener("click", () => answer(false));
+  }
+  function renderPerm() {
+    const area = $("exarea"); area.innerHTML = "";
+    APPS.forEach(([app, items], ai) => { const c = document.createElement("div"); c.className = "permcard"; c.innerHTML = `<h3>${app} meminta izin:</h3>`; items.forEach(([t], ii) => { const key = ai + "-" + ii; const row = document.createElement("div"); row.className = "perm"; row.dataset.key = key; row.innerHTML = `<span>${t}</span>`; const pb = document.createElement("span"); pb.className = "pb"; [["ok", "masuk akal"], ["no", "tidak"]].forEach(([v, lab]) => { const b = document.createElement("button"); b.textContent = lab; b.setAttribute("aria-pressed", marks[key] === v); b.addEventListener("click", () => { marks[key] = v; row.classList.remove("ok", "bad"); setResult(); [...pb.children].forEach(x => x.setAttribute("aria-pressed", x === b)); }); pb.appendChild(b); }); row.appendChild(pb); c.appendChild(row); }); area.appendChild(c); });
+    const r = document.createElement("div"); r.className = "row"; r.innerHTML = `<button class="warm" id="check">Periksa</button>`; area.appendChild(r);
+    $("check").addEventListener("click", () => { let empty = 0, firstBad = null; APPS.forEach(([app, items], ai) => items.forEach(([t, ok], ii) => { const key = ai + "-" + ii, row = area.querySelector(`[data-key="${key}"]`); if (!marks[key]) { empty++; return; } const right = (marks[key] === "ok") === ok; row.classList.toggle("ok", right); row.classList.toggle("bad", !right); if (!right && !firstBad) firstBad = [app, t, ok]; })); if (empty) { setResult("info", `Masih ada ${empty} izin yang belum ditandai.`); return; } if (!firstBad) done("Izin masuk akal kalau memang dibutuhkan tugas aplikasinya; sisanya tolak."); else { const [app, t, ok] = firstBad; wrong(ok ? `${app} memang perlu "${t.toLowerCase()}" untuk menjalankan tugasnya.` : `Pikirkan: apa tugas ${app.toLowerCase()}? Apakah "${t.toLowerCase()}" dibutuhkan untuk tugas itu?`); } });
+  }
+  function loadLevel(i) { L = i; qi = 0; pick = {}; marks = {}; $("task").textContent = level().task; setResult(); renderLevels(); ({ match: renderMatch, sort: renderSort, perm: renderPerm })[level().kind](); }
+  function renderLevels() { const el = $("levels"); el.innerHTML = ""; LEVELS.forEach((lv, i) => { const b = document.createElement("button"); b.textContent = lv.name; b.className = progress.levels[lv.id] ? "done" : ""; b.setAttribute("aria-pressed", i === L); b.addEventListener("click", () => loadLevel(i)); el.appendChild(b); }); }
+  $("redo").addEventListener("click", () => { progress.levels[level().id] = false; save(); loadLevel(L); });
+  P.onProgress(el => LEVELS.forEach(lv => { const s = document.createElement("span"); s.textContent = "Latihan " + lv.name.slice(0, 1); s.className = progress.levels[lv.id] ? "ok" : ""; el.appendChild(s); }));
+  loadLevel(0);
+})();
+</script>
