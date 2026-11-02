@@ -1,0 +1,149 @@
+<title>Kiko: Data Kecil</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<style>
+__PAGE_CSS__
+/* latihan D8.2 */
+.qnum { font-weight: 800; color: var(--ink2); font-size: 14px; margin-bottom: 4px }
+.qtext { font-weight: 800; font-size: 18px; margin-bottom: 8px }
+.cards { display: flex; flex-wrap: wrap; gap: 8px; margin: 8px 0 }
+.cards button { width: 64px; height: 80px; border-radius: 10px; border: 2px solid var(--line); background: var(--kiko, #2E7E9A); color: #fff; font-size: 20px; font-weight: 900; padding: 0; min-height: 80px; display: grid; place-items: center }
+.cards button.open { background: var(--surface); color: var(--ink) } .cards button.found { border-color: var(--good); background: var(--good-bg); color: var(--good) } .cards button.dim { opacity: .3 }
+.cards button[aria-pressed="true"] { border-color: var(--accent); box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 40%, transparent) }
+.cnt { display: flex; gap: 8px; margin: 8px 0 } .cnt div { flex: 1; background: var(--surface2); border-radius: 12px; padding: 8px 10px; text-align: center } .cnt b { display: block; font-size: 24px } .cnt small { color: var(--ink2); font-weight: 700 }
+.mode { display: flex; gap: 8px; margin: 6px 0 10px } .mode button[aria-pressed="true"] { border-color: var(--accent); background: color-mix(in srgb, var(--accent) 18%, var(--surface)) }
+.opts { display: grid; gap: 8px; margin: 8px 0 }
+.opts button { text-align: left; font-size: 15px; min-height: 44px; padding: 10px 12px; background: var(--surface); border: 2px solid var(--line) }
+.opts button.right { border-color: var(--good); background: var(--good-bg) } .opts button.wrong { border-color: var(--bad); background: var(--bad-bg) }
+.tbl { width: 100%; border-collapse: collapse; margin: 8px 0; font-size: 14px } .tbl th, .tbl td { border: 1px solid var(--line); padding: 6px 6px; text-align: left } .tbl th { background: var(--surface2) }
+.tbl tr.hide { opacity: .25 } .tbl tr.pick td { background: color-mix(in srgb, var(--accent) 18%, var(--surface)) } .tbl tr.ok td { background: var(--good-bg) } .tbl tr.no td { background: var(--bad-bg) }
+.tbl td button { min-height: 36px; padding: 4px 10px; font-size: 13px }
+.ex { background: var(--surface2); border-radius: 12px; padding: 12px 14px; font-weight: 800; font-size: 17px; margin: 8px 0 }
+</style>
+
+<div class="wrap">
+  <header>
+    <div class="eyebrow">Informatika · Fase D · Kelas VIII · Episode D8.2</div>
+    <h1>Memecahkan Persoalan dengan Data Kecil</h1>
+    <p class="hint">Tonton videonya (dua bagian), lalu kerjakan tiga latihan di bawahnya. Prasyarat: episode D8.1. Suara bisa dimatikan; teks selalu tampil di layar.</p>
+  </header>
+  <section class="card player" aria-label="Pemutar episode">
+    <div class="stage">
+      <canvas id="screen" width="1920" height="1080" aria-label="Animasi episode"></canvas>
+      <audio id="nar" preload="auto" src="narasi.mp3"></audio>
+      <button class="bigplay" id="bigplay" aria-label="Putar"><span>▶ Putar episode</span></button>
+    </div>
+    <div class="bar" id="bar" role="slider" aria-label="Posisi episode" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" tabindex="0"><i id="barfill"></i></div>
+    <div class="row">
+      <button class="primary" id="playbtn">▶ Putar</button>
+      <button id="replay">↺ Ulangi bagian ini</button>
+      <button id="voice" aria-pressed="true">🔊 Suara: nyala</button>
+      <button id="slow" aria-pressed="false">🐢 Mode lambat</button>
+      <span class="hint" id="timelabel">0:00 / 0:00</span>
+    </div>
+    <div>
+      <div class="eyebrow">Bagian</div>
+      <div class="chapters" id="chapters"></div>
+    </div>
+  </section>
+
+  <section class="card" aria-label="Cek pemahaman">
+    <h2>Cek pemahaman</h2>
+    <p class="hint">Pilih satu jawaban. Kalau salah, kamu dapat petunjuk, lalu coba lagi.</p>
+    <div class="quiz" id="quiz"></div>
+  </section>
+
+  <section class="card" aria-label="Latihan">
+    <h2>Latihan: kartu nilai</h2>
+    <p class="hint">Tiga latihan dengan kartu nilai rekaan. Jawaban salah memberi petunjuk, bukan nilai.</p>
+    <div class="levels" id="levels"></div>
+    <div class="task" id="task"></div>
+    <div id="exarea"></div>
+    <div id="result"></div>
+    <div class="row" style="margin-top:10px"><button id="redo">↺ Ulangi latihan ini</button></div>
+  </section>
+
+  <section class="card" aria-label="Kemajuan">
+    <h2>Kemajuanmu</h2>
+    <div class="progress" id="progress"></div>
+    <p class="hint" style="margin-top:8px">Kemajuan tersimpan di perangkat ini saja.</p>
+  </section>
+
+  <section class="card">
+    <details>
+      <summary>Untuk guru: cara memakai episode ini (10 JP)</summary>
+      <p><b>Tujuan pembelajaran (D8.2):</b> murid mencari, mengurutkan, mengelompokkan, dan menyaring himpunan data berstruktur sederhana bervolume kecil, serta membandingkan cara lewat jumlah langkah. Elemen BK, Fase D.</p>
+      <ul class="plain">
+        <li><b>Pertemuan 1 (2 JP), konkret:</b> permainan kartu nilai (kartu indeks, nilai rekaan): cari satu kartu di tumpukan acak lalu di tumpukan urut, hitung langkah di papan tulis. Tonton Bagian 1 sampai segmen Mencari.</li>
+        <li><b>Pertemuan 2 (2 JP), mengurutkan:</b> tonton segmen Mengurutkan. Berkelompok: urutkan 8 kartu dengan cara 1 (pilih terkecil) dan cara 2 (tukar tetangga), catat jumlah membandingkan dan memindahkan. Latihan 1 dan 2 di halaman ini.</li>
+        <li><b>Pertemuan 3 (2 JP), kelompok dan saring:</b> tonton Bagian 2 sampai segmen Menyaring. Kartu dibagi ke tumpukan; tulis syarat dengan DAN/ATAU; Latihan 3.</li>
+        <li><b>Pertemuan 4 (2 JP), menggabungkan:</b> tonton segmen Menggabungkan. Tiap kelompok mendapat satu pertanyaan (mis. tiga nilai terendah yang belum remedi) dan menuliskan urutan pekerjaannya sebagai langkah bernomor, lalu menjalankannya di lembar kerja (urutkan, filter).</li>
+        <li><b>Pertemuan 5 (2 JP), latihan dan asesmen:</b> soal tipe Bebras tentang mencari dan mengurutkan; murid menjelaskan mengapa data urut lebih cepat dicari.</li>
+      </ul>
+      <p><b>Target minimum:</b> mencari di data urut dengan belah dua, mengurutkan 5 kartu dengan langkah yang jelas, menyaring dengan satu syarat. <b>Pengayaan:</b> menghitung langkah untuk 16 kartu dan menebak pola pertumbuhannya; syarat dengan ATAU dan dua kolom.</p>
+    </details>
+  </section>
+</div>
+
+<script>__ENGINE__</script>
+<script>__PAGE_JS__</script>
+<script>
+(function () {
+  const P = PageCore({ suara: __TIMELINE__, teks: __TIMELINE_TEKS__ });
+  const { $, progress, save } = P; progress.levels = progress.levels || {};
+  const ROWS = [["Dito", 65, "belum"], ["Sinta", 88, "-"], ["Rani", 65, "sudah"], ["Bayu", 58, "belum"], ["Tari", 72, "-"], ["Agus", 69, "belum"], ["Lina", 91, "-"], ["Putri", 60, "sudah"], ["Eko", 77, "-"], ["Maya", 55, "belum"]];
+  const LEVELS = [
+    { id: "cari", name: "1 Cari dengan langkah sedikit", kind: "search", task: "Temukan kartu bernilai 85. Setiap kartu yang kamu buka dihitung satu langkah. Coba di kartu acak, lalu di kartu urut: pakai cara belah dua." },
+    { id: "urut", name: "2 Urutkan, hitung langkah", kind: "sort", task: "Urutkan dari kecil ke besar: ketuk kartu TERKECIL di antara yang belum urut, lalu kartu itu pindah ke depan. Hitung langkahmu." },
+    { id: "saring", name: "3 Saring dan kelompokkan", kind: "filter", task: "Baca pertanyaannya, lalu ketuk baris yang memenuhi syarat. Tekan Periksa." }];
+  let L = 0, qi = 0;
+  const level = () => LEVELS[L];
+  function setResult(kind, msg) { $("result").innerHTML = msg ? `<div class="result ${kind}">${msg}</div>` : ""; }
+  function done(extra) { progress.levels[level().id] = true; save(); renderLevels(); setResult("good", `Latihan ${level().name} selesai! ` + (extra || "")); }
+  function wrong(hint) { setResult("bad", "Belum tepat. Petunjuk: " + hint); }
+  // ---- 1 cari ----
+  const RAND = [72, 55, 90, 60, 78, 68, 95, 85], SORTED = [55, 60, 68, 72, 78, 85, 90, 95];
+  let mode = "acak", opened = new Set(), steps = 0, lo = 0, hi = 7, bestAcak = null;
+  function renderSearch() {
+    const area = $("exarea"); const arr = mode === "acak" ? RAND : SORTED;
+    area.innerHTML = `<div class="mode"><button id="m-acak" aria-pressed="${mode === "acak"}">Kartu acak</button><button id="m-urut" aria-pressed="${mode === "urut"}">Kartu urut (55…95)</button></div><div class="cards" id="cards"></div><div class="cnt"><div><b id="st">${steps}</b><small>langkah</small></div><div><b>${bestAcak == null ? "–" : bestAcak}</b><small>langkah di kartu acak</small></div></div>` + (mode === "urut" ? `<div class="qnum">Cara belah dua: buka kartu TENGAH. Kalau nilainya lebih kecil dari 85, kartu di kirinya tidak mungkin; kalau lebih besar, kartu di kanannya tidak mungkin.</div>` : `<div class="qnum">Di kartu acak, tidak ada cara lain selain membuka satu per satu.</div>`);
+    arr.forEach((v, i) => { const b = document.createElement("button"); const isOpen = opened.has(i); b.textContent = isOpen ? v : "?"; b.className = (isOpen ? "open " : "") + (v === 85 && isOpen ? "found " : "") + (mode === "urut" && (i < lo || i > hi) ? "dim" : ""); b.addEventListener("click", () => {
+      if (opened.has(i) || (mode === "urut" && (i < lo || i > hi))) return; opened.add(i); steps++;
+      if (mode === "urut") { if (arr[i] < 85) lo = i + 1; else if (arr[i] > 85) hi = i - 1; }
+      if (arr[i] === 85) { if (mode === "acak") { bestAcak = steps; setResult("good", `Ketemu dalam ${steps} langkah di kartu acak. Sekarang coba di kartu urut dengan cara belah dua.`); } else { if (steps <= 3) { renderSearch(); done(`Di kartu urut cukup ${steps} langkah${bestAcak ? " (di kartu acak tadi " + bestAcak + ")" : ""}. Data urut lebih cepat dicari.`); return; } else setResult("info", `Ketemu dalam ${steps} langkah. Bisa lebih sedikit: mulai dari kartu TENGAH, lalu buang setengahnya. Tekan Kartu urut untuk mencoba lagi.`); } }
+      renderSearch(); if (arr[i] !== 85) setResult("info", (mode === "urut" ? (arr[i] < 85 ? `${arr[i]} lebih kecil dari 85: semua kartu di kirinya tidak mungkin.` : `${arr[i]} lebih besar dari 85: semua kartu di kanannya tidak mungkin.`) : `Bukan 85. Lanjut.`));
+    }); $("cards").appendChild(b); });
+    $("m-acak").addEventListener("click", () => { mode = "acak"; opened = new Set(); steps = 0; setResult(); renderSearch(); });
+    $("m-urut").addEventListener("click", () => { mode = "urut"; opened = new Set(); steps = 0; lo = 0; hi = 7; setResult(); renderSearch(); });
+  }
+  // ---- 2 urutkan ----
+  let arr = [], fixedTo = 0, cmpCount = 0, mvCount = 0, picked = null;
+  function renderSort() {
+    const area = $("exarea");
+    area.innerHTML = `<div class="cards" id="cards"></div><div class="cnt"><div><b>${fixedTo}</b><small>sudah urut</small></div><div><b>${mvCount}</b><small>pindah</small></div><div><b>${cmpCount}</b><small>langkah</small></div></div><div class="qnum">Kartu hijau sudah di tempatnya. Ketuk kartu terkecil dari sisanya.</div>`;
+    arr.forEach((v, i) => { const b = document.createElement("button"); b.textContent = v; b.className = "open" + (i < fixedTo ? " found" : ""); b.disabled = i < fixedTo; b.addEventListener("click", () => {
+      const rest = arr.slice(fixedTo); const min = Math.min(...rest); cmpCount++;
+      if (v === min) { if (i !== fixedTo) { [arr[fixedTo], arr[i]] = [arr[i], arr[fixedTo]]; mvCount++; } fixedTo++; setResult("good", `${v} adalah yang terkecil. Dipindah ke depan.`); if (fixedTo >= arr.length - 1) { fixedTo = arr.length; renderSort(); done(`Urut! ${mvCount} kali memindahkan, ${cmpCount} langkah ketukan. Dengan 5 kartu, cara ini paling banyak 10 kali membandingkan.`); return; } }
+      else { const smaller = rest.filter(x => x < v).length; wrong(`${v} bukan yang terkecil: masih ada ${smaller} kartu yang lebih kecil di antara yang belum urut. Bandingkan semuanya dulu sebelum memilih.`); }
+      renderSort();
+    }); $("cards").appendChild(b); });
+  }
+  // ---- 3 saring ----
+  const FQ = [["Siapa saja yang nilainya di bawah 70 DAN belum remedi?", r => r[1] < 70 && r[2] === "belum", "Dua syarat harus terpenuhi sekaligus: lihat kolom Nilai dan kolom Remedi."], ["Siapa saja yang nilainya 85 ke atas?", r => r[1] >= 85, "Satu syarat: Nilai 85 atau lebih."], ["Siapa saja yang nilainya di bawah 70 ATAU sudah remedi?", r => r[1] < 70 || r[2] === "sudah", "Kata ATAU: cukup salah satu syarat terpenuhi."], ["Tiga murid dengan nilai TERENDAH yang belum remedi?", r => ["Maya", "Bayu", "Dito"].includes(r[0]), "Saring dulu yang belum remedi (ada 4), lalu urutkan dari terkecil, ambil tiga."]];
+  let sel = new Set();
+  function renderFilter() {
+    const area = $("exarea");
+    if (qi >= FQ.length) { area.innerHTML = `<div class="qtext">Semua pertanyaan terjawab.</div>`; return; }
+    const [q, test, hint] = FQ[qi]; sel = new Set();
+    let h = `<div class="qnum">Pertanyaan ${qi + 1} dari ${FQ.length}</div><div class="ex">${q}</div><table class="tbl" id="tbl"><tr><th>Nama</th><th>Nilai</th><th>Remedi</th><th></th></tr>`;
+    ROWS.forEach((r, i) => { h += `<tr data-i="${i}"><td>${r[0]}</td><td>${r[1]}</td><td>${r[2]}</td><td><button data-i="${i}">pilih</button></td></tr>`; });
+    area.innerHTML = h + `</table><div class="row"><button class="warm" id="check">Periksa</button></div>`;
+    area.querySelectorAll("td button").forEach(b => b.addEventListener("click", () => { const i = +b.dataset.i; sel.has(i) ? sel.delete(i) : sel.add(i); const tr = area.querySelector(`tr[data-i="${i}"]`); tr.classList.toggle("pick", sel.has(i)); tr.classList.remove("ok", "no"); b.textContent = sel.has(i) ? "✓ dipilih" : "pilih"; setResult(); }));
+    $("check").addEventListener("click", () => { const need = new Set(ROWS.map((r, i) => test(r) ? i : -1).filter(i => i >= 0)); const ok = [...need].every(i => sel.has(i)) && [...sel].every(i => need.has(i)); area.querySelectorAll("tr[data-i]").forEach(tr => { const i = +tr.dataset.i; tr.classList.toggle("ok", need.has(i)); tr.classList.toggle("no", sel.has(i) && !need.has(i)); }); if (ok) { setResult("good", "Benar: " + [...need].map(i => ROWS[i][0]).join(", ") + "."); qi++; setTimeout(() => { if (qi >= FQ.length) done("Saring, kelompokkan, urutkan: pertanyaan apa pun bisa dijawab dari data kecil."); else { setResult(); renderFilter(); } }, 1600); } else { const miss = [...need].filter(i => !sel.has(i)).length, extra = [...sel].filter(i => !need.has(i)).length; wrong(hint + (miss ? ` Masih ada ${miss} yang memenuhi syarat tetapi belum dipilih.` : "") + (extra ? ` Ada ${extra} pilihan yang tidak memenuhi syarat.` : "")); } });
+  }
+  function loadLevel(i) { L = i; qi = 0; mode = "acak"; opened = new Set(); steps = 0; lo = 0; hi = 7; bestAcak = null; arr = [78, 55, 90, 71, 62]; fixedTo = 0; cmpCount = 0; mvCount = 0; $("task").textContent = level().task; setResult(); renderLevels(); ({ search: renderSearch, sort: renderSort, filter: renderFilter })[level().kind](); }
+  function renderLevels() { const el = $("levels"); el.innerHTML = ""; LEVELS.forEach((lv, i) => { const b = document.createElement("button"); b.textContent = lv.name; b.className = progress.levels[lv.id] ? "done" : ""; b.setAttribute("aria-pressed", i === L); b.addEventListener("click", () => loadLevel(i)); el.appendChild(b); }); }
+  $("redo").addEventListener("click", () => { progress.levels[level().id] = false; save(); loadLevel(L); });
+  P.onProgress(el => LEVELS.forEach(lv => { const s = document.createElement("span"); s.textContent = "Latihan " + lv.name.slice(0, 1); s.className = progress.levels[lv.id] ? "ok" : ""; el.appendChild(s); }));
+  loadLevel(0);
+})();
+</script>

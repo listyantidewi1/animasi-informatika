@@ -29,4 +29,5 @@ Peta kurikulum, alur belajar, dan daftar 52 episode ada di dokumen "Kurikulum Se
 | D7.8 Proyek: Panduan Digital untuk Adik Kelas | ✓ | ✓ Kak Ceria | ✓ (2 bagian × 2 versi) | ✓ |
 | D8.0 Jembatan Kelas VIII: Empat Jurus dan Instruksi | ✓ | ✓ Kak Ceria | ✓ (1 bagian × 2 versi) | ✓ |
 | D8.1 Lembar Kerja Pengolah Data | ✓ | ✓ Kak Ceria | ✓ (2 bagian × 2 versi) | ✓ |
+| D8.2 Memecahkan Persoalan dengan Data Kecil | ✓ | ✓ Kak Ceria | ✓ (2 bagian × 2 versi) | ✓ |
 | D7.5 Instruksi untuk Manusia dan Mesin | ✓ | ✓ Kak Ceria | ✓ (2 bagian × 2 versi) | ✓ |
