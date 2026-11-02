@@ -1,0 +1,935 @@
+<title>Kiko: Detektif Jaringan</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<style>
+/* Inti gaya halaman latihan: satu kolom, pemutar di atas, latihan di bawah; palet kantin sama dengan video. */
+:root {
+  --bg: #EAF2EE; --surface: #FFFFFF; --surface2: #DCE9E2; --ink: #1F2A33; --ink2: #4A5A66; --line: #C9D8D0;
+  --accent: #2E7E9A; --accent-ink: #FFFFFF; --warm: #F2B134; --warm-ink: #5E3E05; --good: #2E9E5B; --good-bg: #DDF3E4; --bad: #D9443B; --bad-bg: #FBE1DF;
+  --font: Inter, "Segoe UI", Roboto, Arial, sans-serif;
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) { --bg: #141C1A; --surface: #1E2926; --surface2: #273532; --ink: #EAF2EE; --ink2: #A9BBB3; --line: #3A4A45; --accent: #5FB3CE; --accent-ink: #0F1D22; --warm: #F2B134; --warm-ink: #2B1C02; --good: #5FCB8A; --good-bg: #1F3A2B; --bad: #F07A72; --bad-bg: #442523; color-scheme: dark } }
+:root[data-theme="dark"] { --bg: #141C1A; --surface: #1E2926; --surface2: #273532; --ink: #EAF2EE; --ink2: #A9BBB3; --line: #3A4A45; --accent: #5FB3CE; --accent-ink: #0F1D22; --warm: #F2B134; --warm-ink: #2B1C02; --good: #5FCB8A; --good-bg: #1F3A2B; --bad: #F07A72; --bad-bg: #442523; color-scheme: dark }
+* { box-sizing: border-box }
+body { background: var(--bg); color: var(--ink); font-family: var(--font); font-size: 17px; line-height: 1.5; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); padding-block: 16px 48px }
+.wrap { max-width: 980px; margin: 0 auto; display: grid; gap: 28px }
+h1 { font-size: clamp(26px, 5vw, 38px); line-height: 1.15; margin: 0; text-wrap: balance; font-weight: 900 }
+h2 { font-size: 22px; margin: 0 0 12px; font-weight: 800 }
+h3 { font-size: 18px; margin: 0 0 8px; font-weight: 800 }
+p { margin: 0 0 10px; max-width: 65ch }
+.eyebrow { font-size: 13px; letter-spacing: .08em; text-transform: uppercase; color: var(--ink2); font-weight: 800; margin-bottom: 6px }
+.card { background: var(--surface); border-radius: 18px; padding: 18px; border: 1px solid var(--line) }
+button { font: inherit; font-weight: 800; border: 0; border-radius: 12px; padding: 12px 16px; cursor: pointer; background: var(--surface2); color: var(--ink); min-height: 48px; touch-action: manipulation }
+button:focus-visible, [tabindex]:focus-visible { outline: 3px solid var(--warm); outline-offset: 2px }
+button.primary { background: var(--accent); color: var(--accent-ink) }
+button.warm { background: var(--warm); color: var(--warm-ink) }
+button[aria-pressed="true"] { box-shadow: inset 0 0 0 3px var(--accent) }
+button:disabled { opacity: .45; cursor: default }
+.row { display: flex; flex-wrap: wrap; gap: 10px; align-items: center }
+/* player */
+.player { display: grid; gap: 12px }
+.stage { position: relative; width: 100%; aspect-ratio: 16 / 9; max-width: 100%; background: #EAF2EE; border-radius: 14px; overflow: hidden; border: 1px solid var(--line) }
+.stage canvas { width: 100%; height: 100%; display: block }
+.bigplay { position: absolute; inset: 0; display: grid; place-items: center; background: rgba(31,42,51,.25); border: 0; border-radius: 0; color: #fff; font-size: 20px; min-height: 0 }
+.bigplay span { background: var(--accent); color: var(--accent-ink); padding: 14px 26px; border-radius: 999px; font-weight: 900 }
+.bar { height: 10px; background: var(--surface2); border-radius: 999px; overflow: hidden; cursor: pointer }
+.bar > i { display: block; height: 100%; width: 0; background: var(--warm) }
+.chapters { display: flex; flex-wrap: wrap; gap: 8px }
+.chapters button { font-size: 14px; padding: 8px 12px; min-height: 40px }
+.chapters button.now { background: var(--warm); color: var(--warm-ink) }
+.hint { color: var(--ink2); font-size: 15px }
+/* exercises (generic parts) */
+.levels { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 12px }
+.levels button { font-size: 14px; padding: 8px 12px; min-height: 40px }
+.levels button.done::after { content: " ✓"; color: var(--good) }
+.task { background: var(--surface2); border-radius: 12px; padding: 12px 14px; margin-bottom: 12px; font-weight: 700 }
+.result { border-radius: 12px; padding: 12px 14px; font-weight: 800; margin-top: 10px }
+.result.good { background: var(--good-bg); color: var(--good) }
+.result.bad { background: var(--bad-bg); color: var(--bad) }
+.result.info { background: var(--surface2); color: var(--ink) }
+/* quiz */
+.quiz { display: grid; gap: 16px }
+.q { border-top: 1px solid var(--line); padding-top: 14px }
+.q:first-child { border-top: 0; padding-top: 0 }
+.opts { display: grid; gap: 8px; margin-top: 8px }
+.opts button { text-align: left; font-weight: 700; background: var(--surface2); display: flex; gap: 10px; align-items: center }
+.opts button b { width: 30px; height: 30px; border-radius: 50%; background: var(--accent); color: var(--accent-ink); display: grid; place-items: center; flex: none }
+.opts button.right { background: var(--good-bg); box-shadow: inset 0 0 0 3px var(--good) }
+.opts button.wrong { background: var(--bad-bg) }
+.fb { margin-top: 8px; font-weight: 700 }
+.fb.good { color: var(--good) } .fb.bad { color: var(--bad) }
+details summary { cursor: pointer; font-weight: 800; font-size: 18px }
+details[open] summary { margin-bottom: 10px }
+ul.plain { padding-left: 20px; margin: 0 0 10px } ul.plain li { margin-bottom: 6px; max-width: 65ch }
+.progress { display: flex; gap: 8px; flex-wrap: wrap } .progress span { background: var(--surface2); border-radius: 999px; padding: 6px 12px; font-size: 14px; font-weight: 700 }
+.progress span.ok { background: var(--good-bg); color: var(--good) }
+@media (prefers-reduced-motion: reduce) { * { transition: none !important } }
+
+/* latihan F11.8 */
+.qnum { font-weight: 800; color: var(--ink2); font-size: 14px; margin-bottom: 4px }
+.qtext { font-weight: 800; font-size: 18px; margin-bottom: 8px }
+.opts { display: grid; gap: 8px; margin: 8px 0 }
+.opts button { text-align: left; font-size: 15px; min-height: 44px; padding: 10px 12px; background: var(--surface); border: 2px solid var(--line) }
+.opts button.right { border-color: var(--good); background: var(--good-bg) } .opts button.wrong { border-color: var(--bad); background: var(--bad-bg) } .opts button.used { opacity: .5 }
+.term { overflow-wrap: anywhere; background: #0E1418; color: #D7E2DC; border-radius: 12px; padding: 10px 12px; font-family: ui-monospace, monospace; font-size: 13px; white-space: pre-wrap; margin: 8px 0; line-height: 1.6; min-height: 44px } .term b { color: #F2B134 } .term i { color: #FF8A80; font-style: normal } .term u { color: #9BE7A5; text-decoration: none }
+.chain { display: flex; gap: 4px; margin: 8px 0 } .chain span { flex: 1; min-width: 0; overflow: hidden; text-align: center; font-size: 11px; font-weight: 800; padding: 6px 2px; border-radius: 8px; background: var(--surface2); color: var(--ink2) } .chain span.ok { background: var(--good-bg); color: var(--good) } .chain span.bad { background: var(--bad-bg); color: var(--bad) }
+.rules { border-collapse: collapse; width: 100%; font-size: 13px; margin: 8px 0 } .rules th, .rules td { border: 1px solid var(--line); padding: 6px; text-align: left } .rules th { background: var(--surface2) } .rules td.ok { color: var(--good); font-weight: 900 } .rules td.no { color: var(--bad); font-weight: 900 }
+.pk { background: #FFF3D6; border: 2px solid var(--accent); border-radius: 12px; padding: 10px 12px; font-weight: 800; font-size: 15px; margin: 8px 0 }
+.two { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin: 8px 0 } .two button { min-height: 48px; font-weight: 900; font-size: 15px; background: var(--surface); border: 2px solid var(--line) } .two button.right { border-color: var(--good); background: var(--good-bg) } .two button.wrong { border-color: var(--bad); background: var(--bad-bg) }
+.log { font-size: 13px; color: var(--ink2); margin: 6px 0 }
+.rev { display: grid; gap: 6px; margin-top: 8px } .rev div { font-size: 14px; padding: 8px 10px; border-radius: 10px; background: var(--surface2) } .rev div.bad { background: var(--bad-bg) }
+</style>
+
+<div class="wrap">
+  <header>
+    <div class="eyebrow">Informatika · Fase F · Kelas XI · Episode F11.8</div>
+    <h1>Troubleshooting dan Keamanan Lanjut Jaringan</h1>
+    <p class="hint">Tonton videonya (dua bagian), lalu kerjakan tiga latihan: detektif jaringan, penjaga firewall, dan audit router. Semua alamat dan skenario fiktif. Suara bisa dimatikan; teks selalu tampil di layar.</p>
+  </header>
+
+  <section class="card player" aria-label="Pemutar episode">
+    <div class="stage">
+      <canvas id="screen" width="1920" height="1080" aria-label="Animasi episode"></canvas>
+      <audio id="nar" preload="auto" src="narasi.mp3"></audio>
+      <button class="bigplay" id="bigplay" aria-label="Putar"><span>▶ Putar episode</span></button>
+    </div>
+    <div class="bar" id="bar" role="slider" aria-label="Posisi episode" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" tabindex="0"><i id="barfill"></i></div>
+    <div class="controls">
+      <button class="primary" id="playbtn">▶ Putar</button>
+      <button id="replay">↺ Ulangi bagian ini</button>
+      <button id="voice" aria-pressed="true">🔊 Suara: nyala</button>
+      <button id="slow" aria-pressed="false">🐢 Mode lambat</button>
+      <span class="hint" id="timelabel">0:00 / 0:00</span>
+    </div>
+    <div class="caption" id="caption"></div>
+    <div class="chapterwrap">
+      <div class="chapters" id="chapters"></div>
+    </div>
+  </section>
+
+  <section class="card" aria-label="Cek pemahaman">
+    <h2>Cek pemahaman</h2>
+    <p class="hint">Soal yang sama dengan di video. Jawaban salah memberi petunjuk, bukan kunci.</p>
+    <div class="quiz" id="quiz"></div>
+  </section>
+
+  <section class="card" aria-label="Latihan">
+    <h2>Detektif jaringan, penjaga firewall, audit router</h2>
+    <p class="hint">Tiga latihan. Kemajuan tersimpan di perangkat ini.</p>
+    <div class="levels" id="levels"></div>
+    <div class="task" id="task"></div>
+    <div id="exarea"></div>
+    <div id="result"></div>
+    <div class="row" style="margin-top:10px"><button id="redo">↺ Ulangi bagian ini</button></div>
+  </section>
+
+  <section class="card" aria-label="Kemajuan">
+    <h2>Kemajuanmu</h2>
+    <div class="progress" id="progress"></div>
+    <p class="hint">Tersimpan di perangkat ini saja. Guru bisa memintamu menunjukkan halaman ini.</p>
+  </section>
+
+  <section class="card">
+    <details>
+      <summary>Untuk guru: cara memakai episode ini (16 JP)</summary>
+      <p><b>Tujuan (F11.8, elemen Berpikir Komputasional dan Literasi Digital, Fase F):</b> murid mendiagnosis masalah jaringan secara bertahap dan memahami konfigurasi keamanan lanjut (firewall, enkripsi, VPN). Semua praktik hanya di jaringan lab yang dikelola sekolah; tidak ada pemindaian atau percobaan pada jaringan lain.</p>
+      <ul class="plain">
+        <li><b>Pertemuan 1–2 (4 JP), diagnosis:</b> permainan tebak mata rantai dan tiga kurir. Tonton Bagian 1. Latihan 1 (detektif jaringan). Di lab: ping, ipconfig/ifconfig, traceroute, nslookup pada kondisi normal; murid mencatat hasil normal sebagai pembanding.</li>
+        <li><b>Pertemuan 3–4 (4 JP), skenario gangguan:</b> guru menyiapkan gangguan terkendali (kabel dilepas, DNS diubah, gateway salah) di satu komputer uji; kelompok mendiagnosis dengan uji sesedikit mungkin dan menulis prosedur satu halaman. Diskusi: uji mana yang membelah dua tersangka.</li>
+        <li><b>Pertemuan 5–6 (4 JP), firewall dan enkripsi:</b> tonton Bagian 2. Latihan 2 (penjaga firewall). Lihat aturan firewall di sistem operasi laptop lab (hanya melihat, pengubahan oleh guru); periksa gembok HTTPS dan jenis enkripsi Wi-Fi lab; diskusi batas VPN.</li>
+        <li><b>Pertemuan 7–8 (4 JP), audit:</b> Latihan 3 (audit router). Dengan guru, audit daftar periksa pada router lab atau router demonstrasi: sandi bawaan, firmware, enkripsi, jaringan tamu, port, log. Laporan audit dengan temuan, risiko, dan tindakan.</li>
+      </ul>
+      <p><b>Penilaian:</b> prosedur diagnosis satu halaman, catatan hasil alat pada kondisi normal, dan laporan audit router. Hasil kuis tersimpan hanya di perangkat murid.</p>
+    </details>
+  </section>
+</div>
+
+<script>/* Kiko core: mesin gambar bersama untuk semua episode Fase D.
+   Kiko.draw(ctx, t, TL) menggambar frame pada detik t di kanvas 1920x1080 secara deterministik.
+   Berisi palet, pembantu gambar, tokoh (Kiko, murid), dan adegan umum (judul, kuis, ringkasan, penutup).
+   Setiap episode menambahkan adegannya sendiri di scenes.js: Object.assign(Kiko.SCENES, {...}). */
+(function (global) {
+  const W = 1920, H = 1080;
+  const FONT = "Inter, 'Segoe UI', Roboto, Arial, sans-serif";
+  const C = {
+    bg: "#EAF2EE", bg2: "#DCE9E2", ink: "#1F2A33", ink2: "#4A5A66", panel: "#FFFFFF",
+    tile: "#F7FAF8", tileLine: "#C9D8D0", table: "#A4653A", tableTop: "#C98A57",
+    kiko: "#2E7E9A", kikoDark: "#1F5A6E", kikoLight: "#8FD0E6", eye: "#FFFFFF", pupil: "#1F2A33",
+    accent: "#F2B134", accentDark: "#B57A12", good: "#2E9E5B", bad: "#D9443B", goodBg: "#DDF3E4", badBg: "#FBE1DF",
+    sub: "#1F2A33", subText: "#FFFFFF", star: "#F2B134", skin: "#F1C9A5", skin2: "#C98A57", hair: "#2B2118",
+    uniform: "#FFFFFF", pants: "#2F4E7D", bubble: "#FFFFFF", muted: "#9AAFA6"
+  };
+  const ease = u => u < 0 ? 0 : u > 1 ? 1 : u * u * (3 - 2 * u);
+  const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
+  const lerp = (a, b, u) => a + (b - a) * u;
+
+  // ---------- drawing helpers ----------
+  function rr(ctx, x, y, w, h, r) {
+    ctx.beginPath(); ctx.moveTo(x + r, y); ctx.arcTo(x + w, y, x + w, y + h, r); ctx.arcTo(x + w, y + h, x, y + h, r);
+    ctx.arcTo(x, y + h, x, y, r); ctx.arcTo(x, y, x + w, y, r); ctx.closePath();
+  }
+  function text(ctx, s, x, y, size, opt = {}) {
+    ctx.font = `${opt.weight || 600} ${size}px ${FONT}`; ctx.fillStyle = opt.color || C.ink;
+    ctx.textAlign = opt.align || "left"; ctx.textBaseline = opt.base || "alphabetic"; ctx.fillText(s, x, y);
+  }
+  function wrap(ctx, s, size, weight, maxW) {
+    ctx.font = `${weight} ${size}px ${FONT}`;
+    const words = s.split(" "), lines = []; let cur = "";
+    for (const w of words) {
+      const test = cur ? cur + " " + w : w;
+      if (ctx.measureText(test).width > maxW && cur) { lines.push(cur); cur = w; } else cur = test;
+    }
+    if (cur) lines.push(cur);
+    return lines;
+  }
+  function para(ctx, s, x, y, size, maxW, opt = {}) {
+    const lines = wrap(ctx, s, size, opt.weight || 500, maxW); const lh = size * (opt.lh || 1.35);
+    lines.forEach((l, i) => text(ctx, l, x, y + i * lh, size, opt));
+    return lines.length * lh;
+  }
+  function arrowIcon(ctx, kind, cx, cy, s, color) {
+    ctx.save(); ctx.translate(cx, cy); ctx.strokeStyle = color; ctx.fillStyle = color; ctx.lineWidth = s * 0.16; ctx.lineCap = "round"; ctx.lineJoin = "round";
+    if (kind === "up") {
+      ctx.beginPath(); ctx.moveTo(0, s * 0.45); ctx.lineTo(0, -s * 0.3); ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(-s * 0.32, -s * 0.05); ctx.lineTo(0, -s * 0.45); ctx.lineTo(s * 0.32, -s * 0.05); ctx.stroke();
+    } else if (kind === "left" || kind === "right") {
+      const k = kind === "left" ? -1 : 1;
+      ctx.beginPath(); ctx.moveTo(0, s * 0.45); ctx.lineTo(0, -s * 0.05); ctx.quadraticCurveTo(0, -s * 0.32, k * s * 0.28, -s * 0.32); ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(k * s * 0.12, -s * 0.5); ctx.lineTo(k * s * 0.4, -s * 0.32); ctx.lineTo(k * s * 0.12, -s * 0.14); ctx.stroke();
+    } else if (kind === "east") {
+      ctx.beginPath(); ctx.moveTo(-s * 0.4, 0); ctx.lineTo(s * 0.3, 0); ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(s * 0.05, -s * 0.28); ctx.lineTo(s * 0.4, 0); ctx.lineTo(s * 0.05, s * 0.28); ctx.stroke();
+    } else if (kind === "grab") {
+      ctx.beginPath(); ctx.arc(0, s * 0.12, s * 0.22, 0, Math.PI * 2); ctx.fill();
+      ctx.beginPath(); ctx.moveTo(-s * 0.4, -s * 0.42); ctx.lineTo(-s * 0.4, -s * 0.12); ctx.moveTo(s * 0.4, -s * 0.42); ctx.lineTo(s * 0.4, -s * 0.12);
+      ctx.moveTo(-s * 0.4, -s * 0.42); ctx.lineTo(s * 0.4, -s * 0.42); ctx.stroke();
+    }
+    ctx.restore();
+  }
+  function bakso(ctx, cx, cy, s, opt = {}) {
+    // a bowl of bakso: the goal
+    ctx.save(); ctx.translate(cx, cy);
+    if (opt.glow) { ctx.beginPath(); ctx.arc(0, 0, s * 0.62, 0, Math.PI * 2); ctx.fillStyle = "rgba(242,177,52,0.22)"; ctx.fill(); }
+    ctx.fillStyle = "#E4EEF5"; ctx.beginPath(); ctx.moveTo(-s * 0.46, -s * 0.05); ctx.quadraticCurveTo(-s * 0.4, s * 0.45, 0, s * 0.45); ctx.quadraticCurveTo(s * 0.4, s * 0.45, s * 0.46, -s * 0.05); ctx.closePath(); ctx.fill();
+    ctx.strokeStyle = "#8FA9BD"; ctx.lineWidth = s * 0.05; ctx.stroke();
+    ctx.fillStyle = "#C8B49A"; ctx.beginPath(); ctx.ellipse(0, -s * 0.05, s * 0.44, s * 0.14, 0, 0, Math.PI * 2); ctx.fill();
+    for (const [dx, dy, r] of [[-0.16, -0.1, 0.13], [0.14, -0.12, 0.13], [0, -0.22, 0.12]]) {
+      ctx.fillStyle = "#9A7B5B"; ctx.beginPath(); ctx.arc(dx * s, dy * s, r * s, 0, Math.PI * 2); ctx.fill();
+      ctx.fillStyle = "#B8977A"; ctx.beginPath(); ctx.arc(dx * s - r * s * 0.3, dy * s - r * s * 0.3, r * s * 0.4, 0, Math.PI * 2); ctx.fill();
+    }
+    ctx.fillStyle = "#4CA64C"; for (const dx of [-0.26, 0.1, 0.26]) { ctx.beginPath(); ctx.arc(dx * s, -s * 0.07, s * 0.045, 0, Math.PI * 2); ctx.fill(); }
+    ctx.restore();
+  }
+  function table(ctx, x, y, w, h) {
+    ctx.fillStyle = C.table; rr(ctx, x + w * 0.1, y + h * 0.3, w * 0.8, h * 0.55, 10); ctx.fill();
+    ctx.fillStyle = C.tableTop; rr(ctx, x + w * 0.06, y + h * 0.18, w * 0.88, h * 0.3, 10); ctx.fill();
+    ctx.fillStyle = "rgba(0,0,0,0.12)"; ctx.fillRect(x + w * 0.16, y + h * 0.5, w * 0.08, h * 0.35); ctx.fillRect(x + w * 0.76, y + h * 0.5, w * 0.08, h * 0.35);
+  }
+  function kiko(ctx, cx, cy, s, ang, opt = {}) {
+    ctx.save(); ctx.translate(cx, cy);
+    // shadow
+    ctx.fillStyle = "rgba(0,0,0,0.12)"; ctx.beginPath(); ctx.ellipse(0, s * 0.42, s * 0.42, s * 0.12, 0, 0, Math.PI * 2); ctx.fill();
+    ctx.rotate(ang);
+    // wheels
+    ctx.fillStyle = C.kikoDark; rr(ctx, -s * 0.46, -s * 0.2, s * 0.12, s * 0.5, 5); ctx.fill(); rr(ctx, s * 0.34, -s * 0.2, s * 0.12, s * 0.5, 5); ctx.fill();
+    // body
+    ctx.fillStyle = opt.flash ? `rgba(217,68,59,${0.5 + 0.5 * opt.flash})` : C.kiko; rr(ctx, -s * 0.38, -s * 0.36, s * 0.76, s * 0.72, s * 0.16); ctx.fill();
+    // visor (front, facing up)
+    ctx.fillStyle = C.kikoLight; rr(ctx, -s * 0.26, -s * 0.33, s * 0.52, s * 0.3, s * 0.1); ctx.fill();
+    // eyes
+    const mood = opt.mood || "happy";
+    ctx.fillStyle = C.pupil;
+    if (mood === "sad") { ctx.beginPath(); ctx.arc(-s * 0.12, -s * 0.18, s * 0.05, 0, Math.PI * 2); ctx.arc(s * 0.12, -s * 0.18, s * 0.05, 0, Math.PI * 2); ctx.fill(); ctx.strokeStyle = C.pupil; ctx.lineWidth = s * 0.03; ctx.beginPath(); ctx.arc(0, -s * 0.03, s * 0.08, Math.PI * 1.15, Math.PI * 1.85); ctx.stroke(); }
+    else if (mood === "confused") { ctx.beginPath(); ctx.arc(-s * 0.12, -s * 0.18, s * 0.05, 0, Math.PI * 2); ctx.arc(s * 0.12, -s * 0.18, s * 0.035, 0, Math.PI * 2); ctx.fill(); ctx.strokeStyle = C.pupil; ctx.lineWidth = s * 0.03; ctx.beginPath(); ctx.moveTo(-s * 0.08, -s * 0.06); ctx.lineTo(s * 0.08, -s * 0.09); ctx.stroke(); }
+    else { ctx.beginPath(); ctx.arc(-s * 0.12, -s * 0.18, s * 0.055, 0, Math.PI * 2); ctx.arc(s * 0.12, -s * 0.18, s * 0.055, 0, Math.PI * 2); ctx.fill(); ctx.strokeStyle = C.pupil; ctx.lineWidth = s * 0.03; ctx.beginPath(); ctx.arc(0, -s * 0.1, s * 0.08, Math.PI * 0.15, Math.PI * 0.85); ctx.stroke(); }
+    // front pointer
+    ctx.fillStyle = C.accent; ctx.beginPath(); ctx.moveTo(-s * 0.1, -s * 0.38); ctx.lineTo(s * 0.1, -s * 0.38); ctx.lineTo(0, -s * 0.5); ctx.closePath(); ctx.fill();
+    // antenna
+    ctx.strokeStyle = C.kikoDark; ctx.lineWidth = s * 0.04; ctx.beginPath(); ctx.moveTo(0, s * 0.36); ctx.lineTo(0, s * 0.5); ctx.stroke();
+    ctx.fillStyle = C.accent; ctx.beginPath(); ctx.arc(0, s * 0.52, s * 0.07, 0, Math.PI * 2); ctx.fill();
+    // tray with bakso when grabbed
+    if (opt.grabbed) bakso(ctx, 0, s * 0.05, s * 0.45);
+    ctx.restore();
+    if (opt.wave !== undefined) { // arm waving (title scene)
+      ctx.save(); ctx.translate(cx + s * 0.42, cy - s * 0.1); ctx.rotate(-0.6 + Math.sin(opt.wave * 6) * 0.4);
+      ctx.strokeStyle = C.kikoDark; ctx.lineWidth = s * 0.08; ctx.lineCap = "round"; ctx.beginPath(); ctx.moveTo(0, 0); ctx.lineTo(s * 0.3, -s * 0.3); ctx.stroke();
+      ctx.fillStyle = C.kikoLight; ctx.beginPath(); ctx.arc(s * 0.32, -s * 0.33, s * 0.09, 0, Math.PI * 2); ctx.fill(); ctx.restore();
+    }
+  }
+  function kid(ctx, cx, cy, s, opt = {}) {
+    // simple student figure, standing, facing viewer
+    ctx.save(); ctx.translate(cx, cy);
+    ctx.fillStyle = "rgba(0,0,0,0.12)"; ctx.beginPath(); ctx.ellipse(0, s * 1.02, s * 0.5, s * 0.1, 0, 0, Math.PI * 2); ctx.fill();
+    ctx.fillStyle = C.pants; rr(ctx, -s * 0.3, s * 0.35, s * 0.6, s * 0.5, s * 0.1); ctx.fill();
+    ctx.fillStyle = C.skin; ctx.fillRect(-s * 0.24, s * 0.8, s * 0.16, s * 0.2); ctx.fillRect(s * 0.08, s * 0.8, s * 0.16, s * 0.2);
+    ctx.fillStyle = C.uniform; rr(ctx, -s * 0.36, -s * 0.12, s * 0.72, s * 0.56, s * 0.12); ctx.fill();
+    ctx.strokeStyle = "#D5DDE2"; ctx.lineWidth = s * 0.025; rr(ctx, -s * 0.36, -s * 0.12, s * 0.72, s * 0.56, s * 0.12); ctx.stroke();
+    ctx.fillStyle = C.skin; ctx.beginPath(); ctx.arc(0, -s * 0.42, s * 0.32, 0, Math.PI * 2); ctx.fill();
+    ctx.fillStyle = opt.hairColor || C.hair; ctx.beginPath(); ctx.arc(0, -s * 0.5, s * 0.33, Math.PI, 0); ctx.fill();
+    if (opt.hair === "long") { ctx.fillRect(-s * 0.33, -s * 0.5, s * 0.12, s * 0.45); ctx.fillRect(s * 0.21, -s * 0.5, s * 0.12, s * 0.45); }
+    ctx.fillStyle = C.pupil; ctx.beginPath(); ctx.arc(-s * 0.11, -s * 0.4, s * 0.035, 0, Math.PI * 2); ctx.arc(s * 0.11, -s * 0.4, s * 0.035, 0, Math.PI * 2); ctx.fill();
+    ctx.strokeStyle = C.pupil; ctx.lineWidth = s * 0.025; ctx.beginPath(); ctx.arc(0, -s * 0.33, s * 0.08, Math.PI * 0.15, Math.PI * 0.85); ctx.stroke();
+    // arms
+    ctx.strokeStyle = C.skin; ctx.lineWidth = s * 0.11; ctx.lineCap = "round"; ctx.beginPath();
+    if (opt.point) { ctx.moveTo(s * 0.32, s * 0.02); ctx.lineTo(s * 0.75, -s * 0.2); } else { ctx.moveTo(s * 0.34, s * 0.02); ctx.lineTo(s * 0.42, s * 0.38); }
+    ctx.moveTo(-s * 0.34, s * 0.02); ctx.lineTo(-s * 0.42, s * 0.38); ctx.stroke();
+    ctx.restore();
+  }
+  function bubble(ctx, x, y, w, s, size, opt = {}) {
+    const lines = wrap(ctx, s, size, 600, w - 48); const h = lines.length * size * 1.3 + 40;
+    ctx.fillStyle = opt.fill || C.bubble; ctx.strokeStyle = opt.stroke || "#B7C7BF"; ctx.lineWidth = 3;
+    rr(ctx, x, y - h, w, h, 22); ctx.fill(); ctx.stroke();
+    const tx = opt.tailX !== undefined ? opt.tailX : x + 60;
+    ctx.beginPath(); ctx.moveTo(tx - 16, y); ctx.lineTo(tx + 16, y); ctx.lineTo(tx + (opt.tailDir || 0), y + 28); ctx.closePath(); ctx.fillStyle = opt.fill || C.bubble; ctx.fill();
+    ctx.strokeStyle = opt.stroke || "#B7C7BF"; ctx.beginPath(); ctx.moveTo(tx - 16, y); ctx.lineTo(tx + (opt.tailDir || 0), y + 28); ctx.lineTo(tx + 16, y); ctx.stroke();
+    lines.forEach((l, i) => text(ctx, l, x + 24, y - h + 24 + size + i * size * 1.3, size, { color: opt.color || C.ink, weight: 600 }));
+    return h;
+  }
+  function card(ctx, x, y, w, h, opt = {}) { ctx.fillStyle = opt.fill || C.panel; rr(ctx, x, y, w, h, opt.r || 26); ctx.fill(); if (opt.stroke) { ctx.strokeStyle = opt.stroke; ctx.lineWidth = opt.lw || 4; ctx.stroke(); } }
+
+  // ---------- adegan umum (semua episode) ----------
+  const SCENES = {
+    title(ctx, b, l, t, TL) {
+      card(ctx, 160, 160, 1600, 700, { fill: C.panel });
+      kiko(ctx, 420, 520, 260, 0, { wave: l, mood: "happy" });
+      text(ctx, "Informatika · Fase " + (TL.episode || "D")[0] + " · Episode " + TL.episode, 720, 330, 34, { color: C.ink2, weight: 700 });
+      const ts = TL.title.length > 34 ? 74 : 92; const th = para(ctx, TL.title, 720, 440, ts, 1000, { weight: 900, lh: 1.1 }); const hy = Math.max(640, 440 + th - ts * 0.35 + 30);
+      if (TL.hook) { text(ctx, "SETELAH MENONTON, KAMU BISA:", 720, hy, 26, { color: C.accentDark, weight: 800 }); para(ctx, TL.hook, 720, hy + 50, 34, 1000, { weight: 800, lh: 1.3 }); if (hy <= 660) text(ctx, "Dengarkan, atau baca teksnya pelan-pelan.", 720, 800, 26, { color: C.ink2, weight: 600 }); }
+      else text(ctx, "Dengarkan, atau baca teksnya pelan-pelan.", 720, 700, 36, { color: C.ink2, weight: 600 });
+      arrowIcon(ctx, "up", 1560, 250, 70, C.kikoLight); arrowIcon(ctx, "right", 1660, 250, 70, C.kikoLight);
+    },
+    quiz(ctx, b, l, t, TL, answered) {
+      const q = TL.quizzes[b.quiz]; card(ctx, 200, 150, 1520, 740, { stroke: C.accent, lw: 6 });
+      text(ctx, "CEK PEMAHAMAN", 960, 230, 32, { align: "center", color: C.accentDark, weight: 800 });
+      para(ctx, q.q, 960, 320, 44, 1360, { weight: 800, align: "center", lh: 1.3 });
+      q.options.forEach((o, i) => {
+        const y = 470 + i * 120; const right = answered && i === q.answer;
+        card(ctx, 320, y, 1280, 96, { fill: right ? C.goodBg : answered ? "#F4F6F5" : C.bg2, stroke: right ? C.good : "#CFDCD5", lw: right ? 6 : 3 });
+        ctx.fillStyle = right ? C.good : C.kiko; ctx.beginPath(); ctx.arc(380, y + 48, 30, 0, Math.PI * 2); ctx.fill();
+        text(ctx, "ABC"[i], 380, y + 61, 34, { align: "center", color: "#fff", weight: 900 });
+        text(ctx, o, 440, y + 62, 38, { weight: 700, color: answered && !right ? C.muted : C.ink });
+        if (right) text(ctx, "✓", 1540, y + 66, 54, { align: "center", color: C.good, weight: 900 });
+      });
+      if (!answered) { // thinking timer
+        const frac = clamp(l / b.dur, 0, 1); ctx.strokeStyle = "#D7E2DC"; ctx.lineWidth = 14; ctx.beginPath(); ctx.arc(1640, 230, 40, 0, Math.PI * 2); ctx.stroke();
+        ctx.strokeStyle = C.accent; ctx.beginPath(); ctx.arc(1640, 230, 40, -Math.PI / 2, -Math.PI / 2 + frac * Math.PI * 2); ctx.stroke();
+        text(ctx, "Pikirkan dulu, jangan buru-buru.", 960, 860, 32, { align: "center", color: C.ink2, weight: 600 });
+      }
+    },
+    quiz_answer(ctx, b, l, t, TL) { SCENES.quiz(ctx, b, l, t, TL, true); },
+    recap(ctx, b, l, t, TL) {
+      // TL.recap: tiga kalimat pendek dari script.json
+      card(ctx, 160, 140, 1600, 760);
+      text(ctx, "TIGA HAL UNTUK DIINGAT", 960, 230, 34, { align: "center", color: C.accentDark, weight: 900 });
+      const items = TL.recap || [];
+      const show = clamp(Math.floor((l - 0.6) / 2.2) + 1, 1, Math.max(1, items.length));
+      items.forEach((s, i) => { if (i >= show) return; card(ctx, 300, 290 + i * 180, 1320, 140, { fill: C.bg2 }); ctx.fillStyle = C.kiko; ctx.beginPath(); ctx.arc(380, 360 + i * 180, 40, 0, Math.PI * 2); ctx.fill(); text(ctx, String(i + 1), 380, 376 + i * 180, 40, { align: "center", color: "#fff", weight: 900 }); text(ctx, s, 450, 375 + i * 180, 42, { weight: 800 }); });
+      kiko(ctx, 1620, 820, 130, 0);
+    },
+    outro(ctx, b, l, t, TL) {
+      // TL.next: {code, title, note} episode berikutnya, dari script.json
+      const n = TL.next || {};
+      card(ctx, 260, 200, 1400, 600);
+      text(ctx, "EPISODE BERIKUTNYA", 960, 320, 34, { align: "center", color: C.accentDark, weight: 900 });
+      text(ctx, n.code || "", 960, 440, 60, { align: "center", weight: 900 });
+      text(ctx, n.title || "", 960, 530, 54, { align: "center", weight: 800, color: C.ink2 });
+      text(ctx, n.note || "", 960, 680, 34, { align: "center", color: C.ink2, weight: 600 });
+      kiko(ctx, 960, 760 + 20, 140, 0, { wave: l });
+    }
+  };
+
+  function beatAt(TL, t) {
+    let b = TL.beats[0];
+    for (const x of TL.beats) { if (t >= x.start) b = x; else break; }
+    return b;
+  }
+  function draw(ctx, t, TL, opt = {}) {
+    const b = beatAt(TL, t); const l = t - b.start;
+    ctx.save(); ctx.setTransform(1, 0, 0, 1, 0, 0);
+    ctx.fillStyle = C.bg; ctx.fillRect(0, 0, W, H);
+    // header
+    text(ctx, TL.episode + " · " + TL.title, 60, 78, 30, { color: C.ink2, weight: 700 });
+    text(ctx, TL.segments[b.seg], 1860, 78, 30, { color: C.accentDark, weight: 800, align: "right" });
+    ctx.fillStyle = C.bg2; ctx.fillRect(0, 100, W, 6); ctx.fillStyle = C.accent; ctx.fillRect(0, 100, W * clamp(t / TL.total, 0, 1), 6);
+    const fn = SCENES[b.scene]; if (fn) fn(ctx, b, l, t, TL);
+    // narration card (burned-in text the student reads)
+    if (opt.subtitles !== false) {
+      const size = 44; const lines = wrap(ctx, b.text, size, 700, 1660);
+      const h = lines.length * size * 1.3 + 44; const y0 = 1056 - h;
+      ctx.fillStyle = "rgba(31,42,51,0.92)"; rr(ctx, 100, y0, 1720, h, 20); ctx.fill();
+      // reading progress (how far along the text the reader should be)
+      const frac = clamp(l / b.audio, 0, 1); ctx.fillStyle = C.accent; rr(ctx, 100, y0 + h - 8, 1720 * frac, 8, 4); ctx.fill();
+      lines.forEach((ln, i) => text(ctx, ln, 960, y0 + 22 + size + i * size * 1.3, size, { align: "center", color: C.subText, weight: 700 }));
+    }
+    ctx.restore();
+    return b;
+  }
+
+  global.Kiko = { draw, beatAt, W, H, C, FONT, SCENES,
+    helpers: { rr, text, wrap, para, arrowIcon, bakso, table, kiko, kid, bubble, card, ease, clamp, lerp } };
+})(typeof window !== "undefined" ? window : globalThis);
+
+/* Pembantu gambar perangkat (dipakai D7.0, D7.2, …): monitor, mouse, pointer, keyboard, HP, jari, ikon file/folder, jendela.
+   Semua digambar dengan kode (tanpa aset unduhan). Muat setelah ../_alat/kiko-core.js; dipakai scenes.js. */
+(function (global) {
+  const K = global.Kiko, H = K.helpers, C = K.C;
+  const { rr, text, wrap, card, ease, clamp, lerp } = H;
+  const D = {};
+  const SCREEN_BG = "#F4F8FB", BEZEL = "#2B3A46", BEZEL2 = "#1A262F", SEL = "rgba(46,126,154,0.22)";
+
+  // ---------- komputer ----------
+  // monitor di atas meja; mengembalikan kotak layar {x,y,w,h}
+  D.monitor = function (ctx, x, y, w, h) {
+    ctx.fillStyle = BEZEL; rr(ctx, x - 18, y - 18, w + 36, h + 36, 22); ctx.fill();
+    ctx.fillStyle = SCREEN_BG; rr(ctx, x, y, w, h, 10); ctx.fill();
+    // kaki dan meja
+    ctx.fillStyle = BEZEL2; rr(ctx, x + w / 2 - 40, y + h + 18, 80, 36, 8); ctx.fill(); rr(ctx, x + w / 2 - 140, y + h + 50, 280, 16, 8); ctx.fill();
+    ctx.fillStyle = C.tableTop; rr(ctx, x - 80, y + h + 66, w + 160, 22, 8); ctx.fill();
+    return { x, y, w, h };
+  };
+  // panah pointer
+  D.pointer = function (ctx, x, y, s = 34, color = C.ink) {
+    ctx.save(); ctx.translate(x, y); ctx.fillStyle = color; ctx.strokeStyle = "#fff"; ctx.lineWidth = s * 0.08; ctx.lineJoin = "round";
+    ctx.beginPath(); ctx.moveTo(0, 0); ctx.lineTo(0, s); ctx.lineTo(s * 0.27, s * 0.78); ctx.lineTo(s * 0.45, s * 1.15); ctx.lineTo(s * 0.62, s * 1.07); ctx.lineTo(s * 0.45, s * 0.7); ctx.lineTo(s * 0.75, s * 0.7); ctx.closePath();
+    ctx.fill(); ctx.stroke(); ctx.restore();
+  };
+  // mouse tampak atas; opt.left / opt.right = tombol ditekan; opt.label = tulis "kiri/kanan"
+  D.mouse = function (ctx, cx, cy, s, opt = {}) {
+    ctx.save(); ctx.translate(cx, cy);
+    ctx.fillStyle = "rgba(0,0,0,0.12)"; ctx.beginPath(); ctx.ellipse(0, s * 0.62, s * 0.5, s * 0.1, 0, 0, Math.PI * 2); ctx.fill();
+    // kabel
+    ctx.strokeStyle = "#7B8B95"; ctx.lineWidth = s * 0.05; ctx.beginPath(); ctx.moveTo(0, -s * 0.6); ctx.quadraticCurveTo(0, -s * 1.0, s * 0.5, -s * 1.1); ctx.stroke();
+    // badan
+    ctx.fillStyle = "#E8EEF2"; rr(ctx, -s * 0.42, -s * 0.62, s * 0.84, s * 1.24, s * 0.4); ctx.fill(); ctx.strokeStyle = "#A9B7C0"; ctx.lineWidth = s * 0.04; ctx.stroke();
+    // dua tombol
+    const btn = (side, on) => { ctx.fillStyle = on ? C.accent : "#F7FAFC"; ctx.beginPath(); const sx = side === "left" ? -1 : 1;
+      ctx.moveTo(sx * s * 0.03, -s * 0.6); ctx.lineTo(sx * s * 0.03, -s * 0.1); ctx.lineTo(sx * s * 0.4, -s * 0.1); ctx.lineTo(sx * s * 0.4, -s * 0.28); ctx.quadraticCurveTo(sx * s * 0.4, -s * 0.6, sx * s * 0.1, -s * 0.6); ctx.closePath(); ctx.fill(); ctx.strokeStyle = "#A9B7C0"; ctx.lineWidth = s * 0.03; ctx.stroke(); };
+    btn("left", opt.left); btn("right", opt.right);
+    ctx.fillStyle = "#A9B7C0"; rr(ctx, -s * 0.04, -s * 0.5, s * 0.08, s * 0.26, s * 0.04); ctx.fill(); // roda
+    ctx.restore();
+    if (opt.label) { text(ctx, "kiri", cx - s * 0.22, cy - s * 0.72, 26, { align: "center", color: opt.left ? C.accentDark : C.ink2, weight: 800 }); text(ctx, "kanan", cx + s * 0.22, cy - s * 0.72, 26, { align: "center", color: opt.right ? C.accentDark : C.ink2, weight: 800 }); }
+  };
+  // riak "klik" di sekitar titik
+  D.ripple = function (ctx, x, y, u, color = C.accent) { if (u <= 0 || u >= 1) return; ctx.strokeStyle = color; ctx.globalAlpha = 1 - u; ctx.lineWidth = 6; ctx.beginPath(); ctx.arc(x, y, 12 + u * 60, 0, Math.PI * 2); ctx.stroke(); ctx.globalAlpha = 1; };
+
+  // ---------- ikon file & folder ----------
+  const KIND = { folder: "#F2B134", foto: "#5FA8D3", tulisan: "#7B8B95", lagu: "#8E6BBF", video: "#D9443B" };
+  D.fileIcon = function (ctx, cx, cy, s, kind, opt = {}) {
+    ctx.save(); ctx.translate(cx, cy);
+    if (opt.selected) { ctx.fillStyle = SEL; rr(ctx, -s * 0.62, -s * 0.62, s * 1.24, s * 1.24 + (opt.name ? s * 0.5 : 0), s * 0.14); ctx.fill(); }
+    if (kind === "folder") {
+      ctx.fillStyle = "#D99A1B"; rr(ctx, -s * 0.5, -s * 0.32, s * 0.45, s * 0.2, s * 0.06); ctx.fill();
+      ctx.fillStyle = opt.open ? "#F7C860" : KIND.folder; rr(ctx, -s * 0.5, -s * 0.22, s, s * 0.7, s * 0.08); ctx.fill();
+      if (opt.open) { ctx.fillStyle = "#D99A1B"; rr(ctx, -s * 0.46, -s * 0.02, s * 0.92, s * 0.5, s * 0.08); ctx.fill(); }
+    } else {
+      ctx.fillStyle = "#FFFFFF"; ctx.strokeStyle = "#B7C4CC"; ctx.lineWidth = s * 0.05;
+      ctx.beginPath(); ctx.moveTo(-s * 0.36, -s * 0.5); ctx.lineTo(s * 0.12, -s * 0.5); ctx.lineTo(s * 0.36, -s * 0.26); ctx.lineTo(s * 0.36, s * 0.5); ctx.lineTo(-s * 0.36, s * 0.5); ctx.closePath(); ctx.fill(); ctx.stroke();
+      ctx.fillStyle = KIND[kind] || KIND.tulisan;
+      if (kind === "foto") { rr(ctx, -s * 0.26, -s * 0.2, s * 0.52, s * 0.44, s * 0.04); ctx.fill(); ctx.fillStyle = "#fff"; ctx.beginPath(); ctx.arc(-s * 0.12, -s * 0.08, s * 0.06, 0, Math.PI * 2); ctx.fill(); ctx.beginPath(); ctx.moveTo(-s * 0.26, s * 0.24); ctx.lineTo(-s * 0.06, s * 0.02); ctx.lineTo(s * 0.06, s * 0.14); ctx.lineTo(s * 0.14, s * 0.06); ctx.lineTo(s * 0.26, s * 0.24); ctx.closePath(); ctx.fill(); }
+      else if (kind === "lagu") { ctx.beginPath(); ctx.arc(-s * 0.1, s * 0.22, s * 0.1, 0, Math.PI * 2); ctx.arc(s * 0.16, s * 0.16, s * 0.1, 0, Math.PI * 2); ctx.fill(); ctx.lineWidth = s * 0.06; ctx.strokeStyle = KIND.lagu; ctx.beginPath(); ctx.moveTo(0, s * 0.2); ctx.lineTo(0, -s * 0.2); ctx.lineTo(s * 0.26, -s * 0.26); ctx.lineTo(s * 0.26, s * 0.14); ctx.stroke(); }
+      else if (kind === "video") { rr(ctx, -s * 0.26, -s * 0.16, s * 0.52, s * 0.4, s * 0.04); ctx.fill(); ctx.fillStyle = "#fff"; ctx.beginPath(); ctx.moveTo(-s * 0.06, -s * 0.04); ctx.lineTo(s * 0.12, s * 0.04); ctx.lineTo(-s * 0.06, s * 0.12); ctx.closePath(); ctx.fill(); }
+      else { for (let i = 0; i < 4; i++) { rr(ctx, -s * 0.22, -s * 0.14 + i * s * 0.14, s * (i === 3 ? 0.26 : 0.44), s * 0.06, s * 0.03); ctx.fill(); } }
+    }
+    ctx.restore();
+    if (opt.name) { const lines = wrap(ctx, opt.name, opt.size || 24, 700, s * 1.6); lines.slice(0, 2).forEach((ln, i) => text(ctx, ln, cx, cy + s * 0.78 + i * (opt.size || 24) * 1.15, opt.size || 24, { align: "center", weight: 700, color: opt.color || C.ink })); }
+  };
+  D.KIND = KIND;
+
+  // jendela aplikasi (file manager / editor) di dalam layar; mengembalikan area isi
+  D.windowFrame = function (ctx, x, y, w, h, title, opt = {}) {
+    ctx.fillStyle = "#FFFFFF"; rr(ctx, x, y, w, h, 14); ctx.fill(); ctx.strokeStyle = "#C9D4DB"; ctx.lineWidth = 3; ctx.stroke();
+    ctx.fillStyle = "#E6EDF2"; rr(ctx, x, y, w, 54, 14); ctx.fill(); ctx.fillRect(x, y + 30, w, 24);
+    ["#E0655C", "#F2B134", "#2E9E5B"].forEach((c, i) => { ctx.fillStyle = c; ctx.beginPath(); ctx.arc(x + 26 + i * 26, y + 27, 8, 0, Math.PI * 2); ctx.fill(); });
+    if (title) text(ctx, title, x + w / 2, y + 36, 24, { align: "center", color: C.ink2, weight: 800 });
+    if (opt.path) { ctx.fillStyle = "#F4F8FB"; rr(ctx, x + 16, y + 66, w - 32, 44, 10); ctx.fill(); text(ctx, opt.path, x + 32, y + 96, 24, { color: C.ink2, weight: 700 }); }
+    return { x: x + 16, y: y + (opt.path ? 124 : 70), w: w - 32, h: h - (opt.path ? 140 : 86) };
+  };
+  // kotak teks dengan kursor berkedip; opt.cursor = posisi karakter (bawaan akhir)
+  D.textBox = function (ctx, x, y, w, h, lines, tt, opt = {}) {
+    ctx.fillStyle = "#FFFFFF"; rr(ctx, x, y, w, h, 14); ctx.fill(); ctx.strokeStyle = opt.stroke || "#C9D4DB"; ctx.lineWidth = 3; ctx.stroke();
+    const size = opt.size || 48, lh = size * 1.4;
+    lines.forEach((ln, i) => text(ctx, ln, x + 28, y + 24 + size + i * lh, size, { weight: 700, color: opt.color || C.ink }));
+    if (opt.cursor !== false) {
+      const li = lines.length - 1, s = lines[li] || ""; ctx.font = `700 ${size}px ${K.FONT}`; const cw = ctx.measureText(s).width;
+      if (Math.floor(tt * 2.5) % 2 === 0 || opt.cursorOn) { ctx.fillStyle = C.kiko; ctx.fillRect(x + 30 + cw, y + 22 + li * lh, 5, size * 1.15); }
+      return [x + 32 + cw, y + 22 + li * lh + size * 0.6];
+    }
+  };
+
+  // ---------- keyboard ----------
+  const ROWS = [["Q", "W", "E", "R", "T", "Y", "U", "I", "O", "P"], ["A", "S", "D", "F", "G", "H", "J", "K", "L"], ["Z", "X", "C", "V", "B", "N", "M"]];
+  // keyboard sederhana: 3 baris huruf + Shift, Spasi, Backspace, Enter. opt.pressed = [tombol], opt.glow = [tombol] disorot lembut
+  D.keyboard = function (ctx, x, y, w, opt = {}) {
+    const key = w / 11.6, gap = key * 0.12, k = key - gap, h = k * 4 + gap * 5;
+    ctx.fillStyle = BEZEL; rr(ctx, x - 16, y - 16, w + 32, h + 32, 22); ctx.fill();
+    const pressed = opt.pressed || [], glow = opt.glow || [];
+    const draw = (kx, ky, kw, label, small) => {
+      const on = pressed.includes(label), soft = glow.includes(label);
+      ctx.fillStyle = on ? C.accent : soft ? "#FFF3D6" : "#F7FAFC"; rr(ctx, kx, ky + (on ? 4 : 0), kw, k - (on ? 4 : 0), 10); ctx.fill();
+      ctx.strokeStyle = on ? C.accentDark : soft ? C.accent : "#B7C4CC"; ctx.lineWidth = on || soft ? 4 : 2; ctx.stroke();
+      // ukuran huruf mengikuti ukuran tombol; pada keyboard mini (tombol < 40 px) label tombol khusus tidak digambar
+      const fs = small ? Math.min(24, k * 0.45) : Math.min(32, k * 0.6);
+      if (small ? k >= 40 : k >= 18) text(ctx, label, kx + kw / 2, ky + k / 2 + fs * 0.38, fs, { align: "center", weight: 800, color: on ? "#fff" : C.ink });
+    };
+    ROWS.forEach((row, r) => { const off = r === 0 ? 0 : r === 1 ? key * 0.35 : key * 0.85; row.forEach((lab, i) => draw(x + gap + off + i * key, y + gap + r * key, k, lab)); });
+    draw(x + gap + key * 0.85 + 7 * key + gap, y + gap + 2 * key, key * 2.4 - gap, "Backspace", true);
+    draw(x + gap, y + gap + 3 * key, key * 1.9 - gap, "Shift", true);
+    draw(x + gap + key * 1.9, y + gap + 3 * key, key * 6.2 - gap, "Spasi", true);
+    draw(x + gap + key * 8.1, y + gap + 3 * key, key * 2.3 - gap, "Enter", true);
+    draw(x + gap + key * 0.35 + 9 * key, y + gap + 1 * key, key * 1.9 - gap, "Enter", true);
+    return { x, y, w, h };
+  };
+
+  // ---------- HP & jari ----------
+  // HP tegak; mengembalikan kotak layar
+  D.phone = function (ctx, cx, cy, w, h) {
+    ctx.fillStyle = BEZEL; rr(ctx, cx - w / 2 - 14, cy - h / 2 - 22, w + 28, h + 44, 40); ctx.fill();
+    ctx.fillStyle = SCREEN_BG; rr(ctx, cx - w / 2, cy - h / 2, w, h, 26); ctx.fill();
+    ctx.fillStyle = BEZEL2; rr(ctx, cx - 40, cy - h / 2 + 8, 80, 12, 6); ctx.fill();
+    return { x: cx - w / 2, y: cy - h / 2, w, h };
+  };
+  // kisi ikon aplikasi generik di layar HP; mengembalikan posisi tiap ikon
+  const APPS = [["Kamera", "#2E7E9A"], ["Galeri", "#5FA8D3"], ["Pesan", "#2E9E5B"], ["Musik", "#8E6BBF"], ["Kalkulator", "#7B8B95"], ["Peta", "#F2B134"], ["Catatan", "#E0A23B"], ["Jam", "#D9443B"], ["Cuaca", "#4C9BE0"]];
+  D.appGrid = function (ctx, sc, opt = {}) {
+    const cols = 3, cell = sc.w / cols, out = [];
+    APPS.forEach(([name, col], i) => {
+      const r = Math.floor(i / cols), c = i % cols; const ax = sc.x + cell * c + cell / 2, ay = sc.y + 90 + r * (cell + 26);
+      const on = opt.active === name; const sz = cell * 0.56 * (on && opt.scale ? opt.scale : 1);
+      ctx.fillStyle = col; rr(ctx, ax - sz / 2, ay - sz / 2, sz, sz, sz * 0.24); ctx.fill();
+      if (on) { ctx.strokeStyle = C.accent; ctx.lineWidth = 6; ctx.stroke(); }
+      text(ctx, name, ax, ay + sz / 2 + 26, 20, { align: "center", weight: 700, color: C.ink2 });
+      out.push({ name, x: ax, y: ay });
+    });
+    return out;
+  };
+  // ujung jari yang menyentuh layar di (x,y); opt.press = sedang menekan (riak); opt.second = jari kedua
+  D.finger = function (ctx, x, y, opt = {}) {
+    const s = opt.s || 46;
+    ctx.save(); ctx.translate(x, y); ctx.rotate(opt.angle !== undefined ? opt.angle : 0.5);
+    ctx.fillStyle = "rgba(0,0,0,0.10)"; ctx.beginPath(); ctx.ellipse(0, s * 0.25, s * 0.7, s * 0.4, 0, 0, Math.PI * 2); ctx.fill();
+    ctx.fillStyle = C.skin; rr(ctx, -s * 0.5, -s * 0.3, s, s * 3.2, s * 0.5); ctx.fill();
+    ctx.fillStyle = "#F7D9BE"; ctx.beginPath(); ctx.ellipse(0, s * 0.1, s * 0.3, s * 0.42, 0, 0, Math.PI * 2); ctx.fill();
+    ctx.restore();
+    if (opt.press) { ctx.fillStyle = "rgba(46,126,154,0.25)"; ctx.beginPath(); ctx.arc(x, y, s * 0.8, 0, Math.PI * 2); ctx.fill(); }
+  };
+  // menu konteks (klik kanan / tekan lama)
+  D.menu = function (ctx, x, y, items, opt = {}) {
+    const w = opt.w || 300, rowH = 52; ctx.fillStyle = "#FFFFFF"; rr(ctx, x, y, w, rowH * items.length + 16, 12); ctx.fill(); ctx.strokeStyle = "#B7C4CC"; ctx.lineWidth = 3; ctx.stroke();
+    ctx.fillStyle = "rgba(0,0,0,0.08)";
+    items.forEach((it, i) => { if (opt.active === i) { ctx.fillStyle = "#FFF3D6"; rr(ctx, x + 8, y + 8 + i * rowH, w - 16, rowH, 8); ctx.fill(); } text(ctx, it, x + 24, y + 8 + i * rowH + 36, 28, { weight: 700 }); });
+  };
+  // kartu keterangan kecil di kanan/bawah adegan
+  D.note = function (ctx, x, y, w, s, opt = {}) { card(ctx, x, y, w, opt.h || 96, { fill: opt.fill || "#FFF3D6", stroke: opt.stroke || C.accent, lw: 4 }); text(ctx, s, x + w / 2, y + (opt.h || 96) / 2 + 14, opt.size || 36, { align: "center", weight: 900, color: opt.color || C.ink }); };
+
+  K.devices = D;
+})(typeof window !== "undefined" ? window : globalThis);
+
+/* Pembantu gambar D9.2: router, titik akses Wi-Fi dengan gelombang, server/rak pusat data, awan ISP, kabel, paket data berjalan,
+   kartu alamat IP, rumah/gedung sekolah, laptop, printer. Muat setelah kiko-core.js dan kiko-devices.js. */
+(function (global) {
+  const K = global.Kiko, H = K.helpers, C = K.C, D = K.devices;
+  const { rr, text, wrap, card, clamp, lerp } = H;
+  const Q = {};
+  Q.router = function (ctx, cx, cy, s, opt = {}) {
+    ctx.fillStyle = "#2F3B45"; rr(ctx, cx - s * 0.6, cy - s * 0.18, s * 1.2, s * 0.36, s * 0.08); ctx.fill();
+    [-0.35, 0.35].forEach(dx => { ctx.strokeStyle = "#2F3B45"; ctx.lineWidth = s * 0.06; ctx.lineCap = "round"; ctx.beginPath(); ctx.moveTo(cx + dx * s, cy - s * 0.18); ctx.lineTo(cx + dx * s * 1.2, cy - s * 0.6); ctx.stroke(); });
+    [0, 1, 2, 3].forEach(i => { ctx.fillStyle = opt.off ? "#7B8B95" : i === 2 && opt.alert ? C.bad : C.good; ctx.beginPath(); ctx.arc(cx - s * 0.3 + i * s * 0.2, cy, s * 0.04, 0, Math.PI * 2); ctx.fill(); });
+    if (opt.label !== false) text(ctx, opt.label || "router", cx, cy + s * 0.5, 22, { align: "center", weight: 800, color: C.ink2 });
+  };
+  Q.waves = function (ctx, cx, cy, r, n, opt = {}) { for (let i = 1; i <= n; i++) { ctx.strokeStyle = opt.color || C.kiko; ctx.globalAlpha = opt.alpha != null ? opt.alpha : 1 - (i - 1) / (n + 1); ctx.lineWidth = 5; ctx.beginPath(); ctx.arc(cx, cy, r * i, -Math.PI * 0.75, -Math.PI * 0.25); ctx.stroke(); } ctx.globalAlpha = 1; };
+  Q.server = function (ctx, cx, cy, w, h, opt = {}) {
+    ctx.fillStyle = "#2F3B45"; rr(ctx, cx - w / 2, cy - h / 2, w, h, 10); ctx.fill();
+    const rows = Math.floor(h / 40); for (let i = 0; i < rows; i++) { ctx.fillStyle = "#4A5A66"; rr(ctx, cx - w / 2 + 10, cy - h / 2 + 10 + i * 40, w - 20, 28, 5); ctx.fill(); ctx.fillStyle = (i + (opt.tick || 0)) % 3 === 0 ? C.good : "#8FD0E6"; ctx.beginPath(); ctx.arc(cx + w / 2 - 24, cy - h / 2 + 24 + i * 40, 5, 0, Math.PI * 2); ctx.fill(); }
+    if (opt.label !== false) text(ctx, opt.label || "server", cx, cy + h / 2 + 30, 24, { align: "center", weight: 800, color: C.ink2 });
+  };
+  Q.cloud = function (ctx, cx, cy, s, label, opt = {}) {
+    ctx.fillStyle = opt.fill || "#DCEBF2"; ctx.strokeStyle = opt.stroke || C.kiko; ctx.lineWidth = 4; ctx.beginPath();
+    ctx.arc(cx - s * 0.5, cy + s * 0.1, s * 0.35, 0, Math.PI * 2); ctx.arc(cx - s * 0.1, cy - s * 0.2, s * 0.45, 0, Math.PI * 2); ctx.arc(cx + s * 0.4, cy, s * 0.4, 0, Math.PI * 2); ctx.arc(cx, cy + s * 0.25, s * 0.4, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
+    if (label) { const lines = wrap(ctx, label, opt.size || 26, 900, s * 1.6); lines.forEach((ln, i) => text(ctx, ln, cx, cy + 8 + (i - (lines.length - 1) / 2) * 30, opt.size || 26, { align: "center", weight: 900, color: opt.color || C.kiko })); }
+  };
+  Q.cable = function (ctx, pts, opt = {}) { ctx.strokeStyle = opt.color || "#7B8B95"; ctx.lineWidth = opt.lw || 6; ctx.lineJoin = "round"; ctx.setLineDash(opt.dash ? [12, 10] : []); ctx.beginPath(); pts.forEach((p, i) => i ? ctx.lineTo(p[0], p[1]) : ctx.moveTo(p[0], p[1])); ctx.stroke(); ctx.setLineDash([]); };
+  Q.along = function (path, u) { const segs = []; let total = 0; for (let i = 1; i < path.length; i++) { const d = Math.hypot(path[i][0] - path[i - 1][0], path[i][1] - path[i - 1][1]); segs.push(d); total += d; } let t = clamp(u, 0, 1) * total; for (let i = 1; i < path.length; i++) { if (t <= segs[i - 1] || i === path.length - 1) { const f = segs[i - 1] ? Math.min(1, t / segs[i - 1]) : 1; return [lerp(path[i - 1][0], path[i][0], f), lerp(path[i - 1][1], path[i][1], f)]; } t -= segs[i - 1]; } return path[path.length - 1]; };
+  Q.packet = function (ctx, x, y, n, opt = {}) { ctx.save(); ctx.shadowColor = "rgba(0,0,0,0.25)"; ctx.shadowBlur = 8; ctx.fillStyle = opt.color || C.accent; rr(ctx, x - 22, y - 16, 44, 32, 6); ctx.fill(); ctx.restore(); ctx.strokeStyle = "#fff"; ctx.lineWidth = 2; rr(ctx, x - 22, y - 16, 44, 32, 6); ctx.stroke(); if (n != null) text(ctx, String(n), x, y + 7, 18, { align: "center", weight: 900, color: "#fff" }); };
+  Q.ipTag = function (ctx, cx, cy, ip, opt = {}) { const w = opt.w || 190; card(ctx, cx - w / 2, cy - 18, w, 36, { fill: opt.fill || "#FFF9E0", stroke: opt.stroke || "#E0B04B", lw: 2, r: 8 }); text(ctx, ip, cx, cy + 7, 20, { align: "center", weight: 900, color: C.ink }); };
+  Q.house = function (ctx, cx, baseY, w, h, label, opt = {}) { ctx.fillStyle = opt.fill || "#FFF9E0"; ctx.strokeStyle = opt.stroke || "#E0B04B"; ctx.lineWidth = 4; ctx.beginPath(); ctx.moveTo(cx - w / 2, baseY); ctx.lineTo(cx - w / 2, baseY - h); ctx.lineTo(cx, baseY - h - w * 0.3); ctx.lineTo(cx + w / 2, baseY - h); ctx.lineTo(cx + w / 2, baseY); ctx.closePath(); ctx.fill(); ctx.stroke(); if (label) text(ctx, label, cx, baseY + 30, 24, { align: "center", weight: 800, color: C.ink2 }); };
+  Q.laptop = function (ctx, cx, cy, s) { ctx.fillStyle = "#2F3B45"; rr(ctx, cx - s * 0.5, cy - s * 0.4, s, s * 0.62, 6); ctx.fill(); ctx.fillStyle = "#DCEBF2"; rr(ctx, cx - s * 0.44, cy - s * 0.34, s * 0.88, s * 0.5, 4); ctx.fill(); ctx.fillStyle = "#4A5A66"; rr(ctx, cx - s * 0.6, cy + s * 0.22, s * 1.2, s * 0.08, 3); ctx.fill(); };
+  Q.printer = function (ctx, cx, cy, s) { ctx.fillStyle = "#7B8B95"; rr(ctx, cx - s * 0.5, cy - s * 0.2, s, s * 0.4, 6); ctx.fill(); ctx.fillStyle = "#4A5A66"; rr(ctx, cx - s * 0.35, cy - s * 0.4, s * 0.7, s * 0.22, 4); ctx.fill(); ctx.fillStyle = "#fff"; rr(ctx, cx - s * 0.3, cy + s * 0.15, s * 0.6, s * 0.3, 3); ctx.fill(); };
+  Q.phoneSmall = function (ctx, cx, cy, s, opt = {}) { ctx.fillStyle = "#2F3B45"; rr(ctx, cx - s * 0.28, cy - s * 0.5, s * 0.56, s, s * 0.1); ctx.fill(); ctx.fillStyle = opt.screen || "#DCEBF2"; rr(ctx, cx - s * 0.23, cy - s * 0.42, s * 0.46, s * 0.84, s * 0.06); ctx.fill(); if (opt.label) text(ctx, opt.label, cx, cy + s * 0.5 + 28, 22, { align: "center", weight: 800, color: C.ink2 }); };
+  Q.tower = function (ctx, cx, baseY, h) { ctx.strokeStyle = "#7B8B95"; ctx.lineWidth = 5; ctx.beginPath(); ctx.moveTo(cx - 24, baseY); ctx.lineTo(cx, baseY - h); ctx.lineTo(cx + 24, baseY); ctx.moveTo(cx - 14, baseY - h * 0.4); ctx.lineTo(cx + 14, baseY - h * 0.4); ctx.moveTo(cx - 8, baseY - h * 0.7); ctx.lineTo(cx + 8, baseY - h * 0.7); ctx.stroke(); Q.waves(ctx, cx, baseY - h, 18, 3, { color: C.accent }); };
+  K.jaringan = Q;
+})(typeof window !== "undefined" ? window : globalThis);
+
+/* Pembantu gambar F11.7: tumpukan empat lapisan TCP/IP, paket berheader (enkapsulasi), topologi bus/bintang/mesh/pohon
+   dengan kabel putus, jalur lompatan paket, amplop berlapis. Gaya diagram Fase F. Muat setelah kiko-core.js, kiko-devices.js, jaringan.js. */
+(function (global) {
+  const K = global.Kiko, H = K.helpers, C = K.C, J = K.jaringan;
+  const { rr, text, para, card, clamp } = H;
+  const Lp = {};
+  Lp.LAYERS = [["aplikasi", "HTTP, pesan, isi berkas", "#2E9E5B"], ["transport", "TCP/UDP: segmen bernomor, port", "#2E7E9A"], ["internet", "IP: alamat tujuan, jalur", "#8E6BBF"], ["tautan", "MAC, kabel atau Wi-Fi", "#B57A12"]];
+  // tumpukan lapisan: n tampil dari atas, active disorot
+  Lp.stack = function (ctx, x, y, w, n, opt = {}) {
+    Lp.LAYERS.forEach(([nm, s, col], i) => { ctx.save(); if (i >= n) ctx.globalAlpha = 0.2; const ry = y + i * (opt.h || 90); const on = opt.active === i; card(ctx, x, ry, w, (opt.h || 90) - 10, { fill: on ? "#FFF3D6" : "#fff", stroke: col, lw: on ? 6 : 4, r: 12 }); ctx.fillStyle = col; rr(ctx, x, ry, 14, (opt.h || 90) - 10, 6); ctx.fill(); text(ctx, (4 - i) + ". " + nm, x + 30, ry + 34, 24, { weight: 900, color: col }); text(ctx, s, x + 30, ry + 62, 18, { weight: 700, color: C.ink2 }); ctx.restore(); });
+  };
+  // paket berheader: k = jumlah header (0..3) dari kanan ke kiri: [MAC][IP][TCP][DATA]
+  Lp.packet = function (ctx, x, y, k, opt = {}) {
+    const hw = opt.hw || 110, dw = opt.dw || 220, h = opt.h || 56; const heads = [["port 8080 · no. 3", Lp.LAYERS[1][2]], ["ke 10.0.3.12", Lp.LAYERS[2][2]], ["MAC 5A:2F:…", Lp.LAYERS[3][2]]];
+    let cx = x + 3 * hw; card(ctx, cx, y, dw, h, { fill: Lp.LAYERS[0][2], r: 8 }); text(ctx, opt.data || "DATA: foto.jpg (bagian 3)", cx + dw / 2, y + h / 2 + 7, 18, { align: "center", weight: 900, color: "#fff" });
+    for (let i = 0; i < k; i++) { cx -= hw; card(ctx, cx, y, hw - 4, h, { fill: heads[i][1], r: 8 }); text(ctx, heads[i][0], cx + (hw - 4) / 2, y + h / 2 + 6, 14, { align: "center", weight: 900, color: "#fff" }); }
+  };
+  // amplop: nested rectangles with labels; depth = jumlah amplop (0..3)
+  Lp.envelope = function (ctx, cx, cy, depth, opt = {}) {
+    const labels = ["untuk: aplikasi Chat", "pintu: 8080", "alamat: Jl. Melati 12", "kurir: jalur A"]; const cols = [Lp.LAYERS[0][2], Lp.LAYERS[1][2], Lp.LAYERS[2][2], Lp.LAYERS[3][2]];
+    for (let i = depth; i >= 0; i--) { const w = 200 + i * 90, h = 120 + i * 60; card(ctx, cx - w / 2, cy - h / 2, w, h, { fill: i === 0 ? "#FFF9E0" : "#fff", stroke: cols[i], lw: 4, r: 10 }); text(ctx, i === 0 ? "pesan" : labels[i], cx, cy - h / 2 + 24, 16, { align: "center", weight: 900, color: cols[i] }); if (i === 0) text(ctx, opt.msg || "“Hai, Dito!”", cx, cy + 12, 22, { align: "center", weight: 900 }); }
+  };
+  // topologi: kind "bus"|"star"|"mesh"|"tree"; opt.cut = indeks kabel yang diputus; menggambar simpul dan menandai yang terputus dari simpul 0
+  Lp.TOPO = {
+    bus: { nodes: [[-240, -60], [-120, 60], [0, -60], [120, 60], [240, -60]], links: [[0, 1], [1, 2], [2, 3], [3, 4]] },
+    star: { nodes: [[0, 0], [-200, -90], [200, -90], [-200, 90], [200, 90]], links: [[0, 1], [0, 2], [0, 3], [0, 4]], hub: 0 },
+    mesh: { nodes: [[-200, -90], [200, -90], [-200, 90], [200, 90], [0, 0]], links: [[0, 1], [0, 2], [0, 4], [1, 3], [1, 4], [2, 3], [2, 4], [3, 4]] },
+    tree: { nodes: [[0, -110], [-180, 0], [180, 0], [-260, 100], [-100, 100], [100, 100], [260, 100]], links: [[0, 1], [0, 2], [1, 3], [1, 4], [2, 5], [2, 6]] }
+  };
+  Lp.reach = function (kind, cut) { const t = Lp.TOPO[kind]; const adj = t.nodes.map(() => []); t.links.forEach(([a, b], i) => { if (i === cut) return; adj[a].push(b); adj[b].push(a); }); const seen = new Set([0]); const q = [0]; while (q.length) { const u = q.shift(); adj[u].forEach(v => { if (!seen.has(v)) { seen.add(v); q.push(v); } }); } return seen; };
+  Lp.topo = function (ctx, cx, cy, kind, opt = {}) {
+    const t = Lp.TOPO[kind]; const sc = opt.scale || 1; const P = t.nodes.map(([x, y]) => [cx + x * sc, cy + y * sc]); const reach = opt.cut != null ? Lp.reach(kind, opt.cut) : null;
+    t.links.forEach(([a, b], i) => { const cutHere = opt.cut === i; ctx.strokeStyle = cutHere ? C.bad : "#7B8B95"; ctx.lineWidth = 5 * sc; ctx.setLineDash(cutHere ? [10, 10] : []); ctx.beginPath(); ctx.moveTo(P[a][0], P[a][1]); ctx.lineTo(P[b][0], P[b][1]); ctx.stroke(); ctx.setLineDash([]); if (cutHere) text(ctx, "✂", (P[a][0] + P[b][0]) / 2, (P[a][1] + P[b][1]) / 2 + 10, 30 * sc, { align: "center", weight: 900, color: C.bad }); });
+    P.forEach(([x, y], i) => { const dead = reach && !reach.has(i); const hub = t.hub === i || (kind === "tree" && i < 3); ctx.fillStyle = dead ? "#E1E8E4" : hub ? C.kiko : "#fff"; ctx.strokeStyle = dead ? C.bad : hub ? C.kikoDark : C.kiko; ctx.lineWidth = 4; ctx.beginPath(); ctx.arc(x, y, (hub ? 22 : 18) * sc, 0, Math.PI * 2); ctx.fill(); ctx.stroke(); if (dead) text(ctx, "✕", x, y + 7 * sc, 20 * sc, { align: "center", weight: 900, color: C.bad }); });
+    if (opt.label) text(ctx, opt.label, cx, cy + 150 * sc, 24, { align: "center", weight: 900, color: C.ink2 });
+    return reach;
+  };
+  // jalur lompatan: hops [[label, icon fn or null]], pos 0..hops.length-1 (posisi paket, boleh pecahan)
+  Lp.hops = function (ctx, x, y, w, hops, pos, opt = {}) {
+    const step = w / (hops.length - 1); const pts = hops.map((_, i) => [x + i * step, y]);
+    J.cable(ctx, pts, { color: "#B7C4CC", lw: 6 });
+    hops.forEach(([lab, kind], i) => { const px = x + i * step; ctx.fillStyle = "#fff"; ctx.strokeStyle = C.kiko; ctx.lineWidth = 4; ctx.beginPath(); ctx.arc(px, y, 30, 0, Math.PI * 2); ctx.fill(); ctx.stroke(); text(ctx, kind || "•", px, y + 10, 26, { align: "center" }); para(ctx, lab, px, y + 60, 17, 150, { align: "center", weight: 800, color: C.ink2 }); });
+    if (pos != null) { const [px, py] = J.along(pts, clamp(pos / (hops.length - 1), 0, 1)); J.packet(ctx, px, py - 50, 1, { color: opt.color || C.accent }); }
+  };
+  K.lapisan = Lp;
+})(typeof window !== "undefined" ? window : globalThis);
+
+/* Pembantu gambar F11.8: rantai koneksi dengan status uji, terminal perintah, tabel aturan firewall dengan paket yang dicocokkan,
+   terowongan VPN, gembok, daftar periksa, baris log. Gaya diagram Fase F. Semua alamat dan nama fiktif. Muat setelah kiko-core.js, kiko-devices.js, jaringan.js, lapisan.js. */
+(function (global) {
+  const K = global.Kiko, H = K.helpers, C = K.C, J = K.jaringan;
+  const { rr, text, para, card, clamp } = H;
+  const Dt = {};
+  Dt.CHAIN = [["perangkat", "💻"], ["kabel / Wi-Fi", "🔌"], ["alamat IP", "🏷️"], ["router", "📡"], ["internet", "🌐"], ["DNS", "📖"], ["server", "🗄️"]];
+  // rantai: status[i] = "ok" | "bad" | null ; opt.broken = indeks mata rantai yang rusak (ditampilkan bila opt.reveal)
+  Dt.chain = function (ctx, x, y, w, status = [], opt = {}) {
+    const n = Dt.CHAIN.length, step = w / (n - 1);
+    for (let i = 0; i < n - 1; i++) { const broken = opt.reveal && opt.broken === i + 1; ctx.strokeStyle = broken ? C.bad : "#B7C4CC"; ctx.lineWidth = 8; ctx.setLineDash(broken ? [10, 10] : []); ctx.beginPath(); ctx.moveTo(x + i * step + 34, y); ctx.lineTo(x + (i + 1) * step - 34, y); ctx.stroke(); ctx.setLineDash([]); }
+    Dt.CHAIN.forEach(([lab, ic], i) => { const px = x + i * step; const st = status[i]; const broken = opt.reveal && opt.broken === i; ctx.fillStyle = broken ? C.badBg : st === "ok" ? C.goodBg : st === "bad" ? C.badBg : "#fff"; ctx.strokeStyle = broken || st === "bad" ? C.bad : st === "ok" ? C.good : C.kiko; ctx.lineWidth = 4; ctx.beginPath(); ctx.arc(px, y, 34, 0, Math.PI * 2); ctx.fill(); ctx.stroke(); text(ctx, ic, px, y + 10, 28, { align: "center" }); para(ctx, lab, px, y + 66, 17, 150, { align: "center", weight: 800, color: C.ink2 }); if (st) text(ctx, st === "ok" ? "✓" : "✕", px + 26, y - 22, 24, { align: "center", weight: 900, color: st === "ok" ? C.good : C.bad }); if (broken) text(ctx, "✕ rusak", px, y - 48, 20, { align: "center", weight: 900, color: C.bad }); });
+  };
+  // terminal: lines [[teks, kind "cmd"|"out"|"err"|"ok"]]
+  Dt.terminal = function (ctx, x, y, w, lines, opt = {}) {
+    const h = 44 + lines.length * 30 + 12; card(ctx, x, y, w, h, { fill: "#0E1418", stroke: "#4A5A66", lw: 3, r: 12 }); text(ctx, opt.title || "TERMINAL", x + 14, y + 26, 14, { weight: 900, color: "#8FD0E6" });
+    lines.forEach(([t, k], i) => { if (opt.n != null && i >= opt.n) return; text(ctx, (k === "cmd" ? "> " : "  ") + t, x + 14, y + 58 + i * 30, 18, { weight: k === "cmd" ? 900 : 700, color: k === "cmd" ? C.accent : k === "err" ? "#FF8A80" : k === "ok" ? "#9BE7A5" : "#D7E2DC" }); }); return h;
+  };
+  // tabel aturan firewall: rules [[aksi, port, dari]]; opt.hit = indeks aturan yang cocok; opt.n baris tampil
+  Dt.firewall = function (ctx, x, y, w, rules, opt = {}) {
+    const rh = 54, cw = [70, 150, 170, w - 390]; card(ctx, x, y, w, rh * (rules.length + 1), { fill: "#fff", stroke: "#B7C4CC", lw: 3, r: 12 }); ctx.fillStyle = C.bg2; rr(ctx, x, y, w, rh, 12); ctx.fill(); ctx.fillRect(x, y + rh / 2, w, rh / 2);
+    ["#", "aksi", "port", "dari"].forEach((h, c) => text(ctx, h, x + cw.slice(0, c).reduce((a, b) => a + b, 0) + 14, y + rh / 2 + 8, 20, { weight: 900, color: C.ink2 }));
+    rules.forEach((r, i) => { if (opt.n != null && i >= opt.n) return; const ry = y + rh * (i + 1); if (opt.hit === i) { ctx.fillStyle = r[0] === "izinkan" ? C.goodBg : C.badBg; ctx.fillRect(x + 2, ry, w - 4, rh); } [String(i + 1), r[0].toUpperCase(), r[1], r[2]].forEach((v, c) => text(ctx, v, x + cw.slice(0, c).reduce((a, b) => a + b, 0) + 14, ry + rh / 2 + 8, 20, { weight: c === 1 ? 900 : 700, color: c === 1 ? (r[0] === "izinkan" ? C.good : C.bad) : C.ink })); ctx.strokeStyle = "#E1E8E4"; ctx.lineWidth = 2; ctx.beginPath(); ctx.moveTo(x, ry); ctx.lineTo(x + w, ry); ctx.stroke(); });
+  };
+  // paket masuk: kartu kecil {port, from}
+  Dt.packetCard = function (ctx, x, y, port, from, verdict) { const w = 440; card(ctx, x, y, w, 100, { fill: verdict === "izinkan" ? C.goodBg : verdict === "tolak" ? C.badBg : "#FFF3D6", stroke: verdict === "izinkan" ? C.good : verdict === "tolak" ? C.bad : C.accent, lw: 4, r: 12 }); text(ctx, "📦 paket → port " + port, x + 16, y + 38, 22, { weight: 900 }); text(ctx, "dari: " + from, x + 16, y + 70, 17, { weight: 800, color: C.ink2 }); if (verdict) text(ctx, verdict.toUpperCase(), x + w - 16, y + 40, 20, { align: "right", weight: 900, color: verdict === "izinkan" ? C.good : C.bad }); };
+  // gembok
+  Dt.lock = function (ctx, cx, cy, s, on = true) { ctx.fillStyle = on ? C.good : C.bad; rr(ctx, cx - s * 0.5, cy - s * 0.1, s, s * 0.8, s * 0.12); ctx.fill(); ctx.strokeStyle = on ? C.good : C.bad; ctx.lineWidth = s * 0.14; ctx.beginPath(); ctx.arc(cx + (on ? 0 : s * 0.15), cy - s * 0.3, s * 0.3, Math.PI, on ? 0 : -0.3, false); ctx.stroke(); ctx.fillStyle = "#fff"; ctx.beginPath(); ctx.arc(cx, cy + s * 0.25, s * 0.1, 0, Math.PI * 2); ctx.fill(); };
+  // terowongan VPN antara x1 dan x2 pada tinggi y
+  Dt.tunnel = function (ctx, x1, x2, y, opt = {}) {
+    ctx.fillStyle = "rgba(46,126,154,0.15)"; rr(ctx, x1, y - 40, x2 - x1, 80, 40); ctx.fill(); ctx.strokeStyle = C.kiko; ctx.lineWidth = 5; ctx.setLineDash([14, 10]); rr(ctx, x1, y - 40, x2 - x1, 80, 40); ctx.stroke(); ctx.setLineDash([]);
+    const u = opt.u == null ? 0.5 : opt.u; const px = x1 + 40 + (x2 - x1 - 80) * u; J.packet(ctx, px, y, 1, { color: C.good }); Dt.lock(ctx, px + 40, y, 22, true);
+    if (opt.label) text(ctx, opt.label, (x1 + x2) / 2, y - 56, 22, { align: "center", weight: 900, color: C.kiko });
+  };
+  // mata penyadap dengan apa yang dilihatnya
+  Dt.eye = function (ctx, cx, cy, sees, opt = {}) { text(ctx, "👁️", cx, cy, 44, { align: "center" }); card(ctx, cx - 160, cy + 16, 320, 50, { fill: opt.bad ? C.badBg : C.bg2, stroke: opt.bad ? C.bad : "#B7C4CC", lw: 2, r: 10 }); text(ctx, sees, cx, cy + 49, 18, { align: "center", weight: 900, color: opt.bad ? C.bad : C.ink2 }); };
+  // daftar periksa
+  Dt.checklist = function (ctx, x, y, w, items, n, opt = {}) { items.forEach(([t, s], i) => { ctx.save(); if (i >= n) ctx.globalAlpha = 0.2; const ry = y + i * (opt.rh || 64); card(ctx, x, ry, w, (opt.rh || 64) - 8, { fill: i === n - 1 ? "#FFF3D6" : C.bg2, stroke: i === n - 1 ? C.accent : undefined, lw: 3, r: 12 }); text(ctx, "☑ " + t, x + 18, ry + 30, 22, { weight: 900 }); if (s) text(ctx, s, x + w - 18, ry + 30, 18, { align: "right", weight: 800, color: C.ink2 }); ctx.restore(); }); };
+  // baris log
+  Dt.log = function (ctx, x, y, w, rows, n, opt = {}) { const h = 44 + rows.length * 32 + 10; card(ctx, x, y, w, h, { fill: "#0E1418", stroke: "#4A5A66", lw: 3, r: 12 }); text(ctx, "LOG ROUTER", x + 14, y + 26, 14, { weight: 900, color: "#8FD0E6" }); rows.forEach(([t, bad], i) => { if (i >= n) return; text(ctx, t, x + 14, y + 60 + i * 32, 17, { weight: bad ? 900 : 700, color: bad ? "#FF8A80" : "#D7E2DC" }); }); return h; };
+  K.detektif = Dt;
+})(typeof window !== "undefined" ? window : globalThis);
+
+/* Adegan episode F11.8: Troubleshooting dan Keamanan Lanjut Jaringan. Gaya diagram Fase F. Semua alamat dan skenario fiktif.
+   Muat setelah kiko-core.js, kiko-devices.js, jaringan.js, lapisan.js, detektif.js. */
+(function (global) {
+  const K = global.Kiko, H = K.helpers, C = K.C, J = K.jaringan, Lp = K.lapisan, Dt = K.detektif, SCENES = K.SCENES;
+  const { text, para, card, kiko, kid, bubble, rr, ease, clamp, lerp, arrowIcon } = H;
+  const reveal = (l, t0, step, n) => clamp(Math.floor((l - t0) / step) + 1, 0, n);
+  const banner = (ctx, s, y = 745, w = 1000, opt = {}) => { card(ctx, 960 - w / 2, y, w, 80, { fill: opt.fill || "#FFF3D6", stroke: opt.stroke || C.accent, lw: 4 }); text(ctx, s, 960, y + 52, opt.size || 34, { align: "center", weight: 900, color: opt.color || C.accentDark }); };
+  const label = (ctx, s, x, y, opt = {}) => text(ctx, s, x, y, opt.size || 28, { align: "center", weight: 900, color: opt.color || C.accentDark });
+  const heading = (ctx, s, y = 230) => text(ctx, s, 960, y, 34, { align: "center", color: C.accentDark, weight: 800 });
+  const RULES = [["izinkan", "443", "mana saja"], ["izinkan", "22", "laptop admin (10.0.1.2)"], ["tolak", "semua", "mana saja"]];
+
+  Object.assign(SCENES, {
+    title_q(ctx, b, l) {
+      card(ctx, 120, 150, 1680, 740);
+      kiko(ctx, 260, 560, 160, 0, { mood: "think" });
+      const n = reveal(l, 1.5, 2.2, 3);
+      [["🕵️", "detektif jaringan", "uji dari bawah ke atas; pilih uji yang membelah dua penyebab"], ["🛡️", "keamanan lanjut", "firewall per port, enkripsi di jalur, VPN sebagai terowongan"]].forEach(([ic, t, s], i) => { ctx.save(); if (i >= n) ctx.globalAlpha = 0.2; const x = 560 + i * 560; card(ctx, x, 280, 520, 320, { fill: i === n - 1 ? "#FFF3D6" : C.bg2, stroke: i === n - 1 ? C.accent : undefined, lw: 3, r: 18 }); text(ctx, ic, x + 260, 380, 64, { align: "center" }); text(ctx, t, x + 260, 450, 30, { align: "center", weight: 900 }); para(ctx, s, x + 260, 500, 21, 460, { align: "center", weight: 800, color: C.ink2 }); ctx.restore(); });
+      if (n >= 3) banner(ctx, "“internetnya mati!” — dari mana mulai memeriksa?", 660, 1000);
+    },
+    prereq(ctx, b, l) {
+      card(ctx, 260, 200, 1400, 600);
+      text(ctx, "TONTON DULU", 960, 290, 34, { align: "center", color: C.accentDark, weight: 800 });
+      [["F11.7", "Model Jaringan dan Pengiriman Data"], ["E.3", "Keamanan Akun dan Jaringan Dasar"]].forEach(([c, t], i) => { const x = 360 + i * 640; card(ctx, x, 340, 580, 280, { fill: C.bg2 }); text(ctx, "Episode " + c, x + 290, 430, 50, { align: "center", weight: 900 }); para(ctx, t, x + 290, 500, 28, 520, { align: "center", weight: 700, color: C.ink2 }); });
+      kiko(ctx, 1600, 760, 150, 0);
+    },
+    unplugged_tebak_rusak(ctx, b, l) {
+      card(ctx, 120, 150, 1680, 740); heading(ctx, "MAIN DULU: TEBAK MATA RANTAI YANG RUSAK", 215);
+      const n = reveal(l, 1.5, 2.2, 5);
+      const status = []; if (n >= 2) status[3] = "ok"; if (n >= 3) status[4] = "bad";
+      Dt.chain(ctx, 300, 340, 1320, status, { broken: 4, reveal: n >= 4 });
+      [["“Apakah ping ke router berhasil?”", "ya ✓ → kabel, IP, router sehat"], ["“Apakah ping ke internet berhasil?”", "tidak ✕ → tersangka: sambungan internet"]].forEach(([q, a], i) => { ctx.save(); if (n < i + 2) ctx.globalAlpha = 0.2; card(ctx, 300 + i * 680, 470, 640, 110, { fill: C.bg2, r: 14 }); text(ctx, q, 324 + i * 680, 512, 22, { weight: 900 }); text(ctx, a, 324 + i * 680, 550, 19, { weight: 800, color: i ? C.bad : C.good }); ctx.restore(); });
+      if (n >= 5) label(ctx, "dua pertanyaan untuk lima tersangka: pilih uji yang membelah dua", 960, 680, { size: 26 });
+    },
+    unplugged_sandi_amplop(ctx, b, l) {
+      card(ctx, 120, 150, 1680, 740); heading(ctx, "TIGA KURIR YANG BOLEH MENGINTIP", 215);
+      const n = reveal(l, 1.5, 2.4, 5);
+      [["kelompok 1: pesan apa adanya", "“kata sandi lab: Mawar123”", "kurir membaca semuanya", true], ["kelompok 2: diacak dengan kunci", "“ndwd vdqgl odev: Pdzdu456”", "kurir hanya melihat acak", false]].forEach(([t, msg, sees, bad], i) => { ctx.save(); if (n < i + 1) ctx.globalAlpha = 0.2; const y = 280 + i * 220; text(ctx, t, 240, y, 24, { weight: 900, color: bad ? C.bad : C.good }); card(ctx, 240, y + 16, 520, 70, { fill: "#FFF9E0", stroke: "#E0B04B", lw: 3, r: 12 }); text(ctx, msg, 500, y + 60, 22, { align: "center", weight: 900 }); [0, 1, 2].forEach(k => { text(ctx, "🚶", 860 + k * 160, y + 60, 40, { align: "center" }); }); if (n >= i + 2) Dt.eye(ctx, 1480, y + 20, sees, { bad }); ctx.restore(); });
+      if (n >= 5) banner(ctx, "jalur terbuka lawan jalur terenkripsi: kuncinya hanya di dua ujung", 700, 1200, { size: 28 });
+    },
+    rantai(ctx, b, l) {
+      card(ctx, 120, 150, 1680, 740); heading(ctx, "KONEKSI ADALAH RANTAI", 215);
+      const n = reveal(l, 1.5, 1.4, 9);
+      const shown = Math.min(7, n); ctx.save(); Dt.chain(ctx, 300, 360, 1320, [], { broken: 5, reveal: n >= 9 }); ctx.restore();
+      if (n < 7) { ctx.fillStyle = "rgba(246,248,247,0.85)"; ctx.fillRect(300 + shown * 220 - 60, 280, 1500, 200); }
+      [["DNS", "menerjemahkan nama situs menjadi alamat IP"], ["router", "pintu keluar jaringan lokal ke internet"], ["alamat IP", "diberikan router lewat DHCP"]].forEach(([t, s], i) => { ctx.save(); if (n < i + 8 && n < 9) ctx.globalAlpha = n >= 7 ? 1 : 0.2; card(ctx, 300 + i * 450, 500, 420, 90, { fill: C.bg2, r: 12 }); text(ctx, t, 324 + i * 450, 538, 22, { weight: 900, color: C.kiko }); text(ctx, s, 324 + i * 450, 568, 17, { weight: 700, color: C.ink2 }); ctx.restore(); });
+      if (n >= 9) label(ctx, "satu mata rantai putus terasa seperti “internet mati”", 960, 680, { size: 26 });
+    },
+    bawah_ke_atas(ctx, b, l) {
+      card(ctx, 120, 150, 1680, 740); heading(ctx, "PERIKSA DARI BAWAH KE ATAS, JANGAN LOMPAT", 215);
+      const n = reveal(l, 1.5, 1.7, 7);
+      const steps = [["1", "lampu kabel / sinyal Wi-Fi", "menyala? tersambung?"], ["2", "ipconfig", "dapat IP? bukan 169.254.x.x?"], ["3", "ping router", "10.0.3.1 menjawab?"], ["4", "ping alamat internet", "misalnya 203.0.113.1"], ["5", "nslookup situs", "nama → alamat?"], ["6", "aplikasi / browser", "baru periksa aplikasinya"]];
+      steps.forEach(([no, t, s], i) => { ctx.save(); if (i >= n) ctx.globalAlpha = 0.2; const y = 620 - i * 60; card(ctx, 240 + i * 40, y, 760 - i * 40, 52, { fill: i === n - 1 ? "#FFF3D6" : C.bg2, stroke: i === n - 1 ? C.accent : undefined, lw: 3, r: 10 }); text(ctx, no + ". " + t, 264 + i * 40, y + 34, 21, { weight: 900 }); ctx.restore(); });
+      Dt.terminal(ctx, 1060, 280, 620, [["ipconfig", "cmd"], ["IPv4: 10.0.3.5", n >= 2 ? "ok" : "out"], ["Gateway: 10.0.3.1", "out"], ["ping 10.0.3.1", "cmd"], ["balasan 2 ms, 0% hilang", n >= 3 ? "ok" : "out"], ["ping 203.0.113.1", "cmd"], ["waktu habis, 100% hilang", n >= 4 ? "err" : "out"]], { n: n >= 4 ? 7 : n >= 3 ? 5 : n >= 2 ? 3 : 0 });
+      if (n >= 7) label(ctx, "berhenti di langkah yang gagal: itu tersangkamu", 1370, 620, { size: 24 });
+    },
+    belah_dua(ctx, b, l) {
+      card(ctx, 120, 150, 1680, 740); heading(ctx, "PILIH UJI YANG MEMBELAH DUA", 215);
+      const n = reveal(l, 1.5, 2.0, 6);
+      const status = []; if (n >= 2) { [1, 2, 3, 4].forEach(i => status[i] = "ok"); }
+      Dt.chain(ctx, 300, 340, 1320, status, { broken: 5, reveal: n >= 4 });
+      if (n >= 1) { card(ctx, 300, 460, 640, 90, { fill: C.goodBg, stroke: C.good, lw: 3, r: 12 }); text(ctx, "ping 203.0.113.1 → berhasil", 620, 500, 24, { align: "center", weight: 900, color: C.good }); text(ctx, "situs tetap tidak terbuka", 620, 532, 18, { align: "center", weight: 800, color: C.ink2 }); }
+      if (n >= 3) { card(ctx, 980, 460, 640, 90, { fill: "#FFF3D6", stroke: C.accent, lw: 3, r: 12 }); text(ctx, "empat tersangka dihapus sekaligus", 1300, 500, 24, { align: "center", weight: 900, color: C.accentDark }); text(ctx, "tersisa: DNS atau aplikasi", 1300, 532, 18, { align: "center", weight: 800, color: C.ink2 }); }
+      if (n >= 5) Dt.terminal(ctx, 300, 580, 640, [["nslookup sekolahku.sch.id", "cmd"], ["server tidak menjawab", "err"]], {});
+      if (n >= 6) label(ctx, "satu uji, separuh tersangka gugur", 1300, 650, { size: 28 });
+    },
+    alat(ctx, b, l) {
+      card(ctx, 120, 150, 1680, 740); heading(ctx, "EMPAT ALAT DETEKTIF", 215);
+      const n = reveal(l, 1.5, 2.6, 4);
+      [["ping", [["ping 10.0.3.1", "cmd"], ["balasan 2 ms, 0% hilang", "ok"]], "tujuan menjawab? berapa ms? berapa % hilang?"], ["ipconfig / ifconfig", [["ipconfig", "cmd"], ["IPv4 10.0.3.5 · gateway 10.0.3.1 · DNS 10.0.3.1", "out"]], "alamat IP, gateway, DNS"], ["traceroute", [["traceroute 203.0.113.1", "cmd"], ["1 10.0.3.1 · 2 * * * (berhenti)", "err"]], "di router mana paket berhenti"], ["nslookup", [["nslookup sekolahku.sch.id", "cmd"], ["alamat: 203.0.113.40", "ok"]], "nama bisa diterjemahkan?"]].forEach(([t, lines, s], i) => { ctx.save(); if (i >= n) ctx.globalAlpha = 0.2; const x = 240 + (i % 2) * 740, y = 270 + Math.floor(i / 2) * 230; text(ctx, t, x, y, 24, { weight: 900, color: i === n - 1 ? C.accentDark : C.kiko }); Dt.terminal(ctx, x, y + 12, 700, lines, { title: t.toUpperCase() }); text(ctx, s, x, y + 150, 18, { weight: 800, color: C.ink2 }); ctx.restore(); });
+    },
+    firewall(ctx, b, l) {
+      card(ctx, 120, 150, 1680, 740); heading(ctx, "FIREWALL: SATPAM DI PINTU JARINGAN", 215);
+      const n = reveal(l, 1.5, 1.8, 7);
+      J.cloud(ctx, 330, 420, 70, "internet", { size: 22 }); card(ctx, 560, 300, 160, 260, { fill: "#2F3B45", r: 14 }); text(ctx, "🛡️", 640, 400, 54, { align: "center" }); text(ctx, "FIREWALL", 640, 450, 20, { align: "center", weight: 900, color: "#fff" }); J.cable(ctx, [[420, 420], [560, 420]], { color: "#B7C4CC" }); J.cable(ctx, [[720, 420], [860, 420]], { color: "#B7C4CC" }); J.laptop(ctx, 940, 430, 120); text(ctx, "jaringan sekolah", 940, 520, 18, { align: "center", weight: 800, color: C.ink2 });
+      Dt.firewall(ctx, 1080, 290, 600, RULES, { n: Math.min(3, Math.max(0, n - 1)), hit: n >= 5 ? (n >= 6 ? 2 : 0) : null });
+      if (n >= 5) Dt.packetCard(ctx, 240, 600, n >= 6 ? "3389" : "443", "mana saja", n >= 6 ? "tolak" : "izinkan");
+      if (n >= 7) label(ctx, "yang tidak ada di daftar: tolak", 1380, 560, { size: 26 });
+    },
+    aturan_firewall(ctx, b, l) {
+      card(ctx, 120, 150, 1680, 740); heading(ctx, "ATURAN DIBACA DARI ATAS: YANG PERTAMA COCOK DIPAKAI", 215);
+      const n = reveal(l, 1.5, 1.8, 7);
+      const pk = [["443", "HP tamu (10.0.9.7)", 0, "izinkan"], ["22", "laptop admin (10.0.1.2)", 1, "izinkan"], ["22", "HP tamu (10.0.9.7)", 2, "tolak"]]; const k = clamp(n - 2, 0, 3); const cur = k > 0 ? pk[k - 1] : null;
+      Dt.firewall(ctx, 240, 280, 900, RULES, { hit: cur ? cur[2] : null });
+      pk.forEach((p, i) => { ctx.save(); if (i >= k) ctx.globalAlpha = 0.2; Dt.packetCard(ctx, 1200, 280 + i * 120, p[0], p[1], i < k ? p[3] : null); ctx.restore(); });
+      if (n >= 6) { card(ctx, 240, 520, 820, 100, { fill: C.bg2, r: 12 }); text(ctx, "firewall ada di router sekolah dan di laptopmu sendiri", 650, 560, 22, { align: "center", weight: 900 }); text(ctx, "port terbuka tanpa alasan = pintu yang lupa dikunci", 650, 595, 20, { align: "center", weight: 800, color: C.bad }); }
+      if (n >= 7) label(ctx, "firewall tidak bertanya: ia memutuskan dari daftar", 960, 700, { size: 26 });
+    },
+    enkripsi(ctx, b, l) {
+      card(ctx, 120, 150, 1680, 740); heading(ctx, "ENKRIPSI DI JALUR: HTTPS DAN WPA", 215);
+      const n = reveal(l, 1.5, 2.0, 6);
+      J.laptop(ctx, 340, 440, 160); text(ctx, "browser", 340, 530, 20, { align: "center", weight: 800, color: C.ink2 }); J.server(ctx, 1560, 430, 140, 200, { label: "server HTTPS" });
+      J.cable(ctx, [[430, 440], [1490, 440]], { color: "#B7C4CC" });
+      if (n >= 2) { Dt.lock(ctx, 560, 440, 40, true); Dt.lock(ctx, 1340, 440, 40, true); text(ctx, "TLS: diacak di sini", 560, 500, 18, { align: "center", weight: 900, color: C.good }); text(ctx, "dibuka di sini", 1340, 500, 18, { align: "center", weight: 900, color: C.good }); }
+      if (n >= 3) { ["x7Q#k9…", "p2!mZ4…", "Lw8$vR…"].forEach((s, i) => text(ctx, s, 760 + i * 160, 420, 20, { align: "center", weight: 900, color: C.ink2 })); Dt.eye(ctx, 960, 300, "penyadap: hanya huruf acak", {}); }
+      if (n >= 4) { card(ctx, 240, 580, 680, 110, { fill: C.goodBg, stroke: C.good, lw: 3, r: 12 }); text(ctx, "🔒 gembok di browser = HTTPS", 580, 625, 24, { align: "center", weight: 900, color: C.good }); text(ctx, "isi terenkripsi; tujuan tetap terlihat", 580, 660, 18, { align: "center", weight: 800, color: C.ink2 }); }
+      if (n >= 5) { card(ctx, 1000, 580, 680, 110, { fill: C.goodBg, stroke: C.good, lw: 3, r: 12 }); text(ctx, "📶 WPA2 / WPA3 di Wi-Fi", 1340, 625, 24, { align: "center", weight: 900, color: C.good }); text(ctx, "gelombang udara diacak dengan sandi Wi-Fi", 1340, 660, 18, { align: "center", weight: 800, color: C.ink2 }); }
+      if (n >= 6) label(ctx, "dua kunci: gembok browser dan sandi Wi-Fi yang kuat", 960, 745, { size: 24 });
+    },
+    vpn(ctx, b, l) {
+      card(ctx, 120, 150, 1680, 740); heading(ctx, "VPN: TEROWONGAN, BUKAN JUBAH GAIB", 215);
+      const n = reveal(l, 1.5, 2.0, 6);
+      J.phoneSmall(ctx, 300, 440, 120); text(ctx, "HP-mu di Wi-Fi kafe", 300, 530, 18, { align: "center", weight: 800, color: C.ink2 });
+      J.router(ctx, 640, 440, 60, { label: "Wi-Fi kafe" }); J.server(ctx, 1120, 430, 120, 170, { label: "server VPN" }); J.server(ctx, 1600, 430, 120, 170, { label: "situs tujuan" });
+      J.cable(ctx, [[1180, 440], [1540, 440]], { color: "#B7C4CC" });
+      if (n >= 2) Dt.tunnel(ctx, 360, 1060, 440, { u: (l % 2) / 2, label: "terowongan terenkripsi" });
+      if (n >= 3) Dt.eye(ctx, 640, 300, "pemilik Wi-Fi: hanya terowongan", {});
+      if (n >= 4) { card(ctx, 240, 580, 680, 110, { fill: "#FFF3D6", stroke: C.accent, lw: 3, r: 12 }); text(ctx, "penyedia VPN melihat lalu lintasmu", 580, 625, 22, { align: "center", weight: 900, color: C.accentDark }); text(ctx, "pilih yang terpercaya; sekolah sering menyediakannya", 580, 660, 17, { align: "center", weight: 800, color: C.ink2 }); }
+      if (n >= 5) { card(ctx, 1000, 580, 680, 110, { fill: "#FFF3D6", stroke: C.accent, lw: 3, r: 12 }); text(ctx, "situs tetap mengenali akunmu", 1340, 625, 22, { align: "center", weight: 900, color: C.accentDark }); text(ctx, "VPN menyembunyikan jalur, bukan identitas login", 1340, 660, 17, { align: "center", weight: 800, color: C.ink2 }); }
+      if (n >= 6) label(ctx, "di Wi-Fi publik: VPN, HTTPS, dan jangan masuk akun penting", 960, 745, { size: 24 });
+    },
+    daftar_periksa(ctx, b, l) {
+      card(ctx, 120, 150, 1680, 740); heading(ctx, "DAFTAR PERIKSA JARINGAN SEKOLAH", 215);
+      const n = reveal(l, 1.5, 1.7, 8);
+      Dt.checklist(ctx, 240, 270, 820, [["ganti kata sandi bawaan router", "admin/admin → sandi kuat"], ["perbarui firmware", "tambal celah"], ["WPA3 atau WPA2", "bukan WEP / terbuka"], ["pisahkan jaringan tamu dari lab", "VLAN / SSID tamu"], ["tutup port yang tak dipakai", "firewall"], ["aktifkan log", "buku tamu"], ["simpan catatan konfigurasi", "untuk admin berikutnya"]], Math.min(7, n), { rh: 62 });
+      if (n >= 2) { const rows = [["kata sandi admin", "diganti", n >= 2], ["firmware", "terbaru", n >= 3], ["enkripsi Wi-Fi", "WPA3", n >= 4], ["jaringan tamu", "terpisah", n >= 5], ["port terbuka", "443 saja", n >= 6], ["log", "aktif", n >= 7]]; card(ctx, 1120, 280, 560, 60 + rows.length * 56, { fill: "#fff", stroke: "#B7C4CC", lw: 3, r: 14 }); text(ctx, "Pengaturan router · 10.0.3.1", 1140, 318, 18, { weight: 900, color: C.ink2 }); rows.forEach(([lab, val, ok], i) => { const ry = 350 + i * 56; ctx.fillStyle = ok ? C.good : "#B7C4CC"; ctx.beginPath(); ctx.arc(1150, ry + 10, 10, 0, Math.PI * 2); ctx.fill(); text(ctx, lab, 1175, ry + 17, 19, { weight: 900 }); text(ctx, ok ? val : "…", 1660, ry + 17, 18, { align: "right", weight: 800, color: ok ? C.good : C.ink2 }); }); }
+      if (n >= 8) label(ctx, "keamanan adalah kebiasaan, bukan sekali pasang", 960, 745, { size: 26 });
+    },
+    log(ctx, b, l) {
+      card(ctx, 120, 150, 1680, 740); heading(ctx, "LOG ROUTER: BUKU TAMU JARINGAN", 215);
+      const n = reveal(l, 1.5, 1.6, 8);
+      Dt.log(ctx, 240, 270, 1000, [["03/11 07:02  10.0.3.5  → 203.0.113.40:443  izinkan", false], ["03/11 07:03  10.0.3.7  → 203.0.113.40:443  izinkan", false], ["03/11 07:05  10.0.9.7  → 10.0.3.1:22      TOLAK", true], ["03/11 07:05  10.0.9.7  → 10.0.3.1:22      TOLAK", true], ["03/11 07:05  10.0.9.7  → 10.0.3.1:22      TOLAK", true], ["03/11 07:06  10.0.3.5  → 10.0.3.1:53       izinkan", false]], Math.min(6, n));
+      if (n >= 5) { card(ctx, 1280, 280, 400, 160, { fill: C.badBg, stroke: C.bad, lw: 3, r: 14 }); text(ctx, "⚠ pola mencurigakan", 1480, 325, 22, { align: "center", weight: 900, color: C.bad }); para(ctx, "HP tamu mencoba port 22 berulang kali: firewall menolak, log mencatat", 1480, 365, 18, 360, { align: "center", weight: 800 }); }
+      if (n >= 7) { card(ctx, 1280, 470, 400, 150, { fill: C.bg2, r: 14 }); para(ctx, "baca log rutin, bukan hanya saat bermasalah", 1480, 520, 22, 360, { align: "center", weight: 900 }); }
+      if (n >= 8) banner(ctx, "semua uji hanya di jaringan yang kamu kelola atau diizinkan", 690, 1100, { size: 28 });
+    },
+    make_show(ctx, b, l) {
+      card(ctx, 160, 150, 1600, 740);
+      text(ctx, "GILIRANMU", 960, 240, 34, { align: "center", color: C.accentDark, weight: 900 });
+      const items = [["Detektif jaringan", "pilih uji, persempit penyebab", (x, y) => { ctx.save(); ctx.translate(x - 230, y - 120); ctx.scale(0.5, 0.5); Dt.chain(ctx, 40, 80, 840, { 3: "ok", 4: "bad" }, { broken: 4, reveal: true }); ctx.restore(); Dt.terminal(ctx, x - 220, y + 10, 440, [["ping 10.0.3.1", "cmd"], ["balasan 2 ms", "ok"]], {}); }],
+        ["Penjaga firewall", "paket mana yang lolos?", (x, y) => { ctx.save(); ctx.translate(x - 230, y - 120); ctx.scale(0.62, 0.62); Dt.firewall(ctx, 0, 0, 740, RULES, { hit: 2 }); ctx.restore(); Dt.packetCard(ctx, x - 220, y + 50, "22", "HP tamu", "tolak"); }],
+        ["Audit router", "temuan → tindakan", (x, y) => Dt.checklist(ctx, x - 220, y - 110, 440, [["sandi bawaan", "ganti"], ["WEP", "→ WPA3"], ["port 3389 terbuka", "tutup"], ["log mati", "aktifkan"]], 4, { rh: 54 })]];
+      items.forEach(([t1, t2, draw], i) => { const x = 400 + i * 560; card(ctx, x - 250, 290, 500, 440, { fill: C.bg2 }); ctx.fillStyle = C.kiko; ctx.beginPath(); ctx.arc(x - 200, 340, 28, 0, Math.PI * 2); ctx.fill(); text(ctx, String(i + 1), x - 200, 352, 30, { align: "center", color: "#fff", weight: 900 }); text(ctx, t1, x - 160, 352, 26, { weight: 900 }); para(ctx, t2, x - 160, 386, 20, 400, { weight: 700, color: C.ink2 }); draw(x, 560); });
+      text(ctx, "di halaman latihan episode ini — lalu ping, ipconfig, traceroute, nslookup di lab dengan izin guru", 960, 820, 24, { align: "center", color: C.ink2, weight: 700 });
+    }
+  });
+})(typeof window !== "undefined" ? window : globalThis);
+</script>
+<script>/* Inti halaman latihan: pemutar (kanvas + narasi), tombol suara nyala/mati (berpindah antara timeline suara dan teks),
+   kuis dengan petunjuk, dan kemajuan di localStorage (perangkat ini saja).
+   Pakai:  const P = PageCore({ suara: TIMELINE_SUARA_atau_null, teks: TIMELINE_TEKS });
+   Episode menambahkan latihannya sendiri lewat P.$, P.K, P.H, P.progress, P.save(), P.speed(), P.onProgress(fn). */
+function PageCore(TLS, opt = {}) {
+  const $ = id => document.getElementById(id);
+  const K = Kiko, H = K.helpers;
+  let voice = !!TLS.suara; let TL = voice ? TLS.suara : TLS.teks;
+  // ---------- progress storage (per device only) ----------
+  const KEY = opt.key || TL.episode.replace(/\./g, "").toLowerCase() + "-progress";   // D7.5 -> "d75-progress"
+  let progress = { quiz: {} };
+  try { const s = localStorage.getItem(KEY); if (s) progress = { quiz: {}, ...JSON.parse(s) }; } catch (e) {}
+  const extras = [];
+  function renderProgress() {
+    const el = $("progress"); if (!el) return; el.innerHTML = "";
+    Object.keys(TL.quizzes).forEach((id, i) => { const s = document.createElement("span"); s.textContent = "Cek " + (i + 1); s.className = progress.quiz[id] ? "ok" : ""; el.appendChild(s); });
+    extras.forEach(f => f(el));
+  }
+  function save() { try { localStorage.setItem(KEY, JSON.stringify(progress)); } catch (e) {} renderProgress(); }
+
+  // ---------- player ----------
+  const cv = $("screen"), ctx = cv.getContext("2d");
+  let t = 0, playing = false, last = 0, speed = 1, hasAudio = false;
+  const nar = $("nar"); nar.addEventListener("canplay", () => { hasAudio = true; }); nar.addEventListener("error", () => { hasAudio = false; });
+  function fmt(s) { s = Math.max(0, Math.floor(s)); return Math.floor(s / 60) + ":" + String(s % 60).padStart(2, "0"); }
+  function segStart(i) { return TL.beats.find(b => b.seg === i).start; }
+  function syncAudio() { if (voice && hasAudio) { try { nar.currentTime = t; } catch (e) {} } }
+  function drawNow() {
+    const b = K.draw(ctx, Math.min(t, TL.total - 0.01), TL);
+    $("barfill").style.width = (t / TL.total * 100) + "%"; $("bar").setAttribute("aria-valuenow", Math.round(t / TL.total * 100));
+    $("timelabel").textContent = fmt(t) + " / " + fmt(TL.total);
+    [...$("chapters").children].forEach((c, i) => c.classList.toggle("now", i === b.seg));
+    return b;
+  }
+  function loop(now) {
+    if (!playing) return;
+    const dt = Math.min(0.1, (now - last) / 1000); last = now; if (voice && hasAudio && !nar.paused) t = nar.currentTime; else t += dt * speed;
+    if (t >= TL.total) { t = TL.total - 0.01; setPlaying(false); }
+    drawNow(); requestAnimationFrame(loop);
+  }
+  function setPlaying(p) {
+    playing = p; $("bigplay").hidden = p; $("playbtn").textContent = p ? "❚❚ Jeda" : "▶ Putar";
+    if (p) { last = performance.now(); if (voice && hasAudio) { try { nar.currentTime = t; nar.playbackRate = speed; nar.play().catch(() => {}); } catch (e) {} } requestAnimationFrame(loop); } else nar.pause();
+  }
+  $("bigplay").addEventListener("click", () => setPlaying(true));
+  $("playbtn").addEventListener("click", () => setPlaying(!playing));
+  $("replay").addEventListener("click", () => { const b = K.beatAt(TL, t); t = segStart(b.seg); syncAudio(); drawNow(); setPlaying(true); });
+  $("slow").addEventListener("click", e => { speed = speed === 1 ? 0.8 : 1; nar.playbackRate = speed; e.currentTarget.setAttribute("aria-pressed", speed !== 1); });
+  function seekFromBar(ev) { const r = $("bar").getBoundingClientRect(); const x = (ev.touches ? ev.touches[0].clientX : ev.clientX) - r.left; t = Math.max(0, Math.min(TL.total - 0.01, x / r.width * TL.total)); syncAudio(); drawNow(); }
+  $("bar").addEventListener("click", seekFromBar);
+  $("bar").addEventListener("keydown", e => { if (e.key === "ArrowRight") { t = Math.min(TL.total - 0.01, t + 5); syncAudio(); drawNow(); } if (e.key === "ArrowLeft") { t = Math.max(0, t - 5); syncAudio(); drawNow(); } });
+  TL.segments.forEach((name, i) => { const b = document.createElement("button"); b.textContent = (i + 1) + ". " + name; b.addEventListener("click", () => { t = segStart(i); syncAudio(); drawNow(); setPlaying(true); }); $("chapters").appendChild(b); });
+  // voice on/off: switches between the narrated timeline and the reading-paced one, staying on the same beat
+  const vb = $("voice");
+  function setVoice(on) {
+    const cur = K.beatAt(TL, t);
+    voice = on && !!TLS.suara; TL = voice ? TLS.suara : TLS.teks;
+    const nb = TL.beats.find(b => b.id === cur.id) || TL.beats[0]; t = nb.start;
+    if (vb) { vb.setAttribute("aria-pressed", voice); vb.textContent = voice ? "🔊 Suara: nyala" : "🔇 Suara: mati"; }
+    if (playing) { if (voice && hasAudio) { try { nar.currentTime = t; nar.playbackRate = speed; nar.play().catch(() => {}); } catch (e) {} } else nar.pause(); }
+    drawNow();
+  }
+  if (vb) { if (!TLS.suara || !TLS.teks) vb.hidden = true; else { vb.addEventListener("click", () => setVoice(!voice)); vb.setAttribute("aria-pressed", voice); vb.textContent = voice ? "🔊 Suara: nyala" : "🔇 Suara: mati"; } }
+  drawNow();
+
+  // ---------- quiz ----------
+  const quizEl = $("quiz");
+  if (quizEl) Object.entries(TL.quizzes).forEach(([id, q], qi) => {
+    const box = document.createElement("div"); box.className = "q";
+    box.innerHTML = `<h3>${qi + 1}. ${q.q}</h3><div class="opts"></div><div class="fb"></div>`;
+    const opts = box.querySelector(".opts"), fb = box.querySelector(".fb");
+    q.options.forEach((o, i) => {
+      const b = document.createElement("button"); b.innerHTML = `<b>${"ABC"[i]}</b><span>${o}</span>`;
+      b.addEventListener("click", () => {
+        [...opts.children].forEach(c => c.classList.remove("wrong"));
+        if (i === q.answer) { b.classList.add("right"); fb.className = "fb good"; fb.textContent = "Benar! " + (q.explain || ""); progress.quiz[id] = true; save(); [...opts.children].forEach(c => c.disabled = true); }
+        else { b.classList.add("wrong"); fb.className = "fb bad"; fb.textContent = "Belum tepat. Petunjuk: " + q.hint; }
+      });
+      opts.appendChild(b);
+    });
+    if (progress.quiz[id]) { opts.children[q.answer].classList.add("right"); [...opts.children].forEach(c => c.disabled = true); fb.className = "fb good"; fb.textContent = "Sudah dijawab benar."; }
+    quizEl.appendChild(box);
+  });
+  renderProgress();
+
+  return { $, K, H, progress, save, renderProgress, speed: () => speed, timeline: () => TL,
+           onProgress(fn) { extras.push(fn); renderProgress(); } };
+}
+</script>
+<script>
+(function () {
+  const P = PageCore({ suara: {"episode": "F11.8", "title": "Troubleshooting dan Keamanan Lanjut Jaringan", "hook": "mendiagnosis gangguan jaringan selangkah demi selangkah dan mengatur firewall, enkripsi, serta VPN.", "engine": ["../_alat/kiko-core.js", "../_alat/kiko-devices.js", "../D9.2/jaringan.js", "../F11.7/lapisan.js", "detektif.js", "scenes.js"], "parts": {"F11.8a": {"segs": [0, 1, 2, 3], "post": "Lanjut ke Bagian 2: Firewall, Enkripsi, VPN"}, "F11.8b": {"segs": [4, 5, 6, 7], "pre": "Bagian 2: Firewall, Enkripsi, VPN"}}, "youtube": {"ringkas": "“Internetnya mati!” Dari mana mulai memeriksa? Bersama Kiko kita menjadi detektif jaringan: diagnosis bertahap dari lapisan bawah ke atas (kabel atau Wi-Fi, alamat IP, ping ke router, ping ke internet, DNS, lalu aplikasi), memilih uji yang membagi dua kemungkinan penyebab, dan membaca hasil ping, ipconfig, traceroute, serta nslookup. Bagian dua membahas keamanan lanjut: firewall sebagai satpam pintu dengan aturan izinkan atau tolak per port, enkripsi di jalur (HTTPS/TLS, WPA2/WPA3) agar penyadap hanya melihat acak, VPN sebagai terowongan terenkripsi di Wi-Fi publik, serta pembaruan firmware, jaringan tamu, dan log. Semua skenario fiktif. Gaya diagram Fase F. Empat cek pemahaman; simulasi detektif jaringan di halaman latihan.", "belajar": ["mendiagnosis gangguan jaringan bertahap dari lapisan bawah ke atas dengan ping, ipconfig, traceroute, nslookup", "memilih uji yang paling cepat mempersempit penyebab", "menjelaskan firewall, enkripsi di jalur (HTTPS, WPA2/WPA3), dan VPN", "menyusun daftar periksa keamanan router dan jaringan sekolah"], "bagian": {"F11.8a": "Detektif Jaringan: Diagnosis Bertahap", "F11.8b": "Keamanan Lanjut: Firewall, Enkripsi, VPN"}, "cari": ["cara troubleshooting jaringan internet mati langkah demi langkah", "ping ipconfig traceroute nslookup penjelasan kelas 11", "firewall enkripsi vpn dijelaskan sederhana", "keamanan jaringan sekolah sma"], "prasyarat": "episode F11.7 Model Jaringan dan Pengiriman Data dan E.3 Keamanan Akun dan Jaringan Dasar", "jp": 16, "tagar": ["#Troubleshooting", "#Jaringan", "#Firewall", "#VPN", "#Kelas11", "#SMA"]}, "recap": ["Diagnosis dari bawah: kabel, IP, router, internet, DNS.", "Pilih uji yang membelah dua kemungkinan penyebab.", "Firewall per port; enkripsi di jalur; VPN = terowongan."], "next": {"code": "F11.9", "title": "Merancang Kebutuhan Sistem Komputer", "note": "Simulasi detektif jaringan ada di halaman episode ini."}, "segments": ["Pembuka", "Main dulu tanpa komputer", "Rantai koneksi dan diagnosis bertahap", "Uji yang membelah dua dan alat detektif", "Firewall", "Enkripsi dan VPN", "Daftar periksa dan log", "Giliranmu"], "quizzes": {"q1": {"q": "ipconfig menunjukkan alamat 169.254.3.7. Artinya?", "options": ["Koneksi sehat", "Perangkat tidak mendapat alamat dari router", "DNS rusak"], "answer": 1, "hint": "169.254.x.x adalah alamat darurat yang dibuat perangkat sendiri."}, "q2": {"q": "Ping ke router berhasil, ping ke alamat internet gagal. Tersangka utama?", "options": ["Kabel laptop", "Sambungan router ke penyedia internet", "DNS"], "answer": 1, "hint": "Sampai router sehat; ping memakai alamat, bukan nama."}, "q3": {"q": "Aturan: izinkan 443 dari mana saja; izinkan 22 dari laptop admin; tolak lainnya. Paket ke port 22 dari HP tamu?", "options": ["Diizinkan", "Ditolak", "Ditanyakan ke pengguna"], "answer": 1, "hint": "Baca aturan dari atas: mana yang cocok dengan HP tamu ke port 22?"}, "q4": {"q": "Di Wi-Fi kafe tanpa VPN, kamu membuka situs HTTPS. Yang bisa dilihat penyadap di Wi-Fi itu?", "options": ["Kata sandimu", "Nama situs tujuan, tetapi bukan isinya", "Tidak ada sama sekali"], "answer": 1, "hint": "HTTPS mengacak isi; alamat tujuan tetap terlihat di jalur."}}, "beats": [{"id": "intro1", "seg": 0, "scene": "title", "text": "Halo, kelas sebelas! Aku Kiko. Lab komputer ramai: internetnya mati! Padahal lampu router menyala. Dari mana mulai memeriksa? Setelah menonton, kamu bisa mendiagnosis gangguan jaringan selangkah demi selangkah dan mengamankannya.", "hold": 1.0, "start": 0.0, "speech": 0.4, "audio": 15.84, "dur": 17.54}, {"id": "intro2", "seg": 0, "scene": "title_q", "text": "Dua keterampilan: menjadi detektif jaringan, menguji dari lapisan bawah ke atas dan memilih uji yang membelah dua kemungkinan penyebab; lalu keamanan lanjut: firewall, enkripsi di jalur, dan VPN.", "hold": 0.8, "start": 17.54, "speech": 17.94, "audio": 13.361, "dur": 15.84}, {"id": "intro3", "seg": 0, "scene": "prereq", "text": "Episode ini melanjutkan F11.7 tentang lapisan TCP/IP dan E.3 tentang router rumah. Kalau belum menontonnya, tonton dulu, ya.", "hold": 0.8, "start": 33.38, "speech": 33.78, "audio": 10.88, "dur": 12.38}, {"id": "play1", "seg": 1, "scene": "unplugged_tebak_rusak", "text": "Main dulu. Guru memikirkan satu bagian rusak dari rantai: kabel, alamat IP, router, sambungan internet, atau DNS. Kalian hanya boleh bertanya dengan uji: apakah ping ke router berhasil? Tebak penyebabnya dengan pertanyaan sesedikit mungkin.", "hold": 1.0, "start": 45.76, "speech": 46.16, "audio": 18.107, "dur": 19.807}, {"id": "play2", "seg": 1, "scene": "unplugged_sandi_amplop", "text": "Lalu kirim pesan lewat tiga kurir yang boleh mengintip. Kelompok satu menulis apa adanya. Kelompok dua mengacaknya dengan kunci yang hanya dipegang pengirim dan penerima. Apa yang dibaca kurir? Itulah beda jalur terbuka dan terenkripsi.", "hold": 1.0, "start": 65.567, "speech": 65.967, "audio": 15.763, "dur": 19.54}, {"id": "s1a", "seg": 2, "scene": "rantai", "text": "Koneksi adalah rantai: perangkat, kabel atau Wi-Fi, alamat IP, router, sambungan ke penyedia internet, DNS yang menerjemahkan nama ke alamat, lalu server. Satu mata rantai putus terasa seperti internet mati. Tugas kita: menemukannya.", "hold": 1.0, "start": 85.107, "speech": 85.507, "audio": 17.977, "dur": 19.677}, {"id": "s1b", "seg": 2, "scene": "bawah_ke_atas", "text": "Periksa dari bawah ke atas. Satu: lampu kabel atau sinyal Wi-Fi. Dua: ipconfig, dapat alamat IP, bukan 169 titik 254. Tiga: ping router. Empat: ping alamat di internet. Lima: nslookup nama situs. Enam: baru aplikasinya. Jangan lompat.", "hold": 1.0, "start": 104.784, "speech": 105.184, "audio": 23.12, "dur": 24.82}, {"id": "q1", "seg": 2, "scene": "quiz", "quiz": "q1", "text": "Cek pemahaman. ipconfig menunjukkan alamat 169 titik 254 titik 3 titik 7. Artinya: koneksi sehat, perangkat tidak mendapat alamat dari router, atau DNS rusak? Pikirkan dulu.", "hold": 4.0, "start": 129.604, "speech": 130.004, "audio": 16.32, "dur": 21.02}, {"id": "q1a", "seg": 2, "scene": "quiz_answer", "quiz": "q1", "text": "Jawabannya: perangkat tidak mendapat alamat dari router. Alamat 169 titik 254 adalah alamat darurat yang dibuat sendiri. Periksa kabel, Wi-Fi, atau layanan DHCP router.", "hold": 1.0, "start": 150.624, "speech": 151.024, "audio": 13.63, "dur": 15.33}, {"id": "s2a", "seg": 3, "scene": "belah_dua", "text": "Detektif yang baik memilih uji yang membelah dua. Ping ke alamat internet berhasil tetapi situs tak terbuka? Berarti kabel, IP, router, dan sambungan internet sehat: tinggal DNS atau aplikasi. Satu uji menghapus empat tersangka sekaligus.", "hold": 1.0, "start": 165.954, "speech": 166.354, "audio": 17.202, "dur": 19.54}, {"id": "s2b", "seg": 3, "scene": "alat", "text": "Empat alat detektif. ping: apakah tujuan menjawab, berapa milidetik, berapa persen hilang. ipconfig atau ifconfig: alamat IP, gateway, DNS. traceroute: di router mana paket berhenti. nslookup: apakah nama situs bisa diterjemahkan ke alamat.", "hold": 1.0, "start": 185.494, "speech": 185.894, "audio": 20.314, "dur": 22.014}, {"id": "q2", "seg": 3, "scene": "quiz", "quiz": "q2", "text": "Cek pemahaman. Ping ke router berhasil, ping ke alamat internet gagal. Tersangka utamanya: kabel laptop, sambungan router ke penyedia internet, atau DNS? Pikirkan dulu.", "hold": 4.0, "start": 207.508, "speech": 207.908, "audio": 12.887, "dur": 17.587}, {"id": "q2a", "seg": 3, "scene": "quiz_answer", "quiz": "q2", "text": "Jawabannya: sambungan router ke penyedia internet. Sampai router semuanya sehat; yang gagal adalah langkah setelahnya. DNS belum diuji, karena ping memakai alamat, bukan nama.", "hold": 1.0, "start": 225.095, "speech": 225.495, "audio": 12.748, "dur": 14.448}, {"id": "s3a", "seg": 4, "scene": "firewall", "text": "Bagian dua: keamanan lanjut. Firewall adalah satpam pintu jaringan dengan daftar aturan: izinkan atau tolak, berdasarkan alamat dan port. Port 443 untuk web terenkripsi dibuka; port yang tak dipakai ditutup. Yang tak ada di daftar: tolak.", "hold": 1.0, "start": 239.543, "speech": 239.943, "audio": 18.64, "dur": 20.34}, {"id": "s3b", "seg": 4, "scene": "aturan_firewall", "text": "Aturan dibaca dari atas; yang pertama cocok dipakai. Izinkan 443 dari mana saja. Izinkan 22 hanya dari laptop admin. Tolak selain itu. Firewall ada di router sekolah dan di laptopmu. Port terbuka tanpa alasan: pintu yang lupa dikunci.", "hold": 1.0, "start": 259.883, "speech": 260.283, "audio": 19.383, "dur": 21.083}, {"id": "q3", "seg": 4, "scene": "quiz", "quiz": "q3", "text": "Cek pemahaman. Aturan firewall: izinkan 443 dari mana saja; izinkan 22 dari laptop admin; tolak lainnya. Paket ke port 22 dari HP tamu: diizinkan, ditolak, atau ditanyakan ke pengguna? Pikirkan dulu.", "hold": 4.0, "start": 280.966, "speech": 281.366, "audio": 17.87, "dur": 22.57}, {"id": "q3a", "seg": 4, "scene": "quiz_answer", "quiz": "q3", "text": "Jawabannya: ditolak. Aturan 22 hanya untuk laptop admin; HP tamu tidak cocok, maka jatuh ke aturan terakhir: tolak. Firewall tidak bertanya, ia memutuskan dari daftar.", "hold": 1.0, "start": 303.536, "speech": 303.936, "audio": 13.205, "dur": 14.905}, {"id": "s4a", "seg": 5, "scene": "enkripsi", "text": "Enkripsi di jalur. HTTPS dengan TLS mengacak isi antara browser dan server: penyadap di Wi-Fi hanya melihat huruf acak, bukan kata sandimu. Di Wi-Fi sendiri, WPA2 atau WPA3 mengacak gelombang udara. Gembok browser dan sandi Wi-Fi kuat.", "hold": 1.0, "start": 318.441, "speech": 318.841, "audio": 18.731, "dur": 20.54}, {"id": "s4b", "seg": 5, "scene": "vpn", "text": "VPN membuat terowongan terenkripsi dari perangkatmu ke server VPN: di Wi-Fi publik, pemiliknya hanya melihat terowongan, bukan isi atau tujuanmu. Tetapi VPN bukan jubah gaib: penyedia VPN melihat lalu lintasmu, dan situs tetap mengenalimu.", "hold": 1.0, "start": 338.981, "speech": 339.381, "audio": 17.32, "dur": 19.04}, {"id": "q4", "seg": 5, "scene": "quiz", "quiz": "q4", "text": "Cek pemahaman. Di Wi-Fi kafe tanpa VPN, kamu membuka situs HTTPS. Yang bisa dilihat penyadap di Wi-Fi itu: kata sandimu, nama situs yang kamu tuju tetapi bukan isinya, atau tidak ada sama sekali? Pikirkan dulu.", "hold": 4.0, "start": 358.021, "speech": 358.421, "audio": 16.333, "dur": 22.54}, {"id": "q4a", "seg": 5, "scene": "quiz_answer", "quiz": "q4", "text": "Jawabannya: nama situsnya, tetapi bukan isinya. HTTPS mengacak isi, tetapi alamat tujuan tetap terlihat di jalur. VPN menyembunyikan tujuan itu dari pemilik Wi-Fi.", "hold": 1.0, "start": 380.561, "speech": 380.961, "audio": 13.044, "dur": 14.744}, {"id": "s5a", "seg": 6, "scene": "daftar_periksa", "text": "Daftar periksa jaringan sekolah: ganti kata sandi bawaan router, perbarui firmware, pakai WPA3 atau WPA2, pisahkan jaringan tamu dari lab, tutup port yang tak dipakai, aktifkan log, simpan catatan konfigurasi. Keamanan adalah kebiasaan.", "hold": 1.0, "start": 395.305, "speech": 395.705, "audio": 18.882, "dur": 20.582}, {"id": "s5b", "seg": 6, "scene": "log", "text": "Log router adalah buku tamu: siapa masuk, jam berapa, ke mana. Saat ada gangguan, log menjawab apa yang terjadi. Baca log rutin, bukan hanya saat bermasalah. Ingat: semua uji hanya di jaringan yang kamu kelola atau diizinkan.", "hold": 1.0, "start": 415.887, "speech": 416.287, "audio": 16.39, "dur": 20.54}, {"id": "s6a", "seg": 7, "scene": "make_show", "text": "Sekarang giliranmu. Di halaman latihan: detektif jaringan, pilih uji dan persempit penyebab dari lima kasus; penjaga firewall, putuskan paket mana yang lolos dari daftar aturan; lalu daftar periksa router, urutkan prioritas pengamanan.", "hold": 1.0, "start": 436.427, "speech": 436.827, "audio": 16.559, "dur": 18.259}, {"id": "s6b", "seg": 7, "scene": "make_show", "text": "Lalu di lab, dengan izin guru: jalankan ping, ipconfig, traceroute, dan nslookup, catat hasil normalnya sebagai pembanding, dan tulis prosedur diagnosis satu halaman untuk lab sekolahmu. Itulah bekal admin jaringan.", "hold": 1.0, "start": 454.686, "speech": 455.086, "audio": 15.875, "dur": 17.575}, {"id": "recap", "seg": 7, "scene": "recap", "text": "Tiga hal untuk diingat. Satu: diagnosis dari bawah: kabel, IP, router, internet, DNS, aplikasi. Dua: pilih uji yang membelah dua penyebab. Tiga: firewall menyaring per port, enkripsi mengacak jalur, VPN terowongan, bukan jubah gaib.", "hold": 1.5, "start": 472.261, "speech": 472.661, "audio": 20.56, "dur": 22.76}, {"id": "outro", "seg": 7, "scene": "outro", "text": "Sampai jumpa di episode berikutnya: merancang kebutuhan sistem komputer. Dari profil pengguna ke spesifikasi dan anggaran yang masuk akal. Sampai jumpa!", "hold": 1.0, "start": 495.021, "speech": 495.421, "audio": 10.316, "dur": 12.54}], "total": 507.561}, teks: {"episode": "F11.8", "title": "Troubleshooting dan Keamanan Lanjut Jaringan", "hook": "mendiagnosis gangguan jaringan selangkah demi selangkah dan mengatur firewall, enkripsi, serta VPN.", "engine": ["../_alat/kiko-core.js", "../_alat/kiko-devices.js", "../D9.2/jaringan.js", "../F11.7/lapisan.js", "detektif.js", "scenes.js"], "parts": {"F11.8a": {"segs": [0, 1, 2, 3], "post": "Lanjut ke Bagian 2: Firewall, Enkripsi, VPN"}, "F11.8b": {"segs": [4, 5, 6, 7], "pre": "Bagian 2: Firewall, Enkripsi, VPN"}}, "youtube": {"ringkas": "“Internetnya mati!” Dari mana mulai memeriksa? Bersama Kiko kita menjadi detektif jaringan: diagnosis bertahap dari lapisan bawah ke atas (kabel atau Wi-Fi, alamat IP, ping ke router, ping ke internet, DNS, lalu aplikasi), memilih uji yang membagi dua kemungkinan penyebab, dan membaca hasil ping, ipconfig, traceroute, serta nslookup. Bagian dua membahas keamanan lanjut: firewall sebagai satpam pintu dengan aturan izinkan atau tolak per port, enkripsi di jalur (HTTPS/TLS, WPA2/WPA3) agar penyadap hanya melihat acak, VPN sebagai terowongan terenkripsi di Wi-Fi publik, serta pembaruan firmware, jaringan tamu, dan log. Semua skenario fiktif. Gaya diagram Fase F. Empat cek pemahaman; simulasi detektif jaringan di halaman latihan.", "belajar": ["mendiagnosis gangguan jaringan bertahap dari lapisan bawah ke atas dengan ping, ipconfig, traceroute, nslookup", "memilih uji yang paling cepat mempersempit penyebab", "menjelaskan firewall, enkripsi di jalur (HTTPS, WPA2/WPA3), dan VPN", "menyusun daftar periksa keamanan router dan jaringan sekolah"], "bagian": {"F11.8a": "Detektif Jaringan: Diagnosis Bertahap", "F11.8b": "Keamanan Lanjut: Firewall, Enkripsi, VPN"}, "cari": ["cara troubleshooting jaringan internet mati langkah demi langkah", "ping ipconfig traceroute nslookup penjelasan kelas 11", "firewall enkripsi vpn dijelaskan sederhana", "keamanan jaringan sekolah sma"], "prasyarat": "episode F11.7 Model Jaringan dan Pengiriman Data dan E.3 Keamanan Akun dan Jaringan Dasar", "jp": 16, "tagar": ["#Troubleshooting", "#Jaringan", "#Firewall", "#VPN", "#Kelas11", "#SMA"]}, "recap": ["Diagnosis dari bawah: kabel, IP, router, internet, DNS.", "Pilih uji yang membelah dua kemungkinan penyebab.", "Firewall per port; enkripsi di jalur; VPN = terowongan."], "next": {"code": "F11.9", "title": "Merancang Kebutuhan Sistem Komputer", "note": "Simulasi detektif jaringan ada di halaman episode ini."}, "segments": ["Pembuka", "Main dulu tanpa komputer", "Rantai koneksi dan diagnosis bertahap", "Uji yang membelah dua dan alat detektif", "Firewall", "Enkripsi dan VPN", "Daftar periksa dan log", "Giliranmu"], "quizzes": {"q1": {"q": "ipconfig menunjukkan alamat 169.254.3.7. Artinya?", "options": ["Koneksi sehat", "Perangkat tidak mendapat alamat dari router", "DNS rusak"], "answer": 1, "hint": "169.254.x.x adalah alamat darurat yang dibuat perangkat sendiri."}, "q2": {"q": "Ping ke router berhasil, ping ke alamat internet gagal. Tersangka utama?", "options": ["Kabel laptop", "Sambungan router ke penyedia internet", "DNS"], "answer": 1, "hint": "Sampai router sehat; ping memakai alamat, bukan nama."}, "q3": {"q": "Aturan: izinkan 443 dari mana saja; izinkan 22 dari laptop admin; tolak lainnya. Paket ke port 22 dari HP tamu?", "options": ["Diizinkan", "Ditolak", "Ditanyakan ke pengguna"], "answer": 1, "hint": "Baca aturan dari atas: mana yang cocok dengan HP tamu ke port 22?"}, "q4": {"q": "Di Wi-Fi kafe tanpa VPN, kamu membuka situs HTTPS. Yang bisa dilihat penyadap di Wi-Fi itu?", "options": ["Kata sandimu", "Nama situs tujuan, tetapi bukan isinya", "Tidak ada sama sekali"], "answer": 1, "hint": "HTTPS mengacak isi; alamat tujuan tetap terlihat di jalur."}}, "beats": [{"id": "intro1", "seg": 0, "scene": "title", "text": "Halo, kelas sebelas! Aku Kiko. Lab komputer ramai: internetnya mati! Padahal lampu router menyala. Dari mana mulai memeriksa? Setelah menonton, kamu bisa mendiagnosis gangguan jaringan selangkah demi selangkah dan mengamankannya.", "hold": 1.0, "start": 0.0, "speech": 0.0, "audio": 19.55, "dur": 21.55}, {"id": "intro2", "seg": 0, "scene": "title_q", "text": "Dua keterampilan: menjadi detektif jaringan, menguji dari lapisan bawah ke atas dan memilih uji yang membelah dua kemungkinan penyebab; lalu keamanan lanjut: firewall, enkripsi di jalur, dan VPN.", "hold": 0.8, "start": 21.55, "speech": 21.55, "audio": 18.3, "dur": 20.1}, {"id": "intro3", "seg": 0, "scene": "prereq", "text": "Episode ini melanjutkan F11.7 tentang lapisan TCP/IP dan E.3 tentang router rumah. Kalau belum menontonnya, tonton dulu, ya.", "hold": 0.8, "start": 41.65, "speech": 41.65, "audio": 12.05, "dur": 13.85}, {"id": "play1", "seg": 1, "scene": "unplugged_tebak_rusak", "text": "Main dulu. Guru memikirkan satu bagian rusak dari rantai: kabel, alamat IP, router, sambungan internet, atau DNS. Kalian hanya boleh bertanya dengan uji: apakah ping ke router berhasil? Tebak penyebabnya dengan pertanyaan sesedikit mungkin.", "hold": 1.0, "start": 55.5, "speech": 55.5, "audio": 22.05, "dur": 24.05}, {"id": "play2", "seg": 1, "scene": "unplugged_sandi_amplop", "text": "Lalu kirim pesan lewat tiga kurir yang boleh mengintip. Kelompok satu menulis apa adanya. Kelompok dua mengacaknya dengan kunci yang hanya dipegang pengirim dan penerima. Apa yang dibaca kurir? Itulah beda jalur terbuka dan terenkripsi.", "hold": 1.0, "start": 79.55, "speech": 79.55, "audio": 22.675, "dur": 24.675}, {"id": "s1a", "seg": 2, "scene": "rantai", "text": "Koneksi adalah rantai: perangkat, kabel atau Wi-Fi, alamat IP, router, sambungan ke penyedia internet, DNS yang menerjemahkan nama ke alamat, lalu server. Satu mata rantai putus terasa seperti internet mati. Tugas kita: menemukannya.", "hold": 1.0, "start": 104.225, "speech": 104.225, "audio": 21.425, "dur": 23.425}, {"id": "s1b", "seg": 2, "scene": "bawah_ke_atas", "text": "Periksa dari bawah ke atas. Satu: lampu kabel atau sinyal Wi-Fi. Dua: ipconfig, dapat alamat IP, bukan 169 titik 254. Tiga: ping router. Empat: ping alamat di internet. Lima: nslookup nama situs. Enam: baru aplikasinya. Jangan lompat.", "hold": 1.0, "start": 127.65, "speech": 127.65, "audio": 23.925, "dur": 25.925}, {"id": "q1", "seg": 2, "scene": "quiz", "quiz": "q1", "text": "Cek pemahaman. ipconfig menunjukkan alamat 169 titik 254 titik 3 titik 7. Artinya: koneksi sehat, perangkat tidak mendapat alamat dari router, atau DNS rusak? Pikirkan dulu.", "hold": 4.0, "start": 153.575, "speech": 153.575, "audio": 17.05, "dur": 22.05}, {"id": "q1a", "seg": 2, "scene": "quiz_answer", "quiz": "q1", "text": "Jawabannya: perangkat tidak mendapat alamat dari router. Alamat 169 titik 254 adalah alamat darurat yang dibuat sendiri. Periksa kabel, Wi-Fi, atau layanan DHCP router.", "hold": 1.0, "start": 175.625, "speech": 175.625, "audio": 15.8, "dur": 17.8}, {"id": "s2a", "seg": 3, "scene": "belah_dua", "text": "Detektif yang baik memilih uji yang membelah dua. Ping ke alamat internet berhasil tetapi situs tak terbuka? Berarti kabel, IP, router, dan sambungan internet sehat: tinggal DNS atau aplikasi. Satu uji menghapus empat tersangka sekaligus.", "hold": 1.0, "start": 193.425, "speech": 193.425, "audio": 22.675, "dur": 24.675}, {"id": "s2b", "seg": 3, "scene": "alat", "text": "Empat alat detektif. ping: apakah tujuan menjawab, berapa milidetik, berapa persen hilang. ipconfig atau ifconfig: alamat IP, gateway, DNS. traceroute: di router mana paket berhenti. nslookup: apakah nama situs bisa diterjemahkan ke alamat.", "hold": 1.0, "start": 218.1, "speech": 218.1, "audio": 21.425, "dur": 23.425}, {"id": "q2", "seg": 3, "scene": "quiz", "quiz": "q2", "text": "Cek pemahaman. Ping ke router berhasil, ping ke alamat internet gagal. Tersangka utamanya: kabel laptop, sambungan router ke penyedia internet, atau DNS? Pikirkan dulu.", "hold": 4.0, "start": 241.525, "speech": 241.525, "audio": 15.8, "dur": 20.8}, {"id": "q2a", "seg": 3, "scene": "quiz_answer", "quiz": "q2", "text": "Jawabannya: sambungan router ke penyedia internet. Sampai router semuanya sehat; yang gagal adalah langkah setelahnya. DNS belum diuji, karena ping memakai alamat, bukan nama.", "hold": 1.0, "start": 262.325, "speech": 262.325, "audio": 15.8, "dur": 17.8}, {"id": "s3a", "seg": 4, "scene": "firewall", "text": "Bagian dua: keamanan lanjut. Firewall adalah satpam pintu jaringan dengan daftar aturan: izinkan atau tolak, berdasarkan alamat dan port. Port 443 untuk web terenkripsi dibuka; port yang tak dipakai ditutup. Yang tak ada di daftar: tolak.", "hold": 1.0, "start": 280.125, "speech": 280.125, "audio": 23.3, "dur": 25.3}, {"id": "s3b", "seg": 4, "scene": "aturan_firewall", "text": "Aturan dibaca dari atas; yang pertama cocok dipakai. Izinkan 443 dari mana saja. Izinkan 22 hanya dari laptop admin. Tolak selain itu. Firewall ada di router sekolah dan di laptopmu. Port terbuka tanpa alasan: pintu yang lupa dikunci.", "hold": 1.0, "start": 305.425, "speech": 305.425, "audio": 24.55, "dur": 26.55}, {"id": "q3", "seg": 4, "scene": "quiz", "quiz": "q3", "text": "Cek pemahaman. Aturan firewall: izinkan 443 dari mana saja; izinkan 22 dari laptop admin; tolak lainnya. Paket ke port 22 dari HP tamu: diizinkan, ditolak, atau ditanyakan ke pengguna? Pikirkan dulu.", "hold": 4.0, "start": 331.975, "speech": 331.975, "audio": 20.175, "dur": 25.175}, {"id": "q3a", "seg": 4, "scene": "quiz_answer", "quiz": "q3", "text": "Jawabannya: ditolak. Aturan 22 hanya untuk laptop admin; HP tamu tidak cocok, maka jatuh ke aturan terakhir: tolak. Firewall tidak bertanya, ia memutuskan dari daftar.", "hold": 1.0, "start": 357.15, "speech": 357.15, "audio": 16.425, "dur": 18.425}, {"id": "s4a", "seg": 5, "scene": "enkripsi", "text": "Enkripsi di jalur. HTTPS dengan TLS mengacak isi antara browser dan server: penyadap di Wi-Fi hanya melihat huruf acak, bukan kata sandimu. Di Wi-Fi sendiri, WPA2 atau WPA3 mengacak gelombang udara. Gembok browser dan sandi Wi-Fi kuat.", "hold": 1.0, "start": 375.575, "speech": 375.575, "audio": 23.925, "dur": 25.925}, {"id": "s4b", "seg": 5, "scene": "vpn", "text": "VPN membuat terowongan terenkripsi dari perangkatmu ke server VPN: di Wi-Fi publik, pemiliknya hanya melihat terowongan, bukan isi atau tujuanmu. Tetapi VPN bukan jubah gaib: penyedia VPN melihat lalu lintasmu, dan situs tetap mengenalimu.", "hold": 1.0, "start": 401.5, "speech": 401.5, "audio": 22.05, "dur": 24.05}, {"id": "q4", "seg": 5, "scene": "quiz", "quiz": "q4", "text": "Cek pemahaman. Di Wi-Fi kafe tanpa VPN, kamu membuka situs HTTPS. Yang bisa dilihat penyadap di Wi-Fi itu: kata sandimu, nama situs yang kamu tuju tetapi bukan isinya, atau tidak ada sama sekali? Pikirkan dulu.", "hold": 4.0, "start": 425.55, "speech": 425.55, "audio": 22.675, "dur": 27.675}, {"id": "q4a", "seg": 5, "scene": "quiz_answer", "quiz": "q4", "text": "Jawabannya: nama situsnya, tetapi bukan isinya. HTTPS mengacak isi, tetapi alamat tujuan tetap terlihat di jalur. VPN menyembunyikan tujuan itu dari pemilik Wi-Fi.", "hold": 1.0, "start": 453.225, "speech": 453.225, "audio": 15.175, "dur": 17.175}, {"id": "s5a", "seg": 6, "scene": "daftar_periksa", "text": "Daftar periksa jaringan sekolah: ganti kata sandi bawaan router, perbarui firmware, pakai WPA3 atau WPA2, pisahkan jaringan tamu dari lab, tutup port yang tak dipakai, aktifkan log, simpan catatan konfigurasi. Keamanan adalah kebiasaan.", "hold": 1.0, "start": 470.4, "speech": 470.4, "audio": 21.425, "dur": 23.425}, {"id": "s5b", "seg": 6, "scene": "log", "text": "Log router adalah buku tamu: siapa masuk, jam berapa, ke mana. Saat ada gangguan, log menjawab apa yang terjadi. Baca log rutin, bukan hanya saat bermasalah. Ingat: semua uji hanya di jaringan yang kamu kelola atau diizinkan.", "hold": 1.0, "start": 493.825, "speech": 493.825, "audio": 23.925, "dur": 25.925}, {"id": "s6a", "seg": 7, "scene": "make_show", "text": "Sekarang giliranmu. Di halaman latihan: detektif jaringan, pilih uji dan persempit penyebab dari lima kasus; penjaga firewall, putuskan paket mana yang lolos dari daftar aturan; lalu daftar periksa router, urutkan prioritas pengamanan.", "hold": 1.0, "start": 519.75, "speech": 519.75, "audio": 20.8, "dur": 22.8}, {"id": "s6b", "seg": 7, "scene": "make_show", "text": "Lalu di lab, dengan izin guru: jalankan ping, ipconfig, traceroute, dan nslookup, catat hasil normalnya sebagai pembanding, dan tulis prosedur diagnosis satu halaman untuk lab sekolahmu. Itulah bekal admin jaringan.", "hold": 1.0, "start": 542.55, "speech": 542.55, "audio": 19.55, "dur": 21.55}, {"id": "recap", "seg": 7, "scene": "recap", "text": "Tiga hal untuk diingat. Satu: diagnosis dari bawah: kabel, IP, router, internet, DNS, aplikasi. Dua: pilih uji yang membelah dua penyebab. Tiga: firewall menyaring per port, enkripsi mengacak jalur, VPN terowongan, bukan jubah gaib.", "hold": 1.5, "start": 564.1, "speech": 564.1, "audio": 22.05, "dur": 24.55}, {"id": "outro", "seg": 7, "scene": "outro", "text": "Sampai jumpa di episode berikutnya: merancang kebutuhan sistem komputer. Dari profil pengguna ke spesifikasi dan anggaran yang masuk akal. Sampai jumpa!", "hold": 1.0, "start": 588.65, "speech": 588.65, "audio": 13.925, "dur": 15.925}], "total": 604.575} });
+  const { $, progress, save } = P; progress.levels = progress.levels || {};
+  const esc = s => String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;");
+  // ---- Latihan 1: detektif jaringan. Rantai: 0 perangkat, 1 kabel/Wi-Fi, 2 IP, 3 router, 4 internet, 5 DNS, 6 aplikasi
+  const CH = ["perangkat", "kabel/Wi-Fi", "alamat IP", "router", "internet", "DNS", "aplikasi"];
+  const TESTS = [["lihat lampu kabel / sinyal Wi-Fi", 1], ["ipconfig", 2], ["ping 10.0.3.1 (router)", 3], ["ping 203.0.113.1 (alamat internet)", 4], ["nslookup sekolahku.sch.id", 5], ["buka situs di browser", 6]];
+  const CASES = [{ fault: 4, k: "Semua situs tidak terbuka; lampu router menyala." }, { fault: 1, k: "Laptop tidak bisa apa-apa; ikon jaringan bertanda silang." }, { fault: 5, k: "Situs tidak terbuka, tetapi gim daring yang memakai alamat IP langsung tetap jalan." }, { fault: 2, k: "Laptop baru dinyalakan, ikon jaringan tersambung, tetapi tidak ada yang bisa dibuka." }, { fault: 6, k: "Semua situs terbuka di browser lain; hanya satu aplikasi yang gagal terhubung." }];
+  function result(t, fault) { // hasil uji ke-t: baik bila mata rantai t < fault
+    const ok = t < fault || (t === 6 && fault !== 6 && false);
+    const lines = { 1: [ok ? "<u>lampu menyala, sinyal penuh</u>" : "<i>lampu mati / tidak ada sinyal</i>"], 2: [ok ? "IPv4: <u>10.0.3.5</u> · gateway 10.0.3.1" : "IPv4: <i>169.254.3.7</i> · gateway: (kosong)"], 3: [ok ? "<u>balasan 2 ms, 0% hilang</u>" : "<i>waktu habis, 100% hilang</i>"], 4: [ok ? "<u>balasan 24 ms, 0% hilang</u>" : "<i>waktu habis, 100% hilang</i>"], 5: [ok ? "alamat: <u>203.0.113.40</u>" : "<i>server DNS tidak menjawab</i>"], 6: [fault === 6 ? "<i>aplikasi: gagal terhubung</i>" : fault > 6 ? "<u>terbuka</u>" : "<i>tidak bisa dimuat</i>"] };
+    return lines[t][0];
+  }
+  let ci = 0, used = [], outs = [];
+  function renderDet() {
+    const area = $("exarea"); progress.det = progress.det || [];
+    if (ci >= CASES.length) { area.innerHTML = `<div class="rev">${CASES.map((c, i) => `<div class="${progress.det[i] ? "" : "bad"}"><b>kasus ${i + 1}: ${CH[c.fault]}</b> — ${esc(c.k)}</div>`).join("")}</div>`; done(`Tebakan benar langsung: ${progress.det.filter(Boolean).length} dari ${CASES.length}. Uji sesedikit mungkin, dari bawah ke atas, atau belah dua.`); return; }
+    const c = CASES[ci];
+    area.innerHTML = `<div class="qnum">Kasus ${ci + 1} dari ${CASES.length} · uji dipakai: ${used.length}</div><div class="pk">🛎️ ${esc(c.k)}</div><div class="chain">${CH.map((n, i) => `<span class="${used.some(t => TESTS[t][1] === i) ? (i < c.fault || (i === 6 && c.fault === 6 ? false : i < c.fault) ? "ok" : "bad") : ""}">${n}</span>`).join("")}</div><div class="term">${outs.map(o => o).join("\n") || "pilih uji di bawah…"}</div><div class="opts" id="tests">${TESTS.map((t, i) => `<button data-i="${i}" class="${used.includes(i) ? "used" : ""}" ${used.includes(i) ? "disabled" : ""}>${esc(t[0])}</button>`).join("")}</div><div class="qnum">Sudah yakin? Tebak mata rantai yang rusak:</div><div class="opts" id="guess">${[1, 2, 3, 4, 5, 6].map(i => `<button data-f="${i}">${CH[i]}</button>`).join("")}</div>`;
+    [...area.querySelectorAll("#tests button")].forEach(b => b.addEventListener("click", () => { const i = +b.dataset.i; used.push(i); outs.push(`<b>&gt; ${esc(TESTS[i][0])}</b>\n  ${result(TESTS[i][1], c.fault)}`); renderDet(); }));
+    [...area.querySelectorAll("#guess button")].forEach(b => b.addEventListener("click", () => { const f = +b.dataset.f; if (f === c.fault) { b.classList.add("right"); [...area.querySelectorAll("#guess button")].forEach(x => x.disabled = true); if (progress.det[ci] == null) progress.det[ci] = used.length <= 3; save(); setResult("good", `Tepat: ${CH[f]}. Kamu memakai ${used.length} uji${used.length <= 3 ? ": efisien." : "; coba lain kali lebih sedikit dengan uji yang membelah dua."}`); setTimeout(() => { setResult(); ci++; used = []; outs = []; renderDet(); }, 1800); } else { progress.det[ci] = false; save(); b.classList.add("wrong"); setResult("bad", "Belum tepat. Petunjuk: lakukan uji dari bawah ke atas, atau mulai dari tengah (ping router) untuk membelah dua tersangka. Lihat uji mana yang pertama gagal."); } }));
+  }
+  // ---- Latihan 2: penjaga firewall
+  const RULES = [["izinkan", "443", "mana saja"], ["izinkan", "80", "mana saja"], ["izinkan", "22", "10.0.1.2 (laptop admin)"], ["izinkan", "3389", "10.0.1.0/24 (jaringan admin)"], ["tolak", "semua", "mana saja"]];
+  const PKTS = [[443, "10.0.9.7 (HP tamu)", 0], [22, "10.0.9.7 (HP tamu)", 4], [22, "10.0.1.2 (laptop admin)", 2], [3389, "10.0.1.15 (PC admin)", 3], [3389, "10.0.3.5 (laptop lab)", 4], [80, "203.0.113.9 (luar)", 1], [25, "10.0.3.5 (laptop lab)", 4]];
+  let pi = 0;
+  function match(port, from) { for (let i = 0; i < RULES.length; i++) { const [a, p, f] = RULES[i]; if (p !== "semua" && +p !== port) continue; if (f === "mana saja" || from.startsWith(f.split(" ")[0].replace("/24", "").replace(/\.0$/, ".")) ) return i; } return RULES.length - 1; }
+  function renderFw() {
+    const area = $("exarea"); progress.fw = progress.fw || [];
+    if (pi >= PKTS.length) { area.innerHTML = `<div class="rev">${PKTS.map((p, i) => `<div class="${progress.fw[i] ? "" : "bad"}"><b>port ${p[0]} dari ${esc(p[1])}</b> → ${RULES[p[2]][0]} (aturan ${p[2] + 1})</div>`).join("")}</div>`; done(`Benar langsung: ${progress.fw.filter(Boolean).length} dari ${PKTS.length}. Aturan pertama yang cocok yang dipakai; selebihnya ditolak.`); return; }
+    const p = PKTS[pi]; let first = true;
+    area.innerHTML = `<div class="qnum">Paket ${pi + 1} dari ${PKTS.length}</div><table class="rules"><tr><th>#</th><th>aksi</th><th>port</th><th>dari</th></tr>${RULES.map((r, i) => `<tr><td>${i + 1}</td><td class="${r[0] === "izinkan" ? "ok" : "no"}">${r[0]}</td><td>${r[1]}</td><td>${esc(r[2])}</td></tr>`).join("")}</table><div class="pk">📦 paket → port ${p[0]} · dari ${esc(p[1])}</div><div class="two" id="v"><button data-v="izinkan">IZINKAN</button><button data-v="tolak">TOLAK</button></div>`;
+    [...area.querySelectorAll("#v button")].forEach(b => b.addEventListener("click", () => { const want = RULES[p[2]][0]; if (b.dataset.v === want) { b.classList.add("right"); [...area.querySelectorAll("#v button")].forEach(x => x.disabled = true); progress.fw[pi] = first; save(); setResult("good", `Tepat: cocok dengan aturan ${p[2] + 1}.`); setTimeout(() => { setResult(); pi++; renderFw(); }, 1200); } else { first = false; b.classList.add("wrong"); setResult("bad", "Belum tepat. Petunjuk: baca aturan dari atas; cocokkan port DAN asal; kalau tidak ada yang cocok, aturan terakhir (tolak) berlaku."); } }));
+  }
+  // ---- Latihan 3: audit router
+  const AUD = [{ f: "Kata sandi admin router masih admin/admin.", opts: ["ganti dengan kata sandi kuat dan unik", "biarkan, routernya di ruang terkunci", "tulis di stiker router"], a: 0 }, { f: "Enkripsi Wi-Fi lab masih WEP.", opts: ["ubah ke WPA3 atau WPA2", "matikan enkripsi supaya cepat", "sembunyikan nama Wi-Fi saja"], a: 0 }, { f: "Port 3389 (remote desktop) terbuka ke internet.", opts: ["tutup, atau batasi ke jaringan admin lewat VPN", "biarkan, memudahkan admin dari rumah", "ganti ke port 3390"], a: 0 }, { f: "Tamu memakai Wi-Fi yang sama dengan lab.", opts: ["buat jaringan tamu terpisah", "larang tamu membawa HP", "tidak masalah selama ada sandi"], a: 0 }, { f: "Firmware router tidak pernah diperbarui sejak dibeli.", opts: ["perbarui firmware dari situs resmi pabrikan", "tidak perlu, masih jalan", "ganti router tiap tahun"], a: 0 }, { f: "Log router mati.", opts: ["aktifkan dan baca rutin", "biarkan, memenuhi memori", "cukup aktifkan saat ada masalah"], a: 0 }];
+  let ai = 0;
+  function renderAud() {
+    const area = $("exarea"); progress.aud = progress.aud || [];
+    if (ai >= AUD.length) { area.innerHTML = `<div class="rev">${AUD.map((u, i) => `<div class="${progress.aud[i] ? "" : "bad"}"><b>${esc(u.f)}</b> → ${esc(u.opts[u.a])}</div>`).join("")}</div>`; done(`Benar langsung: ${progress.aud.filter(Boolean).length} dari ${AUD.length}. Keamanan adalah kebiasaan.`); return; }
+    const u = AUD[ai]; let first = true; const order = [1, 0, 2].map(i => i).sort(() => (ai % 2 ? 1 : -1));
+    area.innerHTML = `<div class="qnum">Temuan ${ai + 1} dari ${AUD.length}</div><div class="pk">🔍 ${esc(u.f)}</div><div class="qtext">Tindakan yang tepat?</div><div class="opts" id="opts">${order.map(i => `<button data-i="${i}">${esc(u.opts[i])}</button>`).join("")}</div>`;
+    [...area.querySelectorAll("#opts button")].forEach(b => b.addEventListener("click", () => { if (+b.dataset.i === u.a) { b.classList.add("right"); [...area.querySelectorAll("#opts button")].forEach(x => x.disabled = true); progress.aud[ai] = first; save(); setResult("good", "Tepat."); setTimeout(() => { setResult(); ai++; renderAud(); }, 1000); } else { first = false; b.classList.add("wrong"); setResult("bad", "Belum tepat. Petunjuk: pilih tindakan yang menutup celahnya, bukan menyembunyikan atau menundanya."); } }));
+  }
+  const LEVELS = [
+    { id: "det", name: "1 Detektif jaringan", kind: "det", task: "Lima kasus gangguan. Pilih uji (sesedikit mungkin), baca hasilnya di terminal, lalu tebak mata rantai yang rusak. Tiga uji atau kurang dianggap efisien." },
+    { id: "fw", name: "2 Penjaga firewall", kind: "fw", task: "Tujuh paket datang. Baca daftar aturan dari atas ke bawah dan putuskan: izinkan atau tolak." },
+    { id: "aud", name: "3 Audit router", kind: "aud", task: "Enam temuan audit. Pilih tindakan yang menutup celahnya." }];
+  let L = 0; const level = () => LEVELS[L];
+  function setResult(kind, msg) { $("result").innerHTML = msg ? `<div class="result ${kind}">${msg}</div>` : ""; }
+  function done(extra) { progress.levels[level().id] = true; save(); renderLevels(); setResult("good", `${level().name} selesai! ` + (extra || "")); }
+  function loadLevel(i) { L = i; ci = 0; used = []; outs = []; pi = 0; ai = 0; $("task").textContent = level().task; setResult(); renderLevels(); ({ det: renderDet, fw: renderFw, aud: renderAud })[level().kind](); }
+  function renderLevels() { const el = $("levels"); el.innerHTML = ""; LEVELS.forEach((lv, i) => { const b = document.createElement("button"); b.textContent = lv.name; b.className = progress.levels[lv.id] ? "done" : ""; b.setAttribute("aria-pressed", i === L); b.addEventListener("click", () => loadLevel(i)); el.appendChild(b); }); }
+  $("redo").addEventListener("click", () => { const lv = level(); progress.levels[lv.id] = false; if (lv.kind === "det") progress.det = []; if (lv.kind === "fw") progress.fw = []; if (lv.kind === "aud") progress.aud = []; save(); loadLevel(L); });
+  P.onProgress(el => LEVELS.forEach(lv => { const s = document.createElement("span"); s.textContent = lv.name.slice(2); s.className = progress.levels[lv.id] ? "ok" : ""; el.appendChild(s); }));
+  loadLevel(0);
+})();
+</script>

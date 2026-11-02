@@ -59,4 +59,5 @@ Peta kurikulum, alur belajar, dan daftar 52 episode ada di dokumen "Kurikulum Se
 | F11.5 Data Terbuka untuk Keputusan | ✓ | ✓ Kak Ceria | ✓ (2 bagian × 2 versi) | ✓ |
 | F11.6 Strategi Algoritmik dan Alternatif Solusi | ✓ | ✓ Kak Ceria | ✓ (2 bagian × 2 versi) | ✓ |
 | F11.7 Model Jaringan dan Pengiriman Data | ✓ | ✓ Kak Ceria | ✓ (2 bagian × 2 versi) | ✓ |
+| F11.8 Troubleshooting dan Keamanan Lanjut Jaringan | ✓ | ✓ Kak Ceria | ✓ (2 bagian × 2 versi) | ✓ |
 | D7.5 Instruksi untuk Manusia dan Mesin | ✓ | ✓ Kak Ceria | ✓ (2 bagian × 2 versi) | ✓ |
