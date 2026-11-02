@@ -1,0 +1,1006 @@
+<title>Kiko: Pseudocode ke Kode</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<style>
+/* Inti gaya halaman latihan: satu kolom, pemutar di atas, latihan di bawah; palet kantin sama dengan video. */
+:root {
+  --bg: #EAF2EE; --surface: #FFFFFF; --surface2: #DCE9E2; --ink: #1F2A33; --ink2: #4A5A66; --line: #C9D8D0;
+  --accent: #2E7E9A; --accent-ink: #FFFFFF; --warm: #F2B134; --warm-ink: #5E3E05; --good: #2E9E5B; --good-bg: #DDF3E4; --bad: #D9443B; --bad-bg: #FBE1DF;
+  --font: Inter, "Segoe UI", Roboto, Arial, sans-serif;
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) { --bg: #141C1A; --surface: #1E2926; --surface2: #273532; --ink: #EAF2EE; --ink2: #A9BBB3; --line: #3A4A45; --accent: #5FB3CE; --accent-ink: #0F1D22; --warm: #F2B134; --warm-ink: #2B1C02; --good: #5FCB8A; --good-bg: #1F3A2B; --bad: #F07A72; --bad-bg: #442523; color-scheme: dark } }
+:root[data-theme="dark"] { --bg: #141C1A; --surface: #1E2926; --surface2: #273532; --ink: #EAF2EE; --ink2: #A9BBB3; --line: #3A4A45; --accent: #5FB3CE; --accent-ink: #0F1D22; --warm: #F2B134; --warm-ink: #2B1C02; --good: #5FCB8A; --good-bg: #1F3A2B; --bad: #F07A72; --bad-bg: #442523; color-scheme: dark }
+* { box-sizing: border-box }
+body { background: var(--bg); color: var(--ink); font-family: var(--font); font-size: 17px; line-height: 1.5; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); padding-block: 16px 48px }
+.wrap { max-width: 980px; margin: 0 auto; display: grid; gap: 28px }
+h1 { font-size: clamp(26px, 5vw, 38px); line-height: 1.15; margin: 0; text-wrap: balance; font-weight: 900 }
+h2 { font-size: 22px; margin: 0 0 12px; font-weight: 800 }
+h3 { font-size: 18px; margin: 0 0 8px; font-weight: 800 }
+p { margin: 0 0 10px; max-width: 65ch }
+.eyebrow { font-size: 13px; letter-spacing: .08em; text-transform: uppercase; color: var(--ink2); font-weight: 800; margin-bottom: 6px }
+.card { background: var(--surface); border-radius: 18px; padding: 18px; border: 1px solid var(--line) }
+button { font: inherit; font-weight: 800; border: 0; border-radius: 12px; padding: 12px 16px; cursor: pointer; background: var(--surface2); color: var(--ink); min-height: 48px; touch-action: manipulation }
+button:focus-visible, [tabindex]:focus-visible { outline: 3px solid var(--warm); outline-offset: 2px }
+button.primary { background: var(--accent); color: var(--accent-ink) }
+button.warm { background: var(--warm); color: var(--warm-ink) }
+button[aria-pressed="true"] { box-shadow: inset 0 0 0 3px var(--accent) }
+button:disabled { opacity: .45; cursor: default }
+.row { display: flex; flex-wrap: wrap; gap: 10px; align-items: center }
+/* player */
+.player { display: grid; gap: 12px }
+.stage { position: relative; width: 100%; aspect-ratio: 16 / 9; max-width: 100%; background: #EAF2EE; border-radius: 14px; overflow: hidden; border: 1px solid var(--line) }
+.stage canvas { width: 100%; height: 100%; display: block }
+.bigplay { position: absolute; inset: 0; display: grid; place-items: center; background: rgba(31,42,51,.25); border: 0; border-radius: 0; color: #fff; font-size: 20px; min-height: 0 }
+.bigplay span { background: var(--accent); color: var(--accent-ink); padding: 14px 26px; border-radius: 999px; font-weight: 900 }
+.bar { height: 10px; background: var(--surface2); border-radius: 999px; overflow: hidden; cursor: pointer }
+.bar > i { display: block; height: 100%; width: 0; background: var(--warm) }
+.chapters { display: flex; flex-wrap: wrap; gap: 8px }
+.chapters button { font-size: 14px; padding: 8px 12px; min-height: 40px }
+.chapters button.now { background: var(--warm); color: var(--warm-ink) }
+.hint { color: var(--ink2); font-size: 15px }
+/* exercises (generic parts) */
+.levels { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 12px }
+.levels button { font-size: 14px; padding: 8px 12px; min-height: 40px }
+.levels button.done::after { content: " ✓"; color: var(--good) }
+.task { background: var(--surface2); border-radius: 12px; padding: 12px 14px; margin-bottom: 12px; font-weight: 700 }
+.result { border-radius: 12px; padding: 12px 14px; font-weight: 800; margin-top: 10px }
+.result.good { background: var(--good-bg); color: var(--good) }
+.result.bad { background: var(--bad-bg); color: var(--bad) }
+.result.info { background: var(--surface2); color: var(--ink) }
+/* quiz */
+.quiz { display: grid; gap: 16px }
+.q { border-top: 1px solid var(--line); padding-top: 14px }
+.q:first-child { border-top: 0; padding-top: 0 }
+.opts { display: grid; gap: 8px; margin-top: 8px }
+.opts button { text-align: left; font-weight: 700; background: var(--surface2); display: flex; gap: 10px; align-items: center }
+.opts button b { width: 30px; height: 30px; border-radius: 50%; background: var(--accent); color: var(--accent-ink); display: grid; place-items: center; flex: none }
+.opts button.right { background: var(--good-bg); box-shadow: inset 0 0 0 3px var(--good) }
+.opts button.wrong { background: var(--bad-bg) }
+.fb { margin-top: 8px; font-weight: 700 }
+.fb.good { color: var(--good) } .fb.bad { color: var(--bad) }
+details summary { cursor: pointer; font-weight: 800; font-size: 18px }
+details[open] summary { margin-bottom: 10px }
+ul.plain { padding-left: 20px; margin: 0 0 10px } ul.plain li { margin-bottom: 6px; max-width: 65ch }
+.progress { display: flex; gap: 8px; flex-wrap: wrap } .progress span { background: var(--surface2); border-radius: 999px; padding: 6px 12px; font-size: 14px; font-weight: 700 }
+.progress span.ok { background: var(--good-bg); color: var(--good) }
+@media (prefers-reduced-motion: reduce) { * { transition: none !important } }
+
+/* latihan F11.2 */
+.qnum { font-weight: 800; color: var(--ink2); font-size: 14px; margin-bottom: 4px }
+.qtext { font-weight: 800; font-size: 18px; margin-bottom: 8px }
+.opts { display: grid; gap: 8px; margin: 8px 0 }
+.opts button { text-align: left; font-size: 15px; min-height: 44px; padding: 10px 12px; background: var(--surface); border: 2px solid var(--line); font-family: ui-monospace, monospace }
+.opts button.plain { font-family: inherit }
+.opts button.right { border-color: var(--good); background: var(--good-bg) } .opts button.wrong { border-color: var(--bad); background: var(--bad-bg) }
+.ps { background: var(--surface2); border-left: 5px solid var(--accent); border-radius: 10px; padding: 10px 12px; margin: 8px 0; font-size: 15px; font-weight: 800; font-family: ui-monospace, monospace; white-space: pre-wrap; line-height: 1.6 }
+.ps .kw { color: var(--accent-dark, #B57A12) }
+.py { background: #1F2A33; color: #fff; border-radius: 12px; padding: 10px 12px; font-family: ui-monospace, monospace; font-size: 13px; white-space: pre-wrap; margin: 8px 0; line-height: 1.7 }
+.py .hl { background: #B57A12; border-radius: 4px; padding: 0 4px } .py .ln { display: block; padding: 0 4px; border-radius: 4px } .py .ln.pick { cursor: pointer } .py .ln.pick:hover { background: #33424E } .py .ln.bad { background: #8E2B24 } .py .ln.ok { background: #2E5E3B } .py .ln i { color: #7B8B95; font-style: normal; display: inline-block; width: 22px }
+.mem { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; margin: 8px 0 } .mem div { background: var(--surface); border: 2px solid var(--line); border-radius: 10px; padding: 6px; text-align: center } .mem div b { display: block; font-size: 12px; color: var(--ink2) } .mem div span { font-size: 18px; font-weight: 900 } .mem div.chg { border-color: var(--accent); background: #FFF3D6 }
+.scr { background: #0E1418; color: #fff; border-radius: 10px; padding: 8px 12px; font-family: ui-monospace, monospace; font-size: 14px; min-height: 20px; margin: 6px 0 }
+.pairs { display: grid; gap: 6px; margin: 8px 0 } .pairs div { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; font-family: ui-monospace, monospace; font-size: 13px; font-weight: 800 } .pairs div span { background: var(--surface2); border-radius: 8px; padding: 6px 8px } .pairs div span:last-child { background: #1F2A33; color: #fff }
+.rev { display: grid; gap: 6px; margin-top: 8px } .rev div { font-size: 14px; padding: 8px 10px; border-radius: 10px; background: var(--surface2) } .rev div.bad { background: var(--bad-bg) }
+</style>
+
+<div class="wrap">
+  <header>
+    <div class="eyebrow">Informatika · Fase F · Kelas XI · Episode F11.2</div>
+    <h1>Dari Pseudocode ke Kode</h1>
+    <p class="hint">Tonton videonya (dua bagian), lalu kerjakan tiga latihan: penerjemah, pelacak Python, dan pemburu bug. Suara bisa dimatikan; teks selalu tampil di layar.</p>
+  </header>
+
+  <section class="card player" aria-label="Pemutar episode">
+    <div class="stage">
+      <canvas id="screen" width="1920" height="1080" aria-label="Animasi episode"></canvas>
+      <audio id="nar" preload="auto" src="narasi.mp3"></audio>
+      <button class="bigplay" id="bigplay" aria-label="Putar"><span>▶ Putar episode</span></button>
+    </div>
+    <div class="bar" id="bar" role="slider" aria-label="Posisi episode" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" tabindex="0"><i id="barfill"></i></div>
+    <div class="controls">
+      <button class="primary" id="playbtn">▶ Putar</button>
+      <button id="replay">↺ Ulangi bagian ini</button>
+      <button id="voice" aria-pressed="true">🔊 Suara: nyala</button>
+      <button id="slow" aria-pressed="false">🐢 Mode lambat</button>
+      <span class="hint" id="timelabel">0:00 / 0:00</span>
+    </div>
+    <div class="caption" id="caption"></div>
+    <div class="chapterwrap">
+      <div class="chapters" id="chapters"></div>
+    </div>
+  </section>
+
+  <section class="card" aria-label="Cek pemahaman">
+    <h2>Cek pemahaman</h2>
+    <p class="hint">Soal yang sama dengan di video. Jawaban salah memberi petunjuk, bukan kunci.</p>
+    <div class="quiz" id="quiz"></div>
+  </section>
+
+  <section class="card" aria-label="Latihan">
+    <h2>Penerjemah, pelacak, pemburu bug</h2>
+    <p class="hint">Tiga latihan. Kemajuan tersimpan di perangkat ini.</p>
+    <div class="levels" id="levels"></div>
+    <div class="task" id="task"></div>
+    <div id="exarea"></div>
+    <div id="result"></div>
+    <div class="row" style="margin-top:10px"><button id="redo">↺ Ulangi bagian ini</button></div>
+  </section>
+
+  <section class="card" aria-label="Kemajuan">
+    <h2>Kemajuanmu</h2>
+    <div class="progress" id="progress"></div>
+    <p class="hint">Tersimpan di perangkat ini saja. Guru bisa memintamu menunjukkan halaman ini.</p>
+  </section>
+
+  <section class="card">
+    <details>
+      <summary>Untuk guru: cara memakai episode ini (28 JP)</summary>
+      <p><b>Tujuan (F11.2, elemen Algoritma dan Pemrograman, Fase F):</b> murid mengembangkan program terstruktur dengan menerjemahkan notasi algoritma ke kode sumber Python: variabel dan tipe data, percabangan, perulangan, dan fungsi. Pola PRIMM (Predict, Run, Investigate, Modify, Make) di tiap pertemuan; pseudocode selalu ditulis sebelum kode. Lingkungan Python apa pun boleh.</p>
+      <ul class="plain">
+        <li><b>Pertemuan 1–2 (4 JP), kamus dan variabel:</b> permainan kamus dua kolom dan tebak keluaran. Tonton Bagian 1 sampai segmen variabel. Latihan 1 (penerjemah). Murid menerjemahkan tiga pseudocode pendek dari D9.1/E.7 dan menjalankannya; sengaja memakai input() tanpa int() untuk melihat TypeError.</li>
+        <li><b>Pertemuan 3–5 (6 JP), percabangan:</b> segmen percabangan. Program penolak jumlah (if-elif-else) dengan kasus uji dari F11.1. Murid menukar urutan kondisi dan menjelaskan perubahannya. Tugas: program penentu kategori (misalnya nilai → predikat) dari pseudocode sendiri.</li>
+        <li><b>Pertemuan 6–9 (8 JP), perulangan:</b> tonton Bagian 2 sampai segmen perulangan. Latihan 2 (pelacak) sebelum menjalankan di komputer; tabel pelacakan di kertas wajib untuk tiap program. Program menjumlahkan daftar dengan for, membaca sampai "selesai" dengan while, dan sengaja membuat perulangan tak berhenti lalu memperbaikinya.</li>
+        <li><b>Pertemuan 10–12 (6 JP), fungsi:</b> segmen fungsi. Murid memecah program kas menjadi fungsi hitung_saldo, tambah, dan tampil; menggambar bingkai pemanggilan; Latihan 3 (pemburu bug) sebagai pemanasan tiap pertemuan.</li>
+        <li><b>Pertemuan 13–14 (4 JP), program utuh:</b> program kas kelas lengkap dari pseudocode F11.1, diuji dengan lima kasus uji, lalu satu fitur tambahan dari daftar kebutuhan. Presentasi berpasangan: tunjukkan pseudocode, kode, dan tabel pelacakannya.</li>
+      </ul>
+      <p><b>Penilaian:</b> kamus pseudocode–Python milik murid, tabel pelacakan, program kas utuh yang lolos lima kasus uji, dan penjelasan lisan satu fungsi. Hasil kuis tersimpan hanya di perangkat murid.</p>
+    </details>
+  </section>
+</div>
+
+<script>/* Kiko core: mesin gambar bersama untuk semua episode Fase D.
+   Kiko.draw(ctx, t, TL) menggambar frame pada detik t di kanvas 1920x1080 secara deterministik.
+   Berisi palet, pembantu gambar, tokoh (Kiko, murid), dan adegan umum (judul, kuis, ringkasan, penutup).
+   Setiap episode menambahkan adegannya sendiri di scenes.js: Object.assign(Kiko.SCENES, {...}). */
+(function (global) {
+  const W = 1920, H = 1080;
+  const FONT = "Inter, 'Segoe UI', Roboto, Arial, sans-serif";
+  const C = {
+    bg: "#EAF2EE", bg2: "#DCE9E2", ink: "#1F2A33", ink2: "#4A5A66", panel: "#FFFFFF",
+    tile: "#F7FAF8", tileLine: "#C9D8D0", table: "#A4653A", tableTop: "#C98A57",
+    kiko: "#2E7E9A", kikoDark: "#1F5A6E", kikoLight: "#8FD0E6", eye: "#FFFFFF", pupil: "#1F2A33",
+    accent: "#F2B134", accentDark: "#B57A12", good: "#2E9E5B", bad: "#D9443B", goodBg: "#DDF3E4", badBg: "#FBE1DF",
+    sub: "#1F2A33", subText: "#FFFFFF", star: "#F2B134", skin: "#F1C9A5", skin2: "#C98A57", hair: "#2B2118",
+    uniform: "#FFFFFF", pants: "#2F4E7D", bubble: "#FFFFFF", muted: "#9AAFA6"
+  };
+  const ease = u => u < 0 ? 0 : u > 1 ? 1 : u * u * (3 - 2 * u);
+  const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
+  const lerp = (a, b, u) => a + (b - a) * u;
+
+  // ---------- drawing helpers ----------
+  function rr(ctx, x, y, w, h, r) {
+    ctx.beginPath(); ctx.moveTo(x + r, y); ctx.arcTo(x + w, y, x + w, y + h, r); ctx.arcTo(x + w, y + h, x, y + h, r);
+    ctx.arcTo(x, y + h, x, y, r); ctx.arcTo(x, y, x + w, y, r); ctx.closePath();
+  }
+  function text(ctx, s, x, y, size, opt = {}) {
+    ctx.font = `${opt.weight || 600} ${size}px ${FONT}`; ctx.fillStyle = opt.color || C.ink;
+    ctx.textAlign = opt.align || "left"; ctx.textBaseline = opt.base || "alphabetic"; ctx.fillText(s, x, y);
+  }
+  function wrap(ctx, s, size, weight, maxW) {
+    ctx.font = `${weight} ${size}px ${FONT}`;
+    const words = s.split(" "), lines = []; let cur = "";
+    for (const w of words) {
+      const test = cur ? cur + " " + w : w;
+      if (ctx.measureText(test).width > maxW && cur) { lines.push(cur); cur = w; } else cur = test;
+    }
+    if (cur) lines.push(cur);
+    return lines;
+  }
+  function para(ctx, s, x, y, size, maxW, opt = {}) {
+    const lines = wrap(ctx, s, size, opt.weight || 500, maxW); const lh = size * (opt.lh || 1.35);
+    lines.forEach((l, i) => text(ctx, l, x, y + i * lh, size, opt));
+    return lines.length * lh;
+  }
+  function arrowIcon(ctx, kind, cx, cy, s, color) {
+    ctx.save(); ctx.translate(cx, cy); ctx.strokeStyle = color; ctx.fillStyle = color; ctx.lineWidth = s * 0.16; ctx.lineCap = "round"; ctx.lineJoin = "round";
+    if (kind === "up") {
+      ctx.beginPath(); ctx.moveTo(0, s * 0.45); ctx.lineTo(0, -s * 0.3); ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(-s * 0.32, -s * 0.05); ctx.lineTo(0, -s * 0.45); ctx.lineTo(s * 0.32, -s * 0.05); ctx.stroke();
+    } else if (kind === "left" || kind === "right") {
+      const k = kind === "left" ? -1 : 1;
+      ctx.beginPath(); ctx.moveTo(0, s * 0.45); ctx.lineTo(0, -s * 0.05); ctx.quadraticCurveTo(0, -s * 0.32, k * s * 0.28, -s * 0.32); ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(k * s * 0.12, -s * 0.5); ctx.lineTo(k * s * 0.4, -s * 0.32); ctx.lineTo(k * s * 0.12, -s * 0.14); ctx.stroke();
+    } else if (kind === "east") {
+      ctx.beginPath(); ctx.moveTo(-s * 0.4, 0); ctx.lineTo(s * 0.3, 0); ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(s * 0.05, -s * 0.28); ctx.lineTo(s * 0.4, 0); ctx.lineTo(s * 0.05, s * 0.28); ctx.stroke();
+    } else if (kind === "grab") {
+      ctx.beginPath(); ctx.arc(0, s * 0.12, s * 0.22, 0, Math.PI * 2); ctx.fill();
+      ctx.beginPath(); ctx.moveTo(-s * 0.4, -s * 0.42); ctx.lineTo(-s * 0.4, -s * 0.12); ctx.moveTo(s * 0.4, -s * 0.42); ctx.lineTo(s * 0.4, -s * 0.12);
+      ctx.moveTo(-s * 0.4, -s * 0.42); ctx.lineTo(s * 0.4, -s * 0.42); ctx.stroke();
+    }
+    ctx.restore();
+  }
+  function bakso(ctx, cx, cy, s, opt = {}) {
+    // a bowl of bakso: the goal
+    ctx.save(); ctx.translate(cx, cy);
+    if (opt.glow) { ctx.beginPath(); ctx.arc(0, 0, s * 0.62, 0, Math.PI * 2); ctx.fillStyle = "rgba(242,177,52,0.22)"; ctx.fill(); }
+    ctx.fillStyle = "#E4EEF5"; ctx.beginPath(); ctx.moveTo(-s * 0.46, -s * 0.05); ctx.quadraticCurveTo(-s * 0.4, s * 0.45, 0, s * 0.45); ctx.quadraticCurveTo(s * 0.4, s * 0.45, s * 0.46, -s * 0.05); ctx.closePath(); ctx.fill();
+    ctx.strokeStyle = "#8FA9BD"; ctx.lineWidth = s * 0.05; ctx.stroke();
+    ctx.fillStyle = "#C8B49A"; ctx.beginPath(); ctx.ellipse(0, -s * 0.05, s * 0.44, s * 0.14, 0, 0, Math.PI * 2); ctx.fill();
+    for (const [dx, dy, r] of [[-0.16, -0.1, 0.13], [0.14, -0.12, 0.13], [0, -0.22, 0.12]]) {
+      ctx.fillStyle = "#9A7B5B"; ctx.beginPath(); ctx.arc(dx * s, dy * s, r * s, 0, Math.PI * 2); ctx.fill();
+      ctx.fillStyle = "#B8977A"; ctx.beginPath(); ctx.arc(dx * s - r * s * 0.3, dy * s - r * s * 0.3, r * s * 0.4, 0, Math.PI * 2); ctx.fill();
+    }
+    ctx.fillStyle = "#4CA64C"; for (const dx of [-0.26, 0.1, 0.26]) { ctx.beginPath(); ctx.arc(dx * s, -s * 0.07, s * 0.045, 0, Math.PI * 2); ctx.fill(); }
+    ctx.restore();
+  }
+  function table(ctx, x, y, w, h) {
+    ctx.fillStyle = C.table; rr(ctx, x + w * 0.1, y + h * 0.3, w * 0.8, h * 0.55, 10); ctx.fill();
+    ctx.fillStyle = C.tableTop; rr(ctx, x + w * 0.06, y + h * 0.18, w * 0.88, h * 0.3, 10); ctx.fill();
+    ctx.fillStyle = "rgba(0,0,0,0.12)"; ctx.fillRect(x + w * 0.16, y + h * 0.5, w * 0.08, h * 0.35); ctx.fillRect(x + w * 0.76, y + h * 0.5, w * 0.08, h * 0.35);
+  }
+  function kiko(ctx, cx, cy, s, ang, opt = {}) {
+    ctx.save(); ctx.translate(cx, cy);
+    // shadow
+    ctx.fillStyle = "rgba(0,0,0,0.12)"; ctx.beginPath(); ctx.ellipse(0, s * 0.42, s * 0.42, s * 0.12, 0, 0, Math.PI * 2); ctx.fill();
+    ctx.rotate(ang);
+    // wheels
+    ctx.fillStyle = C.kikoDark; rr(ctx, -s * 0.46, -s * 0.2, s * 0.12, s * 0.5, 5); ctx.fill(); rr(ctx, s * 0.34, -s * 0.2, s * 0.12, s * 0.5, 5); ctx.fill();
+    // body
+    ctx.fillStyle = opt.flash ? `rgba(217,68,59,${0.5 + 0.5 * opt.flash})` : C.kiko; rr(ctx, -s * 0.38, -s * 0.36, s * 0.76, s * 0.72, s * 0.16); ctx.fill();
+    // visor (front, facing up)
+    ctx.fillStyle = C.kikoLight; rr(ctx, -s * 0.26, -s * 0.33, s * 0.52, s * 0.3, s * 0.1); ctx.fill();
+    // eyes
+    const mood = opt.mood || "happy";
+    ctx.fillStyle = C.pupil;
+    if (mood === "sad") { ctx.beginPath(); ctx.arc(-s * 0.12, -s * 0.18, s * 0.05, 0, Math.PI * 2); ctx.arc(s * 0.12, -s * 0.18, s * 0.05, 0, Math.PI * 2); ctx.fill(); ctx.strokeStyle = C.pupil; ctx.lineWidth = s * 0.03; ctx.beginPath(); ctx.arc(0, -s * 0.03, s * 0.08, Math.PI * 1.15, Math.PI * 1.85); ctx.stroke(); }
+    else if (mood === "confused") { ctx.beginPath(); ctx.arc(-s * 0.12, -s * 0.18, s * 0.05, 0, Math.PI * 2); ctx.arc(s * 0.12, -s * 0.18, s * 0.035, 0, Math.PI * 2); ctx.fill(); ctx.strokeStyle = C.pupil; ctx.lineWidth = s * 0.03; ctx.beginPath(); ctx.moveTo(-s * 0.08, -s * 0.06); ctx.lineTo(s * 0.08, -s * 0.09); ctx.stroke(); }
+    else { ctx.beginPath(); ctx.arc(-s * 0.12, -s * 0.18, s * 0.055, 0, Math.PI * 2); ctx.arc(s * 0.12, -s * 0.18, s * 0.055, 0, Math.PI * 2); ctx.fill(); ctx.strokeStyle = C.pupil; ctx.lineWidth = s * 0.03; ctx.beginPath(); ctx.arc(0, -s * 0.1, s * 0.08, Math.PI * 0.15, Math.PI * 0.85); ctx.stroke(); }
+    // front pointer
+    ctx.fillStyle = C.accent; ctx.beginPath(); ctx.moveTo(-s * 0.1, -s * 0.38); ctx.lineTo(s * 0.1, -s * 0.38); ctx.lineTo(0, -s * 0.5); ctx.closePath(); ctx.fill();
+    // antenna
+    ctx.strokeStyle = C.kikoDark; ctx.lineWidth = s * 0.04; ctx.beginPath(); ctx.moveTo(0, s * 0.36); ctx.lineTo(0, s * 0.5); ctx.stroke();
+    ctx.fillStyle = C.accent; ctx.beginPath(); ctx.arc(0, s * 0.52, s * 0.07, 0, Math.PI * 2); ctx.fill();
+    // tray with bakso when grabbed
+    if (opt.grabbed) bakso(ctx, 0, s * 0.05, s * 0.45);
+    ctx.restore();
+    if (opt.wave !== undefined) { // arm waving (title scene)
+      ctx.save(); ctx.translate(cx + s * 0.42, cy - s * 0.1); ctx.rotate(-0.6 + Math.sin(opt.wave * 6) * 0.4);
+      ctx.strokeStyle = C.kikoDark; ctx.lineWidth = s * 0.08; ctx.lineCap = "round"; ctx.beginPath(); ctx.moveTo(0, 0); ctx.lineTo(s * 0.3, -s * 0.3); ctx.stroke();
+      ctx.fillStyle = C.kikoLight; ctx.beginPath(); ctx.arc(s * 0.32, -s * 0.33, s * 0.09, 0, Math.PI * 2); ctx.fill(); ctx.restore();
+    }
+  }
+  function kid(ctx, cx, cy, s, opt = {}) {
+    // simple student figure, standing, facing viewer
+    ctx.save(); ctx.translate(cx, cy);
+    ctx.fillStyle = "rgba(0,0,0,0.12)"; ctx.beginPath(); ctx.ellipse(0, s * 1.02, s * 0.5, s * 0.1, 0, 0, Math.PI * 2); ctx.fill();
+    ctx.fillStyle = C.pants; rr(ctx, -s * 0.3, s * 0.35, s * 0.6, s * 0.5, s * 0.1); ctx.fill();
+    ctx.fillStyle = C.skin; ctx.fillRect(-s * 0.24, s * 0.8, s * 0.16, s * 0.2); ctx.fillRect(s * 0.08, s * 0.8, s * 0.16, s * 0.2);
+    ctx.fillStyle = C.uniform; rr(ctx, -s * 0.36, -s * 0.12, s * 0.72, s * 0.56, s * 0.12); ctx.fill();
+    ctx.strokeStyle = "#D5DDE2"; ctx.lineWidth = s * 0.025; rr(ctx, -s * 0.36, -s * 0.12, s * 0.72, s * 0.56, s * 0.12); ctx.stroke();
+    ctx.fillStyle = C.skin; ctx.beginPath(); ctx.arc(0, -s * 0.42, s * 0.32, 0, Math.PI * 2); ctx.fill();
+    ctx.fillStyle = opt.hairColor || C.hair; ctx.beginPath(); ctx.arc(0, -s * 0.5, s * 0.33, Math.PI, 0); ctx.fill();
+    if (opt.hair === "long") { ctx.fillRect(-s * 0.33, -s * 0.5, s * 0.12, s * 0.45); ctx.fillRect(s * 0.21, -s * 0.5, s * 0.12, s * 0.45); }
+    ctx.fillStyle = C.pupil; ctx.beginPath(); ctx.arc(-s * 0.11, -s * 0.4, s * 0.035, 0, Math.PI * 2); ctx.arc(s * 0.11, -s * 0.4, s * 0.035, 0, Math.PI * 2); ctx.fill();
+    ctx.strokeStyle = C.pupil; ctx.lineWidth = s * 0.025; ctx.beginPath(); ctx.arc(0, -s * 0.33, s * 0.08, Math.PI * 0.15, Math.PI * 0.85); ctx.stroke();
+    // arms
+    ctx.strokeStyle = C.skin; ctx.lineWidth = s * 0.11; ctx.lineCap = "round"; ctx.beginPath();
+    if (opt.point) { ctx.moveTo(s * 0.32, s * 0.02); ctx.lineTo(s * 0.75, -s * 0.2); } else { ctx.moveTo(s * 0.34, s * 0.02); ctx.lineTo(s * 0.42, s * 0.38); }
+    ctx.moveTo(-s * 0.34, s * 0.02); ctx.lineTo(-s * 0.42, s * 0.38); ctx.stroke();
+    ctx.restore();
+  }
+  function bubble(ctx, x, y, w, s, size, opt = {}) {
+    const lines = wrap(ctx, s, size, 600, w - 48); const h = lines.length * size * 1.3 + 40;
+    ctx.fillStyle = opt.fill || C.bubble; ctx.strokeStyle = opt.stroke || "#B7C7BF"; ctx.lineWidth = 3;
+    rr(ctx, x, y - h, w, h, 22); ctx.fill(); ctx.stroke();
+    const tx = opt.tailX !== undefined ? opt.tailX : x + 60;
+    ctx.beginPath(); ctx.moveTo(tx - 16, y); ctx.lineTo(tx + 16, y); ctx.lineTo(tx + (opt.tailDir || 0), y + 28); ctx.closePath(); ctx.fillStyle = opt.fill || C.bubble; ctx.fill();
+    ctx.strokeStyle = opt.stroke || "#B7C7BF"; ctx.beginPath(); ctx.moveTo(tx - 16, y); ctx.lineTo(tx + (opt.tailDir || 0), y + 28); ctx.lineTo(tx + 16, y); ctx.stroke();
+    lines.forEach((l, i) => text(ctx, l, x + 24, y - h + 24 + size + i * size * 1.3, size, { color: opt.color || C.ink, weight: 600 }));
+    return h;
+  }
+  function card(ctx, x, y, w, h, opt = {}) { ctx.fillStyle = opt.fill || C.panel; rr(ctx, x, y, w, h, opt.r || 26); ctx.fill(); if (opt.stroke) { ctx.strokeStyle = opt.stroke; ctx.lineWidth = opt.lw || 4; ctx.stroke(); } }
+
+  // ---------- adegan umum (semua episode) ----------
+  const SCENES = {
+    title(ctx, b, l, t, TL) {
+      card(ctx, 160, 160, 1600, 700, { fill: C.panel });
+      kiko(ctx, 420, 520, 260, 0, { wave: l, mood: "happy" });
+      text(ctx, "Informatika · Fase " + (TL.episode || "D")[0] + " · Episode " + TL.episode, 720, 330, 34, { color: C.ink2, weight: 700 });
+      const ts = TL.title.length > 34 ? 74 : 92; const th = para(ctx, TL.title, 720, 440, ts, 1000, { weight: 900, lh: 1.1 }); const hy = Math.max(640, 440 + th - ts * 0.35 + 30);
+      if (TL.hook) { text(ctx, "SETELAH MENONTON, KAMU BISA:", 720, hy, 26, { color: C.accentDark, weight: 800 }); para(ctx, TL.hook, 720, hy + 50, 34, 1000, { weight: 800, lh: 1.3 }); if (hy <= 660) text(ctx, "Dengarkan, atau baca teksnya pelan-pelan.", 720, 800, 26, { color: C.ink2, weight: 600 }); }
+      else text(ctx, "Dengarkan, atau baca teksnya pelan-pelan.", 720, 700, 36, { color: C.ink2, weight: 600 });
+      arrowIcon(ctx, "up", 1560, 250, 70, C.kikoLight); arrowIcon(ctx, "right", 1660, 250, 70, C.kikoLight);
+    },
+    quiz(ctx, b, l, t, TL, answered) {
+      const q = TL.quizzes[b.quiz]; card(ctx, 200, 150, 1520, 740, { stroke: C.accent, lw: 6 });
+      text(ctx, "CEK PEMAHAMAN", 960, 230, 32, { align: "center", color: C.accentDark, weight: 800 });
+      para(ctx, q.q, 960, 320, 44, 1360, { weight: 800, align: "center", lh: 1.3 });
+      q.options.forEach((o, i) => {
+        const y = 470 + i * 120; const right = answered && i === q.answer;
+        card(ctx, 320, y, 1280, 96, { fill: right ? C.goodBg : answered ? "#F4F6F5" : C.bg2, stroke: right ? C.good : "#CFDCD5", lw: right ? 6 : 3 });
+        ctx.fillStyle = right ? C.good : C.kiko; ctx.beginPath(); ctx.arc(380, y + 48, 30, 0, Math.PI * 2); ctx.fill();
+        text(ctx, "ABC"[i], 380, y + 61, 34, { align: "center", color: "#fff", weight: 900 });
+        text(ctx, o, 440, y + 62, 38, { weight: 700, color: answered && !right ? C.muted : C.ink });
+        if (right) text(ctx, "✓", 1540, y + 66, 54, { align: "center", color: C.good, weight: 900 });
+      });
+      if (!answered) { // thinking timer
+        const frac = clamp(l / b.dur, 0, 1); ctx.strokeStyle = "#D7E2DC"; ctx.lineWidth = 14; ctx.beginPath(); ctx.arc(1640, 230, 40, 0, Math.PI * 2); ctx.stroke();
+        ctx.strokeStyle = C.accent; ctx.beginPath(); ctx.arc(1640, 230, 40, -Math.PI / 2, -Math.PI / 2 + frac * Math.PI * 2); ctx.stroke();
+        text(ctx, "Pikirkan dulu, jangan buru-buru.", 960, 860, 32, { align: "center", color: C.ink2, weight: 600 });
+      }
+    },
+    quiz_answer(ctx, b, l, t, TL) { SCENES.quiz(ctx, b, l, t, TL, true); },
+    recap(ctx, b, l, t, TL) {
+      // TL.recap: tiga kalimat pendek dari script.json
+      card(ctx, 160, 140, 1600, 760);
+      text(ctx, "TIGA HAL UNTUK DIINGAT", 960, 230, 34, { align: "center", color: C.accentDark, weight: 900 });
+      const items = TL.recap || [];
+      const show = clamp(Math.floor((l - 0.6) / 2.2) + 1, 1, Math.max(1, items.length));
+      items.forEach((s, i) => { if (i >= show) return; card(ctx, 300, 290 + i * 180, 1320, 140, { fill: C.bg2 }); ctx.fillStyle = C.kiko; ctx.beginPath(); ctx.arc(380, 360 + i * 180, 40, 0, Math.PI * 2); ctx.fill(); text(ctx, String(i + 1), 380, 376 + i * 180, 40, { align: "center", color: "#fff", weight: 900 }); text(ctx, s, 450, 375 + i * 180, 42, { weight: 800 }); });
+      kiko(ctx, 1620, 820, 130, 0);
+    },
+    outro(ctx, b, l, t, TL) {
+      // TL.next: {code, title, note} episode berikutnya, dari script.json
+      const n = TL.next || {};
+      card(ctx, 260, 200, 1400, 600);
+      text(ctx, "EPISODE BERIKUTNYA", 960, 320, 34, { align: "center", color: C.accentDark, weight: 900 });
+      text(ctx, n.code || "", 960, 440, 60, { align: "center", weight: 900 });
+      text(ctx, n.title || "", 960, 530, 54, { align: "center", weight: 800, color: C.ink2 });
+      text(ctx, n.note || "", 960, 680, 34, { align: "center", color: C.ink2, weight: 600 });
+      kiko(ctx, 960, 760 + 20, 140, 0, { wave: l });
+    }
+  };
+
+  function beatAt(TL, t) {
+    let b = TL.beats[0];
+    for (const x of TL.beats) { if (t >= x.start) b = x; else break; }
+    return b;
+  }
+  function draw(ctx, t, TL, opt = {}) {
+    const b = beatAt(TL, t); const l = t - b.start;
+    ctx.save(); ctx.setTransform(1, 0, 0, 1, 0, 0);
+    ctx.fillStyle = C.bg; ctx.fillRect(0, 0, W, H);
+    // header
+    text(ctx, TL.episode + " · " + TL.title, 60, 78, 30, { color: C.ink2, weight: 700 });
+    text(ctx, TL.segments[b.seg], 1860, 78, 30, { color: C.accentDark, weight: 800, align: "right" });
+    ctx.fillStyle = C.bg2; ctx.fillRect(0, 100, W, 6); ctx.fillStyle = C.accent; ctx.fillRect(0, 100, W * clamp(t / TL.total, 0, 1), 6);
+    const fn = SCENES[b.scene]; if (fn) fn(ctx, b, l, t, TL);
+    // narration card (burned-in text the student reads)
+    if (opt.subtitles !== false) {
+      const size = 44; const lines = wrap(ctx, b.text, size, 700, 1660);
+      const h = lines.length * size * 1.3 + 44; const y0 = 1056 - h;
+      ctx.fillStyle = "rgba(31,42,51,0.92)"; rr(ctx, 100, y0, 1720, h, 20); ctx.fill();
+      // reading progress (how far along the text the reader should be)
+      const frac = clamp(l / b.audio, 0, 1); ctx.fillStyle = C.accent; rr(ctx, 100, y0 + h - 8, 1720 * frac, 8, 4); ctx.fill();
+      lines.forEach((ln, i) => text(ctx, ln, 960, y0 + 22 + size + i * size * 1.3, size, { align: "center", color: C.subText, weight: 700 }));
+    }
+    ctx.restore();
+    return b;
+  }
+
+  global.Kiko = { draw, beatAt, W, H, C, FONT, SCENES,
+    helpers: { rr, text, wrap, para, arrowIcon, bakso, table, kiko, kid, bubble, card, ease, clamp, lerp } };
+})(typeof window !== "undefined" ? window : globalThis);
+
+/* Pembantu gambar perangkat (dipakai D7.0, D7.2, …): monitor, mouse, pointer, keyboard, HP, jari, ikon file/folder, jendela.
+   Semua digambar dengan kode (tanpa aset unduhan). Muat setelah ../_alat/kiko-core.js; dipakai scenes.js. */
+(function (global) {
+  const K = global.Kiko, H = K.helpers, C = K.C;
+  const { rr, text, wrap, card, ease, clamp, lerp } = H;
+  const D = {};
+  const SCREEN_BG = "#F4F8FB", BEZEL = "#2B3A46", BEZEL2 = "#1A262F", SEL = "rgba(46,126,154,0.22)";
+
+  // ---------- komputer ----------
+  // monitor di atas meja; mengembalikan kotak layar {x,y,w,h}
+  D.monitor = function (ctx, x, y, w, h) {
+    ctx.fillStyle = BEZEL; rr(ctx, x - 18, y - 18, w + 36, h + 36, 22); ctx.fill();
+    ctx.fillStyle = SCREEN_BG; rr(ctx, x, y, w, h, 10); ctx.fill();
+    // kaki dan meja
+    ctx.fillStyle = BEZEL2; rr(ctx, x + w / 2 - 40, y + h + 18, 80, 36, 8); ctx.fill(); rr(ctx, x + w / 2 - 140, y + h + 50, 280, 16, 8); ctx.fill();
+    ctx.fillStyle = C.tableTop; rr(ctx, x - 80, y + h + 66, w + 160, 22, 8); ctx.fill();
+    return { x, y, w, h };
+  };
+  // panah pointer
+  D.pointer = function (ctx, x, y, s = 34, color = C.ink) {
+    ctx.save(); ctx.translate(x, y); ctx.fillStyle = color; ctx.strokeStyle = "#fff"; ctx.lineWidth = s * 0.08; ctx.lineJoin = "round";
+    ctx.beginPath(); ctx.moveTo(0, 0); ctx.lineTo(0, s); ctx.lineTo(s * 0.27, s * 0.78); ctx.lineTo(s * 0.45, s * 1.15); ctx.lineTo(s * 0.62, s * 1.07); ctx.lineTo(s * 0.45, s * 0.7); ctx.lineTo(s * 0.75, s * 0.7); ctx.closePath();
+    ctx.fill(); ctx.stroke(); ctx.restore();
+  };
+  // mouse tampak atas; opt.left / opt.right = tombol ditekan; opt.label = tulis "kiri/kanan"
+  D.mouse = function (ctx, cx, cy, s, opt = {}) {
+    ctx.save(); ctx.translate(cx, cy);
+    ctx.fillStyle = "rgba(0,0,0,0.12)"; ctx.beginPath(); ctx.ellipse(0, s * 0.62, s * 0.5, s * 0.1, 0, 0, Math.PI * 2); ctx.fill();
+    // kabel
+    ctx.strokeStyle = "#7B8B95"; ctx.lineWidth = s * 0.05; ctx.beginPath(); ctx.moveTo(0, -s * 0.6); ctx.quadraticCurveTo(0, -s * 1.0, s * 0.5, -s * 1.1); ctx.stroke();
+    // badan
+    ctx.fillStyle = "#E8EEF2"; rr(ctx, -s * 0.42, -s * 0.62, s * 0.84, s * 1.24, s * 0.4); ctx.fill(); ctx.strokeStyle = "#A9B7C0"; ctx.lineWidth = s * 0.04; ctx.stroke();
+    // dua tombol
+    const btn = (side, on) => { ctx.fillStyle = on ? C.accent : "#F7FAFC"; ctx.beginPath(); const sx = side === "left" ? -1 : 1;
+      ctx.moveTo(sx * s * 0.03, -s * 0.6); ctx.lineTo(sx * s * 0.03, -s * 0.1); ctx.lineTo(sx * s * 0.4, -s * 0.1); ctx.lineTo(sx * s * 0.4, -s * 0.28); ctx.quadraticCurveTo(sx * s * 0.4, -s * 0.6, sx * s * 0.1, -s * 0.6); ctx.closePath(); ctx.fill(); ctx.strokeStyle = "#A9B7C0"; ctx.lineWidth = s * 0.03; ctx.stroke(); };
+    btn("left", opt.left); btn("right", opt.right);
+    ctx.fillStyle = "#A9B7C0"; rr(ctx, -s * 0.04, -s * 0.5, s * 0.08, s * 0.26, s * 0.04); ctx.fill(); // roda
+    ctx.restore();
+    if (opt.label) { text(ctx, "kiri", cx - s * 0.22, cy - s * 0.72, 26, { align: "center", color: opt.left ? C.accentDark : C.ink2, weight: 800 }); text(ctx, "kanan", cx + s * 0.22, cy - s * 0.72, 26, { align: "center", color: opt.right ? C.accentDark : C.ink2, weight: 800 }); }
+  };
+  // riak "klik" di sekitar titik
+  D.ripple = function (ctx, x, y, u, color = C.accent) { if (u <= 0 || u >= 1) return; ctx.strokeStyle = color; ctx.globalAlpha = 1 - u; ctx.lineWidth = 6; ctx.beginPath(); ctx.arc(x, y, 12 + u * 60, 0, Math.PI * 2); ctx.stroke(); ctx.globalAlpha = 1; };
+
+  // ---------- ikon file & folder ----------
+  const KIND = { folder: "#F2B134", foto: "#5FA8D3", tulisan: "#7B8B95", lagu: "#8E6BBF", video: "#D9443B" };
+  D.fileIcon = function (ctx, cx, cy, s, kind, opt = {}) {
+    ctx.save(); ctx.translate(cx, cy);
+    if (opt.selected) { ctx.fillStyle = SEL; rr(ctx, -s * 0.62, -s * 0.62, s * 1.24, s * 1.24 + (opt.name ? s * 0.5 : 0), s * 0.14); ctx.fill(); }
+    if (kind === "folder") {
+      ctx.fillStyle = "#D99A1B"; rr(ctx, -s * 0.5, -s * 0.32, s * 0.45, s * 0.2, s * 0.06); ctx.fill();
+      ctx.fillStyle = opt.open ? "#F7C860" : KIND.folder; rr(ctx, -s * 0.5, -s * 0.22, s, s * 0.7, s * 0.08); ctx.fill();
+      if (opt.open) { ctx.fillStyle = "#D99A1B"; rr(ctx, -s * 0.46, -s * 0.02, s * 0.92, s * 0.5, s * 0.08); ctx.fill(); }
+    } else {
+      ctx.fillStyle = "#FFFFFF"; ctx.strokeStyle = "#B7C4CC"; ctx.lineWidth = s * 0.05;
+      ctx.beginPath(); ctx.moveTo(-s * 0.36, -s * 0.5); ctx.lineTo(s * 0.12, -s * 0.5); ctx.lineTo(s * 0.36, -s * 0.26); ctx.lineTo(s * 0.36, s * 0.5); ctx.lineTo(-s * 0.36, s * 0.5); ctx.closePath(); ctx.fill(); ctx.stroke();
+      ctx.fillStyle = KIND[kind] || KIND.tulisan;
+      if (kind === "foto") { rr(ctx, -s * 0.26, -s * 0.2, s * 0.52, s * 0.44, s * 0.04); ctx.fill(); ctx.fillStyle = "#fff"; ctx.beginPath(); ctx.arc(-s * 0.12, -s * 0.08, s * 0.06, 0, Math.PI * 2); ctx.fill(); ctx.beginPath(); ctx.moveTo(-s * 0.26, s * 0.24); ctx.lineTo(-s * 0.06, s * 0.02); ctx.lineTo(s * 0.06, s * 0.14); ctx.lineTo(s * 0.14, s * 0.06); ctx.lineTo(s * 0.26, s * 0.24); ctx.closePath(); ctx.fill(); }
+      else if (kind === "lagu") { ctx.beginPath(); ctx.arc(-s * 0.1, s * 0.22, s * 0.1, 0, Math.PI * 2); ctx.arc(s * 0.16, s * 0.16, s * 0.1, 0, Math.PI * 2); ctx.fill(); ctx.lineWidth = s * 0.06; ctx.strokeStyle = KIND.lagu; ctx.beginPath(); ctx.moveTo(0, s * 0.2); ctx.lineTo(0, -s * 0.2); ctx.lineTo(s * 0.26, -s * 0.26); ctx.lineTo(s * 0.26, s * 0.14); ctx.stroke(); }
+      else if (kind === "video") { rr(ctx, -s * 0.26, -s * 0.16, s * 0.52, s * 0.4, s * 0.04); ctx.fill(); ctx.fillStyle = "#fff"; ctx.beginPath(); ctx.moveTo(-s * 0.06, -s * 0.04); ctx.lineTo(s * 0.12, s * 0.04); ctx.lineTo(-s * 0.06, s * 0.12); ctx.closePath(); ctx.fill(); }
+      else { for (let i = 0; i < 4; i++) { rr(ctx, -s * 0.22, -s * 0.14 + i * s * 0.14, s * (i === 3 ? 0.26 : 0.44), s * 0.06, s * 0.03); ctx.fill(); } }
+    }
+    ctx.restore();
+    if (opt.name) { const lines = wrap(ctx, opt.name, opt.size || 24, 700, s * 1.6); lines.slice(0, 2).forEach((ln, i) => text(ctx, ln, cx, cy + s * 0.78 + i * (opt.size || 24) * 1.15, opt.size || 24, { align: "center", weight: 700, color: opt.color || C.ink })); }
+  };
+  D.KIND = KIND;
+
+  // jendela aplikasi (file manager / editor) di dalam layar; mengembalikan area isi
+  D.windowFrame = function (ctx, x, y, w, h, title, opt = {}) {
+    ctx.fillStyle = "#FFFFFF"; rr(ctx, x, y, w, h, 14); ctx.fill(); ctx.strokeStyle = "#C9D4DB"; ctx.lineWidth = 3; ctx.stroke();
+    ctx.fillStyle = "#E6EDF2"; rr(ctx, x, y, w, 54, 14); ctx.fill(); ctx.fillRect(x, y + 30, w, 24);
+    ["#E0655C", "#F2B134", "#2E9E5B"].forEach((c, i) => { ctx.fillStyle = c; ctx.beginPath(); ctx.arc(x + 26 + i * 26, y + 27, 8, 0, Math.PI * 2); ctx.fill(); });
+    if (title) text(ctx, title, x + w / 2, y + 36, 24, { align: "center", color: C.ink2, weight: 800 });
+    if (opt.path) { ctx.fillStyle = "#F4F8FB"; rr(ctx, x + 16, y + 66, w - 32, 44, 10); ctx.fill(); text(ctx, opt.path, x + 32, y + 96, 24, { color: C.ink2, weight: 700 }); }
+    return { x: x + 16, y: y + (opt.path ? 124 : 70), w: w - 32, h: h - (opt.path ? 140 : 86) };
+  };
+  // kotak teks dengan kursor berkedip; opt.cursor = posisi karakter (bawaan akhir)
+  D.textBox = function (ctx, x, y, w, h, lines, tt, opt = {}) {
+    ctx.fillStyle = "#FFFFFF"; rr(ctx, x, y, w, h, 14); ctx.fill(); ctx.strokeStyle = opt.stroke || "#C9D4DB"; ctx.lineWidth = 3; ctx.stroke();
+    const size = opt.size || 48, lh = size * 1.4;
+    lines.forEach((ln, i) => text(ctx, ln, x + 28, y + 24 + size + i * lh, size, { weight: 700, color: opt.color || C.ink }));
+    if (opt.cursor !== false) {
+      const li = lines.length - 1, s = lines[li] || ""; ctx.font = `700 ${size}px ${K.FONT}`; const cw = ctx.measureText(s).width;
+      if (Math.floor(tt * 2.5) % 2 === 0 || opt.cursorOn) { ctx.fillStyle = C.kiko; ctx.fillRect(x + 30 + cw, y + 22 + li * lh, 5, size * 1.15); }
+      return [x + 32 + cw, y + 22 + li * lh + size * 0.6];
+    }
+  };
+
+  // ---------- keyboard ----------
+  const ROWS = [["Q", "W", "E", "R", "T", "Y", "U", "I", "O", "P"], ["A", "S", "D", "F", "G", "H", "J", "K", "L"], ["Z", "X", "C", "V", "B", "N", "M"]];
+  // keyboard sederhana: 3 baris huruf + Shift, Spasi, Backspace, Enter. opt.pressed = [tombol], opt.glow = [tombol] disorot lembut
+  D.keyboard = function (ctx, x, y, w, opt = {}) {
+    const key = w / 11.6, gap = key * 0.12, k = key - gap, h = k * 4 + gap * 5;
+    ctx.fillStyle = BEZEL; rr(ctx, x - 16, y - 16, w + 32, h + 32, 22); ctx.fill();
+    const pressed = opt.pressed || [], glow = opt.glow || [];
+    const draw = (kx, ky, kw, label, small) => {
+      const on = pressed.includes(label), soft = glow.includes(label);
+      ctx.fillStyle = on ? C.accent : soft ? "#FFF3D6" : "#F7FAFC"; rr(ctx, kx, ky + (on ? 4 : 0), kw, k - (on ? 4 : 0), 10); ctx.fill();
+      ctx.strokeStyle = on ? C.accentDark : soft ? C.accent : "#B7C4CC"; ctx.lineWidth = on || soft ? 4 : 2; ctx.stroke();
+      // ukuran huruf mengikuti ukuran tombol; pada keyboard mini (tombol < 40 px) label tombol khusus tidak digambar
+      const fs = small ? Math.min(24, k * 0.45) : Math.min(32, k * 0.6);
+      if (small ? k >= 40 : k >= 18) text(ctx, label, kx + kw / 2, ky + k / 2 + fs * 0.38, fs, { align: "center", weight: 800, color: on ? "#fff" : C.ink });
+    };
+    ROWS.forEach((row, r) => { const off = r === 0 ? 0 : r === 1 ? key * 0.35 : key * 0.85; row.forEach((lab, i) => draw(x + gap + off + i * key, y + gap + r * key, k, lab)); });
+    draw(x + gap + key * 0.85 + 7 * key + gap, y + gap + 2 * key, key * 2.4 - gap, "Backspace", true);
+    draw(x + gap, y + gap + 3 * key, key * 1.9 - gap, "Shift", true);
+    draw(x + gap + key * 1.9, y + gap + 3 * key, key * 6.2 - gap, "Spasi", true);
+    draw(x + gap + key * 8.1, y + gap + 3 * key, key * 2.3 - gap, "Enter", true);
+    draw(x + gap + key * 0.35 + 9 * key, y + gap + 1 * key, key * 1.9 - gap, "Enter", true);
+    return { x, y, w, h };
+  };
+
+  // ---------- HP & jari ----------
+  // HP tegak; mengembalikan kotak layar
+  D.phone = function (ctx, cx, cy, w, h) {
+    ctx.fillStyle = BEZEL; rr(ctx, cx - w / 2 - 14, cy - h / 2 - 22, w + 28, h + 44, 40); ctx.fill();
+    ctx.fillStyle = SCREEN_BG; rr(ctx, cx - w / 2, cy - h / 2, w, h, 26); ctx.fill();
+    ctx.fillStyle = BEZEL2; rr(ctx, cx - 40, cy - h / 2 + 8, 80, 12, 6); ctx.fill();
+    return { x: cx - w / 2, y: cy - h / 2, w, h };
+  };
+  // kisi ikon aplikasi generik di layar HP; mengembalikan posisi tiap ikon
+  const APPS = [["Kamera", "#2E7E9A"], ["Galeri", "#5FA8D3"], ["Pesan", "#2E9E5B"], ["Musik", "#8E6BBF"], ["Kalkulator", "#7B8B95"], ["Peta", "#F2B134"], ["Catatan", "#E0A23B"], ["Jam", "#D9443B"], ["Cuaca", "#4C9BE0"]];
+  D.appGrid = function (ctx, sc, opt = {}) {
+    const cols = 3, cell = sc.w / cols, out = [];
+    APPS.forEach(([name, col], i) => {
+      const r = Math.floor(i / cols), c = i % cols; const ax = sc.x + cell * c + cell / 2, ay = sc.y + 90 + r * (cell + 26);
+      const on = opt.active === name; const sz = cell * 0.56 * (on && opt.scale ? opt.scale : 1);
+      ctx.fillStyle = col; rr(ctx, ax - sz / 2, ay - sz / 2, sz, sz, sz * 0.24); ctx.fill();
+      if (on) { ctx.strokeStyle = C.accent; ctx.lineWidth = 6; ctx.stroke(); }
+      text(ctx, name, ax, ay + sz / 2 + 26, 20, { align: "center", weight: 700, color: C.ink2 });
+      out.push({ name, x: ax, y: ay });
+    });
+    return out;
+  };
+  // ujung jari yang menyentuh layar di (x,y); opt.press = sedang menekan (riak); opt.second = jari kedua
+  D.finger = function (ctx, x, y, opt = {}) {
+    const s = opt.s || 46;
+    ctx.save(); ctx.translate(x, y); ctx.rotate(opt.angle !== undefined ? opt.angle : 0.5);
+    ctx.fillStyle = "rgba(0,0,0,0.10)"; ctx.beginPath(); ctx.ellipse(0, s * 0.25, s * 0.7, s * 0.4, 0, 0, Math.PI * 2); ctx.fill();
+    ctx.fillStyle = C.skin; rr(ctx, -s * 0.5, -s * 0.3, s, s * 3.2, s * 0.5); ctx.fill();
+    ctx.fillStyle = "#F7D9BE"; ctx.beginPath(); ctx.ellipse(0, s * 0.1, s * 0.3, s * 0.42, 0, 0, Math.PI * 2); ctx.fill();
+    ctx.restore();
+    if (opt.press) { ctx.fillStyle = "rgba(46,126,154,0.25)"; ctx.beginPath(); ctx.arc(x, y, s * 0.8, 0, Math.PI * 2); ctx.fill(); }
+  };
+  // menu konteks (klik kanan / tekan lama)
+  D.menu = function (ctx, x, y, items, opt = {}) {
+    const w = opt.w || 300, rowH = 52; ctx.fillStyle = "#FFFFFF"; rr(ctx, x, y, w, rowH * items.length + 16, 12); ctx.fill(); ctx.strokeStyle = "#B7C4CC"; ctx.lineWidth = 3; ctx.stroke();
+    ctx.fillStyle = "rgba(0,0,0,0.08)";
+    items.forEach((it, i) => { if (opt.active === i) { ctx.fillStyle = "#FFF3D6"; rr(ctx, x + 8, y + 8 + i * rowH, w - 16, rowH, 8); ctx.fill(); } text(ctx, it, x + 24, y + 8 + i * rowH + 36, 28, { weight: 700 }); });
+  };
+  // kartu keterangan kecil di kanan/bawah adegan
+  D.note = function (ctx, x, y, w, s, opt = {}) { card(ctx, x, y, w, opt.h || 96, { fill: opt.fill || "#FFF3D6", stroke: opt.stroke || C.accent, lw: 4 }); text(ctx, s, x + w / 2, y + (opt.h || 96) / 2 + 14, opt.size || 36, { align: "center", weight: 900, color: opt.color || C.ink }); };
+
+  K.devices = D;
+})(typeof window !== "undefined" ? window : globalThis);
+
+/* Pembantu gambar D9.1: papan memori (kotak variabel bernama), daftar bernomor (larik), kotak kardus unplugged, kartu angka, gelas air,
+   penanda putaran. Muat setelah kiko-core.js, kiko-devices.js, dan alur.js (D8.3). */
+(function (global) {
+  const K = global.Kiko, H = K.helpers, C = K.C;
+  const { rr, text, wrap, card, clamp } = H;
+  const Q = {};
+  // papan memori: vars = [{name, value, changed, hl}]
+  Q.board = function (ctx, x, y, w, vars, opt = {}) {
+    const bw = opt.bw || 180, bh = opt.bh || 120, gap = 24; const h = opt.h || bh + 90;
+    card(ctx, x, y, w, h, { fill: "#1F2A33", r: 18 }); text(ctx, opt.title || "PAPAN MEMORI", x + 20, y + 36, 22, { weight: 900, color: "#8FD0E6" });
+    vars.forEach((v, i) => { const bx = x + 20 + i * (bw + gap), by = y + 56; ctx.fillStyle = v.changed ? "#FFF3D6" : "#FFFFFF"; rr(ctx, bx, by, bw, bh, 12); ctx.fill(); ctx.strokeStyle = v.changed ? C.accent : v.hl ? C.kikoLight : "#4A5A66"; ctx.lineWidth = v.changed || v.hl ? 5 : 2; rr(ctx, bx, by, bw, bh, 12); ctx.stroke(); ctx.fillStyle = C.kiko; rr(ctx, bx, by, bw, 34, 12); ctx.fill(); ctx.fillRect(bx, by + 17, bw, 17); text(ctx, v.name, bx + bw / 2, by + 24, 20, { align: "center", weight: 900, color: "#fff" }); text(ctx, v.value == null ? "?" : String(v.value), bx + bw / 2, by + bh / 2 + 30, Math.min(44, bw * 0.3), { align: "center", weight: 900, color: v.changed ? C.accentDark : C.ink }); if (v.old != null && v.changed) text(ctx, "tadi " + v.old, bx + bw / 2, by + bh - 8, 16, { align: "center", weight: 700, color: C.ink2 }); });
+  };
+  // daftar bernomor (larik): values[], opt.name, hl indeks (1-based), opt.w lebar sel
+  Q.list = function (ctx, x, y, values, opt = {}) {
+    const w = opt.w || 110, h = opt.h || 64;
+    if (opt.name) text(ctx, opt.name, x, y - 14, 24, { weight: 900, color: C.kiko });
+    values.forEach((v, i) => { const cx = x + i * (w + 8); const on = opt.hl === i + 1; const done = opt.done != null && i + 1 <= opt.done; ctx.fillStyle = on ? "#FFF3D6" : done ? C.goodBg : "#FFFFFF"; rr(ctx, cx, y, w, h, 10); ctx.fill(); ctx.strokeStyle = on ? C.accent : "#B7C4CC"; ctx.lineWidth = on ? 5 : 3; rr(ctx, cx, y, w, h, 10); ctx.stroke(); text(ctx, String(v), cx + w / 2, y + h / 2 + 11, 30, { align: "center", weight: 900 }); text(ctx, "nomor " + (i + 1), cx + w / 2, y + h + 26, 18, { align: "center", weight: 800, color: on ? C.accentDark : C.ink2 }); });
+  };
+  // kotak kardus berlabel dengan kartu angka
+  Q.box = function (ctx, cx, cy, s, label, value, opt = {}) {
+    ctx.fillStyle = "#C98A57"; rr(ctx, cx - s / 2, cy - s * 0.35, s, s * 0.7, 10); ctx.fill(); ctx.fillStyle = "#A4653A"; rr(ctx, cx - s / 2 - 8, cy - s * 0.45, s + 16, s * 0.14, 6); ctx.fill();
+    ctx.fillStyle = "#fff"; rr(ctx, cx - s * 0.3, cy - s * 0.2, s * 0.6, s * 0.2, 6); ctx.fill(); text(ctx, label, cx, cy - s * 0.06, 22, { align: "center", weight: 900 });
+    if (value != null) { ctx.fillStyle = opt.changed ? "#FFF3D6" : "#FFF9E0"; ctx.strokeStyle = opt.changed ? C.accent : "#E0B04B"; ctx.lineWidth = 3; rr(ctx, cx - s * 0.2, cy + s * 0.02, s * 0.4, s * 0.28, 6); ctx.fill(); ctx.stroke(); text(ctx, String(value), cx, cy + s * 0.24, 30, { align: "center", weight: 900 }); }
+  };
+  Q.numCard = function (ctx, x, y, v, opt = {}) { ctx.fillStyle = opt.fill || "#FFF9E0"; ctx.strokeStyle = opt.stroke || "#E0B04B"; ctx.lineWidth = 3; rr(ctx, x, y, 70, 90, 8); ctx.fill(); ctx.stroke(); text(ctx, String(v), x + 35, y + 58, 30, { align: "center", weight: 900 }); };
+  // gelas air: level 0..1
+  Q.glass = function (ctx, cx, baseY, w, h, level, opt = {}) {
+    ctx.fillStyle = "#5FA8D3"; ctx.fillRect(cx - w / 2 + 6, baseY - h * clamp(level, 0, 1) + 2, w - 12, h * clamp(level, 0, 1) - 2);
+    ctx.strokeStyle = C.ink2; ctx.lineWidth = 5; ctx.beginPath(); ctx.moveTo(cx - w / 2, baseY - h); ctx.lineTo(cx - w / 2, baseY); ctx.lineTo(cx + w / 2, baseY); ctx.lineTo(cx + w / 2, baseY - h); ctx.stroke();
+    if (opt.marks) for (let i = 1; i <= opt.marks; i++) { const my = baseY - h * i / opt.marks; ctx.strokeStyle = "#B7C4CC"; ctx.lineWidth = 2; ctx.beginPath(); ctx.moveTo(cx + w / 2 - 20, my); ctx.lineTo(cx + w / 2, my); ctx.stroke(); text(ctx, String(i), cx + w / 2 + 14, my + 8, 20, { weight: 800, color: C.ink2 }); }
+  };
+  // penanda putaran: n total, k aktif (1-based), label
+  Q.rounds = function (ctx, x, y, n, k, opt = {}) {
+    text(ctx, opt.label || "putaran", x, y - 12, 20, { weight: 800, color: C.ink2 });
+    for (let i = 1; i <= n; i++) { const cx = x + (i - 1) * 54 + 20; ctx.fillStyle = i < k ? C.good : i === k ? C.accent : "#E1E8E4"; ctx.beginPath(); ctx.arc(cx, y + 22, 20, 0, Math.PI * 2); ctx.fill(); text(ctx, String(i), cx, y + 30, 20, { align: "center", weight: 900, color: i <= k ? "#fff" : C.ink2 }); }
+  };
+  K.memori = Q;
+})(typeof window !== "undefined" ? window : globalThis);
+
+/* Pembantu gambar E.7: kotak tipe data, blok deklarasi, kartu operator, panel BACA/TULIS, bingkai fungsi dengan parameter
+   dan nilai balik, kode Python berdampingan. Gaya diagram Fase E. Muat setelah kiko-core.js, kiko-devices.js, alur.js. */
+(function (global) {
+  const K = global.Kiko, H = K.helpers, C = K.C;
+  const { rr, text, wrap, card, clamp } = H;
+  const Kd = {};
+  Kd.TYPES = [["bulat", "#2E7E9A", "17, −3"], ["pecahan", "#8E6BBF", "3,5"], ["teks", "#2E9E5B", "\"Sinta\", \"0812…\""], ["boolean", "#B57A12", "benar / salah"]];
+  // kotak tipe: nama + contoh + kartu yang sudah masuk
+  Kd.typeBox = function (ctx, x, y, w, h, i, items = [], opt = {}) {
+    const [name, col, ex] = Kd.TYPES[i]; ctx.save(); if (opt.dim) ctx.globalAlpha = 0.2;
+    card(ctx, x, y, w, h, { fill: "#fff", stroke: col, lw: opt.on ? 6 : 3, r: 16 }); ctx.fillStyle = col; rr(ctx, x, y, w, 46, 16); ctx.fill(); ctx.fillRect(x, y + 23, w, 23); text(ctx, name, x + w / 2, y + 31, 24, { align: "center", weight: 900, color: "#fff" });
+    text(ctx, ex, x + w / 2, y + 78, 20, { align: "center", weight: 700, color: C.ink2 });
+    items.forEach((it, k) => { ctx.fillStyle = "#FFF9E0"; ctx.strokeStyle = "#E0B04B"; ctx.lineWidth = 2; rr(ctx, x + 16, y + 96 + k * 46, w - 32, 38, 8); ctx.fill(); ctx.stroke(); text(ctx, it, x + w / 2, y + 122 + k * 46, 22, { align: "center", weight: 900 }); });
+    ctx.restore();
+  };
+  // blok kode bergaya pseudocode ketat: lines [{t, ind, hl, kind:"kw"}]; kata kunci disorot otomatis
+  Kd.code = function (ctx, x, y, w, lines, opt = {}) {
+    const rh = opt.rh || 44, size = opt.size || 22; card(ctx, x, y, w, 50 + rh * lines.length, { fill: "#fff", stroke: "#B7C4CC", lw: 3, r: 14 });
+    text(ctx, opt.title || "PSEUDOCODE", x + 18, y + 32, 18, { weight: 900, color: C.ink2 });
+    const KW = /^(PROGRAM|DEKLARASI|ALGORITMA|FUNGSI|PROSEDUR|KEMBALIKAN|BACA|TULIS|UNTUK|SELAMA|JIKA|MAKA|LAINNYA|ULANGI|SAMPAI|DIV|MOD|DAN|ATAU|TIDAK|dari|sampai)$/;
+    lines.forEach((ln, i) => { const ly = y + 50 + i * rh; if (ln.hl) { ctx.fillStyle = "#FFF3D6"; rr(ctx, x + 8, ly + 2, w - 16, rh - 4, 8); ctx.fill(); } if (ln.bad) { ctx.fillStyle = C.badBg; rr(ctx, x + 8, ly + 2, w - 16, rh - 4, 8); ctx.fill(); }
+      text(ctx, String(i + 1), x + 30, ly + rh / 2 + 8, 16, { align: "center", weight: 800, color: C.muted });
+      let cx = x + 56 + (ln.ind || 0) * 34; (ln.t || "").split(/(\s+)/).forEach(tok => { if (!tok) return; const kw = KW.test(tok); const col = kw ? C.kiko : /^(bulat|pecahan|teks|boolean|larik)$/.test(tok) ? "#8E6BBF" : ln.bad ? C.bad : C.ink; text(ctx, tok, cx, ly + rh / 2 + 8, size, { weight: kw ? 900 : 700, color: col }); ctx.font = `${kw ? 900 : 700} ${size}px Inter, sans-serif`; cx += ctx.measureText(tok).width; }); });
+    return 50 + rh * lines.length;
+  };
+  // kartu operator
+  Kd.opCard = function (ctx, x, y, w, sym, name, ex, opt = {}) { ctx.save(); if (opt.dim) ctx.globalAlpha = 0.2; card(ctx, x, y, w, 110, { fill: opt.on ? "#FFF3D6" : C.bg2, stroke: opt.on ? C.accent : undefined, lw: 4, r: 14 }); text(ctx, sym, x + 20, y + 50, 30, { weight: 900, color: C.kiko }); text(ctx, name, x + 20, y + 84, 18, { weight: 800, color: C.ink2 }); text(ctx, ex, x + w - 20, y + 66, 22, { align: "right", weight: 900 }); ctx.restore(); };
+  // konsol: baris masukan/keluaran
+  Kd.console = function (ctx, x, y, w, lines, opt = {}) { card(ctx, x, y, w, 40 + lines.length * 40 + 20, { fill: "#1F2A33", r: 14 }); text(ctx, "LAYAR", x + 16, y + 28, 16, { weight: 900, color: "#8FD0E6" }); lines.forEach(([t, kind], i) => text(ctx, (kind === "in" ? "> " : "") + t, x + 20, y + 68 + i * 40, 24, { weight: 900, color: kind === "in" ? C.accent : "#fff" })); };
+  // bingkai pemanggilan fungsi: nama, param [[nama, nilai]], lokal, hasil
+  Kd.frame = function (ctx, x, y, w, name, params, opt = {}) {
+    const h = 70 + params.length * 44 + (opt.ret != null ? 60 : 20); card(ctx, x, y, w, h, { fill: "#F4F0FA", stroke: "#8E6BBF", lw: 4, r: 16 }); text(ctx, "bingkai: " + name, x + 18, y + 36, 20, { weight: 900, color: "#8E6BBF" });
+    params.forEach(([k, v], i) => { ctx.fillStyle = "#fff"; rr(ctx, x + 16, y + 52 + i * 44, w - 32, 36, 8); ctx.fill(); text(ctx, k + " (lokal)", x + 28, y + 76 + i * 44, 18, { weight: 800, color: C.ink2 }); text(ctx, String(v), x + w - 28, y + 77 + i * 44, 22, { align: "right", weight: 900 }); });
+    if (opt.ret != null) { ctx.fillStyle = C.goodBg; rr(ctx, x + 16, y + h - 52, w - 32, 36, 8); ctx.fill(); text(ctx, "KEMBALIKAN " + opt.ret, x + w / 2, y + h - 28, 20, { align: "center", weight: 900, color: C.good }); }
+    return h;
+  };
+  K.kode = Kd;
+})(typeof window !== "undefined" ? window : globalThis);
+
+/* Pembantu gambar F11.0: blok kode Python dengan pewarnaan kata kunci, konsol keluaran, kotak galat, tabel kebenaran,
+   kartu berdiri/duduk. Gaya diagram Fase F. Muat setelah kiko-core.js dan kiko-devices.js. */
+(function (global) {
+  const K = global.Kiko, H = K.helpers, C = K.C;
+  const { rr, text, wrap, card, clamp } = H;
+  const Py = {};
+  const KW = /^(if|else|elif|for|in|while|def|return|print|input|int|str|and|or|not|True|False|range|len)$/;
+  // blok kode python: lines [{t, hl, bad}] ; opt.title, rh, size
+  Py.code = function (ctx, x, y, w, lines, opt = {}) {
+    const rh = opt.rh || 44, size = opt.size || 22; card(ctx, x, y, w, 50 + rh * lines.length, { fill: "#1F2A33", r: 14 });
+    text(ctx, opt.title || "PYTHON", x + 18, y + 32, 16, { weight: 900, color: "#8FD0E6" });
+    lines.forEach((ln, i) => { const ly = y + 50 + i * rh; if (ln.hl) { ctx.fillStyle = "rgba(242,177,52,0.35)"; rr(ctx, x + 8, ly + 2, w - 16, rh - 4, 8); ctx.fill(); } if (ln.bad) { ctx.fillStyle = "rgba(217,68,59,0.45)"; rr(ctx, x + 8, ly + 2, w - 16, rh - 4, 8); ctx.fill(); }
+      text(ctx, String(i + 1), x + 30, ly + rh / 2 + 7, 15, { align: "center", weight: 800, color: "#7B8B95" });
+      const t = ln.t || ""; const lead = t.match(/^ */)[0].length; let cx = x + 56 + lead * 11; const body = t.slice(lead);
+      body.split(/(\s+|\(|\)|:|,|\[|\]|"[^"]*"|'[^']*')/).forEach(tok => { if (!tok) return; const kw = KW.test(tok); const str = /^["'].*["']$/.test(tok); const num = /^\d+$/.test(tok); const col = kw ? "#F2B134" : str ? "#A5D6A7" : num ? "#8FD0E6" : "#FFFFFF"; text(ctx, tok, cx, ly + rh / 2 + 7, size, { weight: kw ? 900 : 700, color: col }); ctx.font = `${kw ? 900 : 700} ${size}px Inter, sans-serif`; cx += ctx.measureText(tok).width; }); });
+    return 50 + rh * lines.length;
+  };
+  Py.console = function (ctx, x, y, w, lines, opt = {}) { const h = 40 + lines.length * 36 + 16; card(ctx, x, y, w, h, { fill: "#0E1418", stroke: "#4A5A66", lw: 3, r: 12 }); text(ctx, "LAYAR", x + 14, y + 26, 14, { weight: 900, color: "#8FD0E6" }); lines.forEach(([t, kind], i) => text(ctx, t, x + 16, y + 60 + i * 36, 20, { weight: 800, color: kind === "in" ? C.accent : kind === "err" ? "#FF8A80" : "#fff" })); return h; };
+  Py.error = function (ctx, x, y, w, title, lines) { card(ctx, x, y, w, 60 + lines.length * 30, { fill: C.badBg, stroke: C.bad, lw: 4, r: 12 }); text(ctx, "⚠ " + title, x + 16, y + 36, 22, { weight: 900, color: C.bad }); lines.forEach((s, i) => text(ctx, s, x + 16, y + 70 + i * 30, 18, { weight: 800, color: C.ink })); };
+  // tabel kebenaran: op "DAN"|"ATAU"; opt.hlRow
+  Py.truth = function (ctx, x, y, op, opt = {}) {
+    const rows = [[true, true], [true, false], [false, true], [false, false]]; const f = (a, b) => op === "DAN" ? a && b : a || b; const cw = 120, rh = 46;
+    card(ctx, x, y, cw * 3, rh * 5, { fill: "#fff", stroke: "#B7C4CC", lw: 3, r: 10 }); ctx.fillStyle = C.bg2; rr(ctx, x, y, cw * 3, rh, 10); ctx.fill(); ctx.fillRect(x, y + rh / 2, cw * 3, rh / 2);
+    ["A", "B", "A " + op + " B"].forEach((h, c) => text(ctx, h, x + c * cw + cw / 2, y + rh / 2 + 7, 18, { align: "center", weight: 900, color: C.ink2 }));
+    rows.forEach((r, i) => { const ry = y + rh * (i + 1); if (opt.hlRow === i) { ctx.fillStyle = "#FFF3D6"; ctx.fillRect(x + 2, ry, cw * 3 - 4, rh); } [r[0], r[1], f(r[0], r[1])].forEach((v, c) => text(ctx, v ? "benar" : "salah", x + c * cw + cw / 2, ry + rh / 2 + 7, 18, { align: "center", weight: c === 2 ? 900 : 700, color: v ? C.good : C.bad })); });
+  };
+  K.py = Py;
+})(typeof window !== "undefined" ? window : globalThis);
+
+/* Pembantu gambar F11.2: kamus pseudocode→Python, pseudocode dan Python berdampingan dengan baris sepasang,
+   kartu tipe data, pemeriksaan cabang if/elif/else, kartu PRIMM. Gaya diagram Fase F. Muat setelah kiko-core.js, kode.js, py.js. */
+(function (global) {
+  const K = global.Kiko, H = K.helpers, C = K.C;
+  const { rr, text, para, card, clamp } = H;
+  const T = {};
+  T.DICT = [["BACA x", "x = input()"], ["TULIS x", "print(x)"], ["x ← 5", "x = 5"], ["JIKA … MAKA", "if …:"], ["LAINNYA", "else:"], ["UNTUK tiap x dalam d", "for x in d:"], ["SELAMA …", "while …:"], ["FUNGSI f(a)", "def f(a):"], ["KEMBALIKAN x", "return x"]];
+  // kamus dua kolom; n = jumlah baris yang sudah tampil, hl = baris disorot
+  T.dict = function (ctx, x, y, w, rows, opt = {}) {
+    const rh = opt.rh || 46, n = opt.n == null ? rows.length : opt.n;
+    card(ctx, x, y, w, rh * (rows.length + 1) + 10, { fill: "#FFFDF5", stroke: "#E0B04B", lw: 3, r: 12 });
+    ctx.fillStyle = "#FFF3D6"; rr(ctx, x, y, w, rh, 12); ctx.fill(); ctx.fillRect(x, y + rh / 2, w, rh / 2);
+    text(ctx, "pseudocode", x + 20, y + rh / 2 + 8, 20, { weight: 900, color: C.ink2 }); text(ctx, "Python", x + w / 2 + 20, y + rh / 2 + 8, 20, { weight: 900, color: C.ink2 });
+    ctx.strokeStyle = "#E0B04B"; ctx.lineWidth = 2; ctx.beginPath(); ctx.moveTo(x + w / 2, y + rh); ctx.lineTo(x + w / 2, y + rh * (rows.length + 1)); ctx.stroke();
+    rows.forEach(([a, b], i) => { const ry = y + rh * (i + 1); if (i >= n) return; if (opt.hl === i) { ctx.fillStyle = "#FFF3D6"; ctx.fillRect(x + 2, ry, w - 4, rh); } text(ctx, a, x + 20, ry + rh / 2 + 8, opt.size || 22, { weight: 800, color: C.kiko }); text(ctx, b, x + w / 2 + 20, ry + rh / 2 + 8, opt.size || 22, { weight: 800, color: "#1F2A33" }); ctx.strokeStyle = "#F0E2B8"; ctx.beginPath(); ctx.moveTo(x + 8, ry + rh); ctx.lineTo(x + w - 8, ry + rh); ctx.stroke(); });
+  };
+  // berdampingan: ps = baris pseudocode [{t,ind}], py = baris python [{t}], pairs = [[iPs, iPy], ...]; opt.hl = indeks pasangan disorot
+  T.side = function (ctx, x, y, ps, py, opt = {}) {
+    const rh = opt.rh || 50, size = opt.size || 22, wl = opt.wl || 740, wr = opt.wr || 720, gap = opt.gap || 40;
+    const pair = opt.pairs && opt.hl != null ? opt.pairs[opt.hl] : null;
+    K.kode.code(ctx, x, y, wl, ps.map((p, i) => ({ ...p, hl: pair && pair[0] === i })), { rh, size });
+    K.py.code(ctx, x + wl + gap, y, wr, py.map((p, i) => ({ ...p, hl: pair && pair[1] === i })), { rh, size });
+    if (pair) { const y1 = y + 50 + pair[0] * rh + rh / 2, y2 = y + 50 + pair[1] * rh + rh / 2; ctx.strokeStyle = C.accent; ctx.lineWidth = 5; ctx.beginPath(); ctx.moveTo(x + wl + 4, y1); ctx.lineTo(x + wl + gap - 4, y2); ctx.stroke(); ctx.fillStyle = C.accent; ctx.beginPath(); ctx.arc(x + wl + gap - 4, y2, 7, 0, Math.PI * 2); ctx.fill(); }
+    return 50 + rh * Math.max(ps.length, py.length);
+  };
+  T.TYPES = [["int", "bilangan bulat", "17, -3", "#2E7E9A"], ["float", "pecahan", "3.5", "#8E6BBF"], ["str", "teks", "\"Sinta\"", "#2E9E5B"], ["bool", "benar-salah", "True, False", "#B57A12"]];
+  T.typeCards = function (ctx, x, y, w, n, opt = {}) {
+    const cw = (w - 3 * 20) / 4; T.TYPES.forEach(([nm, id, ex, col], i) => { ctx.save(); if (i >= n) ctx.globalAlpha = 0.2; const cx = x + i * (cw + 20); card(ctx, cx, y, cw, 130, { fill: "#fff", stroke: col, lw: opt.on === i ? 6 : 3, r: 14 }); ctx.fillStyle = col; rr(ctx, cx, y, cw, 42, 14); ctx.fill(); ctx.fillRect(cx, y + 21, cw, 21); text(ctx, nm, cx + cw / 2, y + 30, 24, { align: "center", weight: 900, color: "#fff" }); text(ctx, id, cx + cw / 2, y + 76, 20, { align: "center", weight: 800, color: C.ink2 }); text(ctx, ex, cx + cw / 2, y + 110, 22, { align: "center", weight: 900 }); ctx.restore(); });
+  };
+  // kotak nilai bertipe di memori: {name, value, type, warn}
+  T.cell = function (ctx, x, y, w, v) {
+    const col = (T.TYPES.find(t => t[0] === v.type) || [0, 0, 0, "#4A5A66"])[3];
+    card(ctx, x, y, w, 110, { fill: v.warn ? C.badBg : v.changed ? "#FFF3D6" : "#fff", stroke: v.warn ? C.bad : v.changed ? C.accent : col, lw: 4, r: 12 });
+    text(ctx, v.name, x + 14, y + 30, 20, { weight: 800, color: C.ink2 }); ctx.fillStyle = col; rr(ctx, x + w - 74, y + 10, 64, 28, 8); ctx.fill(); text(ctx, v.type, x + w - 42, y + 30, 16, { align: "center", weight: 900, color: "#fff" });
+    text(ctx, v.value == null ? "–" : String(v.value), x + w / 2, y + 84, 30, { align: "center", weight: 900, color: v.warn ? C.bad : C.ink });
+  };
+  // pemeriksaan cabang: conds = [[teks kondisi, hasil benar/salah/null]], step = berapa kondisi sudah diperiksa, taken = indeks cabang yang dijalankan
+  T.branchCheck = function (ctx, x, y, w, conds, step, taken) {
+    conds.forEach(([t, ok], i) => { const ry = y + i * 86; const checked = i < step; const run = taken === i; const skip = checked && !run && taken != null && i > taken;
+      ctx.save(); if (taken != null && i > taken) ctx.globalAlpha = 0.25;
+      card(ctx, x, ry, w, 70, { fill: run ? C.goodBg : checked ? C.bg2 : "#fff", stroke: run ? C.good : checked ? "#B7C4CC" : "#D7E2DC", lw: run ? 5 : 3, r: 12 });
+      text(ctx, t, x + 20, ry + 44, 24, { weight: 900, color: "#1F2A33" });
+      if (checked && ok != null) text(ctx, ok ? "✓ benar, jalankan" : "✕ salah, lewati", x + w - 20, ry + 44, 22, { align: "right", weight: 900, color: ok ? C.good : C.bad });
+      ctx.restore(); });
+  };
+  T.PRIMM = [["P", "Predict · Tebak", "tulis dugaan keluaran"], ["R", "Run · Jalankan", "bandingkan dengan dugaan"], ["I", "Investigate · Selidiki", "ubah satu angka, lihat"], ["M", "Modify · Ubah", "tambah satu fitur kecil"], ["M", "Make · Buat", "program versimu sendiri"]];
+  T.primm = function (ctx, x, y, n, opt = {}) {
+    const w = opt.w || 300; T.PRIMM.forEach(([ltr, t, s], i) => { ctx.save(); if (i >= n) ctx.globalAlpha = 0.2; const cx = x + i * (w + 20); card(ctx, cx, y, w, 190, { fill: i === n - 1 ? "#FFF3D6" : C.bg2, stroke: i === n - 1 ? C.accent : undefined, lw: 4, r: 16 }); ctx.fillStyle = C.kiko; ctx.beginPath(); ctx.arc(cx + 44, y + 44, 28, 0, Math.PI * 2); ctx.fill(); text(ctx, ltr, cx + 44, y + 55, 30, { align: "center", weight: 900, color: "#fff" }); text(ctx, t, cx + 86, y + 54, 22, { weight: 900 }); para(ctx, s, cx + 20, y + 110, 22, w - 40, { weight: 700, color: C.ink2 }); ctx.restore(); });
+  };
+  K.terjemah = T;
+})(typeof window !== "undefined" ? window : globalThis);
+
+/* Adegan episode F11.2: Dari Pseudocode ke Kode. Gaya diagram Fase F. Muat setelah kiko-core.js, kiko-devices.js, memori.js, kode.js, py.js, terjemah.js. */
+(function (global) {
+  const K = global.Kiko, H = K.helpers, C = K.C, Mm = K.memori, Kd = K.kode, Py = K.py, T = K.terjemah, SCENES = K.SCENES;
+  const { text, para, card, kiko, kid, bubble, rr, ease, clamp, lerp, arrowIcon } = H;
+  const reveal = (l, t0, step, n) => clamp(Math.floor((l - t0) / step) + 1, 0, n);
+  const banner = (ctx, s, y = 745, w = 1000, opt = {}) => { card(ctx, 960 - w / 2, y, w, 80, { fill: opt.fill || "#FFF3D6", stroke: opt.stroke || C.accent, lw: 4 }); text(ctx, s, 960, y + 52, opt.size || 34, { align: "center", weight: 900, color: opt.color || C.accentDark }); };
+  const label = (ctx, s, x, y, opt = {}) => text(ctx, s, x, y, opt.size || 28, { align: "center", weight: 900, color: opt.color || C.accentDark });
+  const heading = (ctx, s, y = 230) => text(ctx, s, 960, y, 34, { align: "center", color: C.accentDark, weight: 800 });
+  const DAFTAR = [20000, 15000, 10000];
+  const FOR_PS = [{ t: "total ← 0" }, { t: "UNTUK tiap t dalam daftar:" }, { t: "total ← total + t", ind: 1 }, { t: "TULIS total" }];
+  const FOR_PY = [{ t: "total = 0" }, { t: "for t in daftar:" }, { t: "    total = total + t" }, { t: "print(total)" }];
+  const PROG = ["def hitung_saldo(daftar):", "    total = 0", "    for t in daftar:", "        total = total + t", "    return total", "daftar = []", 'jawaban = ""', 'while jawaban != "selesai":', '    jumlah = int(input("jumlah: "))', "    if jumlah <= 0:", '        print("ditolak")', "    else:", "        daftar.append(jumlah)", '    jawaban = input("lanjut/selesai? ")', 'print("saldo:", hitung_saldo(daftar))'];
+
+  Object.assign(SCENES, {
+    title_q(ctx, b, l) {
+      card(ctx, 120, 150, 1680, 740);
+      kiko(ctx, 280, 560, 170, 0, { mood: "happy" });
+      const n = reveal(l, 1.5, 1.5, 4);
+      [["📦", "variabel dan tipe", "saldo = 0"], ["🔀", "percabangan", "if … elif … else"], ["🔁", "perulangan", "for · while"], ["🧩", "fungsi", "def … return"]].forEach(([ic, t, s], i) => { ctx.save(); if (i >= n) ctx.globalAlpha = 0.2; const x = 520 + i * 310; card(ctx, x, 280, 290, 300, { fill: i === n - 1 ? "#FFF3D6" : C.bg2, stroke: i === n - 1 ? C.accent : undefined, lw: 3, r: 18 }); text(ctx, ic, x + 145, 380, 60, { align: "center" }); text(ctx, t, x + 145, 450, 26, { align: "center", weight: 900 }); text(ctx, s, x + 145, 500, 22, { align: "center", weight: 800, color: C.kiko }); ctx.restore(); });
+      if (n >= 4) banner(ctx, "pseudocode | Python | isi memori, berdampingan", 640, 1100);
+    },
+    prereq(ctx, b, l) {
+      card(ctx, 260, 200, 1400, 600);
+      text(ctx, "TONTON DULU", 960, 290, 34, { align: "center", color: C.accentDark, weight: 800 });
+      [["F11.0", "Jembatan Menuju Pemrograman"], ["F11.1", "Alur Pengembangan Program dan Produk Digital"]].forEach(([c, t], i) => { const x = 360 + i * 640; card(ctx, x, 340, 580, 280, { fill: C.bg2 }); text(ctx, "Episode " + c, x + 290, 430, 50, { align: "center", weight: 900 }); para(ctx, t, x + 290, 500, 28, 520, { align: "center", weight: 700, color: C.ink2 }); });
+      kiko(ctx, 1600, 760, 150, 0);
+    },
+    unplugged_kamus(ctx, b, l) {
+      card(ctx, 120, 150, 1680, 740); heading(ctx, "MAIN DULU TANPA KOMPUTER: KAMUS DUA KOLOM", 215);
+      const n = reveal(l, 1.5, 1.4, 9);
+      T.dict(ctx, 240, 260, 900, T.DICT, { n, hl: n - 1, rh: 48, size: 22 });
+      card(ctx, 1220, 300, 460, 200, { fill: "#FFF3D6", stroke: C.accent, lw: 3, r: 14 }); para(ctx, "✏️ tiap menemukan pasangan baru, tambahkan ke kamus", 1450, 370, 26, 400, { align: "center", weight: 900, color: C.accentDark });
+      if (n >= 9) { card(ctx, 1220, 540, 460, 150, { fill: C.bg2, r: 14 }); para(ctx, "kamus ini kamu pakai sepanjang episode dan proyekmu", 1450, 600, 24, 400, { align: "center", weight: 800, color: C.ink2 }); }
+    },
+    unplugged_tebak(ctx, b, l) {
+      card(ctx, 120, 150, 1680, 740); heading(ctx, "SEBELUM MENJALANKAN: TEBAK DULU", 215);
+      const n = reveal(l, 1.5, 2.4, 4);
+      Py.code(ctx, 240, 270, 520, [{ t: "x = 5" }, { t: "x = x + 2" }, { t: "x = x * 2", hl: n >= 4 }, { t: "print(x)" }], { rh: 48, size: 24 });
+      ctx.save(); if (n < 1) ctx.globalAlpha = 0.2; card(ctx, 820, 270, 380, 150, { fill: "#FFFDF5", stroke: "#E0B04B", lw: 3, r: 14 }); text(ctx, "✏️ tebakanku", 1010, 320, 22, { align: "center", weight: 900, color: C.ink2 }); text(ctx, "12", 1010, 390, 44, { align: "center", weight: 900 }); ctx.restore();
+      if (n >= 2) { arrowIcon(ctx, "right", 1230, 345, 40, C.accent); Py.console(ctx, 1280, 270, 400, [["14", "out"]]); }
+      if (n >= 3) { card(ctx, 820, 470, 860, 110, { fill: C.badBg, stroke: C.bad, lw: 3, r: 14 }); text(ctx, "meleset: 12 ≠ 14 → di sinilah pelajarannya", 1250, 535, 28, { align: "center", weight: 900, color: C.bad }); }
+      if (n >= 4) label(ctx, "baris 3 mengalikan setelah ditambah: (5 + 2) × 2 = 14", 960, 680, { size: 26 });
+    },
+    variabel(ctx, b, l) {
+      card(ctx, 120, 150, 1680, 740); heading(ctx, "BAHAN 1 · VARIABEL: LAHIR SAAT PERTAMA DIISI", 215);
+      const n = reveal(l, 1.5, 1.8, 4);
+      T.side(ctx, 220, 260, [{ t: "DEKLARASI saldo: bulat" }, { t: "DEKLARASI nama: teks" }, { t: "saldo ← 0" }, { t: "nama ← \"Sinta\"" }], [{ t: "" }, { t: "" }, { t: "saldo = 0" }, { t: 'nama = "Sinta"' }], { pairs: [[0, 2], [1, 3], [2, 2], [3, 3]], hl: n >= 1 ? Math.min(n, 4) - 1 : null, rh: 46, size: 22 });
+      if (n >= 1) text(ctx, "tanpa deklarasi", 1340, 322, 20, { weight: 800, color: "#7B8B95" });
+      if (n >= 3) T.cell(ctx, 240, 560, 300, { name: "saldo", value: 0, type: "int", changed: n === 3 });
+      if (n >= 4) T.cell(ctx, 580, 560, 300, { name: "nama", value: "\"Sinta\"", type: "str", changed: true });
+      if (n >= 4) label(ctx, "tipe mengikuti isinya", 1340, 620, { size: 28 });
+    },
+    tipe_input(ctx, b, l) {
+      card(ctx, 120, 150, 1680, 740); heading(ctx, "EMPAT TIPE, DAN JEBAKAN input()", 215);
+      const n = reveal(l, 1.5, 1.7, 7);
+      T.typeCards(ctx, 240, 260, 1440, Math.min(n, 4));
+      if (n >= 5) { Py.code(ctx, 240, 430, 640, [{ t: "jumlah = input()", hl: n === 5 }, { t: "jumlah = int(input())", hl: n >= 7 }], { rh: 46, size: 24 }); }
+      if (n >= 5) T.cell(ctx, 940, 440, 320, { name: "jumlah", value: "\"50000\"", type: "str", warn: true });
+      if (n >= 6) { text(ctx, "teks! tidak bisa dihitung", 1100, 585, 22, { align: "center", weight: 900, color: C.bad }); }
+      if (n >= 7) { arrowIcon(ctx, "right", 1290, 495, 40, C.good); T.cell(ctx, 1340, 440, 320, { name: "jumlah", value: 50000, type: "int", changed: true }); label(ctx, "bungkus dengan int() supaya jadi bilangan", 960, 690, { size: 26, color: C.good }); }
+    },
+    percabangan(ctx, b, l) {
+      card(ctx, 120, 150, 1680, 740); heading(ctx, "BAHAN 2 · PERCABANGAN: TITIK DUA, LALU MENJOROK", 215);
+      const n = reveal(l, 1.5, 2.0, 5);
+      T.side(ctx, 220, 260, [{ t: "JIKA jenis = \"masuk\" MAKA" }, { t: "saldo ← saldo + jumlah", ind: 1 }, { t: "LAINNYA" }, { t: "saldo ← saldo − jumlah", ind: 1 }], [{ t: 'if jenis == "masuk":' }, { t: "    saldo = saldo + jumlah" }, { t: "else:" }, { t: "    saldo = saldo - jumlah" }], { pairs: [[0, 0], [1, 1], [2, 2], [3, 3]], hl: n >= 1 && n <= 4 ? n - 1 : null, rh: 50, size: 22 });
+      if (n >= 5) { ctx.strokeStyle = C.accent; ctx.lineWidth = 6; [1, 3].forEach(i => { const y = 260 + 50 + i * 50; ctx.beginPath(); ctx.moveTo(1040, y + 6); ctx.lineTo(1040, y + 44); ctx.stroke(); }); text(ctx, "indentasi = isi cabang", 1140, 560, 24, { weight: 900, color: C.accentDark }); }
+      [["== untuk membandingkan", "= untuk menyimpan"], ["titik dua di akhir if dan else", ""], ["blok ditandai spasi di awal baris", "bukan hiasan"]].forEach(([t, s], i) => { ctx.save(); if (n < i + 2) ctx.globalAlpha = 0.2; card(ctx, 220 + i * 500, 600, 480, 90, { fill: n === i + 2 ? "#FFF3D6" : C.bg2, stroke: n === i + 2 ? C.accent : undefined, lw: 3, r: 12 }); text(ctx, t, 244 + i * 500, 640, 22, { weight: 900 }); text(ctx, s, 244 + i * 500, 670, 17, { weight: 700, color: C.ink2 }); ctx.restore(); });
+    },
+    elif(ctx, b, l) {
+      card(ctx, 120, 150, 1680, 740); heading(ctx, "TIGA CABANG: PERIKSA DARI ATAS, BERHENTI DI YANG PERTAMA BENAR", 215);
+      const n = reveal(l, 1.5, 1.8, 6);
+      const hl = n === 3 ? 0 : n === 4 ? 1 : n === 5 ? 2 : -1;
+      Py.code(ctx, 220, 260, 760, [{ t: "if jumlah < 0:", hl: hl === 0 }, { t: '    print("ditolak")' }, { t: "elif jumlah == 0:", hl: hl === 1 }, { t: '    print("peringatan: nol")' }, { t: "else:", hl: hl === 2 }, { t: "    daftar.append(jumlah)" }], { rh: 46, size: 22 });
+      if (n >= 2) T.cell(ctx, 1040, 270, 260, { name: "jumlah", value: 0, type: "int" });
+      if (n >= 3) T.branchCheck(ctx, 1040, 400, 640, [["jumlah < 0", n >= 3 ? false : null], ["jumlah == 0", n >= 4 ? true : null], ["else", null]], n >= 5 ? 3 : n - 2, n >= 4 ? 1 : null);
+      if (n >= 6) label(ctx, "urutan kondisi menentukan hasil", 500, 620, { size: 26 });
+    },
+    for_lacak(ctx, b, l) {
+      card(ctx, 120, 150, 1680, 740); heading(ctx, "BAHAN 3 · PERULANGAN for: LACAK TIAP PUTARAN", 215);
+      const k = reveal(l, 1.5, 1.3, 9); // 1: pasangan, 2: total 0, 3..8: tiga putaran (baris for, baris total), 9: print
+      const round = k >= 3 && k <= 8 ? Math.floor((k - 3) / 2) : null; const onBody = k >= 3 && k <= 8 && (k - 3) % 2 === 1;
+      let total = 0; for (let i = 0; i < 3; i++) { if (round != null && (i < round || (i === round && onBody))) total += DAFTAR[i]; if (k >= 9) total = 45000; }
+      const hl = k <= 1 ? null : k === 2 ? 0 : k <= 8 ? (onBody ? 2 : 1) : 3;
+      T.side(ctx, 220, 260, FOR_PS, FOR_PY, { pairs: [[0, 0], [1, 1], [2, 2], [3, 3]], hl, rh: 44, size: 20, wl: 560, wr: 520, gap: 30 });
+      Mm.list(ctx, 1380, 300, DAFTAR, { name: "daftar", w: 100, h: 56, hl: round != null ? round + 1 : null });
+      Mm.board(ctx, 1360, 400, 340, [{ name: "t", value: round != null ? DAFTAR[round] : k >= 9 ? 10000 : null, hl: round != null && !onBody }, { name: "total", value: k >= 2 ? total : null, changed: onBody }], { bw: 140, bh: 100 });
+      if (k >= 9) { Py.console(ctx, 1360, 610, 340, [["45000", "out"]]); label(ctx, "tiga putaran, total 45000", 700, 560, { size: 28, color: C.good }); }
+    },
+    while_lacak(ctx, b, l) {
+      card(ctx, 120, 150, 1680, 740); heading(ctx, "while: BERULANG SELAMA KONDISINYA BENAR", 215);
+      const n = reveal(l, 1.5, 1.6, 7);
+      T.side(ctx, 220, 260, [{ t: "SELAMA jawaban ≠ \"selesai\":" }, { t: "BACA transaksi", ind: 1 }, { t: "BACA jawaban", ind: 1 }], [{ t: 'while jawaban != "selesai":' }, { t: "    transaksi = int(input())" }, { t: "    jawaban = input()" }], { pairs: [[0, 0], [1, 1], [2, 2]], hl: n >= 1 && n <= 3 ? n - 1 : null, rh: 50, size: 22, wl: 600, wr: 580, gap: 30 });
+      if (n >= 4) Py.console(ctx, 1440, 270, 260, [["20000", "in"], ["lanjut", "in"], ["15000", "in"], ["selesai", "in"]].slice(0, n >= 5 ? 4 : 2));
+      if (n >= 5) Mm.rounds(ctx, 1440, 520, 3, 3, { label: "putaran" });
+      if (n >= 6) { card(ctx, 220, 520, 1000, 130, { fill: C.badBg, stroke: C.bad, lw: 3, r: 14 }); text(ctx, "⚠ jawaban tidak pernah diubah di dalam blok", 720, 570, 26, { align: "center", weight: 900, color: C.bad }); text(ctx, "kondisi selalu benar → perulangan tak pernah berhenti", 720, 615, 22, { align: "center", weight: 800 }); }
+      if (n >= 7) label(ctx, "baris terakhir di dalam blok mengubah jawaban", 720, 710, { size: 24, color: C.good });
+    },
+    fungsi(ctx, b, l) {
+      card(ctx, 120, 150, 1680, 740); heading(ctx, "BAHAN 4 · FUNGSI: def, PARAMETER, return", 215);
+      const n = reveal(l, 1.5, 1.8, 6);
+      T.side(ctx, 220, 260, [{ t: "FUNGSI hitung_saldo(daftar) → bulat" }, { t: "total ← 0", ind: 1 }, { t: "UNTUK tiap t dalam daftar:", ind: 1 }, { t: "total ← total + t", ind: 2 }, { t: "KEMBALIKAN total", ind: 1 }, { t: "" }, { t: "saldo ← hitung_saldo(daftar)" }], [{ t: "def hitung_saldo(daftar):" }, { t: "    total = 0" }, { t: "    for t in daftar:" }, { t: "        total = total + t" }, { t: "    return total" }, { t: "" }, { t: "saldo = hitung_saldo(daftar)" }], { pairs: [[0, 0], [1, 1], [2, 2], [3, 3], [4, 4], [6, 6]], hl: n >= 1 ? Math.min(n, 6) - 1 : null, rh: 42, size: 20 });
+      [["def nama(parameter):", "kepala fungsi"], ["return nilai", "hasil dikirim ke pemanggil"], ["nama(argumen)", "memanggil fungsi"]].forEach(([t, s], i) => { ctx.save(); if (n < [1, 5, 6][i]) ctx.globalAlpha = 0.2; card(ctx, 1500, 270 + i * 110, 200, 96, { fill: C.bg2, r: 12 }); text(ctx, t, 1600, 308 + i * 110, 17, { align: "center", weight: 900, color: C.kiko }); text(ctx, s, 1600, 340 + i * 110, 15, { align: "center", weight: 700, color: C.ink2 }); ctx.restore(); });
+      if (n >= 6) label(ctx, "kode yang sama dipakai lagi tanpa ditulis ulang", 960, 690, { size: 26 });
+    },
+    fungsi_bingkai(ctx, b, l) {
+      card(ctx, 120, 150, 1680, 740); heading(ctx, "SAAT DIPANGGIL: BINGKAI BARU, LALU DIBUANG", 215);
+      const n = reveal(l, 1.5, 2.2, 5);
+      Py.code(ctx, 220, 260, 600, [{ t: "def hitung_saldo(daftar):", hl: n === 1 }, { t: "    total = 0", hl: n === 2 }, { t: "    for t in daftar:" }, { t: "        total = total + t", hl: n === 2 }, { t: "    return total", hl: n === 3 }, { t: "" }, { t: "saldo = hitung_saldo(daftar)", hl: n === 4 }], { rh: 42, size: 20 });
+      Mm.list(ctx, 880, 310, DAFTAR, { name: "daftar", w: 100, h: 56 }); Mm.board(ctx, 1260, 260, 420, [{ name: "saldo", value: n >= 4 ? 45000 : null, changed: n === 4 }], { bw: 380, bh: 100, title: "MEMORI UTAMA" });
+      if (n >= 1 && n <= 3) Kd.frame(ctx, 860, 470, 500, "hitung_saldo", [["daftar", "[20000, 15000, 10000]"], ["total", n >= 2 ? 45000 : 0]], { ret: n >= 3 ? 45000 : null });
+      if (n >= 4) { card(ctx, 860, 470, 500, 110, { fill: C.bg2, stroke: "#B7C4CC", lw: 3, r: 14 }); text(ctx, "bingkai dibuang; total tidak terlihat dari luar", 1110, 535, 22, { align: "center", weight: 900, color: C.ink2 }); }
+      if (n >= 5) label(ctx, "karena itu fungsi aman dipakai berulang", 1270, 690, { size: 26 });
+    },
+    program_utuh(ctx, b, l) {
+      card(ctx, 120, 150, 1680, 740); heading(ctx, "PROGRAM KAS KELAS UTUH: EMPAT BAHAN JADI SATU", 215);
+      const n = reveal(l, 1.5, 2.4, 4);
+      const groups = [[[0, 1, 2, 3, 4], "fungsi", "#8E6BBF"], [[7, 13], "perulangan", "#2E7E9A"], [[9, 10, 11, 12], "percabangan", "#B57A12"], [[5, 6, 8], "variabel", "#2E9E5B"]];
+      const g = n >= 1 ? groups[n - 1] : null;
+      Py.code(ctx, 220, 250, 920, PROG.map((t, i) => ({ t, hl: g && g[0].includes(i) })), { rh: 30, size: 15 });
+      groups.forEach(([ls, nm, col], i) => { ctx.save(); if (i >= n) ctx.globalAlpha = 0.2; card(ctx, 1200, 280 + i * 100, 480, 80, { fill: i === n - 1 ? "#FFF3D6" : "#fff", stroke: col, lw: 4, r: 12 }); text(ctx, nm, 1230, 315 + i * 100, 24, { weight: 900, color: col }); text(ctx, "baris " + ls.map(x => x + 1).join(", "), 1230, 345 + i * 100, 17, { weight: 800, color: C.ink2 }); ctx.restore(); });
+      if (n >= 4) label(ctx, "15 baris dari pseudocode episode lalu", 1440, 720, { size: 24 });
+    },
+    primm(ctx, b, l) {
+      card(ctx, 120, 150, 1680, 740); heading(ctx, "CARA BELAJARNYA: PRIMM", 215);
+      const n = reveal(l, 1.5, 1.8, 6);
+      T.primm(ctx, 200, 280, Math.min(n, 5), { w: 290 });
+      if (n >= 6) banner(ctx, "simpan tiap versi yang jalan sebelum mengubahnya lagi", 560, 1100, { size: 30 });
+    },
+    make_show(ctx, b, l) {
+      card(ctx, 160, 150, 1600, 740);
+      text(ctx, "GILIRANMU", 960, 240, 34, { align: "center", color: C.accentDark, weight: 900 });
+      const items = [["Penerjemah", "pasangkan baris pseudocode dan Python", (x, y) => { ctx.save(); ctx.translate(x - 220, y - 120); ctx.scale(0.62, 0.62); T.dict(ctx, 0, 0, 700, [["BACA x", "x = input()"], ["JIKA … MAKA", "if …:"], ["TULIS x", "print(x)"]], { rh: 50, size: 24 }); ctx.restore(); }],
+        ["Pelacak", "langkah demi langkah, tebak isi memori", (x, y) => { ctx.save(); ctx.translate(x - 220, y - 120); ctx.scale(0.62, 0.62); Py.code(ctx, 0, 0, 440, [{ t: "total = 0" }, { t: "for t in daftar:", hl: true }, { t: "    total = total + t" }], { rh: 44, size: 24 }); Mm.board(ctx, 460, 0, 260, [{ name: "total", value: 20000, changed: true }], { bw: 200, bh: 90 }); ctx.restore(); }],
+        ["Pemburu bug", "temukan baris yang salah ketik", (x, y) => { ctx.save(); ctx.translate(x - 220, y - 120); ctx.scale(0.62, 0.62); Py.code(ctx, 0, 0, 700, [{ t: "jumlah = input()", bad: true }, { t: "if jumlah > 0" , bad: true }, { t: "    print(jumlah)" }], { rh: 44, size: 24 }); ctx.restore(); }]];
+      items.forEach(([t1, t2, draw], i) => { const x = 400 + i * 560; card(ctx, x - 250, 290, 500, 440, { fill: C.bg2 }); ctx.fillStyle = C.kiko; ctx.beginPath(); ctx.arc(x - 200, 340, 28, 0, Math.PI * 2); ctx.fill(); text(ctx, String(i + 1), x - 200, 352, 30, { align: "center", color: "#fff", weight: 900 }); text(ctx, t1, x - 160, 352, 26, { weight: 900 }); para(ctx, t2, x - 160, 386, 20, 400, { weight: 700, color: C.ink2 }); draw(x, 560); });
+      text(ctx, "di halaman latihan episode ini — lalu ketik program kas kelas di komputer sungguhan", 960, 820, 26, { align: "center", color: C.ink2, weight: 700 });
+    }
+  });
+})(typeof window !== "undefined" ? window : globalThis);
+</script>
+<script>/* Inti halaman latihan: pemutar (kanvas + narasi), tombol suara nyala/mati (berpindah antara timeline suara dan teks),
+   kuis dengan petunjuk, dan kemajuan di localStorage (perangkat ini saja).
+   Pakai:  const P = PageCore({ suara: TIMELINE_SUARA_atau_null, teks: TIMELINE_TEKS });
+   Episode menambahkan latihannya sendiri lewat P.$, P.K, P.H, P.progress, P.save(), P.speed(), P.onProgress(fn). */
+function PageCore(TLS, opt = {}) {
+  const $ = id => document.getElementById(id);
+  const K = Kiko, H = K.helpers;
+  let voice = !!TLS.suara; let TL = voice ? TLS.suara : TLS.teks;
+  // ---------- progress storage (per device only) ----------
+  const KEY = opt.key || TL.episode.replace(/\./g, "").toLowerCase() + "-progress";   // D7.5 -> "d75-progress"
+  let progress = { quiz: {} };
+  try { const s = localStorage.getItem(KEY); if (s) progress = { quiz: {}, ...JSON.parse(s) }; } catch (e) {}
+  const extras = [];
+  function renderProgress() {
+    const el = $("progress"); if (!el) return; el.innerHTML = "";
+    Object.keys(TL.quizzes).forEach((id, i) => { const s = document.createElement("span"); s.textContent = "Cek " + (i + 1); s.className = progress.quiz[id] ? "ok" : ""; el.appendChild(s); });
+    extras.forEach(f => f(el));
+  }
+  function save() { try { localStorage.setItem(KEY, JSON.stringify(progress)); } catch (e) {} renderProgress(); }
+
+  // ---------- player ----------
+  const cv = $("screen"), ctx = cv.getContext("2d");
+  let t = 0, playing = false, last = 0, speed = 1, hasAudio = false;
+  const nar = $("nar"); nar.addEventListener("canplay", () => { hasAudio = true; }); nar.addEventListener("error", () => { hasAudio = false; });
+  function fmt(s) { s = Math.max(0, Math.floor(s)); return Math.floor(s / 60) + ":" + String(s % 60).padStart(2, "0"); }
+  function segStart(i) { return TL.beats.find(b => b.seg === i).start; }
+  function syncAudio() { if (voice && hasAudio) { try { nar.currentTime = t; } catch (e) {} } }
+  function drawNow() {
+    const b = K.draw(ctx, Math.min(t, TL.total - 0.01), TL);
+    $("barfill").style.width = (t / TL.total * 100) + "%"; $("bar").setAttribute("aria-valuenow", Math.round(t / TL.total * 100));
+    $("timelabel").textContent = fmt(t) + " / " + fmt(TL.total);
+    [...$("chapters").children].forEach((c, i) => c.classList.toggle("now", i === b.seg));
+    return b;
+  }
+  function loop(now) {
+    if (!playing) return;
+    const dt = Math.min(0.1, (now - last) / 1000); last = now; if (voice && hasAudio && !nar.paused) t = nar.currentTime; else t += dt * speed;
+    if (t >= TL.total) { t = TL.total - 0.01; setPlaying(false); }
+    drawNow(); requestAnimationFrame(loop);
+  }
+  function setPlaying(p) {
+    playing = p; $("bigplay").hidden = p; $("playbtn").textContent = p ? "❚❚ Jeda" : "▶ Putar";
+    if (p) { last = performance.now(); if (voice && hasAudio) { try { nar.currentTime = t; nar.playbackRate = speed; nar.play().catch(() => {}); } catch (e) {} } requestAnimationFrame(loop); } else nar.pause();
+  }
+  $("bigplay").addEventListener("click", () => setPlaying(true));
+  $("playbtn").addEventListener("click", () => setPlaying(!playing));
+  $("replay").addEventListener("click", () => { const b = K.beatAt(TL, t); t = segStart(b.seg); syncAudio(); drawNow(); setPlaying(true); });
+  $("slow").addEventListener("click", e => { speed = speed === 1 ? 0.8 : 1; nar.playbackRate = speed; e.currentTarget.setAttribute("aria-pressed", speed !== 1); });
+  function seekFromBar(ev) { const r = $("bar").getBoundingClientRect(); const x = (ev.touches ? ev.touches[0].clientX : ev.clientX) - r.left; t = Math.max(0, Math.min(TL.total - 0.01, x / r.width * TL.total)); syncAudio(); drawNow(); }
+  $("bar").addEventListener("click", seekFromBar);
+  $("bar").addEventListener("keydown", e => { if (e.key === "ArrowRight") { t = Math.min(TL.total - 0.01, t + 5); syncAudio(); drawNow(); } if (e.key === "ArrowLeft") { t = Math.max(0, t - 5); syncAudio(); drawNow(); } });
+  TL.segments.forEach((name, i) => { const b = document.createElement("button"); b.textContent = (i + 1) + ". " + name; b.addEventListener("click", () => { t = segStart(i); syncAudio(); drawNow(); setPlaying(true); }); $("chapters").appendChild(b); });
+  // voice on/off: switches between the narrated timeline and the reading-paced one, staying on the same beat
+  const vb = $("voice");
+  function setVoice(on) {
+    const cur = K.beatAt(TL, t);
+    voice = on && !!TLS.suara; TL = voice ? TLS.suara : TLS.teks;
+    const nb = TL.beats.find(b => b.id === cur.id) || TL.beats[0]; t = nb.start;
+    if (vb) { vb.setAttribute("aria-pressed", voice); vb.textContent = voice ? "🔊 Suara: nyala" : "🔇 Suara: mati"; }
+    if (playing) { if (voice && hasAudio) { try { nar.currentTime = t; nar.playbackRate = speed; nar.play().catch(() => {}); } catch (e) {} } else nar.pause(); }
+    drawNow();
+  }
+  if (vb) { if (!TLS.suara || !TLS.teks) vb.hidden = true; else { vb.addEventListener("click", () => setVoice(!voice)); vb.setAttribute("aria-pressed", voice); vb.textContent = voice ? "🔊 Suara: nyala" : "🔇 Suara: mati"; } }
+  drawNow();
+
+  // ---------- quiz ----------
+  const quizEl = $("quiz");
+  if (quizEl) Object.entries(TL.quizzes).forEach(([id, q], qi) => {
+    const box = document.createElement("div"); box.className = "q";
+    box.innerHTML = `<h3>${qi + 1}. ${q.q}</h3><div class="opts"></div><div class="fb"></div>`;
+    const opts = box.querySelector(".opts"), fb = box.querySelector(".fb");
+    q.options.forEach((o, i) => {
+      const b = document.createElement("button"); b.innerHTML = `<b>${"ABC"[i]}</b><span>${o}</span>`;
+      b.addEventListener("click", () => {
+        [...opts.children].forEach(c => c.classList.remove("wrong"));
+        if (i === q.answer) { b.classList.add("right"); fb.className = "fb good"; fb.textContent = "Benar! " + (q.explain || ""); progress.quiz[id] = true; save(); [...opts.children].forEach(c => c.disabled = true); }
+        else { b.classList.add("wrong"); fb.className = "fb bad"; fb.textContent = "Belum tepat. Petunjuk: " + q.hint; }
+      });
+      opts.appendChild(b);
+    });
+    if (progress.quiz[id]) { opts.children[q.answer].classList.add("right"); [...opts.children].forEach(c => c.disabled = true); fb.className = "fb good"; fb.textContent = "Sudah dijawab benar."; }
+    quizEl.appendChild(box);
+  });
+  renderProgress();
+
+  return { $, K, H, progress, save, renderProgress, speed: () => speed, timeline: () => TL,
+           onProgress(fn) { extras.push(fn); renderProgress(); } };
+}
+</script>
+<script>
+(function () {
+  const P = PageCore({ suara: {"episode": "F11.2", "title": "Dari Pseudocode ke Kode", "hook": "menerjemahkan pseudocode menjadi program Python yang jalan: variabel, percabangan, perulangan, dan fungsi.", "engine": ["../_alat/kiko-core.js", "../_alat/kiko-devices.js", "../D9.1/memori.js", "../E.7/kode.js", "../F11.0/py.js", "terjemah.js", "scenes.js"], "parts": {"F11.2a": {"segs": [0, 1, 2, 3], "post": "Lanjut ke Bagian 2: Perulangan dan Fungsi"}, "F11.2b": {"segs": [4, 5, 6, 7], "pre": "Bagian 2: Perulangan dan Fungsi"}}, "youtube": {"ringkas": "Pseudocode sudah di tangan; sekarang kita ubah menjadi program Python yang benar-benar jalan. Bersama Kiko kita terjemahkan satu program kas kelas baris demi baris: variabel dan tipe data (int, float, str, bool, dan jebakan input yang selalu teks), percabangan if-elif-else dengan indentasi, perulangan for dan while dengan pelacakan isi memori, serta fungsi dengan parameter dan nilai balik. Pseudocode dan Python selalu tampil berdampingan; tiap baris yang dijalankan disorot bersama isi memorinya. Pola PRIMM: tebak, jalankan, selidiki, ubah, buat. Empat cek pemahaman; penerjemah dan pelacak di halaman latihan.", "belajar": ["menerjemahkan deklarasi, BACA, TULIS, dan penugasan ke variabel Python dengan tipe yang tepat", "menulis percabangan if-elif-else dengan indentasi yang benar", "melacak perulangan for dan while baris demi baris dengan tabel memori", "menulis fungsi dengan parameter dan return, lalu memanggilnya"], "bagian": {"F11.2a": "Variabel, Tipe Data, Percabangan", "F11.2b": "Perulangan dan Fungsi"}, "cari": ["pseudocode ke python kelas 11", "variabel tipe data percabangan python pemula", "perulangan for while python dijelaskan langkah demi langkah", "fungsi python parameter return contoh sederhana"], "prasyarat": "episode F11.0 Jembatan Menuju Pemrograman dan F11.1 Alur Pengembangan Program dan Produk Digital", "jp": 28, "tagar": ["#Python", "#Pseudocode", "#Pemrograman", "#BelajarKoding", "#Kelas11", "#SMA"]}, "recap": ["Pseudocode → Python: BACA input, TULIS print, ← jadi =.", "if, for, while, def: titik dua lalu indentasi.", "Lacak tiap baris; input selalu teks, ubah dengan int()."], "next": {"code": "F11.3", "title": "Algoritma Standar dalam Kode dan Kualitas Program", "note": "Penerjemah dan pelacak Python ada di halaman episode ini."}, "segments": ["Pembuka", "Main dulu tanpa komputer", "Variabel dan tipe data", "Percabangan", "Perulangan", "Fungsi", "Program utuh dan PRIMM", "Giliranmu"], "quizzes": {"q1": {"q": "jumlah = input(), lalu saldo = saldo + jumlah. Apa yang terjadi?", "options": ["Saldo bertambah", "Galat: angka ditambah teks", "Saldo menjadi teks"], "answer": 1, "hint": "Apa tipe hasil input()? Bisakah angka ditambah teks?"}, "q2": {"q": "jumlah = 0. Program: if jumlah < 0 … elif jumlah == 0 … else … Cabang mana yang dijalankan?", "options": ["Pertama (if)", "Kedua (elif)", "Ketiga (else)"], "answer": 1, "hint": "Periksa dari atas: apakah 0 < 0? Apakah 0 == 0?"}, "q3": {"q": "total = 0; for t in [20000, 15000, 10000]: total = total + t. Berapa total di akhir?", "options": ["10000", "45000", "3"], "answer": 1, "hint": "Lacak tiga putaran: total bertambah tiap putaran, bukan diganti."}, "q4": {"q": "def dua_kali(n): return n * 2, lalu print(dua_kali(7)). Apa yang tampil?", "options": ["n * 2", "14", "Tidak ada, karena return bukan print"], "answer": 1, "hint": "return mengirim nilai ke pemanggil; pemanggilnya adalah print."}}, "beats": [{"id": "intro1", "seg": 0, "scene": "title", "text": "Halo, kelas sebelas! Aku Kiko. Di episode lalu, pseudocode pencatat kas kelas sudah selesai didesain. Hari ini kita ubah menjadi program Python yang benar-benar jalan. Setelah menonton, kamu bisa menerjemahkan pseudocode menjadi kode.", "hold": 1.0, "start": 0.0, "speech": 0.4, "audio": 15.541, "dur": 18.54}, {"id": "intro2", "seg": 0, "scene": "title_q", "text": "Empat bahan: variabel dan tipe data, percabangan, perulangan, dan fungsi. Pseudocode dan Python akan selalu tampil berdampingan, dan tiap baris yang dijalankan kita lacak bersama isi memorinya.", "hold": 0.8, "start": 18.54, "speech": 18.94, "audio": 13.752, "dur": 15.34}, {"id": "intro3", "seg": 0, "scene": "prereq", "text": "Episode ini melanjutkan F11.0 tentang program Python pertama dan F11.1 tentang alur pengembangan. Kalau belum menontonnya, tonton dulu, ya.", "hold": 0.8, "start": 33.88, "speech": 34.28, "audio": 10.405, "dur": 11.905}, {"id": "play1", "seg": 1, "scene": "unplugged_kamus", "text": "Main dulu. Buat kamus dua kolom di kertas: kiri pseudocode, kanan Python. BACA menjadi input, TULIS menjadi print, panah kiri menjadi sama dengan, JIKA MAKA menjadi if dengan titik dua. Tiap kali menemukan pasangan baru, tambahkan ke kamus.", "hold": 1.0, "start": 45.785, "speech": 46.185, "audio": 17.392, "dur": 21.04}, {"id": "play2", "seg": 1, "scene": "unplugged_tebak", "text": "Lalu pola PRIMM: sebelum menjalankan program apa pun, tebak dulu keluarannya dan tulis di kertas. Jalankan. Kalau tebakanmu meleset, di situlah pelajarannya: cari baris yang membuatmu salah menebak.", "hold": 1.0, "start": 66.825, "speech": 67.225, "audio": 12.952, "dur": 16.04}, {"id": "s1a", "seg": 2, "scene": "variabel", "text": "Bahan satu: variabel dan tipe data. Di pseudocode kita menulis deklarasi: saldo bulat, nama teks. Di Python, variabel lahir saat pertama kali diisi: saldo sama dengan nol, nama sama dengan Sinta. Tipenya mengikuti isinya.", "hold": 1.0, "start": 82.865, "speech": 83.265, "audio": 17.391, "dur": 19.091}, {"id": "s1b", "seg": 2, "scene": "tipe_input", "text": "Empat tipe yang sering dipakai: int bilangan bulat, float pecahan, str teks, bool benar-salah. Jebakannya: input selalu memberi teks. Lima puluh ribu dari input adalah teks, bukan angka. Bungkus dengan int supaya bisa dihitung.", "hold": 1.0, "start": 101.956, "speech": 102.356, "audio": 17.444, "dur": 19.144}, {"id": "q1", "seg": 2, "scene": "quiz", "quiz": "q1", "text": "Cek pemahaman. jumlah sama dengan input, lalu saldo sama dengan saldo tambah jumlah. Apa yang terjadi: saldo bertambah, galat karena angka ditambah teks, atau saldo menjadi teks? Pikirkan dulu.", "hold": 4.0, "start": 121.1, "speech": 121.5, "audio": 14.367, "dur": 19.54}, {"id": "q1a", "seg": 2, "scene": "quiz_answer", "quiz": "q1", "text": "Jawabannya: galat, TypeError. Angka tidak bisa ditambah teks. Perbaikannya: jumlah sama dengan int dari input. Ini kesalahan paling sering di program pertama.", "hold": 1.0, "start": 140.64, "speech": 141.04, "audio": 11.645, "dur": 13.345}, {"id": "s2a", "seg": 3, "scene": "percabangan", "text": "Bahan dua: percabangan. Pseudocode: JIKA jenis sama dengan masuk MAKA saldo bertambah, LAINNYA saldo berkurang. Python: if jenis sama dengan masuk, titik dua, baris menjorok; else, titik dua, baris menjorok. Indentasi menandai isi cabang.", "hold": 1.0, "start": 153.985, "speech": 154.385, "audio": 18.909, "dur": 20.609}, {"id": "s2b", "seg": 3, "scene": "elif", "text": "Tiga cabang atau lebih memakai elif. Jumlah di bawah nol: tolak. Jumlah sama dengan nol: peringatan. Selain itu: simpan. Python memeriksa dari atas dan berhenti di cabang pertama yang benar, jadi urutan kondisinya penting.", "hold": 1.0, "start": 174.594, "speech": 174.994, "audio": 16.799, "dur": 19.04}, {"id": "q2", "seg": 3, "scene": "quiz", "quiz": "q2", "text": "Cek pemahaman. jumlah sama dengan nol. Program memeriksa: if jumlah lebih kecil dari nol, elif jumlah sama dengan nol, else. Cabang mana yang dijalankan: pertama, kedua, atau ketiga? Pikirkan dulu.", "hold": 4.0, "start": 193.634, "speech": 194.034, "audio": 15.238, "dur": 20.04}, {"id": "q2a", "seg": 3, "scene": "quiz_answer", "quiz": "q2", "text": "Jawabannya: cabang kedua. Nol tidak lebih kecil dari nol, jadi cabang pertama dilewati; nol sama dengan nol, cabang kedua dijalankan, dan else tidak disentuh.", "hold": 1.0, "start": 213.674, "speech": 214.074, "audio": 11.971, "dur": 14.04}, {"id": "s3a", "seg": 4, "scene": "for_lacak", "text": "Bagian dua. Bahan tiga: perulangan. Pseudocode: UNTUK tiap transaksi dalam daftar, tambahkan ke total. Python: for t in daftar, titik dua, total sama dengan total tambah t. Kita lacak: daftar dua puluh ribu, lima belas ribu, sepuluh ribu.", "hold": 1.0, "start": 227.714, "speech": 228.114, "audio": 19.475, "dur": 21.175}, {"id": "s3b", "seg": 4, "scene": "while_lacak", "text": "Bila banyak putaran belum diketahui, pakai while. SELAMA jawaban bukan selesai, baca transaksi baru. Python: while jawaban tidak sama dengan selesai. Hati-hati: kalau jawaban tak pernah berubah di dalam blok, perulangan tak pernah berhenti.", "hold": 1.0, "start": 248.889, "speech": 249.289, "audio": 17.04, "dur": 19.04}, {"id": "q3", "seg": 4, "scene": "quiz", "quiz": "q3", "text": "Cek pemahaman. total sama dengan nol, lalu for t in daftar dua puluh ribu, lima belas ribu, sepuluh ribu: total sama dengan total tambah t. Berapa total di akhir: sepuluh ribu, empat puluh lima ribu, atau tiga? Pikirkan dulu.", "hold": 4.0, "start": 267.929, "speech": 268.329, "audio": 17.493, "dur": 24.54}, {"id": "q3a", "seg": 4, "scene": "quiz_answer", "quiz": "q3", "text": "Jawabannya: empat puluh lima ribu. Nol tambah dua puluh ribu, tambah lima belas ribu, tambah sepuluh ribu. Tiga adalah banyaknya putaran, bukan totalnya.", "hold": 1.0, "start": 292.469, "speech": 292.869, "audio": 10.948, "dur": 13.54}, {"id": "s4a", "seg": 5, "scene": "fungsi", "text": "Bahan empat: fungsi. Pseudocode: FUNGSI hitung saldo dengan masukan daftar, KEMBALIKAN total. Python: def hitung underscore saldo, kurung daftar, titik dua, lalu return total. Memanggilnya: saldo sama dengan hitung saldo dari daftar.", "hold": 1.0, "start": 306.009, "speech": 306.409, "audio": 18.96, "dur": 20.66}, {"id": "s4b", "seg": 5, "scene": "fungsi_bingkai", "text": "Saat dipanggil, Python membuat bingkai baru: parameter daftar diisi, total dihitung di dalamnya, lalu return mengirim hasilnya keluar dan bingkai dibuang. Variabel di dalamnya tak terlihat dari luar. Karena itu fungsi aman dipakai berulang.", "hold": 1.0, "start": 326.669, "speech": 327.069, "audio": 16.259, "dur": 19.04}, {"id": "q4", "seg": 5, "scene": "quiz", "quiz": "q4", "text": "Cek pemahaman. def dua kali, kurung n, titik dua, return n kali dua. Lalu print dua kali dari tujuh. Apa yang tampil: n kali dua, empat belas, atau tidak ada karena return bukan print? Pikirkan dulu.", "hold": 4.0, "start": 345.709, "speech": 346.109, "audio": 16.87, "dur": 23.04}, {"id": "q4a", "seg": 5, "scene": "quiz_answer", "quiz": "q4", "text": "Jawabannya: empat belas. Fungsi mengembalikan empat belas ke pemanggil, lalu print menampilkannya. Tanpa print, nilainya kembali tetapi tidak tampil.", "hold": 1.0, "start": 368.749, "speech": 369.149, "audio": 10.406, "dur": 12.106}, {"id": "s5a", "seg": 6, "scene": "program_utuh", "text": "Keempat bahan disatukan: program kas kelas utuh. Fungsi hitung saldo, perulangan membaca transaksi sampai selesai, percabangan menolak jumlah salah, dan variabel menyimpan semuanya. Lima belas baris yang lahir dari pseudocode episode lalu.", "hold": 1.0, "start": 380.855, "speech": 381.255, "audio": 16.6, "dur": 18.3}, {"id": "s5b", "seg": 6, "scene": "primm", "text": "Cara belajarnya tetap PRIMM: tebak keluaran, jalankan, selidiki dengan mengubah satu angka, ubah programnya, lalu buat versimu sendiri. Simpan tiap versi yang jalan sebelum mengubahnya lagi, seperti rilis kecil di episode lalu.", "hold": 1.0, "start": 399.155, "speech": 399.555, "audio": 15.87, "dur": 18.04}, {"id": "s6a", "seg": 7, "scene": "make_show", "text": "Sekarang giliranmu. Di halaman latihan: penerjemah, pasangkan tiap baris pseudocode dengan baris Python-nya; pelacak, jalankan program langkah demi langkah dan tebak isi memorinya; lalu pemburu bug, temukan baris yang salah ketik.", "hold": 1.0, "start": 417.195, "speech": 417.595, "audio": 15.752, "dur": 17.54}, {"id": "s6b", "seg": 7, "scene": "make_show", "text": "Lalu di komputer: ketik program kas kelas, jalankan dengan kasus uji dari episode lalu, dan tambahkan satu fitur dari daftar kebutuhan tambahanmu. Itulah implementasi yang sesungguhnya.", "hold": 1.0, "start": 434.735, "speech": 435.135, "audio": 12.13, "dur": 15.04}, {"id": "recap", "seg": 7, "scene": "recap", "text": "Tiga hal untuk diingat. Satu: BACA menjadi input, TULIS menjadi print, panah menjadi sama dengan. Dua: if, for, while, dan def diakhiri titik dua, isinya menjorok. Tiga: lacak baris demi baris; input selalu teks, ubah dengan int.", "hold": 1.5, "start": 449.775, "speech": 450.175, "audio": 19.292, "dur": 21.492}, {"id": "outro", "seg": 7, "scene": "outro", "text": "Sampai jumpa di episode berikutnya: algoritma standar dalam kode. Pencarian dan pengurutan ditulis dalam Python, lalu diuji, dibersihkan, dan dibandingkan kecepatannya. Sampai jumpa!", "hold": 1.0, "start": 471.267, "speech": 471.667, "audio": 13.019, "dur": 14.719}], "total": 485.986}, teks: {"episode": "F11.2", "title": "Dari Pseudocode ke Kode", "hook": "menerjemahkan pseudocode menjadi program Python yang jalan: variabel, percabangan, perulangan, dan fungsi.", "engine": ["../_alat/kiko-core.js", "../_alat/kiko-devices.js", "../D9.1/memori.js", "../E.7/kode.js", "../F11.0/py.js", "terjemah.js", "scenes.js"], "parts": {"F11.2a": {"segs": [0, 1, 2, 3], "post": "Lanjut ke Bagian 2: Perulangan dan Fungsi"}, "F11.2b": {"segs": [4, 5, 6, 7], "pre": "Bagian 2: Perulangan dan Fungsi"}}, "youtube": {"ringkas": "Pseudocode sudah di tangan; sekarang kita ubah menjadi program Python yang benar-benar jalan. Bersama Kiko kita terjemahkan satu program kas kelas baris demi baris: variabel dan tipe data (int, float, str, bool, dan jebakan input yang selalu teks), percabangan if-elif-else dengan indentasi, perulangan for dan while dengan pelacakan isi memori, serta fungsi dengan parameter dan nilai balik. Pseudocode dan Python selalu tampil berdampingan; tiap baris yang dijalankan disorot bersama isi memorinya. Pola PRIMM: tebak, jalankan, selidiki, ubah, buat. Empat cek pemahaman; penerjemah dan pelacak di halaman latihan.", "belajar": ["menerjemahkan deklarasi, BACA, TULIS, dan penugasan ke variabel Python dengan tipe yang tepat", "menulis percabangan if-elif-else dengan indentasi yang benar", "melacak perulangan for dan while baris demi baris dengan tabel memori", "menulis fungsi dengan parameter dan return, lalu memanggilnya"], "bagian": {"F11.2a": "Variabel, Tipe Data, Percabangan", "F11.2b": "Perulangan dan Fungsi"}, "cari": ["pseudocode ke python kelas 11", "variabel tipe data percabangan python pemula", "perulangan for while python dijelaskan langkah demi langkah", "fungsi python parameter return contoh sederhana"], "prasyarat": "episode F11.0 Jembatan Menuju Pemrograman dan F11.1 Alur Pengembangan Program dan Produk Digital", "jp": 28, "tagar": ["#Python", "#Pseudocode", "#Pemrograman", "#BelajarKoding", "#Kelas11", "#SMA"]}, "recap": ["Pseudocode → Python: BACA input, TULIS print, ← jadi =.", "if, for, while, def: titik dua lalu indentasi.", "Lacak tiap baris; input selalu teks, ubah dengan int()."], "next": {"code": "F11.3", "title": "Algoritma Standar dalam Kode dan Kualitas Program", "note": "Penerjemah dan pelacak Python ada di halaman episode ini."}, "segments": ["Pembuka", "Main dulu tanpa komputer", "Variabel dan tipe data", "Percabangan", "Perulangan", "Fungsi", "Program utuh dan PRIMM", "Giliranmu"], "quizzes": {"q1": {"q": "jumlah = input(), lalu saldo = saldo + jumlah. Apa yang terjadi?", "options": ["Saldo bertambah", "Galat: angka ditambah teks", "Saldo menjadi teks"], "answer": 1, "hint": "Apa tipe hasil input()? Bisakah angka ditambah teks?"}, "q2": {"q": "jumlah = 0. Program: if jumlah < 0 … elif jumlah == 0 … else … Cabang mana yang dijalankan?", "options": ["Pertama (if)", "Kedua (elif)", "Ketiga (else)"], "answer": 1, "hint": "Periksa dari atas: apakah 0 < 0? Apakah 0 == 0?"}, "q3": {"q": "total = 0; for t in [20000, 15000, 10000]: total = total + t. Berapa total di akhir?", "options": ["10000", "45000", "3"], "answer": 1, "hint": "Lacak tiga putaran: total bertambah tiap putaran, bukan diganti."}, "q4": {"q": "def dua_kali(n): return n * 2, lalu print(dua_kali(7)). Apa yang tampil?", "options": ["n * 2", "14", "Tidak ada, karena return bukan print"], "answer": 1, "hint": "return mengirim nilai ke pemanggil; pemanggilnya adalah print."}}, "beats": [{"id": "intro1", "seg": 0, "scene": "title", "text": "Halo, kelas sebelas! Aku Kiko. Di episode lalu, pseudocode pencatat kas kelas sudah selesai didesain. Hari ini kita ubah menjadi program Python yang benar-benar jalan. Setelah menonton, kamu bisa menerjemahkan pseudocode menjadi kode.", "hold": 1.0, "start": 0.0, "speech": 0.0, "audio": 21.425, "dur": 23.425}, {"id": "intro2", "seg": 0, "scene": "title_q", "text": "Empat bahan: variabel dan tipe data, percabangan, perulangan, dan fungsi. Pseudocode dan Python akan selalu tampil berdampingan, dan tiap baris yang dijalankan kita lacak bersama isi memorinya.", "hold": 0.8, "start": 23.425, "speech": 23.425, "audio": 17.675, "dur": 19.475}, {"id": "intro3", "seg": 0, "scene": "prereq", "text": "Episode ini melanjutkan F11.0 tentang program Python pertama dan F11.1 tentang alur pengembangan. Kalau belum menontonnya, tonton dulu, ya.", "hold": 0.8, "start": 42.9, "speech": 42.9, "audio": 12.675, "dur": 14.475}, {"id": "play1", "seg": 1, "scene": "unplugged_kamus", "text": "Main dulu. Buat kamus dua kolom di kertas: kiri pseudocode, kanan Python. BACA menjadi input, TULIS menjadi print, panah kiri menjadi sama dengan, JIKA MAKA menjadi if dengan titik dua. Tiap kali menemukan pasangan baru, tambahkan ke kamus.", "hold": 1.0, "start": 57.375, "speech": 57.375, "audio": 24.55, "dur": 26.55}, {"id": "play2", "seg": 1, "scene": "unplugged_tebak", "text": "Lalu pola PRIMM: sebelum menjalankan program apa pun, tebak dulu keluarannya dan tulis di kertas. Jalankan. Kalau tebakanmu meleset, di situlah pelajarannya: cari baris yang membuatmu salah menebak.", "hold": 1.0, "start": 83.925, "speech": 83.925, "audio": 18.3, "dur": 20.3}, {"id": "s1a", "seg": 2, "scene": "variabel", "text": "Bahan satu: variabel dan tipe data. Di pseudocode kita menulis deklarasi: saldo bulat, nama teks. Di Python, variabel lahir saat pertama kali diisi: saldo sama dengan nol, nama sama dengan Sinta. Tipenya mengikuti isinya.", "hold": 1.0, "start": 104.225, "speech": 104.225, "audio": 22.05, "dur": 24.05}, {"id": "s1b", "seg": 2, "scene": "tipe_input", "text": "Empat tipe yang sering dipakai: int bilangan bulat, float pecahan, str teks, bool benar-salah. Jebakannya: input selalu memberi teks. Lima puluh ribu dari input adalah teks, bukan angka. Bungkus dengan int supaya bisa dihitung.", "hold": 1.0, "start": 128.275, "speech": 128.275, "audio": 22.05, "dur": 24.05}, {"id": "q1", "seg": 2, "scene": "quiz", "quiz": "q1", "text": "Cek pemahaman. jumlah sama dengan input, lalu saldo sama dengan saldo tambah jumlah. Apa yang terjadi: saldo bertambah, galat karena angka ditambah teks, atau saldo menjadi teks? Pikirkan dulu.", "hold": 4.0, "start": 152.325, "speech": 152.325, "audio": 18.925, "dur": 23.925}, {"id": "q1a", "seg": 2, "scene": "quiz_answer", "quiz": "q1", "text": "Jawabannya: galat, TypeError. Angka tidak bisa ditambah teks. Perbaikannya: jumlah sama dengan int dari input. Ini kesalahan paling sering di program pertama.", "hold": 1.0, "start": 176.25, "speech": 176.25, "audio": 14.55, "dur": 16.55}, {"id": "s2a", "seg": 3, "scene": "percabangan", "text": "Bahan dua: percabangan. Pseudocode: JIKA jenis sama dengan masuk MAKA saldo bertambah, LAINNYA saldo berkurang. Python: if jenis sama dengan masuk, titik dua, baris menjorok; else, titik dua, baris menjorok. Indentasi menandai isi cabang.", "hold": 1.0, "start": 192.8, "speech": 192.8, "audio": 22.05, "dur": 24.05}, {"id": "s2b", "seg": 3, "scene": "elif", "text": "Tiga cabang atau lebih memakai elif. Jumlah di bawah nol: tolak. Jumlah sama dengan nol: peringatan. Selain itu: simpan. Python memeriksa dari atas dan berhenti di cabang pertama yang benar, jadi urutan kondisinya penting.", "hold": 1.0, "start": 216.85, "speech": 216.85, "audio": 22.05, "dur": 24.05}, {"id": "q2", "seg": 3, "scene": "quiz", "quiz": "q2", "text": "Cek pemahaman. jumlah sama dengan nol. Program memeriksa: if jumlah lebih kecil dari nol, elif jumlah sama dengan nol, else. Cabang mana yang dijalankan: pertama, kedua, atau ketiga? Pikirkan dulu.", "hold": 4.0, "start": 240.9, "speech": 240.9, "audio": 19.55, "dur": 24.55}, {"id": "q2a", "seg": 3, "scene": "quiz_answer", "quiz": "q2", "text": "Jawabannya: cabang kedua. Nol tidak lebih kecil dari nol, jadi cabang pertama dilewati; nol sama dengan nol, cabang kedua dijalankan, dan else tidak disentuh.", "hold": 1.0, "start": 265.45, "speech": 265.45, "audio": 15.8, "dur": 17.8}, {"id": "s3a", "seg": 4, "scene": "for_lacak", "text": "Bagian dua. Bahan tiga: perulangan. Pseudocode: UNTUK tiap transaksi dalam daftar, tambahkan ke total. Python: for t in daftar, titik dua, total sama dengan total tambah t. Kita lacak: daftar dua puluh ribu, lima belas ribu, sepuluh ribu.", "hold": 1.0, "start": 283.25, "speech": 283.25, "audio": 24.55, "dur": 26.55}, {"id": "s3b", "seg": 4, "scene": "while_lacak", "text": "Bila banyak putaran belum diketahui, pakai while. SELAMA jawaban bukan selesai, baca transaksi baru. Python: while jawaban tidak sama dengan selesai. Hati-hati: kalau jawaban tak pernah berubah di dalam blok, perulangan tak pernah berhenti.", "hold": 1.0, "start": 309.8, "speech": 309.8, "audio": 22.05, "dur": 24.05}, {"id": "q3", "seg": 4, "scene": "quiz", "quiz": "q3", "text": "Cek pemahaman. total sama dengan nol, lalu for t in daftar dua puluh ribu, lima belas ribu, sepuluh ribu: total sama dengan total tambah t. Berapa total di akhir: sepuluh ribu, empat puluh lima ribu, atau tiga? Pikirkan dulu.", "hold": 4.0, "start": 333.85, "speech": 333.85, "audio": 25.175, "dur": 30.175}, {"id": "q3a", "seg": 4, "scene": "quiz_answer", "quiz": "q3", "text": "Jawabannya: empat puluh lima ribu. Nol tambah dua puluh ribu, tambah lima belas ribu, tambah sepuluh ribu. Tiga adalah banyaknya putaran, bukan totalnya.", "hold": 1.0, "start": 364.025, "speech": 364.025, "audio": 15.175, "dur": 17.175}, {"id": "s4a", "seg": 5, "scene": "fungsi", "text": "Bahan empat: fungsi. Pseudocode: FUNGSI hitung saldo dengan masukan daftar, KEMBALIKAN total. Python: def hitung underscore saldo, kurung daftar, titik dua, lalu return total. Memanggilnya: saldo sama dengan hitung saldo dari daftar.", "hold": 1.0, "start": 381.2, "speech": 381.2, "audio": 20.8, "dur": 22.8}, {"id": "s4b", "seg": 5, "scene": "fungsi_bingkai", "text": "Saat dipanggil, Python membuat bingkai baru: parameter daftar diisi, total dihitung di dalamnya, lalu return mengirim hasilnya keluar dan bingkai dibuang. Variabel di dalamnya tak terlihat dari luar. Karena itu fungsi aman dipakai berulang.", "hold": 1.0, "start": 404.0, "speech": 404.0, "audio": 22.05, "dur": 24.05}, {"id": "q4", "seg": 5, "scene": "quiz", "quiz": "q4", "text": "Cek pemahaman. def dua kali, kurung n, titik dua, return n kali dua. Lalu print dua kali dari tujuh. Apa yang tampil: n kali dua, empat belas, atau tidak ada karena return bukan print? Pikirkan dulu.", "hold": 4.0, "start": 428.05, "speech": 428.05, "audio": 23.3, "dur": 28.3}, {"id": "q4a", "seg": 5, "scene": "quiz_answer", "quiz": "q4", "text": "Jawabannya: empat belas. Fungsi mengembalikan empat belas ke pemanggil, lalu print menampilkannya. Tanpa print, nilainya kembali tetapi tidak tampil.", "hold": 1.0, "start": 456.35, "speech": 456.35, "audio": 12.675, "dur": 14.675}, {"id": "s5a", "seg": 6, "scene": "program_utuh", "text": "Keempat bahan disatukan: program kas kelas utuh. Fungsi hitung saldo, perulangan membaca transaksi sampai selesai, percabangan menolak jumlah salah, dan variabel menyimpan semuanya. Lima belas baris yang lahir dari pseudocode episode lalu.", "hold": 1.0, "start": 471.025, "speech": 471.025, "audio": 20.8, "dur": 22.8}, {"id": "s5b", "seg": 6, "scene": "primm", "text": "Cara belajarnya tetap PRIMM: tebak keluaran, jalankan, selidiki dengan mengubah satu angka, ubah programnya, lalu buat versimu sendiri. Simpan tiap versi yang jalan sebelum mengubahnya lagi, seperti rilis kecil di episode lalu.", "hold": 1.0, "start": 493.825, "speech": 493.825, "audio": 20.8, "dur": 22.8}, {"id": "s6a", "seg": 7, "scene": "make_show", "text": "Sekarang giliranmu. Di halaman latihan: penerjemah, pasangkan tiap baris pseudocode dengan baris Python-nya; pelacak, jalankan program langkah demi langkah dan tebak isi memorinya; lalu pemburu bug, temukan baris yang salah ketik.", "hold": 1.0, "start": 516.625, "speech": 516.625, "audio": 20.175, "dur": 22.175}, {"id": "s6b", "seg": 7, "scene": "make_show", "text": "Lalu di komputer: ketik program kas kelas, jalankan dengan kasus uji dari episode lalu, dan tambahkan satu fitur dari daftar kebutuhan tambahanmu. Itulah implementasi yang sesungguhnya.", "hold": 1.0, "start": 538.8, "speech": 538.8, "audio": 17.05, "dur": 19.05}, {"id": "recap", "seg": 7, "scene": "recap", "text": "Tiga hal untuk diingat. Satu: BACA menjadi input, TULIS menjadi print, panah menjadi sama dengan. Dua: if, for, while, dan def diakhiri titik dua, isinya menjorok. Tiga: lacak baris demi baris; input selalu teks, ubah dengan int.", "hold": 1.5, "start": 557.85, "speech": 557.85, "audio": 23.925, "dur": 26.425}, {"id": "outro", "seg": 7, "scene": "outro", "text": "Sampai jumpa di episode berikutnya: algoritma standar dalam kode. Pencarian dan pengurutan ditulis dalam Python, lalu diuji, dibersihkan, dan dibandingkan kecepatannya. Sampai jumpa!", "hold": 1.0, "start": 584.275, "speech": 584.275, "audio": 15.175, "dur": 17.175}], "total": 601.45} });
+  const { $, progress, save } = P; progress.levels = progress.levels || {};
+  const esc = s => s.replace(/&/g, "&amp;").replace(/</g, "&lt;");
+  // Latihan 1: penerjemah
+  const TR = [
+    { ps: "BACA nama", opts: ['nama = input()', 'print(nama)', 'nama = "input"'], a: 0, why: "BACA mengambil masukan: input()." },
+    { ps: "TULIS \"Halo\", nama", opts: ['input("Halo", nama)', 'print("Halo", nama)', 'TULIS("Halo", nama)'], a: 1, why: "TULIS menampilkan ke layar: print()." },
+    { ps: "jumlah ← 50000", opts: ['jumlah == 50000', 'jumlah = 50000', 'jumlah ← 50000'], a: 1, why: "Panah kiri menjadi satu tanda sama dengan (menyimpan)." },
+    { ps: "BACA jumlah (bilangan bulat)", opts: ['jumlah = input()', 'jumlah = int(input())', 'jumlah = int()'], a: 1, why: "input() memberi teks; int() mengubahnya menjadi bilangan." },
+    { ps: "JIKA jumlah > 0 MAKA\n    TULIS \"ok\"", opts: ['if jumlah > 0\n    print("ok")', 'if jumlah > 0:\nprint("ok")', 'if jumlah > 0:\n    print("ok")'], a: 2, why: "Titik dua di akhir if, dan isi cabang menjorok." },
+    { ps: "JIKA jenis = \"masuk\" MAKA …", opts: ['if jenis = "masuk":', 'if jenis == "masuk":', 'if jenis is "masuk"'], a: 1, why: "Membandingkan memakai dua tanda sama dengan." },
+    { ps: "LAINNYA\n    TULIS \"tolak\"", opts: ['else:\n    print("tolak")', 'elif:\n    print("tolak")', 'else\n    print("tolak")'], a: 0, why: "LAINNYA menjadi else dengan titik dua." },
+    { ps: "UNTUK tiap t dalam daftar:\n    total ← total + t", opts: ['for t in daftar:\n    total = total + t', 'for t = daftar:\n    total = total + t', 'while t in daftar:\n    total = total + t'], a: 0, why: "UNTUK tiap … dalam … menjadi for … in …:" },
+    { ps: "SELAMA jawaban ≠ \"selesai\":", opts: ['while jawaban = "selesai":', 'while jawaban != "selesai":', 'for jawaban != "selesai":'], a: 1, why: "SELAMA menjadi while; tidak sama dengan ditulis !=." },
+    { ps: "FUNGSI dua_kali(n)\n    KEMBALIKAN n × 2", opts: ['def dua_kali(n):\n    return n * 2', 'function dua_kali(n):\n    return n * 2', 'def dua_kali(n):\n    print(n * 2)'], a: 0, why: "FUNGSI menjadi def; KEMBALIKAN menjadi return, bukan print." }];
+  // Latihan 2: pelacak
+  const PROGS = [
+    { lines: ["total = 0", "for t in [20000, 15000, 10000]:", "    total = total + t", "print(total)"], steps: [{ ln: 0, v: { total: 0 } }, { ln: 1, v: { t: 20000, total: 0 } }, { ln: 2, v: { t: 20000, total: 20000 } }, { ln: 1, v: { t: 15000, total: 20000 } }, { ln: 2, v: { t: 15000, total: 35000 } }, { ln: 1, v: { t: 10000, total: 35000 } }, { ln: 2, v: { t: 10000, total: 45000 } }, { ln: 3, v: { t: 10000, total: 45000 }, out: "45000" }], q: [["Setelah putaran kedua, berapa total?", ["15000", "35000", "45000"], 1], ["Berapa kali baris 3 dijalankan?", ["1", "3", "45000"], 1]] },
+    { lines: ["jumlah = 0", "if jumlah < 0:", '    print("ditolak")', "elif jumlah == 0:", '    print("nol")', "else:", '    print("simpan")'], steps: [{ ln: 0, v: { jumlah: 0 } }, { ln: 1, v: { jumlah: 0 }, note: "0 < 0 salah" }, { ln: 3, v: { jumlah: 0 }, note: "0 == 0 benar" }, { ln: 4, v: { jumlah: 0 }, out: "nol" }], q: [["Apakah baris 7 (simpan) dijalankan?", ["ya", "tidak"], 1], ["Kalau jumlah = -5, baris mana yang mencetak?", ["baris 3", "baris 5", "baris 7"], 0]] },
+    { lines: ["def dua_kali(n):", "    return n * 2", "x = 7", "y = dua_kali(x)", "print(y)"], steps: [{ ln: 2, v: { x: 7 } }, { ln: 3, v: { x: 7 }, note: "panggil dua_kali(7)" }, { ln: 0, v: { x: 7, n: 7 }, note: "bingkai baru: n = 7" }, { ln: 1, v: { x: 7, n: 7 }, note: "return 14" }, { ln: 3, v: { x: 7, y: 14 }, note: "bingkai dibuang" }, { ln: 4, v: { x: 7, y: 14 }, out: "14" }], q: [["Setelah return, apakah n masih ada di memori utama?", ["ya", "tidak"], 1], ["Apa yang ditampilkan?", ["n * 2", "14", "7"], 1]] },
+    { lines: ["jawaban = \"\"", "n = 0", 'while jawaban != "selesai":', "    n = n + 1", '    jawaban = input()  # "lanjut", lalu "selesai"', "print(n)"], steps: [{ ln: 0, v: { jawaban: '""' } }, { ln: 1, v: { jawaban: '""', n: 0 } }, { ln: 2, v: { jawaban: '""', n: 0 }, note: '"" != "selesai" benar' }, { ln: 3, v: { jawaban: '""', n: 1 } }, { ln: 4, v: { jawaban: '"lanjut"', n: 1 } }, { ln: 2, v: { jawaban: '"lanjut"', n: 1 }, note: "masih benar" }, { ln: 3, v: { jawaban: '"lanjut"', n: 2 } }, { ln: 4, v: { jawaban: '"selesai"', n: 2 } }, { ln: 2, v: { jawaban: '"selesai"', n: 2 }, note: "salah, berhenti" }, { ln: 5, v: { jawaban: '"selesai"', n: 2 }, out: "2" }], q: [["Berapa kali blok while dijalankan?", ["1", "2", "3"], 1], ["Kalau baris 5 dihapus, apa yang terjadi?", ["n menjadi 0", "perulangan tak pernah berhenti", "program menolak"], 1]] }];
+  // Latihan 3: pemburu bug
+  const BUGS = [
+    { lines: ["jumlah = input()", "saldo = 100000", "saldo = saldo + jumlah", "print(saldo)"], bug: 0, fixes: ["jumlah = int(input())", "saldo = str(saldo)", 'print("saldo")'], fix: 0, why: "input() memberi teks; bungkus dengan int()." },
+    { lines: ["jumlah = 5000", "if jumlah > 0", '    print("simpan")', "else:", '    print("tolak")'], bug: 1, fixes: ["if jumlah > 0:", "if jumlah > 0 then", "if (jumlah > 0) {"], fix: 0, why: "Kepala if harus diakhiri titik dua." },
+    { lines: ["total = 0", "for t in [1, 2, 3]:", "total = total + t", "print(total)"], bug: 2, fixes: ["    total = total + t", "total == total + t", "total = total + 1"], fix: 0, why: "Isi perulangan harus menjorok; tanpa indentasi, baris itu di luar for." },
+    { lines: ['jenis = "masuk"', 'if jenis = "masuk":', "    saldo = saldo + jumlah", "else:", "    saldo = saldo - jumlah"], bug: 1, fixes: ['if jenis == "masuk":', 'if jenis := "masuk":', 'if jenis = masuk:'], fix: 0, why: "Membandingkan memakai ==, bukan =." },
+    { lines: ["def dua_kali(n):", "    print(n * 2)", "y = dua_kali(7)", "print(y + 1)"], bug: 1, fixes: ["    return n * 2", "    print(n + 2)", "    n = n * 2"], fix: 0, why: "Fungsi harus return supaya y berisi 14; print di dalam fungsi tidak mengirim nilai." },
+    { lines: ['jawaban = ""', 'while jawaban != "selesai":', "    jumlah = int(input())", "    print(jumlah)"], bug: 3, fixes: ["    jawaban = input()", '    jawaban == "selesai"', "    break jawaban"], fix: 0, why: "Di dalam blok, jawaban harus diubah; kalau tidak, while tak pernah berhenti." }];
+  const LEVELS = [
+    { id: "terjemah", name: "1 Penerjemah", kind: "terjemah", task: "Sepuluh baris pseudocode. Pilih baris Python yang tepat untuk tiap baris." },
+    { id: "lacak", name: "2 Pelacak Python", kind: "trace", task: "Empat program. Tekan Langkah untuk melihat baris yang dijalankan dan isi memori, lalu jawab pertanyaannya." },
+    { id: "bug", name: "3 Pemburu bug", kind: "bug", task: "Enam program kecil, masing-masing satu baris salah. Ketuk baris yang salah, lalu pilih perbaikannya." }];
+  let L = 0, idx = 0, si = 0, pq = 0, step = 0;
+  const level = () => LEVELS[L];
+  function setResult(kind, msg) { $("result").innerHTML = msg ? `<div class="result ${kind}">${msg}</div>` : ""; }
+  function done(extra) { progress.levels[level().id] = true; save(); renderLevels(); setResult("good", `${level().name} selesai! ` + (extra || "")); }
+  const kwPs = s => esc(s).replace(/\b(BACA|TULIS|JIKA|MAKA|LAINNYA|UNTUK|SELAMA|FUNGSI|KEMBALIKAN|tiap|dalam)\b/g, '<span class="kw">$1</span>');
+  function renderTerjemah() {
+    const area = $("exarea"); progress.tr = progress.tr || [];
+    if (idx >= TR.length) { area.innerHTML = `<div class="pairs">${TR.map(t => `<div><span>${kwPs(t.ps)}</span><span>${esc(t.opts[t.a])}</span></div>`).join("")}</div>`; done(`Benar langsung: ${progress.tr.filter(Boolean).length} dari ${TR.length}. Salin pasangan ini ke kamusmu.`); return; }
+    const t = TR[idx]; let first = true;
+    area.innerHTML = `<div class="qnum">Baris ${idx + 1} dari ${TR.length}</div><div class="ps">${kwPs(t.ps)}</div><div class="qtext">Python-nya?</div><div class="opts" id="opts">${t.opts.map((o, i) => `<button data-i="${i}">${esc(o)}</button>`).join("")}</div>`;
+    [...area.querySelectorAll("#opts button")].forEach(b => b.addEventListener("click", () => {
+      if (+b.dataset.i === t.a) { b.classList.add("right"); [...area.querySelectorAll("#opts button")].forEach(x => x.disabled = true); progress.tr[idx] = first; save(); setResult("good", "Tepat. " + t.why); setTimeout(() => { setResult(); idx++; renderTerjemah(); }, 1300); }
+      else { first = false; b.classList.add("wrong"); setResult("bad", "Belum tepat. Petunjuk: periksa titik dua, indentasi, dan bedakan = (menyimpan) dari == (membandingkan). Lihat kamus di video."); }
+    }));
+  }
+  function renderTrace() {
+    const area = $("exarea");
+    if (idx >= PROGS.length) { done("Baris demi baris, variabel demi variabel: itulah membaca program."); area.innerHTML = ""; return; }
+    const p = PROGS[idx], st = p.steps[si], prev = p.steps[si - 1]; const vars = [...new Set(p.steps.flatMap(s => Object.keys(s.v)))];
+    area.innerHTML = `<div class="qnum">Program ${idx + 1} dari ${PROGS.length} · langkah ${si + 1} dari ${p.steps.length}</div><div class="py">${p.lines.map((c, i) => `<span class="ln ${st.ln === i ? "hl" : ""}"><i>${i + 1}</i>${esc(c)}</span>`).join("")}</div><div class="mem">${vars.map(v => `<div class="${prev && prev.v[v] !== st.v[v] ? "chg" : ""}"><b>${v}</b><span>${st.v[v] !== undefined ? esc(String(st.v[v])) : "–"}</span></div>`).join("")}</div><div class="scr">${st.note ? "· " + esc(st.note) : ""}${st.out ? "<br>&gt; " + esc(st.out) : ""}</div><div class="row"><button class="warm" id="step" ${si >= p.steps.length - 1 ? "disabled" : ""}>▶ Langkah</button><button id="rst">↺ Dari awal</button></div><div id="qs"></div>`;
+    $("step").addEventListener("click", () => { si++; renderTrace(); }); $("rst").addEventListener("click", () => { si = 0; pq = 0; renderTrace(); });
+    if (si >= p.steps.length - 1) renderTraceQ();
+  }
+  function renderTraceQ() {
+    const p = PROGS[idx], q = $("qs"); if (pq >= p.q.length) return;
+    const [t, opts, a] = p.q[pq];
+    q.innerHTML = `<div class="qtext">${t}</div><div class="opts" id="opts"></div>`;
+    opts.forEach((o, i) => { const b = document.createElement("button"); b.className = "plain"; b.textContent = o; b.addEventListener("click", () => { if (i === a) { b.classList.add("right"); [...q.querySelectorAll("#opts button")].forEach(x => x.disabled = true); setResult("good", "Tepat."); pq++; setTimeout(() => { setResult(); if (pq >= p.q.length) { idx++; si = 0; pq = 0; renderTrace(); } else renderTraceQ(); }, 1100); } else { b.classList.add("wrong"); setResult("bad", "Belum tepat. Petunjuk: ulangi dari awal dan perhatikan baris yang disorot serta kotak memori yang berubah warna."); } }); q.querySelector("#opts").appendChild(b); });
+  }
+  function renderBug() {
+    const area = $("exarea"); progress.bug = progress.bug || [];
+    if (idx >= BUGS.length) { area.innerHTML = `<div class="rev">${BUGS.map((b, i) => `<div class="${progress.bug[i] ? "" : "bad"}"><b>Program ${i + 1}</b>: ${b.why}</div>`).join("")}</div>`; done(`Benar langsung: ${progress.bug.filter(Boolean).length} dari ${BUGS.length}.`); return; }
+    const b = BUGS[idx];
+    if (step === 0) {
+      area.innerHTML = `<div class="qnum">Program ${idx + 1} dari ${BUGS.length} · langkah 1: ketuk baris yang salah</div><div class="py" id="code">${b.lines.map((c, i) => `<span class="ln pick" data-i="${i}"><i>${i + 1}</i>${esc(c)}</span>`).join("")}</div>`;
+      let first = true;
+      [...area.querySelectorAll(".ln")].forEach(el => el.addEventListener("click", () => {
+        if (+el.dataset.i === b.bug) { el.classList.add("bad"); el.classList.remove("pick"); progress.bug[idx] = first; save(); setResult("good", "Itu dia barisnya."); setTimeout(() => { setResult(); step = 1; renderBug(); }, 900); }
+        else { first = false; el.classList.add("ok"); setResult("bad", "Baris itu benar. Petunjuk: cek titik dua di akhir kepala blok, indentasi isi blok, = lawan ==, int() pada input, dan return di fungsi."); }
+      }));
+      return;
+    }
+    area.innerHTML = `<div class="qnum">Program ${idx + 1} dari ${BUGS.length} · langkah 2: pilih perbaikan baris ${b.bug + 1}</div><div class="py">${b.lines.map((c, i) => `<span class="ln ${i === b.bug ? "bad" : ""}"><i>${i + 1}</i>${esc(c)}</span>`).join("")}</div><div class="opts" id="opts">${b.fixes.map((f, i) => `<button data-i="${i}">${esc(f)}</button>`).join("")}</div>`;
+    [...area.querySelectorAll("#opts button")].forEach(bt => bt.addEventListener("click", () => {
+      if (+bt.dataset.i === b.fix) { bt.classList.add("right"); [...area.querySelectorAll("#opts button")].forEach(x => x.disabled = true); setResult("good", "Tepat. " + b.why); setTimeout(() => { setResult(); idx++; step = 0; renderBug(); }, 1400); }
+      else { bt.classList.add("wrong"); setResult("bad", "Belum tepat. Petunjuk: perbaikan harus tetap mengikuti kamus pseudocode–Python, bukan menambah kata baru yang tidak ada di Python."); }
+    }));
+  }
+  function loadLevel(i) { L = i; idx = 0; si = 0; pq = 0; step = 0; $("task").textContent = level().task; setResult(); renderLevels(); ({ terjemah: renderTerjemah, trace: renderTrace, bug: renderBug })[level().kind](); }
+  function renderLevels() { const el = $("levels"); el.innerHTML = ""; LEVELS.forEach((lv, i) => { const b = document.createElement("button"); b.textContent = lv.name; b.className = progress.levels[lv.id] ? "done" : ""; b.setAttribute("aria-pressed", i === L); b.addEventListener("click", () => loadLevel(i)); el.appendChild(b); }); }
+  $("redo").addEventListener("click", () => { const lv = level(); progress.levels[lv.id] = false; if (lv.kind === "terjemah") progress.tr = []; if (lv.kind === "bug") progress.bug = []; save(); loadLevel(L); });
+  P.onProgress(el => LEVELS.forEach(lv => { const s = document.createElement("span"); s.textContent = lv.name.slice(2); s.className = progress.levels[lv.id] ? "ok" : ""; el.appendChild(s); }));
+  loadLevel(0);
+})();
+</script>

@@ -53,4 +53,5 @@ Peta kurikulum, alur belajar, dan daftar 52 episode ada di dokumen "Kurikulum Se
 | E.9 Proyek: Digitalisasi Budaya Lokal | ✓ | ✓ Kak Ceria | ✓ (2 bagian × 2 versi) | ✓ |
 | F11.0 Jembatan Menuju Pemrograman | ✓ | ✓ Kak Ceria | ✓ (2 bagian × 2 versi) | ✓ |
 | F11.1 Alur Pengembangan Program dan Produk Digital | ✓ | ✓ Kak Ceria | ✓ (2 bagian × 2 versi) | ✓ |
+| F11.2 Dari Pseudocode ke Kode | ✓ | ✓ Kak Ceria | ✓ (2 bagian × 2 versi) | ✓ |
 | D7.5 Instruksi untuk Manusia dan Mesin | ✓ | ✓ Kak Ceria | ✓ (2 bagian × 2 versi) | ✓ |
