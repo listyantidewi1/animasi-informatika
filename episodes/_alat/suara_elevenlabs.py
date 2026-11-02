@@ -58,7 +58,9 @@ def pick_voice(name_or_id, auth):
         if v["voice_id"] == name_or_id: return v
     hits = [v for v in vs if name_or_id.lower() in v["name"].lower()]
     if len(hits) == 1: return hits[0]
-    if not hits: raise SystemExit(f"Suara '{name_or_id}' tidak ditemukan di akun ini. Lihat --daftar; suara dari perpustakaan harus ditambahkan dulu ke 'My Voices'.")
+    if not hits:
+        if all(v.get("category") == "premade" for v in vs): raise SystemExit(f"Suara '{name_or_id}' tidak terlihat karena hanya suara bawaan yang terbaca: kunci API belum terkirim. {KUNCI_HELP}")
+        raise SystemExit(f"Suara '{name_or_id}' tidak ditemukan di akun ini. Lihat --daftar; suara dari perpustakaan harus ditambahkan dulu ke 'My Voices'.")
     raise SystemExit("Nama cocok dengan beberapa suara, pakai ID-nya: " + ", ".join(f"{v['name']} = {v['voice_id']}" for v in hits))
 
 def pick_model(ref):
