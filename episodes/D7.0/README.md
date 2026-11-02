@@ -4,7 +4,7 @@ Unit jembatan kelas VII: asesmen diagnostik (cek diri + kuis bergambar) dan meng
 
 Berkas khusus episode ini:
 - `script.json` — naskah (51 beat, 9 segmen, 4 kuis), `parts`, `recap`, `next`; `engine`: `kiko-core.js`, `devices.js`, `scenes.js`, `scenes-b.js`.
-- `devices.js` — pembantu gambar perangkat: monitor, mouse, pointer, keyboard, HP, jari, ikon file/folder, jendela, kotak teks, menu.
+- `../_alat/kiko-devices.js` (dulu `devices.js` di sini) — pembantu gambar perangkat: monitor, mouse, pointer, keyboard, HP, jari, ikon file/folder, jendela, kotak teks, menu.
 - `scenes.js` (bagian a + touch screen), `scenes-b.js` (file, folder, save, giliranmu).
 - `page.html` — halaman latihan: pemutar, 4 cek pemahaman, kuis bergambar tiga bagian (Mouse, Keyboard, Folder) dengan "Peta belajarmu" (diagnostik: lancar / perlu diulang, tombol ke segmen video), "Untuk guru" (3 pertemuan × 2 JP).
 - `tts-kit/` — `buat_suara.py` (edge-tts + peta pelafalan `UCAP`), `naskah.json`, `naskah-tts.txt/.csv`.

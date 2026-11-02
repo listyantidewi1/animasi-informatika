@@ -1,0 +1,959 @@
+<title>Kiko: Mengenal Komputer</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<style>
+/* Inti gaya halaman latihan: satu kolom, pemutar di atas, latihan di bawah; palet kantin sama dengan video. */
+:root {
+  --bg: #EAF2EE; --surface: #FFFFFF; --surface2: #DCE9E2; --ink: #1F2A33; --ink2: #4A5A66; --line: #C9D8D0;
+  --accent: #2E7E9A; --accent-ink: #FFFFFF; --warm: #F2B134; --warm-ink: #5E3E05; --good: #2E9E5B; --good-bg: #DDF3E4; --bad: #D9443B; --bad-bg: #FBE1DF;
+  --font: Inter, "Segoe UI", Roboto, Arial, sans-serif;
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) { --bg: #141C1A; --surface: #1E2926; --surface2: #273532; --ink: #EAF2EE; --ink2: #A9BBB3; --line: #3A4A45; --accent: #5FB3CE; --accent-ink: #0F1D22; --warm: #F2B134; --warm-ink: #2B1C02; --good: #5FCB8A; --good-bg: #1F3A2B; --bad: #F07A72; --bad-bg: #442523; color-scheme: dark } }
+:root[data-theme="dark"] { --bg: #141C1A; --surface: #1E2926; --surface2: #273532; --ink: #EAF2EE; --ink2: #A9BBB3; --line: #3A4A45; --accent: #5FB3CE; --accent-ink: #0F1D22; --warm: #F2B134; --warm-ink: #2B1C02; --good: #5FCB8A; --good-bg: #1F3A2B; --bad: #F07A72; --bad-bg: #442523; color-scheme: dark }
+* { box-sizing: border-box }
+body { background: var(--bg); color: var(--ink); font-family: var(--font); font-size: 17px; line-height: 1.5; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); padding-block: 16px 48px }
+.wrap { max-width: 980px; margin: 0 auto; display: grid; gap: 28px }
+h1 { font-size: clamp(26px, 5vw, 38px); line-height: 1.15; margin: 0; text-wrap: balance; font-weight: 900 }
+h2 { font-size: 22px; margin: 0 0 12px; font-weight: 800 }
+h3 { font-size: 18px; margin: 0 0 8px; font-weight: 800 }
+p { margin: 0 0 10px; max-width: 65ch }
+.eyebrow { font-size: 13px; letter-spacing: .08em; text-transform: uppercase; color: var(--ink2); font-weight: 800; margin-bottom: 6px }
+.card { background: var(--surface); border-radius: 18px; padding: 18px; border: 1px solid var(--line) }
+button { font: inherit; font-weight: 800; border: 0; border-radius: 12px; padding: 12px 16px; cursor: pointer; background: var(--surface2); color: var(--ink); min-height: 48px; touch-action: manipulation }
+button:focus-visible, [tabindex]:focus-visible { outline: 3px solid var(--warm); outline-offset: 2px }
+button.primary { background: var(--accent); color: var(--accent-ink) }
+button.warm { background: var(--warm); color: var(--warm-ink) }
+button[aria-pressed="true"] { box-shadow: inset 0 0 0 3px var(--accent) }
+button:disabled { opacity: .45; cursor: default }
+.row { display: flex; flex-wrap: wrap; gap: 10px; align-items: center }
+/* player */
+.player { display: grid; gap: 12px }
+.stage { position: relative; width: 100%; aspect-ratio: 16 / 9; max-width: 100%; background: #EAF2EE; border-radius: 14px; overflow: hidden; border: 1px solid var(--line) }
+.stage canvas { width: 100%; height: 100%; display: block }
+.bigplay { position: absolute; inset: 0; display: grid; place-items: center; background: rgba(31,42,51,.25); border: 0; border-radius: 0; color: #fff; font-size: 20px; min-height: 0 }
+.bigplay span { background: var(--accent); color: var(--accent-ink); padding: 14px 26px; border-radius: 999px; font-weight: 900 }
+.bar { height: 10px; background: var(--surface2); border-radius: 999px; overflow: hidden; cursor: pointer }
+.bar > i { display: block; height: 100%; width: 0; background: var(--warm) }
+.chapters { display: flex; flex-wrap: wrap; gap: 8px }
+.chapters button { font-size: 14px; padding: 8px 12px; min-height: 40px }
+.chapters button.now { background: var(--warm); color: var(--warm-ink) }
+.hint { color: var(--ink2); font-size: 15px }
+/* exercises (generic parts) */
+.levels { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 12px }
+.levels button { font-size: 14px; padding: 8px 12px; min-height: 40px }
+.levels button.done::after { content: " ✓"; color: var(--good) }
+.task { background: var(--surface2); border-radius: 12px; padding: 12px 14px; margin-bottom: 12px; font-weight: 700 }
+.result { border-radius: 12px; padding: 12px 14px; font-weight: 800; margin-top: 10px }
+.result.good { background: var(--good-bg); color: var(--good) }
+.result.bad { background: var(--bad-bg); color: var(--bad) }
+.result.info { background: var(--surface2); color: var(--ink) }
+/* quiz */
+.quiz { display: grid; gap: 16px }
+.q { border-top: 1px solid var(--line); padding-top: 14px }
+.q:first-child { border-top: 0; padding-top: 0 }
+.opts { display: grid; gap: 8px; margin-top: 8px }
+.opts button { text-align: left; font-weight: 700; background: var(--surface2); display: flex; gap: 10px; align-items: center }
+.opts button b { width: 30px; height: 30px; border-radius: 50%; background: var(--accent); color: var(--accent-ink); display: grid; place-items: center; flex: none }
+.opts button.right { background: var(--good-bg); box-shadow: inset 0 0 0 3px var(--good) }
+.opts button.wrong { background: var(--bad-bg) }
+.fb { margin-top: 8px; font-weight: 700 }
+.fb.good { color: var(--good) } .fb.bad { color: var(--bad) }
+details summary { cursor: pointer; font-weight: 800; font-size: 18px }
+details[open] summary { margin-bottom: 10px }
+ul.plain { padding-left: 20px; margin: 0 0 10px } ul.plain li { margin-bottom: 6px; max-width: 65ch }
+.progress { display: flex; gap: 8px; flex-wrap: wrap } .progress span { background: var(--surface2); border-radius: 999px; padding: 6px 12px; font-size: 14px; font-weight: 700 }
+.progress span.ok { background: var(--good-bg); color: var(--good) }
+@media (prefers-reduced-motion: reduce) { * { transition: none !important } }
+
+/* latihan D7.2 */
+.qnum { font-weight: 800; color: var(--ink2); font-size: 14px; margin-bottom: 4px }
+.qtext { font-weight: 800; font-size: 18px; margin-bottom: 8px }
+.chips, .groups { display: flex; flex-wrap: wrap; gap: 10px }
+.chips button { background: var(--surface); border: 2px solid var(--line); font-weight: 700 }
+.chips button[aria-pressed="true"] { box-shadow: inset 0 0 0 3px var(--warm); background: color-mix(in srgb, var(--warm) 18%, var(--surface)) }
+.groups { margin-top: 14px }
+.groups button { display: grid; justify-items: center; gap: 2px; min-width: 150px; background: var(--surface); border: 2px dashed var(--line) }
+.groups button .count { font-size: 13px; color: var(--ink2); font-weight: 600; max-width: 180px }
+.groups button.wrong { border-color: var(--bad); background: var(--bad-bg) }
+.steps { list-style: none; margin: 8px 0 12px; padding: 0; display: grid; gap: 6px }
+.steps li { display: flex; align-items: center; gap: 8px; background: var(--surface); border: 2px solid var(--line); border-radius: 10px; padding: 6px 8px; font-weight: 700 }
+.steps li .n { width: 28px; height: 28px; border-radius: 50%; background: var(--ink2); color: #fff; display: grid; place-items: center; font-size: 14px; flex: none }
+.steps li span.t { flex: 1 }
+.steps li button { min-height: 36px; padding: 4px 10px; font-size: 14px }
+.steps li.ok { border-color: var(--good); background: var(--good-bg) }
+.steps li.bad { border-color: var(--bad); background: var(--bad-bg) }
+.two { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 10px }
+.two button { font-size: 18px }
+.two button.right { background: var(--good-bg); box-shadow: inset 0 0 0 3px var(--good) }
+.two button.wrong { background: var(--bad-bg) }
+</style>
+
+<div class="wrap">
+  <header>
+    <div class="eyebrow">Informatika · Fase D · Kelas VII · Episode D7.2</div>
+    <h1>Mengenal Komputer: Perjalanan Satu Ketukan</h1>
+    <p class="hint">Tonton bagian demi bagian, lalu kerjakan tiga latihan di bawahnya. Prasyarat: episode D7.0 Cara Memakai Komputer dan HP. Suara bisa dimatikan; teks selalu tampil di layar.</p>
+  </header>
+
+  <section class="card player" aria-label="Pemutar episode">
+    <div class="stage">
+      <canvas id="screen" width="1920" height="1080" aria-label="Animasi episode"></canvas>
+      <audio id="nar" preload="auto" src="narasi.mp3"></audio>
+      <button class="bigplay" id="bigplay" aria-label="Putar"><span>▶ Putar episode</span></button>
+    </div>
+    <div class="bar" id="bar" role="slider" aria-label="Posisi episode" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" tabindex="0"><i id="barfill"></i></div>
+    <div class="row">
+      <button class="primary" id="playbtn">▶ Putar</button>
+      <button id="replay">↺ Ulangi bagian ini</button>
+      <button id="voice" aria-pressed="true">🔊 Suara: nyala</button>
+      <button id="slow" aria-pressed="false">🐢 Mode lambat</button>
+      <span class="hint" id="timelabel">0:00 / 0:00</span>
+    </div>
+    <div>
+      <div class="eyebrow">Bagian</div>
+      <div class="chapters" id="chapters"></div>
+    </div>
+  </section>
+
+  <section class="card" aria-label="Cek pemahaman">
+    <h2>Cek pemahaman</h2>
+    <p class="hint">Pilih satu jawaban. Kalau salah, kamu dapat petunjuk, lalu coba lagi.</p>
+    <div class="quiz" id="quiz"></div>
+  </section>
+
+  <section class="card" aria-label="Latihan">
+    <h2>Latihan: bagian-bagian komputer</h2>
+    <p class="hint">Tiga latihan. Jawaban salah memberi petunjuk, bukan nilai.</p>
+    <div class="levels" id="levels"></div>
+    <div class="task" id="task"></div>
+    <div id="exarea"></div>
+    <div id="result"></div>
+    <div class="row" style="margin-top:10px"><button id="redo">↺ Ulangi latihan ini</button></div>
+  </section>
+
+  <section class="card" aria-label="Kemajuan">
+    <h2>Kemajuanmu</h2>
+    <div class="progress" id="progress"></div>
+    <p class="hint" style="margin-top:8px">Kemajuan tersimpan di perangkat ini saja.</p>
+  </section>
+
+  <section class="card">
+    <details>
+      <summary>Untuk guru: cara memakai episode ini (8 JP)</summary>
+      <p><b>Tujuan pembelajaran (D7.2):</b> murid mendeskripsikan komponen perangkat keras dan lunak, fungsinya, serta alur input–proses–output–penyimpanan. Elemen LD, Fase D.</p>
+      <ul class="plain">
+        <li><b>Pertemuan 1 (2 JP), konkret:</b> permainan tiga teman (membisikkan–menulis–membacakan). Bila ada komputer bekas atau HP rusak, buka dan tunjukkan bagian dalamnya; kalau tidak, pakai gambar di video. Tonton Bagian 1 segmen Masukan.</li>
+        <li><b>Pertemuan 2 (2 JP), gambar:</b> tonton segmen Proses dan keluaran; peragakan RAM sebagai papan tulis yang dihapus saat "komputer dimatikan". Kerjakan latihan Kelompokkan alat dan Urutkan perjalanan.</li>
+        <li><b>Pertemuan 3 (2 JP), simbol:</b> tonton Bagian 2 (penyimpanan, hardware dan software). Murid menggambar diagram empat bagian untuk satu alat di rumah (HP, TV, mesin cuci digital) dan menuliskan contoh tiap bagian. Kerjakan latihan Hardware atau software.</li>
+        <li><b>Pertemuan 4 (2 JP), penguatan:</b> presentasi diagram murid; diskusi: mengapa file bisa hilang kalau belum disimpan? Asesmen tertulis singkat.</li>
+      </ul>
+      <p><b>Target minimum:</b> murid dapat menyebut satu contoh alat untuk tiap bagian (input, proses, output, penyimpanan) dan membedakan hardware dari software. <b>Pengayaan:</b> membandingkan spesifikasi dua HP (RAM, penyimpanan) dari brosur.</p>
+    </details>
+  </section>
+</div>
+
+<script>/* Kiko core: mesin gambar bersama untuk semua episode Fase D.
+   Kiko.draw(ctx, t, TL) menggambar frame pada detik t di kanvas 1920x1080 secara deterministik.
+   Berisi palet, pembantu gambar, tokoh (Kiko, murid), dan adegan umum (judul, kuis, ringkasan, penutup).
+   Setiap episode menambahkan adegannya sendiri di scenes.js: Object.assign(Kiko.SCENES, {...}). */
+(function (global) {
+  const W = 1920, H = 1080;
+  const FONT = "Inter, 'Segoe UI', Roboto, Arial, sans-serif";
+  const C = {
+    bg: "#EAF2EE", bg2: "#DCE9E2", ink: "#1F2A33", ink2: "#4A5A66", panel: "#FFFFFF",
+    tile: "#F7FAF8", tileLine: "#C9D8D0", table: "#A4653A", tableTop: "#C98A57",
+    kiko: "#2E7E9A", kikoDark: "#1F5A6E", kikoLight: "#8FD0E6", eye: "#FFFFFF", pupil: "#1F2A33",
+    accent: "#F2B134", accentDark: "#B57A12", good: "#2E9E5B", bad: "#D9443B", goodBg: "#DDF3E4", badBg: "#FBE1DF",
+    sub: "#1F2A33", subText: "#FFFFFF", star: "#F2B134", skin: "#F1C9A5", skin2: "#C98A57", hair: "#2B2118",
+    uniform: "#FFFFFF", pants: "#2F4E7D", bubble: "#FFFFFF", muted: "#9AAFA6"
+  };
+  const ease = u => u < 0 ? 0 : u > 1 ? 1 : u * u * (3 - 2 * u);
+  const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
+  const lerp = (a, b, u) => a + (b - a) * u;
+
+  // ---------- drawing helpers ----------
+  function rr(ctx, x, y, w, h, r) {
+    ctx.beginPath(); ctx.moveTo(x + r, y); ctx.arcTo(x + w, y, x + w, y + h, r); ctx.arcTo(x + w, y + h, x, y + h, r);
+    ctx.arcTo(x, y + h, x, y, r); ctx.arcTo(x, y, x + w, y, r); ctx.closePath();
+  }
+  function text(ctx, s, x, y, size, opt = {}) {
+    ctx.font = `${opt.weight || 600} ${size}px ${FONT}`; ctx.fillStyle = opt.color || C.ink;
+    ctx.textAlign = opt.align || "left"; ctx.textBaseline = opt.base || "alphabetic"; ctx.fillText(s, x, y);
+  }
+  function wrap(ctx, s, size, weight, maxW) {
+    ctx.font = `${weight} ${size}px ${FONT}`;
+    const words = s.split(" "), lines = []; let cur = "";
+    for (const w of words) {
+      const test = cur ? cur + " " + w : w;
+      if (ctx.measureText(test).width > maxW && cur) { lines.push(cur); cur = w; } else cur = test;
+    }
+    if (cur) lines.push(cur);
+    return lines;
+  }
+  function para(ctx, s, x, y, size, maxW, opt = {}) {
+    const lines = wrap(ctx, s, size, opt.weight || 500, maxW); const lh = size * (opt.lh || 1.35);
+    lines.forEach((l, i) => text(ctx, l, x, y + i * lh, size, opt));
+    return lines.length * lh;
+  }
+  function arrowIcon(ctx, kind, cx, cy, s, color) {
+    ctx.save(); ctx.translate(cx, cy); ctx.strokeStyle = color; ctx.fillStyle = color; ctx.lineWidth = s * 0.16; ctx.lineCap = "round"; ctx.lineJoin = "round";
+    if (kind === "up") {
+      ctx.beginPath(); ctx.moveTo(0, s * 0.45); ctx.lineTo(0, -s * 0.3); ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(-s * 0.32, -s * 0.05); ctx.lineTo(0, -s * 0.45); ctx.lineTo(s * 0.32, -s * 0.05); ctx.stroke();
+    } else if (kind === "left" || kind === "right") {
+      const k = kind === "left" ? -1 : 1;
+      ctx.beginPath(); ctx.moveTo(0, s * 0.45); ctx.lineTo(0, -s * 0.05); ctx.quadraticCurveTo(0, -s * 0.32, k * s * 0.28, -s * 0.32); ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(k * s * 0.12, -s * 0.5); ctx.lineTo(k * s * 0.4, -s * 0.32); ctx.lineTo(k * s * 0.12, -s * 0.14); ctx.stroke();
+    } else if (kind === "east") {
+      ctx.beginPath(); ctx.moveTo(-s * 0.4, 0); ctx.lineTo(s * 0.3, 0); ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(s * 0.05, -s * 0.28); ctx.lineTo(s * 0.4, 0); ctx.lineTo(s * 0.05, s * 0.28); ctx.stroke();
+    } else if (kind === "grab") {
+      ctx.beginPath(); ctx.arc(0, s * 0.12, s * 0.22, 0, Math.PI * 2); ctx.fill();
+      ctx.beginPath(); ctx.moveTo(-s * 0.4, -s * 0.42); ctx.lineTo(-s * 0.4, -s * 0.12); ctx.moveTo(s * 0.4, -s * 0.42); ctx.lineTo(s * 0.4, -s * 0.12);
+      ctx.moveTo(-s * 0.4, -s * 0.42); ctx.lineTo(s * 0.4, -s * 0.42); ctx.stroke();
+    }
+    ctx.restore();
+  }
+  function bakso(ctx, cx, cy, s, opt = {}) {
+    // a bowl of bakso: the goal
+    ctx.save(); ctx.translate(cx, cy);
+    if (opt.glow) { ctx.beginPath(); ctx.arc(0, 0, s * 0.62, 0, Math.PI * 2); ctx.fillStyle = "rgba(242,177,52,0.22)"; ctx.fill(); }
+    ctx.fillStyle = "#E4EEF5"; ctx.beginPath(); ctx.moveTo(-s * 0.46, -s * 0.05); ctx.quadraticCurveTo(-s * 0.4, s * 0.45, 0, s * 0.45); ctx.quadraticCurveTo(s * 0.4, s * 0.45, s * 0.46, -s * 0.05); ctx.closePath(); ctx.fill();
+    ctx.strokeStyle = "#8FA9BD"; ctx.lineWidth = s * 0.05; ctx.stroke();
+    ctx.fillStyle = "#C8B49A"; ctx.beginPath(); ctx.ellipse(0, -s * 0.05, s * 0.44, s * 0.14, 0, 0, Math.PI * 2); ctx.fill();
+    for (const [dx, dy, r] of [[-0.16, -0.1, 0.13], [0.14, -0.12, 0.13], [0, -0.22, 0.12]]) {
+      ctx.fillStyle = "#9A7B5B"; ctx.beginPath(); ctx.arc(dx * s, dy * s, r * s, 0, Math.PI * 2); ctx.fill();
+      ctx.fillStyle = "#B8977A"; ctx.beginPath(); ctx.arc(dx * s - r * s * 0.3, dy * s - r * s * 0.3, r * s * 0.4, 0, Math.PI * 2); ctx.fill();
+    }
+    ctx.fillStyle = "#4CA64C"; for (const dx of [-0.26, 0.1, 0.26]) { ctx.beginPath(); ctx.arc(dx * s, -s * 0.07, s * 0.045, 0, Math.PI * 2); ctx.fill(); }
+    ctx.restore();
+  }
+  function table(ctx, x, y, w, h) {
+    ctx.fillStyle = C.table; rr(ctx, x + w * 0.1, y + h * 0.3, w * 0.8, h * 0.55, 10); ctx.fill();
+    ctx.fillStyle = C.tableTop; rr(ctx, x + w * 0.06, y + h * 0.18, w * 0.88, h * 0.3, 10); ctx.fill();
+    ctx.fillStyle = "rgba(0,0,0,0.12)"; ctx.fillRect(x + w * 0.16, y + h * 0.5, w * 0.08, h * 0.35); ctx.fillRect(x + w * 0.76, y + h * 0.5, w * 0.08, h * 0.35);
+  }
+  function kiko(ctx, cx, cy, s, ang, opt = {}) {
+    ctx.save(); ctx.translate(cx, cy);
+    // shadow
+    ctx.fillStyle = "rgba(0,0,0,0.12)"; ctx.beginPath(); ctx.ellipse(0, s * 0.42, s * 0.42, s * 0.12, 0, 0, Math.PI * 2); ctx.fill();
+    ctx.rotate(ang);
+    // wheels
+    ctx.fillStyle = C.kikoDark; rr(ctx, -s * 0.46, -s * 0.2, s * 0.12, s * 0.5, 5); ctx.fill(); rr(ctx, s * 0.34, -s * 0.2, s * 0.12, s * 0.5, 5); ctx.fill();
+    // body
+    ctx.fillStyle = opt.flash ? `rgba(217,68,59,${0.5 + 0.5 * opt.flash})` : C.kiko; rr(ctx, -s * 0.38, -s * 0.36, s * 0.76, s * 0.72, s * 0.16); ctx.fill();
+    // visor (front, facing up)
+    ctx.fillStyle = C.kikoLight; rr(ctx, -s * 0.26, -s * 0.33, s * 0.52, s * 0.3, s * 0.1); ctx.fill();
+    // eyes
+    const mood = opt.mood || "happy";
+    ctx.fillStyle = C.pupil;
+    if (mood === "sad") { ctx.beginPath(); ctx.arc(-s * 0.12, -s * 0.18, s * 0.05, 0, Math.PI * 2); ctx.arc(s * 0.12, -s * 0.18, s * 0.05, 0, Math.PI * 2); ctx.fill(); ctx.strokeStyle = C.pupil; ctx.lineWidth = s * 0.03; ctx.beginPath(); ctx.arc(0, -s * 0.03, s * 0.08, Math.PI * 1.15, Math.PI * 1.85); ctx.stroke(); }
+    else if (mood === "confused") { ctx.beginPath(); ctx.arc(-s * 0.12, -s * 0.18, s * 0.05, 0, Math.PI * 2); ctx.arc(s * 0.12, -s * 0.18, s * 0.035, 0, Math.PI * 2); ctx.fill(); ctx.strokeStyle = C.pupil; ctx.lineWidth = s * 0.03; ctx.beginPath(); ctx.moveTo(-s * 0.08, -s * 0.06); ctx.lineTo(s * 0.08, -s * 0.09); ctx.stroke(); }
+    else { ctx.beginPath(); ctx.arc(-s * 0.12, -s * 0.18, s * 0.055, 0, Math.PI * 2); ctx.arc(s * 0.12, -s * 0.18, s * 0.055, 0, Math.PI * 2); ctx.fill(); ctx.strokeStyle = C.pupil; ctx.lineWidth = s * 0.03; ctx.beginPath(); ctx.arc(0, -s * 0.1, s * 0.08, Math.PI * 0.15, Math.PI * 0.85); ctx.stroke(); }
+    // front pointer
+    ctx.fillStyle = C.accent; ctx.beginPath(); ctx.moveTo(-s * 0.1, -s * 0.38); ctx.lineTo(s * 0.1, -s * 0.38); ctx.lineTo(0, -s * 0.5); ctx.closePath(); ctx.fill();
+    // antenna
+    ctx.strokeStyle = C.kikoDark; ctx.lineWidth = s * 0.04; ctx.beginPath(); ctx.moveTo(0, s * 0.36); ctx.lineTo(0, s * 0.5); ctx.stroke();
+    ctx.fillStyle = C.accent; ctx.beginPath(); ctx.arc(0, s * 0.52, s * 0.07, 0, Math.PI * 2); ctx.fill();
+    // tray with bakso when grabbed
+    if (opt.grabbed) bakso(ctx, 0, s * 0.05, s * 0.45);
+    ctx.restore();
+    if (opt.wave !== undefined) { // arm waving (title scene)
+      ctx.save(); ctx.translate(cx + s * 0.42, cy - s * 0.1); ctx.rotate(-0.6 + Math.sin(opt.wave * 6) * 0.4);
+      ctx.strokeStyle = C.kikoDark; ctx.lineWidth = s * 0.08; ctx.lineCap = "round"; ctx.beginPath(); ctx.moveTo(0, 0); ctx.lineTo(s * 0.3, -s * 0.3); ctx.stroke();
+      ctx.fillStyle = C.kikoLight; ctx.beginPath(); ctx.arc(s * 0.32, -s * 0.33, s * 0.09, 0, Math.PI * 2); ctx.fill(); ctx.restore();
+    }
+  }
+  function kid(ctx, cx, cy, s, opt = {}) {
+    // simple student figure, standing, facing viewer
+    ctx.save(); ctx.translate(cx, cy);
+    ctx.fillStyle = "rgba(0,0,0,0.12)"; ctx.beginPath(); ctx.ellipse(0, s * 1.02, s * 0.5, s * 0.1, 0, 0, Math.PI * 2); ctx.fill();
+    ctx.fillStyle = C.pants; rr(ctx, -s * 0.3, s * 0.35, s * 0.6, s * 0.5, s * 0.1); ctx.fill();
+    ctx.fillStyle = C.skin; ctx.fillRect(-s * 0.24, s * 0.8, s * 0.16, s * 0.2); ctx.fillRect(s * 0.08, s * 0.8, s * 0.16, s * 0.2);
+    ctx.fillStyle = C.uniform; rr(ctx, -s * 0.36, -s * 0.12, s * 0.72, s * 0.56, s * 0.12); ctx.fill();
+    ctx.strokeStyle = "#D5DDE2"; ctx.lineWidth = s * 0.025; rr(ctx, -s * 0.36, -s * 0.12, s * 0.72, s * 0.56, s * 0.12); ctx.stroke();
+    ctx.fillStyle = C.skin; ctx.beginPath(); ctx.arc(0, -s * 0.42, s * 0.32, 0, Math.PI * 2); ctx.fill();
+    ctx.fillStyle = opt.hairColor || C.hair; ctx.beginPath(); ctx.arc(0, -s * 0.5, s * 0.33, Math.PI, 0); ctx.fill();
+    if (opt.hair === "long") { ctx.fillRect(-s * 0.33, -s * 0.5, s * 0.12, s * 0.45); ctx.fillRect(s * 0.21, -s * 0.5, s * 0.12, s * 0.45); }
+    ctx.fillStyle = C.pupil; ctx.beginPath(); ctx.arc(-s * 0.11, -s * 0.4, s * 0.035, 0, Math.PI * 2); ctx.arc(s * 0.11, -s * 0.4, s * 0.035, 0, Math.PI * 2); ctx.fill();
+    ctx.strokeStyle = C.pupil; ctx.lineWidth = s * 0.025; ctx.beginPath(); ctx.arc(0, -s * 0.33, s * 0.08, Math.PI * 0.15, Math.PI * 0.85); ctx.stroke();
+    // arms
+    ctx.strokeStyle = C.skin; ctx.lineWidth = s * 0.11; ctx.lineCap = "round"; ctx.beginPath();
+    if (opt.point) { ctx.moveTo(s * 0.32, s * 0.02); ctx.lineTo(s * 0.75, -s * 0.2); } else { ctx.moveTo(s * 0.34, s * 0.02); ctx.lineTo(s * 0.42, s * 0.38); }
+    ctx.moveTo(-s * 0.34, s * 0.02); ctx.lineTo(-s * 0.42, s * 0.38); ctx.stroke();
+    ctx.restore();
+  }
+  function bubble(ctx, x, y, w, s, size, opt = {}) {
+    const lines = wrap(ctx, s, size, 600, w - 48); const h = lines.length * size * 1.3 + 40;
+    ctx.fillStyle = opt.fill || C.bubble; ctx.strokeStyle = opt.stroke || "#B7C7BF"; ctx.lineWidth = 3;
+    rr(ctx, x, y - h, w, h, 22); ctx.fill(); ctx.stroke();
+    const tx = opt.tailX !== undefined ? opt.tailX : x + 60;
+    ctx.beginPath(); ctx.moveTo(tx - 16, y); ctx.lineTo(tx + 16, y); ctx.lineTo(tx + (opt.tailDir || 0), y + 28); ctx.closePath(); ctx.fillStyle = opt.fill || C.bubble; ctx.fill();
+    ctx.strokeStyle = opt.stroke || "#B7C7BF"; ctx.beginPath(); ctx.moveTo(tx - 16, y); ctx.lineTo(tx + (opt.tailDir || 0), y + 28); ctx.lineTo(tx + 16, y); ctx.stroke();
+    lines.forEach((l, i) => text(ctx, l, x + 24, y - h + 24 + size + i * size * 1.3, size, { color: opt.color || C.ink, weight: 600 }));
+    return h;
+  }
+  function card(ctx, x, y, w, h, opt = {}) { ctx.fillStyle = opt.fill || C.panel; rr(ctx, x, y, w, h, opt.r || 26); ctx.fill(); if (opt.stroke) { ctx.strokeStyle = opt.stroke; ctx.lineWidth = opt.lw || 4; ctx.stroke(); } }
+
+  // ---------- adegan umum (semua episode) ----------
+  const SCENES = {
+    title(ctx, b, l, t, TL) {
+      card(ctx, 160, 160, 1600, 700, { fill: C.panel });
+      kiko(ctx, 420, 520, 260, 0, { wave: l, mood: "happy" });
+      text(ctx, "Informatika · Fase D · Episode " + TL.episode, 720, 330, 34, { color: C.ink2, weight: 700 });
+      para(ctx, TL.title, 720, 440, 92, 980, { weight: 900, lh: 1.1 });
+      text(ctx, "Dengarkan, atau baca teksnya pelan-pelan.", 720, 700, 36, { color: C.ink2, weight: 600 });
+      arrowIcon(ctx, "up", 1560, 360, 70, C.kikoLight); arrowIcon(ctx, "right", 1660, 360, 70, C.kikoLight);
+    },
+    quiz(ctx, b, l, t, TL, answered) {
+      const q = TL.quizzes[b.quiz]; card(ctx, 200, 150, 1520, 740, { stroke: C.accent, lw: 6 });
+      text(ctx, "CEK PEMAHAMAN", 960, 230, 32, { align: "center", color: C.accentDark, weight: 800 });
+      para(ctx, q.q, 960, 320, 44, 1360, { weight: 800, align: "center", lh: 1.3 });
+      q.options.forEach((o, i) => {
+        const y = 470 + i * 120; const right = answered && i === q.answer;
+        card(ctx, 320, y, 1280, 96, { fill: right ? C.goodBg : answered ? "#F4F6F5" : C.bg2, stroke: right ? C.good : "#CFDCD5", lw: right ? 6 : 3 });
+        ctx.fillStyle = right ? C.good : C.kiko; ctx.beginPath(); ctx.arc(380, y + 48, 30, 0, Math.PI * 2); ctx.fill();
+        text(ctx, "ABC"[i], 380, y + 61, 34, { align: "center", color: "#fff", weight: 900 });
+        text(ctx, o, 440, y + 62, 38, { weight: 700, color: answered && !right ? C.muted : C.ink });
+        if (right) text(ctx, "✓", 1540, y + 66, 54, { align: "center", color: C.good, weight: 900 });
+      });
+      if (!answered) { // thinking timer
+        const frac = clamp(l / b.dur, 0, 1); ctx.strokeStyle = "#D7E2DC"; ctx.lineWidth = 14; ctx.beginPath(); ctx.arc(1640, 230, 40, 0, Math.PI * 2); ctx.stroke();
+        ctx.strokeStyle = C.accent; ctx.beginPath(); ctx.arc(1640, 230, 40, -Math.PI / 2, -Math.PI / 2 + frac * Math.PI * 2); ctx.stroke();
+        text(ctx, "Pikirkan dulu, jangan buru-buru.", 960, 860, 32, { align: "center", color: C.ink2, weight: 600 });
+      }
+    },
+    quiz_answer(ctx, b, l, t, TL) { SCENES.quiz(ctx, b, l, t, TL, true); },
+    recap(ctx, b, l, t, TL) {
+      // TL.recap: tiga kalimat pendek dari script.json
+      card(ctx, 160, 140, 1600, 760);
+      text(ctx, "TIGA HAL UNTUK DIINGAT", 960, 230, 34, { align: "center", color: C.accentDark, weight: 900 });
+      const items = TL.recap || [];
+      const show = clamp(Math.floor((l - 0.6) / 2.2) + 1, 1, Math.max(1, items.length));
+      items.forEach((s, i) => { if (i >= show) return; card(ctx, 300, 290 + i * 180, 1320, 140, { fill: C.bg2 }); ctx.fillStyle = C.kiko; ctx.beginPath(); ctx.arc(380, 360 + i * 180, 40, 0, Math.PI * 2); ctx.fill(); text(ctx, String(i + 1), 380, 376 + i * 180, 40, { align: "center", color: "#fff", weight: 900 }); text(ctx, s, 450, 375 + i * 180, 42, { weight: 800 }); });
+      kiko(ctx, 1620, 820, 130, 0);
+    },
+    outro(ctx, b, l, t, TL) {
+      // TL.next: {code, title, note} episode berikutnya, dari script.json
+      const n = TL.next || {};
+      card(ctx, 260, 200, 1400, 600);
+      text(ctx, "EPISODE BERIKUTNYA", 960, 320, 34, { align: "center", color: C.accentDark, weight: 900 });
+      text(ctx, n.code || "", 960, 440, 60, { align: "center", weight: 900 });
+      text(ctx, n.title || "", 960, 530, 54, { align: "center", weight: 800, color: C.ink2 });
+      text(ctx, n.note || "", 960, 680, 34, { align: "center", color: C.ink2, weight: 600 });
+      kiko(ctx, 960, 760 + 20, 140, 0, { wave: l });
+    }
+  };
+
+  function beatAt(TL, t) {
+    let b = TL.beats[0];
+    for (const x of TL.beats) { if (t >= x.start) b = x; else break; }
+    return b;
+  }
+  function draw(ctx, t, TL, opt = {}) {
+    const b = beatAt(TL, t); const l = t - b.start;
+    ctx.save(); ctx.setTransform(1, 0, 0, 1, 0, 0);
+    ctx.fillStyle = C.bg; ctx.fillRect(0, 0, W, H);
+    // header
+    text(ctx, TL.episode + " · " + TL.title, 60, 78, 30, { color: C.ink2, weight: 700 });
+    text(ctx, TL.segments[b.seg], 1860, 78, 30, { color: C.accentDark, weight: 800, align: "right" });
+    ctx.fillStyle = C.bg2; ctx.fillRect(0, 100, W, 6); ctx.fillStyle = C.accent; ctx.fillRect(0, 100, W * clamp(t / TL.total, 0, 1), 6);
+    const fn = SCENES[b.scene]; if (fn) fn(ctx, b, l, t, TL);
+    // narration card (burned-in text the student reads)
+    if (opt.subtitles !== false) {
+      const size = 44; const lines = wrap(ctx, b.text, size, 700, 1660);
+      const h = lines.length * size * 1.3 + 44; const y0 = 1056 - h;
+      ctx.fillStyle = "rgba(31,42,51,0.92)"; rr(ctx, 100, y0, 1720, h, 20); ctx.fill();
+      // reading progress (how far along the text the reader should be)
+      const frac = clamp(l / b.audio, 0, 1); ctx.fillStyle = C.accent; rr(ctx, 100, y0 + h - 8, 1720 * frac, 8, 4); ctx.fill();
+      lines.forEach((ln, i) => text(ctx, ln, 960, y0 + 22 + size + i * size * 1.3, size, { align: "center", color: C.subText, weight: 700 }));
+    }
+    ctx.restore();
+    return b;
+  }
+
+  global.Kiko = { draw, beatAt, W, H, C, FONT, SCENES,
+    helpers: { rr, text, wrap, para, arrowIcon, bakso, table, kiko, kid, bubble, card, ease, clamp, lerp } };
+})(typeof window !== "undefined" ? window : globalThis);
+
+/* Pembantu gambar perangkat (dipakai D7.0, D7.2, …): monitor, mouse, pointer, keyboard, HP, jari, ikon file/folder, jendela.
+   Semua digambar dengan kode (tanpa aset unduhan). Muat setelah ../_alat/kiko-core.js; dipakai scenes.js. */
+(function (global) {
+  const K = global.Kiko, H = K.helpers, C = K.C;
+  const { rr, text, wrap, card, ease, clamp, lerp } = H;
+  const D = {};
+  const SCREEN_BG = "#F4F8FB", BEZEL = "#2B3A46", BEZEL2 = "#1A262F", SEL = "rgba(46,126,154,0.22)";
+
+  // ---------- komputer ----------
+  // monitor di atas meja; mengembalikan kotak layar {x,y,w,h}
+  D.monitor = function (ctx, x, y, w, h) {
+    ctx.fillStyle = BEZEL; rr(ctx, x - 18, y - 18, w + 36, h + 36, 22); ctx.fill();
+    ctx.fillStyle = SCREEN_BG; rr(ctx, x, y, w, h, 10); ctx.fill();
+    // kaki dan meja
+    ctx.fillStyle = BEZEL2; rr(ctx, x + w / 2 - 40, y + h + 18, 80, 36, 8); ctx.fill(); rr(ctx, x + w / 2 - 140, y + h + 50, 280, 16, 8); ctx.fill();
+    ctx.fillStyle = C.tableTop; rr(ctx, x - 80, y + h + 66, w + 160, 22, 8); ctx.fill();
+    return { x, y, w, h };
+  };
+  // panah pointer
+  D.pointer = function (ctx, x, y, s = 34, color = C.ink) {
+    ctx.save(); ctx.translate(x, y); ctx.fillStyle = color; ctx.strokeStyle = "#fff"; ctx.lineWidth = s * 0.08; ctx.lineJoin = "round";
+    ctx.beginPath(); ctx.moveTo(0, 0); ctx.lineTo(0, s); ctx.lineTo(s * 0.27, s * 0.78); ctx.lineTo(s * 0.45, s * 1.15); ctx.lineTo(s * 0.62, s * 1.07); ctx.lineTo(s * 0.45, s * 0.7); ctx.lineTo(s * 0.75, s * 0.7); ctx.closePath();
+    ctx.fill(); ctx.stroke(); ctx.restore();
+  };
+  // mouse tampak atas; opt.left / opt.right = tombol ditekan; opt.label = tulis "kiri/kanan"
+  D.mouse = function (ctx, cx, cy, s, opt = {}) {
+    ctx.save(); ctx.translate(cx, cy);
+    ctx.fillStyle = "rgba(0,0,0,0.12)"; ctx.beginPath(); ctx.ellipse(0, s * 0.62, s * 0.5, s * 0.1, 0, 0, Math.PI * 2); ctx.fill();
+    // kabel
+    ctx.strokeStyle = "#7B8B95"; ctx.lineWidth = s * 0.05; ctx.beginPath(); ctx.moveTo(0, -s * 0.6); ctx.quadraticCurveTo(0, -s * 1.0, s * 0.5, -s * 1.1); ctx.stroke();
+    // badan
+    ctx.fillStyle = "#E8EEF2"; rr(ctx, -s * 0.42, -s * 0.62, s * 0.84, s * 1.24, s * 0.4); ctx.fill(); ctx.strokeStyle = "#A9B7C0"; ctx.lineWidth = s * 0.04; ctx.stroke();
+    // dua tombol
+    const btn = (side, on) => { ctx.fillStyle = on ? C.accent : "#F7FAFC"; ctx.beginPath(); const sx = side === "left" ? -1 : 1;
+      ctx.moveTo(sx * s * 0.03, -s * 0.6); ctx.lineTo(sx * s * 0.03, -s * 0.1); ctx.lineTo(sx * s * 0.4, -s * 0.1); ctx.lineTo(sx * s * 0.4, -s * 0.28); ctx.quadraticCurveTo(sx * s * 0.4, -s * 0.6, sx * s * 0.1, -s * 0.6); ctx.closePath(); ctx.fill(); ctx.strokeStyle = "#A9B7C0"; ctx.lineWidth = s * 0.03; ctx.stroke(); };
+    btn("left", opt.left); btn("right", opt.right);
+    ctx.fillStyle = "#A9B7C0"; rr(ctx, -s * 0.04, -s * 0.5, s * 0.08, s * 0.26, s * 0.04); ctx.fill(); // roda
+    ctx.restore();
+    if (opt.label) { text(ctx, "kiri", cx - s * 0.22, cy - s * 0.72, 26, { align: "center", color: opt.left ? C.accentDark : C.ink2, weight: 800 }); text(ctx, "kanan", cx + s * 0.22, cy - s * 0.72, 26, { align: "center", color: opt.right ? C.accentDark : C.ink2, weight: 800 }); }
+  };
+  // riak "klik" di sekitar titik
+  D.ripple = function (ctx, x, y, u, color = C.accent) { if (u <= 0 || u >= 1) return; ctx.strokeStyle = color; ctx.globalAlpha = 1 - u; ctx.lineWidth = 6; ctx.beginPath(); ctx.arc(x, y, 12 + u * 60, 0, Math.PI * 2); ctx.stroke(); ctx.globalAlpha = 1; };
+
+  // ---------- ikon file & folder ----------
+  const KIND = { folder: "#F2B134", foto: "#5FA8D3", tulisan: "#7B8B95", lagu: "#8E6BBF", video: "#D9443B" };
+  D.fileIcon = function (ctx, cx, cy, s, kind, opt = {}) {
+    ctx.save(); ctx.translate(cx, cy);
+    if (opt.selected) { ctx.fillStyle = SEL; rr(ctx, -s * 0.62, -s * 0.62, s * 1.24, s * 1.24 + (opt.name ? s * 0.5 : 0), s * 0.14); ctx.fill(); }
+    if (kind === "folder") {
+      ctx.fillStyle = "#D99A1B"; rr(ctx, -s * 0.5, -s * 0.32, s * 0.45, s * 0.2, s * 0.06); ctx.fill();
+      ctx.fillStyle = opt.open ? "#F7C860" : KIND.folder; rr(ctx, -s * 0.5, -s * 0.22, s, s * 0.7, s * 0.08); ctx.fill();
+      if (opt.open) { ctx.fillStyle = "#D99A1B"; rr(ctx, -s * 0.46, -s * 0.02, s * 0.92, s * 0.5, s * 0.08); ctx.fill(); }
+    } else {
+      ctx.fillStyle = "#FFFFFF"; ctx.strokeStyle = "#B7C4CC"; ctx.lineWidth = s * 0.05;
+      ctx.beginPath(); ctx.moveTo(-s * 0.36, -s * 0.5); ctx.lineTo(s * 0.12, -s * 0.5); ctx.lineTo(s * 0.36, -s * 0.26); ctx.lineTo(s * 0.36, s * 0.5); ctx.lineTo(-s * 0.36, s * 0.5); ctx.closePath(); ctx.fill(); ctx.stroke();
+      ctx.fillStyle = KIND[kind] || KIND.tulisan;
+      if (kind === "foto") { rr(ctx, -s * 0.26, -s * 0.2, s * 0.52, s * 0.44, s * 0.04); ctx.fill(); ctx.fillStyle = "#fff"; ctx.beginPath(); ctx.arc(-s * 0.12, -s * 0.08, s * 0.06, 0, Math.PI * 2); ctx.fill(); ctx.beginPath(); ctx.moveTo(-s * 0.26, s * 0.24); ctx.lineTo(-s * 0.06, s * 0.02); ctx.lineTo(s * 0.06, s * 0.14); ctx.lineTo(s * 0.14, s * 0.06); ctx.lineTo(s * 0.26, s * 0.24); ctx.closePath(); ctx.fill(); }
+      else if (kind === "lagu") { ctx.beginPath(); ctx.arc(-s * 0.1, s * 0.22, s * 0.1, 0, Math.PI * 2); ctx.arc(s * 0.16, s * 0.16, s * 0.1, 0, Math.PI * 2); ctx.fill(); ctx.lineWidth = s * 0.06; ctx.strokeStyle = KIND.lagu; ctx.beginPath(); ctx.moveTo(0, s * 0.2); ctx.lineTo(0, -s * 0.2); ctx.lineTo(s * 0.26, -s * 0.26); ctx.lineTo(s * 0.26, s * 0.14); ctx.stroke(); }
+      else if (kind === "video") { rr(ctx, -s * 0.26, -s * 0.16, s * 0.52, s * 0.4, s * 0.04); ctx.fill(); ctx.fillStyle = "#fff"; ctx.beginPath(); ctx.moveTo(-s * 0.06, -s * 0.04); ctx.lineTo(s * 0.12, s * 0.04); ctx.lineTo(-s * 0.06, s * 0.12); ctx.closePath(); ctx.fill(); }
+      else { for (let i = 0; i < 4; i++) { rr(ctx, -s * 0.22, -s * 0.14 + i * s * 0.14, s * (i === 3 ? 0.26 : 0.44), s * 0.06, s * 0.03); ctx.fill(); } }
+    }
+    ctx.restore();
+    if (opt.name) { const lines = wrap(ctx, opt.name, opt.size || 24, 700, s * 1.6); lines.slice(0, 2).forEach((ln, i) => text(ctx, ln, cx, cy + s * 0.78 + i * (opt.size || 24) * 1.15, opt.size || 24, { align: "center", weight: 700, color: opt.color || C.ink })); }
+  };
+  D.KIND = KIND;
+
+  // jendela aplikasi (file manager / editor) di dalam layar; mengembalikan area isi
+  D.windowFrame = function (ctx, x, y, w, h, title, opt = {}) {
+    ctx.fillStyle = "#FFFFFF"; rr(ctx, x, y, w, h, 14); ctx.fill(); ctx.strokeStyle = "#C9D4DB"; ctx.lineWidth = 3; ctx.stroke();
+    ctx.fillStyle = "#E6EDF2"; rr(ctx, x, y, w, 54, 14); ctx.fill(); ctx.fillRect(x, y + 30, w, 24);
+    ["#E0655C", "#F2B134", "#2E9E5B"].forEach((c, i) => { ctx.fillStyle = c; ctx.beginPath(); ctx.arc(x + 26 + i * 26, y + 27, 8, 0, Math.PI * 2); ctx.fill(); });
+    if (title) text(ctx, title, x + w / 2, y + 36, 24, { align: "center", color: C.ink2, weight: 800 });
+    if (opt.path) { ctx.fillStyle = "#F4F8FB"; rr(ctx, x + 16, y + 66, w - 32, 44, 10); ctx.fill(); text(ctx, opt.path, x + 32, y + 96, 24, { color: C.ink2, weight: 700 }); }
+    return { x: x + 16, y: y + (opt.path ? 124 : 70), w: w - 32, h: h - (opt.path ? 140 : 86) };
+  };
+  // kotak teks dengan kursor berkedip; opt.cursor = posisi karakter (bawaan akhir)
+  D.textBox = function (ctx, x, y, w, h, lines, tt, opt = {}) {
+    ctx.fillStyle = "#FFFFFF"; rr(ctx, x, y, w, h, 14); ctx.fill(); ctx.strokeStyle = opt.stroke || "#C9D4DB"; ctx.lineWidth = 3; ctx.stroke();
+    const size = opt.size || 48, lh = size * 1.4;
+    lines.forEach((ln, i) => text(ctx, ln, x + 28, y + 24 + size + i * lh, size, { weight: 700, color: opt.color || C.ink }));
+    if (opt.cursor !== false) {
+      const li = lines.length - 1, s = lines[li] || ""; ctx.font = `700 ${size}px ${K.FONT}`; const cw = ctx.measureText(s).width;
+      if (Math.floor(tt * 2.5) % 2 === 0 || opt.cursorOn) { ctx.fillStyle = C.kiko; ctx.fillRect(x + 30 + cw, y + 22 + li * lh, 5, size * 1.15); }
+      return [x + 32 + cw, y + 22 + li * lh + size * 0.6];
+    }
+  };
+
+  // ---------- keyboard ----------
+  const ROWS = [["Q", "W", "E", "R", "T", "Y", "U", "I", "O", "P"], ["A", "S", "D", "F", "G", "H", "J", "K", "L"], ["Z", "X", "C", "V", "B", "N", "M"]];
+  // keyboard sederhana: 3 baris huruf + Shift, Spasi, Backspace, Enter. opt.pressed = [tombol], opt.glow = [tombol] disorot lembut
+  D.keyboard = function (ctx, x, y, w, opt = {}) {
+    const key = w / 11.6, gap = key * 0.12, k = key - gap, h = k * 4 + gap * 5;
+    ctx.fillStyle = BEZEL; rr(ctx, x - 16, y - 16, w + 32, h + 32, 22); ctx.fill();
+    const pressed = opt.pressed || [], glow = opt.glow || [];
+    const draw = (kx, ky, kw, label, small) => {
+      const on = pressed.includes(label), soft = glow.includes(label);
+      ctx.fillStyle = on ? C.accent : soft ? "#FFF3D6" : "#F7FAFC"; rr(ctx, kx, ky + (on ? 4 : 0), kw, k - (on ? 4 : 0), 10); ctx.fill();
+      ctx.strokeStyle = on ? C.accentDark : soft ? C.accent : "#B7C4CC"; ctx.lineWidth = on || soft ? 4 : 2; ctx.stroke();
+      // ukuran huruf mengikuti ukuran tombol; pada keyboard mini (tombol < 40 px) label tombol khusus tidak digambar
+      const fs = small ? Math.min(24, k * 0.45) : Math.min(32, k * 0.6);
+      if (small ? k >= 40 : k >= 18) text(ctx, label, kx + kw / 2, ky + k / 2 + fs * 0.38, fs, { align: "center", weight: 800, color: on ? "#fff" : C.ink });
+    };
+    ROWS.forEach((row, r) => { const off = r === 0 ? 0 : r === 1 ? key * 0.35 : key * 0.85; row.forEach((lab, i) => draw(x + gap + off + i * key, y + gap + r * key, k, lab)); });
+    draw(x + gap + key * 0.85 + 7 * key + gap, y + gap + 2 * key, key * 2.4 - gap, "Backspace", true);
+    draw(x + gap, y + gap + 3 * key, key * 1.9 - gap, "Shift", true);
+    draw(x + gap + key * 1.9, y + gap + 3 * key, key * 6.2 - gap, "Spasi", true);
+    draw(x + gap + key * 8.1, y + gap + 3 * key, key * 2.3 - gap, "Enter", true);
+    draw(x + gap + key * 0.35 + 9 * key, y + gap + 1 * key, key * 1.9 - gap, "Enter", true);
+    return { x, y, w, h };
+  };
+
+  // ---------- HP & jari ----------
+  // HP tegak; mengembalikan kotak layar
+  D.phone = function (ctx, cx, cy, w, h) {
+    ctx.fillStyle = BEZEL; rr(ctx, cx - w / 2 - 14, cy - h / 2 - 22, w + 28, h + 44, 40); ctx.fill();
+    ctx.fillStyle = SCREEN_BG; rr(ctx, cx - w / 2, cy - h / 2, w, h, 26); ctx.fill();
+    ctx.fillStyle = BEZEL2; rr(ctx, cx - 40, cy - h / 2 + 8, 80, 12, 6); ctx.fill();
+    return { x: cx - w / 2, y: cy - h / 2, w, h };
+  };
+  // kisi ikon aplikasi generik di layar HP; mengembalikan posisi tiap ikon
+  const APPS = [["Kamera", "#2E7E9A"], ["Galeri", "#5FA8D3"], ["Pesan", "#2E9E5B"], ["Musik", "#8E6BBF"], ["Kalkulator", "#7B8B95"], ["Peta", "#F2B134"], ["Catatan", "#E0A23B"], ["Jam", "#D9443B"], ["Cuaca", "#4C9BE0"]];
+  D.appGrid = function (ctx, sc, opt = {}) {
+    const cols = 3, cell = sc.w / cols, out = [];
+    APPS.forEach(([name, col], i) => {
+      const r = Math.floor(i / cols), c = i % cols; const ax = sc.x + cell * c + cell / 2, ay = sc.y + 90 + r * (cell + 26);
+      const on = opt.active === name; const sz = cell * 0.56 * (on && opt.scale ? opt.scale : 1);
+      ctx.fillStyle = col; rr(ctx, ax - sz / 2, ay - sz / 2, sz, sz, sz * 0.24); ctx.fill();
+      if (on) { ctx.strokeStyle = C.accent; ctx.lineWidth = 6; ctx.stroke(); }
+      text(ctx, name, ax, ay + sz / 2 + 26, 20, { align: "center", weight: 700, color: C.ink2 });
+      out.push({ name, x: ax, y: ay });
+    });
+    return out;
+  };
+  // ujung jari yang menyentuh layar di (x,y); opt.press = sedang menekan (riak); opt.second = jari kedua
+  D.finger = function (ctx, x, y, opt = {}) {
+    const s = opt.s || 46;
+    ctx.save(); ctx.translate(x, y); ctx.rotate(opt.angle !== undefined ? opt.angle : 0.5);
+    ctx.fillStyle = "rgba(0,0,0,0.10)"; ctx.beginPath(); ctx.ellipse(0, s * 0.25, s * 0.7, s * 0.4, 0, 0, Math.PI * 2); ctx.fill();
+    ctx.fillStyle = C.skin; rr(ctx, -s * 0.5, -s * 0.3, s, s * 3.2, s * 0.5); ctx.fill();
+    ctx.fillStyle = "#F7D9BE"; ctx.beginPath(); ctx.ellipse(0, s * 0.1, s * 0.3, s * 0.42, 0, 0, Math.PI * 2); ctx.fill();
+    ctx.restore();
+    if (opt.press) { ctx.fillStyle = "rgba(46,126,154,0.25)"; ctx.beginPath(); ctx.arc(x, y, s * 0.8, 0, Math.PI * 2); ctx.fill(); }
+  };
+  // menu konteks (klik kanan / tekan lama)
+  D.menu = function (ctx, x, y, items, opt = {}) {
+    const w = opt.w || 300, rowH = 52; ctx.fillStyle = "#FFFFFF"; rr(ctx, x, y, w, rowH * items.length + 16, 12); ctx.fill(); ctx.strokeStyle = "#B7C4CC"; ctx.lineWidth = 3; ctx.stroke();
+    ctx.fillStyle = "rgba(0,0,0,0.08)";
+    items.forEach((it, i) => { if (opt.active === i) { ctx.fillStyle = "#FFF3D6"; rr(ctx, x + 8, y + 8 + i * rowH, w - 16, rowH, 8); ctx.fill(); } text(ctx, it, x + 24, y + 8 + i * rowH + 36, 28, { weight: 700 }); });
+  };
+  // kartu keterangan kecil di kanan/bawah adegan
+  D.note = function (ctx, x, y, w, s, opt = {}) { card(ctx, x, y, w, opt.h || 96, { fill: opt.fill || "#FFF3D6", stroke: opt.stroke || C.accent, lw: 4 }); text(ctx, s, x + w / 2, y + (opt.h || 96) / 2 + 14, opt.size || 36, { align: "center", weight: 900, color: opt.color || C.ink }); };
+
+  K.devices = D;
+})(typeof window !== "undefined" ? window : globalThis);
+
+/* Pembantu gambar D7.2: bagian dalam komputer (prosesor, RAM, hard disk), alat input/output (mikrofon, kamera, speaker, printer),
+   dan papan alur input → proses → output → penyimpanan dengan denyut "H" yang berjalan. Muat setelah kiko-core.js dan kiko-devices.js. */
+(function (global) {
+  const K = global.Kiko, H = K.helpers, C = K.C, D = K.devices;
+  const { rr, text, card, ease, clamp, lerp } = H;
+  const M = {};
+  const DARK = "#2B3A46", CHIP = "#3E4C59", GOLD = "#E0B04B", GREEN_PCB = "#2E6B4F";
+
+  // prosesor (chip persegi dengan kaki)
+  M.chip = function (ctx, cx, cy, s, opt = {}) {
+    ctx.save(); ctx.translate(cx, cy);
+    ctx.strokeStyle = "#9AAFA6"; ctx.lineWidth = s * 0.05; for (let i = -3; i <= 3; i++) { const p = i * s * 0.14; ctx.beginPath(); ctx.moveTo(p, -s * 0.62); ctx.lineTo(p, -s * 0.5); ctx.moveTo(p, s * 0.5); ctx.lineTo(p, s * 0.62); ctx.moveTo(-s * 0.62, p); ctx.lineTo(-s * 0.5, p); ctx.moveTo(s * 0.5, p); ctx.lineTo(s * 0.62, p); ctx.stroke(); }
+    ctx.fillStyle = opt.hot ? "#F2B134" : CHIP; rr(ctx, -s / 2, -s / 2, s, s, s * 0.12); ctx.fill();
+    ctx.fillStyle = opt.hot ? "#FFF3D6" : "#6B7B88"; rr(ctx, -s * 0.3, -s * 0.3, s * 0.6, s * 0.6, s * 0.08); ctx.fill();
+    text(ctx, opt.label || "CPU", 0, s * 0.12, s * 0.3, { align: "center", weight: 900, color: opt.hot ? C.accentDark : "#fff" });
+    ctx.restore();
+  };
+  // RAM (keping memanjang dengan chip kecil); opt.cells = teks di sel (isi sementara)
+  M.ram = function (ctx, x, y, w, h, opt = {}) {
+    ctx.fillStyle = GREEN_PCB; rr(ctx, x, y, w, h, 10); ctx.fill();
+    ctx.fillStyle = GOLD; for (let i = 0; i < 12; i++) ctx.fillRect(x + 14 + i * (w - 28) / 12, y + h - 10, (w - 28) / 12 - 6, 10);
+    const n = 6, cw = (w - 40) / n;
+    for (let i = 0; i < n; i++) { const c = (opt.cells || [])[i]; ctx.fillStyle = c ? "#FFF3D6" : DARK; rr(ctx, x + 20 + i * cw, y + 14, cw - 8, h - 40, 6); ctx.fill(); if (c) text(ctx, c, x + 20 + i * cw + (cw - 8) / 2, y + 14 + (h - 40) / 2 + 12, Math.min(34, h * 0.45), { align: "center", weight: 900, color: C.ink }); }
+    if (opt.label !== false) text(ctx, opt.label || "RAM", x + w / 2, y - 14, 28, { align: "center", weight: 900, color: C.ink2 });
+  };
+  // hard disk / SSD (kotak dengan piringan)
+  M.disk = function (ctx, cx, cy, s, opt = {}) {
+    ctx.save(); ctx.translate(cx, cy);
+    ctx.fillStyle = "#6B7B88"; rr(ctx, -s * 0.6, -s * 0.45, s * 1.2, s * 0.9, s * 0.1); ctx.fill();
+    ctx.fillStyle = "#B7C4CC"; ctx.beginPath(); ctx.arc(-s * 0.12, 0, s * 0.32, 0, Math.PI * 2); ctx.fill(); ctx.fillStyle = "#6B7B88"; ctx.beginPath(); ctx.arc(-s * 0.12, 0, s * 0.08, 0, Math.PI * 2); ctx.fill();
+    ctx.strokeStyle = "#E6EDF2"; ctx.lineWidth = s * 0.05; ctx.beginPath(); ctx.moveTo(s * 0.4, -s * 0.3); ctx.lineTo(0, -s * 0.05); ctx.stroke();
+    if (opt.full !== undefined) { ctx.fillStyle = C.good; rr(ctx, -s * 0.55, s * 0.3, s * 1.1 * opt.full, s * 0.1, 4); ctx.fill(); }
+    ctx.restore();
+    if (opt.label) text(ctx, opt.label, cx, cy + s * 0.75, 28, { align: "center", weight: 900, color: C.ink2 });
+  };
+  M.ssd = function (ctx, cx, cy, s) { ctx.fillStyle = GREEN_PCB; rr(ctx, cx - s * 0.7, cy - s * 0.2, s * 1.4, s * 0.4, 8); ctx.fill(); ctx.fillStyle = CHIP; for (let i = 0; i < 4; i++) { rr(ctx, cx - s * 0.6 + i * s * 0.33, cy - s * 0.12, s * 0.26, s * 0.24, 4); ctx.fill(); } ctx.fillStyle = GOLD; ctx.fillRect(cx + s * 0.5, cy - s * 0.1, s * 0.2, s * 0.2); };
+  M.flashdisk = function (ctx, cx, cy, s) { ctx.fillStyle = C.kiko; rr(ctx, cx - s * 0.5, cy - s * 0.22, s * 0.7, s * 0.44, 8); ctx.fill(); ctx.fillStyle = "#B7C4CC"; rr(ctx, cx + s * 0.2, cy - s * 0.14, s * 0.3, s * 0.28, 3); ctx.fill(); };
+  M.sdcard = function (ctx, cx, cy, s) { ctx.fillStyle = "#1F2A33"; ctx.beginPath(); ctx.moveTo(cx - s * 0.3, cy - s * 0.4); ctx.lineTo(cx + s * 0.2, cy - s * 0.4); ctx.lineTo(cx + s * 0.3, cy - s * 0.3); ctx.lineTo(cx + s * 0.3, cy + s * 0.4); ctx.lineTo(cx - s * 0.3, cy + s * 0.4); ctx.closePath(); ctx.fill(); ctx.fillStyle = GOLD; for (let i = 0; i < 4; i++) ctx.fillRect(cx - s * 0.22 + i * s * 0.12, cy - s * 0.34, s * 0.07, s * 0.14); };
+  M.cloud = function (ctx, cx, cy, s) { ctx.fillStyle = "#8FD0E6"; [[0, 0, 0.5], [-0.5, 0.15, 0.35], [0.5, 0.15, 0.35], [-0.2, -0.25, 0.35], [0.25, -0.2, 0.3]].forEach(([dx, dy, r]) => { ctx.beginPath(); ctx.arc(cx + dx * s, cy + dy * s, r * s, 0, Math.PI * 2); ctx.fill(); }); ctx.fillRect(cx - s * 0.75, cy + s * 0.1, s * 1.5, s * 0.4); };
+  // alat input/output kecil
+  M.mic = function (ctx, cx, cy, s) { ctx.fillStyle = "#4A5A66"; rr(ctx, cx - s * 0.22, cy - s * 0.55, s * 0.44, s * 0.8, s * 0.22); ctx.fill(); ctx.strokeStyle = "#4A5A66"; ctx.lineWidth = s * 0.08; ctx.beginPath(); ctx.arc(cx, cy, s * 0.4, 0, Math.PI); ctx.moveTo(cx, cy + s * 0.4); ctx.lineTo(cx, cy + s * 0.65); ctx.moveTo(cx - s * 0.3, cy + s * 0.65); ctx.lineTo(cx + s * 0.3, cy + s * 0.65); ctx.stroke(); };
+  M.camera = function (ctx, cx, cy, s) { ctx.fillStyle = "#4A5A66"; rr(ctx, cx - s * 0.6, cy - s * 0.35, s * 1.2, s * 0.8, s * 0.12); ctx.fill(); ctx.fillStyle = "#1F2A33"; ctx.beginPath(); ctx.arc(cx, cy + s * 0.05, s * 0.28, 0, Math.PI * 2); ctx.fill(); ctx.fillStyle = "#8FD0E6"; ctx.beginPath(); ctx.arc(cx, cy + s * 0.05, s * 0.14, 0, Math.PI * 2); ctx.fill(); ctx.fillStyle = "#4A5A66"; rr(ctx, cx - s * 0.2, cy - s * 0.5, s * 0.4, s * 0.2, 4); ctx.fill(); };
+  M.speaker = function (ctx, cx, cy, s, opt = {}) { ctx.fillStyle = "#4A5A66"; rr(ctx, cx - s * 0.35, cy - s * 0.6, s * 0.7, s * 1.2, s * 0.1); ctx.fill(); ctx.fillStyle = "#1F2A33"; ctx.beginPath(); ctx.arc(cx, cy + s * 0.15, s * 0.26, 0, Math.PI * 2); ctx.arc(cx, cy - s * 0.32, s * 0.13, 0, Math.PI * 2); ctx.fill(); if (opt.on) { ctx.strokeStyle = C.accent; ctx.lineWidth = s * 0.07; for (let i = 1; i <= 3; i++) { ctx.beginPath(); ctx.arc(cx + s * 0.4, cy, s * 0.25 * i, -0.6, 0.6); ctx.stroke(); } } };
+  M.printer = function (ctx, cx, cy, s, opt = {}) { ctx.fillStyle = "#B7C4CC"; rr(ctx, cx - s * 0.7, cy - s * 0.25, s * 1.4, s * 0.6, s * 0.1); ctx.fill(); ctx.fillStyle = "#6B7B88"; rr(ctx, cx - s * 0.5, cy - s * 0.55, s, s * 0.35, s * 0.06); ctx.fill(); ctx.fillStyle = "#fff"; rr(ctx, cx - s * 0.4, cy + s * 0.2, s * 0.8, s * (opt.out || 0.4), 4); ctx.fill(); if (opt.text) text(ctx, opt.text, cx, cy + s * 0.5, s * 0.3, { align: "center", weight: 900, color: C.ink }); };
+  M.scanner = function (ctx, cx, cy, s) { ctx.fillStyle = "#B7C4CC"; rr(ctx, cx - s * 0.7, cy - s * 0.2, s * 1.4, s * 0.4, s * 0.08); ctx.fill(); ctx.fillStyle = "#8FD0E6"; rr(ctx, cx - s * 0.6, cy - s * 0.12, s * 1.2, s * 0.2, 4); ctx.fill(); ctx.fillStyle = C.accent; ctx.fillRect(cx - s * 0.1, cy - s * 0.12, s * 0.06, s * 0.2); };
+  // kartu stasiun (kotak berjudul) untuk papan alur
+  M.station = function (ctx, x, y, w, h, title, opt = {}) {
+    card(ctx, x, y, w, h, { fill: opt.on ? "#FFF3D6" : opt.dim ? "#F4F6F5" : C.panel, stroke: opt.on ? C.accent : opt.done ? C.good : "#D7E2DC", lw: opt.on || opt.done ? 5 : 3, r: 20 });
+    text(ctx, title, x + w / 2, y + 44, 30, { align: "center", weight: 900, color: opt.on ? C.accentDark : opt.dim ? C.muted : C.ink });
+    if (opt.sub) text(ctx, opt.sub, x + w / 2, y + h - 18, 24, { align: "center", weight: 700, color: C.ink2 });
+  };
+  // panah tebal mendatar/menurun antar stasiun
+  M.arrow = function (ctx, x1, y1, x2, y2, opt = {}) {
+    ctx.strokeStyle = opt.color || "#9AAFA6"; ctx.fillStyle = opt.color || "#9AAFA6"; ctx.lineWidth = opt.lw || 10; ctx.lineCap = "round";
+    ctx.beginPath(); ctx.moveTo(x1, y1); ctx.lineTo(x2, y2); ctx.stroke();
+    const a = Math.atan2(y2 - y1, x2 - x1), s = (opt.lw || 10) * 2.2; ctx.beginPath(); ctx.moveTo(x2, y2); ctx.lineTo(x2 - s * Math.cos(a - 0.5), y2 - s * Math.sin(a - 0.5)); ctx.lineTo(x2 - s * Math.cos(a + 0.5), y2 - s * Math.sin(a + 0.5)); ctx.closePath(); ctx.fill();
+  };
+  // denyut "H" berjalan di sepanjang titik-titik path pada u (0..n-1)
+  M.pulse = function (ctx, path, u, label = "H") {
+    if (u <= 0) return; const i = Math.min(Math.floor(u), path.length - 2), f = u - i; const x = lerp(path[i][0], path[i + 1][0], f), y = lerp(path[i][1], path[i + 1][1], f);
+    ctx.fillStyle = "rgba(242,177,52,0.35)"; ctx.beginPath(); ctx.arc(x, y, 36, 0, Math.PI * 2); ctx.fill();
+    ctx.fillStyle = C.accent; ctx.beginPath(); ctx.arc(x, y, 24, 0, Math.PI * 2); ctx.fill(); text(ctx, label, x, y + 10, 28, { align: "center", weight: 900, color: "#fff" });
+  };
+  // papan alur lengkap: stasiun INPUT → PROSES → OUTPUT dan PENYIMPANAN di bawah proses.
+  // opt.stage: indeks stasiun yang disorot (0 input,1 proses,2 output,3 simpan); opt.show: jumlah stasiun yang tampak; opt.u: posisi denyut (0..4)
+  M.board = function (ctx, opt = {}) {
+    const show = opt.show === undefined ? 4 : opt.show, st = opt.stage;
+    const X = [160, 700, 1240], Y = 250, W = 520, Hh = 300;
+    const titles = ["MASUKAN (input)", "PROSES", "KELUARAN (output)"];
+    for (let i = 0; i < 3; i++) if (i < show) M.station(ctx, X[i], Y, W, Hh, titles[i], { on: st === i, done: st !== undefined && i < st });
+    if (show >= 1) { D.keyboard(ctx, X[0] + 40, Y + 90, 300, { pressed: opt.key ? ["H"] : [] }); D.mouse(ctx, X[0] + 430, Y + 190, 60, {}); }
+    if (show >= 2) { M.chip(ctx, X[1] + 150, Y + 170, 110, { hot: st === 1 }); M.ram(ctx, X[1] + 260, Y + 110, 230, 110, { cells: opt.ramCells }); }
+    if (show >= 3) { const sc = D.monitor(ctx, X[2] + 60, Y + 80, 260, 150); if (opt.screen) text(ctx, opt.screen, sc.x + 20, sc.y + 80, 64, { weight: 900 }); M.speaker(ctx, X[2] + 420, Y + 170, 60, { on: opt.sound }); }
+    if (show >= 1 && show >= 2) M.arrow(ctx, X[0] + W + 6, Y + Hh / 2, X[1] - 6, Y + Hh / 2);
+    if (show >= 3) M.arrow(ctx, X[1] + W + 6, Y + Hh / 2, X[2] - 6, Y + Hh / 2);
+    if (show >= 4) { M.station(ctx, X[1], Y + Hh + 90, W, 200, "PENYIMPANAN (storage)", { on: st === 3, done: st !== undefined && st > 3 }); M.disk(ctx, X[1] + 170, Y + Hh + 200, 80); M.sdcard(ctx, X[1] + 330, Y + Hh + 200, 70); M.flashdisk(ctx, X[1] + 430, Y + Hh + 200, 70); M.arrow(ctx, X[1] + W / 2 - 30, Y + Hh + 6, X[1] + W / 2 - 30, Y + Hh + 84); M.arrow(ctx, X[1] + W / 2 + 30, Y + Hh + 84, X[1] + W / 2 + 30, Y + Hh + 6); }
+    if (opt.u !== undefined) M.pulse(ctx, [[X[0] + 190, Y + 150], [X[0] + W, Y + Hh / 2], [X[1] + 150, Y + 170], [X[1] + 375, Y + 165], [X[2] + 190, Y + 160]], opt.u, opt.label || "H");
+    return { X, Y, W, H: Hh };
+  };
+  K.komp = M;
+})(typeof window !== "undefined" ? window : globalThis);
+
+/* Adegan episode D7.2: Mengenal Komputer — perjalanan satu ketukan. Muat setelah kiko-core.js, kiko-devices.js, komputer.js. */
+(function (global) {
+  const K = global.Kiko, H = K.helpers, C = K.C, D = K.devices, M = K.komp, SCENES = K.SCENES;
+  const { text, para, card, kiko, kid, bubble, rr, ease, clamp, lerp } = H;
+  const reveal = (l, t0, step, n) => clamp(Math.floor((l - t0) / step) + 1, 0, n);
+  const label = (ctx, s, x, y, col) => text(ctx, s, x, y, 28, { align: "center", weight: 800, color: col || C.ink2 });
+
+  Object.assign(SCENES, {
+    prereq(ctx, b, l) {
+      card(ctx, 260, 200, 1400, 600);
+      text(ctx, "TONTON DULU", 960, 300, 34, { align: "center", color: C.accentDark, weight: 800 });
+      text(ctx, "Episode D7.0", 960, 420, 60, { align: "center", weight: 900 });
+      text(ctx, "Cara Memakai Komputer dan HP", 960, 500, 52, { align: "center", weight: 700, color: C.ink2 });
+      ["Mouse", "Keyboard", "File & folder"].forEach((s, i) => { card(ctx, 480 + i * 340, 580, 300, 120, { fill: C.bg2 }); text(ctx, s, 630 + i * 340, 652, 34, { align: "center", weight: 800 }); });
+      kiko(ctx, 1600, 760, 150, 0);
+    },
+    unplugged(ctx, b, l) {
+      card(ctx, 120, 150, 1680, 740);
+      text(ctx, "MAIN DULU TANPA KOMPUTER", 960, 230, 34, { align: "center", color: C.accentDark, weight: 800 });
+      kid(ctx, 420, 560, 200, { point: true }); kid(ctx, 960, 560, 200, { hair: "long" }); kid(ctx, 1500, 560, 200, { hairColor: "#4A3A2A" });
+      const ph = Math.floor((l / 2.2) % 3);
+      if (ph === 0) bubble(ctx, 300, 360, 300, "psst… bakso", 32, { tailX: 420, tailDir: 0 });
+      if (ph === 1) { ctx.fillStyle = "#FFF3B0"; rr(ctx, 1060, 300, 200, 140, 8); ctx.fill(); text(ctx, "bakso", 1160, 385, 36, { align: "center", weight: 900 }); }
+      if (ph === 2) bubble(ctx, 1340, 360, 340, "BAKSO!", 44, { tailX: 1500, tailDir: 0, fill: C.goodBg, stroke: C.good, color: C.good });
+      ["membisikkan", "menulis", "membacakan"].forEach((s, i) => label(ctx, s, 420 + i * 540, 820));
+    },
+    unplugged_roles(ctx, b, l) {
+      card(ctx, 120, 150, 1680, 740);
+      kid(ctx, 420, 450, 170, { point: true }); kid(ctx, 960, 450, 170, { hair: "long" }); kid(ctx, 1500, 450, 170, { hairColor: "#4A3A2A" });
+      const n = reveal(l, 0.8, 1.1, 3); const names = ["MASUKAN", "MENGOLAH", "KELUARAN"];
+      names.forEach((s, i) => { if (i >= n) return; card(ctx, 260 + i * 540, 650, 320, 90, { fill: "#FFF3D6", stroke: C.accent, lw: 4 }); text(ctx, s, 420 + i * 540, 708, 36, { align: "center", weight: 900 }); if (i) M.arrow(ctx, 600 + (i - 1) * 540, 695, 740 + (i - 1) * 540, 695, { color: C.accentDark }); });
+      if (n >= 3) text(ctx, "komputer bekerja seperti barisan ini", 960, 800, 32, { align: "center", color: C.ink2, weight: 800 });
+    },
+
+    input_intro(ctx, b, l) {
+      M.board(ctx, { show: 1, stage: 0, key: l > 1.5 });
+      const items = [["keyboard", "huruf & angka"], ["mouse", "gerakan & klik"]]; const n = reveal(l, 2.0, 1.2, 2);
+      items.forEach(([t1, t2], i) => { if (i >= n) return; card(ctx, 760 + i * 440, 300, 400, 200, { fill: C.bg2 }); text(ctx, t1, 960 + i * 440, 380, 40, { align: "center", weight: 900 }); text(ctx, "memasukkan " + t2, 960 + i * 440, 440, 28, { align: "center", weight: 700, color: C.ink2 }); });
+      text(ctx, "alat untuk memasukkan sesuatu ke komputer", 960, 680, 34, { align: "center", color: C.accentDark, weight: 800 });
+    },
+    input_more(ctx, b, l) {
+      card(ctx, 120, 150, 1680, 740);
+      text(ctx, "ALAT MASUKAN (input)", 960, 230, 34, { align: "center", color: C.accentDark, weight: 800 });
+      const items = [["layar sentuh", (x, y) => { D.phone(ctx, x, y, 90, 160); D.finger(ctx, x + 10, y + 10, { s: 20, press: true }); }], ["mikrofon", (x, y) => M.mic(ctx, x, y, 110)], ["kamera", (x, y) => M.camera(ctx, x, y, 110)], ["scanner", (x, y) => M.scanner(ctx, x, y, 120)]];
+      const n = reveal(l, 0.6, 1.0, 4);
+      items.forEach(([t, draw], i) => { if (i >= n) return; const x = 330 + i * 420; card(ctx, x - 160, 290, 320, 420, { fill: C.bg2 }); draw(x, 450); text(ctx, t, x, 650, 34, { align: "center", weight: 900 }); });
+      if (n >= 4) text(ctx, "cuma memasukkan, tidak berpikir", 960, 800, 34, { align: "center", color: C.ink2, weight: 800 });
+    },
+    input_signal(ctx, b, l) {
+      const u = clamp((l - 1.5) / 2.5, 0, 1);
+      D.keyboard(ctx, 160, 300, 700, { pressed: l > 0.8 ? ["H"] : [] });
+      ctx.strokeStyle = "#7B8B95"; ctx.lineWidth = 14; ctx.lineCap = "round"; ctx.beginPath(); ctx.moveTo(880, 480); ctx.lineTo(1150, 480); ctx.lineTo(1150, 560); ctx.lineTo(1420, 560); ctx.stroke();
+      card(ctx, 1420, 380, 380, 360, { fill: "#2B3A46" }); text(ctx, "komputer", 1610, 440, 30, { align: "center", color: "#fff", weight: 800 }); M.chip(ctx, 1610, 580, 110, { hot: u >= 1 });
+      if (l > 0.8) { const path = [[880, 480], [1150, 480], [1150, 560], [1420, 560]]; M.pulse(ctx, path, u * 3, "H"); }
+      card(ctx, 160, 190, 700, 80, { fill: "#FFF3D6", stroke: C.accent, lw: 4 }); text(ctx, l > 0.8 ? "kode: tombol nomor 35 ditekan" : "H ditekan…", 510, 242, 32, { align: "center", weight: 900 });
+      text(ctx, "bukan huruf, melainkan kode listrik", 1610, 800, 28, { align: "center", color: C.ink2, weight: 800 });
+    },
+
+    cpu_intro(ctx, b, l) {
+      const u = clamp((l - 0.5) / 1.5, 0, 1); M.board(ctx, { show: 2, stage: 1, u: 1 + u, key: true });
+      if (u >= 1) { bubble(ctx, 760, 700, 520, "Oh, ini huruf H. Tampilkan di layar!", 32, { tailX: 850, tailDir: 0, fill: "#FFF3D6", stroke: C.accent }); }
+      text(ctx, "prosesor (CPU): otak komputer", 960, 820, 34, { align: "center", color: C.accentDark, weight: 800 });
+    },
+    cpu_speed(ctx, b, l) {
+      card(ctx, 120, 150, 1680, 740);
+      M.chip(ctx, 500, 520, 260, { hot: true });
+      const n = Math.floor(Math.max(0, l - 0.5) * 1e9).toLocaleString("id-ID");
+      card(ctx, 900, 300, 760, 200, { fill: C.bg2 }); text(ctx, "langkah kecil tiap detik:", 1280, 360, 30, { align: "center", color: C.ink2, weight: 700 }); text(ctx, "miliaran", 1280, 450, 64, { align: "center", weight: 900, color: C.accentDark });
+      card(ctx, 900, 540, 760, 200, { fill: C.bg2 }); text(ctx, "tetapi hanya menjalankan perintah,", 1280, 610, 30, { align: "center", color: C.ink2, weight: 700 }); text(ctx, "seperti Kiko di episode robot", 1280, 670, 32, { align: "center", weight: 900 });
+      kiko(ctx, 1700, 760, 100, 0);
+    },
+    ram_intro(ctx, b, l) {
+      const typed = "HALO".slice(0, reveal(l, 1.0, 0.8, 4));
+      M.board(ctx, { show: 2, stage: 1, ramCells: typed.split("") });
+      D.textBox(ctx, 760, 660, 800, 100, [typed], l, { size: 48 });
+      text(ctx, "RAM: meja kerja prosesor, memori sementara", 960, 830, 34, { align: "center", color: C.accentDark, weight: 800 });
+    },
+    ram_volatile(ctx, b, l) {
+      const off = l > 3.0;
+      card(ctx, 120, 150, 1680, 740);
+      // papan tulis
+      ctx.fillStyle = "#2E6B4F"; rr(ctx, 200, 240, 760, 480, 14); ctx.fill(); ctx.strokeStyle = "#C98A57"; ctx.lineWidth = 16; rr(ctx, 200, 240, 760, 480, 14); ctx.stroke();
+      if (!off) text(ctx, "HALO", 580, 500, 110, { align: "center", color: "#fff", weight: 900 });
+      else { ctx.fillStyle = "rgba(255,255,255,0.08)"; for (let i = 0; i < 6; i++) { rr(ctx, 260 + i * 110, 400, 90, 60, 20); ctx.fill(); } text(ctx, "(terhapus)", 580, 500, 44, { align: "center", color: "#9AAFA6", weight: 700 }); }
+      text(ctx, "RAM = papan tulis", 580, 780, 34, { align: "center", weight: 900 });
+      // tombol daya
+      ctx.fillStyle = off ? C.bad : C.good; ctx.beginPath(); ctx.arc(1400, 440, 90, 0, Math.PI * 2); ctx.fill(); ctx.strokeStyle = "#fff"; ctx.lineWidth = 14; ctx.beginPath(); ctx.arc(1400, 445, 45, -1.1, 4.25); ctx.stroke(); ctx.beginPath(); ctx.moveTo(1400, 380); ctx.lineTo(1400, 440); ctx.stroke();
+      text(ctx, off ? "komputer dimatikan" : "komputer menyala", 1400, 600, 36, { align: "center", weight: 900, color: off ? C.bad : C.good });
+      if (off) text(ctx, "tulisan yang belum disimpan hilang", 1400, 680, 30, { align: "center", color: C.ink2, weight: 800 });
+    },
+    output_intro(ctx, b, l) {
+      const u = clamp((l - 0.5) / 1.5, 0, 1); M.board(ctx, { show: 3, stage: 2, u: 2 + u * 2, screen: u >= 1 ? "H" : "", sound: u >= 1 });
+      const n = reveal(l, 2.5, 1.0, 3); const items = [["layar", "menampilkan"], ["speaker", "membunyikan"], ["printer", "mencetak"]];
+      items.forEach(([t1, t2], i) => { if (i >= n) return; card(ctx, 300 + i * 460, 640, 420, 110, { fill: C.bg2 }); text(ctx, t1 + ": " + t2, 510 + i * 460, 706, 32, { align: "center", weight: 900 }); if (i === 2) M.printer(ctx, 1720, 690, 56, { text: "H" }); });
+      text(ctx, "alat keluaran (output)", 960, 830, 34, { align: "center", color: C.accentDark, weight: 800 });
+    },
+    ipo_flow(ctx, b, l) {
+      const u = ((l * 1.2) % 5); M.board(ctx, { show: 3, u: u > 4 ? undefined : u, screen: u > 3.5 ? "H" : "", key: u < 1 });
+      card(ctx, 360, 640, 1200, 110, { fill: "#FFF3D6", stroke: C.accent, lw: 4 }); text(ctx, "masukan → proses → keluaran", 960, 690, 40, { align: "center", weight: 900 }); text(ctx, "keyboard → prosesor → layar", 960, 730, 28, { align: "center", color: C.ink2, weight: 700 });
+      text(ctx, "lebih cepat dari kedipan mata", 960, 830, 32, { align: "center", color: C.ink2, weight: 800 });
+    },
+
+    storage_intro(ctx, b, l) {
+      const u = clamp((l - 1.0) / 1.5, 0, 1); M.board(ctx, { show: 4, stage: 3, ramCells: u < 1 ? ["H", "A", "L", "O"] : [] });
+      if (u > 0 && u < 1) { const y = lerp(380, 740, ease(u)); card(ctx, 880, y - 30, 160, 60, { fill: "#FFF3D6", stroke: C.accent, lw: 3 }); text(ctx, "HALO", 960, y + 10, 30, { align: "center", weight: 900 }); }
+      if (u >= 1) text(ctx, "tersimpan ✓", 960, 870, 30, { align: "center", color: C.good, weight: 900 });
+      text(ctx, "tempat penyimpanan (storage): hard disk, SSD, memori HP", 960, 230, 32, { align: "center", color: C.accentDark, weight: 800 });
+    },
+    storage_vs_ram(ctx, b, l) {
+      card(ctx, 120, 150, 1680, 740);
+      card(ctx, 180, 220, 760, 580, { fill: C.bg2 }); card(ctx, 980, 220, 760, 580, { fill: C.bg2 });
+      M.ram(ctx, 300, 320, 520, 110, { cells: l > 4 ? [] : ["H", "A", "L", "O"], label: false }); text(ctx, "RAM", 560, 290, 36, { align: "center", weight: 900 });
+      text(ctx, "papan tulis", 560, 520, 34, { align: "center", weight: 800, color: C.ink2 }); text(ctx, "cepat, tetapi lupa", 560, 600, 40, { align: "center", weight: 900, color: C.bad });
+      text(ctx, "saat dimatikan: kosong", 560, 680, 28, { align: "center", color: C.ink2, weight: 700 });
+      M.disk(ctx, 1360, 380, 110, { full: 0.6 }); text(ctx, "PENYIMPANAN", 1360, 290, 36, { align: "center", weight: 900 });
+      text(ctx, "buku catatan", 1360, 520, 34, { align: "center", weight: 800, color: C.ink2 }); text(ctx, "lambat, tetapi ingat", 1360, 600, 40, { align: "center", weight: 900, color: C.good });
+      text(ctx, "saat dimatikan: tetap ada", 1360, 680, 28, { align: "center", color: C.ink2, weight: 700 });
+    },
+    storage_kinds(ctx, b, l) {
+      card(ctx, 120, 150, 1680, 740);
+      text(ctx, "MACAM-MACAM PENYIMPANAN", 960, 230, 34, { align: "center", color: C.accentDark, weight: 800 });
+      const items = [["hard disk", (x, y) => M.disk(ctx, x, y, 90)], ["SSD", (x, y) => M.ssd(ctx, x, y, 110)], ["flashdisk", (x, y) => M.flashdisk(ctx, x, y, 130)], ["kartu memori", (x, y) => M.sdcard(ctx, x, y, 110)], ["cloud (internet)", (x, y) => M.cloud(ctx, x, y, 80)]];
+      const n = reveal(l, 0.6, 0.9, 5);
+      items.forEach(([t, draw], i) => { if (i >= n) return; const x = 300 + i * 330; card(ctx, x - 140, 290, 280, 380, { fill: C.bg2 }); draw(x, 440); text(ctx, t, x, 620, 28, { align: "center", weight: 900 }); });
+      if (n >= 5) { D.fileIcon(ctx, 760, 740, 56, "tulisan", {}); D.fileIcon(ctx, 860, 740, 56, "foto", {}); D.fileIcon(ctx, 960, 740, 64, "folder", {}); text(ctx, "semuanya menyimpan file dan folder", 1300, 752, 30, { align: "center", color: C.ink2, weight: 800 }); }
+    },
+    full_flow(ctx, b, l) {
+      const u = ((l * 1.1) % 6); M.board(ctx, { show: 4, u: u > 4 ? undefined : u, screen: u > 3.5 ? "H" : "", key: u < 1, stage: u > 4.5 ? 3 : undefined });
+      text(ctx, "empat bagian di setiap komputer, besar maupun kecil", 960, 870, 32, { align: "center", color: C.accentDark, weight: 800 });
+    },
+
+    hardware(ctx, b, l) {
+      card(ctx, 120, 150, 1680, 740);
+      text(ctx, "PERANGKAT KERAS (hardware)", 960, 230, 34, { align: "center", color: C.accentDark, weight: 800 });
+      const items = [["keyboard", (x, y) => D.keyboard(ctx, x - 130, y - 50, 260, {})], ["prosesor", (x, y) => M.chip(ctx, x, y, 110)], ["layar", (x, y) => D.monitor(ctx, x - 110, y - 80, 220, 130)], ["hard disk", (x, y) => M.disk(ctx, x, y, 90)]];
+      const n = reveal(l, 0.6, 0.9, 4);
+      items.forEach(([t, draw], i) => { if (i >= n) return; const x = 330 + i * 420; card(ctx, x - 170, 290, 340, 420, { fill: C.bg2 }); draw(x, 450); text(ctx, t, x, 660, 32, { align: "center", weight: 900 }); });
+      if (n >= 4) text(ctx, "bisa dipegang", 960, 810, 40, { align: "center", weight: 900 });
+    },
+    software(ctx, b, l) {
+      card(ctx, 120, 150, 1680, 740);
+      const sc = D.monitor(ctx, 240, 260, 700, 420);
+      const on = l > 1.8;
+      if (!on) { ctx.fillStyle = "#2B3A46"; rr(ctx, sc.x, sc.y, sc.w, sc.h, 10); ctx.fill(); text(ctx, "…", sc.x + sc.w / 2, sc.y + sc.h / 2 + 20, 80, { align: "center", color: "#6B7B88" }); }
+      else { const win = D.windowFrame(ctx, sc.x + 30, sc.y + 30, sc.w - 60, sc.h - 60, "Pengolah kata"); text(ctx, "Halo, Ibu.", win.x + 20, win.y + 60, 40, { weight: 700 }); }
+      text(ctx, on ? "hardware + software: bekerja" : "hardware saja: kotak diam", 590, 820, 34, { align: "center", weight: 900, color: on ? C.good : C.ink2 });
+      card(ctx, 1080, 300, 640, 380, { fill: on ? "#FFF3D6" : C.bg2, stroke: on ? C.accent : "#D7E2DC", lw: 4 });
+      text(ctx, "PERANGKAT LUNAK", 1400, 380, 34, { align: "center", color: C.accentDark, weight: 800 }); text(ctx, "(software)", 1400, 430, 30, { align: "center", color: C.ink2, weight: 700 });
+      text(ctx, "program yang memberi perintah", 1400, 530, 32, { align: "center", weight: 900 }); text(ctx, "tidak bisa dipegang", 1400, 600, 32, { align: "center", color: C.ink2, weight: 800 });
+      if (on) M.arrow(ctx, 1080, 490, 960, 490, { color: C.accentDark });
+    },
+    os_apps(ctx, b, l) {
+      card(ctx, 120, 150, 1680, 740);
+      const n = reveal(l, 0.6, 1.4, 2);
+      if (n >= 1) { card(ctx, 180, 240, 760, 560, { fill: C.bg2 }); text(ctx, "SISTEM OPERASI", 560, 320, 36, { align: "center", weight: 900 }); text(ctx, "(operating system)", 560, 365, 28, { align: "center", color: C.ink2, weight: 700 }); text(ctx, "mengatur seluruh komputer", 560, 440, 30, { align: "center", weight: 800, color: C.accentDark }); ["Windows", "Android", "iOS"].forEach((s, i) => { card(ctx, 250 + i * 210, 520, 180, 90, { fill: C.panel }); text(ctx, s, 340 + i * 210, 578, 30, { align: "center", weight: 900 }); }); text(ctx, "di laptop, di HP", 560, 700, 28, { align: "center", color: C.ink2, weight: 700 }); }
+      if (n >= 2) { card(ctx, 980, 240, 760, 560, { fill: C.bg2 }); text(ctx, "APLIKASI", 1360, 320, 36, { align: "center", weight: 900 }); text(ctx, "(app)", 1360, 365, 28, { align: "center", color: C.ink2, weight: 700 }); text(ctx, "untuk satu tugas tertentu", 1360, 440, 30, { align: "center", weight: 800, color: C.accentDark }); [["kamera", "#2E7E9A"], ["game", "#D9443B"], ["pengolah kata", "#2E9E5B"]].forEach(([s, col], i) => { ctx.fillStyle = col; rr(ctx, 1060 + i * 210, 500, 150, 150, 30); ctx.fill(); text(ctx, s, 1135 + i * 210, 700, 26, { align: "center", weight: 800 }); }); }
+    },
+    hw_sw_pair(ctx, b, l) {
+      card(ctx, 120, 150, 1680, 740);
+      // angkot dan sopir
+      ctx.fillStyle = "#4C9BE0"; rr(ctx, 300, 420, 520, 200, 30); ctx.fill(); ctx.fillStyle = "#DCEBFF"; rr(ctx, 340, 450, 160, 90, 12); ctx.fill(); rr(ctx, 540, 450, 240, 90, 12); ctx.fill();
+      ctx.fillStyle = "#1F2A33"; [400, 720].forEach(x => { ctx.beginPath(); ctx.arc(x, 630, 46, 0, Math.PI * 2); ctx.fill(); });
+      text(ctx, "ANGKOT", 560, 700, 30, { align: "center", color: "#fff", weight: 900 });
+      if (l > 1.5) kid(ctx, 420, 470, 90, {});
+      text(ctx, "angkot = hardware", 560, 740, 32, { align: "center", weight: 900 }); text(ctx, l > 1.5 ? "sopir = software" : "tanpa sopir: diam", 560, 785, 32, { align: "center", weight: 900, color: l > 1.5 ? C.good : C.bad });
+      card(ctx, 1000, 260, 720, 520, { fill: C.bg2 });
+      text(ctx, "saling butuh", 1360, 340, 40, { align: "center", weight: 900 });
+      text(ctx, "hardware tanpa software:", 1360, 440, 30, { align: "center", color: C.ink2, weight: 700 }); text(ctx, "kotak diam", 1360, 490, 36, { align: "center", weight: 900, color: C.bad });
+      text(ctx, "software tanpa hardware:", 1360, 600, 30, { align: "center", color: C.ink2, weight: 700 }); text(ctx, "tidak punya tempat berjalan", 1360, 650, 36, { align: "center", weight: 900, color: C.bad });
+    },
+
+    phone_is_computer(ctx, b, l) {
+      const sc = D.phone(ctx, 560, 520, 360, 680); D.appGrid(ctx, sc);
+      const tags = [["MASUKAN: layar sentuh, mikrofon", 1000, 300, 560, 330], ["PROSES: prosesor + RAM di dalam", 1000, 420, 560, 520], ["KELUARAN: layar, speaker", 1000, 540, 560, 620], ["PENYIMPANAN: memori HP", 1000, 660, 560, 760]];
+      const n = reveal(l, 0.8, 1.1, 4);
+      tags.forEach(([s, x, y, tx, ty], i) => { if (i >= n) return; card(ctx, x, y - 50, 760, 80, { fill: i === 1 ? "#FFF3D6" : C.bg2, stroke: i === 1 ? C.accent : "#D7E2DC", lw: 3 }); text(ctx, s, x + 24, y + 2, 30, { weight: 800 }); ctx.strokeStyle = "#9AAFA6"; ctx.lineWidth = 4; ctx.beginPath(); ctx.moveTo(x, y - 10); ctx.lineTo(tx + 180, ty); ctx.stroke(); });
+      if (n >= 4) text(ctx, "HP juga komputer", 1380, 800, 40, { align: "center", weight: 900, color: C.accentDark });
+    },
+    everywhere(ctx, b, l) {
+      card(ctx, 120, 150, 1680, 740);
+      const items = [["mesin kasir", (x, y) => { D.monitor(ctx, x - 90, y - 90, 180, 110); text(ctx, "Rp13.000", x, y - 30, 26, { align: "center", weight: 900 }); }], ["ATM", (x, y) => { ctx.fillStyle = "#6B7B88"; rr(ctx, x - 100, y - 130, 200, 260, 16); ctx.fill(); ctx.fillStyle = "#8FD0E6"; rr(ctx, x - 70, y - 100, 140, 90, 8); ctx.fill(); D.keyboard(ctx, x - 60, y + 10, 120, {}); }], ["smart TV", (x, y) => { ctx.fillStyle = "#2B3A46"; rr(ctx, x - 150, y - 90, 300, 180, 10); ctx.fill(); ctx.fillStyle = "#8FD0E6"; rr(ctx, x - 138, y - 78, 276, 156, 6); ctx.fill(); }]];
+      const n = reveal(l, 0.6, 1.0, 3);
+      items.forEach(([t, draw], i) => { if (i >= n) return; const x = 400 + i * 560; card(ctx, x - 220, 250, 440, 440, { fill: C.bg2 }); draw(x, 440); text(ctx, t, x, 650, 32, { align: "center", weight: 900 }); });
+      if (n >= 3) { card(ctx, 360, 740, 1200, 100, { fill: "#FFF3D6", stroke: C.accent, lw: 4 }); text(ctx, "bentuk beda, empat bagian sama: masukan, proses, keluaran, penyimpanan", 960, 800, 30, { align: "center", weight: 900 }); }
+    },
+    make_show(ctx, b, l) {
+      card(ctx, 160, 150, 1600, 740);
+      text(ctx, "GILIRANMU", 960, 240, 34, { align: "center", color: C.accentDark, weight: 900 });
+      const items = [["Kelompokkan alat", "input, proses, output, atau penyimpanan?", (x, y) => { M.mic(ctx, x - 60, y, 50); M.chip(ctx, x + 50, y, 60); }], ["Urutkan perjalanan", "satu ketukan dari keyboard ke layar", (x, y) => { D.keyboard(ctx, x - 110, y - 30, 100, {}); M.arrow(ctx, x - 5, y, x + 25, y, { lw: 6 }); M.chip(ctx, x + 60, y, 50); }], ["Hardware atau software?", "pilah yang bisa dipegang", (x, y) => { D.mouse(ctx, x - 50, y, 50, {}); ctx.fillStyle = "#2E9E5B"; rr(ctx, x + 20, y - 35, 70, 70, 14); ctx.fill(); }]];
+      items.forEach(([t1, t2, draw], i) => { const x = 400 + i * 560; card(ctx, x - 240, 290, 480, 440, { fill: C.bg2 }); ctx.fillStyle = C.kiko; ctx.beginPath(); ctx.arc(x - 190, 340, 28, 0, Math.PI * 2); ctx.fill(); text(ctx, String(i + 1), x - 190, 352, 30, { align: "center", color: "#fff", weight: 900 }); draw(x, 470); text(ctx, t1, x, 600, 32, { align: "center", weight: 900 }); text(ctx, t2, x, 650, 24, { align: "center", weight: 700, color: C.ink2 }); });
+      text(ctx, "di halaman latihan episode ini — lalu coba sebutkan empat bagian pada HP di rumahmu", 960, 820, 28, { align: "center", color: C.ink2, weight: 700 });
+    }
+  });
+})(typeof window !== "undefined" ? window : globalThis);
+</script>
+<script>/* Inti halaman latihan: pemutar (kanvas + narasi), tombol suara nyala/mati (berpindah antara timeline suara dan teks),
+   kuis dengan petunjuk, dan kemajuan di localStorage (perangkat ini saja).
+   Pakai:  const P = PageCore({ suara: TIMELINE_SUARA_atau_null, teks: TIMELINE_TEKS });
+   Episode menambahkan latihannya sendiri lewat P.$, P.K, P.H, P.progress, P.save(), P.speed(), P.onProgress(fn). */
+function PageCore(TLS, opt = {}) {
+  const $ = id => document.getElementById(id);
+  const K = Kiko, H = K.helpers;
+  let voice = !!TLS.suara; let TL = voice ? TLS.suara : TLS.teks;
+  // ---------- progress storage (per device only) ----------
+  const KEY = opt.key || TL.episode.replace(/\./g, "").toLowerCase() + "-progress";   // D7.5 -> "d75-progress"
+  let progress = { quiz: {} };
+  try { const s = localStorage.getItem(KEY); if (s) progress = { quiz: {}, ...JSON.parse(s) }; } catch (e) {}
+  const extras = [];
+  function renderProgress() {
+    const el = $("progress"); if (!el) return; el.innerHTML = "";
+    Object.keys(TL.quizzes).forEach((id, i) => { const s = document.createElement("span"); s.textContent = "Cek " + (i + 1); s.className = progress.quiz[id] ? "ok" : ""; el.appendChild(s); });
+    extras.forEach(f => f(el));
+  }
+  function save() { try { localStorage.setItem(KEY, JSON.stringify(progress)); } catch (e) {} renderProgress(); }
+
+  // ---------- player ----------
+  const cv = $("screen"), ctx = cv.getContext("2d");
+  let t = 0, playing = false, last = 0, speed = 1, hasAudio = false;
+  const nar = $("nar"); nar.addEventListener("canplay", () => { hasAudio = true; }); nar.addEventListener("error", () => { hasAudio = false; });
+  function fmt(s) { s = Math.max(0, Math.floor(s)); return Math.floor(s / 60) + ":" + String(s % 60).padStart(2, "0"); }
+  function segStart(i) { return TL.beats.find(b => b.seg === i).start; }
+  function syncAudio() { if (voice && hasAudio) { try { nar.currentTime = t; } catch (e) {} } }
+  function drawNow() {
+    const b = K.draw(ctx, Math.min(t, TL.total - 0.01), TL);
+    $("barfill").style.width = (t / TL.total * 100) + "%"; $("bar").setAttribute("aria-valuenow", Math.round(t / TL.total * 100));
+    $("timelabel").textContent = fmt(t) + " / " + fmt(TL.total);
+    [...$("chapters").children].forEach((c, i) => c.classList.toggle("now", i === b.seg));
+    return b;
+  }
+  function loop(now) {
+    if (!playing) return;
+    const dt = Math.min(0.1, (now - last) / 1000); last = now; if (voice && hasAudio && !nar.paused) t = nar.currentTime; else t += dt * speed;
+    if (t >= TL.total) { t = TL.total - 0.01; setPlaying(false); }
+    drawNow(); requestAnimationFrame(loop);
+  }
+  function setPlaying(p) {
+    playing = p; $("bigplay").hidden = p; $("playbtn").textContent = p ? "❚❚ Jeda" : "▶ Putar";
+    if (p) { last = performance.now(); if (voice && hasAudio) { try { nar.currentTime = t; nar.playbackRate = speed; nar.play().catch(() => {}); } catch (e) {} } requestAnimationFrame(loop); } else nar.pause();
+  }
+  $("bigplay").addEventListener("click", () => setPlaying(true));
+  $("playbtn").addEventListener("click", () => setPlaying(!playing));
+  $("replay").addEventListener("click", () => { const b = K.beatAt(TL, t); t = segStart(b.seg); syncAudio(); drawNow(); setPlaying(true); });
+  $("slow").addEventListener("click", e => { speed = speed === 1 ? 0.8 : 1; nar.playbackRate = speed; e.currentTarget.setAttribute("aria-pressed", speed !== 1); });
+  function seekFromBar(ev) { const r = $("bar").getBoundingClientRect(); const x = (ev.touches ? ev.touches[0].clientX : ev.clientX) - r.left; t = Math.max(0, Math.min(TL.total - 0.01, x / r.width * TL.total)); syncAudio(); drawNow(); }
+  $("bar").addEventListener("click", seekFromBar);
+  $("bar").addEventListener("keydown", e => { if (e.key === "ArrowRight") { t = Math.min(TL.total - 0.01, t + 5); syncAudio(); drawNow(); } if (e.key === "ArrowLeft") { t = Math.max(0, t - 5); syncAudio(); drawNow(); } });
+  TL.segments.forEach((name, i) => { const b = document.createElement("button"); b.textContent = (i + 1) + ". " + name; b.addEventListener("click", () => { t = segStart(i); syncAudio(); drawNow(); setPlaying(true); }); $("chapters").appendChild(b); });
+  // voice on/off: switches between the narrated timeline and the reading-paced one, staying on the same beat
+  const vb = $("voice");
+  function setVoice(on) {
+    const cur = K.beatAt(TL, t);
+    voice = on && !!TLS.suara; TL = voice ? TLS.suara : TLS.teks;
+    const nb = TL.beats.find(b => b.id === cur.id) || TL.beats[0]; t = nb.start;
+    if (vb) { vb.setAttribute("aria-pressed", voice); vb.textContent = voice ? "🔊 Suara: nyala" : "🔇 Suara: mati"; }
+    if (playing) { if (voice && hasAudio) { try { nar.currentTime = t; nar.playbackRate = speed; nar.play().catch(() => {}); } catch (e) {} } else nar.pause(); }
+    drawNow();
+  }
+  if (vb) { if (!TLS.suara || !TLS.teks) vb.hidden = true; else { vb.addEventListener("click", () => setVoice(!voice)); vb.setAttribute("aria-pressed", voice); vb.textContent = voice ? "🔊 Suara: nyala" : "🔇 Suara: mati"; } }
+  drawNow();
+
+  // ---------- quiz ----------
+  const quizEl = $("quiz");
+  if (quizEl) Object.entries(TL.quizzes).forEach(([id, q], qi) => {
+    const box = document.createElement("div"); box.className = "q";
+    box.innerHTML = `<h3>${qi + 1}. ${q.q}</h3><div class="opts"></div><div class="fb"></div>`;
+    const opts = box.querySelector(".opts"), fb = box.querySelector(".fb");
+    q.options.forEach((o, i) => {
+      const b = document.createElement("button"); b.innerHTML = `<b>${"ABC"[i]}</b><span>${o}</span>`;
+      b.addEventListener("click", () => {
+        [...opts.children].forEach(c => c.classList.remove("wrong"));
+        if (i === q.answer) { b.classList.add("right"); fb.className = "fb good"; fb.textContent = "Benar! " + (q.explain || ""); progress.quiz[id] = true; save(); [...opts.children].forEach(c => c.disabled = true); }
+        else { b.classList.add("wrong"); fb.className = "fb bad"; fb.textContent = "Belum tepat. Petunjuk: " + q.hint; }
+      });
+      opts.appendChild(b);
+    });
+    if (progress.quiz[id]) { opts.children[q.answer].classList.add("right"); [...opts.children].forEach(c => c.disabled = true); fb.className = "fb good"; fb.textContent = "Sudah dijawab benar."; }
+    quizEl.appendChild(box);
+  });
+  renderProgress();
+
+  return { $, K, H, progress, save, renderProgress, speed: () => speed, timeline: () => TL,
+           onProgress(fn) { extras.push(fn); renderProgress(); } };
+}
+</script>
+<script>
+(function () {
+  const P = PageCore({ suara: {"episode": "D7.2", "title": "Mengenal Komputer: Perjalanan Satu Ketukan", "engine": ["../_alat/kiko-core.js", "../_alat/kiko-devices.js", "komputer.js", "scenes.js"], "parts": {"D7.2a": {"segs": [0, 1, 2, 3], "post": "Lanjut ke Bagian 2: Penyimpanan dan Perangkat Lunak"}, "D7.2b": {"segs": [4, 5, 6, 7], "pre": "Bagian 2: Penyimpanan dan Perangkat Lunak"}}, "youtube": {"ringkas": "Dito menekan satu tombol di keyboard, dan huruf muncul di layar. Apa yang terjadi di antaranya? Bersama Kiko kita ikuti perjalanan satu ketukan: dari alat masukan (input), ke prosesor dan RAM (proses), ke layar dan speaker (output), lalu disimpan di hard disk atau memori HP (penyimpanan). Juga: apa itu hardware dan software, mengapa HP juga komputer. Empat cek pemahaman dengan jeda berpikir.", "belajar": ["menyebut bagian komputer dan HP beserta fungsinya", "mengurutkan alur input → proses → output → penyimpanan pada kejadian sehari-hari", "membedakan perangkat keras (hardware) dan perangkat lunak (software)", "menjelaskan perbedaan RAM (sementara) dan penyimpanan (tetap)"], "bagian": {"D7.2a": "Input, Proses, Output", "D7.2b": "Penyimpanan dan Perangkat Lunak"}, "prasyarat": "episode D7.0 Cara Memakai Komputer dan HP", "jp": 8, "tagar": ["#MengenalKomputer", "#Hardware", "#Software", "#InputProsesOutput", "#Kelas7", "#SMP"]}, "recap": ["Input → proses → output → simpan.", "Hardware bisa dipegang, software tidak.", "RAM sementara, penyimpanan tetap."], "next": {"code": "D7.3", "title": "Kata Sandi Aman dan Rekam Jejak Digital", "note": "Latihan menyusun alur ada di halaman episode ini."}, "segments": ["Pembuka", "Main dulu tanpa komputer", "Masukan (input)", "Proses dan keluaran", "Penyimpanan", "Hardware dan software", "HP juga komputer", "Giliranmu"], "quizzes": {"q1": {"q": "Sinta BICARA ke HP untuk mencari lagu. Alat input mana yang dipakai?", "options": ["Speaker", "Mikrofon", "Layar"], "answer": 1, "hint": "Input = alat untuk MEMASUKKAN sesuatu ke komputer. Suara Sinta masuk lewat alat apa?"}, "q2": {"q": "Dito mengetik puisi, lalu listrik padam sebelum ia menyimpannya. Di mana tulisan itu tadi berada?", "options": ["Di RAM (memori sementara)", "Di hard disk", "Di layar"], "answer": 0, "hint": "Tulisan yang BELUM disimpan ada di meja kerja prosesor, yang isinya terhapus saat listrik padam."}, "q3": {"q": "Foto yang kamu ambil kemarin masih ada di HP hari ini. Foto itu tersimpan di mana?", "options": ["Di RAM", "Di penyimpanan (memori HP)", "Di layar"], "answer": 1, "hint": "RAM lupa begitu HP dimatikan. Tempat yang tetap ingat namanya apa?"}, "q4": {"q": "Mana yang termasuk SOFTWARE?", "options": ["Layar HP", "Aplikasi kamera", "Kabel charger"], "answer": 1, "hint": "Software tidak bisa dipegang. Mana dari ketiganya yang tidak bisa kamu pegang?"}}, "beats": [{"id": "intro1", "seg": 0, "scene": "title", "text": "Halo! Aku Kiko. Hari ini kita masuk ke dalam komputer, mengikuti perjalanan satu ketukan tombol.", "hold": 1.0, "start": 0.0, "speech": 0.4, "audio": 7.243, "dur": 9.54}, {"id": "intro2", "seg": 0, "scene": "title", "text": "Dito menekan huruf H di keyboard. Sekejap kemudian, H muncul di layar. Apa yang terjadi di antaranya?", "hold": 0.8, "start": 9.54, "speech": 9.94, "audio": 7.25, "dur": 10.34}, {"id": "intro3", "seg": 0, "scene": "prereq", "text": "Episode ini melanjutkan D7.0, cara memakai komputer dan HP. Kalau belum menontonnya, tonton dulu, ya.", "hold": 0.8, "start": 19.88, "speech": 20.28, "audio": 8.308, "dur": 9.808}, {"id": "play1", "seg": 1, "scene": "unplugged", "text": "Main dulu. Tiga teman berdiri berjajar. Yang pertama membisikkan satu kata. Yang kedua menulisnya di kertas. Yang ketiga membacakannya keras-keras.", "hold": 0.6, "start": 29.688, "speech": 30.088, "audio": 11.392, "dur": 12.692}, {"id": "play2", "seg": 1, "scene": "unplugged_roles", "text": "Teman pertama adalah masukan. Teman kedua mengolah. Teman ketiga keluaran. Komputer bekerja persis seperti barisan ini. Ingat permainan ini, ya.", "hold": 1.0, "start": 42.38, "speech": 42.78, "audio": 10.665, "dur": 12.365}, {"id": "s1a", "seg": 2, "scene": "input_intro", "text": "Perjalanan dimulai dari alat masukan (input): alat untuk memasukkan sesuatu ke komputer. Keyboard memasukkan huruf, mouse memasukkan gerakan dan klik.", "hold": 0.6, "start": 54.745, "speech": 55.145, "audio": 10.88, "dur": 12.18}, {"id": "s1b", "seg": 2, "scene": "input_more", "text": "Ada input lain: layar sentuh HP, mikrofon untuk suara, kamera untuk gambar, scanner untuk kertas. Semuanya cuma memasukkan, tidak berpikir.", "hold": 0.6, "start": 66.925, "speech": 67.325, "audio": 11.44, "dur": 12.74}, {"id": "s1c", "seg": 2, "scene": "input_signal", "text": "Dito menekan H. Keyboard tidak mengirim huruf, melainkan kode listrik: tombol nomor sekian ditekan. Kode itu meluncur lewat kabel ke dalam komputer.", "hold": 0.8, "start": 79.665, "speech": 80.065, "audio": 10.106, "dur": 12.84}, {"id": "q1", "seg": 2, "scene": "quiz", "quiz": "q1", "text": "Cek pemahaman. Sinta bicara ke HP untuk mencari lagu. Alat input mana yang dipakai? Pikirkan dulu.", "hold": 4.0, "start": 92.505, "speech": 92.905, "audio": 7.919, "dur": 13.04}, {"id": "q1a", "seg": 2, "scene": "quiz_answer", "quiz": "q1", "text": "Jawabannya: mikrofon. Suara Sinta masuk lewat mikrofon. Speaker dan layar justru alat keluaran.", "hold": 1.0, "start": 105.545, "speech": 105.945, "audio": 7.729, "dur": 9.429}, {"id": "s2a", "seg": 3, "scene": "cpu_intro", "text": "Kode tadi sampai ke otak komputer: prosesor (CPU). Prosesor membaca kode: oh, ini huruf H. Lalu ia memutuskan apa yang harus terjadi.", "hold": 0.6, "start": 114.974, "speech": 115.374, "audio": 11.484, "dur": 12.784}, {"id": "s2b", "seg": 3, "scene": "cpu_speed", "text": "Prosesor bekerja sangat cepat: miliaran langkah kecil tiap detik. Tetapi ia hanya menjalankan perintah, persis seperti Kiko di episode robot.", "hold": 0.6, "start": 127.758, "speech": 128.158, "audio": 9.46, "dur": 11.64}, {"id": "s2c", "seg": 3, "scene": "ram_intro", "text": "Prosesor butuh meja kerja: RAM, memori sementara. Huruf yang sedang diketik ditaruh di RAM supaya cepat diambil lagi.", "hold": 0.6, "start": 139.398, "speech": 139.798, "audio": 8.085, "dur": 10.64}, {"id": "s2d", "seg": 3, "scene": "ram_volatile", "text": "Tetapi RAM seperti papan tulis: kalau komputer dimatikan, isinya terhapus. Itulah sebabnya tulisan yang belum disimpan bisa hilang.", "hold": 0.8, "start": 150.038, "speech": 150.438, "audio": 8.798, "dur": 10.84}, {"id": "s2e", "seg": 3, "scene": "output_intro", "text": "Dari prosesor, hasilnya dikirim ke alat keluaran (output). Layar menampilkan huruf H. Speaker mengeluarkan bunyi. Printer mencetak ke kertas.", "hold": 0.6, "start": 160.878, "speech": 161.278, "audio": 10.903, "dur": 12.203}, {"id": "s2f", "seg": 3, "scene": "ipo_flow", "text": "Inilah alurnya: masukan, proses, keluaran. Keyboard, prosesor, layar. Semuanya terjadi lebih cepat dari kedipan mata.", "hold": 1.0, "start": 173.081, "speech": 173.481, "audio": 9.784, "dur": 11.484}, {"id": "q2", "seg": 3, "scene": "quiz", "quiz": "q2", "text": "Cek pemahaman. Dito mengetik puisi, lalu listrik padam sebelum ia menyimpannya. Di mana tulisan itu tadi berada?", "hold": 4.0, "start": 184.565, "speech": 184.965, "audio": 7.836, "dur": 13.54}, {"id": "q2a", "seg": 3, "scene": "quiz_answer", "quiz": "q2", "text": "Jawabannya: di RAM, memori sementara. Begitu listrik padam, isinya hilang. Karena itu, simpan sering-sering.", "hold": 1.0, "start": 198.105, "speech": 198.505, "audio": 8.052, "dur": 9.752}, {"id": "s3a", "seg": 4, "scene": "storage_intro", "text": "Supaya tidak hilang, tulisan harus dipindahkan ke tempat penyimpanan (storage): hard disk atau SSD di komputer, memori di HP.", "hold": 0.6, "start": 207.857, "speech": 208.257, "audio": 9.962, "dur": 11.262}, {"id": "s3b", "seg": 4, "scene": "storage_vs_ram", "text": "Bedanya dengan RAM: penyimpanan seperti buku catatan, isinya tetap ada walau komputer dimatikan. RAM cepat tetapi lupa; penyimpanan lambat tetapi ingat.", "hold": 0.6, "start": 219.119, "speech": 219.519, "audio": 11.696, "dur": 12.996}, {"id": "s3c", "seg": 4, "scene": "storage_kinds", "text": "Bentuknya macam-macam: hard disk, SSD, flashdisk, kartu memori, dan penyimpanan di internet (cloud). Semuanya menyimpan file dan folder dari episode D7.0.", "hold": 0.8, "start": 232.115, "speech": 232.515, "audio": 12.802, "dur": 14.302}, {"id": "s3d", "seg": 4, "scene": "full_flow", "text": "Sekarang alurnya lengkap: masukan, proses, keluaran, dan penyimpanan. Empat bagian ini ada di setiap komputer, besar maupun kecil.", "hold": 1.0, "start": 246.417, "speech": 246.817, "audio": 10.334, "dur": 12.034}, {"id": "q3", "seg": 4, "scene": "quiz", "quiz": "q3", "text": "Cek pemahaman. Foto yang kamu ambil kemarin masih ada di HP hari ini. Foto itu tersimpan di mana?", "hold": 4.0, "start": 258.451, "speech": 258.851, "audio": 6.829, "dur": 14.04}, {"id": "q3a", "seg": 4, "scene": "quiz_answer", "quiz": "q3", "text": "Jawabannya: di penyimpanan, memori HP. Kalau di RAM, foto itu hilang begitu HP dimatikan.", "hold": 1.0, "start": 272.491, "speech": 272.891, "audio": 7.6, "dur": 9.3}, {"id": "s4a", "seg": 5, "scene": "hardware", "text": "Semua yang tadi bisa dipegang: keyboard, prosesor, layar, hard disk. Itu perangkat keras (hardware).", "hold": 0.6, "start": 281.791, "speech": 282.191, "audio": 8.367, "dur": 9.667}, {"id": "s4b", "seg": 5, "scene": "software", "text": "Tetapi hardware sendirian tidak tahu harus berbuat apa. Yang memberi perintah adalah perangkat lunak (software): program yang tidak bisa dipegang.", "hold": 0.6, "start": 291.458, "speech": 291.858, "audio": 9.733, "dur": 11.64}, {"id": "s4c", "seg": 5, "scene": "os_apps", "text": "Software ada dua macam. Sistem operasi (operating system) mengatur seluruh komputer: Windows, Android, iOS. Aplikasi (app) untuk tugas tertentu: kamera, game, pengolah kata.", "hold": 0.8, "start": 303.098, "speech": 303.498, "audio": 14.759, "dur": 16.259}, {"id": "s4d", "seg": 5, "scene": "hw_sw_pair", "text": "Keduanya saling butuh. Hardware tanpa software hanya kotak diam. Software tanpa hardware tidak punya tempat berjalan. Seperti angkot dan sopirnya.", "hold": 1.0, "start": 319.357, "speech": 319.757, "audio": 10.228, "dur": 12.04}, {"id": "q4", "seg": 5, "scene": "quiz", "quiz": "q4", "text": "Cek pemahaman. Mana yang termasuk software: layar HP, aplikasi kamera, atau kabel charger? Pikirkan dulu.", "hold": 4.0, "start": 331.397, "speech": 331.797, "audio": 8.907, "dur": 13.607}, {"id": "q4a", "seg": 5, "scene": "quiz_answer", "quiz": "q4", "text": "Jawabannya: aplikasi kamera. Layar dan kabel bisa dipegang, jadi hardware. Aplikasi tidak bisa dipegang.", "hold": 1.0, "start": 345.004, "speech": 345.404, "audio": 8.4, "dur": 10.1}, {"id": "s5a", "seg": 6, "scene": "phone_is_computer", "text": "HP juga komputer. Layar sentuh dan mikrofon itu input. Di dalamnya ada prosesor dan RAM. Layar dan speaker output. Memori HP penyimpanan.", "hold": 0.6, "start": 355.104, "speech": 355.504, "audio": 10.722, "dur": 12.64}, {"id": "s5b", "seg": 6, "scene": "everywhere", "text": "Begitu juga mesin kasir, ATM, dan smart TV. Bentuknya beda, empat bagiannya sama. Kalau kamu paham empat bagian ini, kamu paham semua komputer.", "hold": 1.0, "start": 367.744, "speech": 368.144, "audio": 11.06, "dur": 13.54}, {"id": "s6a", "seg": 7, "scene": "make_show", "text": "Sekarang giliranmu. Di halaman latihan: kelompokkan alat ke input, proses, output, atau penyimpanan, lalu urutkan perjalanan satu ketukan.", "hold": 0.6, "start": 381.284, "speech": 381.684, "audio": 10.592, "dur": 11.892}, {"id": "s6b", "seg": 7, "scene": "make_show", "text": "Coba juga di rumah: sebutkan empat bagian itu pada HP atau TV di rumahmu. Kerjakan pelan-pelan; jawaban salah memberi petunjuk.", "hold": 1.5, "start": 393.176, "speech": 393.576, "audio": 9.597, "dur": 12.54}, {"id": "recap", "seg": 7, "scene": "recap", "text": "Tiga hal untuk diingat. Satu: input, proses, output, simpan. Dua: hardware bisa dipegang, software tidak. Tiga: RAM sementara, penyimpanan tetap.", "hold": 1.5, "start": 405.716, "speech": 406.116, "audio": 14.08, "dur": 16.28}, {"id": "outro", "seg": 7, "scene": "outro", "text": "Sampai jumpa di episode berikutnya: kata sandi aman dan rekam jejak digital.", "hold": 2.5, "start": 421.996, "speech": 422.396, "audio": 5.155, "dur": 9.54}], "total": 431.536}, teks: {"episode": "D7.2", "title": "Mengenal Komputer: Perjalanan Satu Ketukan", "engine": ["../_alat/kiko-core.js", "../_alat/kiko-devices.js", "komputer.js", "scenes.js"], "parts": {"D7.2a": {"segs": [0, 1, 2, 3], "post": "Lanjut ke Bagian 2: Penyimpanan dan Perangkat Lunak"}, "D7.2b": {"segs": [4, 5, 6, 7], "pre": "Bagian 2: Penyimpanan dan Perangkat Lunak"}}, "youtube": {"ringkas": "Dito menekan satu tombol di keyboard, dan huruf muncul di layar. Apa yang terjadi di antaranya? Bersama Kiko kita ikuti perjalanan satu ketukan: dari alat masukan (input), ke prosesor dan RAM (proses), ke layar dan speaker (output), lalu disimpan di hard disk atau memori HP (penyimpanan). Juga: apa itu hardware dan software, mengapa HP juga komputer. Empat cek pemahaman dengan jeda berpikir.", "belajar": ["menyebut bagian komputer dan HP beserta fungsinya", "mengurutkan alur input → proses → output → penyimpanan pada kejadian sehari-hari", "membedakan perangkat keras (hardware) dan perangkat lunak (software)", "menjelaskan perbedaan RAM (sementara) dan penyimpanan (tetap)"], "bagian": {"D7.2a": "Input, Proses, Output", "D7.2b": "Penyimpanan dan Perangkat Lunak"}, "prasyarat": "episode D7.0 Cara Memakai Komputer dan HP", "jp": 8, "tagar": ["#MengenalKomputer", "#Hardware", "#Software", "#InputProsesOutput", "#Kelas7", "#SMP"]}, "recap": ["Input → proses → output → simpan.", "Hardware bisa dipegang, software tidak.", "RAM sementara, penyimpanan tetap."], "next": {"code": "D7.3", "title": "Kata Sandi Aman dan Rekam Jejak Digital", "note": "Latihan menyusun alur ada di halaman episode ini."}, "segments": ["Pembuka", "Main dulu tanpa komputer", "Masukan (input)", "Proses dan keluaran", "Penyimpanan", "Hardware dan software", "HP juga komputer", "Giliranmu"], "quizzes": {"q1": {"q": "Sinta BICARA ke HP untuk mencari lagu. Alat input mana yang dipakai?", "options": ["Speaker", "Mikrofon", "Layar"], "answer": 1, "hint": "Input = alat untuk MEMASUKKAN sesuatu ke komputer. Suara Sinta masuk lewat alat apa?"}, "q2": {"q": "Dito mengetik puisi, lalu listrik padam sebelum ia menyimpannya. Di mana tulisan itu tadi berada?", "options": ["Di RAM (memori sementara)", "Di hard disk", "Di layar"], "answer": 0, "hint": "Tulisan yang BELUM disimpan ada di meja kerja prosesor, yang isinya terhapus saat listrik padam."}, "q3": {"q": "Foto yang kamu ambil kemarin masih ada di HP hari ini. Foto itu tersimpan di mana?", "options": ["Di RAM", "Di penyimpanan (memori HP)", "Di layar"], "answer": 1, "hint": "RAM lupa begitu HP dimatikan. Tempat yang tetap ingat namanya apa?"}, "q4": {"q": "Mana yang termasuk SOFTWARE?", "options": ["Layar HP", "Aplikasi kamera", "Kabel charger"], "answer": 1, "hint": "Software tidak bisa dipegang. Mana dari ketiganya yang tidak bisa kamu pegang?"}}, "beats": [{"id": "intro1", "seg": 0, "scene": "title", "text": "Halo! Aku Kiko. Hari ini kita masuk ke dalam komputer, mengikuti perjalanan satu ketukan tombol.", "hold": 1.0, "start": 0.0, "speech": 0.0, "audio": 10.175, "dur": 12.175}, {"id": "intro2", "seg": 0, "scene": "title", "text": "Dito menekan huruf H di keyboard. Sekejap kemudian, H muncul di layar. Apa yang terjadi di antaranya?", "hold": 0.8, "start": 12.175, "speech": 12.175, "audio": 11.425, "dur": 13.225}, {"id": "intro3", "seg": 0, "scene": "prereq", "text": "Episode ini melanjutkan D7.0, cara memakai komputer dan HP. Kalau belum menontonnya, tonton dulu, ya.", "hold": 0.8, "start": 25.4, "speech": 25.4, "audio": 10.175, "dur": 11.975}, {"id": "play1", "seg": 1, "scene": "unplugged", "text": "Main dulu. Tiga teman berdiri berjajar. Yang pertama membisikkan satu kata. Yang kedua menulisnya di kertas. Yang ketiga membacakannya keras-keras.", "hold": 0.6, "start": 37.375, "speech": 37.375, "audio": 13.3, "dur": 14.9}, {"id": "play2", "seg": 1, "scene": "unplugged_roles", "text": "Teman pertama adalah masukan. Teman kedua mengolah. Teman ketiga keluaran. Komputer bekerja persis seperti barisan ini. Ingat permainan ini, ya.", "hold": 1.0, "start": 52.275, "speech": 52.275, "audio": 13.3, "dur": 15.3}, {"id": "s1a", "seg": 2, "scene": "input_intro", "text": "Perjalanan dimulai dari alat masukan (input): alat untuk memasukkan sesuatu ke komputer. Keyboard memasukkan huruf, mouse memasukkan gerakan dan klik.", "hold": 0.6, "start": 67.575, "speech": 67.575, "audio": 13.3, "dur": 14.9}, {"id": "s1b", "seg": 2, "scene": "input_more", "text": "Ada input lain: layar sentuh HP, mikrofon untuk suara, kamera untuk gambar, scanner untuk kertas. Semuanya cuma memasukkan, tidak berpikir.", "hold": 0.6, "start": 82.475, "speech": 82.475, "audio": 13.3, "dur": 14.9}, {"id": "s1c", "seg": 2, "scene": "input_signal", "text": "Dito menekan H. Keyboard tidak mengirim huruf, melainkan kode listrik: tombol nomor sekian ditekan. Kode itu meluncur lewat kabel ke dalam komputer.", "hold": 0.8, "start": 97.375, "speech": 97.375, "audio": 14.55, "dur": 16.35}, {"id": "q1", "seg": 2, "scene": "quiz", "quiz": "q1", "text": "Cek pemahaman. Sinta bicara ke HP untuk mencari lagu. Alat input mana yang dipakai? Pikirkan dulu.", "hold": 4.0, "start": 113.725, "speech": 113.725, "audio": 10.8, "dur": 15.8}, {"id": "q1a", "seg": 2, "scene": "quiz_answer", "quiz": "q1", "text": "Jawabannya: mikrofon. Suara Sinta masuk lewat mikrofon. Speaker dan layar justru alat keluaran.", "hold": 1.0, "start": 129.525, "speech": 129.525, "audio": 8.925, "dur": 10.925}, {"id": "s2a", "seg": 3, "scene": "cpu_intro", "text": "Kode tadi sampai ke otak komputer: prosesor (CPU). Prosesor membaca kode: oh, ini huruf H. Lalu ia memutuskan apa yang harus terjadi.", "hold": 0.6, "start": 140.45, "speech": 140.45, "audio": 14.55, "dur": 16.15}, {"id": "s2b", "seg": 3, "scene": "cpu_speed", "text": "Prosesor bekerja sangat cepat: miliaran langkah kecil tiap detik. Tetapi ia hanya menjalankan perintah, persis seperti Kiko di episode robot.", "hold": 0.6, "start": 156.6, "speech": 156.6, "audio": 13.3, "dur": 14.9}, {"id": "s2c", "seg": 3, "scene": "ram_intro", "text": "Prosesor butuh meja kerja: RAM, memori sementara. Huruf yang sedang diketik ditaruh di RAM supaya cepat diambil lagi.", "hold": 0.6, "start": 171.5, "speech": 171.5, "audio": 12.05, "dur": 13.65}, {"id": "s2d", "seg": 3, "scene": "ram_volatile", "text": "Tetapi RAM seperti papan tulis: kalau komputer dimatikan, isinya terhapus. Itulah sebabnya tulisan yang belum disimpan bisa hilang.", "hold": 0.8, "start": 185.15, "speech": 185.15, "audio": 12.05, "dur": 13.85}, {"id": "s2e", "seg": 3, "scene": "output_intro", "text": "Dari prosesor, hasilnya dikirim ke alat keluaran (output). Layar menampilkan huruf H. Speaker mengeluarkan bunyi. Printer mencetak ke kertas.", "hold": 0.6, "start": 199.0, "speech": 199.0, "audio": 12.675, "dur": 14.275}, {"id": "s2f", "seg": 3, "scene": "ipo_flow", "text": "Inilah alurnya: masukan, proses, keluaran. Keyboard, prosesor, layar. Semuanya terjadi lebih cepat dari kedipan mata.", "hold": 1.0, "start": 213.275, "speech": 213.275, "audio": 10.175, "dur": 12.175}, {"id": "q2", "seg": 3, "scene": "quiz", "quiz": "q2", "text": "Cek pemahaman. Dito mengetik puisi, lalu listrik padam sebelum ia menyimpannya. Di mana tulisan itu tadi berada?", "hold": 4.0, "start": 225.45, "speech": 225.45, "audio": 11.425, "dur": 16.425}, {"id": "q2a", "seg": 3, "scene": "quiz_answer", "quiz": "q2", "text": "Jawabannya: di RAM, memori sementara. Begitu listrik padam, isinya hilang. Karena itu, simpan sering-sering.", "hold": 1.0, "start": 241.875, "speech": 241.875, "audio": 9.55, "dur": 11.55}, {"id": "s3a", "seg": 4, "scene": "storage_intro", "text": "Supaya tidak hilang, tulisan harus dipindahkan ke tempat penyimpanan (storage): hard disk atau SSD di komputer, memori di HP.", "hold": 0.6, "start": 253.425, "speech": 253.425, "audio": 12.675, "dur": 14.275}, {"id": "s3b", "seg": 4, "scene": "storage_vs_ram", "text": "Bedanya dengan RAM: penyimpanan seperti buku catatan, isinya tetap ada walau komputer dimatikan. RAM cepat tetapi lupa; penyimpanan lambat tetapi ingat.", "hold": 0.6, "start": 267.7, "speech": 267.7, "audio": 13.925, "dur": 15.525}, {"id": "s3c", "seg": 4, "scene": "storage_kinds", "text": "Bentuknya macam-macam: hard disk, SSD, flashdisk, kartu memori, dan penyimpanan di internet (cloud). Semuanya menyimpan file dan folder dari episode D7.0.", "hold": 0.8, "start": 283.225, "speech": 283.225, "audio": 13.925, "dur": 15.725}, {"id": "s3d", "seg": 4, "scene": "full_flow", "text": "Sekarang alurnya lengkap: masukan, proses, keluaran, dan penyimpanan. Empat bagian ini ada di setiap komputer, besar maupun kecil.", "hold": 1.0, "start": 298.95, "speech": 298.95, "audio": 12.05, "dur": 14.05}, {"id": "q3", "seg": 4, "scene": "quiz", "quiz": "q3", "text": "Cek pemahaman. Foto yang kamu ambil kemarin masih ada di HP hari ini. Foto itu tersimpan di mana?", "hold": 4.0, "start": 313.0, "speech": 313.0, "audio": 12.05, "dur": 17.05}, {"id": "q3a", "seg": 4, "scene": "quiz_answer", "quiz": "q3", "text": "Jawabannya: di penyimpanan, memori HP. Kalau di RAM, foto itu hilang begitu HP dimatikan.", "hold": 1.0, "start": 330.05, "speech": 330.05, "audio": 9.55, "dur": 11.55}, {"id": "s4a", "seg": 5, "scene": "hardware", "text": "Semua yang tadi bisa dipegang: keyboard, prosesor, layar, hard disk. Itu perangkat keras (hardware).", "hold": 0.6, "start": 341.6, "speech": 341.6, "audio": 9.55, "dur": 11.15}, {"id": "s4b", "seg": 5, "scene": "software", "text": "Tetapi hardware sendirian tidak tahu harus berbuat apa. Yang memberi perintah adalah perangkat lunak (software): program yang tidak bisa dipegang.", "hold": 0.6, "start": 352.75, "speech": 352.75, "audio": 13.3, "dur": 14.9}, {"id": "s4c", "seg": 5, "scene": "os_apps", "text": "Software ada dua macam. Sistem operasi (operating system) mengatur seluruh komputer: Windows, Android, iOS. Aplikasi (app) untuk tugas tertentu: kamera, game, pengolah kata.", "hold": 0.8, "start": 367.65, "speech": 367.65, "audio": 15.175, "dur": 16.975}, {"id": "s4d", "seg": 5, "scene": "hw_sw_pair", "text": "Keduanya saling butuh. Hardware tanpa software hanya kotak diam. Software tanpa hardware tidak punya tempat berjalan. Seperti angkot dan sopirnya.", "hold": 1.0, "start": 384.625, "speech": 384.625, "audio": 13.3, "dur": 15.3}, {"id": "q4", "seg": 5, "scene": "quiz", "quiz": "q4", "text": "Cek pemahaman. Mana yang termasuk software: layar HP, aplikasi kamera, atau kabel charger? Pikirkan dulu.", "hold": 4.0, "start": 399.925, "speech": 399.925, "audio": 10.175, "dur": 15.175}, {"id": "q4a", "seg": 5, "scene": "quiz_answer", "quiz": "q4", "text": "Jawabannya: aplikasi kamera. Layar dan kabel bisa dipegang, jadi hardware. Aplikasi tidak bisa dipegang.", "hold": 1.0, "start": 415.1, "speech": 415.1, "audio": 9.55, "dur": 11.55}, {"id": "s5a", "seg": 6, "scene": "phone_is_computer", "text": "HP juga komputer. Layar sentuh dan mikrofon itu input. Di dalamnya ada prosesor dan RAM. Layar dan speaker output. Memori HP penyimpanan.", "hold": 0.6, "start": 426.65, "speech": 426.65, "audio": 14.55, "dur": 16.15}, {"id": "s5b", "seg": 6, "scene": "everywhere", "text": "Begitu juga mesin kasir, ATM, dan smart TV. Bentuknya beda, empat bagiannya sama. Kalau kamu paham empat bagian ini, kamu paham semua komputer.", "hold": 1.0, "start": 442.8, "speech": 442.8, "audio": 15.175, "dur": 17.175}, {"id": "s6a", "seg": 7, "scene": "make_show", "text": "Sekarang giliranmu. Di halaman latihan: kelompokkan alat ke input, proses, output, atau penyimpanan, lalu urutkan perjalanan satu ketukan.", "hold": 0.6, "start": 459.975, "speech": 459.975, "audio": 12.05, "dur": 13.65}, {"id": "s6b", "seg": 7, "scene": "make_show", "text": "Coba juga di rumah: sebutkan empat bagian itu pada HP atau TV di rumahmu. Kerjakan pelan-pelan; jawaban salah memberi petunjuk.", "hold": 1.5, "start": 473.625, "speech": 473.625, "audio": 13.3, "dur": 15.8}, {"id": "recap", "seg": 7, "scene": "recap", "text": "Tiga hal untuk diingat. Satu: input, proses, output, simpan. Dua: hardware bisa dipegang, software tidak. Tiga: RAM sementara, penyimpanan tetap.", "hold": 1.5, "start": 489.425, "speech": 489.425, "audio": 13.3, "dur": 15.8}, {"id": "outro", "seg": 7, "scene": "outro", "text": "Sampai jumpa di episode berikutnya: kata sandi aman dan rekam jejak digital.", "hold": 2.5, "start": 505.225, "speech": 505.225, "audio": 8.3, "dur": 11.8}], "total": 517.025} });
+  const { $, progress, save } = P; progress.levels = progress.levels || {};
+  const LEVELS = [
+    { id: "kelompok", name: "1 Kelompokkan alat", task: "Ketuk satu alat, lalu ketuk bagiannya: masukan, proses, keluaran, atau penyimpanan.", kind: "sort",
+      groups: ["Masukan (input)", "Proses", "Keluaran (output)", "Penyimpanan"],
+      items: [["keyboard", 0], ["prosesor (CPU)", 1], ["layar", 2], ["hard disk", 3], ["mikrofon", 0], ["RAM", 1], ["speaker", 2], ["kartu memori", 3], ["kamera", 0], ["printer", 2]],
+      hint: "Tanya: alat ini MEMASUKKAN sesuatu, MENGOLAH, MENGELUARKAN hasil, atau MENYIMPAN untuk nanti?" },
+    { id: "urut", name: "2 Urutkan perjalanan", task: "Perjalanan satu ketukan teracak. Pakai ▲▼ sampai urutannya benar, lalu tekan Periksa.", kind: "order",
+      correct: ["Dito menekan tombol H di keyboard", "Keyboard mengirim kode lewat kabel", "Prosesor membaca kode: ini huruf H", "Huruf H ditaruh di RAM", "Layar menampilkan huruf H", "Dito menekan Simpan: file masuk ke hard disk"],
+      start: [2, 0, 4, 1, 5, 3],
+      hint: "Ikuti alurnya: masukan → proses → keluaran → penyimpanan. Apa yang paling pertama terjadi?" },
+    { id: "hwsw", name: "3 Hardware atau software?", task: "Untuk tiap benda, ketuk Hardware (bisa dipegang) atau Software (tidak bisa dipegang).", kind: "two",
+      items: [["mouse", 0], ["aplikasi kamera", 1], ["kabel charger", 0], ["Android (sistem operasi)", 1], ["layar HP", 0], ["game", 1], ["flashdisk", 0], ["pengolah kata", 1]],
+      hint: "Coba bayangkan memegangnya. Bisa? Berarti hardware. Kalau yang kamu pegang hanya alatnya, bukan programnya, berarti software." }
+  ];
+  let L = 0, sel = null, placed = {}, order = [], qi = 0;
+  const level = () => LEVELS[L];
+  function setResult(kind, msg) { $("result").innerHTML = msg ? `<div class="result ${kind}">${msg}</div>` : ""; }
+  function done(extra) { progress.levels[level().id] = true; save(); renderLevels(); setResult("good", `Latihan ${level().name} selesai! ` + (extra || "")); }
+  function wrong(hint) { setResult("bad", "Belum tepat. Petunjuk: " + hint); }
+  function renderSort() {
+    const lv = level(), area = $("exarea"); area.innerHTML = `<div class="qnum">Alat yang belum dikelompokkan</div><div class="chips" id="chips"></div><div class="qnum" style="margin-top:14px">Bagian</div><div class="groups" id="groups"></div>`;
+    const left = lv.items.filter(([n]) => placed[n] === undefined);
+    if (!left.length) $("chips").innerHTML = `<span class="hint">Semua sudah dikelompokkan.</span>`;
+    left.forEach(([n]) => { const b = document.createElement("button"); b.textContent = n; b.setAttribute("aria-pressed", sel === n); b.addEventListener("click", () => { sel = sel === n ? null : n; setResult(sel ? "info" : "", sel ? `"${sel}" dipilih. Sekarang ketuk bagiannya.` : ""); renderSort(); }); $("chips").appendChild(b); });
+    lv.groups.forEach((g, gi) => {
+      const mine = lv.items.filter(([n]) => placed[n] === gi).map(([n]) => n);
+      const b = document.createElement("button"); b.innerHTML = `<b>${g}</b><span class="count">${mine.length ? mine.join(", ") : "belum ada"}</span>`;
+      b.addEventListener("click", () => {
+        if (!sel) { setResult("info", "Ketuk dulu alatnya."); return; }
+        if (lv.items.find(([n]) => n === sel)[1] === gi) { placed[sel] = gi; sel = null; setResult("good", `Masuk ke ${g}.`); renderSort(); if (lv.items.every(([n]) => placed[n] !== undefined)) done("Empat bagian ini ada di setiap komputer."); }
+        else { b.classList.add("wrong"); wrong(lv.hint); setTimeout(() => b.classList.remove("wrong"), 900); }
+      });
+      $("groups").appendChild(b);
+    });
+  }
+  function renderOrder() {
+    const lv = level(), area = $("exarea"); area.innerHTML = `<ol class="steps" id="steps"></ol><div class="row"><button class="warm" id="check">Periksa</button></div>`;
+    order.forEach((ci, pos) => { const li = document.createElement("li"); li.innerHTML = `<span class="n">${pos + 1}</span><span class="t">${lv.correct[ci]}</span>`; const up = document.createElement("button"); up.textContent = "▲"; up.disabled = pos === 0; up.addEventListener("click", () => { [order[pos - 1], order[pos]] = [order[pos], order[pos - 1]]; setResult(); renderOrder(); }); const dn = document.createElement("button"); dn.textContent = "▼"; dn.disabled = pos === order.length - 1; dn.addEventListener("click", () => { [order[pos + 1], order[pos]] = [order[pos], order[pos + 1]]; setResult(); renderOrder(); }); li.append(up, dn); $("steps").appendChild(li); });
+    $("check").addEventListener("click", () => {
+      const ok = order.every((ci, pos) => ci === pos); const firstBad = order.findIndex((ci, pos) => ci !== pos);
+      [...$("steps").children].forEach((li, pos) => { li.classList.toggle("ok", order[pos] === pos); li.classList.toggle("bad", !ok && pos === firstBad); });
+      if (ok) done("Lebih cepat dari kedipan mata, tetapi urutannya selalu begitu."); else wrong(`Langkah ke-${firstBad + 1} belum pada tempatnya. ` + lv.hint);
+    });
+  }
+  function renderTwo() {
+    const lv = level(), area = $("exarea");
+    if (qi >= lv.items.length) { area.innerHTML = `<div class="qtext">Semua sudah dipilah.</div>`; return; }
+    const [name, ans] = lv.items[qi];
+    area.innerHTML = `<div class="qnum">Benda ${qi + 1} dari ${lv.items.length}</div><div class="qtext">${name}</div><div class="two" id="opts"></div>`;
+    ["Hardware (bisa dipegang)", "Software (tidak bisa dipegang)"].forEach((o, i) => { const b = document.createElement("button"); b.textContent = o; b.addEventListener("click", () => { [...$("opts").children].forEach(c => c.classList.remove("wrong")); if (i === ans) { b.classList.add("right"); [...$("opts").children].forEach(c => c.disabled = true); setResult("good", "Benar!"); qi++; setTimeout(() => { if (qi >= lv.items.length) done("Keduanya saling butuh, seperti angkot dan sopirnya."); else { setResult(); renderTwo(); } }, 800); } else { b.classList.add("wrong"); wrong(lv.hint); } }); $("opts").appendChild(b); });
+  }
+  function loadLevel(i) { L = i; sel = null; placed = {}; qi = 0; order = [...(level().start || [])]; $("task").textContent = level().task; setResult(); renderLevels(); ({ sort: renderSort, order: renderOrder, two: renderTwo })[level().kind](); }
+  function renderLevels() { const el = $("levels"); el.innerHTML = ""; LEVELS.forEach((lv, i) => { const b = document.createElement("button"); b.textContent = lv.name; b.className = progress.levels[lv.id] ? "done" : ""; b.setAttribute("aria-pressed", i === L); b.addEventListener("click", () => loadLevel(i)); el.appendChild(b); }); }
+  $("redo").addEventListener("click", () => { progress.levels[level().id] = false; save(); loadLevel(L); });
+  P.onProgress(el => LEVELS.forEach(lv => { const s = document.createElement("span"); s.textContent = "Latihan " + lv.name.slice(0, 1); s.className = progress.levels[lv.id] ? "ok" : ""; el.appendChild(s); }));
+  loadLevel(0);
+})();
+</script>
