@@ -1,0 +1,1037 @@
+<title>Kiko: Data Pribadi</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<style>
+/* Inti gaya halaman latihan: satu kolom, pemutar di atas, latihan di bawah; palet kantin sama dengan video. */
+:root {
+  --bg: #EAF2EE; --surface: #FFFFFF; --surface2: #DCE9E2; --ink: #1F2A33; --ink2: #4A5A66; --line: #C9D8D0;
+  --accent: #2E7E9A; --accent-ink: #FFFFFF; --warm: #F2B134; --warm-ink: #5E3E05; --good: #2E9E5B; --good-bg: #DDF3E4; --bad: #D9443B; --bad-bg: #FBE1DF;
+  --font: Inter, "Segoe UI", Roboto, Arial, sans-serif;
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) { --bg: #141C1A; --surface: #1E2926; --surface2: #273532; --ink: #EAF2EE; --ink2: #A9BBB3; --line: #3A4A45; --accent: #5FB3CE; --accent-ink: #0F1D22; --warm: #F2B134; --warm-ink: #2B1C02; --good: #5FCB8A; --good-bg: #1F3A2B; --bad: #F07A72; --bad-bg: #442523; color-scheme: dark } }
+:root[data-theme="dark"] { --bg: #141C1A; --surface: #1E2926; --surface2: #273532; --ink: #EAF2EE; --ink2: #A9BBB3; --line: #3A4A45; --accent: #5FB3CE; --accent-ink: #0F1D22; --warm: #F2B134; --warm-ink: #2B1C02; --good: #5FCB8A; --good-bg: #1F3A2B; --bad: #F07A72; --bad-bg: #442523; color-scheme: dark }
+* { box-sizing: border-box }
+body { background: var(--bg); color: var(--ink); font-family: var(--font); font-size: 17px; line-height: 1.5; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); padding-block: 16px 48px }
+.wrap { max-width: 980px; margin: 0 auto; display: grid; gap: 28px }
+h1 { font-size: clamp(26px, 5vw, 38px); line-height: 1.15; margin: 0; text-wrap: balance; font-weight: 900 }
+h2 { font-size: 22px; margin: 0 0 12px; font-weight: 800 }
+h3 { font-size: 18px; margin: 0 0 8px; font-weight: 800 }
+p { margin: 0 0 10px; max-width: 65ch }
+.eyebrow { font-size: 13px; letter-spacing: .08em; text-transform: uppercase; color: var(--ink2); font-weight: 800; margin-bottom: 6px }
+.card { background: var(--surface); border-radius: 18px; padding: 18px; border: 1px solid var(--line) }
+button { font: inherit; font-weight: 800; border: 0; border-radius: 12px; padding: 12px 16px; cursor: pointer; background: var(--surface2); color: var(--ink); min-height: 48px; touch-action: manipulation }
+button:focus-visible, [tabindex]:focus-visible { outline: 3px solid var(--warm); outline-offset: 2px }
+button.primary { background: var(--accent); color: var(--accent-ink) }
+button.warm { background: var(--warm); color: var(--warm-ink) }
+button[aria-pressed="true"] { box-shadow: inset 0 0 0 3px var(--accent) }
+button:disabled { opacity: .45; cursor: default }
+.row { display: flex; flex-wrap: wrap; gap: 10px; align-items: center }
+/* player */
+.player { display: grid; gap: 12px }
+.stage { position: relative; width: 100%; aspect-ratio: 16 / 9; max-width: 100%; background: #EAF2EE; border-radius: 14px; overflow: hidden; border: 1px solid var(--line) }
+.stage canvas { width: 100%; height: 100%; display: block }
+.bigplay { position: absolute; inset: 0; display: grid; place-items: center; background: rgba(31,42,51,.25); border: 0; border-radius: 0; color: #fff; font-size: 20px; min-height: 0 }
+.bigplay span { background: var(--accent); color: var(--accent-ink); padding: 14px 26px; border-radius: 999px; font-weight: 900 }
+.bar { height: 10px; background: var(--surface2); border-radius: 999px; overflow: hidden; cursor: pointer }
+.bar > i { display: block; height: 100%; width: 0; background: var(--warm) }
+.chapters { display: flex; flex-wrap: wrap; gap: 8px }
+.chapters button { font-size: 14px; padding: 8px 12px; min-height: 40px }
+.chapters button.now { background: var(--warm); color: var(--warm-ink) }
+.hint { color: var(--ink2); font-size: 15px }
+/* exercises (generic parts) */
+.levels { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 12px }
+.levels button { font-size: 14px; padding: 8px 12px; min-height: 40px }
+.levels button.done::after { content: " ✓"; color: var(--good) }
+.task { background: var(--surface2); border-radius: 12px; padding: 12px 14px; margin-bottom: 12px; font-weight: 700 }
+.result { border-radius: 12px; padding: 12px 14px; font-weight: 800; margin-top: 10px }
+.result.good { background: var(--good-bg); color: var(--good) }
+.result.bad { background: var(--bad-bg); color: var(--bad) }
+.result.info { background: var(--surface2); color: var(--ink) }
+/* quiz */
+.quiz { display: grid; gap: 16px }
+.q { border-top: 1px solid var(--line); padding-top: 14px }
+.q:first-child { border-top: 0; padding-top: 0 }
+.opts { display: grid; gap: 8px; margin-top: 8px }
+.opts button { text-align: left; font-weight: 700; background: var(--surface2); display: flex; gap: 10px; align-items: center }
+.opts button b { width: 30px; height: 30px; border-radius: 50%; background: var(--accent); color: var(--accent-ink); display: grid; place-items: center; flex: none }
+.opts button.right { background: var(--good-bg); box-shadow: inset 0 0 0 3px var(--good) }
+.opts button.wrong { background: var(--bad-bg) }
+.fb { margin-top: 8px; font-weight: 700 }
+.fb.good { color: var(--good) } .fb.bad { color: var(--bad) }
+details summary { cursor: pointer; font-weight: 800; font-size: 18px }
+details[open] summary { margin-bottom: 10px }
+ul.plain { padding-left: 20px; margin: 0 0 10px } ul.plain li { margin-bottom: 6px; max-width: 65ch }
+.progress { display: flex; gap: 8px; flex-wrap: wrap } .progress span { background: var(--surface2); border-radius: 999px; padding: 6px 12px; font-size: 14px; font-weight: 700 }
+.progress span.ok { background: var(--good-bg); color: var(--good) }
+@media (prefers-reduced-motion: reduce) { * { transition: none !important } }
+
+/* latihan D9.4 */
+.qnum { font-weight: 800; color: var(--ink2); font-size: 14px; margin-bottom: 4px }
+.qtext { font-weight: 800; font-size: 18px; margin-bottom: 8px }
+.ex { background: var(--surface2); border-radius: 12px; padding: 12px 14px; font-weight: 800; font-size: 17px; margin: 8px 0 }
+.opts { display: grid; gap: 8px; margin: 8px 0 }
+.opts button { text-align: left; font-size: 15px; min-height: 44px; padding: 10px 12px; background: var(--surface); border: 2px solid var(--line) }
+.opts button.right { border-color: var(--good); background: var(--good-bg) } .opts button.wrong { border-color: var(--bad); background: var(--bad-bg) }
+.three { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 6px; margin: 8px 0 }
+.three button { min-height: 52px; font-size: 14px; font-weight: 900; padding: 6px 4px }
+.three .pub { background: var(--good-bg); border: 2px solid var(--good); color: var(--good) } .three .pri { background: var(--bad-bg); border: 2px solid var(--bad); color: var(--bad) } .three .dep { background: #FFF3D6; border: 2px solid #B57A12; color: #B57A12 }
+.gap { margin: 10px 0 } .gap .lbl { display: flex; justify-content: space-between; font-size: 13px; font-weight: 800; color: var(--ink2) }
+.gap .bar { height: 16px; border-radius: 8px; background: var(--surface2); overflow: hidden; border: 1px solid var(--line) } .gap .bar i { display: block; height: 100%; background: linear-gradient(90deg, var(--good), #F2B134, var(--bad)); transition: width .4s }
+.rows { display: grid; gap: 6px; margin: 8px 0 }
+.rw { display: grid; grid-template-columns: 1fr auto; gap: 8px; align-items: center; background: var(--surface); border: 2px solid var(--line); border-radius: 12px; padding: 8px 10px; font-weight: 700; font-size: 15px }
+.rw .pb { display: flex; gap: 6px } .rw .pb button { min-height: 36px; padding: 4px 10px; font-size: 13px }
+.rw .pb button[aria-pressed="true"] { background: var(--accent); color: #fff; border-color: var(--accent) }
+.rw.ok { border-color: var(--good); background: var(--good-bg) } .rw.bad { border-color: var(--bad); background: var(--bad-bg) }
+</style>
+
+<div class="wrap">
+  <header>
+    <div class="eyebrow">Informatika · Fase D · Kelas IX · Episode D9.4</div>
+    <h1>Data Pribadi, Identitas Digital, dan Kesadaran Penuh</h1>
+    <p class="hint">Tonton videonya (dua bagian), lalu kerjakan tiga latihan di bawahnya. Prasyarat: episode D7.3 dan D7.7. Suara bisa dimatikan; teks selalu tampil di layar.</p>
+  </header>
+  <section class="card player" aria-label="Pemutar episode">
+    <div class="stage">
+      <canvas id="screen" width="1920" height="1080" aria-label="Animasi episode"></canvas>
+      <audio id="nar" preload="auto" src="narasi.mp3"></audio>
+      <button class="bigplay" id="bigplay" aria-label="Putar"><span>▶ Putar episode</span></button>
+    </div>
+    <div class="bar" id="bar" role="slider" aria-label="Posisi episode" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" tabindex="0"><i id="barfill"></i></div>
+    <div class="row">
+      <button class="primary" id="playbtn">▶ Putar</button>
+      <button id="replay">↺ Ulangi bagian ini</button>
+      <button id="voice" aria-pressed="true">🔊 Suara: nyala</button>
+      <button id="slow" aria-pressed="false">🐢 Mode lambat</button>
+      <span class="hint" id="timelabel">0:00 / 0:00</span>
+    </div>
+    <div>
+      <div class="eyebrow">Bagian</div>
+      <div class="chapters" id="chapters"></div>
+    </div>
+  </section>
+
+  <section class="card" aria-label="Cek pemahaman">
+    <h2>Cek pemahaman</h2>
+    <p class="hint">Pilih satu jawaban. Kalau salah, kamu dapat petunjuk, lalu coba lagi.</p>
+    <div class="quiz" id="quiz"></div>
+  </section>
+
+  <section class="card" aria-label="Latihan">
+    <h2>Latihan: apa yang boleh kubagikan?</h2>
+    <p class="hint">Tiga latihan. Jawaban salah memberi petunjuk, bukan nilai.</p>
+    <div class="levels" id="levels"></div>
+    <div class="task" id="task"></div>
+    <div id="exarea"></div>
+    <div id="result"></div>
+    <div class="row" style="margin-top:10px"><button id="redo">↺ Ulangi latihan ini</button></div>
+  </section>
+
+  <section class="card" aria-label="Kemajuan">
+    <h2>Kemajuanmu</h2>
+    <div class="progress" id="progress"></div>
+    <p class="hint" style="margin-top:8px">Kemajuan tersimpan di perangkat ini saja.</p>
+  </section>
+
+  <section class="card">
+    <details>
+      <summary>Untuk guru: cara memakai episode ini (8 JP)</summary>
+      <p><b>Tujuan pembelajaran (D9.4):</b> murid memilah informasi privat dan publik, melindungi data pribadi dan identitas digital, serta menerapkan kesadaran penuh di dunia digital. Elemen LD, Fase D. Semua akun, nama, dan unggahan dalam episode ini fiktif.</p>
+      <ul class="plain">
+        <li><b>Pertemuan 1 (2 JP), konkret:</b> permainan sepuluh kartu dan tiga kotak (publik, privat, tergantung) tanpa komputer; bandingkan pilahan antarmurid dan bahas alasannya. Tonton Bagian 1 sampai segmen Data pribadi. Latihan 1 Pilah kartu.</li>
+        <li><b>Pertemuan 2 (2 JP), skenario bercabang:</b> tonton segmen Apa yang boleh kubagikan?. Latihan 2 di halaman ini sambil mengawasi celah data. Bermain peran: satu murid ingin mengunggah sesuatu, murid lain menjadi "pengukur celah" yang menyebut data apa yang terbuka.</li>
+        <li><b>Pertemuan 3 (2 JP), identitas digital:</b> tonton Bagian 2 sampai segmen Identitas digital. Latihan 3 Rapikan profil. Murid menggambar "profil ideal" miliknya: nama tampilan, bio, pengaturan privat, lokasi, tinjauan tanda.</li>
+        <li><b>Pertemuan 4 (2 JP), jeda sadar:</b> tonton segmen Jeda sadar dan Kalau telanjur. Latihan "empat pertanyaan": tiap murid menilai tiga unggahan fiktif dengan empat pertanyaan, lalu memutuskan unggah, ubah, atau tunda. Tugas bersama orang tua: memeriksa bio, pengaturan privat, dan lokasi akun sendiri; tulis satu perubahan yang dilakukan. Asesmen lewat lembar empat pertanyaan dan catatan perubahan.</li>
+      </ul>
+      <p><b>Target minimum:</b> membedakan data umum dan berisiko, menyebut dua pengaturan akun yang merapikan identitas digital, dan menerapkan jeda sebelum mengunggah. <b>Pengayaan:</b> menjelaskan mengapa potongan informasi kecil bisa digabung menjadi potret lengkap; menyusun panduan singkat "unggah dengan sadar" untuk adik kelas.</p>
+    </details>
+  </section>
+</div>
+
+<script>/* Kiko core: mesin gambar bersama untuk semua episode Fase D.
+   Kiko.draw(ctx, t, TL) menggambar frame pada detik t di kanvas 1920x1080 secara deterministik.
+   Berisi palet, pembantu gambar, tokoh (Kiko, murid), dan adegan umum (judul, kuis, ringkasan, penutup).
+   Setiap episode menambahkan adegannya sendiri di scenes.js: Object.assign(Kiko.SCENES, {...}). */
+(function (global) {
+  const W = 1920, H = 1080;
+  const FONT = "Inter, 'Segoe UI', Roboto, Arial, sans-serif";
+  const C = {
+    bg: "#EAF2EE", bg2: "#DCE9E2", ink: "#1F2A33", ink2: "#4A5A66", panel: "#FFFFFF",
+    tile: "#F7FAF8", tileLine: "#C9D8D0", table: "#A4653A", tableTop: "#C98A57",
+    kiko: "#2E7E9A", kikoDark: "#1F5A6E", kikoLight: "#8FD0E6", eye: "#FFFFFF", pupil: "#1F2A33",
+    accent: "#F2B134", accentDark: "#B57A12", good: "#2E9E5B", bad: "#D9443B", goodBg: "#DDF3E4", badBg: "#FBE1DF",
+    sub: "#1F2A33", subText: "#FFFFFF", star: "#F2B134", skin: "#F1C9A5", skin2: "#C98A57", hair: "#2B2118",
+    uniform: "#FFFFFF", pants: "#2F4E7D", bubble: "#FFFFFF", muted: "#9AAFA6"
+  };
+  const ease = u => u < 0 ? 0 : u > 1 ? 1 : u * u * (3 - 2 * u);
+  const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
+  const lerp = (a, b, u) => a + (b - a) * u;
+
+  // ---------- drawing helpers ----------
+  function rr(ctx, x, y, w, h, r) {
+    ctx.beginPath(); ctx.moveTo(x + r, y); ctx.arcTo(x + w, y, x + w, y + h, r); ctx.arcTo(x + w, y + h, x, y + h, r);
+    ctx.arcTo(x, y + h, x, y, r); ctx.arcTo(x, y, x + w, y, r); ctx.closePath();
+  }
+  function text(ctx, s, x, y, size, opt = {}) {
+    ctx.font = `${opt.weight || 600} ${size}px ${FONT}`; ctx.fillStyle = opt.color || C.ink;
+    ctx.textAlign = opt.align || "left"; ctx.textBaseline = opt.base || "alphabetic"; ctx.fillText(s, x, y);
+  }
+  function wrap(ctx, s, size, weight, maxW) {
+    ctx.font = `${weight} ${size}px ${FONT}`;
+    const words = s.split(" "), lines = []; let cur = "";
+    for (const w of words) {
+      const test = cur ? cur + " " + w : w;
+      if (ctx.measureText(test).width > maxW && cur) { lines.push(cur); cur = w; } else cur = test;
+    }
+    if (cur) lines.push(cur);
+    return lines;
+  }
+  function para(ctx, s, x, y, size, maxW, opt = {}) {
+    const lines = wrap(ctx, s, size, opt.weight || 500, maxW); const lh = size * (opt.lh || 1.35);
+    lines.forEach((l, i) => text(ctx, l, x, y + i * lh, size, opt));
+    return lines.length * lh;
+  }
+  function arrowIcon(ctx, kind, cx, cy, s, color) {
+    ctx.save(); ctx.translate(cx, cy); ctx.strokeStyle = color; ctx.fillStyle = color; ctx.lineWidth = s * 0.16; ctx.lineCap = "round"; ctx.lineJoin = "round";
+    if (kind === "up") {
+      ctx.beginPath(); ctx.moveTo(0, s * 0.45); ctx.lineTo(0, -s * 0.3); ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(-s * 0.32, -s * 0.05); ctx.lineTo(0, -s * 0.45); ctx.lineTo(s * 0.32, -s * 0.05); ctx.stroke();
+    } else if (kind === "left" || kind === "right") {
+      const k = kind === "left" ? -1 : 1;
+      ctx.beginPath(); ctx.moveTo(0, s * 0.45); ctx.lineTo(0, -s * 0.05); ctx.quadraticCurveTo(0, -s * 0.32, k * s * 0.28, -s * 0.32); ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(k * s * 0.12, -s * 0.5); ctx.lineTo(k * s * 0.4, -s * 0.32); ctx.lineTo(k * s * 0.12, -s * 0.14); ctx.stroke();
+    } else if (kind === "east") {
+      ctx.beginPath(); ctx.moveTo(-s * 0.4, 0); ctx.lineTo(s * 0.3, 0); ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(s * 0.05, -s * 0.28); ctx.lineTo(s * 0.4, 0); ctx.lineTo(s * 0.05, s * 0.28); ctx.stroke();
+    } else if (kind === "grab") {
+      ctx.beginPath(); ctx.arc(0, s * 0.12, s * 0.22, 0, Math.PI * 2); ctx.fill();
+      ctx.beginPath(); ctx.moveTo(-s * 0.4, -s * 0.42); ctx.lineTo(-s * 0.4, -s * 0.12); ctx.moveTo(s * 0.4, -s * 0.42); ctx.lineTo(s * 0.4, -s * 0.12);
+      ctx.moveTo(-s * 0.4, -s * 0.42); ctx.lineTo(s * 0.4, -s * 0.42); ctx.stroke();
+    }
+    ctx.restore();
+  }
+  function bakso(ctx, cx, cy, s, opt = {}) {
+    // a bowl of bakso: the goal
+    ctx.save(); ctx.translate(cx, cy);
+    if (opt.glow) { ctx.beginPath(); ctx.arc(0, 0, s * 0.62, 0, Math.PI * 2); ctx.fillStyle = "rgba(242,177,52,0.22)"; ctx.fill(); }
+    ctx.fillStyle = "#E4EEF5"; ctx.beginPath(); ctx.moveTo(-s * 0.46, -s * 0.05); ctx.quadraticCurveTo(-s * 0.4, s * 0.45, 0, s * 0.45); ctx.quadraticCurveTo(s * 0.4, s * 0.45, s * 0.46, -s * 0.05); ctx.closePath(); ctx.fill();
+    ctx.strokeStyle = "#8FA9BD"; ctx.lineWidth = s * 0.05; ctx.stroke();
+    ctx.fillStyle = "#C8B49A"; ctx.beginPath(); ctx.ellipse(0, -s * 0.05, s * 0.44, s * 0.14, 0, 0, Math.PI * 2); ctx.fill();
+    for (const [dx, dy, r] of [[-0.16, -0.1, 0.13], [0.14, -0.12, 0.13], [0, -0.22, 0.12]]) {
+      ctx.fillStyle = "#9A7B5B"; ctx.beginPath(); ctx.arc(dx * s, dy * s, r * s, 0, Math.PI * 2); ctx.fill();
+      ctx.fillStyle = "#B8977A"; ctx.beginPath(); ctx.arc(dx * s - r * s * 0.3, dy * s - r * s * 0.3, r * s * 0.4, 0, Math.PI * 2); ctx.fill();
+    }
+    ctx.fillStyle = "#4CA64C"; for (const dx of [-0.26, 0.1, 0.26]) { ctx.beginPath(); ctx.arc(dx * s, -s * 0.07, s * 0.045, 0, Math.PI * 2); ctx.fill(); }
+    ctx.restore();
+  }
+  function table(ctx, x, y, w, h) {
+    ctx.fillStyle = C.table; rr(ctx, x + w * 0.1, y + h * 0.3, w * 0.8, h * 0.55, 10); ctx.fill();
+    ctx.fillStyle = C.tableTop; rr(ctx, x + w * 0.06, y + h * 0.18, w * 0.88, h * 0.3, 10); ctx.fill();
+    ctx.fillStyle = "rgba(0,0,0,0.12)"; ctx.fillRect(x + w * 0.16, y + h * 0.5, w * 0.08, h * 0.35); ctx.fillRect(x + w * 0.76, y + h * 0.5, w * 0.08, h * 0.35);
+  }
+  function kiko(ctx, cx, cy, s, ang, opt = {}) {
+    ctx.save(); ctx.translate(cx, cy);
+    // shadow
+    ctx.fillStyle = "rgba(0,0,0,0.12)"; ctx.beginPath(); ctx.ellipse(0, s * 0.42, s * 0.42, s * 0.12, 0, 0, Math.PI * 2); ctx.fill();
+    ctx.rotate(ang);
+    // wheels
+    ctx.fillStyle = C.kikoDark; rr(ctx, -s * 0.46, -s * 0.2, s * 0.12, s * 0.5, 5); ctx.fill(); rr(ctx, s * 0.34, -s * 0.2, s * 0.12, s * 0.5, 5); ctx.fill();
+    // body
+    ctx.fillStyle = opt.flash ? `rgba(217,68,59,${0.5 + 0.5 * opt.flash})` : C.kiko; rr(ctx, -s * 0.38, -s * 0.36, s * 0.76, s * 0.72, s * 0.16); ctx.fill();
+    // visor (front, facing up)
+    ctx.fillStyle = C.kikoLight; rr(ctx, -s * 0.26, -s * 0.33, s * 0.52, s * 0.3, s * 0.1); ctx.fill();
+    // eyes
+    const mood = opt.mood || "happy";
+    ctx.fillStyle = C.pupil;
+    if (mood === "sad") { ctx.beginPath(); ctx.arc(-s * 0.12, -s * 0.18, s * 0.05, 0, Math.PI * 2); ctx.arc(s * 0.12, -s * 0.18, s * 0.05, 0, Math.PI * 2); ctx.fill(); ctx.strokeStyle = C.pupil; ctx.lineWidth = s * 0.03; ctx.beginPath(); ctx.arc(0, -s * 0.03, s * 0.08, Math.PI * 1.15, Math.PI * 1.85); ctx.stroke(); }
+    else if (mood === "confused") { ctx.beginPath(); ctx.arc(-s * 0.12, -s * 0.18, s * 0.05, 0, Math.PI * 2); ctx.arc(s * 0.12, -s * 0.18, s * 0.035, 0, Math.PI * 2); ctx.fill(); ctx.strokeStyle = C.pupil; ctx.lineWidth = s * 0.03; ctx.beginPath(); ctx.moveTo(-s * 0.08, -s * 0.06); ctx.lineTo(s * 0.08, -s * 0.09); ctx.stroke(); }
+    else { ctx.beginPath(); ctx.arc(-s * 0.12, -s * 0.18, s * 0.055, 0, Math.PI * 2); ctx.arc(s * 0.12, -s * 0.18, s * 0.055, 0, Math.PI * 2); ctx.fill(); ctx.strokeStyle = C.pupil; ctx.lineWidth = s * 0.03; ctx.beginPath(); ctx.arc(0, -s * 0.1, s * 0.08, Math.PI * 0.15, Math.PI * 0.85); ctx.stroke(); }
+    // front pointer
+    ctx.fillStyle = C.accent; ctx.beginPath(); ctx.moveTo(-s * 0.1, -s * 0.38); ctx.lineTo(s * 0.1, -s * 0.38); ctx.lineTo(0, -s * 0.5); ctx.closePath(); ctx.fill();
+    // antenna
+    ctx.strokeStyle = C.kikoDark; ctx.lineWidth = s * 0.04; ctx.beginPath(); ctx.moveTo(0, s * 0.36); ctx.lineTo(0, s * 0.5); ctx.stroke();
+    ctx.fillStyle = C.accent; ctx.beginPath(); ctx.arc(0, s * 0.52, s * 0.07, 0, Math.PI * 2); ctx.fill();
+    // tray with bakso when grabbed
+    if (opt.grabbed) bakso(ctx, 0, s * 0.05, s * 0.45);
+    ctx.restore();
+    if (opt.wave !== undefined) { // arm waving (title scene)
+      ctx.save(); ctx.translate(cx + s * 0.42, cy - s * 0.1); ctx.rotate(-0.6 + Math.sin(opt.wave * 6) * 0.4);
+      ctx.strokeStyle = C.kikoDark; ctx.lineWidth = s * 0.08; ctx.lineCap = "round"; ctx.beginPath(); ctx.moveTo(0, 0); ctx.lineTo(s * 0.3, -s * 0.3); ctx.stroke();
+      ctx.fillStyle = C.kikoLight; ctx.beginPath(); ctx.arc(s * 0.32, -s * 0.33, s * 0.09, 0, Math.PI * 2); ctx.fill(); ctx.restore();
+    }
+  }
+  function kid(ctx, cx, cy, s, opt = {}) {
+    // simple student figure, standing, facing viewer
+    ctx.save(); ctx.translate(cx, cy);
+    ctx.fillStyle = "rgba(0,0,0,0.12)"; ctx.beginPath(); ctx.ellipse(0, s * 1.02, s * 0.5, s * 0.1, 0, 0, Math.PI * 2); ctx.fill();
+    ctx.fillStyle = C.pants; rr(ctx, -s * 0.3, s * 0.35, s * 0.6, s * 0.5, s * 0.1); ctx.fill();
+    ctx.fillStyle = C.skin; ctx.fillRect(-s * 0.24, s * 0.8, s * 0.16, s * 0.2); ctx.fillRect(s * 0.08, s * 0.8, s * 0.16, s * 0.2);
+    ctx.fillStyle = C.uniform; rr(ctx, -s * 0.36, -s * 0.12, s * 0.72, s * 0.56, s * 0.12); ctx.fill();
+    ctx.strokeStyle = "#D5DDE2"; ctx.lineWidth = s * 0.025; rr(ctx, -s * 0.36, -s * 0.12, s * 0.72, s * 0.56, s * 0.12); ctx.stroke();
+    ctx.fillStyle = C.skin; ctx.beginPath(); ctx.arc(0, -s * 0.42, s * 0.32, 0, Math.PI * 2); ctx.fill();
+    ctx.fillStyle = opt.hairColor || C.hair; ctx.beginPath(); ctx.arc(0, -s * 0.5, s * 0.33, Math.PI, 0); ctx.fill();
+    if (opt.hair === "long") { ctx.fillRect(-s * 0.33, -s * 0.5, s * 0.12, s * 0.45); ctx.fillRect(s * 0.21, -s * 0.5, s * 0.12, s * 0.45); }
+    ctx.fillStyle = C.pupil; ctx.beginPath(); ctx.arc(-s * 0.11, -s * 0.4, s * 0.035, 0, Math.PI * 2); ctx.arc(s * 0.11, -s * 0.4, s * 0.035, 0, Math.PI * 2); ctx.fill();
+    ctx.strokeStyle = C.pupil; ctx.lineWidth = s * 0.025; ctx.beginPath(); ctx.arc(0, -s * 0.33, s * 0.08, Math.PI * 0.15, Math.PI * 0.85); ctx.stroke();
+    // arms
+    ctx.strokeStyle = C.skin; ctx.lineWidth = s * 0.11; ctx.lineCap = "round"; ctx.beginPath();
+    if (opt.point) { ctx.moveTo(s * 0.32, s * 0.02); ctx.lineTo(s * 0.75, -s * 0.2); } else { ctx.moveTo(s * 0.34, s * 0.02); ctx.lineTo(s * 0.42, s * 0.38); }
+    ctx.moveTo(-s * 0.34, s * 0.02); ctx.lineTo(-s * 0.42, s * 0.38); ctx.stroke();
+    ctx.restore();
+  }
+  function bubble(ctx, x, y, w, s, size, opt = {}) {
+    const lines = wrap(ctx, s, size, 600, w - 48); const h = lines.length * size * 1.3 + 40;
+    ctx.fillStyle = opt.fill || C.bubble; ctx.strokeStyle = opt.stroke || "#B7C7BF"; ctx.lineWidth = 3;
+    rr(ctx, x, y - h, w, h, 22); ctx.fill(); ctx.stroke();
+    const tx = opt.tailX !== undefined ? opt.tailX : x + 60;
+    ctx.beginPath(); ctx.moveTo(tx - 16, y); ctx.lineTo(tx + 16, y); ctx.lineTo(tx + (opt.tailDir || 0), y + 28); ctx.closePath(); ctx.fillStyle = opt.fill || C.bubble; ctx.fill();
+    ctx.strokeStyle = opt.stroke || "#B7C7BF"; ctx.beginPath(); ctx.moveTo(tx - 16, y); ctx.lineTo(tx + (opt.tailDir || 0), y + 28); ctx.lineTo(tx + 16, y); ctx.stroke();
+    lines.forEach((l, i) => text(ctx, l, x + 24, y - h + 24 + size + i * size * 1.3, size, { color: opt.color || C.ink, weight: 600 }));
+    return h;
+  }
+  function card(ctx, x, y, w, h, opt = {}) { ctx.fillStyle = opt.fill || C.panel; rr(ctx, x, y, w, h, opt.r || 26); ctx.fill(); if (opt.stroke) { ctx.strokeStyle = opt.stroke; ctx.lineWidth = opt.lw || 4; ctx.stroke(); } }
+
+  // ---------- adegan umum (semua episode) ----------
+  const SCENES = {
+    title(ctx, b, l, t, TL) {
+      card(ctx, 160, 160, 1600, 700, { fill: C.panel });
+      kiko(ctx, 420, 520, 260, 0, { wave: l, mood: "happy" });
+      text(ctx, "Informatika · Fase D · Episode " + TL.episode, 720, 330, 34, { color: C.ink2, weight: 700 });
+      const ts = TL.title.length > 34 ? 74 : 92; const th = para(ctx, TL.title, 720, 440, ts, 1000, { weight: 900, lh: 1.1 }); const hy = Math.max(640, 440 + th - ts * 0.35 + 30);
+      if (TL.hook) { text(ctx, "SETELAH MENONTON, KAMU BISA:", 720, hy, 26, { color: C.accentDark, weight: 800 }); para(ctx, TL.hook, 720, hy + 50, 34, 1000, { weight: 800, lh: 1.3 }); if (hy <= 660) text(ctx, "Dengarkan, atau baca teksnya pelan-pelan.", 720, 800, 26, { color: C.ink2, weight: 600 }); }
+      else text(ctx, "Dengarkan, atau baca teksnya pelan-pelan.", 720, 700, 36, { color: C.ink2, weight: 600 });
+      arrowIcon(ctx, "up", 1560, 250, 70, C.kikoLight); arrowIcon(ctx, "right", 1660, 250, 70, C.kikoLight);
+    },
+    quiz(ctx, b, l, t, TL, answered) {
+      const q = TL.quizzes[b.quiz]; card(ctx, 200, 150, 1520, 740, { stroke: C.accent, lw: 6 });
+      text(ctx, "CEK PEMAHAMAN", 960, 230, 32, { align: "center", color: C.accentDark, weight: 800 });
+      para(ctx, q.q, 960, 320, 44, 1360, { weight: 800, align: "center", lh: 1.3 });
+      q.options.forEach((o, i) => {
+        const y = 470 + i * 120; const right = answered && i === q.answer;
+        card(ctx, 320, y, 1280, 96, { fill: right ? C.goodBg : answered ? "#F4F6F5" : C.bg2, stroke: right ? C.good : "#CFDCD5", lw: right ? 6 : 3 });
+        ctx.fillStyle = right ? C.good : C.kiko; ctx.beginPath(); ctx.arc(380, y + 48, 30, 0, Math.PI * 2); ctx.fill();
+        text(ctx, "ABC"[i], 380, y + 61, 34, { align: "center", color: "#fff", weight: 900 });
+        text(ctx, o, 440, y + 62, 38, { weight: 700, color: answered && !right ? C.muted : C.ink });
+        if (right) text(ctx, "✓", 1540, y + 66, 54, { align: "center", color: C.good, weight: 900 });
+      });
+      if (!answered) { // thinking timer
+        const frac = clamp(l / b.dur, 0, 1); ctx.strokeStyle = "#D7E2DC"; ctx.lineWidth = 14; ctx.beginPath(); ctx.arc(1640, 230, 40, 0, Math.PI * 2); ctx.stroke();
+        ctx.strokeStyle = C.accent; ctx.beginPath(); ctx.arc(1640, 230, 40, -Math.PI / 2, -Math.PI / 2 + frac * Math.PI * 2); ctx.stroke();
+        text(ctx, "Pikirkan dulu, jangan buru-buru.", 960, 860, 32, { align: "center", color: C.ink2, weight: 600 });
+      }
+    },
+    quiz_answer(ctx, b, l, t, TL) { SCENES.quiz(ctx, b, l, t, TL, true); },
+    recap(ctx, b, l, t, TL) {
+      // TL.recap: tiga kalimat pendek dari script.json
+      card(ctx, 160, 140, 1600, 760);
+      text(ctx, "TIGA HAL UNTUK DIINGAT", 960, 230, 34, { align: "center", color: C.accentDark, weight: 900 });
+      const items = TL.recap || [];
+      const show = clamp(Math.floor((l - 0.6) / 2.2) + 1, 1, Math.max(1, items.length));
+      items.forEach((s, i) => { if (i >= show) return; card(ctx, 300, 290 + i * 180, 1320, 140, { fill: C.bg2 }); ctx.fillStyle = C.kiko; ctx.beginPath(); ctx.arc(380, 360 + i * 180, 40, 0, Math.PI * 2); ctx.fill(); text(ctx, String(i + 1), 380, 376 + i * 180, 40, { align: "center", color: "#fff", weight: 900 }); text(ctx, s, 450, 375 + i * 180, 42, { weight: 800 }); });
+      kiko(ctx, 1620, 820, 130, 0);
+    },
+    outro(ctx, b, l, t, TL) {
+      // TL.next: {code, title, note} episode berikutnya, dari script.json
+      const n = TL.next || {};
+      card(ctx, 260, 200, 1400, 600);
+      text(ctx, "EPISODE BERIKUTNYA", 960, 320, 34, { align: "center", color: C.accentDark, weight: 900 });
+      text(ctx, n.code || "", 960, 440, 60, { align: "center", weight: 900 });
+      text(ctx, n.title || "", 960, 530, 54, { align: "center", weight: 800, color: C.ink2 });
+      text(ctx, n.note || "", 960, 680, 34, { align: "center", color: C.ink2, weight: 600 });
+      kiko(ctx, 960, 760 + 20, 140, 0, { wave: l });
+    }
+  };
+
+  function beatAt(TL, t) {
+    let b = TL.beats[0];
+    for (const x of TL.beats) { if (t >= x.start) b = x; else break; }
+    return b;
+  }
+  function draw(ctx, t, TL, opt = {}) {
+    const b = beatAt(TL, t); const l = t - b.start;
+    ctx.save(); ctx.setTransform(1, 0, 0, 1, 0, 0);
+    ctx.fillStyle = C.bg; ctx.fillRect(0, 0, W, H);
+    // header
+    text(ctx, TL.episode + " · " + TL.title, 60, 78, 30, { color: C.ink2, weight: 700 });
+    text(ctx, TL.segments[b.seg], 1860, 78, 30, { color: C.accentDark, weight: 800, align: "right" });
+    ctx.fillStyle = C.bg2; ctx.fillRect(0, 100, W, 6); ctx.fillStyle = C.accent; ctx.fillRect(0, 100, W * clamp(t / TL.total, 0, 1), 6);
+    const fn = SCENES[b.scene]; if (fn) fn(ctx, b, l, t, TL);
+    // narration card (burned-in text the student reads)
+    if (opt.subtitles !== false) {
+      const size = 44; const lines = wrap(ctx, b.text, size, 700, 1660);
+      const h = lines.length * size * 1.3 + 44; const y0 = 1056 - h;
+      ctx.fillStyle = "rgba(31,42,51,0.92)"; rr(ctx, 100, y0, 1720, h, 20); ctx.fill();
+      // reading progress (how far along the text the reader should be)
+      const frac = clamp(l / b.audio, 0, 1); ctx.fillStyle = C.accent; rr(ctx, 100, y0 + h - 8, 1720 * frac, 8, 4); ctx.fill();
+      lines.forEach((ln, i) => text(ctx, ln, 960, y0 + 22 + size + i * size * 1.3, size, { align: "center", color: C.subText, weight: 700 }));
+    }
+    ctx.restore();
+    return b;
+  }
+
+  global.Kiko = { draw, beatAt, W, H, C, FONT, SCENES,
+    helpers: { rr, text, wrap, para, arrowIcon, bakso, table, kiko, kid, bubble, card, ease, clamp, lerp } };
+})(typeof window !== "undefined" ? window : globalThis);
+
+/* Pembantu gambar perangkat (dipakai D7.0, D7.2, …): monitor, mouse, pointer, keyboard, HP, jari, ikon file/folder, jendela.
+   Semua digambar dengan kode (tanpa aset unduhan). Muat setelah ../_alat/kiko-core.js; dipakai scenes.js. */
+(function (global) {
+  const K = global.Kiko, H = K.helpers, C = K.C;
+  const { rr, text, wrap, card, ease, clamp, lerp } = H;
+  const D = {};
+  const SCREEN_BG = "#F4F8FB", BEZEL = "#2B3A46", BEZEL2 = "#1A262F", SEL = "rgba(46,126,154,0.22)";
+
+  // ---------- komputer ----------
+  // monitor di atas meja; mengembalikan kotak layar {x,y,w,h}
+  D.monitor = function (ctx, x, y, w, h) {
+    ctx.fillStyle = BEZEL; rr(ctx, x - 18, y - 18, w + 36, h + 36, 22); ctx.fill();
+    ctx.fillStyle = SCREEN_BG; rr(ctx, x, y, w, h, 10); ctx.fill();
+    // kaki dan meja
+    ctx.fillStyle = BEZEL2; rr(ctx, x + w / 2 - 40, y + h + 18, 80, 36, 8); ctx.fill(); rr(ctx, x + w / 2 - 140, y + h + 50, 280, 16, 8); ctx.fill();
+    ctx.fillStyle = C.tableTop; rr(ctx, x - 80, y + h + 66, w + 160, 22, 8); ctx.fill();
+    return { x, y, w, h };
+  };
+  // panah pointer
+  D.pointer = function (ctx, x, y, s = 34, color = C.ink) {
+    ctx.save(); ctx.translate(x, y); ctx.fillStyle = color; ctx.strokeStyle = "#fff"; ctx.lineWidth = s * 0.08; ctx.lineJoin = "round";
+    ctx.beginPath(); ctx.moveTo(0, 0); ctx.lineTo(0, s); ctx.lineTo(s * 0.27, s * 0.78); ctx.lineTo(s * 0.45, s * 1.15); ctx.lineTo(s * 0.62, s * 1.07); ctx.lineTo(s * 0.45, s * 0.7); ctx.lineTo(s * 0.75, s * 0.7); ctx.closePath();
+    ctx.fill(); ctx.stroke(); ctx.restore();
+  };
+  // mouse tampak atas; opt.left / opt.right = tombol ditekan; opt.label = tulis "kiri/kanan"
+  D.mouse = function (ctx, cx, cy, s, opt = {}) {
+    ctx.save(); ctx.translate(cx, cy);
+    ctx.fillStyle = "rgba(0,0,0,0.12)"; ctx.beginPath(); ctx.ellipse(0, s * 0.62, s * 0.5, s * 0.1, 0, 0, Math.PI * 2); ctx.fill();
+    // kabel
+    ctx.strokeStyle = "#7B8B95"; ctx.lineWidth = s * 0.05; ctx.beginPath(); ctx.moveTo(0, -s * 0.6); ctx.quadraticCurveTo(0, -s * 1.0, s * 0.5, -s * 1.1); ctx.stroke();
+    // badan
+    ctx.fillStyle = "#E8EEF2"; rr(ctx, -s * 0.42, -s * 0.62, s * 0.84, s * 1.24, s * 0.4); ctx.fill(); ctx.strokeStyle = "#A9B7C0"; ctx.lineWidth = s * 0.04; ctx.stroke();
+    // dua tombol
+    const btn = (side, on) => { ctx.fillStyle = on ? C.accent : "#F7FAFC"; ctx.beginPath(); const sx = side === "left" ? -1 : 1;
+      ctx.moveTo(sx * s * 0.03, -s * 0.6); ctx.lineTo(sx * s * 0.03, -s * 0.1); ctx.lineTo(sx * s * 0.4, -s * 0.1); ctx.lineTo(sx * s * 0.4, -s * 0.28); ctx.quadraticCurveTo(sx * s * 0.4, -s * 0.6, sx * s * 0.1, -s * 0.6); ctx.closePath(); ctx.fill(); ctx.strokeStyle = "#A9B7C0"; ctx.lineWidth = s * 0.03; ctx.stroke(); };
+    btn("left", opt.left); btn("right", opt.right);
+    ctx.fillStyle = "#A9B7C0"; rr(ctx, -s * 0.04, -s * 0.5, s * 0.08, s * 0.26, s * 0.04); ctx.fill(); // roda
+    ctx.restore();
+    if (opt.label) { text(ctx, "kiri", cx - s * 0.22, cy - s * 0.72, 26, { align: "center", color: opt.left ? C.accentDark : C.ink2, weight: 800 }); text(ctx, "kanan", cx + s * 0.22, cy - s * 0.72, 26, { align: "center", color: opt.right ? C.accentDark : C.ink2, weight: 800 }); }
+  };
+  // riak "klik" di sekitar titik
+  D.ripple = function (ctx, x, y, u, color = C.accent) { if (u <= 0 || u >= 1) return; ctx.strokeStyle = color; ctx.globalAlpha = 1 - u; ctx.lineWidth = 6; ctx.beginPath(); ctx.arc(x, y, 12 + u * 60, 0, Math.PI * 2); ctx.stroke(); ctx.globalAlpha = 1; };
+
+  // ---------- ikon file & folder ----------
+  const KIND = { folder: "#F2B134", foto: "#5FA8D3", tulisan: "#7B8B95", lagu: "#8E6BBF", video: "#D9443B" };
+  D.fileIcon = function (ctx, cx, cy, s, kind, opt = {}) {
+    ctx.save(); ctx.translate(cx, cy);
+    if (opt.selected) { ctx.fillStyle = SEL; rr(ctx, -s * 0.62, -s * 0.62, s * 1.24, s * 1.24 + (opt.name ? s * 0.5 : 0), s * 0.14); ctx.fill(); }
+    if (kind === "folder") {
+      ctx.fillStyle = "#D99A1B"; rr(ctx, -s * 0.5, -s * 0.32, s * 0.45, s * 0.2, s * 0.06); ctx.fill();
+      ctx.fillStyle = opt.open ? "#F7C860" : KIND.folder; rr(ctx, -s * 0.5, -s * 0.22, s, s * 0.7, s * 0.08); ctx.fill();
+      if (opt.open) { ctx.fillStyle = "#D99A1B"; rr(ctx, -s * 0.46, -s * 0.02, s * 0.92, s * 0.5, s * 0.08); ctx.fill(); }
+    } else {
+      ctx.fillStyle = "#FFFFFF"; ctx.strokeStyle = "#B7C4CC"; ctx.lineWidth = s * 0.05;
+      ctx.beginPath(); ctx.moveTo(-s * 0.36, -s * 0.5); ctx.lineTo(s * 0.12, -s * 0.5); ctx.lineTo(s * 0.36, -s * 0.26); ctx.lineTo(s * 0.36, s * 0.5); ctx.lineTo(-s * 0.36, s * 0.5); ctx.closePath(); ctx.fill(); ctx.stroke();
+      ctx.fillStyle = KIND[kind] || KIND.tulisan;
+      if (kind === "foto") { rr(ctx, -s * 0.26, -s * 0.2, s * 0.52, s * 0.44, s * 0.04); ctx.fill(); ctx.fillStyle = "#fff"; ctx.beginPath(); ctx.arc(-s * 0.12, -s * 0.08, s * 0.06, 0, Math.PI * 2); ctx.fill(); ctx.beginPath(); ctx.moveTo(-s * 0.26, s * 0.24); ctx.lineTo(-s * 0.06, s * 0.02); ctx.lineTo(s * 0.06, s * 0.14); ctx.lineTo(s * 0.14, s * 0.06); ctx.lineTo(s * 0.26, s * 0.24); ctx.closePath(); ctx.fill(); }
+      else if (kind === "lagu") { ctx.beginPath(); ctx.arc(-s * 0.1, s * 0.22, s * 0.1, 0, Math.PI * 2); ctx.arc(s * 0.16, s * 0.16, s * 0.1, 0, Math.PI * 2); ctx.fill(); ctx.lineWidth = s * 0.06; ctx.strokeStyle = KIND.lagu; ctx.beginPath(); ctx.moveTo(0, s * 0.2); ctx.lineTo(0, -s * 0.2); ctx.lineTo(s * 0.26, -s * 0.26); ctx.lineTo(s * 0.26, s * 0.14); ctx.stroke(); }
+      else if (kind === "video") { rr(ctx, -s * 0.26, -s * 0.16, s * 0.52, s * 0.4, s * 0.04); ctx.fill(); ctx.fillStyle = "#fff"; ctx.beginPath(); ctx.moveTo(-s * 0.06, -s * 0.04); ctx.lineTo(s * 0.12, s * 0.04); ctx.lineTo(-s * 0.06, s * 0.12); ctx.closePath(); ctx.fill(); }
+      else { for (let i = 0; i < 4; i++) { rr(ctx, -s * 0.22, -s * 0.14 + i * s * 0.14, s * (i === 3 ? 0.26 : 0.44), s * 0.06, s * 0.03); ctx.fill(); } }
+    }
+    ctx.restore();
+    if (opt.name) { const lines = wrap(ctx, opt.name, opt.size || 24, 700, s * 1.6); lines.slice(0, 2).forEach((ln, i) => text(ctx, ln, cx, cy + s * 0.78 + i * (opt.size || 24) * 1.15, opt.size || 24, { align: "center", weight: 700, color: opt.color || C.ink })); }
+  };
+  D.KIND = KIND;
+
+  // jendela aplikasi (file manager / editor) di dalam layar; mengembalikan area isi
+  D.windowFrame = function (ctx, x, y, w, h, title, opt = {}) {
+    ctx.fillStyle = "#FFFFFF"; rr(ctx, x, y, w, h, 14); ctx.fill(); ctx.strokeStyle = "#C9D4DB"; ctx.lineWidth = 3; ctx.stroke();
+    ctx.fillStyle = "#E6EDF2"; rr(ctx, x, y, w, 54, 14); ctx.fill(); ctx.fillRect(x, y + 30, w, 24);
+    ["#E0655C", "#F2B134", "#2E9E5B"].forEach((c, i) => { ctx.fillStyle = c; ctx.beginPath(); ctx.arc(x + 26 + i * 26, y + 27, 8, 0, Math.PI * 2); ctx.fill(); });
+    if (title) text(ctx, title, x + w / 2, y + 36, 24, { align: "center", color: C.ink2, weight: 800 });
+    if (opt.path) { ctx.fillStyle = "#F4F8FB"; rr(ctx, x + 16, y + 66, w - 32, 44, 10); ctx.fill(); text(ctx, opt.path, x + 32, y + 96, 24, { color: C.ink2, weight: 700 }); }
+    return { x: x + 16, y: y + (opt.path ? 124 : 70), w: w - 32, h: h - (opt.path ? 140 : 86) };
+  };
+  // kotak teks dengan kursor berkedip; opt.cursor = posisi karakter (bawaan akhir)
+  D.textBox = function (ctx, x, y, w, h, lines, tt, opt = {}) {
+    ctx.fillStyle = "#FFFFFF"; rr(ctx, x, y, w, h, 14); ctx.fill(); ctx.strokeStyle = opt.stroke || "#C9D4DB"; ctx.lineWidth = 3; ctx.stroke();
+    const size = opt.size || 48, lh = size * 1.4;
+    lines.forEach((ln, i) => text(ctx, ln, x + 28, y + 24 + size + i * lh, size, { weight: 700, color: opt.color || C.ink }));
+    if (opt.cursor !== false) {
+      const li = lines.length - 1, s = lines[li] || ""; ctx.font = `700 ${size}px ${K.FONT}`; const cw = ctx.measureText(s).width;
+      if (Math.floor(tt * 2.5) % 2 === 0 || opt.cursorOn) { ctx.fillStyle = C.kiko; ctx.fillRect(x + 30 + cw, y + 22 + li * lh, 5, size * 1.15); }
+      return [x + 32 + cw, y + 22 + li * lh + size * 0.6];
+    }
+  };
+
+  // ---------- keyboard ----------
+  const ROWS = [["Q", "W", "E", "R", "T", "Y", "U", "I", "O", "P"], ["A", "S", "D", "F", "G", "H", "J", "K", "L"], ["Z", "X", "C", "V", "B", "N", "M"]];
+  // keyboard sederhana: 3 baris huruf + Shift, Spasi, Backspace, Enter. opt.pressed = [tombol], opt.glow = [tombol] disorot lembut
+  D.keyboard = function (ctx, x, y, w, opt = {}) {
+    const key = w / 11.6, gap = key * 0.12, k = key - gap, h = k * 4 + gap * 5;
+    ctx.fillStyle = BEZEL; rr(ctx, x - 16, y - 16, w + 32, h + 32, 22); ctx.fill();
+    const pressed = opt.pressed || [], glow = opt.glow || [];
+    const draw = (kx, ky, kw, label, small) => {
+      const on = pressed.includes(label), soft = glow.includes(label);
+      ctx.fillStyle = on ? C.accent : soft ? "#FFF3D6" : "#F7FAFC"; rr(ctx, kx, ky + (on ? 4 : 0), kw, k - (on ? 4 : 0), 10); ctx.fill();
+      ctx.strokeStyle = on ? C.accentDark : soft ? C.accent : "#B7C4CC"; ctx.lineWidth = on || soft ? 4 : 2; ctx.stroke();
+      // ukuran huruf mengikuti ukuran tombol; pada keyboard mini (tombol < 40 px) label tombol khusus tidak digambar
+      const fs = small ? Math.min(24, k * 0.45) : Math.min(32, k * 0.6);
+      if (small ? k >= 40 : k >= 18) text(ctx, label, kx + kw / 2, ky + k / 2 + fs * 0.38, fs, { align: "center", weight: 800, color: on ? "#fff" : C.ink });
+    };
+    ROWS.forEach((row, r) => { const off = r === 0 ? 0 : r === 1 ? key * 0.35 : key * 0.85; row.forEach((lab, i) => draw(x + gap + off + i * key, y + gap + r * key, k, lab)); });
+    draw(x + gap + key * 0.85 + 7 * key + gap, y + gap + 2 * key, key * 2.4 - gap, "Backspace", true);
+    draw(x + gap, y + gap + 3 * key, key * 1.9 - gap, "Shift", true);
+    draw(x + gap + key * 1.9, y + gap + 3 * key, key * 6.2 - gap, "Spasi", true);
+    draw(x + gap + key * 8.1, y + gap + 3 * key, key * 2.3 - gap, "Enter", true);
+    draw(x + gap + key * 0.35 + 9 * key, y + gap + 1 * key, key * 1.9 - gap, "Enter", true);
+    return { x, y, w, h };
+  };
+
+  // ---------- HP & jari ----------
+  // HP tegak; mengembalikan kotak layar
+  D.phone = function (ctx, cx, cy, w, h) {
+    ctx.fillStyle = BEZEL; rr(ctx, cx - w / 2 - 14, cy - h / 2 - 22, w + 28, h + 44, 40); ctx.fill();
+    ctx.fillStyle = SCREEN_BG; rr(ctx, cx - w / 2, cy - h / 2, w, h, 26); ctx.fill();
+    ctx.fillStyle = BEZEL2; rr(ctx, cx - 40, cy - h / 2 + 8, 80, 12, 6); ctx.fill();
+    return { x: cx - w / 2, y: cy - h / 2, w, h };
+  };
+  // kisi ikon aplikasi generik di layar HP; mengembalikan posisi tiap ikon
+  const APPS = [["Kamera", "#2E7E9A"], ["Galeri", "#5FA8D3"], ["Pesan", "#2E9E5B"], ["Musik", "#8E6BBF"], ["Kalkulator", "#7B8B95"], ["Peta", "#F2B134"], ["Catatan", "#E0A23B"], ["Jam", "#D9443B"], ["Cuaca", "#4C9BE0"]];
+  D.appGrid = function (ctx, sc, opt = {}) {
+    const cols = 3, cell = sc.w / cols, out = [];
+    APPS.forEach(([name, col], i) => {
+      const r = Math.floor(i / cols), c = i % cols; const ax = sc.x + cell * c + cell / 2, ay = sc.y + 90 + r * (cell + 26);
+      const on = opt.active === name; const sz = cell * 0.56 * (on && opt.scale ? opt.scale : 1);
+      ctx.fillStyle = col; rr(ctx, ax - sz / 2, ay - sz / 2, sz, sz, sz * 0.24); ctx.fill();
+      if (on) { ctx.strokeStyle = C.accent; ctx.lineWidth = 6; ctx.stroke(); }
+      text(ctx, name, ax, ay + sz / 2 + 26, 20, { align: "center", weight: 700, color: C.ink2 });
+      out.push({ name, x: ax, y: ay });
+    });
+    return out;
+  };
+  // ujung jari yang menyentuh layar di (x,y); opt.press = sedang menekan (riak); opt.second = jari kedua
+  D.finger = function (ctx, x, y, opt = {}) {
+    const s = opt.s || 46;
+    ctx.save(); ctx.translate(x, y); ctx.rotate(opt.angle !== undefined ? opt.angle : 0.5);
+    ctx.fillStyle = "rgba(0,0,0,0.10)"; ctx.beginPath(); ctx.ellipse(0, s * 0.25, s * 0.7, s * 0.4, 0, 0, Math.PI * 2); ctx.fill();
+    ctx.fillStyle = C.skin; rr(ctx, -s * 0.5, -s * 0.3, s, s * 3.2, s * 0.5); ctx.fill();
+    ctx.fillStyle = "#F7D9BE"; ctx.beginPath(); ctx.ellipse(0, s * 0.1, s * 0.3, s * 0.42, 0, 0, Math.PI * 2); ctx.fill();
+    ctx.restore();
+    if (opt.press) { ctx.fillStyle = "rgba(46,126,154,0.25)"; ctx.beginPath(); ctx.arc(x, y, s * 0.8, 0, Math.PI * 2); ctx.fill(); }
+  };
+  // menu konteks (klik kanan / tekan lama)
+  D.menu = function (ctx, x, y, items, opt = {}) {
+    const w = opt.w || 300, rowH = 52; ctx.fillStyle = "#FFFFFF"; rr(ctx, x, y, w, rowH * items.length + 16, 12); ctx.fill(); ctx.strokeStyle = "#B7C4CC"; ctx.lineWidth = 3; ctx.stroke();
+    ctx.fillStyle = "rgba(0,0,0,0.08)";
+    items.forEach((it, i) => { if (opt.active === i) { ctx.fillStyle = "#FFF3D6"; rr(ctx, x + 8, y + 8 + i * rowH, w - 16, rowH, 8); ctx.fill(); } text(ctx, it, x + 24, y + 8 + i * rowH + 36, 28, { weight: 700 }); });
+  };
+  // kartu keterangan kecil di kanan/bawah adegan
+  D.note = function (ctx, x, y, w, s, opt = {}) { card(ctx, x, y, w, opt.h || 96, { fill: opt.fill || "#FFF3D6", stroke: opt.stroke || C.accent, lw: 4 }); text(ctx, s, x + w / 2, y + (opt.h || 96) / 2 + 14, opt.size || 36, { align: "center", weight: 900, color: opt.color || C.ink }); };
+
+  K.devices = D;
+})(typeof window !== "undefined" ? window : globalThis);
+
+/* Pembantu gambar D7.7: panel grup chat, avatar, kerumunan pendengar, pengukur perasaan, kartu pilihan, kartu langkah,
+   ikon ruang publik. Muat setelah kiko-core.js dan kiko-devices.js. */
+(function (global) {
+  const K = global.Kiko, H = K.helpers, C = K.C, D = K.devices;
+  const { rr, text, wrap, card, kid, clamp } = H;
+  const Q = {};
+  const COLORS = { Dito: "#2E7E9A", Sinta: "#8E6BBF", Rani: "#2E9E5B", Bayu: "#D9443B", Tari: "#E0A23B", Agus: "#7B8B95", Aku: "#1F5A6E" };
+  // avatar bulat berinisial; mood: "happy" | "sad" | "angry" | "flat"
+  Q.avatar = function (ctx, cx, cy, r, name, mood = "flat") {
+    ctx.fillStyle = COLORS[name] || "#7B8B95"; ctx.beginPath(); ctx.arc(cx, cy, r, 0, Math.PI * 2); ctx.fill();
+    ctx.fillStyle = "#fff"; ctx.beginPath(); ctx.arc(cx - r * 0.3, cy - r * 0.15, r * 0.1, 0, Math.PI * 2); ctx.arc(cx + r * 0.3, cy - r * 0.15, r * 0.1, 0, Math.PI * 2); ctx.fill();
+    ctx.strokeStyle = "#fff"; ctx.lineWidth = Math.max(2, r * 0.08); ctx.lineCap = "round"; ctx.beginPath();
+    if (mood === "happy") ctx.arc(cx, cy + r * 0.15, r * 0.3, Math.PI * 0.15, Math.PI * 0.85);
+    else if (mood === "sad") ctx.arc(cx, cy + r * 0.55, r * 0.3, Math.PI * 1.15, Math.PI * 1.85);
+    else if (mood === "angry") { ctx.moveTo(cx - r * 0.3, cy + r * 0.4); ctx.lineTo(cx + r * 0.3, cy + r * 0.4); ctx.moveTo(cx - r * 0.45, cy - r * 0.4); ctx.lineTo(cx - r * 0.15, cy - r * 0.3); ctx.moveTo(cx + r * 0.45, cy - r * 0.4); ctx.lineTo(cx + r * 0.15, cy - r * 0.3); }
+    else { ctx.moveTo(cx - r * 0.25, cy + r * 0.35); ctx.lineTo(cx + r * 0.25, cy + r * 0.35); }
+    ctx.stroke();
+  };
+  // panel grup chat. msgs: [{who, text, tone: "bad"|"good"|"laugh"|"sys", mood}], opt.n jumlah tampil, opt.hl indeks disorot, opt.members
+  Q.chat = function (ctx, x, y, w, h, title, msgs, opt = {}) {
+    card(ctx, x, y, w, h, { fill: "#F7FAF8", stroke: "#B7C4CC", lw: 3, r: 18 });
+    ctx.fillStyle = C.kiko; rr(ctx, x, y, w, 64, 18); ctx.fill(); ctx.fillRect(x, y + 32, w, 32);
+    text(ctx, title, x + 24, y + 42, 28, { weight: 900, color: "#fff" });
+    if (opt.members) text(ctx, opt.members + " anggota", x + w - 24, y + 42, 22, { align: "right", weight: 700, color: "#DDF3E4" });
+    const n = opt.n == null ? msgs.length : clamp(opt.n, 0, msgs.length); let cy = y + 84; const size = opt.size || 24; const from = opt.from || 0;
+    ctx.save(); ctx.beginPath(); rr(ctx, x, y + 64, w, h - 64, 18); ctx.clip();
+    if (from) { text(ctx, "⋯ pesan sebelumnya", x + w / 2, cy + 10, 18, { align: "center", weight: 700, color: C.muted }); cy += 30; }
+    for (let i = from; i < n; i++) {
+      const m = msgs[i]; const hl = opt.hl === i;
+      if (m.tone === "sys") { text(ctx, m.text, x + w / 2, cy + 20, 20, { align: "center", weight: 700, color: C.ink2 }); cy += 44; continue; }
+      const mine = m.who === "Aku" || m.mine; const bw = Math.min(w - 110, Math.max(160, m.text.length * size * 0.56 + 40));
+      const lines = wrap(ctx, m.text, size, 700, bw - 32); const bh = 36 + lines.length * size * 1.3;
+      const bx = mine ? x + w - 20 - bw : x + 70;
+      if (!mine) Q.avatar(ctx, x + 40, cy + 26, 22, m.who, m.mood || "flat");
+      ctx.fillStyle = hl ? "#FFF3B0" : m.tone === "bad" ? C.badBg : m.tone === "good" ? C.goodBg : mine ? "#DCEBF2" : "#FFFFFF";
+      ctx.strokeStyle = hl ? C.accent : m.tone === "bad" ? C.bad : m.tone === "good" ? C.good : "#D7E2DC"; ctx.lineWidth = hl ? 5 : 3;
+      rr(ctx, bx, cy, bw, bh + (mine ? 0 : 0), 14); ctx.fill(); ctx.stroke();
+      if (!mine) text(ctx, m.who, bx + 16, cy + 22, 18, { weight: 900, color: COLORS[m.who] || C.ink2 });
+      lines.forEach((ln, k) => text(ctx, ln, bx + 16, cy + (mine ? 30 : 46) + k * size * 1.3, size, { weight: 700, color: m.tone === "bad" ? C.bad : C.ink }));
+      if (m.meme) { ctx.fillStyle = "#E6EDF2"; rr(ctx, bx + 16, cy + bh - 6, 120, 70, 8); ctx.fill(); text(ctx, "MEME", bx + 76, cy + bh + 36, 20, { align: "center", weight: 900, color: C.bad }); cy += 76; }
+      cy += bh + 14;
+    }
+    ctx.restore();
+    return cy;
+  };
+  // kerumunan kepala kecil (pendengar)
+  Q.crowd = function (ctx, x, y, cols, rows, opt = {}) {
+    for (let r = 0; r < rows; r++) for (let c = 0; c < cols; c++) { const cx = x + c * 44, cy = y + r * 48; ctx.fillStyle = ["#2B2118", "#4A2E1A", "#1B1B1B"][(r + c) % 3]; ctx.beginPath(); ctx.arc(cx, cy, 14, Math.PI, 0); ctx.fill(); ctx.fillStyle = C.skin; ctx.beginPath(); ctx.arc(cx, cy + 4, 12, 0, Math.PI * 2); ctx.fill(); ctx.fillStyle = C.uniform; rr(ctx, cx - 14, cy + 16, 28, 18, 6); ctx.fill(); }
+  };
+  // pengukur perasaan: 0 sedih .. 1 senang
+  Q.mood = function (ctx, x, y, w, v, label) {
+    ctx.fillStyle = "#E6EDF2"; rr(ctx, x, y, w, 26, 13); ctx.fill();
+    const g = ctx.createLinearGradient(x, 0, x + w, 0); g.addColorStop(0, C.bad); g.addColorStop(0.5, C.accent); g.addColorStop(1, C.good); ctx.fillStyle = g; rr(ctx, x, y, w, 26, 13); ctx.fill();
+    ctx.fillStyle = "#fff"; ctx.strokeStyle = C.ink; ctx.lineWidth = 4; ctx.beginPath(); ctx.arc(x + w * clamp(v, 0, 1), y + 13, 18, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
+    text(ctx, "😢", x - 10, y + 22, 24, { align: "right" }); text(ctx, "😊", x + w + 12, y + 22, 24);
+    if (label) text(ctx, label, x + w / 2, y + 62, 24, { align: "center", weight: 800, color: C.ink2 });
+  };
+  // kartu pilihan bernomor
+  Q.choice = function (ctx, x, y, w, h, n, label, opt = {}) {
+    card(ctx, x, y, w, h, { fill: opt.on ? "#FFF3D6" : opt.dim ? "#F4F6F5" : C.panel, stroke: opt.on ? C.accent : opt.good ? C.good : opt.bad ? C.bad : "#CFDCD5", lw: opt.on || opt.good || opt.bad ? 6 : 3, r: 16 });
+    ctx.fillStyle = opt.good ? C.good : opt.bad ? C.bad : C.kiko; ctx.beginPath(); ctx.arc(x + 40, y + 40, 24, 0, Math.PI * 2); ctx.fill(); text(ctx, String(n), x + 40, y + 50, 26, { align: "center", color: "#fff", weight: 900 });
+    const lines = wrap(ctx, label, 26, 800, w - 100); lines.forEach((ln, i) => text(ctx, ln, x + 80, y + 50 + i * 34, 26, { weight: 800, color: opt.dim ? C.muted : C.ink }));
+  };
+  // kartu langkah
+  Q.step = function (ctx, x, y, w, n, title, sub, on = true) {
+    ctx.save(); ctx.globalAlpha = on ? 1 : 0.25;
+    card(ctx, x, y, w, 150, { fill: C.bg2, r: 18 });
+    ctx.fillStyle = C.kiko; ctx.beginPath(); ctx.arc(x + 44, y + 44, 26, 0, Math.PI * 2); ctx.fill(); text(ctx, String(n), x + 44, y + 54, 26, { align: "center", color: "#fff", weight: 900 });
+    text(ctx, title, x + 84, y + 54, 28, { weight: 900 });
+    const lines = wrap(ctx, sub, 22, 700, w - 40); lines.forEach((ln, i) => text(ctx, ln, x + 20, y + 100 + i * 28, 22, { weight: 700, color: C.ink2 }));
+    ctx.restore();
+  };
+  // ikon ruang publik: "chat" | "sosial" | "komentar" | "game" | "forum"
+  Q.spaceIcon = function (ctx, cx, cy, s, kind) {
+    ctx.save(); ctx.translate(cx, cy); ctx.fillStyle = C.kiko; ctx.strokeStyle = C.kiko; ctx.lineWidth = s * 0.08; ctx.lineCap = "round";
+    if (kind === "chat") { rr(ctx, -s * 0.5, -s * 0.45, s * 0.7, s * 0.5, s * 0.12); ctx.fill(); ctx.fillStyle = C.kikoLight; rr(ctx, -s * 0.2, -s * 0.1, s * 0.7, s * 0.5, s * 0.12); ctx.fill(); }
+    else if (kind === "sosial") { rr(ctx, -s * 0.45, -s * 0.45, s * 0.9, s * 0.9, s * 0.16); ctx.fill(); ctx.fillStyle = "#fff"; ctx.beginPath(); ctx.moveTo(0, s * 0.25); ctx.bezierCurveTo(-s * 0.5, -s * 0.1, -s * 0.2, -s * 0.4, 0, -s * 0.15); ctx.bezierCurveTo(s * 0.2, -s * 0.4, s * 0.5, -s * 0.1, 0, s * 0.25); ctx.fill(); }
+    else if (kind === "komentar") { for (let i = 0; i < 3; i++) { ctx.fillStyle = i ? C.kikoLight : C.kiko; rr(ctx, -s * 0.45, -s * 0.4 + i * s * 0.3, s * (0.9 - i * 0.2), s * 0.2, s * 0.06); ctx.fill(); } }
+    else if (kind === "game") { rr(ctx, -s * 0.5, -s * 0.25, s, s * 0.5, s * 0.2); ctx.fill(); ctx.fillStyle = "#fff"; ctx.fillRect(-s * 0.36, -s * 0.04, s * 0.2, s * 0.08); ctx.fillRect(-s * 0.3, -s * 0.1, s * 0.08, s * 0.2); ctx.beginPath(); ctx.arc(s * 0.22, -s * 0.06, s * 0.05, 0, Math.PI * 2); ctx.arc(s * 0.34, s * 0.06, s * 0.05, 0, Math.PI * 2); ctx.fill(); }
+    else { rr(ctx, -s * 0.45, -s * 0.45, s * 0.9, s * 0.9, s * 0.1); ctx.fill(); ctx.fillStyle = "#fff"; for (let i = 0; i < 3; i++) { ctx.fillRect(-s * 0.3, -s * 0.3 + i * s * 0.22, s * 0.6, s * 0.1); } }
+    ctx.restore();
+  };
+  K.empati = Q;
+})(typeof window !== "undefined" ? window : globalThis);
+
+/* Pembantu gambar D9.4: kartu informasi diri, kotak pilah, kartu pelajar (dengan/ tanpa penutup), unggahan media sosial,
+   pengukur celah data, layar profil, sakelar, lingkaran napas. Semua fiktif. Muat setelah kiko-core.js, kiko-devices.js, empati.js. */
+(function (global) {
+  const K = global.Kiko, H = K.helpers, C = K.C, D = K.devices, Em = K.empati;
+  const { rr, text, wrap, card, clamp, lerp } = H;
+  const Q = {};
+  const KIND = { publik: ["#DDF3E4", "#2E9E5B", "PUBLIK"], privat: ["#FBE1DF", "#D9443B", "PRIVAT"], tergantung: ["#FFF3D6", "#B57A12", "TERGANTUNG"] };
+  Q.kind = KIND;
+  // kartu informasi: ikon + label; kind mewarnai; opt.dim, opt.on (disorot), opt.small
+  Q.info = function (ctx, x, y, w, h, icon, label, kind, opt = {}) {
+    ctx.save(); if (opt.dim) ctx.globalAlpha = 0.2;
+    const k = KIND[kind]; card(ctx, x, y, w, h, { fill: k ? k[0] : "#FFF9E0", stroke: opt.on ? C.accent : k ? k[1] : "#E0B04B", lw: opt.on ? 6 : 3, r: 14 });
+    const sz = opt.size || 24; text(ctx, icon, x + 16, y + h / 2 + sz * 0.6, sz * 1.4);
+    const lines = wrap(ctx, label, sz, 800, w - 70 - sz * 1.4); lines.forEach((ln, i) => text(ctx, ln, x + 30 + sz * 1.5, y + h / 2 + sz * 0.38 + (i - (lines.length - 1) / 2) * sz * 1.2, sz, { weight: 800 }));
+    if (k && opt.tag) { ctx.fillStyle = k[1]; rr(ctx, x + w - 112, y + 8, 104, 24, 6); ctx.fill(); text(ctx, k[2], x + w - 60, y + 26, 15, { align: "center", weight: 900, color: "#fff" }); }
+    ctx.restore();
+  };
+  // kotak pilah bertutup terbuka; items: daftar [icon,label] yang sudah masuk
+  Q.box = function (ctx, x, y, w, h, kind, sub, items = [], opt = {}) {
+    const k = KIND[kind];
+    ctx.fillStyle = k[0]; rr(ctx, x, y, w, h, 16); ctx.fill(); ctx.strokeStyle = k[1]; ctx.lineWidth = 5; rr(ctx, x, y, w, h, 16); ctx.stroke();
+    ctx.fillStyle = k[1]; rr(ctx, x - 10, y - 22, w + 20, 44, 10); ctx.fill(); text(ctx, k[2], x + w / 2, y + 10, 26, { align: "center", weight: 900, color: "#fff" });
+    text(ctx, sub, x + w / 2, y + 58, 20, { align: "center", weight: 700, color: C.ink2 });
+    items.forEach(([ic, lab], i) => Q.info(ctx, x + 16, y + 76 + i * 58, w - 32, 50, ic, lab, null, { size: 20 }));
+  };
+  // kartu pelajar fiktif; opt.mask = tutup data berisiko; opt.s skala lebar (default 420)
+  Q.idCard = function (ctx, x, y, opt = {}) {
+    const w = opt.w || 420, h = w * 0.63, s = w / 420;
+    card(ctx, x, y, w, h, { fill: "#FFFFFF", stroke: "#B7C4CC", lw: 3, r: 14 * s });
+    ctx.fillStyle = C.kiko; rr(ctx, x, y, w, 46 * s, 14 * s); ctx.fill(); ctx.fillRect(x, y + 24 * s, w, 22 * s);
+    text(ctx, "KARTU PELAJAR · SMP NUSA BANGSA", x + w / 2, y + 31 * s, 17 * s, { align: "center", weight: 900, color: "#fff" });
+    ctx.fillStyle = "#E6EDF2"; rr(ctx, x + 18 * s, y + 66 * s, 96 * s, 120 * s, 8 * s); ctx.fill();
+    ctx.fillStyle = C.hair; ctx.beginPath(); ctx.arc(x + 66 * s, y + 104 * s, 26 * s, Math.PI, 0); ctx.fill(); ctx.fillStyle = C.skin; ctx.beginPath(); ctx.arc(x + 66 * s, y + 112 * s, 22 * s, 0, Math.PI * 2); ctx.fill(); ctx.fillStyle = C.uniform; rr(ctx, x + 36 * s, y + 138 * s, 60 * s, 44 * s, 8 * s); ctx.fill();
+    const rows = [["Nama", "Sinta Pramesti", false], ["NIS", "0012345", true], ["TTL", "Bandung, 12-04-2011", true], ["Alamat", "Jl. Mawar No. 12, RT 03", true], ["Kelas", "IX B", false]];
+    rows.forEach(([k, v, risky], i) => { const ry = y + 86 * s + i * 30 * s; text(ctx, k, x + 130 * s, ry, 15 * s, { weight: 700, color: C.ink2 }); if (opt.mask && risky) { ctx.fillStyle = C.ink; rr(ctx, x + 196 * s, ry - 15 * s, 200 * s, 22 * s, 4 * s); ctx.fill(); } else text(ctx, v, x + 196 * s, ry, 16 * s, { weight: 800, color: risky && opt.flag ? C.bad : C.ink }); });
+    if (opt.mask) text(ctx, "data berisiko ditutup", x + w / 2, y + h - 8 * s, 15 * s, { align: "center", weight: 900, color: C.good });
+  };
+  // unggahan media sosial: {who, text, loc, img: fn(ctx,x,y,w,h), likes}; opt.tone "bad"|"good"; opt.w
+  Q.post = function (ctx, x, y, w, p, opt = {}) {
+    const lines = wrap(ctx, p.text, 24, 700, w - 40); const imgH = p.img ? (opt.imgH || 200) : 0; const h = 70 + lines.length * 31 + (p.loc ? 34 : 0) + imgH + 70;
+    card(ctx, x, y, w, h, { fill: "#fff", stroke: opt.tone === "bad" ? C.bad : opt.tone === "good" ? C.good : "#C9D4DB", lw: opt.tone ? 6 : 3, r: 18 });
+    Em.avatar(ctx, x + 40, y + 36, 24, p.who, "happy"); text(ctx, p.who, x + 76, y + 32, 22, { weight: 900 }); text(ctx, p.when || "baru saja", x + 76, y + 54, 17, { weight: 700, color: C.muted });
+    let cy = y + 96; lines.forEach(ln => { text(ctx, ln, x + 20, cy, 24, { weight: 700 }); cy += 31; });
+    if (p.loc) { ctx.fillStyle = opt.tone === "bad" ? C.badBg : C.bg2; rr(ctx, x + 20, cy - 20, Math.min(w - 40, p.loc.length * 13 + 60), 30, 8); ctx.fill(); text(ctx, "📍 " + p.loc, x + 30, cy + 2, 19, { weight: 800, color: opt.tone === "bad" ? C.bad : C.ink2 }); cy += 34; }
+    if (p.img) { ctx.fillStyle = "#E6EDF2"; rr(ctx, x + 20, cy, w - 40, imgH, 12); ctx.fill(); ctx.save(); ctx.beginPath(); rr(ctx, x + 20, cy, w - 40, imgH, 12); ctx.clip(); p.img(ctx, x + 20, cy, w - 40, imgH); ctx.restore(); cy += imgH + 12; }
+    text(ctx, "♡ " + (p.likes == null ? 12 : p.likes) + "   💬 " + (p.comments == null ? 3 : p.comments) + "   ↗ bagikan", x + 20, cy + 30, 19, { weight: 700, color: C.ink2 });
+    return h;
+  };
+  // pengukur celah data: v 0 (tertutup) .. 1 (terbuka lebar)
+  Q.gap = function (ctx, x, y, w, v, opt = {}) {
+    v = clamp(v, 0, 1); text(ctx, opt.title || "CELAH DATA", x + w / 2, y - 12, 20, { align: "center", weight: 900, color: C.ink2 });
+    ctx.fillStyle = "#E6EDF2"; rr(ctx, x, y, w, 30, 15); ctx.fill();
+    const g = ctx.createLinearGradient(x, 0, x + w, 0); g.addColorStop(0, C.good); g.addColorStop(0.5, C.accent); g.addColorStop(1, C.bad); ctx.fillStyle = g; rr(ctx, x, y, Math.max(30, w * v), 30, 15); ctx.fill();
+    ctx.fillStyle = "#fff"; ctx.strokeStyle = C.ink; ctx.lineWidth = 4; ctx.beginPath(); ctx.arc(x + w * v, y + 15, 19, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
+    if (opt.label) text(ctx, opt.label, x + w / 2, y + 62, 24, { align: "center", weight: 900, color: v > 0.6 ? C.bad : v > 0.3 ? C.accentDark : C.good });
+    else { text(ctx, "tertutup", x, y + 58, 18, { weight: 800, color: C.good }); text(ctx, "terbuka lebar", x + w, y + 58, 18, { align: "right", weight: 800, color: C.bad }); }
+  };
+  // layar profil di dalam bingkai HP; p: {name, handle, pub, loc, bio:[[text, risky]], tags}; opt.fix = tampilkan versi rapi
+  Q.profile = function (ctx, cx, cy, w, h, p, opt = {}) {
+    const sc = D.phone(ctx, cx, cy, w, h); const x = sc.x, y = sc.y;
+    Em.avatar(ctx, x + 60, y + 90, 36, p.avatar || "Rani", "happy");
+    text(ctx, p.name, x + 110, y + 82, 24, { weight: 900 }); text(ctx, p.handle, x + 110, y + 108, 18, { weight: 700, color: C.muted });
+    const pub = opt.fix ? false : p.pub; ctx.fillStyle = pub ? C.badBg : C.goodBg; rr(ctx, x + 16, y + 140, w - 32, 36, 10); ctx.fill(); text(ctx, pub ? "🌐 Publik: semua orang bisa melihat" : "🔒 Privat: hanya teman yang disetujui", x + 28, y + 164, 15, { weight: 800, color: pub ? C.bad : C.good });
+    let by = y + 210; text(ctx, "Bio", x + 16, by, 16, { weight: 900, color: C.ink2 }); by += 26;
+    p.bio.forEach(([t, risky]) => { if (opt.fix && risky) return; if (risky && opt.flag) { ctx.fillStyle = C.badBg; rr(ctx, x + 12, by - 20, w - 24, 30, 6); ctx.fill(); } text(ctx, t, x + 20, by, 18, { weight: 700, color: risky && opt.flag ? C.bad : C.ink }); by += 34; });
+    if (opt.fix) { text(ctx, "+ hobi: menggambar", x + 20, by, 18, { weight: 700, color: C.good }); by += 34; }
+    const loc = opt.fix ? false : p.loc; by += 8; Q.toggle(ctx, x + 20, by, loc, "Lokasi langsung", { onBad: true }); by += 50;
+    if (p.tags != null) { text(ctx, "Foto menandaimu: " + p.tags + " menunggu tinjauan", x + 20, by + 8, 15, { weight: 700, color: C.ink2 }); }
+    return { x, y, w, h };
+  };
+  // sakelar; on; opt.onBad = kondisi nyala dianggap berisiko (merah)
+  Q.toggle = function (ctx, x, y, on, label, opt = {}) {
+    const col = on ? (opt.onBad ? C.bad : C.good) : "#9AAFA6";
+    ctx.fillStyle = col; rr(ctx, x, y - 14, 56, 28, 14); ctx.fill(); ctx.fillStyle = "#fff"; ctx.beginPath(); ctx.arc(x + (on ? 42 : 14), y, 11, 0, Math.PI * 2); ctx.fill();
+    text(ctx, label + ": " + (on ? "nyala" : "mati"), x + 70, y + 7, 18, { weight: 800, color: col });
+  };
+  // lingkaran napas; phase 0..1 membesar-mengecil
+  Q.breath = function (ctx, cx, cy, r, phase, label) {
+    const k = 0.75 + 0.25 * Math.sin(phase * Math.PI * 2);
+    ctx.fillStyle = "rgba(46,126,154,0.15)"; ctx.beginPath(); ctx.arc(cx, cy, r * k * 1.25, 0, Math.PI * 2); ctx.fill();
+    ctx.fillStyle = "rgba(46,126,154,0.35)"; ctx.beginPath(); ctx.arc(cx, cy, r * k, 0, Math.PI * 2); ctx.fill();
+    ctx.fillStyle = C.kiko; ctx.beginPath(); ctx.arc(cx, cy, r * k * 0.6, 0, Math.PI * 2); ctx.fill();
+    if (label) text(ctx, label, cx, cy + 10, 26, { align: "center", weight: 900, color: "#fff" });
+  };
+  // siluet orang dengan tanda tanya / tanda ketemu
+  Q.silhouette = function (ctx, cx, cy, s, opt = {}) {
+    ctx.fillStyle = opt.color || "#7B8B95"; ctx.beginPath(); ctx.arc(cx, cy - s * 0.55, s * 0.28, 0, Math.PI * 2); ctx.fill(); rr(ctx, cx - s * 0.4, cy - s * 0.2, s * 0.8, s * 0.9, s * 0.25); ctx.fill();
+    if (opt.mark) text(ctx, opt.mark, cx, cy + s * 0.2, s * 0.5, { align: "center", weight: 900, color: "#fff" });
+  };
+  K.privasi = Q;
+})(typeof window !== "undefined" ? window : globalThis);
+
+/* Adegan episode D9.4: Data Pribadi, Identitas Digital, dan Kesadaran Penuh. Muat setelah kiko-core.js, kiko-devices.js, empati.js, privasi.js. */
+(function (global) {
+  const K = global.Kiko, H = K.helpers, C = K.C, D = K.devices, Em = K.empati, Pv = K.privasi, SCENES = K.SCENES;
+  const { text, para, card, kiko, kid, bubble, rr, ease, clamp, lerp, arrowIcon } = H;
+  const reveal = (l, t0, step, n) => clamp(Math.floor((l - t0) / step) + 1, 0, n);
+  const banner = (ctx, s, y = 745, w = 1000, opt = {}) => { card(ctx, 960 - w / 2, y, w, 80, { fill: opt.fill || "#FFF3D6", stroke: opt.stroke || C.accent, lw: 4 }); text(ctx, s, 960, y + 52, opt.size || 34, { align: "center", weight: 900, color: opt.color || C.accentDark }); };
+  const label = (ctx, s, x, y, opt = {}) => text(ctx, s, x, y, opt.size || 28, { align: "center", weight: 900, color: opt.color || C.accentDark });
+  const heading = (ctx, s, y = 230) => text(ctx, s, 960, y, 34, { align: "center", color: C.accentDark, weight: 800 });
+  // sepuluh kartu permainan: [ikon, label, kotak]
+  const CARDS = [["🙂", "nama panggilan", "publik"], ["⚽", "hobi", "publik"], ["🏫", "nama sekolah", "tergantung"], ["🏠", "alamat rumah", "privat"], ["📱", "nomor HP", "privat"], ["🎂", "tanggal lahir", "tergantung"], ["👩", "nama ibu", "privat"], ["🤳", "foto wajah", "tergantung"], ["🕒", "jadwal les", "privat"], ["🐱", "nama kucing", "publik"]];
+  const RISKY = [["🪪", "NIK"], ["🏠", "alamat lengkap"], ["📱", "nomor HP"], ["🎂", "tanggal lahir"], ["👩", "nama ibu kandung"], ["📄", "foto dokumen"]];
+  const SETTINGS = [["🔒", "Akun privat", "hanya teman yang kamu setujui"], ["📍", "Lokasi langsung mati", "jangan siarkan posisimu"], ["📝", "Bio bersih", "tanpa sekolah, kelas, nomor HP"], ["🏷️", "Tinjau tanda", "setujui dulu foto yang menandaimu"]];
+  const ASK = ["Siapa yang bisa melihat?", "Apa yang bisa diketahui orang dari sini?", "Masih nyamankah aku jika guru, orang tua, atau orang asing melihatnya setahun lagi?", "Apakah ini milikku untuk dibagikan?"];
+  const selfieImg = (ctx, x, y, w, h) => { ctx.fillStyle = "#CFE3D8"; ctx.fillRect(x, y, w, h); kid(ctx, x + w / 2, y + h * 0.55, h * 0.42, { hair: "long" }); };
+  const cardImg = (mask) => (ctx, x, y, w, h) => { ctx.fillStyle = "#CFE3D8"; ctx.fillRect(x, y, w, h); Pv.idCard(ctx, x + w / 2 - 150, y + 6, { w: 300, mask, flag: !mask }); };
+  const beachImg = (ctx, x, y, w, h) => { ctx.fillStyle = "#9FD6EA"; ctx.fillRect(x, y, w, h * 0.55); ctx.fillStyle = "#F2DDA4"; ctx.fillRect(x, y + h * 0.55, w, h * 0.45); ctx.fillStyle = "#F2B134"; ctx.beginPath(); ctx.arc(x + w * 0.8, y + h * 0.25, h * 0.14, 0, Math.PI * 2); ctx.fill(); };
+
+  Object.assign(SCENES, {
+    title_q(ctx, b, l) {
+      card(ctx, 120, 150, 1680, 740);
+      kiko(ctx, 330, 560, 200, 0, { mood: "happy" });
+      const items = [["🪪", "Data pribadi", "mana yang publik, mana yang privat"], ["👤", "Identitas digital", "gambaran dirimu di internet"], ["🧘", "Kesadaran penuh", "jeda dulu sebelum menekan unggah"]];
+      const n = reveal(l, 0.8, 1.3, 3);
+      items.forEach(([ic, t, s], i) => { ctx.save(); if (i >= n) ctx.globalAlpha = 0.2; const x = 640 + i * 380; card(ctx, x, 260, 350, 300, { fill: i === 2 ? "#FFF3D6" : C.bg2, r: 20 }); text(ctx, ic, x + 175, 370, 72, { align: "center" }); text(ctx, t, x + 175, 440, 30, { align: "center", weight: 900 }); para(ctx, s, x + 175, 490, 22, 310, { align: "center", color: C.ink2, weight: 700 }); ctx.restore(); });
+      if (n >= 3) banner(ctx, "berhenti sejenak sebelum jari menekan unggah", 640, 900);
+    },
+    prereq(ctx, b, l) {
+      card(ctx, 260, 200, 1400, 600);
+      text(ctx, "TONTON DULU", 960, 290, 34, { align: "center", color: C.accentDark, weight: 800 });
+      [["D7.3", "Kata Sandi Aman dan Rekam Jejak Digital"], ["D7.7", "Ruang Publik Virtual dan Empati"]].forEach(([c, t], i) => { const x = 360 + i * 640; card(ctx, x, 340, 580, 300, { fill: C.bg2 }); text(ctx, "Episode " + c, x + 290, 430, 50, { align: "center", weight: 900 }); para(ctx, t, x + 290, 500, 32, 520, { align: "center", weight: 700, color: C.ink2 }); });
+      kiko(ctx, 1600, 760, 150, 0);
+    },
+    unplugged_cards(ctx, b, l) {
+      card(ctx, 120, 150, 1680, 740);
+      heading(ctx, "MAIN DULU TANPA KOMPUTER: SEPULUH KARTU TENTANG AKU");
+      const n = reveal(l, 1.2, 0.8, 10);
+      CARDS.forEach(([ic, lab], i) => { const x = 260 + (i % 5) * 290, y = 290 + Math.floor(i / 5) * 190; Pv.info(ctx, x, y, 260, 150, ic, lab, null, { dim: i >= n, on: i === n - 1, size: 26 }); });
+      kid(ctx, 1700, 760, 110, { point: true });
+      if (n >= 10) label(ctx, "sepuluh kartu, satu orang: kamu", 960, 710);
+    },
+    unplugged_boxes(ctx, b, l) {
+      card(ctx, 120, 150, 1680, 740);
+      heading(ctx, "TIGA KOTAK: PUBLIK · PRIVAT · TERGANTUNG");
+      const subs = { publik: "boleh diketahui semua orang", privat: "hanya keluarga dan orang terdekat", tergantung: "teman sekelas ya, orang asing tidak" };
+      const n = reveal(l, 3.0, 0.75, 10);
+      const groups = { publik: [], privat: [], tergantung: [] };
+      CARDS.slice(0, n).forEach(([ic, lab, k]) => groups[k].push([ic, lab]));
+      ["publik", "tergantung", "privat"].forEach((k, i) => Pv.box(ctx, 230 + i * 520, 300, 460, 400, k, subs[k], groups[k]));
+      if (n >= 10) label(ctx, "pilahanmu boleh berbeda dengan temanmu: bahas alasannya", 960, 750, { size: 26, color: C.ink2 });
+    },
+
+    data_def(ctx, b, l) {
+      card(ctx, 120, 150, 1680, 740);
+      heading(ctx, "DATA PRIBADI: SIAPA KAMU, DI MANA KAMU, CARA MENGHUBUNGIMU");
+      card(ctx, 200, 280, 620, 400, { fill: C.goodBg, stroke: C.good, lw: 4, r: 18 }); text(ctx, "UMUM", 510, 330, 30, { align: "center", weight: 900, color: C.good });
+      const nu = reveal(l, 2.0, 0.8, 3);
+      [["🙂", "nama panggilan"], ["⚽", "hobi"], ["🐱", "nama kucing"]].forEach(([ic, lab], i) => { if (i < nu) Pv.info(ctx, 240, 355 + i * 100, 540, 84, ic, lab, null, { size: 26 }); });
+      card(ctx, 880, 280, 840, 400, { fill: C.badBg, stroke: C.bad, lw: 4, r: 18 }); text(ctx, "BERISIKO", 1300, 330, 30, { align: "center", weight: 900, color: C.bad });
+      const nr = reveal(l, 5.5, 0.7, 6);
+      RISKY.forEach(([ic, lab], i) => { if (i < nr) Pv.info(ctx, 910 + (i % 2) * 400, 355 + Math.floor(i / 2) * 100, 380, 84, ic, lab, null, { size: 24 }); });
+      if (nr >= 6) label(ctx, "berisiko: cukup untuk menemukan atau menyamar menjadi dirimu", 960, 740, { size: 26, color: C.bad });
+    },
+    puzzle(ctx, b, l) {
+      card(ctx, 120, 150, 1680, 740);
+      heading(ctx, "POTONGAN KECIL MENJADI POTRET LENGKAP");
+      const pieces = [["🤳", "foto berseragam", "→ sekolahmu"], ["🕒", "\"pulang jam tiga\"", "→ waktumu"], ["🛣️", "\"lewat gang mawar\"", "→ jalurmu"]];
+      const n = reveal(l, 1.5, 2.2, 3);
+      pieces.forEach(([ic, t, s], i) => { ctx.save(); if (i >= n) ctx.globalAlpha = 0.2; const x = 220 + i * 380; card(ctx, x, 300, 340, 260, { fill: "#FFF9E0", stroke: "#E0B04B", lw: 4, r: 18 }); text(ctx, ic, x + 170, 390, 64, { align: "center" }); text(ctx, t, x + 170, 460, 26, { align: "center", weight: 900 }); text(ctx, s, x + 170, 510, 24, { align: "center", weight: 800, color: C.ink2 }); if (i < 2) text(ctx, "+", x + 360, 450, 60, { align: "center", weight: 900, color: C.ink2 }); ctx.restore(); });
+      text(ctx, "=", 1380, 450, 60, { align: "center", weight: 900, color: C.ink2 });
+      const done = l > 8.5;
+      Pv.silhouette(ctx, 1560, 430, 150, { color: done ? C.bad : "#B7C4CC", mark: done ? "!" : "?" });
+      text(ctx, done ? "orang asing tahu di mana dan kapan" : "siapa? di mana? kapan?", 1560, 600, 24, { align: "center", weight: 900, color: done ? C.bad : C.ink2 });
+      if (done) banner(ctx, "satu per satu aman, digabung berbahaya", 700, 900, { fill: C.badBg, stroke: C.bad, color: C.bad });
+    },
+    branch1(ctx, b, l) {
+      card(ctx, 120, 150, 1680, 740);
+      heading(ctx, "APA YANG BOLEH KUBAGIKAN? · KARTU PELAJAR BARU", 215);
+      const stage = l < 4.5 ? 0 : 1;
+      [["A", "unggah kartu apa adanya", cardImg(false), 1.0, "bad"], ["B", "foto diri berseragam saja", selfieImg, 0.08, "good"]].forEach(([k, t, img, v, tone], i) => {
+        ctx.save(); const on = stage === i || (stage === 1 && i === 0); if (!on) ctx.globalAlpha = 0.25;
+        const x = 180 + i * 820; text(ctx, "PILIHAN " + k + ": " + t, x + 330, 265, 26, { align: "center", weight: 900, color: tone === "bad" ? C.bad : C.good });
+        Pv.post(ctx, x, 285, 420, { who: "Sinta", text: "Kartu pelajar baru!", img, likes: 18 }, { tone: on ? tone : null, imgH: 196 });
+        Pv.gap(ctx, x + 450, 420, 200, on ? v : 0, { label: v > 0.5 ? "terbuka" : "tertutup" });
+        ctx.restore();
+      });
+      if (l > 8) label(ctx, "cerita tetap tersampaikan, data tetap aman", 960, 790, { size: 26, color: C.good });
+    },
+    branch2(ctx, b, l) {
+      card(ctx, 120, 150, 1680, 740);
+      heading(ctx, "APA YANG BOLEH KUBAGIKAN? · LIBURAN", 215);
+      const stage = l < 6 ? 0 : 1;
+      [["A", "sekarang, dengan lokasi langsung", { who: "Dito", text: "Liburan seminggu! Rumah kosong, berangkat besok 😎", loc: "Lokasi langsung: Jl. Melati 5", img: beachImg }, 1.0, "bad"], ["B", "setelah pulang, tanpa lokasi", { who: "Dito", text: "Minggu lalu seru banget liburannya!", img: beachImg, when: "setelah pulang" }, 0.1, "good"]].forEach(([k, t, p, v, tone], i) => {
+        ctx.save(); const on = stage === i || (stage === 1 && i === 0); if (!on) ctx.globalAlpha = 0.25;
+        const x = 180 + i * 820; text(ctx, "PILIHAN " + k + ": " + t, x + 330, 265, 26, { align: "center", weight: 900, color: tone === "bad" ? C.bad : C.good });
+        Pv.post(ctx, x, 285, 440, p, { tone: on ? tone : null, imgH: 150 });
+        Pv.gap(ctx, x + 470, 420, 190, on ? v : 0, { label: v > 0.5 ? "terbuka" : "tertutup" });
+        if (i === 0 && on) text(ctx, "semua tahu rumah kosong", x + 565, 520, 20, { align: "center", weight: 900, color: C.bad });
+        ctx.restore();
+      });
+      if (l > 9) label(ctx, "pikirkan dulu, unggah nanti", 960, 790, { size: 26 });
+    },
+
+    identitas(ctx, b, l) {
+      card(ctx, 120, 150, 1680, 740);
+      heading(ctx, "IDENTITAS DIGITAL: GAMBARAN DIRIMU DI INTERNET");
+      kid(ctx, 420, 540, 170, { hair: "long" }); text(ctx, "Sinta yang asli", 420, 740, 24, { align: "center", weight: 800, color: C.ink2 });
+      arrowIcon(ctx, "right", 640, 500, 40, C.ink2);
+      const parts = [["👤", "nama akun & foto profil"], ["📝", "bio"], ["🖼️", "unggahan"], ["💬", "komentar"], ["♡", "tanda suka"], ["🏷️", "unggahan orang lain tentangmu"]];
+      const n = reveal(l, 1.5, 1.0, 6);
+      parts.forEach(([ic, t], i) => { ctx.save(); if (i >= n) ctx.globalAlpha = 0.2; const x = 720 + (i % 2) * 500, y = 290 + Math.floor(i / 2) * 130; card(ctx, x, y, 470, 110, { fill: i === 5 ? "#FFF3D6" : C.bg2, r: 16 }); text(ctx, ic, x + 50, y + 72, 40, { align: "center" }); para(ctx, t, x + 100, y + 48, 26, 350, { weight: 900 }); ctx.restore(); });
+      if (n >= 6) label(ctx, "orang menilai dari gambaran ini, bukan dari dirimu langsung", 1205, 720, { size: 26, color: C.ink2 });
+    },
+    pengaturan(ctx, b, l) {
+      card(ctx, 120, 150, 1680, 740);
+      heading(ctx, "EMPAT PENGATURAN YANG MERAPIKAN");
+      const n = reveal(l, 1.5, 2.3, 4);
+      Pv.profile(ctx, 440, 540, 360, 560, { name: "Rani Putri Lestari", handle: "@rani_9b", pub: true, loc: true, avatar: "Rani", bio: [["SMP Nusa Bangsa · IX B", true], ["HP 08xx-xxxx-123", true], ["suka menggambar 🎨", false]], tags: 3 }, { fix: n >= 4, flag: n < 4 });
+      SETTINGS.forEach(([ic, t, s], i) => { ctx.save(); if (i >= n) ctx.globalAlpha = 0.2; const y = 290 + i * 112; card(ctx, 720, y, 1000, 96, { fill: i < n ? C.goodBg : C.bg2, stroke: i < n ? C.good : undefined, lw: 4, r: 16 }); text(ctx, ic, 770, y + 62, 40, { align: "center" }); text(ctx, (i + 1) + ". " + t, 830, y + 44, 28, { weight: 900 }); text(ctx, s, 830, y + 78, 22, { weight: 700, color: C.ink2 }); ctx.restore(); });
+      if (n >= 4) label(ctx, "profil Rani sesudah dirapikan", 440, 860, { size: 22, color: C.good });
+    },
+    jeda(ctx, b, l) {
+      card(ctx, 120, 150, 1680, 740);
+      heading(ctx, "KESADARAN PENUH: SADAR SEBELUM JARI BERGERAK");
+      const moods = [["😡", "marah"], ["🤩", "terlalu senang"], ["😰", "takut ketinggalan"]];
+      const n = reveal(l, 4.0, 1.0, 3);
+      moods.forEach(([e, t], i) => { ctx.save(); if (i >= n) ctx.globalAlpha = 0.2; const x = 260 + i * 300; card(ctx, x, 300, 260, 200, { fill: C.badBg, stroke: C.bad, lw: 3, r: 16 }); text(ctx, e, x + 130, 400, 64, { align: "center" }); text(ctx, t, x + 130, 460, 24, { align: "center", weight: 900, color: C.bad }); ctx.restore(); });
+      if (n >= 3) text(ctx, "saat paling mudah salah unggah", 690, 560, 26, { align: "center", weight: 900, color: C.bad });
+      const breathing = l > 8;
+      Pv.breath(ctx, 1400, 450, 130, breathing ? (l - 8) / 3 : 0.25, breathing ? ["tarik", "hembus", "tarik", "hembus", "tarik", "hembus"][Math.floor(((l - 8) / 1.5)) % 6] : "jeda");
+      text(ctx, breathing ? "tarik napas tiga kali" : "sebelum menekan unggah", 1400, 660, 26, { align: "center", weight: 900, color: C.kiko });
+      D.finger(ctx, 1190, 690, { s: 36, angle: -0.6 }); card(ctx, 1080, 690, 150, 56, { fill: C.kiko, r: 14 }); text(ctx, "Unggah", 1155, 728, 24, { align: "center", weight: 900, color: "#fff" });
+    },
+    empat_tanya(ctx, b, l) {
+      card(ctx, 120, 150, 1680, 740);
+      heading(ctx, "EMPAT PERTANYAAN SEBELUM MENGUNGGAH");
+      const n = reveal(l, 1.5, 2.6, 4);
+      ASK.forEach((q, i) => Em.choice(ctx, 240 + (i % 2) * 740, 290 + Math.floor(i / 2) * 200, 700, 170, i + 1, q, { on: i === n - 1, dim: i >= n }));
+      kiko(ctx, 1740, 820, 90, 0, { mood: "happy" });
+      if (n >= 4) label(ctx, "empat ya, baru unggah; satu ragu, tunda dulu", 960, 720);
+    },
+    bocor(ctx, b, l) {
+      card(ctx, 120, 150, 1680, 740);
+      heading(ctx, "KALAU DATA TELANJUR TERSEBAR");
+      const steps = [["🗑️", "Hapus unggahannya", "secepatnya, sebelum makin menyebar"], ["🔑", "Ganti kata sandi", "akun yang terkait dengan data itu"], ["📸", "Simpan bukti", "tangkapan layar sebelum dihapus"], ["🧑‍🏫", "Beri tahu orang dewasa", "orang tua atau guru; jangan sendirian"]];
+      const n = reveal(l, 1.2, 1.5, 4);
+      steps.forEach(([ic, t, s], i) => Em.step(ctx, 220 + (i % 2) * 760, 290 + Math.floor(i / 2) * 180, 720, i + 1, t, s, i < n));
+      if (n >= 4) label(ctx, "yang sudah tersebar sulit ditarik penuh: itulah gunanya jeda", 960, 700, { size: 26, color: C.bad });
+    },
+    data_teman(ctx, b, l) {
+      card(ctx, 120, 150, 1680, 740);
+      heading(ctx, "DATA TEMANMU JUGA BUKAN MILIKMU");
+      const msgs = [{ who: "Bayu", text: "Minta nomor HP Rani dong, mau tanya PR" }, { who: "Aku", text: "Tunggu, aku tanya Rani dulu boleh atau tidak.", tone: "good" }, { who: "Rani", text: "Boleh, kirim ke Bayu saja ya. Makasih sudah tanya dulu!", mood: "happy" }];
+      Em.chat(ctx, 200, 280, 700, 440, "Bayu", msgs, { n: reveal(l, 1.0, 2.2, 3) });
+      const dont = [["🖼️", "foto teman tanpa izin"], ["📱", "meneruskan nomor HP ke grup lain"], ["📍", "menandai lokasi rumah orang"]];
+      const n = reveal(l, 4.0, 1.4, 3);
+      dont.forEach(([ic, t], i) => { ctx.save(); if (i >= n) ctx.globalAlpha = 0.2; const y = 300 + i * 130; card(ctx, 980, y, 720, 110, { fill: C.badBg, stroke: C.bad, lw: 3, r: 16 }); text(ctx, "✕", 1030, y + 72, 40, { align: "center", weight: 900, color: C.bad }); text(ctx, ic, 1090, y + 70, 36, { align: "center" }); para(ctx, t, 1130, y + 52, 26, 540, { weight: 900 }); ctx.restore(); });
+      if (n >= 3) label(ctx, "menjaga data orang lain = menjaga dirimu", 1340, 720, { size: 26, color: C.good });
+    },
+    make_show(ctx, b, l) {
+      card(ctx, 160, 150, 1600, 740);
+      text(ctx, "GILIRANMU", 960, 240, 34, { align: "center", color: C.accentDark, weight: 900 });
+      const items = [["Pilah dua belas kartu", "publik, privat, tergantung", (x, y) => { [["publik", "🐱 nama kucing"], ["privat", "📱 nomor HP"], ["tergantung", "🏫 sekolah"]].forEach(([k, t], i) => { const kk = Pv.kind[k]; card(ctx, x - 190, y - 90 + i * 70, 380, 58, { fill: kk[0], stroke: kk[1], lw: 3, r: 12 }); text(ctx, t, x - 170, y - 52 + i * 70, 22, { weight: 900 }); text(ctx, kk[2], x + 175, y - 54 + i * 70, 15, { align: "right", weight: 900, color: kk[1] }); }); }],
+        ["Skenario bercabang", "apa yang boleh kubagikan?", (x, y) => { card(ctx, x - 190, y - 90, 380, 60, { fill: C.badBg, stroke: C.bad, lw: 3, r: 12 }); text(ctx, "A: unggah sekarang + lokasi", x, y - 52, 22, { align: "center", weight: 900, color: C.bad }); card(ctx, x - 190, y - 15, 380, 60, { fill: C.goodBg, stroke: C.good, lw: 3, r: 12 }); text(ctx, "B: nanti, tanpa lokasi", x, y + 23, 22, { align: "center", weight: 900, color: C.good }); Pv.gap(ctx, x - 150, y + 90, 300, 0.15, { title: "" }); }],
+        ["Rapikan profil", "temukan yang bocor, perbaiki", (x, y) => { ctx.save(); ctx.translate(x, y + 20); ctx.scale(0.55, 0.55); Pv.profile(ctx, 0, 0, 340, 520, { name: "Rani Putri", handle: "@rani_9b", pub: true, loc: true, bio: [["SMP Nusa · IX B", true], ["HP 08xx-123", true]], tags: 3 }, { flag: true }); ctx.restore(); }]];
+      items.forEach(([t1, t2, draw], i) => { const x = 400 + i * 560; card(ctx, x - 250, 290, 500, 440, { fill: C.bg2 }); ctx.fillStyle = C.kiko; ctx.beginPath(); ctx.arc(x - 200, 340, 28, 0, Math.PI * 2); ctx.fill(); text(ctx, String(i + 1), x - 200, 352, 30, { align: "center", color: "#fff", weight: 900 }); text(ctx, t1, x - 160, 352, 28, { weight: 900 }); text(ctx, t2, x - 160, 386, 20, { weight: 700, color: C.ink2 }); draw(x, 560); });
+      text(ctx, "di halaman latihan episode ini — lalu periksa akunmu bersama orang tua", 960, 820, 28, { align: "center", color: C.ink2, weight: 700 });
+    }
+  });
+})(typeof window !== "undefined" ? window : globalThis);
+</script>
+<script>/* Inti halaman latihan: pemutar (kanvas + narasi), tombol suara nyala/mati (berpindah antara timeline suara dan teks),
+   kuis dengan petunjuk, dan kemajuan di localStorage (perangkat ini saja).
+   Pakai:  const P = PageCore({ suara: TIMELINE_SUARA_atau_null, teks: TIMELINE_TEKS });
+   Episode menambahkan latihannya sendiri lewat P.$, P.K, P.H, P.progress, P.save(), P.speed(), P.onProgress(fn). */
+function PageCore(TLS, opt = {}) {
+  const $ = id => document.getElementById(id);
+  const K = Kiko, H = K.helpers;
+  let voice = !!TLS.suara; let TL = voice ? TLS.suara : TLS.teks;
+  // ---------- progress storage (per device only) ----------
+  const KEY = opt.key || TL.episode.replace(/\./g, "").toLowerCase() + "-progress";   // D7.5 -> "d75-progress"
+  let progress = { quiz: {} };
+  try { const s = localStorage.getItem(KEY); if (s) progress = { quiz: {}, ...JSON.parse(s) }; } catch (e) {}
+  const extras = [];
+  function renderProgress() {
+    const el = $("progress"); if (!el) return; el.innerHTML = "";
+    Object.keys(TL.quizzes).forEach((id, i) => { const s = document.createElement("span"); s.textContent = "Cek " + (i + 1); s.className = progress.quiz[id] ? "ok" : ""; el.appendChild(s); });
+    extras.forEach(f => f(el));
+  }
+  function save() { try { localStorage.setItem(KEY, JSON.stringify(progress)); } catch (e) {} renderProgress(); }
+
+  // ---------- player ----------
+  const cv = $("screen"), ctx = cv.getContext("2d");
+  let t = 0, playing = false, last = 0, speed = 1, hasAudio = false;
+  const nar = $("nar"); nar.addEventListener("canplay", () => { hasAudio = true; }); nar.addEventListener("error", () => { hasAudio = false; });
+  function fmt(s) { s = Math.max(0, Math.floor(s)); return Math.floor(s / 60) + ":" + String(s % 60).padStart(2, "0"); }
+  function segStart(i) { return TL.beats.find(b => b.seg === i).start; }
+  function syncAudio() { if (voice && hasAudio) { try { nar.currentTime = t; } catch (e) {} } }
+  function drawNow() {
+    const b = K.draw(ctx, Math.min(t, TL.total - 0.01), TL);
+    $("barfill").style.width = (t / TL.total * 100) + "%"; $("bar").setAttribute("aria-valuenow", Math.round(t / TL.total * 100));
+    $("timelabel").textContent = fmt(t) + " / " + fmt(TL.total);
+    [...$("chapters").children].forEach((c, i) => c.classList.toggle("now", i === b.seg));
+    return b;
+  }
+  function loop(now) {
+    if (!playing) return;
+    const dt = Math.min(0.1, (now - last) / 1000); last = now; if (voice && hasAudio && !nar.paused) t = nar.currentTime; else t += dt * speed;
+    if (t >= TL.total) { t = TL.total - 0.01; setPlaying(false); }
+    drawNow(); requestAnimationFrame(loop);
+  }
+  function setPlaying(p) {
+    playing = p; $("bigplay").hidden = p; $("playbtn").textContent = p ? "❚❚ Jeda" : "▶ Putar";
+    if (p) { last = performance.now(); if (voice && hasAudio) { try { nar.currentTime = t; nar.playbackRate = speed; nar.play().catch(() => {}); } catch (e) {} } requestAnimationFrame(loop); } else nar.pause();
+  }
+  $("bigplay").addEventListener("click", () => setPlaying(true));
+  $("playbtn").addEventListener("click", () => setPlaying(!playing));
+  $("replay").addEventListener("click", () => { const b = K.beatAt(TL, t); t = segStart(b.seg); syncAudio(); drawNow(); setPlaying(true); });
+  $("slow").addEventListener("click", e => { speed = speed === 1 ? 0.8 : 1; nar.playbackRate = speed; e.currentTarget.setAttribute("aria-pressed", speed !== 1); });
+  function seekFromBar(ev) { const r = $("bar").getBoundingClientRect(); const x = (ev.touches ? ev.touches[0].clientX : ev.clientX) - r.left; t = Math.max(0, Math.min(TL.total - 0.01, x / r.width * TL.total)); syncAudio(); drawNow(); }
+  $("bar").addEventListener("click", seekFromBar);
+  $("bar").addEventListener("keydown", e => { if (e.key === "ArrowRight") { t = Math.min(TL.total - 0.01, t + 5); syncAudio(); drawNow(); } if (e.key === "ArrowLeft") { t = Math.max(0, t - 5); syncAudio(); drawNow(); } });
+  TL.segments.forEach((name, i) => { const b = document.createElement("button"); b.textContent = (i + 1) + ". " + name; b.addEventListener("click", () => { t = segStart(i); syncAudio(); drawNow(); setPlaying(true); }); $("chapters").appendChild(b); });
+  // voice on/off: switches between the narrated timeline and the reading-paced one, staying on the same beat
+  const vb = $("voice");
+  function setVoice(on) {
+    const cur = K.beatAt(TL, t);
+    voice = on && !!TLS.suara; TL = voice ? TLS.suara : TLS.teks;
+    const nb = TL.beats.find(b => b.id === cur.id) || TL.beats[0]; t = nb.start;
+    if (vb) { vb.setAttribute("aria-pressed", voice); vb.textContent = voice ? "🔊 Suara: nyala" : "🔇 Suara: mati"; }
+    if (playing) { if (voice && hasAudio) { try { nar.currentTime = t; nar.playbackRate = speed; nar.play().catch(() => {}); } catch (e) {} } else nar.pause(); }
+    drawNow();
+  }
+  if (vb) { if (!TLS.suara || !TLS.teks) vb.hidden = true; else { vb.addEventListener("click", () => setVoice(!voice)); vb.setAttribute("aria-pressed", voice); vb.textContent = voice ? "🔊 Suara: nyala" : "🔇 Suara: mati"; } }
+  drawNow();
+
+  // ---------- quiz ----------
+  const quizEl = $("quiz");
+  if (quizEl) Object.entries(TL.quizzes).forEach(([id, q], qi) => {
+    const box = document.createElement("div"); box.className = "q";
+    box.innerHTML = `<h3>${qi + 1}. ${q.q}</h3><div class="opts"></div><div class="fb"></div>`;
+    const opts = box.querySelector(".opts"), fb = box.querySelector(".fb");
+    q.options.forEach((o, i) => {
+      const b = document.createElement("button"); b.innerHTML = `<b>${"ABC"[i]}</b><span>${o}</span>`;
+      b.addEventListener("click", () => {
+        [...opts.children].forEach(c => c.classList.remove("wrong"));
+        if (i === q.answer) { b.classList.add("right"); fb.className = "fb good"; fb.textContent = "Benar! " + (q.explain || ""); progress.quiz[id] = true; save(); [...opts.children].forEach(c => c.disabled = true); }
+        else { b.classList.add("wrong"); fb.className = "fb bad"; fb.textContent = "Belum tepat. Petunjuk: " + q.hint; }
+      });
+      opts.appendChild(b);
+    });
+    if (progress.quiz[id]) { opts.children[q.answer].classList.add("right"); [...opts.children].forEach(c => c.disabled = true); fb.className = "fb good"; fb.textContent = "Sudah dijawab benar."; }
+    quizEl.appendChild(box);
+  });
+  renderProgress();
+
+  return { $, K, H, progress, save, renderProgress, speed: () => speed, timeline: () => TL,
+           onProgress(fn) { extras.push(fn); renderProgress(); } };
+}
+</script>
+<script>
+(function () {
+  const P = PageCore({ suara: {"episode": "D9.4", "title": "Data Pribadi, Identitas Digital, dan Kesadaran Penuh", "hook": "memilah data privat dan publik, memeriksa unggahan sebelum tayang, dan merapikan identitas digitalmu.", "engine": ["../_alat/kiko-core.js", "../_alat/kiko-devices.js", "../D7.7/empati.js", "privasi.js", "scenes.js"], "parts": {"D9.4a": {"segs": [0, 1, 2, 3], "post": "Lanjut ke Bagian 2: Identitas Digital dan Jeda Sadar"}, "D9.4b": {"segs": [4, 5, 6, 7], "pre": "Bagian 2: Identitas Digital dan Jeda Sadar"}}, "youtube": {"ringkas": "Sinta baru dapat kartu pelajar dan ingin mengunggah fotonya. Boleh, tidak, ya? Bersama Kiko kita pilah data pribadi: mana yang publik, privat, atau tergantung; lihat bagaimana potongan kecil informasi bisa menjadi potret lengkap; lalu jalani skenario bercabang \"apa yang boleh kubagikan?\" sambil mengawasi celah data yang terbuka atau tertutup. Bagian dua membahas identitas digital dan empat pengaturan yang merapikannya, kesadaran penuh (jeda sebelum unggah dengan empat pertanyaan), langkah bila data telanjur tersebar, dan menjaga data teman. Empat cek pemahaman dengan jeda berpikir.", "belajar": ["memilah informasi tentang diri menjadi publik, privat, atau tergantung konteks", "menjelaskan mengapa potongan informasi kecil bisa membuka celah data", "merapikan identitas digital lewat pengaturan akun: privat, lokasi mati, bio bersih, tinjau tanda", "menerapkan jeda sadar dan empat pertanyaan sebelum mengunggah atau membalas"], "bagian": {"D9.4a": "Privat atau Publik?", "D9.4b": "Identitas Digital dan Jeda Sadar"}, "cari": ["data pribadi kelas 9", "apa yang boleh dibagikan di media sosial untuk pelajar", "identitas digital informatika smp", "cara mengatur akun media sosial agar aman"], "prasyarat": "episode D7.3 Kata Sandi Aman dan Rekam Jejak Digital serta D7.7 Ruang Publik Virtual dan Empati", "jp": 8, "tagar": ["#DataPribadi", "#IdentitasDigital", "#LiterasiDigital", "#KeamananDigital", "#Kelas9", "#SMP"]}, "recap": ["Data berisiko bukan untuk umum; potongan jadi potret.", "Rapikan identitas digital lewat pengaturan akun.", "Jeda dan empat pertanyaan sebelum mengunggah."], "next": {"code": "D9.5", "title": "Produksi dan Diseminasi Konten Digital", "note": "Latihan skenario bercabang ada di halaman episode ini."}, "segments": ["Pembuka", "Main dulu tanpa komputer", "Data pribadi", "Apa yang boleh kubagikan?", "Identitas digital", "Jeda sadar sebelum unggah", "Kalau telanjur, dan data teman", "Giliranmu"], "quizzes": {"q1": {"q": "Mana yang paling berisiko diunggah untuk umum?", "options": ["Foto kucingmu", "Foto kartu pelajar lengkap dengan alamat dan tanggal lahir", "Foto masakan ibumu"], "answer": 1, "hint": "Cari gambar yang memuat nama lengkap, sekolah, alamat, dan tanggal lahir sekaligus."}, "q2": {"q": "Akun yang mengaku teman sekelas meminta foto kartu identitas orang tuamu untuk 'daftar hadiah'. Apa yang kamu lakukan?", "options": ["Kirim, kan teman", "Tanya orang tua dan jangan kirim", "Kirim separuhnya saja"], "answer": 1, "hint": "Dokumen identitas tidak dibagikan lewat chat; akun itu belum tentu benar-benar temanmu."}, "q3": {"q": "Bio akun Rani: nama lengkap, nama SMP dan kelas, nomor HP, 'DM aja!'. Akunnya publik. Mana yang paling perlu diubah lebih dulu?", "options": ["Ganti foto profil jadi kucing", "Hapus nomor HP dan nama sekolah, lalu jadikan akun privat", "Hapus tulisan 'DM aja!' saja"], "answer": 1, "hint": "Mulai dari data yang paling berisiko: cara menghubungimu dan tempat menemukanmu."}, "q4": {"q": "Dito dirundung di kolom komentar dan ingin membalas dengan menyebut alamat rumah si pengomentar. Pilihan terbaik?", "options": ["Balas sekarang, biar kapok", "Jeda, simpan bukti, lalu lapor dan blokir", "Sebar nomor HP-nya ke grup"], "answer": 1, "hint": "Menyebarkan data orang lain tetap salah, meskipun ia yang mulai. Saat marah, jeda dulu."}}, "beats": [{"id": "intro1", "seg": 0, "scene": "title", "text": "Halo! Aku Kiko. Sinta baru dapat kartu pelajar dan ingin mengunggah fotonya. Boleh, tidak, ya? Setelah menonton, kamu bisa memilah data privat dan publik, lalu memeriksa unggahan sebelum tayang.", "hold": 1.0, "start": 0.0, "speech": 0.4, "audio": 13.058, "dur": 16.54}, {"id": "intro2", "seg": 0, "scene": "title_q", "text": "Hari ini kita belajar tiga hal: data pribadi, identitas digital, dan kesadaran penuh, yaitu berhenti sejenak sebelum jari menekan tombol unggah.", "hold": 0.8, "start": 16.54, "speech": 16.94, "audio": 10.509, "dur": 12.34}, {"id": "intro3", "seg": 0, "scene": "prereq", "text": "Episode ini melanjutkan D7.3 tentang kata sandi dan jejak digital, serta D7.7 tentang ruang publik virtual. Kalau belum menontonnya, tonton dulu, ya.", "hold": 0.8, "start": 28.88, "speech": 29.28, "audio": 11.885, "dur": 13.385}, {"id": "play1", "seg": 1, "scene": "unplugged_cards", "text": "Main dulu. Tulis sepuluh hal tentang dirimu di sepuluh kartu: nama panggilan, hobi, nama sekolah, alamat rumah, nomor HP, tanggal lahir, nama ibu, foto wajah, jadwal les, dan nama kucingmu.", "hold": 1.0, "start": 42.265, "speech": 42.665, "audio": 15.52, "dur": 17.22}, {"id": "play2", "seg": 1, "scene": "unplugged_boxes", "text": "Siapkan tiga kotak. Publik: boleh diketahui semua orang. Privat: hanya keluarga dan orang terdekat. Tergantung: aman untuk teman sekelas, tetapi tidak untuk orang asing. Pilah kartumu, lalu bandingkan dengan temanmu.", "hold": 1.0, "start": 59.485, "speech": 59.885, "audio": 15.678, "dur": 17.378}, {"id": "s1a", "seg": 2, "scene": "data_def", "text": "Data pribadi adalah informasi yang menunjukkan siapa kamu, di mana kamu, dan cara menghubungimu. Ada yang umum, seperti hobi dan nama panggilan. Ada yang berisiko: NIK, alamat lengkap, nomor HP, tanggal lahir, nama ibu kandung, dan foto dokumen.", "hold": 1.0, "start": 76.863, "speech": 77.263, "audio": 18.96, "dur": 21.04}, {"id": "s1b", "seg": 2, "scene": "puzzle", "text": "Satu potongan tampak tidak berbahaya. Foto seragam menunjukkan sekolahmu. Cerita pulang jam tiga lewat gang mawar menunjukkan jalurmu. Digabung, orang asing tahu di mana dan kapan menemukanmu. Potongan kecil bisa menjadi potret lengkap.", "hold": 1.0, "start": 97.903, "speech": 98.303, "audio": 15.795, "dur": 18.54}, {"id": "q1", "seg": 2, "scene": "quiz", "quiz": "q1", "text": "Cek pemahaman. Mana yang paling berisiko diunggah untuk umum: foto kucingmu, foto kartu pelajar lengkap dengan alamat dan tanggal lahir, atau foto masakan ibumu? Pikirkan dulu.", "hold": 4.0, "start": 116.443, "speech": 116.843, "audio": 12.42, "dur": 18.04}, {"id": "q1a", "seg": 2, "scene": "quiz_answer", "quiz": "q1", "text": "Jawabannya: foto kartu pelajar. Satu gambar memuat nama lengkap, sekolah, alamat, dan tanggal lahir. Itu cukup bagi orang jahat untuk menyamar menjadi dirimu.", "hold": 1.0, "start": 134.483, "speech": 134.883, "audio": 11.144, "dur": 13.54}, {"id": "s2a", "seg": 3, "scene": "branch1", "text": "Kembali ke Sinta. Pilihan A: unggah foto kartu pelajar apa adanya. Celah data terbuka lebar. Pilihan B: foto diri dengan seragam saja, tanpa kartu. Celah tertutup, cerita tetap tersampaikan.", "hold": 1.0, "start": 148.023, "speech": 148.423, "audio": 14.501, "dur": 16.54}, {"id": "s2b", "seg": 3, "scene": "branch2", "text": "Dito menulis: liburan seminggu, rumah kosong, berangkat besok, lengkap dengan lokasi langsung. Celah terbuka: semua orang tahu rumahnya kosong. Pilihan lebih aman: bagikan cerita setelah pulang, tanpa lokasi langsung.", "hold": 1.0, "start": 164.563, "speech": 164.963, "audio": 15.796, "dur": 17.496}, {"id": "q2", "seg": 3, "scene": "quiz", "quiz": "q2", "text": "Cek pemahaman. Akun yang mengaku teman sekelas meminta foto kartu identitas orang tuamu untuk daftar hadiah. Apa yang kamu lakukan: kirim, tanya orang tua dan jangan kirim, atau kirim separuhnya saja? Pikirkan dulu.", "hold": 4.0, "start": 182.059, "speech": 182.459, "audio": 15.446, "dur": 21.54}, {"id": "q2a", "seg": 3, "scene": "quiz_answer", "quiz": "q2", "text": "Jawabannya: jangan kirim, dan tanyakan ke orang tua. Dokumen identitas tidak dibagikan lewat chat, apalagi kepada akun yang belum tentu benar-benar temanmu.", "hold": 1.0, "start": 203.599, "speech": 203.999, "audio": 10.87, "dur": 13.04}, {"id": "s3a", "seg": 4, "scene": "identitas", "text": "Bagian dua. Identitas digital adalah gambaran dirimu di internet: nama akun, foto profil, bio, unggahan, komentar, dan tanda suka, ditambah yang diunggah orang lain tentangmu. Orang menilai dari gambaran itu, bukan dari dirimu langsung.", "hold": 1.0, "start": 216.639, "speech": 217.039, "audio": 17.676, "dur": 19.376}, {"id": "s3b", "seg": 4, "scene": "pengaturan", "text": "Empat pengaturan yang merapikan identitas digital. Akun privat: hanya teman yang kamu setujui yang melihat. Lokasi langsung dimatikan. Bio tanpa sekolah, kelas, dan nomor HP. Tinjau dulu foto yang menandai namamu.", "hold": 1.0, "start": 236.015, "speech": 236.415, "audio": 15.661, "dur": 17.54}, {"id": "q3", "seg": 4, "scene": "quiz", "quiz": "q3", "text": "Cek pemahaman. Bio akun Rani berisi nama lengkap, nama SMP dan kelas, nomor HP, dan tulisan DM aja. Akunnya publik. Mana yang paling perlu diubah lebih dulu? Pikirkan dulu.", "hold": 4.0, "start": 253.555, "speech": 253.955, "audio": 14.72, "dur": 19.54}, {"id": "q3a", "seg": 4, "scene": "quiz_answer", "quiz": "q3", "text": "Jawabannya: hapus nomor HP dan nama sekolah dari bio, lalu ubah akun menjadi privat. Nama panggilan dan hobi boleh tetap ada.", "hold": 1.0, "start": 273.095, "speech": 273.495, "audio": 9.552, "dur": 12.54}, {"id": "s4a", "seg": 5, "scene": "jeda", "text": "Kesadaran penuh artinya sadar apa yang kulakukan, mengapa, dan apa akibatnya, sebelum jari bergerak. Saat marah, terlalu senang, atau takut ketinggalan, kita paling mudah salah unggah. Tarik napas tiga kali. Jeda dulu.", "hold": 1.0, "start": 285.635, "speech": 286.035, "audio": 16.538, "dur": 18.238}, {"id": "s4b", "seg": 5, "scene": "empat_tanya", "text": "Sebelum mengunggah, empat pertanyaan. Siapa yang bisa melihat? Apa yang bisa diketahui orang dari sini? Masih nyamankah aku jika guru, orang tua, atau orang asing melihatnya setahun lagi? Apakah ini milikku untuk dibagikan?", "hold": 1.0, "start": 303.873, "speech": 304.273, "audio": 15.126, "dur": 18.54}, {"id": "q4", "seg": 5, "scene": "quiz", "quiz": "q4", "text": "Cek pemahaman. Dito marah karena dirundung di kolom komentar, lalu ingin membalas dengan menyebut alamat rumah si pengomentar. Pilihan terbaik: balas sekarang, jeda lalu lapor dan blokir, atau sebar nomor HP-nya? Pikirkan dulu.", "hold": 4.0, "start": 322.413, "speech": 322.813, "audio": 16.549, "dur": 21.54}, {"id": "q4a", "seg": 5, "scene": "quiz_answer", "quiz": "q4", "text": "Jawabannya: jeda, simpan bukti, lalu lapor dan blokir. Menyebarkan data orang lain, meskipun ia jahat, tetap salah dan bisa dikenai sanksi.", "hold": 1.0, "start": 343.953, "speech": 344.353, "audio": 10.773, "dur": 12.54}, {"id": "s5a", "seg": 6, "scene": "bocor", "text": "Kalau data telanjur tersebar: hapus unggahannya, ganti kata sandi akun yang terkait, simpan tangkapan layar sebagai bukti, lalu beri tahu orang tua atau guru. Yang sudah tersebar sulit ditarik penuh. Itulah gunanya jeda.", "hold": 1.0, "start": 356.493, "speech": 356.893, "audio": 15.04, "dur": 18.54}, {"id": "s5b", "seg": 6, "scene": "data_teman", "text": "Data temanmu juga bukan milikmu. Jangan unggah foto teman tanpa izin, jangan teruskan nomor HP teman ke grup lain, dan jangan menandai lokasi rumah orang. Menjaga data orang lain adalah bagian dari menjaga dirimu.", "hold": 1.0, "start": 375.033, "speech": 375.433, "audio": 14.447, "dur": 19.04}, {"id": "s6a", "seg": 7, "scene": "make_show", "text": "Sekarang giliranmu. Di halaman latihan: pilah dua belas kartu informasi menjadi publik, privat, atau tergantung; jalani skenario bercabang apa yang boleh kubagikan sambil mengawasi celah data; lalu rapikan profil yang bocor.", "hold": 1.0, "start": 394.073, "speech": 394.473, "audio": 16.188, "dur": 17.888}, {"id": "s6b", "seg": 7, "scene": "make_show", "text": "Lalu buka akunmu bersama orang tua: periksa bio, pengaturan privat, dan lokasi. Satu perubahan kecil hari ini menutup satu celah.", "hold": 1.0, "start": 411.961, "speech": 412.361, "audio": 9.532, "dur": 12.04}, {"id": "recap", "seg": 7, "scene": "recap", "text": "Tiga hal untuk diingat. Satu: data berisiko bukan untuk umum, karena potongan kecil bisa menjadi potret lengkap. Dua: rapikan identitas digital lewat pengaturan akun. Tiga: jeda dan empat pertanyaan sebelum mengunggah.", "hold": 1.5, "start": 424.001, "speech": 424.401, "audio": 16.255, "dur": 18.455}, {"id": "outro", "seg": 7, "scene": "outro", "text": "Sampai jumpa di episode berikutnya: produksi dan diseminasi konten digital, dari ide sampai unggahan yang bertanggung jawab. Sampai jumpa!", "hold": 1.0, "start": 442.456, "speech": 442.856, "audio": 9.434, "dur": 11.54}], "total": 453.996}, teks: {"episode": "D9.4", "title": "Data Pribadi, Identitas Digital, dan Kesadaran Penuh", "hook": "memilah data privat dan publik, memeriksa unggahan sebelum tayang, dan merapikan identitas digitalmu.", "engine": ["../_alat/kiko-core.js", "../_alat/kiko-devices.js", "../D7.7/empati.js", "privasi.js", "scenes.js"], "parts": {"D9.4a": {"segs": [0, 1, 2, 3], "post": "Lanjut ke Bagian 2: Identitas Digital dan Jeda Sadar"}, "D9.4b": {"segs": [4, 5, 6, 7], "pre": "Bagian 2: Identitas Digital dan Jeda Sadar"}}, "youtube": {"ringkas": "Sinta baru dapat kartu pelajar dan ingin mengunggah fotonya. Boleh, tidak, ya? Bersama Kiko kita pilah data pribadi: mana yang publik, privat, atau tergantung; lihat bagaimana potongan kecil informasi bisa menjadi potret lengkap; lalu jalani skenario bercabang \"apa yang boleh kubagikan?\" sambil mengawasi celah data yang terbuka atau tertutup. Bagian dua membahas identitas digital dan empat pengaturan yang merapikannya, kesadaran penuh (jeda sebelum unggah dengan empat pertanyaan), langkah bila data telanjur tersebar, dan menjaga data teman. Empat cek pemahaman dengan jeda berpikir.", "belajar": ["memilah informasi tentang diri menjadi publik, privat, atau tergantung konteks", "menjelaskan mengapa potongan informasi kecil bisa membuka celah data", "merapikan identitas digital lewat pengaturan akun: privat, lokasi mati, bio bersih, tinjau tanda", "menerapkan jeda sadar dan empat pertanyaan sebelum mengunggah atau membalas"], "bagian": {"D9.4a": "Privat atau Publik?", "D9.4b": "Identitas Digital dan Jeda Sadar"}, "cari": ["data pribadi kelas 9", "apa yang boleh dibagikan di media sosial untuk pelajar", "identitas digital informatika smp", "cara mengatur akun media sosial agar aman"], "prasyarat": "episode D7.3 Kata Sandi Aman dan Rekam Jejak Digital serta D7.7 Ruang Publik Virtual dan Empati", "jp": 8, "tagar": ["#DataPribadi", "#IdentitasDigital", "#LiterasiDigital", "#KeamananDigital", "#Kelas9", "#SMP"]}, "recap": ["Data berisiko bukan untuk umum; potongan jadi potret.", "Rapikan identitas digital lewat pengaturan akun.", "Jeda dan empat pertanyaan sebelum mengunggah."], "next": {"code": "D9.5", "title": "Produksi dan Diseminasi Konten Digital", "note": "Latihan skenario bercabang ada di halaman episode ini."}, "segments": ["Pembuka", "Main dulu tanpa komputer", "Data pribadi", "Apa yang boleh kubagikan?", "Identitas digital", "Jeda sadar sebelum unggah", "Kalau telanjur, dan data teman", "Giliranmu"], "quizzes": {"q1": {"q": "Mana yang paling berisiko diunggah untuk umum?", "options": ["Foto kucingmu", "Foto kartu pelajar lengkap dengan alamat dan tanggal lahir", "Foto masakan ibumu"], "answer": 1, "hint": "Cari gambar yang memuat nama lengkap, sekolah, alamat, dan tanggal lahir sekaligus."}, "q2": {"q": "Akun yang mengaku teman sekelas meminta foto kartu identitas orang tuamu untuk 'daftar hadiah'. Apa yang kamu lakukan?", "options": ["Kirim, kan teman", "Tanya orang tua dan jangan kirim", "Kirim separuhnya saja"], "answer": 1, "hint": "Dokumen identitas tidak dibagikan lewat chat; akun itu belum tentu benar-benar temanmu."}, "q3": {"q": "Bio akun Rani: nama lengkap, nama SMP dan kelas, nomor HP, 'DM aja!'. Akunnya publik. Mana yang paling perlu diubah lebih dulu?", "options": ["Ganti foto profil jadi kucing", "Hapus nomor HP dan nama sekolah, lalu jadikan akun privat", "Hapus tulisan 'DM aja!' saja"], "answer": 1, "hint": "Mulai dari data yang paling berisiko: cara menghubungimu dan tempat menemukanmu."}, "q4": {"q": "Dito dirundung di kolom komentar dan ingin membalas dengan menyebut alamat rumah si pengomentar. Pilihan terbaik?", "options": ["Balas sekarang, biar kapok", "Jeda, simpan bukti, lalu lapor dan blokir", "Sebar nomor HP-nya ke grup"], "answer": 1, "hint": "Menyebarkan data orang lain tetap salah, meskipun ia yang mulai. Saat marah, jeda dulu."}}, "beats": [{"id": "intro1", "seg": 0, "scene": "title", "text": "Halo! Aku Kiko. Sinta baru dapat kartu pelajar dan ingin mengunggah fotonya. Boleh, tidak, ya? Setelah menonton, kamu bisa memilah data privat dan publik, lalu memeriksa unggahan sebelum tayang.", "hold": 1.0, "start": 0.0, "speech": 0.0, "audio": 18.925, "dur": 20.925}, {"id": "intro2", "seg": 0, "scene": "title_q", "text": "Hari ini kita belajar tiga hal: data pribadi, identitas digital, dan kesadaran penuh, yaitu berhenti sejenak sebelum jari menekan tombol unggah.", "hold": 0.8, "start": 20.925, "speech": 20.925, "audio": 13.925, "dur": 15.725}, {"id": "intro3", "seg": 0, "scene": "prereq", "text": "Episode ini melanjutkan D7.3 tentang kata sandi dan jejak digital, serta D7.7 tentang ruang publik virtual. Kalau belum menontonnya, tonton dulu, ya.", "hold": 0.8, "start": 36.65, "speech": 36.65, "audio": 14.55, "dur": 16.35}, {"id": "play1", "seg": 1, "scene": "unplugged_cards", "text": "Main dulu. Tulis sepuluh hal tentang dirimu di sepuluh kartu: nama panggilan, hobi, nama sekolah, alamat rumah, nomor HP, tanggal lahir, nama ibu, foto wajah, jadwal les, dan nama kucingmu.", "hold": 1.0, "start": 53.0, "speech": 53.0, "audio": 19.55, "dur": 21.55}, {"id": "play2", "seg": 1, "scene": "unplugged_boxes", "text": "Siapkan tiga kotak. Publik: boleh diketahui semua orang. Privat: hanya keluarga dan orang terdekat. Tergantung: aman untuk teman sekelas, tetapi tidak untuk orang asing. Pilah kartumu, lalu bandingkan dengan temanmu.", "hold": 1.0, "start": 74.55, "speech": 74.55, "audio": 19.55, "dur": 21.55}, {"id": "s1a", "seg": 2, "scene": "data_def", "text": "Data pribadi adalah informasi yang menunjukkan siapa kamu, di mana kamu, dan cara menghubungimu. Ada yang umum, seperti hobi dan nama panggilan. Ada yang berisiko: NIK, alamat lengkap, nomor HP, tanggal lahir, nama ibu kandung, dan foto dokumen.", "hold": 1.0, "start": 96.1, "speech": 96.1, "audio": 24.55, "dur": 26.55}, {"id": "s1b", "seg": 2, "scene": "puzzle", "text": "Satu potongan tampak tidak berbahaya. Foto seragam menunjukkan sekolahmu. Cerita pulang jam tiga lewat gang mawar menunjukkan jalurmu. Digabung, orang asing tahu di mana dan kapan menemukanmu. Potongan kecil bisa menjadi potret lengkap.", "hold": 1.0, "start": 122.65, "speech": 122.65, "audio": 21.425, "dur": 23.425}, {"id": "q1", "seg": 2, "scene": "quiz", "quiz": "q1", "text": "Cek pemahaman. Mana yang paling berisiko diunggah untuk umum: foto kucingmu, foto kartu pelajar lengkap dengan alamat dan tanggal lahir, atau foto masakan ibumu? Pikirkan dulu.", "hold": 4.0, "start": 146.075, "speech": 146.075, "audio": 17.05, "dur": 22.05}, {"id": "q1a", "seg": 2, "scene": "quiz_answer", "quiz": "q1", "text": "Jawabannya: foto kartu pelajar. Satu gambar memuat nama lengkap, sekolah, alamat, dan tanggal lahir. Itu cukup bagi orang jahat untuk menyamar menjadi dirimu.", "hold": 1.0, "start": 168.125, "speech": 168.125, "audio": 15.175, "dur": 17.175}, {"id": "s2a", "seg": 3, "scene": "branch1", "text": "Kembali ke Sinta. Pilihan A: unggah foto kartu pelajar apa adanya. Celah data terbuka lebar. Pilihan B: foto diri dengan seragam saja, tanpa kartu. Celah tertutup, cerita tetap tersampaikan.", "hold": 1.0, "start": 185.3, "speech": 185.3, "audio": 18.925, "dur": 20.925}, {"id": "s2b", "seg": 3, "scene": "branch2", "text": "Dito menulis: liburan seminggu, rumah kosong, berangkat besok, lengkap dengan lokasi langsung. Celah terbuka: semua orang tahu rumahnya kosong. Pilihan lebih aman: bagikan cerita setelah pulang, tanpa lokasi langsung.", "hold": 1.0, "start": 206.225, "speech": 206.225, "audio": 18.925, "dur": 20.925}, {"id": "q2", "seg": 3, "scene": "quiz", "quiz": "q2", "text": "Cek pemahaman. Akun yang mengaku teman sekelas meminta foto kartu identitas orang tuamu untuk daftar hadiah. Apa yang kamu lakukan: kirim, tanya orang tua dan jangan kirim, atau kirim separuhnya saja? Pikirkan dulu.", "hold": 4.0, "start": 227.15, "speech": 227.15, "audio": 21.425, "dur": 26.425}, {"id": "q2a", "seg": 3, "scene": "quiz_answer", "quiz": "q2", "text": "Jawabannya: jangan kirim, dan tanyakan ke orang tua. Dokumen identitas tidak dibagikan lewat chat, apalagi kepada akun yang belum tentu benar-benar temanmu.", "hold": 1.0, "start": 253.575, "speech": 253.575, "audio": 14.55, "dur": 16.55}, {"id": "s3a", "seg": 4, "scene": "identitas", "text": "Bagian dua. Identitas digital adalah gambaran dirimu di internet: nama akun, foto profil, bio, unggahan, komentar, dan tanda suka, ditambah yang diunggah orang lain tentangmu. Orang menilai dari gambaran itu, bukan dari dirimu langsung.", "hold": 1.0, "start": 270.125, "speech": 270.125, "audio": 22.05, "dur": 24.05}, {"id": "s3b", "seg": 4, "scene": "pengaturan", "text": "Empat pengaturan yang merapikan identitas digital. Akun privat: hanya teman yang kamu setujui yang melihat. Lokasi langsung dimatikan. Bio tanpa sekolah, kelas, dan nomor HP. Tinjau dulu foto yang menandai namamu.", "hold": 1.0, "start": 294.175, "speech": 294.175, "audio": 20.175, "dur": 22.175}, {"id": "q3", "seg": 4, "scene": "quiz", "quiz": "q3", "text": "Cek pemahaman. Bio akun Rani berisi nama lengkap, nama SMP dan kelas, nomor HP, dan tulisan DM aja. Akunnya publik. Mana yang paling perlu diubah lebih dulu? Pikirkan dulu.", "hold": 4.0, "start": 316.35, "speech": 316.35, "audio": 18.925, "dur": 23.925}, {"id": "q3a", "seg": 4, "scene": "quiz_answer", "quiz": "q3", "text": "Jawabannya: hapus nomor HP dan nama sekolah dari bio, lalu ubah akun menjadi privat. Nama panggilan dan hobi boleh tetap ada.", "hold": 1.0, "start": 340.275, "speech": 340.275, "audio": 13.925, "dur": 15.925}, {"id": "s4a", "seg": 5, "scene": "jeda", "text": "Kesadaran penuh artinya sadar apa yang kulakukan, mengapa, dan apa akibatnya, sebelum jari bergerak. Saat marah, terlalu senang, atau takut ketinggalan, kita paling mudah salah unggah. Tarik napas tiga kali. Jeda dulu.", "hold": 1.0, "start": 356.2, "speech": 356.2, "audio": 20.8, "dur": 22.8}, {"id": "s4b", "seg": 5, "scene": "empat_tanya", "text": "Sebelum mengunggah, empat pertanyaan. Siapa yang bisa melihat? Apa yang bisa diketahui orang dari sini? Masih nyamankah aku jika guru, orang tua, atau orang asing melihatnya setahun lagi? Apakah ini milikku untuk dibagikan?", "hold": 1.0, "start": 379.0, "speech": 379.0, "audio": 21.425, "dur": 23.425}, {"id": "q4", "seg": 5, "scene": "quiz", "quiz": "q4", "text": "Cek pemahaman. Dito marah karena dirundung di kolom komentar, lalu ingin membalas dengan menyebut alamat rumah si pengomentar. Pilihan terbaik: balas sekarang, jeda lalu lapor dan blokir, atau sebar nomor HP-nya? Pikirkan dulu.", "hold": 4.0, "start": 402.425, "speech": 402.425, "audio": 21.425, "dur": 26.425}, {"id": "q4a", "seg": 5, "scene": "quiz_answer", "quiz": "q4", "text": "Jawabannya: jeda, simpan bukti, lalu lapor dan blokir. Menyebarkan data orang lain, meskipun ia jahat, tetap salah dan bisa dikenai sanksi.", "hold": 1.0, "start": 428.85, "speech": 428.85, "audio": 13.925, "dur": 15.925}, {"id": "s5a", "seg": 6, "scene": "bocor", "text": "Kalau data telanjur tersebar: hapus unggahannya, ganti kata sandi akun yang terkait, simpan tangkapan layar sebagai bukti, lalu beri tahu orang tua atau guru. Yang sudah tersebar sulit ditarik penuh. Itulah gunanya jeda.", "hold": 1.0, "start": 444.775, "speech": 444.775, "audio": 21.425, "dur": 23.425}, {"id": "s5b", "seg": 6, "scene": "data_teman", "text": "Data temanmu juga bukan milikmu. Jangan unggah foto teman tanpa izin, jangan teruskan nomor HP teman ke grup lain, dan jangan menandai lokasi rumah orang. Menjaga data orang lain adalah bagian dari menjaga dirimu.", "hold": 1.0, "start": 468.2, "speech": 468.2, "audio": 22.05, "dur": 24.05}, {"id": "s6a", "seg": 7, "scene": "make_show", "text": "Sekarang giliranmu. Di halaman latihan: pilah dua belas kartu informasi menjadi publik, privat, atau tergantung; jalani skenario bercabang apa yang boleh kubagikan sambil mengawasi celah data; lalu rapikan profil yang bocor.", "hold": 1.0, "start": 492.25, "speech": 492.25, "audio": 20.175, "dur": 22.175}, {"id": "s6b", "seg": 7, "scene": "make_show", "text": "Lalu buka akunmu bersama orang tua: periksa bio, pengaturan privat, dan lokasi. Satu perubahan kecil hari ini menutup satu celah.", "hold": 1.0, "start": 514.425, "speech": 514.425, "audio": 13.3, "dur": 15.3}, {"id": "recap", "seg": 7, "scene": "recap", "text": "Tiga hal untuk diingat. Satu: data berisiko bukan untuk umum, karena potongan kecil bisa menjadi potret lengkap. Dua: rapikan identitas digital lewat pengaturan akun. Tiga: jeda dan empat pertanyaan sebelum mengunggah.", "hold": 1.5, "start": 529.725, "speech": 529.725, "audio": 20.175, "dur": 22.675}, {"id": "outro", "seg": 7, "scene": "outro", "text": "Sampai jumpa di episode berikutnya: produksi dan diseminasi konten digital, dari ide sampai unggahan yang bertanggung jawab. Sampai jumpa!", "hold": 1.0, "start": 552.4, "speech": 552.4, "audio": 12.675, "dur": 14.675}], "total": 567.075} });
+  const { $, progress, save } = P; progress.levels = progress.levels || {};
+  const CARDS = [
+    ["🙂 nama panggilan", "pub", "Nama panggilan tidak menunjukkan di mana kamu atau cara menghubungimu."],
+    ["⚽ hobi", "pub", "Hobi aman dibagikan; ia tidak membuka jalan ke dirimu."],
+    ["🏫 nama sekolah", "dep", "Teman sekelas sudah tahu; bagi orang asing, ini tempat menemukanmu."],
+    ["🏠 alamat rumah lengkap", "pri", "Alamat menunjukkan di mana kamu. Ini data berisiko."],
+    ["📱 nomor HP", "pri", "Nomor HP adalah cara menghubungimu langsung. Hanya untuk orang terdekat."],
+    ["🎂 tanggal lahir lengkap", "dep", "Teman boleh tahu ulang tahunmu; tanggal lengkap dengan tahun sering dipakai untuk menebak sandi dan memverifikasi akun."],
+    ["👩 nama ibu kandung", "pri", "Nama ibu kandung sering jadi pertanyaan keamanan bank dan akun. Privat."],
+    ["🤳 foto wajah berseragam", "dep", "Untuk teman, biasa saja; untuk orang asing, seragam menunjukkan sekolahmu."],
+    ["🕒 jadwal les tiap hari", "pri", "Jadwal rutin menunjukkan kapan dan di mana kamu berada. Privat."],
+    ["🐱 nama kucing", "pub", "Nama kucing tidak membuka celah data. Aman."],
+    ["🪪 NIK (nomor induk kependudukan)", "pri", "NIK bisa dipakai untuk menyamar menjadi dirimu. Jangan pernah diunggah."],
+    ["🎨 karya gambarmu", "pub", "Karya bisa dibagikan untuk umum; pastikan tidak ada nama lengkap atau alamat di dalamnya."]];
+  const KN = { pub: "publik", pri: "privat", dep: "tergantung" };
+  const SCN = [
+    ["Sinta baru dapat kartu pelajar dan ingin memamerkannya.", [["Unggah foto kartu apa adanya", 2, "Satu gambar memuat nama lengkap, sekolah, alamat, dan tanggal lahir."], ["Unggah foto kartu dengan NIS, alamat, dan tanggal lahir ditutup", 1, "Lebih baik, tetapi nama lengkap dan sekolah masih terbuka untuk umum."], ["Unggah foto diri berseragam saja, tanpa kartu", 0, "Cerita tersampaikan, data tetap aman."]]],
+    ["Keluarga Dito berangkat liburan seminggu besok pagi.", [["Unggah sekarang: 'rumah kosong seminggu' + lokasi langsung", 2, "Semua orang tahu rumahnya kosong dan di mana rumahnya."], ["Unggah foto liburan setiap hari dengan lokasi langsung", 1, "Lokasi langsung tetap menunjukkan rumah sedang ditinggal."], ["Bagikan cerita setelah pulang, tanpa lokasi langsung", 0, "Pikirkan dulu, unggah nanti. Celah tetap tertutup."]]],
+    ["Akun yang mengaku teman sekelas meminta foto kartu identitas orang tuamu untuk 'daftar hadiah'.", [["Kirim, kan teman", 2, "Akun itu belum tentu temanmu, dan dokumen identitas tidak dibagikan lewat chat."], ["Kirim separuhnya saja", 1, "Separuh dokumen pun tetap data berisiko. Tanya orang tua dulu."], ["Jangan kirim; tanya orang tua dan hubungi temanmu lewat jalur lain", 0, "Tepat. Dokumen identitas bukan untuk chat, apalagi kepada akun yang meragukan."]]],
+    ["Rani ingin mengunggah foto bersama tiga teman di kantin.", [["Unggah dan tandai semua teman beserta nama sekolah", 2, "Nama sekolah dan tanda nama teman membuka data orang lain tanpa izin."], ["Unggah tanpa bertanya, toh fotonya bagus", 1, "Foto teman bukan milikmu untuk dibagikan. Tanya dulu."], ["Tanya tiga temanmu dulu; unggah tanpa tanda lokasi dan nama sekolah", 0, "Izin dulu, lalu buang data yang tidak perlu. Tepat."]]],
+    ["Dito marah karena komentar jahat seseorang dan ingin membalas sekarang.", [["Balas dengan menyebut alamat rumah si pengomentar", 2, "Menyebarkan data orang lain tetap salah dan bisa dikenai sanksi."], ["Balas dengan kata-kata kasar saja", 1, "Tanpa data pun, membalas saat marah menambah masalah dan jejak digitalmu."], ["Jeda, simpan bukti, lalu lapor dan blokir", 0, "Jeda sadar bekerja: masalah selesai tanpa membuka celah baru."]]]];
+  const PROF = [
+    ["🌐 Akun publik: semua orang bisa melihat", true, "Ubah menjadi privat supaya hanya teman yang kamu setujui yang melihat."],
+    ["📍 Lokasi langsung: nyala", true, "Lokasi langsung menyiarkan posisimu kepada siapa pun yang melihat."],
+    ["📝 Bio: 'SMP Nusa Bangsa, kelas IX B'", true, "Nama sekolah dan kelas memberi tahu orang asing tempat menemukanmu."],
+    ["📝 Bio: 'HP 08xx-xxxx-123, DM aja!'", true, "Nomor HP adalah cara menghubungimu langsung. Hapus dari bio."],
+    ["📝 Bio: 'suka menggambar dan kucing 🎨🐱'", false, "Hobi aman dibagikan dan membuat profil tetap hidup."],
+    ["🖼️ Foto profil: gambar kucing kartun buatan sendiri", false, "Foto profil tanpa wajah dan seragam tidak membuka celah."],
+    ["🏷️ Tanda foto: otomatis tampil tanpa tinjauan", true, "Nyalakan tinjauan supaya kamu menyetujui dulu foto yang menandaimu."],
+    ["🎂 Tanggal lahir lengkap: tampil untuk umum", true, "Sembunyikan tahun atau seluruh tanggal; ia sering dipakai untuk memverifikasi akun."]];
+  const LEVELS = [
+    { id: "pilah", name: "1 Pilah kartu", kind: "sort", task: "Dua belas kartu informasi. Untuk tiap kartu, pilih: publik, tergantung, atau privat." },
+    { id: "cabang", name: "2 Skenario bercabang", kind: "branch", task: "Lima situasi. Pilih tindakanmu dan awasi celah data. Selesai bila celah tetap tertutup." },
+    { id: "profil", name: "3 Rapikan profil", kind: "profile", task: "Profil Rani (fiktif). Tandai tiap bagian: biarkan atau perbaiki, lalu tekan Periksa." }];
+  let L = 0, qi = 0, gap = 0, opened = [], marks = {};
+  const level = () => LEVELS[L];
+  function setResult(kind, msg) { $("result").innerHTML = msg ? `<div class="result ${kind}">${msg}</div>` : ""; }
+  function done(extra) { progress.levels[level().id] = true; save(); renderLevels(); setResult("good", `Latihan ${level().name} selesai! ` + (extra || "")); }
+  function wrong(hint) { setResult("bad", "Belum tepat. Petunjuk: " + hint); }
+  function renderSort() {
+    const area = $("exarea");
+    if (qi >= CARDS.length) { area.innerHTML = `<div class="qtext">Dua belas kartu sudah dipilah.</div>`; return; }
+    const [t, k, why] = CARDS[qi];
+    area.innerHTML = `<div class="qnum">Kartu ${qi + 1} dari ${CARDS.length}</div><div class="ex">${t}</div><div class="three"><button class="pub" data-k="pub">PUBLIK<br><small>semua orang</small></button><button class="dep" data-k="dep">TERGANTUNG<br><small>teman ya, asing tidak</small></button><button class="pri" data-k="pri">PRIVAT<br><small>orang terdekat</small></button></div>`;
+    area.querySelectorAll(".three button").forEach(b => b.addEventListener("click", () => { if (b.dataset.k === k) { area.querySelectorAll(".three button").forEach(x => x.disabled = true); setResult("good", `Tepat, ${KN[k]}. ` + why); qi++; setTimeout(() => { if (qi >= CARDS.length) done("Umum boleh publik; yang menunjukkan di mana kamu dan cara menghubungimu, privat."); else { setResult(); renderSort(); } }, 1700); } else wrong((k === "dep" ? "Pikirkan dua penonton: teman sekelas dan orang asing. Sama amankah bagi keduanya? " : k === "pri" ? "Tanya: apakah ini menunjukkan di mana aku, kapan aku di sana, atau cara menghubungiku? " : "Tanya: apakah ini membuka jalan bagi orang asing untuk menemukan atau menyamar menjadi aku? ") + why); }));
+  }
+  function renderGap() { return `<div class="gap"><div class="lbl"><span>Celah data: tertutup</span><span>terbuka lebar</span></div><div class="bar"><i style="width:${Math.min(100, gap * 12.5)}%"></i></div></div>`; }
+  function renderBranch() {
+    const area = $("exarea");
+    if (qi >= SCN.length) {
+      if (gap === 0) { area.innerHTML = renderGap() + `<div class="qtext">Lima situasi dilalui, celah tetap tertutup.</div>`; done("Pikirkan dulu, unggah nanti; data orang lain bukan milikmu."); }
+      else { area.innerHTML = renderGap() + `<div class="qtext">Celah terbuka pada situasi ${opened.join(", ")}.</div><div class="row"><button class="warm" id="again">Coba lagi dari awal</button></div>`; setResult("bad", "Belum tepat. Petunjuk: pada tiap situasi, cari pilihan yang menyampaikan cerita tanpa membuka data: tunda, tutup, atau tanya izin dulu."); $("again").addEventListener("click", () => { qi = 0; gap = 0; opened = []; setResult(); renderBranch(); }); }
+      return;
+    }
+    const [t, opts] = SCN[qi];
+    area.innerHTML = renderGap() + `<div class="qnum">Situasi ${qi + 1} dari ${SCN.length}</div><div class="ex">${t}</div><div class="opts" id="opts"></div>`;
+    opts.forEach(([lab, d, why]) => { const b = document.createElement("button"); b.textContent = lab; b.addEventListener("click", () => { [...$("opts").children].forEach(x => x.disabled = true); b.classList.add(d ? "wrong" : "right"); gap += d; if (d) opened.push(qi + 1); setResult(d ? "bad" : "good", (d ? `Celah terbuka ${d === 2 ? "lebar" : "sedikit"}. ` : "Celah tetap tertutup. ") + why); qi++; setTimeout(() => { setResult(); renderBranch(); }, 2200); }); $("opts").appendChild(b); });
+  }
+  function renderProfile() {
+    const area = $("exarea"); area.innerHTML = `<div class="rows" id="rows"></div><div class="row"><button class="warm" id="check">Periksa</button></div>`;
+    PROF.forEach(([t], i) => { const row = document.createElement("div"); row.className = "rw"; row.dataset.i = i; row.innerHTML = `<span>${t}</span>`; const pb = document.createElement("span"); pb.className = "pb"; [["keep", "biarkan"], ["fix", "perbaiki"]].forEach(([v, lab]) => { const b = document.createElement("button"); b.textContent = lab; b.setAttribute("aria-pressed", marks[i] === v); b.addEventListener("click", () => { marks[i] = v; row.classList.remove("ok", "bad"); setResult(); [...pb.children].forEach(x => x.setAttribute("aria-pressed", x === b)); }); pb.appendChild(b); }); row.appendChild(pb); $("rows").appendChild(row); });
+    $("check").addEventListener("click", () => { let empty = 0, firstBad = null; PROF.forEach(([t, fix, why], i) => { const row = area.querySelector(`[data-i="${i}"]`); if (!marks[i]) { empty++; return; } const right = (marks[i] === "fix") === fix; row.classList.toggle("ok", right); row.classList.toggle("bad", !right); if (!right && !firstBad) firstBad = [t, fix, why]; }); if (empty) { setResult("info", `Masih ada ${empty} bagian yang belum ditandai.`); return; } if (!firstBad) done("Privat, lokasi mati, bio bersih, tinjau tanda: identitas digital Rani rapi."); else { const [t, fix, why] = firstBad; wrong(fix ? `Lihat lagi "${t.replace(/^\S+\s/, "")}". ` + why : `"${t.replace(/^\S+\s/, "")}" sebenarnya aman. ` + why); } });
+  }
+  function loadLevel(i) { L = i; qi = 0; gap = 0; opened = []; marks = {}; $("task").textContent = level().task; setResult(); renderLevels(); ({ sort: renderSort, branch: renderBranch, profile: renderProfile })[level().kind](); }
+  function renderLevels() { const el = $("levels"); el.innerHTML = ""; LEVELS.forEach((lv, i) => { const b = document.createElement("button"); b.textContent = lv.name; b.className = progress.levels[lv.id] ? "done" : ""; b.setAttribute("aria-pressed", i === L); b.addEventListener("click", () => loadLevel(i)); el.appendChild(b); }); }
+  $("redo").addEventListener("click", () => { progress.levels[level().id] = false; save(); loadLevel(L); });
+  P.onProgress(el => LEVELS.forEach(lv => { const s = document.createElement("span"); s.textContent = "Latihan " + lv.name.slice(0, 1); s.className = progress.levels[lv.id] ? "ok" : ""; el.appendChild(s); }));
+  loadLevel(0);
+})();
+</script>
