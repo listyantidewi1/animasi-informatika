@@ -7,7 +7,7 @@ import episode as E
 
 ROOT, _ = E.find_root(sys.argv[1:])
 S = E.load_script(ROOT); Y = S.get("youtube", {})
-KELAS = {"D7": "Kelas 7", "D8": "Kelas 8", "D9": "Kelas 9", "E": "Kelas 10"}.get(S["episode"].split(".")[0], "")
+KELAS = {"D7": "Kelas 7", "D8": "Kelas 8", "D9": "Kelas 9", "E": "Kelas 10", "F11": "Kelas 11", "F12": "Kelas 12"}.get(S["episode"].split(".")[0], "")
 def mmss(t): t = int(round(t)); return f"{t // 60}:{t % 60:02d}"
 out = [f"# Judul dan deskripsi YouTube — {S['episode']} {S['title']}\n"]
 parts = list(S["parts"].items())
@@ -36,7 +36,7 @@ for variant, label in (("suara", ""), ("teks", " (versi teks, tanpa suara)")):
 # komentar tersemat (pinned): satu per bagian, dipakai untuk kedua versi
 for pi, (name, p) in enumerate(parts, 1):
     sub = Y.get("bagian", {}).get(name, "")
-    pin = [f"📌 {S['title']}" + (f" ({pi}/{len(parts)}): {sub}" if len(parts) > 1 else "") + " — materi Informatika kelas 7 (unit " + S["episode"] + ")."]
+    pin = [f"📌 {S['title']}" + (f" ({pi}/{len(parts)}): {sub}" if len(parts) > 1 else "") + " — materi Informatika " + KELAS.lower() + " (unit " + S["episode"] + ")."]
     if S.get("hook"): pin.append("Setelah menonton, kamu bisa " + S["hook"])
     if Y.get("cari"): pin.append("Kata kunci materi ini: " + "; ".join(Y["cari"]) + ".")
     pin.append(f"Latihan interaktif (bisa luring di HP): berkas episode-{E.code_slug(S['episode'])}.html." + (f" Tonton dulu {Y['prasyarat']} bila belum." if Y.get("prasyarat") else ""))
