@@ -26,4 +26,5 @@ Peta kurikulum, alur belajar, dan daftar 52 episode ada di dokumen "Kurikulum Se
 | D7.4 Mesin Pencari: Cara Kerja dan Strategi | ✓ | ✓ Kak Ceria | ✓ (1 bagian × 2 versi) | ✓ |
 | D7.6 Data Terstruktur di Sekitar Kita | ✓ | ✓ Kak Ceria | ✓ (2 bagian × 2 versi) | ✓ |
 | D7.7 Ruang Publik Virtual dan Empati | ✓ | ✓ Kak Ceria | ✓ (2 bagian × 2 versi) | ✓ |
+| D7.8 Proyek: Panduan Digital untuk Adik Kelas | ✓ | ✓ Kak Ceria | ✓ (2 bagian × 2 versi) | ✓ |
 | D7.5 Instruksi untuk Manusia dan Mesin | ✓ | ✓ Kak Ceria | ✓ (2 bagian × 2 versi) | ✓ |

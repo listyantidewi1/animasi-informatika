@@ -1,0 +1,909 @@
+<title>Kiko: Proyek Panduan Digital</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<style>
+/* Inti gaya halaman latihan: satu kolom, pemutar di atas, latihan di bawah; palet kantin sama dengan video. */
+:root {
+  --bg: #EAF2EE; --surface: #FFFFFF; --surface2: #DCE9E2; --ink: #1F2A33; --ink2: #4A5A66; --line: #C9D8D0;
+  --accent: #2E7E9A; --accent-ink: #FFFFFF; --warm: #F2B134; --warm-ink: #5E3E05; --good: #2E9E5B; --good-bg: #DDF3E4; --bad: #D9443B; --bad-bg: #FBE1DF;
+  --font: Inter, "Segoe UI", Roboto, Arial, sans-serif;
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) { --bg: #141C1A; --surface: #1E2926; --surface2: #273532; --ink: #EAF2EE; --ink2: #A9BBB3; --line: #3A4A45; --accent: #5FB3CE; --accent-ink: #0F1D22; --warm: #F2B134; --warm-ink: #2B1C02; --good: #5FCB8A; --good-bg: #1F3A2B; --bad: #F07A72; --bad-bg: #442523; color-scheme: dark } }
+:root[data-theme="dark"] { --bg: #141C1A; --surface: #1E2926; --surface2: #273532; --ink: #EAF2EE; --ink2: #A9BBB3; --line: #3A4A45; --accent: #5FB3CE; --accent-ink: #0F1D22; --warm: #F2B134; --warm-ink: #2B1C02; --good: #5FCB8A; --good-bg: #1F3A2B; --bad: #F07A72; --bad-bg: #442523; color-scheme: dark }
+* { box-sizing: border-box }
+body { background: var(--bg); color: var(--ink); font-family: var(--font); font-size: 17px; line-height: 1.5; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); padding-block: 16px 48px }
+.wrap { max-width: 980px; margin: 0 auto; display: grid; gap: 28px }
+h1 { font-size: clamp(26px, 5vw, 38px); line-height: 1.15; margin: 0; text-wrap: balance; font-weight: 900 }
+h2 { font-size: 22px; margin: 0 0 12px; font-weight: 800 }
+h3 { font-size: 18px; margin: 0 0 8px; font-weight: 800 }
+p { margin: 0 0 10px; max-width: 65ch }
+.eyebrow { font-size: 13px; letter-spacing: .08em; text-transform: uppercase; color: var(--ink2); font-weight: 800; margin-bottom: 6px }
+.card { background: var(--surface); border-radius: 18px; padding: 18px; border: 1px solid var(--line) }
+button { font: inherit; font-weight: 800; border: 0; border-radius: 12px; padding: 12px 16px; cursor: pointer; background: var(--surface2); color: var(--ink); min-height: 48px; touch-action: manipulation }
+button:focus-visible, [tabindex]:focus-visible { outline: 3px solid var(--warm); outline-offset: 2px }
+button.primary { background: var(--accent); color: var(--accent-ink) }
+button.warm { background: var(--warm); color: var(--warm-ink) }
+button[aria-pressed="true"] { box-shadow: inset 0 0 0 3px var(--accent) }
+button:disabled { opacity: .45; cursor: default }
+.row { display: flex; flex-wrap: wrap; gap: 10px; align-items: center }
+/* player */
+.player { display: grid; gap: 12px }
+.stage { position: relative; width: 100%; aspect-ratio: 16 / 9; max-width: 100%; background: #EAF2EE; border-radius: 14px; overflow: hidden; border: 1px solid var(--line) }
+.stage canvas { width: 100%; height: 100%; display: block }
+.bigplay { position: absolute; inset: 0; display: grid; place-items: center; background: rgba(31,42,51,.25); border: 0; border-radius: 0; color: #fff; font-size: 20px; min-height: 0 }
+.bigplay span { background: var(--accent); color: var(--accent-ink); padding: 14px 26px; border-radius: 999px; font-weight: 900 }
+.bar { height: 10px; background: var(--surface2); border-radius: 999px; overflow: hidden; cursor: pointer }
+.bar > i { display: block; height: 100%; width: 0; background: var(--warm) }
+.chapters { display: flex; flex-wrap: wrap; gap: 8px }
+.chapters button { font-size: 14px; padding: 8px 12px; min-height: 40px }
+.chapters button.now { background: var(--warm); color: var(--warm-ink) }
+.hint { color: var(--ink2); font-size: 15px }
+/* exercises (generic parts) */
+.levels { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 12px }
+.levels button { font-size: 14px; padding: 8px 12px; min-height: 40px }
+.levels button.done::after { content: " ✓"; color: var(--good) }
+.task { background: var(--surface2); border-radius: 12px; padding: 12px 14px; margin-bottom: 12px; font-weight: 700 }
+.result { border-radius: 12px; padding: 12px 14px; font-weight: 800; margin-top: 10px }
+.result.good { background: var(--good-bg); color: var(--good) }
+.result.bad { background: var(--bad-bg); color: var(--bad) }
+.result.info { background: var(--surface2); color: var(--ink) }
+/* quiz */
+.quiz { display: grid; gap: 16px }
+.q { border-top: 1px solid var(--line); padding-top: 14px }
+.q:first-child { border-top: 0; padding-top: 0 }
+.opts { display: grid; gap: 8px; margin-top: 8px }
+.opts button { text-align: left; font-weight: 700; background: var(--surface2); display: flex; gap: 10px; align-items: center }
+.opts button b { width: 30px; height: 30px; border-radius: 50%; background: var(--accent); color: var(--accent-ink); display: grid; place-items: center; flex: none }
+.opts button.right { background: var(--good-bg); box-shadow: inset 0 0 0 3px var(--good) }
+.opts button.wrong { background: var(--bad-bg) }
+.fb { margin-top: 8px; font-weight: 700 }
+.fb.good { color: var(--good) } .fb.bad { color: var(--bad) }
+details summary { cursor: pointer; font-weight: 800; font-size: 18px }
+details[open] summary { margin-bottom: 10px }
+ul.plain { padding-left: 20px; margin: 0 0 10px } ul.plain li { margin-bottom: 6px; max-width: 65ch }
+.progress { display: flex; gap: 8px; flex-wrap: wrap } .progress span { background: var(--surface2); border-radius: 999px; padding: 6px 12px; font-size: 14px; font-weight: 700 }
+.progress span.ok { background: var(--good-bg); color: var(--good) }
+@media (prefers-reduced-motion: reduce) { * { transition: none !important } }
+
+/* latihan D7.8 */
+.qnum { font-weight: 800; color: var(--ink2); font-size: 14px; margin-bottom: 4px }
+.qtext { font-weight: 800; font-size: 18px; margin-bottom: 8px }
+.form { display: grid; gap: 10px; margin: 8px 0 }
+.form label { display: grid; gap: 4px; font-weight: 800; font-size: 14px; color: var(--ink2) }
+.form input, .form select, .form textarea { font: inherit; font-size: 16px; padding: 10px 12px; border: 2px solid var(--line); border-radius: 10px; background: var(--surface); color: var(--ink) }
+.form textarea { min-height: 60px; resize: vertical }
+.slides { display: grid; gap: 8px; margin: 8px 0 }
+.slides .sl { display: grid; grid-template-columns: 70px 1fr; gap: 8px; align-items: center }
+.slides .sl .no { background: var(--ink2); color: #fff; border-radius: 8px; padding: 8px 0; text-align: center; font-weight: 900; font-size: 13px }
+.slides .sl input { font: inherit; font-size: 16px; padding: 10px 12px; border: 2px solid var(--line); border-radius: 10px; background: var(--surface); color: var(--ink); width: 100% }
+.slides .sl input.over { border-color: var(--bad); background: var(--bad-bg) } .slides .sl input.ok { border-color: var(--good); background: var(--good-bg) }
+.cnt { font-size: 12px; color: var(--ink2); font-weight: 700 }
+.rub { display: grid; gap: 8px; margin: 8px 0 }
+.rub .r { background: var(--surface2); border-radius: 12px; padding: 10px 12px; display: grid; gap: 6px }
+.rub .r b { font-size: 15px } .rub .r small { color: var(--ink2); font-weight: 700 }
+.stars { display: flex; gap: 6px } .stars button { min-height: 40px; padding: 6px 12px; font-weight: 900 } .stars button[aria-pressed="true"] { border-color: var(--accent); background: color-mix(in srgb, var(--accent) 18%, var(--surface)) }
+.ex { background: var(--surface2); border-radius: 12px; padding: 12px 14px; font-weight: 800; font-size: 17px; margin: 8px 0 }
+.opts { display: grid; gap: 8px; margin: 8px 0 }
+.opts button { text-align: left; font-size: 15px; min-height: 44px; padding: 10px 12px; background: var(--surface); border: 2px solid var(--line) }
+.opts button.right { border-color: var(--good); background: var(--good-bg) } .opts button.wrong { border-color: var(--bad); background: var(--bad-bg) }
+</style>
+
+<div class="wrap">
+  <header>
+    <div class="eyebrow">Informatika · Fase D · Kelas VII · Episode D7.8</div>
+    <h1>Proyek: Panduan Digital untuk Adik Kelas</h1>
+    <p class="hint">Tonton videonya (dua bagian), lalu pakai tiga alat di bawahnya untuk proyek timmu. Prasyarat: episode D7.3, D7.4, D7.7. Suara bisa dimatikan; teks selalu tampil di layar.</p>
+  </header>
+  <section class="card player" aria-label="Pemutar episode">
+    <div class="stage">
+      <canvas id="screen" width="1920" height="1080" aria-label="Animasi episode"></canvas>
+      <audio id="nar" preload="auto" src="narasi.mp3"></audio>
+      <button class="bigplay" id="bigplay" aria-label="Putar"><span>▶ Putar episode</span></button>
+    </div>
+    <div class="bar" id="bar" role="slider" aria-label="Posisi episode" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" tabindex="0"><i id="barfill"></i></div>
+    <div class="row">
+      <button class="primary" id="playbtn">▶ Putar</button>
+      <button id="replay">↺ Ulangi bagian ini</button>
+      <button id="voice" aria-pressed="true">🔊 Suara: nyala</button>
+      <button id="slow" aria-pressed="false">🐢 Mode lambat</button>
+      <span class="hint" id="timelabel">0:00 / 0:00</span>
+    </div>
+    <div>
+      <div class="eyebrow">Bagian</div>
+      <div class="chapters" id="chapters"></div>
+    </div>
+  </section>
+
+  <section class="card" aria-label="Cek pemahaman">
+    <h2>Cek pemahaman</h2>
+    <p class="hint">Pilih satu jawaban. Kalau salah, kamu dapat petunjuk, lalu coba lagi.</p>
+    <div class="quiz" id="quiz"></div>
+  </section>
+
+  <section class="card" aria-label="Latihan">
+    <h2>Alat proyek</h2>
+    <p class="hint">Isian tersimpan di perangkat ini saja. Satu perangkat per tim sudah cukup.</p>
+    <div class="levels" id="levels"></div>
+    <div class="task" id="task"></div>
+    <div id="exarea"></div>
+    <div id="result"></div>
+    <div class="row" style="margin-top:10px"><button id="redo">↺ Kosongkan isian ini</button></div>
+  </section>
+
+  <section class="card" aria-label="Kemajuan">
+    <h2>Kemajuanmu</h2>
+    <div class="progress" id="progress"></div>
+    <p class="hint" style="margin-top:8px">Kemajuan tersimpan di perangkat ini saja.</p>
+  </section>
+
+  <section class="card">
+    <details>
+      <summary>Untuk guru: cara memakai episode ini (8 JP)</summary>
+      <p><b>Tujuan pembelajaran (D7.8):</b> murid memanfaatkan pengolah dokumen dan presentasi untuk menyusun panduan aman berinternet bagi adik kelas, memakai ulang materi D7.3, D7.4, dan D7.7. Elemen LD, Fase D. Proyek ini sekaligus asesmen sumatif semester 2.</p>
+      <ul class="plain">
+        <li><b>Pertemuan 1 (2 JP), rencana:</b> tonton Bagian 1. Bentuk tim 3–4 orang, isi Perencana proyek (pembaca, tujuan, peran). Tugas rumah: wawancara satu anak kelas 6 (tiga pertanyaan dari video).</li>
+        <li><b>Pertemuan 2 (2 JP), dokumen:</b> tonton segmen Pengolah dokumen. Di lab komputer: buat file bernama jelas di folder proyek, tulis tiga bab (aturan, contoh, gambar) dengan heading dan bullet. Guru menunjukkan alatnya lewat rekaman layar singkat sesuai aplikasi yang tersedia di sekolah.</li>
+        <li><b>Pertemuan 3 (2 JP), slide dan latihan:</b> tonton segmen Slide yang jelas dan Tampil. Isi Kerangka slide (lima slide, maksimal lima kata), buat slidenya, latihan dua menit per orang. Cek rubrik mandiri.</li>
+        <li><b>Pertemuan 4 (2 JP), tampil:</b> presentasi untuk kelas 6 (undang satu kelas SD mitra, atau kelas 7 lain berperan sebagai adik kelas). Minta satu masukan, ubah satu hal, kumpulkan dokumen akhir.</li>
+      </ul>
+      <p><b>Rubrik (4 kriteria × 3 bintang):</b> isi benar, bahasa sesuai pembaca, tampilan jelas, kerja tim. <b>Target minimum:</b> dokumen tiga bab lengkap dan presentasi lima slide. <b>Pengayaan:</b> versi cetak atau poster untuk mading SD mitra. Tanpa komputer cukup: panduan ditulis di kertas berformat (judul, daftar, gambar) dan slide digambar di karton.</p>
+    </details>
+  </section>
+</div>
+
+<script>/* Kiko core: mesin gambar bersama untuk semua episode Fase D.
+   Kiko.draw(ctx, t, TL) menggambar frame pada detik t di kanvas 1920x1080 secara deterministik.
+   Berisi palet, pembantu gambar, tokoh (Kiko, murid), dan adegan umum (judul, kuis, ringkasan, penutup).
+   Setiap episode menambahkan adegannya sendiri di scenes.js: Object.assign(Kiko.SCENES, {...}). */
+(function (global) {
+  const W = 1920, H = 1080;
+  const FONT = "Inter, 'Segoe UI', Roboto, Arial, sans-serif";
+  const C = {
+    bg: "#EAF2EE", bg2: "#DCE9E2", ink: "#1F2A33", ink2: "#4A5A66", panel: "#FFFFFF",
+    tile: "#F7FAF8", tileLine: "#C9D8D0", table: "#A4653A", tableTop: "#C98A57",
+    kiko: "#2E7E9A", kikoDark: "#1F5A6E", kikoLight: "#8FD0E6", eye: "#FFFFFF", pupil: "#1F2A33",
+    accent: "#F2B134", accentDark: "#B57A12", good: "#2E9E5B", bad: "#D9443B", goodBg: "#DDF3E4", badBg: "#FBE1DF",
+    sub: "#1F2A33", subText: "#FFFFFF", star: "#F2B134", skin: "#F1C9A5", skin2: "#C98A57", hair: "#2B2118",
+    uniform: "#FFFFFF", pants: "#2F4E7D", bubble: "#FFFFFF", muted: "#9AAFA6"
+  };
+  const ease = u => u < 0 ? 0 : u > 1 ? 1 : u * u * (3 - 2 * u);
+  const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
+  const lerp = (a, b, u) => a + (b - a) * u;
+
+  // ---------- drawing helpers ----------
+  function rr(ctx, x, y, w, h, r) {
+    ctx.beginPath(); ctx.moveTo(x + r, y); ctx.arcTo(x + w, y, x + w, y + h, r); ctx.arcTo(x + w, y + h, x, y + h, r);
+    ctx.arcTo(x, y + h, x, y, r); ctx.arcTo(x, y, x + w, y, r); ctx.closePath();
+  }
+  function text(ctx, s, x, y, size, opt = {}) {
+    ctx.font = `${opt.weight || 600} ${size}px ${FONT}`; ctx.fillStyle = opt.color || C.ink;
+    ctx.textAlign = opt.align || "left"; ctx.textBaseline = opt.base || "alphabetic"; ctx.fillText(s, x, y);
+  }
+  function wrap(ctx, s, size, weight, maxW) {
+    ctx.font = `${weight} ${size}px ${FONT}`;
+    const words = s.split(" "), lines = []; let cur = "";
+    for (const w of words) {
+      const test = cur ? cur + " " + w : w;
+      if (ctx.measureText(test).width > maxW && cur) { lines.push(cur); cur = w; } else cur = test;
+    }
+    if (cur) lines.push(cur);
+    return lines;
+  }
+  function para(ctx, s, x, y, size, maxW, opt = {}) {
+    const lines = wrap(ctx, s, size, opt.weight || 500, maxW); const lh = size * (opt.lh || 1.35);
+    lines.forEach((l, i) => text(ctx, l, x, y + i * lh, size, opt));
+    return lines.length * lh;
+  }
+  function arrowIcon(ctx, kind, cx, cy, s, color) {
+    ctx.save(); ctx.translate(cx, cy); ctx.strokeStyle = color; ctx.fillStyle = color; ctx.lineWidth = s * 0.16; ctx.lineCap = "round"; ctx.lineJoin = "round";
+    if (kind === "up") {
+      ctx.beginPath(); ctx.moveTo(0, s * 0.45); ctx.lineTo(0, -s * 0.3); ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(-s * 0.32, -s * 0.05); ctx.lineTo(0, -s * 0.45); ctx.lineTo(s * 0.32, -s * 0.05); ctx.stroke();
+    } else if (kind === "left" || kind === "right") {
+      const k = kind === "left" ? -1 : 1;
+      ctx.beginPath(); ctx.moveTo(0, s * 0.45); ctx.lineTo(0, -s * 0.05); ctx.quadraticCurveTo(0, -s * 0.32, k * s * 0.28, -s * 0.32); ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(k * s * 0.12, -s * 0.5); ctx.lineTo(k * s * 0.4, -s * 0.32); ctx.lineTo(k * s * 0.12, -s * 0.14); ctx.stroke();
+    } else if (kind === "east") {
+      ctx.beginPath(); ctx.moveTo(-s * 0.4, 0); ctx.lineTo(s * 0.3, 0); ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(s * 0.05, -s * 0.28); ctx.lineTo(s * 0.4, 0); ctx.lineTo(s * 0.05, s * 0.28); ctx.stroke();
+    } else if (kind === "grab") {
+      ctx.beginPath(); ctx.arc(0, s * 0.12, s * 0.22, 0, Math.PI * 2); ctx.fill();
+      ctx.beginPath(); ctx.moveTo(-s * 0.4, -s * 0.42); ctx.lineTo(-s * 0.4, -s * 0.12); ctx.moveTo(s * 0.4, -s * 0.42); ctx.lineTo(s * 0.4, -s * 0.12);
+      ctx.moveTo(-s * 0.4, -s * 0.42); ctx.lineTo(s * 0.4, -s * 0.42); ctx.stroke();
+    }
+    ctx.restore();
+  }
+  function bakso(ctx, cx, cy, s, opt = {}) {
+    // a bowl of bakso: the goal
+    ctx.save(); ctx.translate(cx, cy);
+    if (opt.glow) { ctx.beginPath(); ctx.arc(0, 0, s * 0.62, 0, Math.PI * 2); ctx.fillStyle = "rgba(242,177,52,0.22)"; ctx.fill(); }
+    ctx.fillStyle = "#E4EEF5"; ctx.beginPath(); ctx.moveTo(-s * 0.46, -s * 0.05); ctx.quadraticCurveTo(-s * 0.4, s * 0.45, 0, s * 0.45); ctx.quadraticCurveTo(s * 0.4, s * 0.45, s * 0.46, -s * 0.05); ctx.closePath(); ctx.fill();
+    ctx.strokeStyle = "#8FA9BD"; ctx.lineWidth = s * 0.05; ctx.stroke();
+    ctx.fillStyle = "#C8B49A"; ctx.beginPath(); ctx.ellipse(0, -s * 0.05, s * 0.44, s * 0.14, 0, 0, Math.PI * 2); ctx.fill();
+    for (const [dx, dy, r] of [[-0.16, -0.1, 0.13], [0.14, -0.12, 0.13], [0, -0.22, 0.12]]) {
+      ctx.fillStyle = "#9A7B5B"; ctx.beginPath(); ctx.arc(dx * s, dy * s, r * s, 0, Math.PI * 2); ctx.fill();
+      ctx.fillStyle = "#B8977A"; ctx.beginPath(); ctx.arc(dx * s - r * s * 0.3, dy * s - r * s * 0.3, r * s * 0.4, 0, Math.PI * 2); ctx.fill();
+    }
+    ctx.fillStyle = "#4CA64C"; for (const dx of [-0.26, 0.1, 0.26]) { ctx.beginPath(); ctx.arc(dx * s, -s * 0.07, s * 0.045, 0, Math.PI * 2); ctx.fill(); }
+    ctx.restore();
+  }
+  function table(ctx, x, y, w, h) {
+    ctx.fillStyle = C.table; rr(ctx, x + w * 0.1, y + h * 0.3, w * 0.8, h * 0.55, 10); ctx.fill();
+    ctx.fillStyle = C.tableTop; rr(ctx, x + w * 0.06, y + h * 0.18, w * 0.88, h * 0.3, 10); ctx.fill();
+    ctx.fillStyle = "rgba(0,0,0,0.12)"; ctx.fillRect(x + w * 0.16, y + h * 0.5, w * 0.08, h * 0.35); ctx.fillRect(x + w * 0.76, y + h * 0.5, w * 0.08, h * 0.35);
+  }
+  function kiko(ctx, cx, cy, s, ang, opt = {}) {
+    ctx.save(); ctx.translate(cx, cy);
+    // shadow
+    ctx.fillStyle = "rgba(0,0,0,0.12)"; ctx.beginPath(); ctx.ellipse(0, s * 0.42, s * 0.42, s * 0.12, 0, 0, Math.PI * 2); ctx.fill();
+    ctx.rotate(ang);
+    // wheels
+    ctx.fillStyle = C.kikoDark; rr(ctx, -s * 0.46, -s * 0.2, s * 0.12, s * 0.5, 5); ctx.fill(); rr(ctx, s * 0.34, -s * 0.2, s * 0.12, s * 0.5, 5); ctx.fill();
+    // body
+    ctx.fillStyle = opt.flash ? `rgba(217,68,59,${0.5 + 0.5 * opt.flash})` : C.kiko; rr(ctx, -s * 0.38, -s * 0.36, s * 0.76, s * 0.72, s * 0.16); ctx.fill();
+    // visor (front, facing up)
+    ctx.fillStyle = C.kikoLight; rr(ctx, -s * 0.26, -s * 0.33, s * 0.52, s * 0.3, s * 0.1); ctx.fill();
+    // eyes
+    const mood = opt.mood || "happy";
+    ctx.fillStyle = C.pupil;
+    if (mood === "sad") { ctx.beginPath(); ctx.arc(-s * 0.12, -s * 0.18, s * 0.05, 0, Math.PI * 2); ctx.arc(s * 0.12, -s * 0.18, s * 0.05, 0, Math.PI * 2); ctx.fill(); ctx.strokeStyle = C.pupil; ctx.lineWidth = s * 0.03; ctx.beginPath(); ctx.arc(0, -s * 0.03, s * 0.08, Math.PI * 1.15, Math.PI * 1.85); ctx.stroke(); }
+    else if (mood === "confused") { ctx.beginPath(); ctx.arc(-s * 0.12, -s * 0.18, s * 0.05, 0, Math.PI * 2); ctx.arc(s * 0.12, -s * 0.18, s * 0.035, 0, Math.PI * 2); ctx.fill(); ctx.strokeStyle = C.pupil; ctx.lineWidth = s * 0.03; ctx.beginPath(); ctx.moveTo(-s * 0.08, -s * 0.06); ctx.lineTo(s * 0.08, -s * 0.09); ctx.stroke(); }
+    else { ctx.beginPath(); ctx.arc(-s * 0.12, -s * 0.18, s * 0.055, 0, Math.PI * 2); ctx.arc(s * 0.12, -s * 0.18, s * 0.055, 0, Math.PI * 2); ctx.fill(); ctx.strokeStyle = C.pupil; ctx.lineWidth = s * 0.03; ctx.beginPath(); ctx.arc(0, -s * 0.1, s * 0.08, Math.PI * 0.15, Math.PI * 0.85); ctx.stroke(); }
+    // front pointer
+    ctx.fillStyle = C.accent; ctx.beginPath(); ctx.moveTo(-s * 0.1, -s * 0.38); ctx.lineTo(s * 0.1, -s * 0.38); ctx.lineTo(0, -s * 0.5); ctx.closePath(); ctx.fill();
+    // antenna
+    ctx.strokeStyle = C.kikoDark; ctx.lineWidth = s * 0.04; ctx.beginPath(); ctx.moveTo(0, s * 0.36); ctx.lineTo(0, s * 0.5); ctx.stroke();
+    ctx.fillStyle = C.accent; ctx.beginPath(); ctx.arc(0, s * 0.52, s * 0.07, 0, Math.PI * 2); ctx.fill();
+    // tray with bakso when grabbed
+    if (opt.grabbed) bakso(ctx, 0, s * 0.05, s * 0.45);
+    ctx.restore();
+    if (opt.wave !== undefined) { // arm waving (title scene)
+      ctx.save(); ctx.translate(cx + s * 0.42, cy - s * 0.1); ctx.rotate(-0.6 + Math.sin(opt.wave * 6) * 0.4);
+      ctx.strokeStyle = C.kikoDark; ctx.lineWidth = s * 0.08; ctx.lineCap = "round"; ctx.beginPath(); ctx.moveTo(0, 0); ctx.lineTo(s * 0.3, -s * 0.3); ctx.stroke();
+      ctx.fillStyle = C.kikoLight; ctx.beginPath(); ctx.arc(s * 0.32, -s * 0.33, s * 0.09, 0, Math.PI * 2); ctx.fill(); ctx.restore();
+    }
+  }
+  function kid(ctx, cx, cy, s, opt = {}) {
+    // simple student figure, standing, facing viewer
+    ctx.save(); ctx.translate(cx, cy);
+    ctx.fillStyle = "rgba(0,0,0,0.12)"; ctx.beginPath(); ctx.ellipse(0, s * 1.02, s * 0.5, s * 0.1, 0, 0, Math.PI * 2); ctx.fill();
+    ctx.fillStyle = C.pants; rr(ctx, -s * 0.3, s * 0.35, s * 0.6, s * 0.5, s * 0.1); ctx.fill();
+    ctx.fillStyle = C.skin; ctx.fillRect(-s * 0.24, s * 0.8, s * 0.16, s * 0.2); ctx.fillRect(s * 0.08, s * 0.8, s * 0.16, s * 0.2);
+    ctx.fillStyle = C.uniform; rr(ctx, -s * 0.36, -s * 0.12, s * 0.72, s * 0.56, s * 0.12); ctx.fill();
+    ctx.strokeStyle = "#D5DDE2"; ctx.lineWidth = s * 0.025; rr(ctx, -s * 0.36, -s * 0.12, s * 0.72, s * 0.56, s * 0.12); ctx.stroke();
+    ctx.fillStyle = C.skin; ctx.beginPath(); ctx.arc(0, -s * 0.42, s * 0.32, 0, Math.PI * 2); ctx.fill();
+    ctx.fillStyle = opt.hairColor || C.hair; ctx.beginPath(); ctx.arc(0, -s * 0.5, s * 0.33, Math.PI, 0); ctx.fill();
+    if (opt.hair === "long") { ctx.fillRect(-s * 0.33, -s * 0.5, s * 0.12, s * 0.45); ctx.fillRect(s * 0.21, -s * 0.5, s * 0.12, s * 0.45); }
+    ctx.fillStyle = C.pupil; ctx.beginPath(); ctx.arc(-s * 0.11, -s * 0.4, s * 0.035, 0, Math.PI * 2); ctx.arc(s * 0.11, -s * 0.4, s * 0.035, 0, Math.PI * 2); ctx.fill();
+    ctx.strokeStyle = C.pupil; ctx.lineWidth = s * 0.025; ctx.beginPath(); ctx.arc(0, -s * 0.33, s * 0.08, Math.PI * 0.15, Math.PI * 0.85); ctx.stroke();
+    // arms
+    ctx.strokeStyle = C.skin; ctx.lineWidth = s * 0.11; ctx.lineCap = "round"; ctx.beginPath();
+    if (opt.point) { ctx.moveTo(s * 0.32, s * 0.02); ctx.lineTo(s * 0.75, -s * 0.2); } else { ctx.moveTo(s * 0.34, s * 0.02); ctx.lineTo(s * 0.42, s * 0.38); }
+    ctx.moveTo(-s * 0.34, s * 0.02); ctx.lineTo(-s * 0.42, s * 0.38); ctx.stroke();
+    ctx.restore();
+  }
+  function bubble(ctx, x, y, w, s, size, opt = {}) {
+    const lines = wrap(ctx, s, size, 600, w - 48); const h = lines.length * size * 1.3 + 40;
+    ctx.fillStyle = opt.fill || C.bubble; ctx.strokeStyle = opt.stroke || "#B7C7BF"; ctx.lineWidth = 3;
+    rr(ctx, x, y - h, w, h, 22); ctx.fill(); ctx.stroke();
+    const tx = opt.tailX !== undefined ? opt.tailX : x + 60;
+    ctx.beginPath(); ctx.moveTo(tx - 16, y); ctx.lineTo(tx + 16, y); ctx.lineTo(tx + (opt.tailDir || 0), y + 28); ctx.closePath(); ctx.fillStyle = opt.fill || C.bubble; ctx.fill();
+    ctx.strokeStyle = opt.stroke || "#B7C7BF"; ctx.beginPath(); ctx.moveTo(tx - 16, y); ctx.lineTo(tx + (opt.tailDir || 0), y + 28); ctx.lineTo(tx + 16, y); ctx.stroke();
+    lines.forEach((l, i) => text(ctx, l, x + 24, y - h + 24 + size + i * size * 1.3, size, { color: opt.color || C.ink, weight: 600 }));
+    return h;
+  }
+  function card(ctx, x, y, w, h, opt = {}) { ctx.fillStyle = opt.fill || C.panel; rr(ctx, x, y, w, h, opt.r || 26); ctx.fill(); if (opt.stroke) { ctx.strokeStyle = opt.stroke; ctx.lineWidth = opt.lw || 4; ctx.stroke(); } }
+
+  // ---------- adegan umum (semua episode) ----------
+  const SCENES = {
+    title(ctx, b, l, t, TL) {
+      card(ctx, 160, 160, 1600, 700, { fill: C.panel });
+      kiko(ctx, 420, 520, 260, 0, { wave: l, mood: "happy" });
+      text(ctx, "Informatika · Fase D · Episode " + TL.episode, 720, 330, 34, { color: C.ink2, weight: 700 });
+      const ts = TL.title.length > 34 ? 74 : 92; const th = para(ctx, TL.title, 720, 440, ts, 1000, { weight: 900, lh: 1.1 }); const hy = Math.max(640, 440 + th - ts * 0.35 + 30);
+      if (TL.hook) { text(ctx, "SETELAH MENONTON, KAMU BISA:", 720, hy, 26, { color: C.accentDark, weight: 800 }); para(ctx, TL.hook, 720, hy + 50, 34, 1000, { weight: 800, lh: 1.3 }); if (hy <= 660) text(ctx, "Dengarkan, atau baca teksnya pelan-pelan.", 720, 800, 26, { color: C.ink2, weight: 600 }); }
+      else text(ctx, "Dengarkan, atau baca teksnya pelan-pelan.", 720, 700, 36, { color: C.ink2, weight: 600 });
+      arrowIcon(ctx, "up", 1560, 250, 70, C.kikoLight); arrowIcon(ctx, "right", 1660, 250, 70, C.kikoLight);
+    },
+    quiz(ctx, b, l, t, TL, answered) {
+      const q = TL.quizzes[b.quiz]; card(ctx, 200, 150, 1520, 740, { stroke: C.accent, lw: 6 });
+      text(ctx, "CEK PEMAHAMAN", 960, 230, 32, { align: "center", color: C.accentDark, weight: 800 });
+      para(ctx, q.q, 960, 320, 44, 1360, { weight: 800, align: "center", lh: 1.3 });
+      q.options.forEach((o, i) => {
+        const y = 470 + i * 120; const right = answered && i === q.answer;
+        card(ctx, 320, y, 1280, 96, { fill: right ? C.goodBg : answered ? "#F4F6F5" : C.bg2, stroke: right ? C.good : "#CFDCD5", lw: right ? 6 : 3 });
+        ctx.fillStyle = right ? C.good : C.kiko; ctx.beginPath(); ctx.arc(380, y + 48, 30, 0, Math.PI * 2); ctx.fill();
+        text(ctx, "ABC"[i], 380, y + 61, 34, { align: "center", color: "#fff", weight: 900 });
+        text(ctx, o, 440, y + 62, 38, { weight: 700, color: answered && !right ? C.muted : C.ink });
+        if (right) text(ctx, "✓", 1540, y + 66, 54, { align: "center", color: C.good, weight: 900 });
+      });
+      if (!answered) { // thinking timer
+        const frac = clamp(l / b.dur, 0, 1); ctx.strokeStyle = "#D7E2DC"; ctx.lineWidth = 14; ctx.beginPath(); ctx.arc(1640, 230, 40, 0, Math.PI * 2); ctx.stroke();
+        ctx.strokeStyle = C.accent; ctx.beginPath(); ctx.arc(1640, 230, 40, -Math.PI / 2, -Math.PI / 2 + frac * Math.PI * 2); ctx.stroke();
+        text(ctx, "Pikirkan dulu, jangan buru-buru.", 960, 860, 32, { align: "center", color: C.ink2, weight: 600 });
+      }
+    },
+    quiz_answer(ctx, b, l, t, TL) { SCENES.quiz(ctx, b, l, t, TL, true); },
+    recap(ctx, b, l, t, TL) {
+      // TL.recap: tiga kalimat pendek dari script.json
+      card(ctx, 160, 140, 1600, 760);
+      text(ctx, "TIGA HAL UNTUK DIINGAT", 960, 230, 34, { align: "center", color: C.accentDark, weight: 900 });
+      const items = TL.recap || [];
+      const show = clamp(Math.floor((l - 0.6) / 2.2) + 1, 1, Math.max(1, items.length));
+      items.forEach((s, i) => { if (i >= show) return; card(ctx, 300, 290 + i * 180, 1320, 140, { fill: C.bg2 }); ctx.fillStyle = C.kiko; ctx.beginPath(); ctx.arc(380, 360 + i * 180, 40, 0, Math.PI * 2); ctx.fill(); text(ctx, String(i + 1), 380, 376 + i * 180, 40, { align: "center", color: "#fff", weight: 900 }); text(ctx, s, 450, 375 + i * 180, 42, { weight: 800 }); });
+      kiko(ctx, 1620, 820, 130, 0);
+    },
+    outro(ctx, b, l, t, TL) {
+      // TL.next: {code, title, note} episode berikutnya, dari script.json
+      const n = TL.next || {};
+      card(ctx, 260, 200, 1400, 600);
+      text(ctx, "EPISODE BERIKUTNYA", 960, 320, 34, { align: "center", color: C.accentDark, weight: 900 });
+      text(ctx, n.code || "", 960, 440, 60, { align: "center", weight: 900 });
+      text(ctx, n.title || "", 960, 530, 54, { align: "center", weight: 800, color: C.ink2 });
+      text(ctx, n.note || "", 960, 680, 34, { align: "center", color: C.ink2, weight: 600 });
+      kiko(ctx, 960, 760 + 20, 140, 0, { wave: l });
+    }
+  };
+
+  function beatAt(TL, t) {
+    let b = TL.beats[0];
+    for (const x of TL.beats) { if (t >= x.start) b = x; else break; }
+    return b;
+  }
+  function draw(ctx, t, TL, opt = {}) {
+    const b = beatAt(TL, t); const l = t - b.start;
+    ctx.save(); ctx.setTransform(1, 0, 0, 1, 0, 0);
+    ctx.fillStyle = C.bg; ctx.fillRect(0, 0, W, H);
+    // header
+    text(ctx, TL.episode + " · " + TL.title, 60, 78, 30, { color: C.ink2, weight: 700 });
+    text(ctx, TL.segments[b.seg], 1860, 78, 30, { color: C.accentDark, weight: 800, align: "right" });
+    ctx.fillStyle = C.bg2; ctx.fillRect(0, 100, W, 6); ctx.fillStyle = C.accent; ctx.fillRect(0, 100, W * clamp(t / TL.total, 0, 1), 6);
+    const fn = SCENES[b.scene]; if (fn) fn(ctx, b, l, t, TL);
+    // narration card (burned-in text the student reads)
+    if (opt.subtitles !== false) {
+      const size = 44; const lines = wrap(ctx, b.text, size, 700, 1660);
+      const h = lines.length * size * 1.3 + 44; const y0 = 1056 - h;
+      ctx.fillStyle = "rgba(31,42,51,0.92)"; rr(ctx, 100, y0, 1720, h, 20); ctx.fill();
+      // reading progress (how far along the text the reader should be)
+      const frac = clamp(l / b.audio, 0, 1); ctx.fillStyle = C.accent; rr(ctx, 100, y0 + h - 8, 1720 * frac, 8, 4); ctx.fill();
+      lines.forEach((ln, i) => text(ctx, ln, 960, y0 + 22 + size + i * size * 1.3, size, { align: "center", color: C.subText, weight: 700 }));
+    }
+    ctx.restore();
+    return b;
+  }
+
+  global.Kiko = { draw, beatAt, W, H, C, FONT, SCENES,
+    helpers: { rr, text, wrap, para, arrowIcon, bakso, table, kiko, kid, bubble, card, ease, clamp, lerp } };
+})(typeof window !== "undefined" ? window : globalThis);
+
+/* Pembantu gambar perangkat (dipakai D7.0, D7.2, …): monitor, mouse, pointer, keyboard, HP, jari, ikon file/folder, jendela.
+   Semua digambar dengan kode (tanpa aset unduhan). Muat setelah ../_alat/kiko-core.js; dipakai scenes.js. */
+(function (global) {
+  const K = global.Kiko, H = K.helpers, C = K.C;
+  const { rr, text, wrap, card, ease, clamp, lerp } = H;
+  const D = {};
+  const SCREEN_BG = "#F4F8FB", BEZEL = "#2B3A46", BEZEL2 = "#1A262F", SEL = "rgba(46,126,154,0.22)";
+
+  // ---------- komputer ----------
+  // monitor di atas meja; mengembalikan kotak layar {x,y,w,h}
+  D.monitor = function (ctx, x, y, w, h) {
+    ctx.fillStyle = BEZEL; rr(ctx, x - 18, y - 18, w + 36, h + 36, 22); ctx.fill();
+    ctx.fillStyle = SCREEN_BG; rr(ctx, x, y, w, h, 10); ctx.fill();
+    // kaki dan meja
+    ctx.fillStyle = BEZEL2; rr(ctx, x + w / 2 - 40, y + h + 18, 80, 36, 8); ctx.fill(); rr(ctx, x + w / 2 - 140, y + h + 50, 280, 16, 8); ctx.fill();
+    ctx.fillStyle = C.tableTop; rr(ctx, x - 80, y + h + 66, w + 160, 22, 8); ctx.fill();
+    return { x, y, w, h };
+  };
+  // panah pointer
+  D.pointer = function (ctx, x, y, s = 34, color = C.ink) {
+    ctx.save(); ctx.translate(x, y); ctx.fillStyle = color; ctx.strokeStyle = "#fff"; ctx.lineWidth = s * 0.08; ctx.lineJoin = "round";
+    ctx.beginPath(); ctx.moveTo(0, 0); ctx.lineTo(0, s); ctx.lineTo(s * 0.27, s * 0.78); ctx.lineTo(s * 0.45, s * 1.15); ctx.lineTo(s * 0.62, s * 1.07); ctx.lineTo(s * 0.45, s * 0.7); ctx.lineTo(s * 0.75, s * 0.7); ctx.closePath();
+    ctx.fill(); ctx.stroke(); ctx.restore();
+  };
+  // mouse tampak atas; opt.left / opt.right = tombol ditekan; opt.label = tulis "kiri/kanan"
+  D.mouse = function (ctx, cx, cy, s, opt = {}) {
+    ctx.save(); ctx.translate(cx, cy);
+    ctx.fillStyle = "rgba(0,0,0,0.12)"; ctx.beginPath(); ctx.ellipse(0, s * 0.62, s * 0.5, s * 0.1, 0, 0, Math.PI * 2); ctx.fill();
+    // kabel
+    ctx.strokeStyle = "#7B8B95"; ctx.lineWidth = s * 0.05; ctx.beginPath(); ctx.moveTo(0, -s * 0.6); ctx.quadraticCurveTo(0, -s * 1.0, s * 0.5, -s * 1.1); ctx.stroke();
+    // badan
+    ctx.fillStyle = "#E8EEF2"; rr(ctx, -s * 0.42, -s * 0.62, s * 0.84, s * 1.24, s * 0.4); ctx.fill(); ctx.strokeStyle = "#A9B7C0"; ctx.lineWidth = s * 0.04; ctx.stroke();
+    // dua tombol
+    const btn = (side, on) => { ctx.fillStyle = on ? C.accent : "#F7FAFC"; ctx.beginPath(); const sx = side === "left" ? -1 : 1;
+      ctx.moveTo(sx * s * 0.03, -s * 0.6); ctx.lineTo(sx * s * 0.03, -s * 0.1); ctx.lineTo(sx * s * 0.4, -s * 0.1); ctx.lineTo(sx * s * 0.4, -s * 0.28); ctx.quadraticCurveTo(sx * s * 0.4, -s * 0.6, sx * s * 0.1, -s * 0.6); ctx.closePath(); ctx.fill(); ctx.strokeStyle = "#A9B7C0"; ctx.lineWidth = s * 0.03; ctx.stroke(); };
+    btn("left", opt.left); btn("right", opt.right);
+    ctx.fillStyle = "#A9B7C0"; rr(ctx, -s * 0.04, -s * 0.5, s * 0.08, s * 0.26, s * 0.04); ctx.fill(); // roda
+    ctx.restore();
+    if (opt.label) { text(ctx, "kiri", cx - s * 0.22, cy - s * 0.72, 26, { align: "center", color: opt.left ? C.accentDark : C.ink2, weight: 800 }); text(ctx, "kanan", cx + s * 0.22, cy - s * 0.72, 26, { align: "center", color: opt.right ? C.accentDark : C.ink2, weight: 800 }); }
+  };
+  // riak "klik" di sekitar titik
+  D.ripple = function (ctx, x, y, u, color = C.accent) { if (u <= 0 || u >= 1) return; ctx.strokeStyle = color; ctx.globalAlpha = 1 - u; ctx.lineWidth = 6; ctx.beginPath(); ctx.arc(x, y, 12 + u * 60, 0, Math.PI * 2); ctx.stroke(); ctx.globalAlpha = 1; };
+
+  // ---------- ikon file & folder ----------
+  const KIND = { folder: "#F2B134", foto: "#5FA8D3", tulisan: "#7B8B95", lagu: "#8E6BBF", video: "#D9443B" };
+  D.fileIcon = function (ctx, cx, cy, s, kind, opt = {}) {
+    ctx.save(); ctx.translate(cx, cy);
+    if (opt.selected) { ctx.fillStyle = SEL; rr(ctx, -s * 0.62, -s * 0.62, s * 1.24, s * 1.24 + (opt.name ? s * 0.5 : 0), s * 0.14); ctx.fill(); }
+    if (kind === "folder") {
+      ctx.fillStyle = "#D99A1B"; rr(ctx, -s * 0.5, -s * 0.32, s * 0.45, s * 0.2, s * 0.06); ctx.fill();
+      ctx.fillStyle = opt.open ? "#F7C860" : KIND.folder; rr(ctx, -s * 0.5, -s * 0.22, s, s * 0.7, s * 0.08); ctx.fill();
+      if (opt.open) { ctx.fillStyle = "#D99A1B"; rr(ctx, -s * 0.46, -s * 0.02, s * 0.92, s * 0.5, s * 0.08); ctx.fill(); }
+    } else {
+      ctx.fillStyle = "#FFFFFF"; ctx.strokeStyle = "#B7C4CC"; ctx.lineWidth = s * 0.05;
+      ctx.beginPath(); ctx.moveTo(-s * 0.36, -s * 0.5); ctx.lineTo(s * 0.12, -s * 0.5); ctx.lineTo(s * 0.36, -s * 0.26); ctx.lineTo(s * 0.36, s * 0.5); ctx.lineTo(-s * 0.36, s * 0.5); ctx.closePath(); ctx.fill(); ctx.stroke();
+      ctx.fillStyle = KIND[kind] || KIND.tulisan;
+      if (kind === "foto") { rr(ctx, -s * 0.26, -s * 0.2, s * 0.52, s * 0.44, s * 0.04); ctx.fill(); ctx.fillStyle = "#fff"; ctx.beginPath(); ctx.arc(-s * 0.12, -s * 0.08, s * 0.06, 0, Math.PI * 2); ctx.fill(); ctx.beginPath(); ctx.moveTo(-s * 0.26, s * 0.24); ctx.lineTo(-s * 0.06, s * 0.02); ctx.lineTo(s * 0.06, s * 0.14); ctx.lineTo(s * 0.14, s * 0.06); ctx.lineTo(s * 0.26, s * 0.24); ctx.closePath(); ctx.fill(); }
+      else if (kind === "lagu") { ctx.beginPath(); ctx.arc(-s * 0.1, s * 0.22, s * 0.1, 0, Math.PI * 2); ctx.arc(s * 0.16, s * 0.16, s * 0.1, 0, Math.PI * 2); ctx.fill(); ctx.lineWidth = s * 0.06; ctx.strokeStyle = KIND.lagu; ctx.beginPath(); ctx.moveTo(0, s * 0.2); ctx.lineTo(0, -s * 0.2); ctx.lineTo(s * 0.26, -s * 0.26); ctx.lineTo(s * 0.26, s * 0.14); ctx.stroke(); }
+      else if (kind === "video") { rr(ctx, -s * 0.26, -s * 0.16, s * 0.52, s * 0.4, s * 0.04); ctx.fill(); ctx.fillStyle = "#fff"; ctx.beginPath(); ctx.moveTo(-s * 0.06, -s * 0.04); ctx.lineTo(s * 0.12, s * 0.04); ctx.lineTo(-s * 0.06, s * 0.12); ctx.closePath(); ctx.fill(); }
+      else { for (let i = 0; i < 4; i++) { rr(ctx, -s * 0.22, -s * 0.14 + i * s * 0.14, s * (i === 3 ? 0.26 : 0.44), s * 0.06, s * 0.03); ctx.fill(); } }
+    }
+    ctx.restore();
+    if (opt.name) { const lines = wrap(ctx, opt.name, opt.size || 24, 700, s * 1.6); lines.slice(0, 2).forEach((ln, i) => text(ctx, ln, cx, cy + s * 0.78 + i * (opt.size || 24) * 1.15, opt.size || 24, { align: "center", weight: 700, color: opt.color || C.ink })); }
+  };
+  D.KIND = KIND;
+
+  // jendela aplikasi (file manager / editor) di dalam layar; mengembalikan area isi
+  D.windowFrame = function (ctx, x, y, w, h, title, opt = {}) {
+    ctx.fillStyle = "#FFFFFF"; rr(ctx, x, y, w, h, 14); ctx.fill(); ctx.strokeStyle = "#C9D4DB"; ctx.lineWidth = 3; ctx.stroke();
+    ctx.fillStyle = "#E6EDF2"; rr(ctx, x, y, w, 54, 14); ctx.fill(); ctx.fillRect(x, y + 30, w, 24);
+    ["#E0655C", "#F2B134", "#2E9E5B"].forEach((c, i) => { ctx.fillStyle = c; ctx.beginPath(); ctx.arc(x + 26 + i * 26, y + 27, 8, 0, Math.PI * 2); ctx.fill(); });
+    if (title) text(ctx, title, x + w / 2, y + 36, 24, { align: "center", color: C.ink2, weight: 800 });
+    if (opt.path) { ctx.fillStyle = "#F4F8FB"; rr(ctx, x + 16, y + 66, w - 32, 44, 10); ctx.fill(); text(ctx, opt.path, x + 32, y + 96, 24, { color: C.ink2, weight: 700 }); }
+    return { x: x + 16, y: y + (opt.path ? 124 : 70), w: w - 32, h: h - (opt.path ? 140 : 86) };
+  };
+  // kotak teks dengan kursor berkedip; opt.cursor = posisi karakter (bawaan akhir)
+  D.textBox = function (ctx, x, y, w, h, lines, tt, opt = {}) {
+    ctx.fillStyle = "#FFFFFF"; rr(ctx, x, y, w, h, 14); ctx.fill(); ctx.strokeStyle = opt.stroke || "#C9D4DB"; ctx.lineWidth = 3; ctx.stroke();
+    const size = opt.size || 48, lh = size * 1.4;
+    lines.forEach((ln, i) => text(ctx, ln, x + 28, y + 24 + size + i * lh, size, { weight: 700, color: opt.color || C.ink }));
+    if (opt.cursor !== false) {
+      const li = lines.length - 1, s = lines[li] || ""; ctx.font = `700 ${size}px ${K.FONT}`; const cw = ctx.measureText(s).width;
+      if (Math.floor(tt * 2.5) % 2 === 0 || opt.cursorOn) { ctx.fillStyle = C.kiko; ctx.fillRect(x + 30 + cw, y + 22 + li * lh, 5, size * 1.15); }
+      return [x + 32 + cw, y + 22 + li * lh + size * 0.6];
+    }
+  };
+
+  // ---------- keyboard ----------
+  const ROWS = [["Q", "W", "E", "R", "T", "Y", "U", "I", "O", "P"], ["A", "S", "D", "F", "G", "H", "J", "K", "L"], ["Z", "X", "C", "V", "B", "N", "M"]];
+  // keyboard sederhana: 3 baris huruf + Shift, Spasi, Backspace, Enter. opt.pressed = [tombol], opt.glow = [tombol] disorot lembut
+  D.keyboard = function (ctx, x, y, w, opt = {}) {
+    const key = w / 11.6, gap = key * 0.12, k = key - gap, h = k * 4 + gap * 5;
+    ctx.fillStyle = BEZEL; rr(ctx, x - 16, y - 16, w + 32, h + 32, 22); ctx.fill();
+    const pressed = opt.pressed || [], glow = opt.glow || [];
+    const draw = (kx, ky, kw, label, small) => {
+      const on = pressed.includes(label), soft = glow.includes(label);
+      ctx.fillStyle = on ? C.accent : soft ? "#FFF3D6" : "#F7FAFC"; rr(ctx, kx, ky + (on ? 4 : 0), kw, k - (on ? 4 : 0), 10); ctx.fill();
+      ctx.strokeStyle = on ? C.accentDark : soft ? C.accent : "#B7C4CC"; ctx.lineWidth = on || soft ? 4 : 2; ctx.stroke();
+      // ukuran huruf mengikuti ukuran tombol; pada keyboard mini (tombol < 40 px) label tombol khusus tidak digambar
+      const fs = small ? Math.min(24, k * 0.45) : Math.min(32, k * 0.6);
+      if (small ? k >= 40 : k >= 18) text(ctx, label, kx + kw / 2, ky + k / 2 + fs * 0.38, fs, { align: "center", weight: 800, color: on ? "#fff" : C.ink });
+    };
+    ROWS.forEach((row, r) => { const off = r === 0 ? 0 : r === 1 ? key * 0.35 : key * 0.85; row.forEach((lab, i) => draw(x + gap + off + i * key, y + gap + r * key, k, lab)); });
+    draw(x + gap + key * 0.85 + 7 * key + gap, y + gap + 2 * key, key * 2.4 - gap, "Backspace", true);
+    draw(x + gap, y + gap + 3 * key, key * 1.9 - gap, "Shift", true);
+    draw(x + gap + key * 1.9, y + gap + 3 * key, key * 6.2 - gap, "Spasi", true);
+    draw(x + gap + key * 8.1, y + gap + 3 * key, key * 2.3 - gap, "Enter", true);
+    draw(x + gap + key * 0.35 + 9 * key, y + gap + 1 * key, key * 1.9 - gap, "Enter", true);
+    return { x, y, w, h };
+  };
+
+  // ---------- HP & jari ----------
+  // HP tegak; mengembalikan kotak layar
+  D.phone = function (ctx, cx, cy, w, h) {
+    ctx.fillStyle = BEZEL; rr(ctx, cx - w / 2 - 14, cy - h / 2 - 22, w + 28, h + 44, 40); ctx.fill();
+    ctx.fillStyle = SCREEN_BG; rr(ctx, cx - w / 2, cy - h / 2, w, h, 26); ctx.fill();
+    ctx.fillStyle = BEZEL2; rr(ctx, cx - 40, cy - h / 2 + 8, 80, 12, 6); ctx.fill();
+    return { x: cx - w / 2, y: cy - h / 2, w, h };
+  };
+  // kisi ikon aplikasi generik di layar HP; mengembalikan posisi tiap ikon
+  const APPS = [["Kamera", "#2E7E9A"], ["Galeri", "#5FA8D3"], ["Pesan", "#2E9E5B"], ["Musik", "#8E6BBF"], ["Kalkulator", "#7B8B95"], ["Peta", "#F2B134"], ["Catatan", "#E0A23B"], ["Jam", "#D9443B"], ["Cuaca", "#4C9BE0"]];
+  D.appGrid = function (ctx, sc, opt = {}) {
+    const cols = 3, cell = sc.w / cols, out = [];
+    APPS.forEach(([name, col], i) => {
+      const r = Math.floor(i / cols), c = i % cols; const ax = sc.x + cell * c + cell / 2, ay = sc.y + 90 + r * (cell + 26);
+      const on = opt.active === name; const sz = cell * 0.56 * (on && opt.scale ? opt.scale : 1);
+      ctx.fillStyle = col; rr(ctx, ax - sz / 2, ay - sz / 2, sz, sz, sz * 0.24); ctx.fill();
+      if (on) { ctx.strokeStyle = C.accent; ctx.lineWidth = 6; ctx.stroke(); }
+      text(ctx, name, ax, ay + sz / 2 + 26, 20, { align: "center", weight: 700, color: C.ink2 });
+      out.push({ name, x: ax, y: ay });
+    });
+    return out;
+  };
+  // ujung jari yang menyentuh layar di (x,y); opt.press = sedang menekan (riak); opt.second = jari kedua
+  D.finger = function (ctx, x, y, opt = {}) {
+    const s = opt.s || 46;
+    ctx.save(); ctx.translate(x, y); ctx.rotate(opt.angle !== undefined ? opt.angle : 0.5);
+    ctx.fillStyle = "rgba(0,0,0,0.10)"; ctx.beginPath(); ctx.ellipse(0, s * 0.25, s * 0.7, s * 0.4, 0, 0, Math.PI * 2); ctx.fill();
+    ctx.fillStyle = C.skin; rr(ctx, -s * 0.5, -s * 0.3, s, s * 3.2, s * 0.5); ctx.fill();
+    ctx.fillStyle = "#F7D9BE"; ctx.beginPath(); ctx.ellipse(0, s * 0.1, s * 0.3, s * 0.42, 0, 0, Math.PI * 2); ctx.fill();
+    ctx.restore();
+    if (opt.press) { ctx.fillStyle = "rgba(46,126,154,0.25)"; ctx.beginPath(); ctx.arc(x, y, s * 0.8, 0, Math.PI * 2); ctx.fill(); }
+  };
+  // menu konteks (klik kanan / tekan lama)
+  D.menu = function (ctx, x, y, items, opt = {}) {
+    const w = opt.w || 300, rowH = 52; ctx.fillStyle = "#FFFFFF"; rr(ctx, x, y, w, rowH * items.length + 16, 12); ctx.fill(); ctx.strokeStyle = "#B7C4CC"; ctx.lineWidth = 3; ctx.stroke();
+    ctx.fillStyle = "rgba(0,0,0,0.08)";
+    items.forEach((it, i) => { if (opt.active === i) { ctx.fillStyle = "#FFF3D6"; rr(ctx, x + 8, y + 8 + i * rowH, w - 16, rowH, 8); ctx.fill(); } text(ctx, it, x + 24, y + 8 + i * rowH + 36, 28, { weight: 700 }); });
+  };
+  // kartu keterangan kecil di kanan/bawah adegan
+  D.note = function (ctx, x, y, w, s, opt = {}) { card(ctx, x, y, w, opt.h || 96, { fill: opt.fill || "#FFF3D6", stroke: opt.stroke || C.accent, lw: 4 }); text(ctx, s, x + w / 2, y + (opt.h || 96) / 2 + 14, opt.size || 36, { align: "center", weight: 900, color: opt.color || C.ink }); };
+
+  K.devices = D;
+})(typeof window !== "undefined" ? window : globalThis);
+
+/* Pembantu gambar D7.8: jendela pengolah dokumen (toolbar, judul, bullet, gambar), slide dan deretan slide, kartu langkah,
+   kartu peran tim, garis jadwal, tabel rubrik, kartu bab. Muat setelah kiko-core.js dan kiko-devices.js. */
+(function (global) {
+  const K = global.Kiko, H = K.helpers, C = K.C, D = K.devices;
+  const { rr, text, wrap, card, clamp } = H;
+  const Q = {};
+  // gambar placeholder (gunung + matahari)
+  Q.picture = function (ctx, x, y, w, h, opt = {}) {
+    ctx.fillStyle = opt.fill || "#DCEBF2"; rr(ctx, x, y, w, h, 10); ctx.fill(); ctx.strokeStyle = "#B7C4CC"; ctx.lineWidth = 2; rr(ctx, x, y, w, h, 10); ctx.stroke();
+    ctx.fillStyle = C.accent; ctx.beginPath(); ctx.arc(x + w * 0.75, y + h * 0.3, Math.min(w, h) * 0.12, 0, Math.PI * 2); ctx.fill();
+    ctx.fillStyle = "#2E9E5B"; ctx.beginPath(); ctx.moveTo(x + 4, y + h - 4); ctx.lineTo(x + w * 0.35, y + h * 0.4); ctx.lineTo(x + w * 0.6, y + h - 4); ctx.closePath(); ctx.fill();
+    ctx.fillStyle = "#2E7E9A"; ctx.beginPath(); ctx.moveTo(x + w * 0.45, y + h - 4); ctx.lineTo(x + w * 0.7, y + h * 0.55); ctx.lineTo(x + w - 4, y + h - 4); ctx.closePath(); ctx.fill();
+  };
+  // jendela pengolah dokumen: opt.title (judul bab), opt.bullets [], opt.image, opt.hlTool "heading"|"bullet"|"image"|"save", opt.cursor
+  Q.docWindow = function (ctx, x, y, w, h, opt = {}) {
+    const f = D.windowFrame(ctx, x, y, w, h, opt.name || "Pengolah Dokumen", {});
+    // toolbar
+    const tools = [["H", "heading"], ["• —", "bullet"], ["🖼", "image"], ["💾", "save"]];
+    ctx.fillStyle = "#F4F8FB"; rr(ctx, f.x, f.y - 4, f.w, 56, 10); ctx.fill();
+    tools.forEach(([lab, id], i) => { const tx = f.x + 12 + i * 92; const on = opt.hlTool === id; ctx.fillStyle = on ? C.accent : "#FFFFFF"; rr(ctx, tx, f.y + 4, 80, 40, 8); ctx.fill(); ctx.strokeStyle = on ? C.accentDark : "#C9D4DB"; ctx.lineWidth = on ? 4 : 2; rr(ctx, tx, f.y + 4, 80, 40, 8); ctx.stroke(); text(ctx, lab, tx + 40, f.y + 32, 22, { align: "center", weight: 900, color: on ? "#fff" : C.ink }); });
+    if (opt.toolLabel) text(ctx, opt.toolLabel, f.x + f.w - 12, f.y + 32, 20, { align: "right", weight: 800, color: C.accentDark });
+    // halaman
+    const px = f.x + 30, py = f.y + 72, pw = f.w - 60, ph = f.h - 84;
+    ctx.fillStyle = "#FFFFFF"; rr(ctx, px, py, pw, ph, 6); ctx.fill(); ctx.strokeStyle = "#E1E8E4"; ctx.lineWidth = 2; rr(ctx, px, py, pw, ph, 6); ctx.stroke();
+    let cy = py + 50;
+    if (opt.title) { text(ctx, opt.title, px + 30, cy, opt.titleSize || 30, { weight: 900, color: opt.hlTool === "heading" ? C.accentDark : C.ink }); cy += 44; }
+    (opt.bullets || []).forEach(b => { ctx.fillStyle = opt.hlTool === "bullet" ? C.accentDark : C.ink; ctx.beginPath(); ctx.arc(px + 40, cy - 8, 5, 0, Math.PI * 2); ctx.fill(); text(ctx, b, px + 58, cy, 22, { weight: 700, color: opt.hlTool === "bullet" ? C.accentDark : C.ink }); cy += 34; });
+    if (opt.lines) for (let i = 0; i < opt.lines; i++) { ctx.fillStyle = "#D7E2DC"; rr(ctx, px + 30, cy - 10, (pw - 60) * (0.55 + ((i * 7) % 4) * 0.1), 10, 5); ctx.fill(); cy += 26; }
+    if (opt.image) { Q.picture(ctx, px + 30, cy + 4, Math.min(220, pw - 60), 120, {}); if (opt.hlTool === "image") { ctx.strokeStyle = C.accent; ctx.lineWidth = 5; rr(ctx, px + 26, cy, Math.min(220, pw - 60) + 8, 128, 10); ctx.stroke(); } cy += 140; }
+    return { px, py, pw, ph, cy };
+  };
+  // satu slide 16:9; opt.title, opt.lines (teks kecil banyak), opt.words (teks besar), opt.image, opt.bad, opt.scale font
+  Q.slide = function (ctx, x, y, w, opt = {}) {
+    const h = w * 9 / 16;
+    ctx.fillStyle = opt.bg || "#FFFFFF"; rr(ctx, x, y, w, h, 12); ctx.fill(); ctx.strokeStyle = opt.good ? C.good : opt.bad ? C.bad : "#B7C4CC"; ctx.lineWidth = opt.good || opt.bad ? 6 : 3; rr(ctx, x, y, w, h, 12); ctx.stroke();
+    ctx.fillStyle = C.kiko; rr(ctx, x, y, w, h * 0.16, 12); ctx.fill(); ctx.fillRect(x, y + h * 0.08, w, h * 0.08);
+    if (opt.title) text(ctx, opt.title, x + w * 0.05, y + h * 0.115, w * 0.055, { weight: 900, color: "#fff" });
+    if (opt.lines) { for (let i = 0; i < opt.lines; i++) { text(ctx, (opt.lineText || "Kata sandi harus panjang dan tidak boleh diberitahukan kepada siapa pun termasuk teman dekat."), x + w * 0.05, y + h * 0.26 + i * (h * 0.058), w * 0.026, { weight: 600, color: opt.textColor || C.ink }); } }
+    if (opt.words) { const lines = wrap(ctx, opt.words, w * 0.075, 900, w * (opt.image ? 0.5 : 0.9)); lines.forEach((ln, i) => text(ctx, ln, x + w * 0.05, y + h * 0.42 + i * w * 0.09, w * 0.075, { weight: 900, color: opt.textColor || C.ink })); }
+    if (opt.image) Q.picture(ctx, x + w * 0.6, y + h * 0.3, w * 0.34, h * 0.55, {});
+    return h;
+  };
+  // kartu langkah bernomor (kecil), on = aktif
+  Q.stepCard = function (ctx, x, y, w, h, n, title, opt = {}) {
+    ctx.save(); ctx.globalAlpha = opt.dim ? 0.25 : 1;
+    card(ctx, x, y, w, h, { fill: opt.on ? "#FFF3D6" : C.bg2, stroke: opt.on ? C.accent : undefined, lw: 5, r: 16 });
+    ctx.fillStyle = opt.done ? C.good : C.kiko; ctx.beginPath(); ctx.arc(x + 40, y + 40, 26, 0, Math.PI * 2); ctx.fill(); text(ctx, opt.done ? "✓" : String(n), x + 40, y + 50, 26, { align: "center", color: "#fff", weight: 900 });
+    const lines = wrap(ctx, title, 24, 900, w - 30); lines.forEach((ln, i) => text(ctx, ln, x + w / 2, y + 100 + i * 30, 24, { align: "center", weight: 900 }));
+    if (opt.sub) text(ctx, opt.sub, x + w / 2, y + h - 18, 20, { align: "center", weight: 700, color: C.ink2 });
+    ctx.restore();
+  };
+  // kartu peran tim dengan tokoh
+  Q.roleCard = function (ctx, x, y, w, name, role, opt = {}) {
+    card(ctx, x, y, w, 230, { fill: C.bg2, r: 16 });
+    H.kid(ctx, x + w / 2, y + 90, 90, opt.kid || {});
+    text(ctx, name, x + w / 2, y + 200, 22, { align: "center", weight: 800, color: C.ink2 });
+    ctx.fillStyle = C.kiko; rr(ctx, x + 14, y + 14, w - 28, 36, 10); ctx.fill(); text(ctx, role, x + w / 2, y + 39, 20, { align: "center", weight: 900, color: "#fff" });
+  };
+  // garis jadwal empat pertemuan
+  Q.timeline = function (ctx, x, y, w, items, opt = {}) {
+    ctx.strokeStyle = "#B7C4CC"; ctx.lineWidth = 6; ctx.beginPath(); ctx.moveTo(x, y); ctx.lineTo(x + w, y); ctx.stroke();
+    items.forEach((it, i) => { const cx = x + (i + 0.5) * (w / items.length); const on = opt.n == null || i < opt.n; ctx.save(); ctx.globalAlpha = on ? 1 : 0.25; ctx.fillStyle = C.accent; ctx.beginPath(); ctx.arc(cx, y, 18, 0, Math.PI * 2); ctx.fill(); text(ctx, "P" + (i + 1), cx, y + 8, 18, { align: "center", weight: 900 }); const lines = wrap(ctx, it, 22, 800, w / items.length - 20); lines.forEach((ln, k) => text(ctx, ln, cx, y + 52 + k * 28, 22, { align: "center", weight: 800, color: C.ink2 })); ctx.restore(); });
+  };
+  // tabel rubrik: rows [[kriteria, deskripsi]], opt.n tampil
+  Q.rubric = function (ctx, x, y, w, rows, opt = {}) {
+    const rh = 70; card(ctx, x, y, w, rh * (rows.length + 1), { fill: "#FFFFFF", stroke: "#B7C4CC", lw: 3, r: 12 });
+    ctx.fillStyle = C.bg2; rr(ctx, x, y, w, rh, 12); ctx.fill(); ctx.fillRect(x, y + rh / 2, w, rh / 2);
+    text(ctx, "Kriteria", x + 24, y + 44, 26, { weight: 900, color: C.ink2 }); text(ctx, "Bagus bila…", x + w * 0.36, y + 44, 26, { weight: 900, color: C.ink2 }); text(ctx, "☆", x + w - 40, y + 46, 28, { align: "center", color: C.ink2 });
+    rows.forEach(([k, d], i) => { const ry = y + rh * (i + 1); const on = opt.n == null || i < opt.n; ctx.save(); ctx.globalAlpha = on ? 1 : 0.2; ctx.strokeStyle = "#E1E8E4"; ctx.lineWidth = 2; ctx.beginPath(); ctx.moveTo(x, ry); ctx.lineTo(x + w, ry); ctx.stroke(); text(ctx, k, x + 24, ry + 44, 26, { weight: 900 }); text(ctx, d, x + w * 0.36, ry + 44, 22, { weight: 700, color: C.ink2 }); text(ctx, "★★★", x + w - 40, ry + 46, 24, { align: "center", color: C.accent }); ctx.restore(); });
+  };
+  // kartu bab panduan: nomor, judul, episode sumber, tiga ikon (aturan, contoh, gambar)
+  Q.chapter = function (ctx, x, y, w, n, title, src, opt = {}) {
+    card(ctx, x, y, w, opt.h || 300, { fill: C.bg2, r: 18 });
+    ctx.fillStyle = C.kiko; ctx.beginPath(); ctx.arc(x + 44, y + 44, 26, 0, Math.PI * 2); ctx.fill(); text(ctx, String(n), x + 44, y + 54, 26, { align: "center", color: "#fff", weight: 900 });
+    const lines = wrap(ctx, title, 28, 900, w - 100); lines.forEach((ln, i) => text(ctx, ln, x + 84, y + 54 + i * 34, 28, { weight: 900 }));
+    text(ctx, "dari episode " + src, x + 24, y + 150, 22, { weight: 700, color: C.ink2 });
+    if (opt.parts) ["aturan", "contoh", "gambar"].forEach((p, i) => { const on = i < opt.parts; card(ctx, x + 24 + i * ((w - 48) / 3), y + 180, (w - 48) / 3 - 10, 80, { fill: on ? C.goodBg : "#F4F6F5", stroke: on ? C.good : "#E1E8E4", lw: 3, r: 12 }); text(ctx, (on ? "✓ " : "") + p, x + 24 + i * ((w - 48) / 3) + ((w - 48) / 3 - 10) / 2, y + 230, 22, { align: "center", weight: 900, color: on ? C.good : C.muted }); });
+  };
+  K.proyek = Q;
+})(typeof window !== "undefined" ? window : globalThis);
+
+/* Adegan episode D7.8: Proyek Panduan Digital. Muat setelah kiko-core.js, kiko-devices.js, proyek.js. */
+(function (global) {
+  const K = global.Kiko, H = K.helpers, C = K.C, D = K.devices, Q = K.proyek, SCENES = K.SCENES;
+  const { text, para, card, kiko, kid, bubble, rr, ease, clamp, lerp, arrowIcon } = H;
+  const reveal = (l, t0, step, n) => clamp(Math.floor((l - t0) / step) + 1, 0, n);
+  const banner = (ctx, s, y = 745, w = 1000, opt = {}) => { card(ctx, 960 - w / 2, y, w, 80, { fill: opt.fill || "#FFF3D6", stroke: opt.stroke || C.accent, lw: 4 }); text(ctx, s, 960, y + 52, opt.size || 34, { align: "center", weight: 900, color: opt.color || C.ink }); };
+  const label = (ctx, s, x, y, opt = {}) => text(ctx, s, x, y, opt.size || 28, { align: "center", weight: 900, color: opt.color || C.accentDark });
+  const STEPS = ["Tentukan pembaca dan tujuan", "Kumpulkan bahan", "Susun kerangka", "Tulis dokumen", "Buat slide", "Tampil, lalu perbaiki"];
+  const BULLETS = ["Pakai 12 huruf atau lebih.", "Jangan beri tahu siapa pun.", "Satu akun, satu kata sandi."];
+
+  Object.assign(SCENES, {
+    title_q(ctx, b, l) {
+      card(ctx, 120, 150, 1680, 740);
+      kiko(ctx, 330, 560, 200, 0, { mood: "happy" });
+      const n = reveal(l, 0.5, 1.0, 6);
+      STEPS.forEach((s, i) => { const x = 700 + (i % 3) * 380, y = i < 3 ? 280 : 560; Q.stepCard(ctx, x - 160, y, 320, 230, i + 1, s, { dim: i >= n }); });
+      if (l > 7) bubble(ctx, 170, 330, 300, "Dari awal sampai tampil!", 28, { tailX: 330, tailDir: 0 });
+    },
+    prereq(ctx, b, l) {
+      card(ctx, 260, 200, 1400, 600);
+      text(ctx, "TONTON DULU", 960, 300, 34, { align: "center", color: C.accentDark, weight: 800 });
+      [["D7.3", "Kata Sandi Aman dan Rekam Jejak Digital"], ["D7.4", "Mesin Pencari"], ["D7.7", "Ruang Publik Virtual dan Empati"]].forEach(([c, t], i) => { const x = 420 + i * 380; card(ctx, x, 360, 340, 300, { fill: C.bg2 }); text(ctx, "Episode " + c, x + 170, 430, 36, { align: "center", weight: 900 }); para(ctx, t, x + 170, 500, 26, 300, { align: "center", weight: 700, color: C.ink2, lh: 1.3 }); });
+      text(ctx, "isi panduan diambil dari tiga episode ini", 960, 730, 28, { align: "center", weight: 800, color: C.ink2 });
+      kiko(ctx, 1600, 760, 150, 0);
+    },
+    unplugged_interview(ctx, b, l) {
+      card(ctx, 120, 150, 1680, 740);
+      text(ctx, "MAIN DULU TANPA KOMPUTER", 960, 230, 34, { align: "center", color: C.accentDark, weight: 800 });
+      kid(ctx, 520, 560, 170, { point: true }); text(ctx, "kamu", 520, 800, 24, { align: "center", weight: 800, color: C.ink2 });
+      kid(ctx, 800, 600, 120, { hair: "long", hairColor: "#4A2E1A" }); text(ctx, "adik kelas 6", 800, 800, 24, { align: "center", weight: 800, color: C.ink2 });
+      const qs = ["Apa yang sering kamu lakukan di HP?", "Apa yang membuatmu bingung?", "Apa yang membuatmu takut?"]; const n = reveal(l, 1.0, 2.0, 3);
+      qs.forEach((q, i) => { if (i < n) { card(ctx, 1000, 300 + i * 150, 700, 110, { fill: i === n - 1 ? "#FFF3D6" : C.bg2, stroke: i === n - 1 ? C.accent : undefined, lw: 4, r: 16 }); text(ctx, (i + 1) + ". " + q, 1030, 365 + i * 150, 28, { weight: 800 }); } });
+      if (l > 7.5) label(ctx, "catat jawabannya", 1350, 800, { size: 26 });
+    },
+    unplugged_reader(ctx, b, l) {
+      card(ctx, 120, 150, 1680, 740);
+      kid(ctx, 360, 540, 150, { hair: "long", hairColor: "#4A2E1A" }); text(ctx, "pembacamu: kelas 6 SD", 360, 735, 26, { align: "center", weight: 900, color: C.kiko });
+      const items = [["kata sederhana", "\"kata sandi\" bukan \"kredensial\""], ["banyak gambar", "satu gambar tiap aturan"], ["contoh yang dekat", "grup kelas, game, HP ibu"]];
+      const n = reveal(l, 1.0, 1.6, 3);
+      items.forEach(([t, s], i) => { if (i < n) { card(ctx, 640, 260 + i * 170, 1040, 140, { fill: C.goodBg, stroke: C.good, lw: 4, r: 16 }); text(ctx, "✓ " + t, 680, 318 + i * 170, 32, { weight: 900, color: C.good }); text(ctx, s, 680, 362 + i * 170, 24, { weight: 700, color: C.ink2 }); } });
+      if (l > 7) banner(ctx, "jawaban mereka menentukan isi panduanmu", 775, 900, { size: 30 });
+    },
+
+    steps_six(ctx, b, l) {
+      card(ctx, 120, 150, 1680, 740);
+      text(ctx, "ENAM LANGKAH PROYEK", 960, 230, 34, { align: "center", color: C.accentDark, weight: 800 });
+      const n = reveal(l, 0.8, 1.3, 6);
+      STEPS.forEach((s, i) => { const x = 420 + (i % 3) * 540, y = i < 3 ? 270 : 530; Q.stepCard(ctx, x - 240, y, 480, 230, i + 1, s, { dim: i >= n, on: i === n - 1 }); });
+      if (n >= 6) label(ctx, "urut, satu per satu", 960, 805, { size: 26, color: C.ink2 });
+    },
+    team_roles(ctx, b, l) {
+      card(ctx, 120, 150, 1680, 740);
+      text(ctx, "TIM 3–4 ORANG, BAGI PERAN", 960, 230, 34, { align: "center", color: C.accentDark, weight: 800 });
+      const roles = [["Dito", "Penulis", {}], ["Sinta", "Perancang gambar", { hair: "long" }], ["Rani", "Penyaji", { hair: "long", hairColor: "#4A2E1A" }], ["Bayu", "Pemeriksa", { hairColor: "#1B1B1B" }]];
+      const n = reveal(l, 0.6, 1.0, 4);
+      roles.forEach(([nm, r, o], i) => { if (i < n) Q.roleCard(ctx, 230 + i * 380, 270, 320, nm, r, { kid: o }); });
+      if (l > 5) Q.timeline(ctx, 300, 580, 1320, ["pembaca, bahan, kerangka", "tulis dokumen", "buat slide, latihan", "tampil, perbaiki"], {});
+      if (l > 7) label(ctx, "satu langkah besar tiap pertemuan", 960, 740, { size: 26, color: C.ink2 });
+    },
+
+    content_map(ctx, b, l) {
+      card(ctx, 120, 150, 1680, 740);
+      text(ctx, "ISI PANDUAN: TIGA BAB", 960, 230, 34, { align: "center", color: C.accentDark, weight: 800 });
+      const n = reveal(l, 0.8, 1.6, 3);
+      [["Kata sandi yang aman", "D7.3"], ["Mencari informasi yang jitu", "D7.4"], ["Sopan dan aman di grup kelas", "D7.7"]].forEach(([t, s], i) => { if (i < n) Q.chapter(ctx, 200 + i * 520, 280, 480, i + 1, t, s, { h: 300 }); });
+      if (n >= 3) banner(ctx, "satu bab, satu episode yang sudah kamu tonton", 745, 1000, { size: 30 });
+    },
+    content_rule(ctx, b, l) {
+      card(ctx, 120, 150, 1680, 740);
+      const n = reveal(l, 0.6, 1.0, 3);
+      Q.chapter(ctx, 200, 230, 620, 1, "Kata sandi yang aman", "D7.3", { h: 300, parts: n });
+      // contoh isi di kanan
+      const d = Q.docWindow(ctx, 880, 200, 800, 620, { name: "panduan-aman-internet-7B", title: "Bab 1: Kata sandi yang aman", bullets: n >= 1 ? ["Aturan: pakai 12 huruf atau lebih."] : [], lines: 0, image: false });
+      if (n >= 2) text(ctx, "Contoh: \"kucingku makan 3 bakso!\" lebih kuat daripada \"rani2013\".", d.px + 30, d.cy + 20, 20, { weight: 700, color: C.ink2 });
+      if (n >= 3) Q.picture(ctx, d.px + 30, d.cy + 44, 220, 120, {});
+      if (l > 5) label(ctx, "dengan kata-katamu sendiri, bukan menyalin", 510, 620, { size: 24, color: C.bad });
+      if (l > 7.5) banner(ctx, "satu aturan, satu contoh, satu gambar", 745, 900);
+    },
+
+    doc_intro(ctx, b, l) {
+      card(ctx, 120, 150, 1680, 740);
+      const d = Q.docWindow(ctx, 260, 190, 1100, 600, { name: "Pengolah Dokumen (word processor)", title: "Panduan Aman Berinternet", lines: 5, image: false });
+      if (l > 2.5) { ctx.strokeStyle = C.kiko; ctx.lineWidth = 6; rr(ctx, d.px - 20, d.py - 70, d.pw + 40, 56, 10); ctx.stroke(); bubble(ctx, 1400, 330, 330, "baris alat di atas", 26, { tailX: 1400, tailDir: -140 }); }
+      if (l > 5) { ctx.strokeStyle = C.good; ctx.lineWidth = 6; rr(ctx, d.px, d.py, d.pw, d.ph, 6); ctx.stroke(); bubble(ctx, 1400, 600, 330, "halaman putih: tempat menulis", 26, { tailX: 1400, tailDir: -140, fill: C.goodBg, stroke: C.good, color: C.good }); }
+      label(ctx, "untuk tulisan panjang: panduan, laporan, surat", 810, 830, { size: 24, color: C.ink2 });
+    },
+    doc_tools(ctx, b, l) {
+      card(ctx, 120, 150, 1680, 740);
+      const tools = [["heading", "judul (heading)", "agar bab terlihat"], ["bullet", "daftar bertitik (bullet)", "agar aturan rapi"], ["image", "sisipkan gambar (insert image)", "satu gambar tiap aturan"], ["save", "simpan (save)", "sesering mungkin"]];
+      const n = clamp(reveal(l, 0.5, 1.8, 4), 1, 4); const cur = tools[n - 1];
+      Q.docWindow(ctx, 200, 190, 1000, 660, { name: "panduan-aman-internet-7B", title: "Bab 1: Kata sandi yang aman", bullets: n >= 2 ? BULLETS : [], lines: n >= 2 ? 0 : 3, image: n >= 3, hlTool: cur[0], toolLabel: cur[1] });
+      tools.forEach(([id, t, s], i) => { const on = i < n; ctx.save(); ctx.globalAlpha = on ? 1 : 0.25; card(ctx, 1260, 220 + i * 150, 460, 120, { fill: i === n - 1 ? "#FFF3D6" : C.bg2, stroke: i === n - 1 ? C.accent : undefined, lw: 4, r: 14 }); text(ctx, (i + 1) + ". " + t, 1290, 268 + i * 150, 24, { weight: 900 }); text(ctx, s, 1290, 306 + i * 150, 22, { weight: 700, color: C.ink2 }); ctx.restore(); });
+    },
+    doc_save(ctx, b, l) {
+      card(ctx, 120, 150, 1680, 740);
+      const f = D.windowFrame(ctx, 260, 200, 900, 560, "Simpan sebagai", {});
+      text(ctx, "Nama file:", f.x + 20, f.y + 40, 26, { weight: 800, color: C.ink2 });
+      const good = l > 2.5; D.textBox(ctx, f.x + 20, f.y + 60, f.w - 40, 80, [good ? "panduan-aman-internet-7B.docx" : "Dokumen1.docx"], l, { size: 30, stroke: good ? C.good : C.bad });
+      text(ctx, good ? "✓ menyebut isi dan pemilik, mudah dicari" : "✕ akan hilang di antara ratusan file", f.x + 20, f.y + 190, 26, { weight: 900, color: good ? C.good : C.bad });
+      text(ctx, "Folder:", f.x + 20, f.y + 260, 26, { weight: 800, color: C.ink2 });
+      [["Sekolah", false], ["Kelas 7", false], ["Proyek Panduan", l > 5]].forEach(([nm, on], i) => { D.fileIcon(ctx, f.x + 60 + i * 60, f.y + 320 + i * 56, 44, "folder", { selected: on }); text(ctx, nm, f.x + 100 + i * 60, f.y + 330 + i * 56, 24, { weight: on ? 900 : 700, color: on ? C.good : C.ink }); });
+      if (l > 5) bubble(ctx, 1220, 560, 420, "simpan di folder proyek, seperti di episode D7.0", 26, { tailX: 1230, tailDir: -160, fill: C.goodBg, stroke: C.good, color: C.good });
+      kiko(ctx, 1500, 760, 140, 0);
+    },
+
+    slide_intro(ctx, b, l) {
+      card(ctx, 120, 150, 1680, 740);
+      text(ctx, "PRESENTASI: KUMPULAN SLIDE", 960, 230, 34, { align: "center", color: C.accentDark, weight: 800 });
+      // deretan slide kecil
+      ["Judul", "Bab 1", "Bab 2", "Bab 3", "Terima kasih"].forEach((t, i) => Q.slide(ctx, 220 + i * 190, 270, 170, { title: t, bg: i === 1 ? "#FFF9E0" : "#fff" }));
+      const n = reveal(l, 1.5, 1.4, 4);
+      const rules = ["satu ide per slide", "paling banyak lima kata", "satu gambar", "huruf besar (24 ke atas)"];
+      rules.forEach((r, i) => { if (i < n) { card(ctx, 260 + i * 360, 430, 330, 110, { fill: C.goodBg, stroke: C.good, lw: 4, r: 14 }); text(ctx, "✓ " + r, 425 + i * 360, 495, 24, { align: "center", weight: 900, color: C.good }); } });
+      Q.slide(ctx, 730, 565, 460, { title: "Bab 1", words: "Kata sandi: panjang dan rahasia", image: true, good: n >= 4 });
+    },
+    slide_compare(ctx, b, l) {
+      card(ctx, 120, 150, 1680, 740);
+      Q.slide(ctx, 180, 230, 760, { title: "Kata sandi", lines: 12, bad: l > 2 });
+      Q.slide(ctx, 980, 230, 760, { title: "Kata sandi", words: "Panjang dan rahasia", image: true, good: l > 4.5 });
+      if (l > 2) { text(ctx, "✕ dua belas kalimat kecil", 560, 690, 28, { align: "center", weight: 900, color: C.bad }); text(ctx, "penonton sibuk membaca, tidak mendengarkanmu", 560, 725, 22, { align: "center", weight: 700, color: C.ink2 }); }
+      if (l > 4.5) { text(ctx, "✓ lima kata, satu gambar", 1360, 690, 28, { align: "center", weight: 900, color: C.good }); text(ctx, "mata ke slide sebentar, lalu kembali kepadamu", 1360, 725, 22, { align: "center", weight: 700, color: C.ink2 }); }
+      if (l > 7) banner(ctx, "slide = pendukung, bukan pengganti ceritamu", 750, 900, { size: 30 });
+    },
+
+    present_tips(ctx, b, l) {
+      card(ctx, 120, 150, 1680, 740);
+      // penyaji di depan, penonton adik kelas
+      Q.slide(ctx, 200, 230, 520, { title: "Bab 2", words: "Cari dengan kata kunci jitu", image: true });
+      kid(ctx, 820, 560, 160, { hair: "long", hairColor: "#4A2E1A", point: true }); text(ctx, "Rani (penyaji)", 820, 800, 22, { align: "center", weight: 800, color: C.ink2 });
+      for (let r = 0; r < 2; r++) for (let c = 0; c < 5; c++) kid(ctx, 1080 + c * 130 + (r % 2) * 40, 520 + r * 140, 90, { hair: (r + c) % 2 ? "long" : undefined, hairColor: ["#2B2118", "#4A2E1A", "#1B1B1B"][(r + c) % 3] });
+      text(ctx, "adik kelas 6", 1380, 810, 22, { align: "center", weight: 800, color: C.ink2 });
+      const n = reveal(l, 0.8, 1.8, 3);
+      const tips = ["berlatih dulu: 2 menit per orang", "lihat penonton, bukan membaca slide", "ajukan satu pertanyaan kepada mereka"];
+      tips.forEach((t, i) => { if (i < n) { card(ctx, 760 + i * 10, 220 + i * 70, 900, 60, { fill: C.goodBg, stroke: C.good, lw: 3, r: 12 }); text(ctx, "✓ " + t, 790 + i * 10, 260 + i * 70, 24, { weight: 900, color: C.good }); } });
+      if (n >= 3) bubble(ctx, 330, 640, 320, "Siapa yang punya grup kelas?", 24, { tailX: 600, tailDir: 20, fill: "#FFF3D6", stroke: C.accent });
+    },
+    rubric(ctx, b, l) {
+      card(ctx, 120, 150, 1680, 740);
+      text(ctx, "SETELAH TAMPIL", 560, 230, 34, { align: "center", color: C.accentDark, weight: 800 });
+      card(ctx, 200, 270, 720, 200, { fill: C.bg2, r: 16 }); text(ctx, "1. minta SATU masukan dari adik kelas", 240, 330, 26, { weight: 900 }); text(ctx, "2. ubah SATU hal", 240, 380, 26, { weight: 900 }); text(ctx, "\"gambarnya kurang besar, Kak\" → perbesar gambar", 240, 430, 22, { weight: 700, color: C.ink2 });
+      const n = reveal(l, 2.0, 1.4, 4);
+      Q.rubric(ctx, 980, 230, 720, [["Isi benar", "sesuai episode D7.3, D7.4, D7.7"], ["Bahasa sesuai", "kata sederhana untuk kelas 6"], ["Tampilan jelas", "judul, daftar, gambar, huruf besar"], ["Kerja tim", "semua peran berjalan"]], { n });
+      if (n >= 4) label(ctx, "rubrik: nilai sendiri dulu, baru dinilai guru", 560, 620, { size: 26, color: C.ink2 });
+      kiko(ctx, 560, 760, 140, 0, { mood: "happy" });
+    },
+    make_show(ctx, b, l) {
+      card(ctx, 160, 150, 1600, 740);
+      text(ctx, "GILIRANMU", 960, 240, 34, { align: "center", color: C.accentDark, weight: 900 });
+      const items = [["Perencana proyek", "pembaca, tujuan, peran tim", (x, y) => { ["Pembaca: kelas 6", "Tujuan: aman", "Tim: 4 peran"].forEach((s, i) => { card(ctx, x - 170, y - 90 + i * 60, 340, 50, { fill: "#fff", stroke: "#CFDCD5", lw: 3, r: 10 }); text(ctx, s, x - 150, y - 56 + i * 60, 22, { weight: 800 }); }); }],
+        ["Kerangka slide", "lima slide, lima kata", (x, y) => { ["Judul", "Bab 1", "Bab 2"].forEach((s, i) => Q.slide(ctx, x - 190 + i * 130, y - 50, 120, { title: s })); }],
+        ["Cek rubrik", "nilai sendiri sebelum tampil", (x, y) => { ["Isi benar", "Bahasa sesuai", "Tampilan jelas"].forEach((s, i) => { text(ctx, "☑ " + s, x - 150, y - 60 + i * 50, 26, { weight: 800, color: C.good }); }); }]];
+      items.forEach(([t1, t2, draw], i) => { const x = 400 + i * 560; card(ctx, x - 250, 290, 500, 440, { fill: C.bg2 }); ctx.fillStyle = C.kiko; ctx.beginPath(); ctx.arc(x - 200, 340, 28, 0, Math.PI * 2); ctx.fill(); text(ctx, String(i + 1), x - 200, 352, 30, { align: "center", color: "#fff", weight: 900 }); draw(x, 470); text(ctx, t1, x, 610, 28, { align: "center", weight: 900 }); text(ctx, t2, x, 650, 22, { align: "center", weight: 700, color: C.ink2 }); });
+      text(ctx, "di halaman latihan episode ini — lalu kerjakan proyeknya empat pertemuan di kelas", 960, 820, 28, { align: "center", color: C.ink2, weight: 700 });
+    }
+  });
+})(typeof window !== "undefined" ? window : globalThis);
+</script>
+<script>/* Inti halaman latihan: pemutar (kanvas + narasi), tombol suara nyala/mati (berpindah antara timeline suara dan teks),
+   kuis dengan petunjuk, dan kemajuan di localStorage (perangkat ini saja).
+   Pakai:  const P = PageCore({ suara: TIMELINE_SUARA_atau_null, teks: TIMELINE_TEKS });
+   Episode menambahkan latihannya sendiri lewat P.$, P.K, P.H, P.progress, P.save(), P.speed(), P.onProgress(fn). */
+function PageCore(TLS, opt = {}) {
+  const $ = id => document.getElementById(id);
+  const K = Kiko, H = K.helpers;
+  let voice = !!TLS.suara; let TL = voice ? TLS.suara : TLS.teks;
+  // ---------- progress storage (per device only) ----------
+  const KEY = opt.key || TL.episode.replace(/\./g, "").toLowerCase() + "-progress";   // D7.5 -> "d75-progress"
+  let progress = { quiz: {} };
+  try { const s = localStorage.getItem(KEY); if (s) progress = { quiz: {}, ...JSON.parse(s) }; } catch (e) {}
+  const extras = [];
+  function renderProgress() {
+    const el = $("progress"); if (!el) return; el.innerHTML = "";
+    Object.keys(TL.quizzes).forEach((id, i) => { const s = document.createElement("span"); s.textContent = "Cek " + (i + 1); s.className = progress.quiz[id] ? "ok" : ""; el.appendChild(s); });
+    extras.forEach(f => f(el));
+  }
+  function save() { try { localStorage.setItem(KEY, JSON.stringify(progress)); } catch (e) {} renderProgress(); }
+
+  // ---------- player ----------
+  const cv = $("screen"), ctx = cv.getContext("2d");
+  let t = 0, playing = false, last = 0, speed = 1, hasAudio = false;
+  const nar = $("nar"); nar.addEventListener("canplay", () => { hasAudio = true; }); nar.addEventListener("error", () => { hasAudio = false; });
+  function fmt(s) { s = Math.max(0, Math.floor(s)); return Math.floor(s / 60) + ":" + String(s % 60).padStart(2, "0"); }
+  function segStart(i) { return TL.beats.find(b => b.seg === i).start; }
+  function syncAudio() { if (voice && hasAudio) { try { nar.currentTime = t; } catch (e) {} } }
+  function drawNow() {
+    const b = K.draw(ctx, Math.min(t, TL.total - 0.01), TL);
+    $("barfill").style.width = (t / TL.total * 100) + "%"; $("bar").setAttribute("aria-valuenow", Math.round(t / TL.total * 100));
+    $("timelabel").textContent = fmt(t) + " / " + fmt(TL.total);
+    [...$("chapters").children].forEach((c, i) => c.classList.toggle("now", i === b.seg));
+    return b;
+  }
+  function loop(now) {
+    if (!playing) return;
+    const dt = Math.min(0.1, (now - last) / 1000); last = now; if (voice && hasAudio && !nar.paused) t = nar.currentTime; else t += dt * speed;
+    if (t >= TL.total) { t = TL.total - 0.01; setPlaying(false); }
+    drawNow(); requestAnimationFrame(loop);
+  }
+  function setPlaying(p) {
+    playing = p; $("bigplay").hidden = p; $("playbtn").textContent = p ? "❚❚ Jeda" : "▶ Putar";
+    if (p) { last = performance.now(); if (voice && hasAudio) { try { nar.currentTime = t; nar.playbackRate = speed; nar.play().catch(() => {}); } catch (e) {} } requestAnimationFrame(loop); } else nar.pause();
+  }
+  $("bigplay").addEventListener("click", () => setPlaying(true));
+  $("playbtn").addEventListener("click", () => setPlaying(!playing));
+  $("replay").addEventListener("click", () => { const b = K.beatAt(TL, t); t = segStart(b.seg); syncAudio(); drawNow(); setPlaying(true); });
+  $("slow").addEventListener("click", e => { speed = speed === 1 ? 0.8 : 1; nar.playbackRate = speed; e.currentTarget.setAttribute("aria-pressed", speed !== 1); });
+  function seekFromBar(ev) { const r = $("bar").getBoundingClientRect(); const x = (ev.touches ? ev.touches[0].clientX : ev.clientX) - r.left; t = Math.max(0, Math.min(TL.total - 0.01, x / r.width * TL.total)); syncAudio(); drawNow(); }
+  $("bar").addEventListener("click", seekFromBar);
+  $("bar").addEventListener("keydown", e => { if (e.key === "ArrowRight") { t = Math.min(TL.total - 0.01, t + 5); syncAudio(); drawNow(); } if (e.key === "ArrowLeft") { t = Math.max(0, t - 5); syncAudio(); drawNow(); } });
+  TL.segments.forEach((name, i) => { const b = document.createElement("button"); b.textContent = (i + 1) + ". " + name; b.addEventListener("click", () => { t = segStart(i); syncAudio(); drawNow(); setPlaying(true); }); $("chapters").appendChild(b); });
+  // voice on/off: switches between the narrated timeline and the reading-paced one, staying on the same beat
+  const vb = $("voice");
+  function setVoice(on) {
+    const cur = K.beatAt(TL, t);
+    voice = on && !!TLS.suara; TL = voice ? TLS.suara : TLS.teks;
+    const nb = TL.beats.find(b => b.id === cur.id) || TL.beats[0]; t = nb.start;
+    if (vb) { vb.setAttribute("aria-pressed", voice); vb.textContent = voice ? "🔊 Suara: nyala" : "🔇 Suara: mati"; }
+    if (playing) { if (voice && hasAudio) { try { nar.currentTime = t; nar.playbackRate = speed; nar.play().catch(() => {}); } catch (e) {} } else nar.pause(); }
+    drawNow();
+  }
+  if (vb) { if (!TLS.suara || !TLS.teks) vb.hidden = true; else { vb.addEventListener("click", () => setVoice(!voice)); vb.setAttribute("aria-pressed", voice); vb.textContent = voice ? "🔊 Suara: nyala" : "🔇 Suara: mati"; } }
+  drawNow();
+
+  // ---------- quiz ----------
+  const quizEl = $("quiz");
+  if (quizEl) Object.entries(TL.quizzes).forEach(([id, q], qi) => {
+    const box = document.createElement("div"); box.className = "q";
+    box.innerHTML = `<h3>${qi + 1}. ${q.q}</h3><div class="opts"></div><div class="fb"></div>`;
+    const opts = box.querySelector(".opts"), fb = box.querySelector(".fb");
+    q.options.forEach((o, i) => {
+      const b = document.createElement("button"); b.innerHTML = `<b>${"ABC"[i]}</b><span>${o}</span>`;
+      b.addEventListener("click", () => {
+        [...opts.children].forEach(c => c.classList.remove("wrong"));
+        if (i === q.answer) { b.classList.add("right"); fb.className = "fb good"; fb.textContent = "Benar! " + (q.explain || ""); progress.quiz[id] = true; save(); [...opts.children].forEach(c => c.disabled = true); }
+        else { b.classList.add("wrong"); fb.className = "fb bad"; fb.textContent = "Belum tepat. Petunjuk: " + q.hint; }
+      });
+      opts.appendChild(b);
+    });
+    if (progress.quiz[id]) { opts.children[q.answer].classList.add("right"); [...opts.children].forEach(c => c.disabled = true); fb.className = "fb good"; fb.textContent = "Sudah dijawab benar."; }
+    quizEl.appendChild(box);
+  });
+  renderProgress();
+
+  return { $, K, H, progress, save, renderProgress, speed: () => speed, timeline: () => TL,
+           onProgress(fn) { extras.push(fn); renderProgress(); } };
+}
+</script>
+<script>
+(function () {
+  const P = PageCore({ suara: {"episode": "D7.8", "title": "Proyek: Panduan Digital untuk Adik Kelas", "hook": "merancang proyek dari awal sampai tampil: tim, isi, dokumen, slide, dan presentasi untuk adik kelas.", "engine": ["../_alat/kiko-core.js", "../_alat/kiko-devices.js", "proyek.js", "scenes.js"], "parts": {"D7.8a": {"segs": [0, 1, 2, 3], "post": "Lanjut ke Bagian 2: Dokumen, Slide, dan Tampil"}, "D7.8b": {"segs": [4, 5, 6, 7], "pre": "Bagian 2: Dokumen, Slide, dan Tampil"}}, "youtube": {"ringkas": "Kelas 7B diminta membuat panduan aman berinternet untuk adik kelas enam SD yang akan masuk SMP. Bersama Kiko, Dito, dan Sinta kita merancang proyeknya dari awal: mengenali pembaca, membagi peran dalam tim, menyusun kerangka dari tiga episode sebelumnya (kata sandi aman, mencari yang jitu, sopan di grup), lalu menuliskannya di pengolah dokumen, membuat slide yang jelas, dan tampil di depan adik kelas. Empat cek pemahaman dengan jeda berpikir.", "belajar": ["menyusun rencana proyek: pembaca, tujuan, tim, jadwal", "memilih isi panduan dari materi kata sandi, mesin pencari, dan ruang publik virtual", "memakai judul, daftar, gambar, dan penyimpanan file di pengolah dokumen", "membuat slide yang jelas: satu ide per slide, sedikit kata, huruf besar, lalu menyajikannya"], "bagian": {"D7.8a": "Merancang Panduan", "D7.8b": "Dokumen, Slide, dan Tampil"}, "cari": ["proyek informatika kelas 7 panduan aman berinternet", "cara membuat presentasi yang baik untuk siswa SMP", "pengolah dokumen dan presentasi kelas 7", "contoh proyek literasi digital SMP"], "prasyarat": "episode D7.3, D7.4, dan D7.7", "jp": 8, "tagar": ["#ProyekInformatika", "#LiterasiDigital", "#Presentasi", "#PengolahDokumen", "#Kelas7", "#SMP"]}, "recap": ["Kenali pembaca dulu, baru tulis.", "Satu aturan, satu contoh, satu gambar.", "Satu ide per slide, huruf besar, lihat penonton."], "next": {"code": "D8.0", "title": "Jembatan Kelas VIII: Empat Jurus dan Instruksi", "note": "Perencana proyek dan cek rubrik ada di halaman episode ini."}, "segments": ["Pembuka", "Main dulu tanpa komputer", "Enam langkah dan tim", "Isi panduan", "Pengolah dokumen", "Slide yang jelas", "Tampil dan perbaiki", "Giliranmu"], "quizzes": {"q1": {"q": "Apa langkah PERTAMA proyek panduan ini?", "options": ["Membuat slide yang bagus", "Menentukan siapa pembacanya dan apa tujuannya", "Mencetak panduan"], "answer": 1, "hint": "Ingat permainan wawancara adik kelas: sebelum menulis, kita harus tahu untuk siapa tulisan itu."}, "q2": {"q": "Bab 'kata sandi aman' hanya berisi daftar aturan. Apa yang kurang untuk pembaca kelas 6?", "options": ["Contoh dan gambar", "Lebih banyak aturan", "Tulisan lebih kecil supaya muat"], "answer": 0, "hint": "Rumus tiap bab: satu aturan, satu contoh, satu gambar."}, "q3": {"q": "Nama file mana yang paling baik untuk panduan ini?", "options": ["Dokumen1.docx", "panduan-aman-internet-7B.docx", "asdf.docx"], "answer": 1, "hint": "Nama file yang baik menyebut isinya dan pemiliknya, supaya mudah dicari lagi."}, "q4": {"q": "Slide mana yang paling baik untuk adik kelas?", "options": ["Satu slide berisi 12 kalimat kecil", "Satu ide, lima kata, satu gambar, huruf besar", "Semua tulisan kuning di latar putih"], "answer": 1, "hint": "Slide adalah pendukung cerita, bukan teks untuk dibaca penonton. Tulisan harus terbaca dari bangku belakang."}}, "beats": [{"id": "intro1", "seg": 0, "scene": "title", "text": "Halo! Aku Kiko. Bu Guru meminta kelas 7B membuat panduan aman berinternet untuk adik kelas enam SD yang akan masuk SMP. Ini proyek pertama kita.", "hold": 1.0, "start": 0.0, "speech": 0.4, "audio": 10.132, "dur": 14.54}, {"id": "intro2", "seg": 0, "scene": "title_q", "text": "Hari ini kita merancang proyek itu dari awal sampai tampil: siapa pembacanya, apa isinya, bagaimana menulis dokumennya, membuat slide, lalu menyajikannya.", "hold": 0.8, "start": 14.54, "speech": 14.94, "audio": 11.311, "dur": 12.811}, {"id": "intro3", "seg": 0, "scene": "prereq", "text": "Isi panduannya diambil dari tiga episode: kata sandi aman, mesin pencari, dan ruang publik virtual. Kalau belum menontonnya, tonton dulu, ya.", "hold": 0.8, "start": 27.351, "speech": 27.751, "audio": 9.693, "dur": 12.34}, {"id": "play1", "seg": 1, "scene": "unplugged_interview", "text": "Main dulu. Tanyakan tiga hal kepada adik, sepupu, atau tetangga kelas enam: apa yang sering ia lakukan di HP, apa yang membuatnya bingung, dan apa yang membuatnya takut.", "hold": 0.6, "start": 39.691, "speech": 40.091, "audio": 12.16, "dur": 15.64}, {"id": "play2", "seg": 1, "scene": "unplugged_reader", "text": "Jawaban mereka menentukan isi panduanmu. Pembacamu anak kelas enam, jadi pakai kata yang sederhana, banyak gambar, dan contoh yang dekat dengan mereka.", "hold": 1.0, "start": 55.331, "speech": 55.731, "audio": 9.981, "dur": 13.04}, {"id": "s1a", "seg": 2, "scene": "steps_six", "text": "Proyek punya enam langkah. Satu: tentukan pembaca dan tujuan. Dua: kumpulkan bahan. Tiga: susun kerangka. Empat: tulis dokumen. Lima: buat slide. Enam: tampil, lalu perbaiki.", "hold": 0.8, "start": 68.371, "speech": 68.771, "audio": 15.65, "dur": 17.15}, {"id": "s1b", "seg": 2, "scene": "team_roles", "text": "Kerjakan bertim, tiga sampai empat orang. Bagi perannya: penulis, perancang gambar, penyaji, dan pemeriksa. Jadwalnya empat pertemuan, satu langkah besar tiap pertemuan.", "hold": 0.8, "start": 85.521, "speech": 85.921, "audio": 11.926, "dur": 13.426}, {"id": "q1", "seg": 2, "scene": "quiz", "quiz": "q1", "text": "Cek pemahaman. Apa langkah pertama proyek panduan ini? Pikirkan dulu.", "hold": 4.0, "start": 98.947, "speech": 99.347, "audio": 5.052, "dur": 10.04}, {"id": "q1a", "seg": 2, "scene": "quiz_answer", "quiz": "q1", "text": "Jawabannya: menentukan siapa pembacanya dan apa tujuannya. Slide yang bagus dibuat belakangan, setelah isinya jelas.", "hold": 1.0, "start": 108.987, "speech": 109.387, "audio": 8.8, "dur": 10.5}, {"id": "s2a", "seg": 3, "scene": "content_map", "text": "Isinya tiga bab, dari tiga episode. Bab satu: kata sandi yang aman. Bab dua: mencari informasi yang jitu. Bab tiga: sopan dan aman di grup kelas.", "hold": 0.6, "start": 119.487, "speech": 119.887, "audio": 12.32, "dur": 14.64}, {"id": "s2b", "seg": 3, "scene": "content_rule", "text": "Setiap bab cukup tiga hal: satu aturan, satu contoh, satu gambar. Tulis dengan kata-katamu sendiri, jangan menyalin. Adik kelas lebih percaya cerita kakaknya.", "hold": 0.8, "start": 134.127, "speech": 134.527, "audio": 11.485, "dur": 13.34}, {"id": "q2", "seg": 3, "scene": "quiz", "quiz": "q2", "text": "Cek pemahaman. Bab kata sandi aman hanya berisi daftar aturan. Apa yang kurang untuk pembaca kelas enam?", "hold": 4.0, "start": 147.467, "speech": 147.867, "audio": 7.029, "dur": 13.54}, {"id": "q2a", "seg": 3, "scene": "quiz_answer", "quiz": "q2", "text": "Jawabannya: contoh dan gambar. Daftar aturan saja sulit diingat. Satu contoh nyata lebih menempel daripada sepuluh aturan.", "hold": 1.0, "start": 161.007, "speech": 161.407, "audio": 9.062, "dur": 10.762}, {"id": "s3a", "seg": 4, "scene": "doc_intro", "text": "Bagian dua. Panduannya ditulis di pengolah dokumen (word processor), aplikasi untuk menulis panjang. Di layarnya ada baris alat di atas, dan halaman putih di tengah.", "hold": 0.6, "start": 171.769, "speech": 172.169, "audio": 11.95, "dur": 14.14}, {"id": "s3b", "seg": 4, "scene": "doc_tools", "text": "Tiga alat yang paling penting: judul (heading) agar bab terlihat, daftar bertitik (bullet) agar aturan rapi, dan sisipkan gambar (insert image). Lalu simpan (save) sesering mungkin.", "hold": 0.8, "start": 185.909, "speech": 186.309, "audio": 15.44, "dur": 16.94}, {"id": "s3c", "seg": 4, "scene": "doc_save", "text": "Beri nama file yang jelas, misalnya panduan aman internet 7B. Nama seperti dokumen satu akan hilang di antara ratusan file. Ingat folder dari episode D7.0: simpan di folder proyek.", "hold": 0.8, "start": 202.849, "speech": 203.249, "audio": 13.967, "dur": 16.34}, {"id": "q3", "seg": 4, "scene": "quiz", "quiz": "q3", "text": "Cek pemahaman. Nama file mana yang paling baik untuk panduan ini?", "hold": 4.0, "start": 219.189, "speech": 219.589, "audio": 4.173, "dur": 10.54}, {"id": "q3a", "seg": 4, "scene": "quiz_answer", "quiz": "q3", "text": "Jawabannya: panduan aman internet 7B. Namanya menyebut isi dan pemiliknya, sehingga mudah dicari lagi.", "hold": 1.0, "start": 229.729, "speech": 230.129, "audio": 8.061, "dur": 9.761}, {"id": "s4a", "seg": 5, "scene": "slide_intro", "text": "Untuk tampil, kita membuat presentasi: kumpulan slide. Aturannya sederhana: satu ide per slide, paling banyak lima kata, satu gambar, dan huruf yang besar.", "hold": 0.6, "start": 239.49, "speech": 239.89, "audio": 11.384, "dur": 13.14}, {"id": "s4b", "seg": 5, "scene": "slide_compare", "text": "Bandingkan. Slide kiri berisi dua belas kalimat kecil: adik kelas sibuk membaca, tidak mendengarkanmu. Slide kanan: lima kata, satu gambar. Mata ke slide sebentar, lalu kembali kepadamu.", "hold": 0.8, "start": 252.63, "speech": 253.03, "audio": 14.158, "dur": 15.658}, {"id": "q4", "seg": 5, "scene": "quiz", "quiz": "q4", "text": "Cek pemahaman. Slide mana yang paling baik untuk adik kelas?", "hold": 4.0, "start": 268.288, "speech": 268.688, "audio": 3.855, "dur": 10.04}, {"id": "q4a", "seg": 5, "scene": "quiz_answer", "quiz": "q4", "text": "Jawabannya: satu ide, lima kata, satu gambar, huruf besar. Slide adalah pendukung, bukan pengganti ceritamu.", "hold": 1.0, "start": 278.328, "speech": 278.728, "audio": 9.224, "dur": 10.924}, {"id": "s5a", "seg": 6, "scene": "present_tips", "text": "Saat tampil: berlatih dulu, dua menit per orang. Lihat penonton, bukan membaca slide. Ajukan satu pertanyaan kepada adik kelas supaya mereka ikut berpikir.", "hold": 0.6, "start": 289.252, "speech": 289.652, "audio": 11.68, "dur": 13.14}, {"id": "s5b", "seg": 6, "scene": "rubric", "text": "Setelah tampil, minta satu masukan dari adik kelas, lalu ubah satu hal. Nilai dengan rubrik: isi benar, bahasa sesuai pembaca, tampilan jelas, dan kerja tim.", "hold": 0.8, "start": 302.392, "speech": 302.792, "audio": 11.903, "dur": 14.34}, {"id": "s6a", "seg": 7, "scene": "make_show", "text": "Sekarang giliranmu. Di halaman latihan ada perencana proyek: isi pembaca, tujuan, peran tim, dan kerangka slide. Lalu cek rubriknya sebelum tampil.", "hold": 0.6, "start": 316.732, "speech": 317.132, "audio": 10.842, "dur": 12.142}, {"id": "s6b", "seg": 7, "scene": "make_show", "text": "Proyek ini dikerjakan empat pertemuan di kelas. Hasil akhirnya satu dokumen panduan dan satu presentasi singkat untuk adik kelas.", "hold": 1.5, "start": 328.874, "speech": 329.274, "audio": 8.582, "dur": 12.04}, {"id": "recap", "seg": 7, "scene": "recap", "text": "Tiga hal untuk diingat. Satu: kenali pembaca dulu, baru menulis. Dua: satu aturan, satu contoh, satu gambar. Tiga: satu ide per slide, huruf besar, dan lihat penonton.", "hold": 1.5, "start": 340.914, "speech": 341.314, "audio": 14.48, "dur": 16.68}, {"id": "outro", "seg": 7, "scene": "outro", "text": "Selamat, kelas tujuh selesai! Sampai jumpa di kelas delapan: kita mulai dengan mengulang empat jurus dan instruksi untuk mesin.", "hold": 2.5, "start": 357.594, "speech": 357.994, "audio": 8.88, "dur": 13.04}], "total": 370.634}, teks: {"episode": "D7.8", "title": "Proyek: Panduan Digital untuk Adik Kelas", "hook": "merancang proyek dari awal sampai tampil: tim, isi, dokumen, slide, dan presentasi untuk adik kelas.", "engine": ["../_alat/kiko-core.js", "../_alat/kiko-devices.js", "proyek.js", "scenes.js"], "parts": {"D7.8a": {"segs": [0, 1, 2, 3], "post": "Lanjut ke Bagian 2: Dokumen, Slide, dan Tampil"}, "D7.8b": {"segs": [4, 5, 6, 7], "pre": "Bagian 2: Dokumen, Slide, dan Tampil"}}, "youtube": {"ringkas": "Kelas 7B diminta membuat panduan aman berinternet untuk adik kelas enam SD yang akan masuk SMP. Bersama Kiko, Dito, dan Sinta kita merancang proyeknya dari awal: mengenali pembaca, membagi peran dalam tim, menyusun kerangka dari tiga episode sebelumnya (kata sandi aman, mencari yang jitu, sopan di grup), lalu menuliskannya di pengolah dokumen, membuat slide yang jelas, dan tampil di depan adik kelas. Empat cek pemahaman dengan jeda berpikir.", "belajar": ["menyusun rencana proyek: pembaca, tujuan, tim, jadwal", "memilih isi panduan dari materi kata sandi, mesin pencari, dan ruang publik virtual", "memakai judul, daftar, gambar, dan penyimpanan file di pengolah dokumen", "membuat slide yang jelas: satu ide per slide, sedikit kata, huruf besar, lalu menyajikannya"], "bagian": {"D7.8a": "Merancang Panduan", "D7.8b": "Dokumen, Slide, dan Tampil"}, "cari": ["proyek informatika kelas 7 panduan aman berinternet", "cara membuat presentasi yang baik untuk siswa SMP", "pengolah dokumen dan presentasi kelas 7", "contoh proyek literasi digital SMP"], "prasyarat": "episode D7.3, D7.4, dan D7.7", "jp": 8, "tagar": ["#ProyekInformatika", "#LiterasiDigital", "#Presentasi", "#PengolahDokumen", "#Kelas7", "#SMP"]}, "recap": ["Kenali pembaca dulu, baru tulis.", "Satu aturan, satu contoh, satu gambar.", "Satu ide per slide, huruf besar, lihat penonton."], "next": {"code": "D8.0", "title": "Jembatan Kelas VIII: Empat Jurus dan Instruksi", "note": "Perencana proyek dan cek rubrik ada di halaman episode ini."}, "segments": ["Pembuka", "Main dulu tanpa komputer", "Enam langkah dan tim", "Isi panduan", "Pengolah dokumen", "Slide yang jelas", "Tampil dan perbaiki", "Giliranmu"], "quizzes": {"q1": {"q": "Apa langkah PERTAMA proyek panduan ini?", "options": ["Membuat slide yang bagus", "Menentukan siapa pembacanya dan apa tujuannya", "Mencetak panduan"], "answer": 1, "hint": "Ingat permainan wawancara adik kelas: sebelum menulis, kita harus tahu untuk siapa tulisan itu."}, "q2": {"q": "Bab 'kata sandi aman' hanya berisi daftar aturan. Apa yang kurang untuk pembaca kelas 6?", "options": ["Contoh dan gambar", "Lebih banyak aturan", "Tulisan lebih kecil supaya muat"], "answer": 0, "hint": "Rumus tiap bab: satu aturan, satu contoh, satu gambar."}, "q3": {"q": "Nama file mana yang paling baik untuk panduan ini?", "options": ["Dokumen1.docx", "panduan-aman-internet-7B.docx", "asdf.docx"], "answer": 1, "hint": "Nama file yang baik menyebut isinya dan pemiliknya, supaya mudah dicari lagi."}, "q4": {"q": "Slide mana yang paling baik untuk adik kelas?", "options": ["Satu slide berisi 12 kalimat kecil", "Satu ide, lima kata, satu gambar, huruf besar", "Semua tulisan kuning di latar putih"], "answer": 1, "hint": "Slide adalah pendukung cerita, bukan teks untuk dibaca penonton. Tulisan harus terbaca dari bangku belakang."}}, "beats": [{"id": "intro1", "seg": 0, "scene": "title", "text": "Halo! Aku Kiko. Bu Guru meminta kelas 7B membuat panduan aman berinternet untuk adik kelas enam SD yang akan masuk SMP. Ini proyek pertama kita.", "hold": 1.0, "start": 0.0, "speech": 0.0, "audio": 16.425, "dur": 18.425}, {"id": "intro2", "seg": 0, "scene": "title_q", "text": "Hari ini kita merancang proyek itu dari awal sampai tampil: siapa pembacanya, apa isinya, bagaimana menulis dokumennya, membuat slide, lalu menyajikannya.", "hold": 0.8, "start": 18.425, "speech": 18.425, "audio": 13.925, "dur": 15.725}, {"id": "intro3", "seg": 0, "scene": "prereq", "text": "Isi panduannya diambil dari tiga episode: kata sandi aman, mesin pencari, dan ruang publik virtual. Kalau belum menontonnya, tonton dulu, ya.", "hold": 0.8, "start": 34.15, "speech": 34.15, "audio": 13.925, "dur": 15.725}, {"id": "play1", "seg": 1, "scene": "unplugged_interview", "text": "Main dulu. Tanyakan tiga hal kepada adik, sepupu, atau tetangga kelas enam: apa yang sering ia lakukan di HP, apa yang membuatnya bingung, dan apa yang membuatnya takut.", "hold": 0.6, "start": 49.875, "speech": 49.875, "audio": 18.3, "dur": 19.9}, {"id": "play2", "seg": 1, "scene": "unplugged_reader", "text": "Jawaban mereka menentukan isi panduanmu. Pembacamu anak kelas enam, jadi pakai kata yang sederhana, banyak gambar, dan contoh yang dekat dengan mereka.", "hold": 1.0, "start": 69.775, "speech": 69.775, "audio": 14.55, "dur": 16.55}, {"id": "s1a", "seg": 2, "scene": "steps_six", "text": "Proyek punya enam langkah. Satu: tentukan pembaca dan tujuan. Dua: kumpulkan bahan. Tiga: susun kerangka. Empat: tulis dokumen. Lima: buat slide. Enam: tampil, lalu perbaiki.", "hold": 0.8, "start": 86.325, "speech": 86.325, "audio": 16.425, "dur": 18.225}, {"id": "s1b", "seg": 2, "scene": "team_roles", "text": "Kerjakan bertim, tiga sampai empat orang. Bagi perannya: penulis, perancang gambar, penyaji, dan pemeriksa. Jadwalnya empat pertemuan, satu langkah besar tiap pertemuan.", "hold": 0.8, "start": 104.55, "speech": 104.55, "audio": 14.55, "dur": 16.35}, {"id": "q1", "seg": 2, "scene": "quiz", "quiz": "q1", "text": "Cek pemahaman. Apa langkah pertama proyek panduan ini? Pikirkan dulu.", "hold": 4.0, "start": 120.9, "speech": 120.9, "audio": 7.05, "dur": 12.05}, {"id": "q1a", "seg": 2, "scene": "quiz_answer", "quiz": "q1", "text": "Jawabannya: menentukan siapa pembacanya dan apa tujuannya. Slide yang bagus dibuat belakangan, setelah isinya jelas.", "hold": 1.0, "start": 132.95, "speech": 132.95, "audio": 10.175, "dur": 12.175}, {"id": "s2a", "seg": 3, "scene": "content_map", "text": "Isinya tiga bab, dari tiga episode. Bab satu: kata sandi yang aman. Bab dua: mencari informasi yang jitu. Bab tiga: sopan dan aman di grup kelas.", "hold": 0.6, "start": 145.125, "speech": 145.125, "audio": 17.05, "dur": 18.65}, {"id": "s2b", "seg": 3, "scene": "content_rule", "text": "Setiap bab cukup tiga hal: satu aturan, satu contoh, satu gambar. Tulis dengan kata-katamu sendiri, jangan menyalin. Adik kelas lebih percaya cerita kakaknya.", "hold": 0.8, "start": 163.775, "speech": 163.775, "audio": 15.175, "dur": 16.975}, {"id": "q2", "seg": 3, "scene": "quiz", "quiz": "q2", "text": "Cek pemahaman. Bab kata sandi aman hanya berisi daftar aturan. Apa yang kurang untuk pembaca kelas enam?", "hold": 4.0, "start": 180.75, "speech": 180.75, "audio": 11.425, "dur": 16.425}, {"id": "q2a", "seg": 3, "scene": "quiz_answer", "quiz": "q2", "text": "Jawabannya: contoh dan gambar. Daftar aturan saja sulit diingat. Satu contoh nyata lebih menempel daripada sepuluh aturan.", "hold": 1.0, "start": 197.175, "speech": 197.175, "audio": 11.425, "dur": 13.425}, {"id": "s3a", "seg": 4, "scene": "doc_intro", "text": "Bagian dua. Panduannya ditulis di pengolah dokumen (word processor), aplikasi untuk menulis panjang. Di layarnya ada baris alat di atas, dan halaman putih di tengah.", "hold": 0.6, "start": 210.6, "speech": 210.6, "audio": 16.425, "dur": 18.025}, {"id": "s3b", "seg": 4, "scene": "doc_tools", "text": "Tiga alat yang paling penting: judul (heading) agar bab terlihat, daftar bertitik (bullet) agar aturan rapi, dan sisipkan gambar (insert image). Lalu simpan (save) sesering mungkin.", "hold": 0.8, "start": 228.625, "speech": 228.625, "audio": 17.05, "dur": 18.85}, {"id": "s3c", "seg": 4, "scene": "doc_save", "text": "Beri nama file yang jelas, misalnya panduan aman internet 7B. Nama seperti dokumen satu akan hilang di antara ratusan file. Ingat folder dari episode D7.0: simpan di folder proyek.", "hold": 0.8, "start": 247.475, "speech": 247.475, "audio": 18.925, "dur": 20.725}, {"id": "q3", "seg": 4, "scene": "quiz", "quiz": "q3", "text": "Cek pemahaman. Nama file mana yang paling baik untuk panduan ini?", "hold": 4.0, "start": 268.2, "speech": 268.2, "audio": 7.675, "dur": 12.675}, {"id": "q3a", "seg": 4, "scene": "quiz_answer", "quiz": "q3", "text": "Jawabannya: panduan aman internet 7B. Namanya menyebut isi dan pemiliknya, sehingga mudah dicari lagi.", "hold": 1.0, "start": 280.875, "speech": 280.875, "audio": 9.55, "dur": 11.55}, {"id": "s4a", "seg": 5, "scene": "slide_intro", "text": "Untuk tampil, kita membuat presentasi: kumpulan slide. Aturannya sederhana: satu ide per slide, paling banyak lima kata, satu gambar, dan huruf yang besar.", "hold": 0.6, "start": 292.425, "speech": 292.425, "audio": 15.175, "dur": 16.775}, {"id": "s4b", "seg": 5, "scene": "slide_compare", "text": "Bandingkan. Slide kiri berisi dua belas kalimat kecil: adik kelas sibuk membaca, tidak mendengarkanmu. Slide kanan: lima kata, satu gambar. Mata ke slide sebentar, lalu kembali kepadamu.", "hold": 0.8, "start": 309.2, "speech": 309.2, "audio": 17.675, "dur": 19.475}, {"id": "q4", "seg": 5, "scene": "quiz", "quiz": "q4", "text": "Cek pemahaman. Slide mana yang paling baik untuk adik kelas?", "hold": 4.0, "start": 328.675, "speech": 328.675, "audio": 7.05, "dur": 12.05}, {"id": "q4a", "seg": 5, "scene": "quiz_answer", "quiz": "q4", "text": "Jawabannya: satu ide, lima kata, satu gambar, huruf besar. Slide adalah pendukung, bukan pengganti ceritamu.", "hold": 1.0, "start": 340.725, "speech": 340.725, "audio": 10.175, "dur": 12.175}, {"id": "s5a", "seg": 6, "scene": "present_tips", "text": "Saat tampil: berlatih dulu, dua menit per orang. Lihat penonton, bukan membaca slide. Ajukan satu pertanyaan kepada adik kelas supaya mereka ikut berpikir.", "hold": 0.6, "start": 352.9, "speech": 352.9, "audio": 15.175, "dur": 16.775}, {"id": "s5b", "seg": 6, "scene": "rubric", "text": "Setelah tampil, minta satu masukan dari adik kelas, lalu ubah satu hal. Nilai dengan rubrik: isi benar, bahasa sesuai pembaca, tampilan jelas, dan kerja tim.", "hold": 0.8, "start": 369.675, "speech": 369.675, "audio": 16.425, "dur": 18.225}, {"id": "s6a", "seg": 7, "scene": "make_show", "text": "Sekarang giliranmu. Di halaman latihan ada perencana proyek: isi pembaca, tujuan, peran tim, dan kerangka slide. Lalu cek rubriknya sebelum tampil.", "hold": 0.6, "start": 387.9, "speech": 387.9, "audio": 13.925, "dur": 15.525}, {"id": "s6b", "seg": 7, "scene": "make_show", "text": "Proyek ini dikerjakan empat pertemuan di kelas. Hasil akhirnya satu dokumen panduan dan satu presentasi singkat untuk adik kelas.", "hold": 1.5, "start": 403.425, "speech": 403.425, "audio": 12.675, "dur": 15.175}, {"id": "recap", "seg": 7, "scene": "recap", "text": "Tiga hal untuk diingat. Satu: kenali pembaca dulu, baru menulis. Dua: satu aturan, satu contoh, satu gambar. Tiga: satu ide per slide, huruf besar, dan lihat penonton.", "hold": 1.5, "start": 418.6, "speech": 418.6, "audio": 17.675, "dur": 20.175}, {"id": "outro", "seg": 7, "scene": "outro", "text": "Selamat, kelas tujuh selesai! Sampai jumpa di kelas delapan: kita mulai dengan mengulang empat jurus dan instruksi untuk mesin.", "hold": 2.5, "start": 438.775, "speech": 438.775, "audio": 12.675, "dur": 16.175}], "total": 454.95} });
+  const { $, progress, save } = P; progress.levels = progress.levels || {}; progress.proyek = progress.proyek || {};
+  const PR = progress.proyek;
+  const LEVELS = [
+    { id: "rencana", name: "1 Perencana proyek", kind: "plan", task: "Isi bersama timmu. Semua kotak terisi berarti rencana siap." },
+    { id: "slide", name: "2 Kerangka slide", kind: "slides", task: "Tulis judul tiap slide: paling banyak lima kata. Kotak merah berarti terlalu panjang." },
+    { id: "rubrik", name: "3 Cek rubrik", kind: "rubric", task: "Nilai sendiri sebelum tampil. Kalau ada yang satu bintang, perbaiki dulu." },
+    { id: "pilih", name: "4 Pilih yang jelas", kind: "pick", task: "Mana pilihan yang lebih baik untuk pembaca kelas 6? Ketuk satu." }];
+  const PLAN = [["pembaca", "Siapa pembacanya?", "contoh: murid kelas 6 SD Melati"], ["tujuan", "Apa tujuannya (satu kalimat)?", "contoh: mereka tahu cara membuat kata sandi aman"], ["penulis", "Penulis", "nama"], ["perancang", "Perancang gambar", "nama"], ["penyaji", "Penyaji", "nama"], ["pemeriksa", "Pemeriksa", "nama"]];
+  const SLIDES = ["Judul", "Bab 1", "Bab 2", "Bab 3", "Penutup"];
+  const RUB = [["isi", "Isi benar", "sesuai episode D7.3, D7.4, D7.7; tidak ada yang keliru"], ["bahasa", "Bahasa sesuai", "kata sederhana, kalimat pendek, contoh dekat"], ["tampilan", "Tampilan jelas", "judul, daftar, gambar; slide huruf besar, lima kata"], ["tim", "Kerja tim", "semua peran berjalan, semua ikut tampil"]];
+  const PICK = [["Nama file", ["Dokumen1.docx", "panduan-aman-internet-7B.docx"], 1, "Nama yang menyebut isi dan pemilik mudah dicari lagi."], ["Judul bab", ["Bab 1: Kata sandi yang aman", "BAB SATU!!! baca ya adik2"], 0, "Judul yang jelas dan sopan; huruf besar semua dan tanda seru bertumpuk sulit dibaca."], ["Isi aturan", ["Kata sandi harus memenuhi kriteria kompleksitas kredensial.", "Pakai 12 huruf atau lebih. Contoh: kucingku makan 3 bakso!"], 1, "Kata sederhana plus contoh; kata 'kredensial' dan 'kompleksitas' asing bagi kelas 6."], ["Slide", ["12 kalimat kecil dalam satu slide", "Lima kata, satu gambar, huruf besar"], 1, "Slide adalah pendukung cerita, bukan teks untuk dibaca penonton."], ["Saat tampil", ["Membaca slide sambil membelakangi penonton", "Melihat penonton, bertanya satu hal kepada mereka"], 1, "Penonton mendengarkanmu, bukan membaca punggungmu."], ["Setelah tampil", ["Minta satu masukan, ubah satu hal", "Langsung pulang, selesai"], 0, "Proyek belum selesai sebelum diperbaiki sekali."]];
+  let L = 0, qi = 0;
+  const level = () => LEVELS[L];
+  function setResult(kind, msg) { $("result").innerHTML = msg ? `<div class="result ${kind}">${msg}</div>` : ""; }
+  function done(extra) { progress.levels[level().id] = true; save(); renderLevels(); setResult("good", `${level().name} siap! ` + (extra || "")); }
+  function undone() { if (progress.levels[level().id]) { progress.levels[level().id] = false; save(); renderLevels(); } }
+  function renderPlan() {
+    const area = $("exarea"); area.innerHTML = `<div class="form" id="form"></div><div class="row"><button class="warm" id="check">Periksa rencana</button></div>`;
+    PLAN.forEach(([k, lab, ph]) => { const l = document.createElement("label"); l.innerHTML = `${lab}<input data-k="${k}" placeholder="${ph}" maxlength="80">`; const inp = l.querySelector("input"); inp.value = PR[k] || ""; inp.addEventListener("input", () => { PR[k] = inp.value; save(); undone(); setResult(); }); $("form").appendChild(l); });
+    $("check").addEventListener("click", () => { const miss = PLAN.filter(([k]) => !(PR[k] || "").trim()); if (miss.length) { setResult("bad", "Belum lengkap: " + miss.map(m => m[1].replace("?", "")).join(", ") + ". Ingat langkah pertama: pembaca dan tujuan dulu."); return; } if ((PR.tujuan || "").trim().split(/\s+/).length < 3) { setResult("bad", "Tujuannya tulis satu kalimat utuh, misalnya: adik kelas tahu cara membuat kata sandi aman."); return; } done("Pembaca, tujuan, dan empat peran sudah ada. Lanjut kumpulkan bahan dari tiga episode."); });
+  }
+  function renderSlides() {
+    const area = $("exarea"); area.innerHTML = `<div class="slides" id="slides"></div><div class="row"><button class="warm" id="check">Periksa kerangka</button></div>`;
+    PR.slides = PR.slides || ["", "", "", "", ""];
+    SLIDES.forEach((nm, i) => { const d = document.createElement("div"); d.className = "sl"; d.innerHTML = `<div class="no">${nm}</div><div><input data-i="${i}" placeholder="judul slide, maks. 5 kata" maxlength="60"><div class="cnt" id="c${i}"></div></div>`; const inp = d.querySelector("input"); inp.value = PR.slides[i]; const upd = () => { const n = inp.value.trim() ? inp.value.trim().split(/\s+/).length : 0; $("c" + i).textContent = n ? n + " kata" : ""; inp.classList.toggle("over", n > 5); inp.classList.toggle("ok", n > 0 && n <= 5); }; inp.addEventListener("input", () => { PR.slides[i] = inp.value; save(); undone(); setResult(); upd(); }); $("slides").appendChild(d); upd(); });
+    $("check").addEventListener("click", () => { const empty = PR.slides.filter(s => !s.trim()).length, over = PR.slides.filter(s => s.trim().split(/\s+/).length > 5).length; if (empty) { setResult("bad", `Masih ada ${empty} slide tanpa judul. Satu ide per slide.`); return; } if (over) { setResult("bad", `Ada ${over} judul lebih dari lima kata. Buang kata yang tidak perlu, seperti di episode mesin pencari.`); return; } done("Lima slide, tiap slide satu ide. Tambahkan satu gambar per slide saat membuatnya."); });
+  }
+  function renderRubric() {
+    const area = $("exarea"); area.innerHTML = `<div class="rub" id="rub"></div><div class="row"><button class="warm" id="check">Simpulkan</button></div>`;
+    PR.rub = PR.rub || {};
+    RUB.forEach(([k, t, s]) => { const r = document.createElement("div"); r.className = "r"; r.innerHTML = `<b>${t}</b><small>${s}</small><div class="stars" id="st-${k}"></div>`; [1, 2, 3].forEach(v => { const b = document.createElement("button"); b.textContent = "★".repeat(v); b.setAttribute("aria-pressed", PR.rub[k] === v); b.addEventListener("click", () => { PR.rub[k] = v; save(); undone(); setResult(); [...r.querySelectorAll("button")].forEach((x, j) => x.setAttribute("aria-pressed", j + 1 === v)); }); r.querySelector(".stars").appendChild(b); }); $("rub").appendChild(r); });
+    $("check").addEventListener("click", () => { const miss = RUB.filter(([k]) => !PR.rub[k]); if (miss.length) { setResult("bad", "Belum dinilai: " + miss.map(m => m[1]).join(", ") + "."); return; } const low = RUB.filter(([k]) => PR.rub[k] === 1); if (low.length) { setResult("bad", "Masih satu bintang: " + low.map(m => m[1]).join(", ") + ". Perbaiki dulu bagian itu, lalu nilai lagi."); return; } done("Tidak ada yang satu bintang. Siap tampil; setelahnya minta satu masukan dan ubah satu hal."); });
+  }
+  function renderPick() {
+    const area = $("exarea");
+    if (qi >= PICK.length) { area.innerHTML = `<div class="qtext">Semua sudah dipilih.</div>`; return; }
+    const [t, opts, ans, why] = PICK[qi];
+    area.innerHTML = `<div class="qnum">${qi + 1} dari ${PICK.length}: ${t}</div><div class="opts" id="opts"></div>`;
+    opts.forEach((o, i) => { const b = document.createElement("button"); b.textContent = o; b.addEventListener("click", () => { [...$("opts").children].forEach(x => x.classList.remove("wrong")); if (i === ans) { b.classList.add("right"); [...$("opts").children].forEach(x => x.disabled = true); setResult("good", "Benar. " + why); qi++; setTimeout(() => { if (qi >= PICK.length) done("Kamu tahu mana yang jelas untuk pembaca kelas 6."); else { setResult(); renderPick(); } }, 1400); } else { b.classList.add("wrong"); setResult("bad", "Belum tepat. Petunjuk: " + why); } }); $("opts").appendChild(b); });
+  }
+  function loadLevel(i) { L = i; qi = 0; $("task").textContent = level().task; setResult(); renderLevels(); ({ plan: renderPlan, slides: renderSlides, rubric: renderRubric, pick: renderPick })[level().kind](); }
+  function renderLevels() { const el = $("levels"); el.innerHTML = ""; LEVELS.forEach((lv, i) => { const b = document.createElement("button"); b.textContent = lv.name; b.className = progress.levels[lv.id] ? "done" : ""; b.setAttribute("aria-pressed", i === L); b.addEventListener("click", () => loadLevel(i)); el.appendChild(b); }); }
+  $("redo").addEventListener("click", () => { const lv = level(); if (lv.kind === "plan") PLAN.forEach(([k]) => delete PR[k]); if (lv.kind === "slides") delete PR.slides; if (lv.kind === "rubric") delete PR.rub; progress.levels[lv.id] = false; save(); loadLevel(L); });
+  P.onProgress(el => LEVELS.forEach(lv => { const s = document.createElement("span"); s.textContent = "Alat " + lv.name.slice(0, 1); s.className = progress.levels[lv.id] ? "ok" : ""; el.appendChild(s); }));
+  loadLevel(0);
+})();
+</script>
