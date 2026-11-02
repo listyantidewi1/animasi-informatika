@@ -17,13 +17,13 @@ for variant, label in (("suara", ""), ("teks", " (versi teks, tanpa suara)")):
     for pi, (name, p) in enumerate(parts, 1):
         sb = [b for b in TL["beats"] if b["seg"] in p["segs"]]; t0 = sb[0]["start"]; pre = 4 if p.get("pre") else 0
         sub = Y.get("bagian", {}).get(name, "")
-        title = f"Informatika {KELAS} | {S['title']}" + (f" ({pi}/{len(parts)})" if len(parts) > 1 else "") + (f": {sub}" if sub else "") + label
+        title = f"Informatika {KELAS} | {S['title']}" + (f" ({pi}/{len(parts)}): {sub}" if len(parts) > 1 else "") + label
         chapters = []
         for seg in p["segs"]:
             first = next(b for b in sb if b["seg"] == seg); chapters.append(f"{mmss(first['start'] - t0 + pre)} {TL['segments'][seg]}")
         if pre: chapters.insert(0, "0:00 Pembuka bagian")
         lines = [f"## {name}{label}", "", f"**Judul** ({len(title)} karakter):", title, "", "**Deskripsi:**", "```",
-                 (f"{S['title']} — bagian {pi} dari {len(parts)}: {sub}." if len(parts) > 1 else f"{S['title']}: {sub}.") + (" Versi tanpa narasi suara: teks narasi tampil besar di layar dengan garis kemajuan baca, cocok untuk ditonton tanpa speaker atau untuk murid yang lebih suka membaca." if variant == "teks" else " Narasi suara plus teks besar di layar; ada versi tanpa suara di video terpisah."),
+                 (f"{S['title']} — bagian {pi} dari {len(parts)}: {sub}." if len(parts) > 1 else f"{S['title']} — {sub}.") + (" Versi tanpa narasi suara: teks narasi tampil besar di layar dengan garis kemajuan baca, cocok untuk ditonton tanpa speaker atau untuk murid yang lebih suka membaca." if variant == "teks" else " Narasi suara plus teks besar di layar; ada versi tanpa suara di video terpisah."),
                  "", Y.get("ringkas", ""), ""]
         if Y.get("belajar"): lines += ["Setelah menonton, murid bisa:"] + [f"• {x}" for x in Y["belajar"]] + [""]
         lines += ["Bab:"] + chapters + ["",
