@@ -10,7 +10,7 @@ Peta kurikulum, alur belajar, dan daftar 52 episode ada di dokumen "Kurikulum Se
 
 ## Keputusan produksi
 - Video dipecah menjadi bagian 3–5 menit; teks narasi selalu tampil di layar; tiap animasi punya versi teks saja dan versi teks + suara.
-- Narasi: suara neural Microsoft id-ID-GadisNeural (dibuat lokal dengan edge-tts), nada dinaikkan 18%.
+- Narasi: ElevenLabs, suara "Kak Ceria – Cute Kids Storyteller" (model Eleven v4), dibuat otomatis per beat oleh `episodes/_alat/suara_elevenlabs.py`; cadangan edge-tts id-ID-GadisNeural (nada +18%).
 - Tanpa musik latar.
 - Fase D memakai tokoh orisinal (robot Kiko, murid Dito dan Sinta); Fase E–F memakai gaya diagram.
 - Asumsi murid: pemahaman dasar sangat rendah; tiap kelas dibuka unit jembatan.
@@ -19,5 +19,5 @@ Peta kurikulum, alur belajar, dan daftar 52 episode ada di dokumen "Kurikulum Se
 ## Status
 | Episode | Naskah | Suara | Video | Halaman |
 | --- | --- | --- | --- | --- |
-| D7.0 Jembatan: Cara Memakai Komputer dan HP | ✓ | menunggu MP3 | adegan siap; menunggu suara | ✓ (versi teks) |
-| D7.5 Instruksi untuk Manusia dan Mesin | ✓ | ✓ | ✓ (2 bagian × 2 versi) | ✓ |
+| D7.0 Jembatan: Cara Memakai Komputer dan HP | ✓ | ✓ Kak Ceria | ✓ (2 bagian × 2 versi) | ✓ |
+| D7.5 Instruksi untuk Manusia dan Mesin | ✓ | ✓ Kak Ceria | ✓ (2 bagian × 2 versi) | ✓ |

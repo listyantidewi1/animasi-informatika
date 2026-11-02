@@ -15,10 +15,14 @@ script = E.load_script(ROOT)
 RATE = 22050; LEAD = 0.4; WPS = 1.6
 
 def prep(src, dst):
-    af = (f"rubberband=pitch={PITCH}:pitchq=quality,"
-          "silenceremove=start_periods=1:start_silence=0.05:start_threshold=-45dB,areverse,"
-          "silenceremove=start_periods=1:start_silence=0.05:start_threshold=-45dB,areverse,loudnorm=I=-17:TP=-1.5")
-    subprocess.run(["ffmpeg", "-v", "error", "-y", "-i", src, "-ac", "1", "-ar", str(RATE), "-af", af, dst], check=True)
+    """Dua langkah: (1) decode + nada -> WAV mono 22,05 kHz; (2) potong hening awal/akhir + normalisasi pada WAV.
+    Dipisah karena rantai penuh langsung dari MP3 (ElevenLabs 44,1 kHz) kadang membuat ffmpeg menggantung di EOF."""
+    tmp = dst + ".tmp.wav"
+    trim = ("silenceremove=start_periods=1:start_silence=0.05:start_threshold=-45dB,areverse,"
+            "silenceremove=start_periods=1:start_silence=0.05:start_threshold=-45dB,areverse,loudnorm=I=-17:TP=-1.5")
+    subprocess.run(["ffmpeg", "-nostdin", "-v", "error", "-y", "-i", src, "-ac", "1", "-ar", str(RATE), "-af", f"rubberband=pitch={PITCH}:pitchq=quality", tmp], check=True, timeout=120)
+    subprocess.run(["ffmpeg", "-nostdin", "-v", "error", "-y", "-i", tmp, "-af", trim, dst], check=True, timeout=120)
+    os.remove(tmp)
     with wave.open(dst) as w: return w.getnframes() / w.getframerate()
 
 def src_for(bid):
