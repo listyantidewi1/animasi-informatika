@@ -41,11 +41,12 @@
       const n = reveal(l, 1.5, 1.1, 12);
       const names = "ADI,BUDI,CICI,DEWI,EKA,FANI,GITA,HANA,INA,JOKO,KIKI,LANI,MIRA,NANA,OKI,PUTU".split(",");
       const seq = Math.min(11, Math.max(0, n - 1)); const open1 = new Set([...Array(seq).keys()]);
+      const nameRow = (x, y, open, found) => names.forEach((nm, i) => Kt.card(ctx, x + i * 94, y, 86, 70, nm, { face: open.has(i), hl: found && i === 10 ? C.good : undefined, size: 19 }));
       text(ctx, "cara 1: buka satu per satu, cari KIKI", 240, 280, 24, { weight: 900, color: C.kiko });
-      Kt.row(ctx, 240, 300, names, { w: 86, h: 70, gap: 8, open: open1, hl: seq >= 11 ? { 10: C.good } : {} }); Kt.counter(ctx, 1600, 300, seq, "bukaan");
+      nameRow(240, 300, open1, seq >= 11); Kt.counter(ctx, 1600, 300, seq, "bukaan");
       const steps2 = [7, 11, 9, 10]; const k2 = Math.min(4, Math.max(0, n - 8)); const open2 = new Set(steps2.slice(0, k2));
       ctx.save(); if (n < 8) ctx.globalAlpha = 0.25; text(ctx, "cara 2: buka tengah dulu, lalu belah lagi", 240, 470, 24, { weight: 900, color: "#8E6BBF" });
-      Kt.row(ctx, 240, 490, names, { w: 86, h: 70, gap: 8, open: open2, hl: k2 >= 4 ? { 10: C.good } : {} }); Kt.counter(ctx, 1600, 490, k2, "bukaan"); ctx.restore();
+      nameRow(240, 490, open2, k2 >= 4); Kt.counter(ctx, 1600, 490, k2, "bukaan"); ctx.restore();
       if (n >= 12) label(ctx, "11 bukaan lawan 4 bukaan: catat, nanti dibandingkan dengan program", 960, 690, { size: 24 });
     },
     linear_kode(ctx, b, l) {
