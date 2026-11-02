@@ -1,0 +1,138 @@
+<title>Kiko: Sistem Operasi</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<style>
+__PAGE_CSS__
+/* latihan E.2 */
+.qnum { font-weight: 800; color: var(--ink2); font-size: 14px; margin-bottom: 4px }
+.qtext { font-weight: 800; font-size: 18px; margin-bottom: 8px }
+.ex { background: var(--surface2); border-radius: 12px; padding: 12px 14px; font-weight: 800; font-size: 17px; margin: 8px 0 }
+.opts { display: grid; gap: 8px; margin: 8px 0 }
+.opts button { text-align: left; font-size: 15px; min-height: 44px; padding: 10px 12px; background: var(--surface); border: 2px solid var(--line) }
+.opts button.right { border-color: var(--good); background: var(--good-bg) } .opts button.wrong { border-color: var(--bad); background: var(--bad-bg) }
+.procs { display: grid; gap: 6px; margin: 8px 0 } .pr { display: grid; grid-template-columns: 110px 1fr 60px; gap: 8px; align-items: center; background: var(--surface); border: 2px solid var(--line); border-radius: 10px; padding: 6px 10px; font-weight: 800 }
+.pr .bar { height: 14px; background: var(--surface2); border-radius: 7px; overflow: hidden } .pr .bar i { display: block; height: 100%; background: var(--accent) } .pr.on { border-color: var(--accent); background: #FFF3D6 } .pr.done { border-color: var(--good); background: var(--good-bg) }
+.cpu { display: flex; justify-content: space-between; align-items: center; background: var(--surface2); border-radius: 12px; padding: 8px 12px; font-weight: 900; margin: 8px 0 }
+.ram { display: grid; grid-template-columns: repeat(10, 1fr); gap: 3px; margin: 8px 0 } .ram button { min-height: 52px; padding: 0; font-size: 10px; font-weight: 900; border-radius: 6px; border: 2px solid var(--line); background: var(--surface); color: var(--ink) } .ram button.used { color: #fff; border-color: transparent } .ram button.bad { outline: 3px solid var(--bad) }
+.apps { display: flex; gap: 6px; flex-wrap: wrap; margin: 8px 0 } .apps button { font-size: 14px; font-weight: 900; min-height: 44px; border: 2px solid var(--line) } .apps button[aria-pressed="true"] { outline: 3px solid var(--accent) } .apps button.placed { opacity: .4 }
+.pairs { display: grid; gap: 8px; margin: 8px 0 } .pair { display: grid; grid-template-columns: 1fr auto; gap: 8px; align-items: center; background: var(--surface); border: 2px solid var(--line); border-radius: 12px; padding: 8px 10px; font-weight: 700; font-size: 15px }
+.pair select { min-height: 40px; border-radius: 10px; border: 2px solid var(--line); font: inherit; font-weight: 800; padding: 4px 6px; background: var(--surface2); color: var(--ink) } .pair.ok { border-color: var(--good); background: var(--good-bg) } .pair.bad { border-color: var(--bad); background: var(--bad-bg) }
+</style>
+
+<div class="wrap">
+  <header>
+    <div class="eyebrow">Informatika · Fase E · Kelas X · Episode E.2</div>
+    <h1>Peran Sistem Operasi</h1>
+    <p class="hint">Tonton videonya, lalu kerjakan tiga latihan di bawahnya. Prasyarat: episode E.1. Suara bisa dimatikan; teks selalu tampil di layar.</p>
+  </header>
+  <section class="card player" aria-label="Pemutar episode">
+    <div class="stage">
+      <canvas id="screen" width="1920" height="1080" aria-label="Animasi episode"></canvas>
+      <audio id="nar" preload="auto" src="narasi.mp3"></audio>
+      <button class="bigplay" id="bigplay" aria-label="Putar"><span>▶ Putar episode</span></button>
+    </div>
+    <div class="bar" id="bar" role="slider" aria-label="Posisi episode" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" tabindex="0"><i id="barfill"></i></div>
+    <div class="row">
+      <button class="primary" id="playbtn">▶ Putar</button>
+      <button id="replay">↺ Ulangi bagian ini</button>
+      <button id="voice" aria-pressed="true">🔊 Suara: nyala</button>
+      <button id="slow" aria-pressed="false">🐢 Mode lambat</button>
+      <span class="hint" id="timelabel">0:00 / 0:00</span>
+    </div>
+    <div>
+      <div class="eyebrow">Bagian</div>
+      <div class="chapters" id="chapters"></div>
+    </div>
+  </section>
+
+  <section class="card" aria-label="Cek pemahaman">
+    <h2>Cek pemahaman</h2>
+    <p class="hint">Pilih satu jawaban. Kalau salah, kamu dapat petunjuk, lalu coba lagi.</p>
+    <div class="quiz" id="quiz"></div>
+  </section>
+
+  <section class="card" aria-label="Latihan">
+    <h2>Latihan: jadi sistem operasi</h2>
+    <p class="hint">Tiga latihan. Jawaban salah memberi petunjuk, bukan nilai.</p>
+    <div class="levels" id="levels"></div>
+    <div class="task" id="task"></div>
+    <div id="exarea"></div>
+    <div id="result"></div>
+    <div class="row" style="margin-top:10px"><button id="redo">↺ Ulangi latihan ini</button></div>
+  </section>
+
+  <section class="card" aria-label="Kemajuan">
+    <h2>Kemajuanmu</h2>
+    <div class="progress" id="progress"></div>
+    <p class="hint" style="margin-top:8px">Kemajuan tersimpan di perangkat ini saja.</p>
+  </section>
+
+  <section class="card">
+    <details>
+      <summary>Untuk guru: cara memakai episode ini (4 JP)</summary>
+      <p><b>Tujuan pembelajaran (E.2):</b> murid menjelaskan peran sistem operasi dalam mengelola proses, memori, berkas, dan perangkat. Elemen BK, Fase E. Penjadwalan yang dipakai adalah giliran berputar (round robin) dengan irisan waktu sama; manajemen memori disederhanakan menjadi blok berurutan.</p>
+      <ul class="plain">
+        <li><b>Pertemuan 1 (2 JP), proses dan memori:</b> permainan satu prosesor lima soal (hitung putaran) dan meja berpetak tanpa komputer. Tonton video sampai segmen Memori. Latihan 1 Giliran prosesor dan Latihan 2 Peta memori. Diskusi: mengapa HP tersendat saat banyak aplikasi terbuka?</li>
+        <li><b>Pertemuan 2 (2 JP), berkas, perangkat, praktik:</b> tonton sisa video. Latihan 3 Pasangkan kejadian. Praktik di lab atau HP: buka pengelola tugas atau menu pemakaian memori, catat tiga proses terbesar, tutup satu aplikasi dan amati perubahan RAM; lihat izin aplikasi di pengaturan dan cabut satu izin yang tidak masuk akal. Asesmen: lembar pengamatan dengan empat kolom tugas sistem operasi dan satu contoh nyata untuk masing-masing.</li>
+      </ul>
+      <p><b>Target minimum:</b> menyebut empat tugas sistem operasi dengan satu contoh masing-masing dan menjelaskan irisan waktu. <b>Pengayaan:</b> membandingkan dua sistem operasi yang dipakai murid (misalnya Android dan Windows): nama pengelola tugasnya, cara melihat RAM, cara mengatur izin.</p>
+    </details>
+  </section>
+</div>
+
+<script>__ENGINE__</script>
+<script>__PAGE_JS__</script>
+<script>
+(function () {
+  const P = PageCore({ suara: __TIMELINE__, teks: __TIMELINE_TEKS__ });
+  const { $, progress, save } = P; progress.levels = progress.levels || {};
+  const APPS = [["🎵 Musik", 3, "#8E6BBF"], ["💬 Chat", 1, "#2E9E5B"], ["🌐 Peramban", 2, "#2E7E9A"], ["🎮 Game", 4, "#D9443B"]];
+  const RRQ = [["Giliran berputar, 1 irisan per giliran, urutan Musik → Chat → Peramban → Game. Proses mana yang selesai paling dulu?", ["Musik (3 irisan)", "Chat (1 irisan)", "Game (4 irisan)"], 1, "Chat hanya butuh satu irisan: selesai pada giliran pertamanya."], ["Proses mana yang selesai paling akhir?", ["Game", "Musik", "Peramban"], 0, "Game butuh empat irisan; ia masih berjalan saat yang lain sudah selesai."], ["Berapa jumlah irisan sampai semua selesai?", ["4", "10", "12"], 1, "3 + 1 + 2 + 4 = 10 irisan, apa pun urutannya."]];
+  const EVENTS = [["Dua puluh aplikasi terbuka, HP tersendat", "memori"], ["Printer baru dicolok, laptop memasang driver", "perangkat"], ["Game macet; kamu menghentikannya lewat pengelola tugas", "proses"], ["Aplikasi senter meminta izin kamera", "berkas"], ["Musik tetap terdengar saat kamu mengetik chat", "proses"], ["Dua teman mencetak bersamaan, hasilnya keluar bergantian", "perangkat"], ["Foto tersimpan di folder Galeri dengan nama IMG_001", "berkas"], ["Menutup aplikasi membuat HP lancar lagi", "memori"]];
+  const TASKS = [["proses", "Proses: giliran prosesor"], ["memori", "Memori: wilayah RAM"], ["berkas", "Berkas: nama, folder, izin"], ["perangkat", "Perangkat: driver, antrean"]];
+  const HINTS = { proses: "Ini tentang siapa yang memakai prosesor dan kapan.", memori: "Ini tentang wilayah RAM yang penuh atau bebas.", berkas: "Ini tentang nama, folder, atau izin akses.", perangkat: "Ini tentang perangkat keras tambahan dan penerjemahnya." };
+  const LEVELS = [
+    { id: "cpu", name: "1 Giliran prosesor", kind: "rr", task: "Tekan Giliran berikutnya dan amati sisa irisan tiap proses. Lalu jawab tiga pertanyaan." },
+    { id: "ram", name: "2 Peta memori", kind: "ram", task: "RAM 10 blok. Ketuk aplikasi, lalu ketuk blok awal tempatnya. Semua harus muat dan tidak boleh tumpang tindih." },
+    { id: "pasang", name: "3 Pasangkan kejadian", kind: "match", task: "Delapan kejadian sehari-hari. Pilih tugas sistem operasi yang menanganinya, lalu Periksa." }];
+  let L = 0, qi = 0, rem = [], turn = 0, slices = 0, order = [], sel = null, placed = {}, pick = {};
+  const level = () => LEVELS[L];
+  function setResult(kind, msg) { $("result").innerHTML = msg ? `<div class="result ${kind}">${msg}</div>` : ""; }
+  function done(extra) { progress.levels[level().id] = true; save(); renderLevels(); setResult("good", `Latihan ${level().name} selesai! ` + (extra || "")); }
+  function wrong(hint) { setResult("bad", "Belum tepat. Petunjuk: " + hint); }
+  function renderRR() {
+    const area = $("exarea"); if (!rem.length) { rem = APPS.map(a => a[1]); turn = 0; slices = 0; order = []; }
+    const allDone = rem.every(r => r === 0);
+    let cur = turn; if (!allDone) { let g = 0; while (rem[cur] === 0 && g < 4) { cur = (cur + 1) % 4; g++; } }
+    area.innerHTML = `<div class="cpu"><span>PROSESOR: ${allDone ? "kosong, semua selesai" : APPS[cur][0]}</span><span>irisan ke-${slices}</span></div><div class="procs" id="procs"></div><div class="row"><button class="warm" id="next" ${allDone ? "disabled" : ""}>▶ Giliran berikutnya</button><button id="rst">↺ Ulang</button></div><div id="qs"></div>`;
+    APPS.forEach(([n, need, col], i) => { const d = document.createElement("div"); d.className = "pr " + (rem[i] === 0 ? "done" : (!allDone && i === cur ? "on" : "")); d.innerHTML = `<span>${n}</span><div class="bar"><i style="width:${(need - rem[i]) / need * 100}%;background:${col}"></i></div><span>${rem[i] === 0 ? "selesai" : "sisa " + rem[i]}</span>`; $("procs").appendChild(d); });
+    $("next").addEventListener("click", () => { if (allDone) return; rem[cur] -= 1; slices += 1; if (rem[cur] === 0) order.push(APPS[cur][0]); turn = (cur + 1) % 4; setResult("info", `${APPS[cur][0]} memakai 1 irisan.` + (rem[cur] === 0 ? " Selesai!" : "")); renderRR(); });
+    $("rst").addEventListener("click", () => { rem = []; qi = 0; setResult(); renderRR(); });
+    if (allDone) renderRRQ();
+  }
+  function renderRRQ() {
+    const q = $("qs"); if (qi >= RRQ.length) { q.innerHTML = `<div class="qnum">Urutan selesai: ${order.join(" → ")}</div>`; return; }
+    const [t, opts, a, why] = RRQ[qi];
+    q.innerHTML = `<div class="qnum">Urutan selesai: ${order.join(" → ")}</div><div class="ex">${t}</div><div class="opts" id="opts"></div>`;
+    opts.forEach((o, i) => { const b = document.createElement("button"); b.textContent = o; b.addEventListener("click", () => { if (i === a) { b.classList.add("right"); [...q.querySelectorAll("#opts button")].forEach(x => x.disabled = true); setResult("good", "Tepat. " + why); qi++; setTimeout(() => { setResult(); if (qi >= RRQ.length) done("Giliran berputar: adil, dan yang pendek selesai lebih dulu."); renderRRQ(); }, 1500); } else { b.classList.add("wrong"); wrong("Lihat lagi urutan selesai dan jumlah irisan tiap proses. " + why); } }); q.querySelector("#opts").appendChild(b); });
+  }
+  function renderRAM() {
+    const area = $("exarea");
+    area.innerHTML = `<div class="qnum">Aplikasi (blok yang dibutuhkan):</div><div class="apps" id="apps"></div><div class="qnum">RAM 10 blok (ketuk blok awal):</div><div class="ram" id="ram"></div><div class="row"><button class="warm" id="check">Periksa</button><button id="clr">↺ Kosongkan</button></div>`;
+    const occ = new Array(10).fill(null); Object.entries(placed).forEach(([i, s]) => { for (let k = 0; k < APPS[i][1]; k++) if (s + k < 10) occ[s + k] = occ[s + k] == null ? +i : "x"; });
+    APPS.forEach(([n, size, col], i) => { const b = document.createElement("button"); b.textContent = `${n} (${size})`; b.style.borderColor = col; b.setAttribute("aria-pressed", sel === i); if (placed[i] != null) b.classList.add("placed"); b.addEventListener("click", () => { sel = sel === i ? null : i; setResult(); renderRAM(); }); $("apps").appendChild(b); });
+    for (let k = 0; k < 10; k++) { const b = document.createElement("button"); const o = occ[k]; if (o === "x") { b.textContent = "✕"; b.classList.add("bad"); } else if (o != null) { b.textContent = APPS[o][0].split(" ")[0]; b.classList.add("used"); b.style.background = APPS[o][2]; } else b.textContent = String(k); b.addEventListener("click", () => { if (sel == null) { setResult("info", "Pilih aplikasinya dulu, lalu ketuk blok awal."); return; } if (k + APPS[sel][1] > 10) { wrong(`${APPS[sel][0]} butuh ${APPS[sel][1]} blok; dari blok ${k} tidak cukup sampai ujung RAM.`); return; } placed[sel] = k; sel = null; setResult(); renderRAM(); }); $("ram").appendChild(b); }
+    $("check").addEventListener("click", () => { const missing = APPS.findIndex((a, i) => placed[i] == null); if (missing >= 0) { setResult("info", `${APPS[missing][0]} belum ditempatkan.`); return; } if (occ.includes("x")) { wrong("Ada blok yang dipakai dua proses (tanda ✕). Sistem operasi tidak pernah mengizinkan wilayah tumpang tindih; geser salah satunya."); return; } done("Peta: " + APPS.map((a, i) => `${a[0]} blok ${placed[i]}–${placed[i] + a[1] - 1}`).join(", ") + "."); });
+    $("clr").addEventListener("click", () => { placed = {}; sel = null; setResult(); renderRAM(); });
+  }
+  function renderMatch() {
+    const area = $("exarea"); area.innerHTML = `<div class="pairs" id="pairs"></div><div class="row"><button class="warm" id="check">Periksa</button></div>`;
+    EVENTS.forEach(([t, k], i) => { const d = document.createElement("div"); d.className = "pair"; d.dataset.i = i; d.innerHTML = `<span>${t}</span>`; const s = document.createElement("select"); s.innerHTML = `<option value="">tugas…</option>` + TASKS.map(([v, lab]) => `<option value="${v}" ${pick[i] === v ? "selected" : ""}>${lab.split(":")[0]}</option>`).join(""); s.addEventListener("change", () => { pick[i] = s.value; d.classList.remove("ok", "bad"); setResult(); }); d.appendChild(s); $("pairs").appendChild(d); });
+    $("check").addEventListener("click", () => { let empty = 0, bad = null; EVENTS.forEach(([t, k], i) => { const d = area.querySelector(`[data-i="${i}"]`); if (!pick[i]) { empty++; d.classList.remove("ok", "bad"); return; } const ok = pick[i] === k; d.classList.toggle("ok", ok); d.classList.toggle("bad", !ok); if (!ok && bad == null) bad = i; }); if (empty) { setResult("info", `Masih ada ${empty} kejadian yang belum dipasangkan.`); return; } if (bad == null) done("Proses, memori, berkas, perangkat: empat tugas, satu pengatur."); else wrong(`"${EVENTS[bad][0]}": ` + HINTS[EVENTS[bad][1]]); });
+  }
+  function loadLevel(i) { L = i; qi = 0; rem = []; placed = {}; sel = null; pick = {}; $("task").textContent = level().task; setResult(); renderLevels(); ({ rr: renderRR, ram: renderRAM, match: renderMatch })[level().kind](); }
+  function renderLevels() { const el = $("levels"); el.innerHTML = ""; LEVELS.forEach((lv, i) => { const b = document.createElement("button"); b.textContent = lv.name; b.className = progress.levels[lv.id] ? "done" : ""; b.setAttribute("aria-pressed", i === L); b.addEventListener("click", () => loadLevel(i)); el.appendChild(b); }); }
+  $("redo").addEventListener("click", () => { progress.levels[level().id] = false; save(); loadLevel(L); });
+  P.onProgress(el => LEVELS.forEach(lv => { const s = document.createElement("span"); s.textContent = "Latihan " + lv.name.slice(0, 1); s.className = progress.levels[lv.id] ? "ok" : ""; el.appendChild(s); }));
+  loadLevel(0);
+})();
+</script>
