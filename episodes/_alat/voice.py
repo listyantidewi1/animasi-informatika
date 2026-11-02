@@ -1,13 +1,16 @@
-"""Timeline versi SUARA: pakai narasi neural dari tts-kit (MP3 per beat di <episode>/suara_in/suara/):
-naikkan nada, rapikan, normalisasi; susun timeline.json dan satu trek audio/narration.wav.
-  python3 episodes/_alat/voice.py D7.0 1.18     (angka = faktor nada; bawaan 1.18)"""
+"""Timeline versi SUARA: pakai narasi per beat di <episode>/suara_in/suara/ (dari suara_elevenlabs.py, tts-kit/buat_suara.py,
+atau TTS lain): sesuaikan nada, rapikan, normalisasi; susun timeline.json, audio/narration.wav, dan narasi.mp3.
+  python3 episodes/_alat/voice.py D7.0          nada dari tts-kit/suara.json (ElevenLabs: 1.0), kalau tidak ada 1.18
+  python3 episodes/_alat/voice.py D7.0 1.18     nada ditentukan langsung"""
 import subprocess, wave, os, re, sys
 import episode as E
 
 ROOT, args = E.find_root(sys.argv[1:])
 SRC = os.path.join(ROOT, "suara_in", "suara")
 OUT = os.path.join(ROOT, "audio"); os.makedirs(OUT, exist_ok=True)
-PITCH = float(args[0]) if args else 1.18
+# Nada: argumen > "pitch" di tts-kit/suara.json (ditulis suara_elevenlabs.py, bawaan 1.0) > 1.18 (edge-tts GadisNeural)
+CFG = os.path.join(ROOT, "tts-kit", "suara.json")
+PITCH = float(args[0]) if args else float(E.load_json(CFG).get("pitch", 1.18)) if os.path.exists(CFG) else 1.18
 script = E.load_script(ROOT)
 RATE = 22050; LEAD = 0.4; WPS = 1.6
 

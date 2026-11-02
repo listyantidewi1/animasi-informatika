@@ -9,4 +9,4 @@ Berkas khusus episode ini:
 - `page.html` — halaman latihan: pemutar, 4 cek pemahaman, kuis bergambar tiga bagian (Mouse, Keyboard, Folder) dengan "Peta belajarmu" (diagnostik: lancar / perlu diulang, tombol ke segmen video), "Untuk guru" (3 pertemuan × 2 JP).
 - `tts-kit/` — `buat_suara.py` (edge-tts + peta pelafalan `UCAP`), `naskah.json`, `naskah-tts.txt/.csv`.
 
-Status: naskah disetujui; adegan selesai dan diperiksa (`preview.py`); `timeline-teks.json` dan `episode-d70.html` (versi teks) sudah dibangun. Menunggu suara di `suara_in/suara/` → `voice.py D7.0 1.18` → `build.py` → `render.py D7.0`.
+Status: naskah disetujui; adegan selesai dan diperiksa (`preview.py`); `timeline-teks.json`, `episode-d70.html` (versi teks), dan video versi teks (D7.0a 5:24, D7.0b 5:55) sudah dibuat. Menunggu suara (ElevenLabs: `suara_elevenlabs.py D7.0 --voice "Nama"`) → `voice.py D7.0` → `build.py` → `render.py D7.0 --suara`.

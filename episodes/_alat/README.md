@@ -5,8 +5,9 @@ Satu mesin animasi menghasilkan, untuk tiap episode, **video MP4 1080p** (dua ve
 ```bash
 python3 episodes/_alat/timing.py D7.0        # timeline versi teks (waktu baca 1,6 kata/detik) -> timeline-teks.json
 python3 episodes/_alat/preview.py D7.0       # frame tiap beat -> preview/*.jpg  (atau: preview.py D7.0 s1b s4d=2.5)
-python3 episodes/_alat/naskah_tts.py D7.0    # naskah per beat untuk TTS -> tts-kit/naskah-tts.txt, .csv, naskah.json
-python3 episodes/_alat/voice.py D7.0 1.18    # dari suara_in/suara/<id>.mp3: timeline.json, audio/narration.wav, narasi.mp3
+python3 episodes/_alat/naskah_tts.py D7.0    # naskah per beat untuk TTS manual -> tts-kit/naskah-tts.txt, .csv, naskah.json
+python3 episodes/_alat/suara_elevenlabs.py D7.0 --voice "Nama"   # narasi otomatis lewat API ElevenLabs -> suara_in/suara/<id>.mp3
+python3 episodes/_alat/voice.py D7.0         # dari suara_in/suara/<id>.mp3: timeline.json, audio/narration.wav, narasi.mp3
 python3 episodes/_alat/build.py D7.0         # halaman latihan -> episode-d70.html
 python3 episodes/_alat/render.py D7.0        # video + .srt -> video/ (semua bagian, semua versi yang bahannya ada)
 python3 episodes/_alat/render.py D7.0 D7.0a --suara --mux   # satu bagian, satu versi; --mux = pakai ulang segmen, hanya suara/subtitel
@@ -31,7 +32,7 @@ Dari dalam folder episode, kodenya boleh dihilangkan (`python3 ../_alat/render.p
 ## Urutan produksi satu episode
 1. Tulis `script.json`; minta Bu Dewi membaca naskahnya.
 2. Tulis adegan di `scenes.js`; `timing.py` lalu `preview.py`; lihat gambarnya sendiri sebelum render.
-3. Suara: `naskah_tts.py`, kirim `tts-kit/` ke laptop, jalankan `buat_suara.py` (atau TTS lain), taruh hasilnya di `suara_in/suara/`, lalu `voice.py 1.18`.
+3. Suara, salah satu dari: (a) **ElevenLabs otomatis**: `suara_elevenlabs.py <kode> --voice "Nama"` (butuh `ELEVENLABS_API_KEY` di lingkungan; coba `--hanya intro1` dulu, `--uji` untuk menghitung kuota; pengaturan tersimpan di `tts-kit/suara.json`); (b) edge-tts di laptop: `tts-kit/buat_suara.py`; (c) TTS lain memakai `tts-kit/naskah-tts.txt`. Hasil di `suara_in/suara/<id>.mp3`, lalu `voice.py <kode>` (nada: ElevenLabs 1.0, GadisNeural 1.18).
 4. `build.py` → halaman; `render.py` → video dua versi. Satu render penuh per permintaan.
 5. Perbarui tabel status di `README.md` akar, commit dengan pesan Bahasa Indonesia.
 
