@@ -17,6 +17,8 @@ Setelah menonton, murid bisa:
 • memakai layar sentuh dan memasangkannya dengan gerakan mouse
 • menyimpan file ke folder dengan nama yang jelas dan mencarinya lagi
 
+Video ini cocok untuk yang mencari: cara menggunakan mouse dan keyboard kelas 7; materi informatika kelas 7 perangkat komputer; cara menyimpan file di folder; fungsi mouse, keyboard, dan layar sentuh.
+
 Bab:
 0:00 Pembuka
 0:31 Cek diri dulu
@@ -46,6 +48,8 @@ Setelah menonton, murid bisa:
 • mengetik dengan tombol huruf, Shift, Spasi, Backspace, Enter
 • memakai layar sentuh dan memasangkannya dengan gerakan mouse
 • menyimpan file ke folder dengan nama yang jelas dan mencarinya lagi
+
+Video ini cocok untuk yang mencari: cara menggunakan mouse dan keyboard kelas 7; materi informatika kelas 7 perangkat komputer; cara menyimpan file di folder; fungsi mouse, keyboard, dan layar sentuh.
 
 Bab:
 0:00 Pembuka bagian
@@ -79,6 +83,8 @@ Setelah menonton, murid bisa:
 • memakai layar sentuh dan memasangkannya dengan gerakan mouse
 • menyimpan file ke folder dengan nama yang jelas dan mencarinya lagi
 
+Video ini cocok untuk yang mencari: cara menggunakan mouse dan keyboard kelas 7; materi informatika kelas 7 perangkat komputer; cara menyimpan file di folder; fungsi mouse, keyboard, dan layar sentuh.
+
 Bab:
 0:00 Pembuka
 0:40 Cek diri dulu
@@ -109,6 +115,8 @@ Setelah menonton, murid bisa:
 • memakai layar sentuh dan memasangkannya dengan gerakan mouse
 • menyimpan file ke folder dengan nama yang jelas dan mencarinya lagi
 
+Video ini cocok untuk yang mencari: cara menggunakan mouse dan keyboard kelas 7; materi informatika kelas 7 perangkat komputer; cara menyimpan file di folder; fungsi mouse, keyboard, dan layar sentuh.
+
 Bab:
 0:00 Pembuka bagian
 0:04 Touch screen
@@ -122,4 +130,24 @@ Latihan interaktif (kuis dengan petunjuk, bisa dipakai luring di HP): berkas epi
 Seri Animasi Informatika untuk SMP–SMA mengikuti CP 2025 (Keputusan Kepala BSKAP 046/H/KR/2025), unit D7.0 (6 JP). Tokoh: robot Kiko, Dito, dan Sinta. Semua gambar dibuat dengan kode; tanpa musik latar.
 
 #Informatika #KurikulumMerdeka #D70 #BelajarKomputer #Kelas7 #SMP #Mouse #Keyboard #FileDanFolder
+```
+
+## Komentar tersemat (pin) — D7.0a
+
+```
+📌 Cara Memakai Komputer dan HP (1/2): Mouse dan Keyboard — materi Informatika kelas 7 (unit D7.0).
+Setelah menonton, kamu bisa memakai mouse, keyboard, dan layar sentuh, serta menyimpan file di folder dengan rapi.
+Kata kunci materi ini: cara menggunakan mouse dan keyboard kelas 7; materi informatika kelas 7 perangkat komputer; cara menyimpan file di folder; fungsi mouse, keyboard, dan layar sentuh.
+Latihan interaktif (bisa luring di HP): berkas episode-d70.html.
+Ada yang belum jelas? Tulis di komentar, pertanyaanmu membantu teman lain juga.
+```
+
+## Komentar tersemat (pin) — D7.0b
+
+```
+📌 Cara Memakai Komputer dan HP (2/2): Touch Screen, File, dan Folder — materi Informatika kelas 7 (unit D7.0).
+Setelah menonton, kamu bisa memakai mouse, keyboard, dan layar sentuh, serta menyimpan file di folder dengan rapi.
+Kata kunci materi ini: cara menggunakan mouse dan keyboard kelas 7; materi informatika kelas 7 perangkat komputer; cara menyimpan file di folder; fungsi mouse, keyboard, dan layar sentuh.
+Latihan interaktif (bisa luring di HP): berkas episode-d70.html.
+Ada yang belum jelas? Tulis di komentar, pertanyaanmu membantu teman lain juga.
 ```

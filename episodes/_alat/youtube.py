@@ -26,11 +26,21 @@ for variant, label in (("suara", ""), ("teks", " (versi teks, tanpa suara)")):
                  (f"{S['title']} — bagian {pi} dari {len(parts)}: {sub}." if len(parts) > 1 else f"{S['title']} — {sub}.") + (" Versi tanpa narasi suara: teks narasi tampil besar di layar dengan garis kemajuan baca, cocok untuk ditonton tanpa speaker atau untuk murid yang lebih suka membaca." if variant == "teks" else " Narasi suara plus teks besar di layar; ada versi tanpa suara di video terpisah."),
                  "", Y.get("ringkas", ""), ""]
         if Y.get("belajar"): lines += ["Setelah menonton, murid bisa:"] + [f"• {x}" for x in Y["belajar"]] + [""]
+        if Y.get("cari"): lines += ["Video ini cocok untuk yang mencari: " + "; ".join(Y["cari"]) + ".", ""]
         lines += ["Bab:"] + chapters + ["",
                   f"Latihan interaktif (kuis dengan petunjuk, bisa dipakai luring di HP): berkas episode-{E.code_slug(S['episode'])}.html di repositori proyek." + (f" Prasyarat: {Y['prasyarat']}." if Y.get("prasyarat") else " Tidak ada prasyarat."),
                   "", f"Seri Animasi Informatika untuk SMP–SMA mengikuti CP 2025 (Keputusan Kepala BSKAP 046/H/KR/2025), unit {S['episode']} ({Y.get('jp', '?')} JP). Tokoh: robot Kiko, Dito, dan Sinta. Semua gambar dibuat dengan kode; tanpa musik latar. Narasi: Kak Ceria (ElevenLabs)." if variant == "suara" else
                   f"Seri Animasi Informatika untuk SMP–SMA mengikuti CP 2025 (Keputusan Kepala BSKAP 046/H/KR/2025), unit {S['episode']} ({Y.get('jp', '?')} JP). Tokoh: robot Kiko, Dito, dan Sinta. Semua gambar dibuat dengan kode; tanpa musik latar.",
                   "", "#Informatika #KurikulumMerdeka #" + S["episode"].replace(".", "") + " " + " ".join(Y.get("tagar", [])), "```", ""]
         out += lines
+# komentar tersemat (pinned): satu per bagian, dipakai untuk kedua versi
+for pi, (name, p) in enumerate(parts, 1):
+    sub = Y.get("bagian", {}).get(name, "")
+    pin = [f"📌 {S['title']}" + (f" ({pi}/{len(parts)}): {sub}" if len(parts) > 1 else "") + " — materi Informatika kelas 7 (unit " + S["episode"] + ")."]
+    if S.get("hook"): pin.append("Setelah menonton, kamu bisa " + S["hook"])
+    if Y.get("cari"): pin.append("Kata kunci materi ini: " + "; ".join(Y["cari"]) + ".")
+    pin.append(f"Latihan interaktif (bisa luring di HP): berkas episode-{E.code_slug(S['episode'])}.html." + (f" Tonton dulu {Y['prasyarat']} bila belum." if Y.get("prasyarat") else ""))
+    pin.append("Ada yang belum jelas? Tulis di komentar, pertanyaanmu membantu teman lain juga.")
+    out += [f"## Komentar tersemat (pin) — {name}", "", "```", "\n".join(pin), "```", ""]
 open(os.path.join(ROOT, "youtube.md"), "w", encoding="utf-8").write("\n".join(out))
 print(os.path.join(ROOT, "youtube.md"))

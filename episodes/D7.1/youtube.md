@@ -17,6 +17,8 @@ Setelah menonton, murid bisa:
 • membedakan hal yang penting dan yang bisa diabaikan
 • menulis langkah-langkah berurutan yang bisa diikuti orang lain
 
+Video ini cocok untuk yang mencari: berpikir komputasional kelas 7; contoh dekomposisi, pola, abstraksi, algoritma; soal Bebras SMP; materi informatika kelas 7 berpikir komputasional.
+
 Bab:
 0:00 Pembuka
 0:30 Main dulu tanpa komputer
@@ -46,6 +48,8 @@ Setelah menonton, murid bisa:
 • menemukan pola yang berulang dan memakainya untuk menghemat kerja
 • membedakan hal yang penting dan yang bisa diabaikan
 • menulis langkah-langkah berurutan yang bisa diikuti orang lain
+
+Video ini cocok untuk yang mencari: berpikir komputasional kelas 7; contoh dekomposisi, pola, abstraksi, algoritma; soal Bebras SMP; materi informatika kelas 7 berpikir komputasional.
 
 Bab:
 0:00 Pembuka bagian
@@ -78,6 +82,8 @@ Setelah menonton, murid bisa:
 • membedakan hal yang penting dan yang bisa diabaikan
 • menulis langkah-langkah berurutan yang bisa diikuti orang lain
 
+Video ini cocok untuk yang mencari: berpikir komputasional kelas 7; contoh dekomposisi, pola, abstraksi, algoritma; soal Bebras SMP; materi informatika kelas 7 berpikir komputasional.
+
 Bab:
 0:00 Pembuka
 0:37 Main dulu tanpa komputer
@@ -108,6 +114,8 @@ Setelah menonton, murid bisa:
 • membedakan hal yang penting dan yang bisa diabaikan
 • menulis langkah-langkah berurutan yang bisa diikuti orang lain
 
+Video ini cocok untuk yang mencari: berpikir komputasional kelas 7; contoh dekomposisi, pola, abstraksi, algoritma; soal Bebras SMP; materi informatika kelas 7 berpikir komputasional.
+
 Bab:
 0:00 Pembuka bagian
 0:04 Jurus 3: Abstraksi
@@ -120,4 +128,24 @@ Latihan interaktif (kuis dengan petunjuk, bisa dipakai luring di HP): berkas epi
 Seri Animasi Informatika untuk SMP–SMA mengikuti CP 2025 (Keputusan Kepala BSKAP 046/H/KR/2025), unit D7.1 (10 JP). Tokoh: robot Kiko, Dito, dan Sinta. Semua gambar dibuat dengan kode; tanpa musik latar.
 
 #Informatika #KurikulumMerdeka #D71 #BerpikirKomputasional #Dekomposisi #Pola #Abstraksi #Algoritma #Bebras #Kelas7 #SMP
+```
+
+## Komentar tersemat (pin) — D7.1a
+
+```
+📌 Empat Jurus Berpikir Komputasional (1/2): Memecah Masalah dan Mencari Pola — materi Informatika kelas 7 (unit D7.1).
+Setelah menonton, kamu bisa memecah masalah besar, menemukan pola, dan menyusun langkah seperti pemecah soal Bebras.
+Kata kunci materi ini: berpikir komputasional kelas 7; contoh dekomposisi, pola, abstraksi, algoritma; soal Bebras SMP; materi informatika kelas 7 berpikir komputasional.
+Latihan interaktif (bisa luring di HP): berkas episode-d71.html. Tonton dulu episode D7.0 Cara Memakai Komputer dan HP (hanya bila belum pernah memakai komputer) bila belum.
+Ada yang belum jelas? Tulis di komentar, pertanyaanmu membantu teman lain juga.
+```
+
+## Komentar tersemat (pin) — D7.1b
+
+```
+📌 Empat Jurus Berpikir Komputasional (2/2): Abstraksi dan Algoritma — materi Informatika kelas 7 (unit D7.1).
+Setelah menonton, kamu bisa memecah masalah besar, menemukan pola, dan menyusun langkah seperti pemecah soal Bebras.
+Kata kunci materi ini: berpikir komputasional kelas 7; contoh dekomposisi, pola, abstraksi, algoritma; soal Bebras SMP; materi informatika kelas 7 berpikir komputasional.
+Latihan interaktif (bisa luring di HP): berkas episode-d71.html. Tonton dulu episode D7.0 Cara Memakai Komputer dan HP (hanya bila belum pernah memakai komputer) bila belum.
+Ada yang belum jelas? Tulis di komentar, pertanyaanmu membantu teman lain juga.
 ```

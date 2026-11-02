@@ -17,6 +17,8 @@ Setelah menonton, murid bisa:
 • menyebut jejak digital yang ditinggalkan saat memakai HP
 • menjelaskan mengapa jejak digital sulit dihapus dan memutuskan sebelum mengunggah
 
+Video ini cocok untuk yang mencari: cara membuat kata sandi yang kuat; jejak digital kelas 7; keamanan akun informatika SMP; contoh password yang aman.
+
 Bab:
 0:00 Pembuka
 0:39 Main dulu tanpa komputer
@@ -46,6 +48,8 @@ Setelah menonton, murid bisa:
 • menjelaskan tiga aturan menjaga kata sandi
 • menyebut jejak digital yang ditinggalkan saat memakai HP
 • menjelaskan mengapa jejak digital sulit dihapus dan memutuskan sebelum mengunggah
+
+Video ini cocok untuk yang mencari: cara membuat kata sandi yang kuat; jejak digital kelas 7; keamanan akun informatika SMP; contoh password yang aman.
 
 Bab:
 0:00 Pembuka bagian
@@ -77,6 +81,8 @@ Setelah menonton, murid bisa:
 • menyebut jejak digital yang ditinggalkan saat memakai HP
 • menjelaskan mengapa jejak digital sulit dihapus dan memutuskan sebelum mengunggah
 
+Video ini cocok untuk yang mencari: cara membuat kata sandi yang kuat; jejak digital kelas 7; keamanan akun informatika SMP; contoh password yang aman.
+
 Bab:
 0:00 Pembuka
 0:49 Main dulu tanpa komputer
@@ -107,6 +113,8 @@ Setelah menonton, murid bisa:
 • menyebut jejak digital yang ditinggalkan saat memakai HP
 • menjelaskan mengapa jejak digital sulit dihapus dan memutuskan sebelum mengunggah
 
+Video ini cocok untuk yang mencari: cara membuat kata sandi yang kuat; jejak digital kelas 7; keamanan akun informatika SMP; contoh password yang aman.
+
 Bab:
 0:00 Pembuka bagian
 0:04 Jejak digital
@@ -118,4 +126,24 @@ Latihan interaktif (kuis dengan petunjuk, bisa dipakai luring di HP): berkas epi
 Seri Animasi Informatika untuk SMP–SMA mengikuti CP 2025 (Keputusan Kepala BSKAP 046/H/KR/2025), unit D7.3 (6 JP). Tokoh: robot Kiko, Dito, dan Sinta. Semua gambar dibuat dengan kode; tanpa musik latar.
 
 #Informatika #KurikulumMerdeka #D73 #KataSandi #Password #JejakDigital #KeamananDigital #LiterasiDigital #Kelas7 #SMP
+```
+
+## Komentar tersemat (pin) — D7.3a
+
+```
+📌 Kata Sandi Aman dan Rekam Jejak Digital (1/2): Kata Sandi Aman — materi Informatika kelas 7 (unit D7.3).
+Setelah menonton, kamu bisa membuat kata sandi yang kuat dan memutuskan apa yang aman diunggah.
+Kata kunci materi ini: cara membuat kata sandi yang kuat; jejak digital kelas 7; keamanan akun informatika SMP; contoh password yang aman.
+Latihan interaktif (bisa luring di HP): berkas episode-d73.html. Tonton dulu episode D7.0 Cara Memakai Komputer dan HP bila belum.
+Ada yang belum jelas? Tulis di komentar, pertanyaanmu membantu teman lain juga.
+```
+
+## Komentar tersemat (pin) — D7.3b
+
+```
+📌 Kata Sandi Aman dan Rekam Jejak Digital (2/2): Rekam Jejak Digital — materi Informatika kelas 7 (unit D7.3).
+Setelah menonton, kamu bisa membuat kata sandi yang kuat dan memutuskan apa yang aman diunggah.
+Kata kunci materi ini: cara membuat kata sandi yang kuat; jejak digital kelas 7; keamanan akun informatika SMP; contoh password yang aman.
+Latihan interaktif (bisa luring di HP): berkas episode-d73.html. Tonton dulu episode D7.0 Cara Memakai Komputer dan HP bila belum.
+Ada yang belum jelas? Tulis di komentar, pertanyaanmu membantu teman lain juga.
 ```

@@ -17,6 +17,8 @@ Setelah menonton, murid bisa:
 • membedakan perangkat keras (hardware) dan perangkat lunak (software)
 • menjelaskan perbedaan RAM (sementara) dan penyimpanan (tetap)
 
+Video ini cocok untuk yang mencari: perangkat keras dan perangkat lunak kelas 7; input proses output komputer; materi mengenal komputer informatika SMP; fungsi CPU, RAM, dan penyimpanan.
+
 Bab:
 0:00 Pembuka
 0:30 Main dulu tanpa komputer
@@ -46,6 +48,8 @@ Setelah menonton, murid bisa:
 • mengurutkan alur input → proses → output → penyimpanan pada kejadian sehari-hari
 • membedakan perangkat keras (hardware) dan perangkat lunak (software)
 • menjelaskan perbedaan RAM (sementara) dan penyimpanan (tetap)
+
+Video ini cocok untuk yang mencari: perangkat keras dan perangkat lunak kelas 7; input proses output komputer; materi mengenal komputer informatika SMP; fungsi CPU, RAM, dan penyimpanan.
 
 Bab:
 0:00 Pembuka bagian
@@ -78,6 +82,8 @@ Setelah menonton, murid bisa:
 • membedakan perangkat keras (hardware) dan perangkat lunak (software)
 • menjelaskan perbedaan RAM (sementara) dan penyimpanan (tetap)
 
+Video ini cocok untuk yang mencari: perangkat keras dan perangkat lunak kelas 7; input proses output komputer; materi mengenal komputer informatika SMP; fungsi CPU, RAM, dan penyimpanan.
+
 Bab:
 0:00 Pembuka
 0:37 Main dulu tanpa komputer
@@ -108,6 +114,8 @@ Setelah menonton, murid bisa:
 • membedakan perangkat keras (hardware) dan perangkat lunak (software)
 • menjelaskan perbedaan RAM (sementara) dan penyimpanan (tetap)
 
+Video ini cocok untuk yang mencari: perangkat keras dan perangkat lunak kelas 7; input proses output komputer; materi mengenal komputer informatika SMP; fungsi CPU, RAM, dan penyimpanan.
+
 Bab:
 0:00 Pembuka bagian
 0:04 Penyimpanan
@@ -120,4 +128,24 @@ Latihan interaktif (kuis dengan petunjuk, bisa dipakai luring di HP): berkas epi
 Seri Animasi Informatika untuk SMP–SMA mengikuti CP 2025 (Keputusan Kepala BSKAP 046/H/KR/2025), unit D7.2 (8 JP). Tokoh: robot Kiko, Dito, dan Sinta. Semua gambar dibuat dengan kode; tanpa musik latar.
 
 #Informatika #KurikulumMerdeka #D72 #MengenalKomputer #Hardware #Software #InputProsesOutput #Kelas7 #SMP
+```
+
+## Komentar tersemat (pin) — D7.2a
+
+```
+📌 Mengenal Komputer: Perjalanan Satu Ketukan (1/2): Input, Proses, Output — materi Informatika kelas 7 (unit D7.2).
+Setelah menonton, kamu bisa menjelaskan perjalanan satu ketukan: input, proses, output, penyimpanan, dan perangkat lunak.
+Kata kunci materi ini: perangkat keras dan perangkat lunak kelas 7; input proses output komputer; materi mengenal komputer informatika SMP; fungsi CPU, RAM, dan penyimpanan.
+Latihan interaktif (bisa luring di HP): berkas episode-d72.html. Tonton dulu episode D7.0 Cara Memakai Komputer dan HP bila belum.
+Ada yang belum jelas? Tulis di komentar, pertanyaanmu membantu teman lain juga.
+```
+
+## Komentar tersemat (pin) — D7.2b
+
+```
+📌 Mengenal Komputer: Perjalanan Satu Ketukan (2/2): Penyimpanan dan Perangkat Lunak — materi Informatika kelas 7 (unit D7.2).
+Setelah menonton, kamu bisa menjelaskan perjalanan satu ketukan: input, proses, output, penyimpanan, dan perangkat lunak.
+Kata kunci materi ini: perangkat keras dan perangkat lunak kelas 7; input proses output komputer; materi mengenal komputer informatika SMP; fungsi CPU, RAM, dan penyimpanan.
+Latihan interaktif (bisa luring di HP): berkas episode-d72.html. Tonton dulu episode D7.0 Cara Memakai Komputer dan HP bila belum.
+Ada yang belum jelas? Tulis di komentar, pertanyaanmu membantu teman lain juga.
 ```

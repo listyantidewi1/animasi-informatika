@@ -17,6 +17,8 @@ Setelah menonton, murid bisa:
 • menebak hasil program sebelum menjalankannya
 • menemukan baris yang salah dan memperbaikinya (debugging)
 
+Video ini cocok untuk yang mencari: algoritma dan pemrograman kelas 7; contoh instruksi untuk robot; pseudocode informatika SMP; apa itu debugging.
+
 Bab:
 0:00 Pembuka
 0:21 Main dulu tanpa komputer
@@ -46,6 +48,8 @@ Setelah menonton, murid bisa:
 • menulis dan membaca daftar perintah berurutan (algoritma)
 • menebak hasil program sebelum menjalankannya
 • menemukan baris yang salah dan memperbaikinya (debugging)
+
+Video ini cocok untuk yang mencari: algoritma dan pemrograman kelas 7; contoh instruksi untuk robot; pseudocode informatika SMP; apa itu debugging.
 
 Bab:
 0:00 Pembuka bagian
@@ -78,6 +82,8 @@ Setelah menonton, murid bisa:
 • menebak hasil program sebelum menjalankannya
 • menemukan baris yang salah dan memperbaikinya (debugging)
 
+Video ini cocok untuk yang mencari: algoritma dan pemrograman kelas 7; contoh instruksi untuk robot; pseudocode informatika SMP; apa itu debugging.
+
 Bab:
 0:00 Pembuka
 0:27 Main dulu tanpa komputer
@@ -108,6 +114,8 @@ Setelah menonton, murid bisa:
 • menebak hasil program sebelum menjalankannya
 • menemukan baris yang salah dan memperbaikinya (debugging)
 
+Video ini cocok untuk yang mencari: algoritma dan pemrograman kelas 7; contoh instruksi untuk robot; pseudocode informatika SMP; apa itu debugging.
+
 Bab:
 0:00 Pembuka bagian
 0:04 Tebak dulu
@@ -120,4 +128,24 @@ Latihan interaktif (kuis dengan petunjuk, bisa dipakai luring di HP): berkas epi
 Seri Animasi Informatika untuk SMP–SMA mengikuti CP 2025 (Keputusan Kepala BSKAP 046/H/KR/2025), unit D7.5 (12 JP). Tokoh: robot Kiko, Dito, dan Sinta. Semua gambar dibuat dengan kode; tanpa musik latar.
 
 #Informatika #KurikulumMerdeka #D75 #BerpikirKomputasional #Algoritma #Kelas7 #SMP #Pseudocode #Debugging
+```
+
+## Komentar tersemat (pin) — D7.5a
+
+```
+📌 Instruksi untuk Manusia dan Mesin (1/2): Mesin Tidak Bisa Menebak — materi Informatika kelas 7 (unit D7.5).
+Setelah menonton, kamu bisa menulis instruksi yang bisa dijalankan robot, lalu menemukan dan memperbaiki kesalahannya.
+Kata kunci materi ini: algoritma dan pemrograman kelas 7; contoh instruksi untuk robot; pseudocode informatika SMP; apa itu debugging.
+Latihan interaktif (bisa luring di HP): berkas episode-d75.html. Tonton dulu episode D7.1 Berpikir Komputasional di Sekitar Kita bila belum.
+Ada yang belum jelas? Tulis di komentar, pertanyaanmu membantu teman lain juga.
+```
+
+## Komentar tersemat (pin) — D7.5b
+
+```
+📌 Instruksi untuk Manusia dan Mesin (2/2): Tebak, Jalankan, Perbaiki — materi Informatika kelas 7 (unit D7.5).
+Setelah menonton, kamu bisa menulis instruksi yang bisa dijalankan robot, lalu menemukan dan memperbaiki kesalahannya.
+Kata kunci materi ini: algoritma dan pemrograman kelas 7; contoh instruksi untuk robot; pseudocode informatika SMP; apa itu debugging.
+Latihan interaktif (bisa luring di HP): berkas episode-d75.html. Tonton dulu episode D7.1 Berpikir Komputasional di Sekitar Kita bila belum.
+Ada yang belum jelas? Tulis di komentar, pertanyaanmu membantu teman lain juga.
 ```
