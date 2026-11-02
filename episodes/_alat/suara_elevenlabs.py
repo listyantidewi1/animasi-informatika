@@ -53,15 +53,43 @@ def voices(auth):
     return call("GET", "/voices", auth=auth)["voices"]
 
 def pick_voice(name_or_id, auth):
-    vs = voices(auth)
+    try:
+        vs = voices(auth)
+    except SystemExit as e:
+        # kunci tanpa izin "Voices: Read": ID suara (20 huruf/angka, disalin dari halaman suara di ElevenLabs) tetap bisa dipakai langsung
+        if "voices_read" in str(e) and len(name_or_id) >= 16 and name_or_id.isalnum(): return {"voice_id": name_or_id, "name": name_or_id}
+        if "voices_read" in str(e): raise SystemExit("Kunci API tidak punya izin 'Voices: Read', jadi nama suara tidak bisa dicari. Pilihan: tambahkan izin itu pada kunci di ElevenLabs, "
+                                                     "atau sebut ID suaranya langsung: --voice <ID> (ElevenLabs -> Voices -> suara -> salin ID).")
+        raise
     for v in vs:
         if v["voice_id"] == name_or_id: return v
     hits = [v for v in vs if name_or_id.lower() in v["name"].lower()]
     if len(hits) == 1: return hits[0]
-    if not hits:
-        if all(v.get("category") == "premade" for v in vs): raise SystemExit(f"Suara '{name_or_id}' tidak terlihat karena hanya suara bawaan yang terbaca: kunci API belum terkirim. {KUNCI_HELP}")
-        raise SystemExit(f"Suara '{name_or_id}' tidak ditemukan di akun ini. Lihat --daftar; suara dari perpustakaan harus ditambahkan dulu ke 'My Voices'.")
-    raise SystemExit("Nama cocok dengan beberapa suara, pakai ID-nya: " + ", ".join(f"{v['name']} = {v['voice_id']}" for v in hits))
+    if len(hits) > 1: raise SystemExit("Nama cocok dengan beberapa suara, pakai ID-nya: " + ", ".join(f"{v['name']} = {v['voice_id']}" for v in hits))
+    if all(v.get("category") == "premade" for v in vs) and not os.environ.get("ELEVENLABS_API_KEY"):
+        raise SystemExit(f"Hanya suara bawaan yang terbaca: kunci API belum terkirim. {KUNCI_HELP}")
+    return add_from_library(name_or_id)
+
+def add_from_library(name):
+    """Suara perpustakaan (Voice Library) harus masuk 'My Voices' dulu agar bisa dipakai API. Cari, lalu tambahkan (izin Voices: Write)."""
+    import urllib.parse
+    try:
+        found = call("GET", "/shared-voices?" + urllib.parse.urlencode({"search": name, "page_size": 10})).get("voices", [])
+    except SystemExit as e:
+        raise SystemExit(f"Suara '{name}' tidak ada di My Voices, dan perpustakaan tidak bisa dicari ({str(e)[:120]}...). Tambahkan suaranya lewat situs ElevenLabs (Add to My Voices), lalu coba lagi.")
+    cands = [v for v in found if name.lower() in v.get("name", "").lower()] or found
+    if not cands: raise SystemExit(f"Suara '{name}' tidak ditemukan, juga di perpustakaan. Periksa namanya di situs ElevenLabs.")
+    if len(cands) > 1: raise SystemExit("Beberapa suara perpustakaan cocok; pakai ID-nya dengan --voice <ID>: " + ", ".join(f"{v['name']} = {v['voice_id']}" for v in cands))
+    v = cands[0]
+    try:
+        call("POST", f"/voices/add/{v['public_owner_id']}/{v['voice_id']}", {"new_name": v["name"]})
+        print(f"suara perpustakaan '{v['name']}' ditambahkan ke My Voices")
+    except SystemExit as e:
+        if "voices_write" in str(e) or "401" in str(e):
+            raise SystemExit(f"'{v['name']}' ada di perpustakaan (ID {v['voice_id']}) tetapi belum di My Voices, dan kunci tidak punya izin 'Voices: Write' untuk menambahkannya. "
+                             "Tekan 'Add to My Voices' di situs ElevenLabs, atau beri izin itu, lalu coba lagi.")
+        raise
+    return {"voice_id": v["voice_id"], "name": v["name"]}
 
 def pick_model(ref):
     """Model dicari di /v1/models: cocok ID persis, atau namanya memuat teks (mis. "v4" -> "Eleven v4"). Hanya model TTS."""
