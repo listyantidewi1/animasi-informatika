@@ -31,4 +31,5 @@ Peta kurikulum, alur belajar, dan daftar 52 episode ada di dokumen "Kurikulum Se
 | D8.1 Lembar Kerja Pengolah Data | ✓ | ✓ Kak Ceria | ✓ (2 bagian × 2 versi) | ✓ |
 | D8.2 Memecahkan Persoalan dengan Data Kecil | ✓ | ✓ Kak Ceria | ✓ (2 bagian × 2 versi) | ✓ |
 | D8.3 Flowchart dan Pseudocode Dasar | ✓ | ✓ Kak Ceria | ✓ (2 bagian × 2 versi) | ✓ |
+| D8.4 Menilai Informasi dan Ekosistem Pers Digital | ✓ | ✓ Kak Ceria | ✓ (2 bagian × 2 versi) | ✓ |
 | D7.5 Instruksi untuk Manusia dan Mesin | ✓ | ✓ Kak Ceria | ✓ (2 bagian × 2 versi) | ✓ |
