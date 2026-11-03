@@ -1,0 +1,896 @@
+<title>Kiko: Transaksi Aman</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<style>
+/* Inti gaya halaman latihan: satu kolom, pemutar di atas, latihan di bawah; palet kantin sama dengan video. */
+:root {
+  --bg: #EAF2EE; --surface: #FFFFFF; --surface2: #DCE9E2; --ink: #1F2A33; --ink2: #4A5A66; --line: #C9D8D0;
+  --accent: #2E7E9A; --accent-ink: #FFFFFF; --warm: #F2B134; --warm-ink: #5E3E05; --good: #2E9E5B; --good-bg: #DDF3E4; --bad: #D9443B; --bad-bg: #FBE1DF;
+  --font: Inter, "Segoe UI", Roboto, Arial, sans-serif;
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) { --bg: #141C1A; --surface: #1E2926; --surface2: #273532; --ink: #EAF2EE; --ink2: #A9BBB3; --line: #3A4A45; --accent: #5FB3CE; --accent-ink: #0F1D22; --warm: #F2B134; --warm-ink: #2B1C02; --good: #5FCB8A; --good-bg: #1F3A2B; --bad: #F07A72; --bad-bg: #442523; color-scheme: dark } }
+:root[data-theme="dark"] { --bg: #141C1A; --surface: #1E2926; --surface2: #273532; --ink: #EAF2EE; --ink2: #A9BBB3; --line: #3A4A45; --accent: #5FB3CE; --accent-ink: #0F1D22; --warm: #F2B134; --warm-ink: #2B1C02; --good: #5FCB8A; --good-bg: #1F3A2B; --bad: #F07A72; --bad-bg: #442523; color-scheme: dark }
+* { box-sizing: border-box }
+body { background: var(--bg); color: var(--ink); font-family: var(--font); font-size: 17px; line-height: 1.5; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); padding-block: 16px 48px }
+.wrap { max-width: 980px; margin: 0 auto; display: grid; gap: 28px }
+h1 { font-size: clamp(26px, 5vw, 38px); line-height: 1.15; margin: 0; text-wrap: balance; font-weight: 900 }
+h2 { font-size: 22px; margin: 0 0 12px; font-weight: 800 }
+h3 { font-size: 18px; margin: 0 0 8px; font-weight: 800 }
+p { margin: 0 0 10px; max-width: 65ch }
+.eyebrow { font-size: 13px; letter-spacing: .08em; text-transform: uppercase; color: var(--ink2); font-weight: 800; margin-bottom: 6px }
+.card { background: var(--surface); border-radius: 18px; padding: 18px; border: 1px solid var(--line) }
+button { font: inherit; font-weight: 800; border: 0; border-radius: 12px; padding: 12px 16px; cursor: pointer; background: var(--surface2); color: var(--ink); min-height: 48px; touch-action: manipulation }
+button:focus-visible, [tabindex]:focus-visible { outline: 3px solid var(--warm); outline-offset: 2px }
+button.primary { background: var(--accent); color: var(--accent-ink) }
+button.warm { background: var(--warm); color: var(--warm-ink) }
+button[aria-pressed="true"] { box-shadow: inset 0 0 0 3px var(--accent) }
+button:disabled { opacity: .45; cursor: default }
+.row { display: flex; flex-wrap: wrap; gap: 10px; align-items: center }
+/* player */
+.player { display: grid; gap: 12px }
+.stage { position: relative; width: 100%; aspect-ratio: 16 / 9; max-width: 100%; background: #EAF2EE; border-radius: 14px; overflow: hidden; border: 1px solid var(--line) }
+.stage canvas { width: 100%; height: 100%; display: block }
+.bigplay { position: absolute; inset: 0; display: grid; place-items: center; background: rgba(31,42,51,.25); border: 0; border-radius: 0; color: #fff; font-size: 20px; min-height: 0 }
+.bigplay span { background: var(--accent); color: var(--accent-ink); padding: 14px 26px; border-radius: 999px; font-weight: 900 }
+.bar { height: 10px; background: var(--surface2); border-radius: 999px; overflow: hidden; cursor: pointer }
+.bar > i { display: block; height: 100%; width: 0; background: var(--warm) }
+.chapters { display: flex; flex-wrap: wrap; gap: 8px }
+.chapters button { font-size: 14px; padding: 8px 12px; min-height: 40px }
+.chapters button.now { background: var(--warm); color: var(--warm-ink) }
+.hint { color: var(--ink2); font-size: 15px }
+/* exercises (generic parts) */
+.levels { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 12px }
+.levels button { font-size: 14px; padding: 8px 12px; min-height: 40px }
+.levels button.done::after { content: " ✓"; color: var(--good) }
+.task { background: var(--surface2); border-radius: 12px; padding: 12px 14px; margin-bottom: 12px; font-weight: 700 }
+.result { border-radius: 12px; padding: 12px 14px; font-weight: 800; margin-top: 10px }
+.result.good { background: var(--good-bg); color: var(--good) }
+.result.bad { background: var(--bad-bg); color: var(--bad) }
+.result.info { background: var(--surface2); color: var(--ink) }
+/* quiz */
+.quiz { display: grid; gap: 16px }
+.q { border-top: 1px solid var(--line); padding-top: 14px }
+.q:first-child { border-top: 0; padding-top: 0 }
+.opts { display: grid; gap: 8px; margin-top: 8px }
+.opts button { text-align: left; font-weight: 700; background: var(--surface2); display: flex; gap: 10px; align-items: center }
+.opts button b { width: 30px; height: 30px; border-radius: 50%; background: var(--accent); color: var(--accent-ink); display: grid; place-items: center; flex: none }
+.opts button.right { background: var(--good-bg); box-shadow: inset 0 0 0 3px var(--good) }
+.opts button.wrong { background: var(--bad-bg) }
+.fb { margin-top: 8px; font-weight: 700 }
+.fb.good { color: var(--good) } .fb.bad { color: var(--bad) }
+details summary { cursor: pointer; font-weight: 800; font-size: 18px }
+details[open] summary { margin-bottom: 10px }
+ul.plain { padding-left: 20px; margin: 0 0 10px } ul.plain li { margin-bottom: 6px; max-width: 65ch }
+.progress { display: flex; gap: 8px; flex-wrap: wrap } .progress span { background: var(--surface2); border-radius: 999px; padding: 6px 12px; font-size: 14px; font-weight: 700 }
+.progress span.ok { background: var(--good-bg); color: var(--good) }
+@media (prefers-reduced-motion: reduce) { * { transition: none !important } }
+
+/* latihan F12.5 */
+.qnum { font-weight: 800; color: var(--ink2); font-size: 14px; margin-bottom: 4px }
+.qtext { font-weight: 800; font-size: 18px; margin-bottom: 8px }
+.pic { background: var(--surface2); border-radius: 12px; padding: 12px; margin: 8px 0; font-size: 15px; font-weight: 700; display: grid; gap: 6px }
+.pic .big { font-size: 34px; letter-spacing: 6px }
+.pic .row2 { display: flex; flex-wrap: wrap; gap: 6px } .pic .chip { background: var(--surface); border: 2px solid var(--line); border-radius: 8px; padding: 4px 8px }
+.grid5 { border-collapse: collapse; margin: 6px auto } .grid5 td, .grid5 th { width: 44px; height: 44px; text-align: center; border: 1px solid var(--line); font-size: 14px; font-weight: 800; padding: 0 }
+.grid5 th { background: var(--surface2) } .grid5 td button { width: 100%; height: 100%; border: 0; border-radius: 0; background: transparent; font-size: 18px; min-height: 44px; padding: 0 }
+.grid5 td button.right { background: var(--good-bg) } .grid5 td button.wrong { background: var(--bad-bg) } .grid5 td.start { background: #FFF3D6 }
+.opts { display: grid; gap: 8px; margin: 8px 0 }
+.opts button { text-align: left; font-size: 15px; min-height: 44px; padding: 10px 12px; background: var(--surface); border: 2px solid var(--line) }
+.opts button.right { border-color: var(--good); background: var(--good-bg) } .opts button.wrong { border-color: var(--bad); background: var(--bad-bg) } .opts button.picked { border-color: var(--accent); background: color-mix(in srgb, var(--accent) 14%, var(--surface)) }
+.peta { display: grid; gap: 10px; margin: 8px 0 }
+.peta .ep { border-radius: 12px; padding: 12px 14px; display: grid; gap: 4px; font-weight: 700 } .peta .ep.ok { background: var(--good-bg) } .peta .ep.redo { background: color-mix(in srgb, var(--accent) 18%, var(--surface)) }
+.peta .ep b { font-size: 16px } .peta .ep small { color: var(--ink2) }
+.rev { display: grid; gap: 6px; margin-top: 8px } .rev div { font-size: 14px; padding: 8px 10px; border-radius: 10px; background: var(--surface2) } .rev div.bad { background: var(--bad-bg) }
+.tr { border-collapse: collapse; width: 100%; font-size: 15px; margin: 8px 0 } .tr th, .tr td { border: 1px solid var(--line); padding: 6px 8px; text-align: center } .tr th { background: var(--surface2) } .tr td.blank { background: #FFF3D6; font-weight: 900 } .tr td.ok { background: var(--good-bg); font-weight: 900 }
+.code { background: #1F2A33; color: #fff; border-radius: 12px; padding: 10px 12px; font-family: ui-monospace, monospace; font-size: 14px; white-space: pre; margin: 8px 0; line-height: 1.6 }
+.mem { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; margin: 8px 0 } .mem div { background: var(--surface); border: 2px solid var(--line); border-radius: 10px; padding: 6px; text-align: center } .mem div b { display: block; font-size: 12px; color: var(--ink2) } .mem div span { font-size: 18px; font-weight: 900 } .mem div.chg { border-color: var(--accent); background: #FFF3D6 }
+.py { background: #1F2A33; color: #fff; border-radius: 12px; padding: 10px 12px; font-family: ui-monospace, monospace; font-size: 13px; white-space: pre-wrap; margin: 8px 0; line-height: 1.7 } .py .hl { background: #B57A12; border-radius: 4px; padding: 0 4px }
+.scr { background: #0E1418; color: #fff; border-radius: 10px; padding: 8px 12px; font-family: ui-monospace, monospace; font-size: 14px; min-height: 20px; margin: 6px 0 }
+.tree svg { width: 100%; height: auto; display: block; background: var(--surface2); border-radius: 12px; margin: 8px 0 }
+.tree circle { fill: var(--surface); stroke: #2E7E9A; stroke-width: 2.5 } .tree circle.cur { fill: #FFF3D6; stroke: #E09A1A; stroke-width: 4 } .tree circle.path { fill: #FFF3D6; stroke: #E09A1A } .tree circle.fresh { fill: var(--good-bg); stroke: var(--good) }
+.tree line { stroke: #B7C4CC; stroke-width: 2.5 } .tree line.path { stroke: #E09A1A; stroke-width: 4 } .tree text { font: 800 12px Inter, sans-serif; text-anchor: middle; fill: #1F2A33 }
+.dir { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; margin: 8px 0 } .dir button { min-height: 48px; font-size: 16px; font-weight: 800 }
+.todo { display: flex; flex-wrap: wrap; gap: 6px; margin: 6px 0 } .todo span { border: 2px solid var(--line); border-radius: 8px; padding: 2px 8px; font-weight: 800 } .todo span.now { border-color: #E09A1A; background: #FFF3D6 } .todo span.ok { background: var(--good-bg); border-color: var(--good) }
+.dt { border-collapse: collapse; width: 100%; font-size: 14px; margin: 6px 0 } .dt th, .dt td { border: 1px solid var(--line); padding: 5px 6px; text-align: center } .dt th { background: var(--surface2) } .dt tr.cur td { background: #FFF3D6 } .dt tr.fin td { background: var(--good-bg) }
+.acts { display: grid; gap: 6px; margin: 8px 0 } .acts button { text-align: left; min-height: 48px; font-size: 15px; display: grid; gap: 2px } .acts button small { color: var(--ink2); font-weight: 700 } .acts button.on { border-color: var(--good); background: var(--good-bg) }
+.bar13 { position: relative; height: 10px; background: var(--surface2); border-radius: 5px; margin-top: 4px } .bar13 i { position: absolute; top: 0; bottom: 0; background: #2E7E9A; border-radius: 5px }
+pre.ref { background: #1F2A33; color: #fff; border-radius: 10px; padding: 10px; font-size: 12px; overflow-x: auto }
+.akibat { border-radius: 12px; padding: 10px 12px; margin: 8px 0; font-weight: 700; font-size: 15px } .akibat.ok { background: var(--good-bg) } .akibat.no { background: var(--bad-bg) }
+.akibat b { display: block; margin-bottom: 2px } .draft { background: var(--surface2); border-left: 5px solid #2E7E9A; border-radius: 10px; padding: 10px 12px; font-weight: 700; margin: 8px 0 }
+.hp { width: 230px; margin: 8px auto; border: 10px solid #1F2A33; border-radius: 28px; background: #fff; overflow: hidden } .hp .bar { background: #2E7E9A; color: #fff; font-weight: 900; text-align: center; padding: 16px 8px 8px } .hp .bd { padding: 12px; text-align: center } .hp .nm { border: 3px solid #E09A1A; background: #FFF3D6; border-radius: 10px; padding: 8px; font-weight: 900; margin: 4px 0 10px } .hp .nom { font-size: 26px; font-weight: 900 } .hp small { color: var(--ink2); font-weight: 700 }
+.ctx { background: var(--surface2); border-radius: 10px; padding: 8px 12px; font-weight: 800; margin: 6px 0 }
+</style>
+
+<div class="wrap">
+  <header>
+    <div class="eyebrow">Informatika · Fase F · Kelas XII · Episode F12.5</div>
+    <h1>Transaksi Digital yang Aman</h1>
+    <p class="hint">Tonton videonya (dua bagian), lalu kerjakan tiga latihan: simulasi kasir QRIS, detektif pesan penipuan, dan penyusun autentikasi dua langkah. Semua toko, nama, nomor, dan pesan fiktif. Jangan memakai data asli saat berlatih.</p>
+  </header>
+  <section class="card player" aria-label="Pemutar episode">
+    <div class="stage">
+      <canvas id="screen" width="1920" height="1080" aria-label="Animasi episode"></canvas>
+      <audio id="nar" preload="auto" src="narasi.mp3"></audio>
+      <button class="bigplay" id="bigplay" aria-label="Putar"><span>▶ Putar episode</span></button>
+    </div>
+    <div class="bar" id="bar" role="slider" aria-label="Posisi episode" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" tabindex="0"><i id="barfill"></i></div>
+    <div class="row">
+      <button class="primary" id="playbtn">▶ Putar</button>
+      <button id="replay">↺ Ulangi bagian ini</button>
+      <button id="voice" aria-pressed="true">🔊 Suara: nyala</button>
+      <button id="slow" aria-pressed="false">🐢 Mode lambat</button>
+      <span class="hint" id="timelabel">0:00 / 0:00</span>
+    </div>
+    <div>
+      <div class="eyebrow">Bagian</div>
+      <div class="chapters" id="chapters"></div>
+    </div>
+  </section>
+
+  <section class="card" aria-label="Cek pemahaman">
+    <h2>Cek pemahaman</h2>
+    <p class="hint">Pilih satu jawaban. Kalau salah, kamu dapat petunjuk, lalu coba lagi.</p>
+    <div class="quiz" id="quiz"></div>
+  </section>
+
+  <section class="card" aria-label="Latihan">
+    <h2>Kasir QRIS, detektif penipuan, penyusun 2FA</h2>
+    <p class="hint">Tiga latihan. Jawaban salah memberi petunjuk. Kemajuan tersimpan di perangkat ini.</p>
+    <div class="levels" id="levels"></div>
+    <div class="task" id="task"></div>
+    <div id="exarea"></div>
+    <div id="result"></div>
+    <div class="row" style="margin-top:10px"><button id="redo">↺ Ulangi bagian ini</button></div>
+  </section>
+
+  <section class="card" aria-label="Kemajuan">
+    <h2>Kemajuanmu</h2>
+    <div class="progress" id="progress"></div>
+    <p class="hint" style="margin-top:8px">Kemajuan tersimpan di perangkat ini saja.</p>
+  </section>
+
+  <section class="card">
+    <details>
+      <summary>Untuk guru: cara memakai episode ini (12 JP)</summary>
+      <p><b>Tujuan (F12.5, elemen LD, Fase F):</b> murid memahami loka pasar, perbankan digital, dan dompet digital beserta keamanannya, serta menerapkan autentikasi dua langkah dengan beragam moda.</p>
+      <ul class="plain">
+        <li><b>Pertemuan 1 (2 JP):</b> permainan rekening bersama (pembeli, penjual, rekening bersama dengan uang mainan) dan stiker QR palsu. Tonton Bagian 1 sampai segmen Loka pasar dan dompet digital.</li>
+        <li><b>Pertemuan 2 (2 JP), QRIS:</b> segmen Perjalanan QRIS; urutkan kartu langkah pembayaran; Latihan 1 (simulasi kasir).</li>
+        <li><b>Pertemuan 3 (2 JP), rekayasa sosial:</b> tonton Bagian 2. Kelompok menganalisis pesan penipuan fiktif yang guru siapkan dan menandai empat tanda bahaya. Latihan 2.</li>
+        <li><b>Pertemuan 4 (2 JP), autentikasi dua langkah:</b> mengelompokkan faktor (tahu, punya, diri); guru memperagakan aplikasi autentikator pada akun latihan, bukan akun murid. Latihan 3.</li>
+        <li><b>Pertemuan 5 (2 JP), bila tertipu:</b> bermain peran telepon "petugas bank" palsu; menyusun langkah darurat. Nomor resmi bank keluarga diisi di rumah bersama orang tua, tidak dikumpulkan.</li>
+        <li><b>Pertemuan 6 (2 JP), kampanye:</b> poster atau video pendek "tiga detik sebelum bayar" untuk kantin atau koperasi sekolah; di rumah, bersama orang tua, memeriksa notifikasi, batas transaksi, dan 2FA satu aplikasi tanpa membuka saldo atau kata sandi.</li>
+      </ul>
+      <p><b>Catatan:</b> jangan meminta murid membuka aplikasi keuangan asli, memperlihatkan saldo, atau menyerahkan nomor rekening. Semua latihan memakai contoh fiktif. Pengaduan konsumen sektor jasa keuangan dapat disampaikan lewat Kontak OJK 157 atau layanan resmi bank yang bersangkutan.</p>
+    </details>
+  </section>
+</div>
+
+<script>/* Kiko core: mesin gambar bersama untuk semua episode Fase D.
+   Kiko.draw(ctx, t, TL) menggambar frame pada detik t di kanvas 1920x1080 secara deterministik.
+   Berisi palet, pembantu gambar, tokoh (Kiko, murid), dan adegan umum (judul, kuis, ringkasan, penutup).
+   Setiap episode menambahkan adegannya sendiri di scenes.js: Object.assign(Kiko.SCENES, {...}). */
+(function (global) {
+  const W = 1920, H = 1080;
+  const FONT = "Inter, 'Segoe UI', Roboto, Arial, sans-serif";
+  const C = {
+    bg: "#EAF2EE", bg2: "#DCE9E2", ink: "#1F2A33", ink2: "#4A5A66", panel: "#FFFFFF",
+    tile: "#F7FAF8", tileLine: "#C9D8D0", table: "#A4653A", tableTop: "#C98A57",
+    kiko: "#2E7E9A", kikoDark: "#1F5A6E", kikoLight: "#8FD0E6", eye: "#FFFFFF", pupil: "#1F2A33",
+    accent: "#F2B134", accentDark: "#B57A12", good: "#2E9E5B", bad: "#D9443B", goodBg: "#DDF3E4", badBg: "#FBE1DF",
+    sub: "#1F2A33", subText: "#FFFFFF", star: "#F2B134", skin: "#F1C9A5", skin2: "#C98A57", hair: "#2B2118",
+    uniform: "#FFFFFF", pants: "#2F4E7D", bubble: "#FFFFFF", muted: "#9AAFA6"
+  };
+  const ease = u => u < 0 ? 0 : u > 1 ? 1 : u * u * (3 - 2 * u);
+  const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
+  const lerp = (a, b, u) => a + (b - a) * u;
+
+  // ---------- drawing helpers ----------
+  function rr(ctx, x, y, w, h, r) {
+    ctx.beginPath(); ctx.moveTo(x + r, y); ctx.arcTo(x + w, y, x + w, y + h, r); ctx.arcTo(x + w, y + h, x, y + h, r);
+    ctx.arcTo(x, y + h, x, y, r); ctx.arcTo(x, y, x + w, y, r); ctx.closePath();
+  }
+  function text(ctx, s, x, y, size, opt = {}) {
+    ctx.font = `${opt.weight || 600} ${size}px ${FONT}`; ctx.fillStyle = opt.color || C.ink;
+    ctx.textAlign = opt.align || "left"; ctx.textBaseline = opt.base || "alphabetic"; ctx.fillText(s, x, y);
+  }
+  function wrap(ctx, s, size, weight, maxW) {
+    ctx.font = `${weight} ${size}px ${FONT}`;
+    const words = s.split(" "), lines = []; let cur = "";
+    for (const w of words) {
+      const test = cur ? cur + " " + w : w;
+      if (ctx.measureText(test).width > maxW && cur) { lines.push(cur); cur = w; } else cur = test;
+    }
+    if (cur) lines.push(cur);
+    return lines;
+  }
+  function para(ctx, s, x, y, size, maxW, opt = {}) {
+    const lines = wrap(ctx, s, size, opt.weight || 500, maxW); const lh = size * (opt.lh || 1.35);
+    lines.forEach((l, i) => text(ctx, l, x, y + i * lh, size, opt));
+    return lines.length * lh;
+  }
+  function arrowIcon(ctx, kind, cx, cy, s, color) {
+    ctx.save(); ctx.translate(cx, cy); ctx.strokeStyle = color; ctx.fillStyle = color; ctx.lineWidth = s * 0.16; ctx.lineCap = "round"; ctx.lineJoin = "round";
+    if (kind === "up") {
+      ctx.beginPath(); ctx.moveTo(0, s * 0.45); ctx.lineTo(0, -s * 0.3); ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(-s * 0.32, -s * 0.05); ctx.lineTo(0, -s * 0.45); ctx.lineTo(s * 0.32, -s * 0.05); ctx.stroke();
+    } else if (kind === "left" || kind === "right") {
+      const k = kind === "left" ? -1 : 1;
+      ctx.beginPath(); ctx.moveTo(0, s * 0.45); ctx.lineTo(0, -s * 0.05); ctx.quadraticCurveTo(0, -s * 0.32, k * s * 0.28, -s * 0.32); ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(k * s * 0.12, -s * 0.5); ctx.lineTo(k * s * 0.4, -s * 0.32); ctx.lineTo(k * s * 0.12, -s * 0.14); ctx.stroke();
+    } else if (kind === "east") {
+      ctx.beginPath(); ctx.moveTo(-s * 0.4, 0); ctx.lineTo(s * 0.3, 0); ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(s * 0.05, -s * 0.28); ctx.lineTo(s * 0.4, 0); ctx.lineTo(s * 0.05, s * 0.28); ctx.stroke();
+    } else if (kind === "grab") {
+      ctx.beginPath(); ctx.arc(0, s * 0.12, s * 0.22, 0, Math.PI * 2); ctx.fill();
+      ctx.beginPath(); ctx.moveTo(-s * 0.4, -s * 0.42); ctx.lineTo(-s * 0.4, -s * 0.12); ctx.moveTo(s * 0.4, -s * 0.42); ctx.lineTo(s * 0.4, -s * 0.12);
+      ctx.moveTo(-s * 0.4, -s * 0.42); ctx.lineTo(s * 0.4, -s * 0.42); ctx.stroke();
+    }
+    ctx.restore();
+  }
+  function bakso(ctx, cx, cy, s, opt = {}) {
+    // a bowl of bakso: the goal
+    ctx.save(); ctx.translate(cx, cy);
+    if (opt.glow) { ctx.beginPath(); ctx.arc(0, 0, s * 0.62, 0, Math.PI * 2); ctx.fillStyle = "rgba(242,177,52,0.22)"; ctx.fill(); }
+    ctx.fillStyle = "#E4EEF5"; ctx.beginPath(); ctx.moveTo(-s * 0.46, -s * 0.05); ctx.quadraticCurveTo(-s * 0.4, s * 0.45, 0, s * 0.45); ctx.quadraticCurveTo(s * 0.4, s * 0.45, s * 0.46, -s * 0.05); ctx.closePath(); ctx.fill();
+    ctx.strokeStyle = "#8FA9BD"; ctx.lineWidth = s * 0.05; ctx.stroke();
+    ctx.fillStyle = "#C8B49A"; ctx.beginPath(); ctx.ellipse(0, -s * 0.05, s * 0.44, s * 0.14, 0, 0, Math.PI * 2); ctx.fill();
+    for (const [dx, dy, r] of [[-0.16, -0.1, 0.13], [0.14, -0.12, 0.13], [0, -0.22, 0.12]]) {
+      ctx.fillStyle = "#9A7B5B"; ctx.beginPath(); ctx.arc(dx * s, dy * s, r * s, 0, Math.PI * 2); ctx.fill();
+      ctx.fillStyle = "#B8977A"; ctx.beginPath(); ctx.arc(dx * s - r * s * 0.3, dy * s - r * s * 0.3, r * s * 0.4, 0, Math.PI * 2); ctx.fill();
+    }
+    ctx.fillStyle = "#4CA64C"; for (const dx of [-0.26, 0.1, 0.26]) { ctx.beginPath(); ctx.arc(dx * s, -s * 0.07, s * 0.045, 0, Math.PI * 2); ctx.fill(); }
+    ctx.restore();
+  }
+  function table(ctx, x, y, w, h) {
+    ctx.fillStyle = C.table; rr(ctx, x + w * 0.1, y + h * 0.3, w * 0.8, h * 0.55, 10); ctx.fill();
+    ctx.fillStyle = C.tableTop; rr(ctx, x + w * 0.06, y + h * 0.18, w * 0.88, h * 0.3, 10); ctx.fill();
+    ctx.fillStyle = "rgba(0,0,0,0.12)"; ctx.fillRect(x + w * 0.16, y + h * 0.5, w * 0.08, h * 0.35); ctx.fillRect(x + w * 0.76, y + h * 0.5, w * 0.08, h * 0.35);
+  }
+  function kiko(ctx, cx, cy, s, ang, opt = {}) {
+    ctx.save(); ctx.translate(cx, cy);
+    // shadow
+    ctx.fillStyle = "rgba(0,0,0,0.12)"; ctx.beginPath(); ctx.ellipse(0, s * 0.42, s * 0.42, s * 0.12, 0, 0, Math.PI * 2); ctx.fill();
+    ctx.rotate(ang);
+    // wheels
+    ctx.fillStyle = C.kikoDark; rr(ctx, -s * 0.46, -s * 0.2, s * 0.12, s * 0.5, 5); ctx.fill(); rr(ctx, s * 0.34, -s * 0.2, s * 0.12, s * 0.5, 5); ctx.fill();
+    // body
+    ctx.fillStyle = opt.flash ? `rgba(217,68,59,${0.5 + 0.5 * opt.flash})` : C.kiko; rr(ctx, -s * 0.38, -s * 0.36, s * 0.76, s * 0.72, s * 0.16); ctx.fill();
+    // visor (front, facing up)
+    ctx.fillStyle = C.kikoLight; rr(ctx, -s * 0.26, -s * 0.33, s * 0.52, s * 0.3, s * 0.1); ctx.fill();
+    // eyes
+    const mood = opt.mood || "happy";
+    ctx.fillStyle = C.pupil;
+    if (mood === "sad") { ctx.beginPath(); ctx.arc(-s * 0.12, -s * 0.18, s * 0.05, 0, Math.PI * 2); ctx.arc(s * 0.12, -s * 0.18, s * 0.05, 0, Math.PI * 2); ctx.fill(); ctx.strokeStyle = C.pupil; ctx.lineWidth = s * 0.03; ctx.beginPath(); ctx.arc(0, -s * 0.03, s * 0.08, Math.PI * 1.15, Math.PI * 1.85); ctx.stroke(); }
+    else if (mood === "confused") { ctx.beginPath(); ctx.arc(-s * 0.12, -s * 0.18, s * 0.05, 0, Math.PI * 2); ctx.arc(s * 0.12, -s * 0.18, s * 0.035, 0, Math.PI * 2); ctx.fill(); ctx.strokeStyle = C.pupil; ctx.lineWidth = s * 0.03; ctx.beginPath(); ctx.moveTo(-s * 0.08, -s * 0.06); ctx.lineTo(s * 0.08, -s * 0.09); ctx.stroke(); }
+    else { ctx.beginPath(); ctx.arc(-s * 0.12, -s * 0.18, s * 0.055, 0, Math.PI * 2); ctx.arc(s * 0.12, -s * 0.18, s * 0.055, 0, Math.PI * 2); ctx.fill(); ctx.strokeStyle = C.pupil; ctx.lineWidth = s * 0.03; ctx.beginPath(); ctx.arc(0, -s * 0.1, s * 0.08, Math.PI * 0.15, Math.PI * 0.85); ctx.stroke(); }
+    // front pointer
+    ctx.fillStyle = C.accent; ctx.beginPath(); ctx.moveTo(-s * 0.1, -s * 0.38); ctx.lineTo(s * 0.1, -s * 0.38); ctx.lineTo(0, -s * 0.5); ctx.closePath(); ctx.fill();
+    // antenna
+    ctx.strokeStyle = C.kikoDark; ctx.lineWidth = s * 0.04; ctx.beginPath(); ctx.moveTo(0, s * 0.36); ctx.lineTo(0, s * 0.5); ctx.stroke();
+    ctx.fillStyle = C.accent; ctx.beginPath(); ctx.arc(0, s * 0.52, s * 0.07, 0, Math.PI * 2); ctx.fill();
+    // tray with bakso when grabbed
+    if (opt.grabbed) bakso(ctx, 0, s * 0.05, s * 0.45);
+    ctx.restore();
+    if (opt.wave !== undefined) { // arm waving (title scene)
+      ctx.save(); ctx.translate(cx + s * 0.42, cy - s * 0.1); ctx.rotate(-0.6 + Math.sin(opt.wave * 6) * 0.4);
+      ctx.strokeStyle = C.kikoDark; ctx.lineWidth = s * 0.08; ctx.lineCap = "round"; ctx.beginPath(); ctx.moveTo(0, 0); ctx.lineTo(s * 0.3, -s * 0.3); ctx.stroke();
+      ctx.fillStyle = C.kikoLight; ctx.beginPath(); ctx.arc(s * 0.32, -s * 0.33, s * 0.09, 0, Math.PI * 2); ctx.fill(); ctx.restore();
+    }
+  }
+  function kid(ctx, cx, cy, s, opt = {}) {
+    // simple student figure, standing, facing viewer
+    ctx.save(); ctx.translate(cx, cy);
+    ctx.fillStyle = "rgba(0,0,0,0.12)"; ctx.beginPath(); ctx.ellipse(0, s * 1.02, s * 0.5, s * 0.1, 0, 0, Math.PI * 2); ctx.fill();
+    ctx.fillStyle = C.pants; rr(ctx, -s * 0.3, s * 0.35, s * 0.6, s * 0.5, s * 0.1); ctx.fill();
+    ctx.fillStyle = C.skin; ctx.fillRect(-s * 0.24, s * 0.8, s * 0.16, s * 0.2); ctx.fillRect(s * 0.08, s * 0.8, s * 0.16, s * 0.2);
+    ctx.fillStyle = C.uniform; rr(ctx, -s * 0.36, -s * 0.12, s * 0.72, s * 0.56, s * 0.12); ctx.fill();
+    ctx.strokeStyle = "#D5DDE2"; ctx.lineWidth = s * 0.025; rr(ctx, -s * 0.36, -s * 0.12, s * 0.72, s * 0.56, s * 0.12); ctx.stroke();
+    ctx.fillStyle = C.skin; ctx.beginPath(); ctx.arc(0, -s * 0.42, s * 0.32, 0, Math.PI * 2); ctx.fill();
+    ctx.fillStyle = opt.hairColor || C.hair; ctx.beginPath(); ctx.arc(0, -s * 0.5, s * 0.33, Math.PI, 0); ctx.fill();
+    if (opt.hair === "long") { ctx.fillRect(-s * 0.33, -s * 0.5, s * 0.12, s * 0.45); ctx.fillRect(s * 0.21, -s * 0.5, s * 0.12, s * 0.45); }
+    ctx.fillStyle = C.pupil; ctx.beginPath(); ctx.arc(-s * 0.11, -s * 0.4, s * 0.035, 0, Math.PI * 2); ctx.arc(s * 0.11, -s * 0.4, s * 0.035, 0, Math.PI * 2); ctx.fill();
+    ctx.strokeStyle = C.pupil; ctx.lineWidth = s * 0.025; ctx.beginPath(); ctx.arc(0, -s * 0.33, s * 0.08, Math.PI * 0.15, Math.PI * 0.85); ctx.stroke();
+    // arms
+    ctx.strokeStyle = C.skin; ctx.lineWidth = s * 0.11; ctx.lineCap = "round"; ctx.beginPath();
+    if (opt.point) { ctx.moveTo(s * 0.32, s * 0.02); ctx.lineTo(s * 0.75, -s * 0.2); } else { ctx.moveTo(s * 0.34, s * 0.02); ctx.lineTo(s * 0.42, s * 0.38); }
+    ctx.moveTo(-s * 0.34, s * 0.02); ctx.lineTo(-s * 0.42, s * 0.38); ctx.stroke();
+    ctx.restore();
+  }
+  function bubble(ctx, x, y, w, s, size, opt = {}) {
+    const lines = wrap(ctx, s, size, 600, w - 48); const h = lines.length * size * 1.3 + 40;
+    ctx.fillStyle = opt.fill || C.bubble; ctx.strokeStyle = opt.stroke || "#B7C7BF"; ctx.lineWidth = 3;
+    rr(ctx, x, y - h, w, h, 22); ctx.fill(); ctx.stroke();
+    const tx = opt.tailX !== undefined ? opt.tailX : x + 60;
+    ctx.beginPath(); ctx.moveTo(tx - 16, y); ctx.lineTo(tx + 16, y); ctx.lineTo(tx + (opt.tailDir || 0), y + 28); ctx.closePath(); ctx.fillStyle = opt.fill || C.bubble; ctx.fill();
+    ctx.strokeStyle = opt.stroke || "#B7C7BF"; ctx.beginPath(); ctx.moveTo(tx - 16, y); ctx.lineTo(tx + (opt.tailDir || 0), y + 28); ctx.lineTo(tx + 16, y); ctx.stroke();
+    lines.forEach((l, i) => text(ctx, l, x + 24, y - h + 24 + size + i * size * 1.3, size, { color: opt.color || C.ink, weight: 600 }));
+    return h;
+  }
+  function card(ctx, x, y, w, h, opt = {}) { ctx.fillStyle = opt.fill || C.panel; rr(ctx, x, y, w, h, opt.r || 26); ctx.fill(); if (opt.stroke) { ctx.strokeStyle = opt.stroke; ctx.lineWidth = opt.lw || 4; ctx.stroke(); } }
+
+  // ---------- adegan umum (semua episode) ----------
+  const SCENES = {
+    title(ctx, b, l, t, TL) {
+      card(ctx, 160, 160, 1600, 700, { fill: C.panel });
+      kiko(ctx, 420, 520, 260, 0, { wave: l, mood: "happy" });
+      text(ctx, "Informatika · Fase " + (TL.episode || "D")[0] + " · Episode " + TL.episode, 720, 330, 34, { color: C.ink2, weight: 700 });
+      const ts = TL.title.length > 34 ? 74 : 92; const th = para(ctx, TL.title, 720, 440, ts, 1000, { weight: 900, lh: 1.1 }); const hy = Math.max(640, 440 + th - ts * 0.35 + 30);
+      if (TL.hook) { text(ctx, "SETELAH MENONTON, KAMU BISA:", 720, hy, 26, { color: C.accentDark, weight: 800 }); para(ctx, TL.hook, 720, hy + 50, 34, 1000, { weight: 800, lh: 1.3 }); const ny = hy + 50 + wrap(ctx, TL.hook, 34, 800, 1000).length * 34 * 1.3 + 12; if (ny <= 830) text(ctx, "Dengarkan, atau baca teksnya pelan-pelan.", 720, Math.max(800, ny), 26, { color: C.ink2, weight: 600 }); }
+      else text(ctx, "Dengarkan, atau baca teksnya pelan-pelan.", 720, 700, 36, { color: C.ink2, weight: 600 });
+      arrowIcon(ctx, "up", 1560, 250, 70, C.kikoLight); arrowIcon(ctx, "right", 1660, 250, 70, C.kikoLight);
+    },
+    quiz(ctx, b, l, t, TL, answered) {
+      const q = TL.quizzes[b.quiz]; card(ctx, 200, 150, 1520, 740, { stroke: C.accent, lw: 6 });
+      text(ctx, "CEK PEMAHAMAN", 960, 230, 32, { align: "center", color: C.accentDark, weight: 800 });
+      para(ctx, q.q, 960, 320, 44, 1360, { weight: 800, align: "center", lh: 1.3 });
+      // tata letak pilihan: mulai di bawah pertanyaan dan selesai di atas kartu narasi (narasi panjang = jarak dirapatkan)
+      const qLines = wrap(ctx, q.q, 44, 800, 1360).length, subTop = 1056 - (wrap(ctx, b.text, 44, 700, 1660).length * 44 * 1.3 + 44);
+      let oy = qLines <= 1 ? 420 : 470, gap = 120, oh = 96; const n = q.options.length;
+      if (oy + (n - 1) * gap + oh > subTop - 12) { gap = Math.max(104, Math.floor((subTop - 12 - oh - oy) / Math.max(1, n - 1))); }
+      if (oy + (n - 1) * gap + oh > subTop - 12) { oh = 86; gap = 100; oy = Math.max(320 + (qLines - 1) * 57 + 40, subTop - 12 - oh - (n - 1) * gap); }
+      q.options.forEach((o, i) => {
+        const y = oy + i * gap; const right = answered && i === q.answer;
+        card(ctx, 320, y, 1280, oh, { fill: right ? C.goodBg : answered ? "#F4F6F5" : C.bg2, stroke: right ? C.good : "#CFDCD5", lw: right ? 6 : 3 });
+        ctx.fillStyle = right ? C.good : C.kiko; ctx.beginPath(); ctx.arc(380, y + oh / 2, 30, 0, Math.PI * 2); ctx.fill();
+        text(ctx, "ABC"[i], 380, y + oh / 2 + 13, 34, { align: "center", color: "#fff", weight: 900 });
+        text(ctx, o, 440, y + oh / 2 + 14, 38, { weight: 700, color: answered && !right ? C.muted : C.ink });
+        if (right) text(ctx, "✓", 1540, y + oh / 2 + 18, 54, { align: "center", color: C.good, weight: 900 });
+      });
+      if (!answered) { // thinking timer
+        const frac = clamp(l / b.dur, 0, 1); ctx.strokeStyle = "#D7E2DC"; ctx.lineWidth = 14; ctx.beginPath(); ctx.arc(1640, 230, 40, 0, Math.PI * 2); ctx.stroke();
+        ctx.strokeStyle = C.accent; ctx.beginPath(); ctx.arc(1640, 230, 40, -Math.PI / 2, -Math.PI / 2 + frac * Math.PI * 2); ctx.stroke();
+        // catatan hanya digambar bila tidak tertutup kartu narasi (narasi tiga baris atau lebih menutupinya)
+        const subTop = 1056 - (wrap(ctx, b.text, 44, 700, 1660).length * 44 * 1.3 + 44);
+        if (subTop > 880) text(ctx, "Pikirkan dulu, jangan buru-buru.", 960, 860, 32, { align: "center", color: C.ink2, weight: 600 });
+      }
+    },
+    quiz_answer(ctx, b, l, t, TL) { SCENES.quiz(ctx, b, l, t, TL, true); },
+    recap(ctx, b, l, t, TL) {
+      // TL.recap: tiga kalimat pendek dari script.json
+      card(ctx, 160, 140, 1600, 760);
+      text(ctx, "TIGA HAL UNTUK DIINGAT", 960, 230, 34, { align: "center", color: C.accentDark, weight: 900 });
+      const items = TL.recap || [];
+      const show = clamp(Math.floor((l - 0.6) / 2.2) + 1, 1, Math.max(1, items.length));
+      items.forEach((s, i) => { if (i >= show) return; card(ctx, 300, 290 + i * 180, 1320, 140, { fill: C.bg2 }); ctx.fillStyle = C.kiko; ctx.beginPath(); ctx.arc(380, 360 + i * 180, 40, 0, Math.PI * 2); ctx.fill(); text(ctx, String(i + 1), 380, 376 + i * 180, 40, { align: "center", color: "#fff", weight: 900 }); text(ctx, s, 450, 375 + i * 180, 42, { weight: 800 }); });
+      kiko(ctx, 1620, 820, 130, 0);
+    },
+    outro(ctx, b, l, t, TL) {
+      // TL.next: {code, title, note} episode berikutnya, dari script.json
+      const n = TL.next || {};
+      card(ctx, 260, 200, 1400, 600);
+      text(ctx, "EPISODE BERIKUTNYA", 960, 320, 34, { align: "center", color: C.accentDark, weight: 900 });
+      text(ctx, n.code || "", 960, 440, 60, { align: "center", weight: 900 });
+      text(ctx, n.title || "", 960, 530, 54, { align: "center", weight: 800, color: C.ink2 });
+      text(ctx, n.note || "", 960, 680, 34, { align: "center", color: C.ink2, weight: 600 });
+      kiko(ctx, 960, 760 + 20, 140, 0, { wave: l });
+    }
+  };
+
+  function beatAt(TL, t) {
+    let b = TL.beats[0];
+    for (const x of TL.beats) { if (t >= x.start) b = x; else break; }
+    return b;
+  }
+  function draw(ctx, t, TL, opt = {}) {
+    const b = beatAt(TL, t); const l = t - b.start;
+    ctx.save(); ctx.setTransform(1, 0, 0, 1, 0, 0);
+    ctx.fillStyle = C.bg; ctx.fillRect(0, 0, W, H);
+    // header
+    text(ctx, TL.episode + " · " + TL.title, 60, 78, 30, { color: C.ink2, weight: 700 });
+    text(ctx, TL.segments[b.seg], 1860, 78, 30, { color: C.accentDark, weight: 800, align: "right" });
+    ctx.fillStyle = C.bg2; ctx.fillRect(0, 100, W, 6); ctx.fillStyle = C.accent; ctx.fillRect(0, 100, W * clamp(t / TL.total, 0, 1), 6);
+    const fn = SCENES[b.scene]; if (fn) fn(ctx, b, l, t, TL);
+    // narration card (burned-in text the student reads)
+    if (opt.subtitles !== false) {
+      const size = 44; const lines = wrap(ctx, b.text, size, 700, 1660);
+      const h = lines.length * size * 1.3 + 44; const y0 = 1056 - h;
+      ctx.fillStyle = "rgba(31,42,51,0.92)"; rr(ctx, 100, y0, 1720, h, 20); ctx.fill();
+      // reading progress (how far along the text the reader should be)
+      const frac = clamp(l / b.audio, 0, 1); ctx.fillStyle = C.accent; rr(ctx, 100, y0 + h - 8, 1720 * frac, 8, 4); ctx.fill();
+      lines.forEach((ln, i) => text(ctx, ln, 960, y0 + 22 + size + i * size * 1.3, size, { align: "center", color: C.subText, weight: 700 }));
+    }
+    ctx.restore();
+    return b;
+  }
+
+  global.Kiko = { draw, beatAt, W, H, C, FONT, SCENES,
+    helpers: { rr, text, wrap, para, arrowIcon, bakso, table, kiko, kid, bubble, card, ease, clamp, lerp } };
+})(typeof window !== "undefined" ? window : globalThis);
+
+/* Pembantu gambar perangkat (dipakai D7.0, D7.2, …): monitor, mouse, pointer, keyboard, HP, jari, ikon file/folder, jendela.
+   Semua digambar dengan kode (tanpa aset unduhan). Muat setelah ../_alat/kiko-core.js; dipakai scenes.js. */
+(function (global) {
+  const K = global.Kiko, H = K.helpers, C = K.C;
+  const { rr, text, wrap, card, ease, clamp, lerp } = H;
+  const D = {};
+  const SCREEN_BG = "#F4F8FB", BEZEL = "#2B3A46", BEZEL2 = "#1A262F", SEL = "rgba(46,126,154,0.22)";
+
+  // ---------- komputer ----------
+  // monitor di atas meja; mengembalikan kotak layar {x,y,w,h}
+  D.monitor = function (ctx, x, y, w, h) {
+    ctx.fillStyle = BEZEL; rr(ctx, x - 18, y - 18, w + 36, h + 36, 22); ctx.fill();
+    ctx.fillStyle = SCREEN_BG; rr(ctx, x, y, w, h, 10); ctx.fill();
+    // kaki dan meja
+    ctx.fillStyle = BEZEL2; rr(ctx, x + w / 2 - 40, y + h + 18, 80, 36, 8); ctx.fill(); rr(ctx, x + w / 2 - 140, y + h + 50, 280, 16, 8); ctx.fill();
+    ctx.fillStyle = C.tableTop; rr(ctx, x - 80, y + h + 66, w + 160, 22, 8); ctx.fill();
+    return { x, y, w, h };
+  };
+  // panah pointer
+  D.pointer = function (ctx, x, y, s = 34, color = C.ink) {
+    ctx.save(); ctx.translate(x, y); ctx.fillStyle = color; ctx.strokeStyle = "#fff"; ctx.lineWidth = s * 0.08; ctx.lineJoin = "round";
+    ctx.beginPath(); ctx.moveTo(0, 0); ctx.lineTo(0, s); ctx.lineTo(s * 0.27, s * 0.78); ctx.lineTo(s * 0.45, s * 1.15); ctx.lineTo(s * 0.62, s * 1.07); ctx.lineTo(s * 0.45, s * 0.7); ctx.lineTo(s * 0.75, s * 0.7); ctx.closePath();
+    ctx.fill(); ctx.stroke(); ctx.restore();
+  };
+  // mouse tampak atas; opt.left / opt.right = tombol ditekan; opt.label = tulis "kiri/kanan"
+  D.mouse = function (ctx, cx, cy, s, opt = {}) {
+    ctx.save(); ctx.translate(cx, cy);
+    ctx.fillStyle = "rgba(0,0,0,0.12)"; ctx.beginPath(); ctx.ellipse(0, s * 0.62, s * 0.5, s * 0.1, 0, 0, Math.PI * 2); ctx.fill();
+    // kabel
+    ctx.strokeStyle = "#7B8B95"; ctx.lineWidth = s * 0.05; ctx.beginPath(); ctx.moveTo(0, -s * 0.6); ctx.quadraticCurveTo(0, -s * 1.0, s * 0.5, -s * 1.1); ctx.stroke();
+    // badan
+    ctx.fillStyle = "#E8EEF2"; rr(ctx, -s * 0.42, -s * 0.62, s * 0.84, s * 1.24, s * 0.4); ctx.fill(); ctx.strokeStyle = "#A9B7C0"; ctx.lineWidth = s * 0.04; ctx.stroke();
+    // dua tombol
+    const btn = (side, on) => { ctx.fillStyle = on ? C.accent : "#F7FAFC"; ctx.beginPath(); const sx = side === "left" ? -1 : 1;
+      ctx.moveTo(sx * s * 0.03, -s * 0.6); ctx.lineTo(sx * s * 0.03, -s * 0.1); ctx.lineTo(sx * s * 0.4, -s * 0.1); ctx.lineTo(sx * s * 0.4, -s * 0.28); ctx.quadraticCurveTo(sx * s * 0.4, -s * 0.6, sx * s * 0.1, -s * 0.6); ctx.closePath(); ctx.fill(); ctx.strokeStyle = "#A9B7C0"; ctx.lineWidth = s * 0.03; ctx.stroke(); };
+    btn("left", opt.left); btn("right", opt.right);
+    ctx.fillStyle = "#A9B7C0"; rr(ctx, -s * 0.04, -s * 0.5, s * 0.08, s * 0.26, s * 0.04); ctx.fill(); // roda
+    ctx.restore();
+    if (opt.label) { text(ctx, "kiri", cx - s * 0.22, cy - s * 0.72, 26, { align: "center", color: opt.left ? C.accentDark : C.ink2, weight: 800 }); text(ctx, "kanan", cx + s * 0.22, cy - s * 0.72, 26, { align: "center", color: opt.right ? C.accentDark : C.ink2, weight: 800 }); }
+  };
+  // riak "klik" di sekitar titik
+  D.ripple = function (ctx, x, y, u, color = C.accent) { if (u <= 0 || u >= 1) return; ctx.strokeStyle = color; ctx.globalAlpha = 1 - u; ctx.lineWidth = 6; ctx.beginPath(); ctx.arc(x, y, 12 + u * 60, 0, Math.PI * 2); ctx.stroke(); ctx.globalAlpha = 1; };
+
+  // ---------- ikon file & folder ----------
+  const KIND = { folder: "#F2B134", foto: "#5FA8D3", tulisan: "#7B8B95", lagu: "#8E6BBF", video: "#D9443B" };
+  D.fileIcon = function (ctx, cx, cy, s, kind, opt = {}) {
+    ctx.save(); ctx.translate(cx, cy);
+    if (opt.selected) { ctx.fillStyle = SEL; rr(ctx, -s * 0.62, -s * 0.62, s * 1.24, s * 1.24 + (opt.name ? s * 0.5 : 0), s * 0.14); ctx.fill(); }
+    if (kind === "folder") {
+      ctx.fillStyle = "#D99A1B"; rr(ctx, -s * 0.5, -s * 0.32, s * 0.45, s * 0.2, s * 0.06); ctx.fill();
+      ctx.fillStyle = opt.open ? "#F7C860" : KIND.folder; rr(ctx, -s * 0.5, -s * 0.22, s, s * 0.7, s * 0.08); ctx.fill();
+      if (opt.open) { ctx.fillStyle = "#D99A1B"; rr(ctx, -s * 0.46, -s * 0.02, s * 0.92, s * 0.5, s * 0.08); ctx.fill(); }
+    } else {
+      ctx.fillStyle = "#FFFFFF"; ctx.strokeStyle = "#B7C4CC"; ctx.lineWidth = s * 0.05;
+      ctx.beginPath(); ctx.moveTo(-s * 0.36, -s * 0.5); ctx.lineTo(s * 0.12, -s * 0.5); ctx.lineTo(s * 0.36, -s * 0.26); ctx.lineTo(s * 0.36, s * 0.5); ctx.lineTo(-s * 0.36, s * 0.5); ctx.closePath(); ctx.fill(); ctx.stroke();
+      ctx.fillStyle = KIND[kind] || KIND.tulisan;
+      if (kind === "foto") { rr(ctx, -s * 0.26, -s * 0.2, s * 0.52, s * 0.44, s * 0.04); ctx.fill(); ctx.fillStyle = "#fff"; ctx.beginPath(); ctx.arc(-s * 0.12, -s * 0.08, s * 0.06, 0, Math.PI * 2); ctx.fill(); ctx.beginPath(); ctx.moveTo(-s * 0.26, s * 0.24); ctx.lineTo(-s * 0.06, s * 0.02); ctx.lineTo(s * 0.06, s * 0.14); ctx.lineTo(s * 0.14, s * 0.06); ctx.lineTo(s * 0.26, s * 0.24); ctx.closePath(); ctx.fill(); }
+      else if (kind === "lagu") { ctx.beginPath(); ctx.arc(-s * 0.1, s * 0.22, s * 0.1, 0, Math.PI * 2); ctx.arc(s * 0.16, s * 0.16, s * 0.1, 0, Math.PI * 2); ctx.fill(); ctx.lineWidth = s * 0.06; ctx.strokeStyle = KIND.lagu; ctx.beginPath(); ctx.moveTo(0, s * 0.2); ctx.lineTo(0, -s * 0.2); ctx.lineTo(s * 0.26, -s * 0.26); ctx.lineTo(s * 0.26, s * 0.14); ctx.stroke(); }
+      else if (kind === "video") { rr(ctx, -s * 0.26, -s * 0.16, s * 0.52, s * 0.4, s * 0.04); ctx.fill(); ctx.fillStyle = "#fff"; ctx.beginPath(); ctx.moveTo(-s * 0.06, -s * 0.04); ctx.lineTo(s * 0.12, s * 0.04); ctx.lineTo(-s * 0.06, s * 0.12); ctx.closePath(); ctx.fill(); }
+      else { for (let i = 0; i < 4; i++) { rr(ctx, -s * 0.22, -s * 0.14 + i * s * 0.14, s * (i === 3 ? 0.26 : 0.44), s * 0.06, s * 0.03); ctx.fill(); } }
+    }
+    ctx.restore();
+    if (opt.name) { const lines = wrap(ctx, opt.name, opt.size || 24, 700, s * 1.6); lines.slice(0, 2).forEach((ln, i) => text(ctx, ln, cx, cy + s * 0.78 + i * (opt.size || 24) * 1.15, opt.size || 24, { align: "center", weight: 700, color: opt.color || C.ink })); }
+  };
+  D.KIND = KIND;
+
+  // jendela aplikasi (file manager / editor) di dalam layar; mengembalikan area isi
+  D.windowFrame = function (ctx, x, y, w, h, title, opt = {}) {
+    ctx.fillStyle = "#FFFFFF"; rr(ctx, x, y, w, h, 14); ctx.fill(); ctx.strokeStyle = "#C9D4DB"; ctx.lineWidth = 3; ctx.stroke();
+    ctx.fillStyle = "#E6EDF2"; rr(ctx, x, y, w, 54, 14); ctx.fill(); ctx.fillRect(x, y + 30, w, 24);
+    ["#E0655C", "#F2B134", "#2E9E5B"].forEach((c, i) => { ctx.fillStyle = c; ctx.beginPath(); ctx.arc(x + 26 + i * 26, y + 27, 8, 0, Math.PI * 2); ctx.fill(); });
+    if (title) text(ctx, title, x + w / 2, y + 36, 24, { align: "center", color: C.ink2, weight: 800 });
+    if (opt.path) { ctx.fillStyle = "#F4F8FB"; rr(ctx, x + 16, y + 66, w - 32, 44, 10); ctx.fill(); text(ctx, opt.path, x + 32, y + 96, 24, { color: C.ink2, weight: 700 }); }
+    return { x: x + 16, y: y + (opt.path ? 124 : 70), w: w - 32, h: h - (opt.path ? 140 : 86) };
+  };
+  // kotak teks dengan kursor berkedip; opt.cursor = posisi karakter (bawaan akhir)
+  D.textBox = function (ctx, x, y, w, h, lines, tt, opt = {}) {
+    ctx.fillStyle = "#FFFFFF"; rr(ctx, x, y, w, h, 14); ctx.fill(); ctx.strokeStyle = opt.stroke || "#C9D4DB"; ctx.lineWidth = 3; ctx.stroke();
+    const size = opt.size || 48, lh = size * 1.4;
+    lines.forEach((ln, i) => text(ctx, ln, x + 28, y + 24 + size + i * lh, size, { weight: 700, color: opt.color || C.ink }));
+    if (opt.cursor !== false) {
+      const li = lines.length - 1, s = lines[li] || ""; ctx.font = `700 ${size}px ${K.FONT}`; const cw = ctx.measureText(s).width;
+      if (Math.floor(tt * 2.5) % 2 === 0 || opt.cursorOn) { ctx.fillStyle = C.kiko; ctx.fillRect(x + 30 + cw, y + 22 + li * lh, 5, size * 1.15); }
+      return [x + 32 + cw, y + 22 + li * lh + size * 0.6];
+    }
+  };
+
+  // ---------- keyboard ----------
+  const ROWS = [["Q", "W", "E", "R", "T", "Y", "U", "I", "O", "P"], ["A", "S", "D", "F", "G", "H", "J", "K", "L"], ["Z", "X", "C", "V", "B", "N", "M"]];
+  // keyboard sederhana: 3 baris huruf + Shift, Spasi, Backspace, Enter. opt.pressed = [tombol], opt.glow = [tombol] disorot lembut
+  D.keyboard = function (ctx, x, y, w, opt = {}) {
+    const key = w / 11.6, gap = key * 0.12, k = key - gap, h = k * 4 + gap * 5;
+    ctx.fillStyle = BEZEL; rr(ctx, x - 16, y - 16, w + 32, h + 32, 22); ctx.fill();
+    const pressed = opt.pressed || [], glow = opt.glow || [];
+    const draw = (kx, ky, kw, label, small) => {
+      const on = pressed.includes(label), soft = glow.includes(label);
+      ctx.fillStyle = on ? C.accent : soft ? "#FFF3D6" : "#F7FAFC"; rr(ctx, kx, ky + (on ? 4 : 0), kw, k - (on ? 4 : 0), 10); ctx.fill();
+      ctx.strokeStyle = on ? C.accentDark : soft ? C.accent : "#B7C4CC"; ctx.lineWidth = on || soft ? 4 : 2; ctx.stroke();
+      // ukuran huruf mengikuti ukuran tombol; pada keyboard mini (tombol < 40 px) label tombol khusus tidak digambar
+      const fs = small ? Math.min(24, k * 0.45) : Math.min(32, k * 0.6);
+      if (small ? k >= 40 : k >= 18) text(ctx, label, kx + kw / 2, ky + k / 2 + fs * 0.38, fs, { align: "center", weight: 800, color: on ? "#fff" : C.ink });
+    };
+    ROWS.forEach((row, r) => { const off = r === 0 ? 0 : r === 1 ? key * 0.35 : key * 0.85; row.forEach((lab, i) => draw(x + gap + off + i * key, y + gap + r * key, k, lab)); });
+    draw(x + gap + key * 0.85 + 7 * key + gap, y + gap + 2 * key, key * 2.4 - gap, "Backspace", true);
+    draw(x + gap, y + gap + 3 * key, key * 1.9 - gap, "Shift", true);
+    draw(x + gap + key * 1.9, y + gap + 3 * key, key * 6.2 - gap, "Spasi", true);
+    draw(x + gap + key * 8.1, y + gap + 3 * key, key * 2.3 - gap, "Enter", true);
+    draw(x + gap + key * 0.35 + 9 * key, y + gap + 1 * key, key * 1.9 - gap, "Enter", true);
+    return { x, y, w, h };
+  };
+
+  // ---------- HP & jari ----------
+  // HP tegak; mengembalikan kotak layar
+  D.phone = function (ctx, cx, cy, w, h) {
+    ctx.fillStyle = BEZEL; rr(ctx, cx - w / 2 - 14, cy - h / 2 - 22, w + 28, h + 44, 40); ctx.fill();
+    ctx.fillStyle = SCREEN_BG; rr(ctx, cx - w / 2, cy - h / 2, w, h, 26); ctx.fill();
+    ctx.fillStyle = BEZEL2; rr(ctx, cx - 40, cy - h / 2 + 8, 80, 12, 6); ctx.fill();
+    return { x: cx - w / 2, y: cy - h / 2, w, h };
+  };
+  // kisi ikon aplikasi generik di layar HP; mengembalikan posisi tiap ikon
+  const APPS = [["Kamera", "#2E7E9A"], ["Galeri", "#5FA8D3"], ["Pesan", "#2E9E5B"], ["Musik", "#8E6BBF"], ["Kalkulator", "#7B8B95"], ["Peta", "#F2B134"], ["Catatan", "#E0A23B"], ["Jam", "#D9443B"], ["Cuaca", "#4C9BE0"]];
+  D.appGrid = function (ctx, sc, opt = {}) {
+    const cols = 3, cell = sc.w / cols, out = [];
+    APPS.forEach(([name, col], i) => {
+      const r = Math.floor(i / cols), c = i % cols; const ax = sc.x + cell * c + cell / 2, ay = sc.y + 90 + r * (cell + 26);
+      const on = opt.active === name; const sz = cell * 0.56 * (on && opt.scale ? opt.scale : 1);
+      ctx.fillStyle = col; rr(ctx, ax - sz / 2, ay - sz / 2, sz, sz, sz * 0.24); ctx.fill();
+      if (on) { ctx.strokeStyle = C.accent; ctx.lineWidth = 6; ctx.stroke(); }
+      text(ctx, name, ax, ay + sz / 2 + 26, 20, { align: "center", weight: 700, color: C.ink2 });
+      out.push({ name, x: ax, y: ay });
+    });
+    return out;
+  };
+  // ujung jari yang menyentuh layar di (x,y); opt.press = sedang menekan (riak); opt.second = jari kedua
+  D.finger = function (ctx, x, y, opt = {}) {
+    const s = opt.s || 46;
+    ctx.save(); ctx.translate(x, y); ctx.rotate(opt.angle !== undefined ? opt.angle : 0.5);
+    ctx.fillStyle = "rgba(0,0,0,0.10)"; ctx.beginPath(); ctx.ellipse(0, s * 0.25, s * 0.7, s * 0.4, 0, 0, Math.PI * 2); ctx.fill();
+    ctx.fillStyle = C.skin; rr(ctx, -s * 0.5, -s * 0.3, s, s * 3.2, s * 0.5); ctx.fill();
+    ctx.fillStyle = "#F7D9BE"; ctx.beginPath(); ctx.ellipse(0, s * 0.1, s * 0.3, s * 0.42, 0, 0, Math.PI * 2); ctx.fill();
+    ctx.restore();
+    if (opt.press) { ctx.fillStyle = "rgba(46,126,154,0.25)"; ctx.beginPath(); ctx.arc(x, y, s * 0.8, 0, Math.PI * 2); ctx.fill(); }
+  };
+  // menu konteks (klik kanan / tekan lama)
+  D.menu = function (ctx, x, y, items, opt = {}) {
+    const w = opt.w || 300, rowH = 52; ctx.fillStyle = "#FFFFFF"; rr(ctx, x, y, w, rowH * items.length + 16, 12); ctx.fill(); ctx.strokeStyle = "#B7C4CC"; ctx.lineWidth = 3; ctx.stroke();
+    ctx.fillStyle = "rgba(0,0,0,0.08)";
+    items.forEach((it, i) => { if (opt.active === i) { ctx.fillStyle = "#FFF3D6"; rr(ctx, x + 8, y + 8 + i * rowH, w - 16, rowH, 8); ctx.fill(); } text(ctx, it, x + 24, y + 8 + i * rowH + 36, 28, { weight: 700 }); });
+  };
+  // kartu keterangan kecil di kanan/bawah adegan
+  D.note = function (ctx, x, y, w, s, opt = {}) { card(ctx, x, y, w, opt.h || 96, { fill: opt.fill || "#FFF3D6", stroke: opt.stroke || C.accent, lw: 4 }); text(ctx, s, x + w / 2, y + (opt.h || 96) / 2 + 14, opt.size || 36, { align: "center", weight: 900, color: opt.color || C.ink }); };
+
+  K.devices = D;
+})(typeof window !== "undefined" ? window : globalThis);
+
+/* Pembantu gambar F12.5: kode QR (digambar dengan kode, bukan kode asli), dudukan QR di meja kasir, layar aplikasi pembayaran
+   (pindai, konfirmasi, PIN, berhasil), alur kotak berpanah, gelembung chat. Semua nama, nomor, dan pesan fiktif.
+   Muat setelah kiko-core.js dan kiko-devices.js. */
+(function (global) {
+  const K = global.Kiko, H = K.helpers, C = K.C, D = K.devices;
+  const { rr, text, para, card } = H;
+  const Bx = {};
+  const rnd = seed => () => { seed = (seed * 9301 + 49297) % 233280; return seed / 233280; };
+  // pola mirip kode QR: s ukuran, seed pola
+  Bx.qr = function (ctx, x, y, s, seed = 7, opt = {}) {
+    const n = 21, c = s / n, r = rnd(seed); ctx.fillStyle = "#fff"; ctx.fillRect(x - c, y - c, s + 2 * c, s + 2 * c); ctx.fillStyle = opt.col || "#1F2A33";
+    const finder = (fx, fy) => { ctx.fillRect(x + fx * c, y + fy * c, 7 * c, 7 * c); ctx.fillStyle = "#fff"; ctx.fillRect(x + (fx + 1) * c, y + (fy + 1) * c, 5 * c, 5 * c); ctx.fillStyle = opt.col || "#1F2A33"; ctx.fillRect(x + (fx + 2) * c, y + (fy + 2) * c, 3 * c, 3 * c); };
+    for (let i = 0; i < n; i++) for (let j = 0; j < n; j++) { const inF = (i < 8 && j < 8) || (i > 12 && j < 8) || (i < 8 && j > 12); if (!inF && r() > 0.52) ctx.fillRect(x + i * c, y + j * c, c, c); }
+    finder(0, 0); finder(14, 0); finder(0, 14);
+  };
+  // dudukan QR kasir: nama toko; opt {palsu: true -> stiker miring di atasnya}
+  Bx.stand = function (ctx, x, y, name, opt = {}) {
+    card(ctx, x, y, 260, 330, { fill: "#fff", stroke: "#B7C4CC", lw: 3, r: 16 }); ctx.fillStyle = "#C0392B"; rr(ctx, x, y, 260, 56, 16); ctx.fill(); ctx.fillRect(x, y + 28, 260, 28);
+    text(ctx, "QRIS", x + 130, y + 40, 28, { align: "center", weight: 900, color: "#fff" }); Bx.qr(ctx, x + 45, y + 80, 170, opt.seed || 7);
+    text(ctx, name, x + 130, y + 300, 22, { align: "center", weight: 900 });
+    if (opt.palsu) { ctx.save(); ctx.translate(x + 140, y + 165); ctx.rotate(-0.06); ctx.fillStyle = "#FFFDF5"; ctx.fillRect(-100, -100, 200, 200); ctx.strokeStyle = "#E0B04B"; ctx.lineWidth = 3; ctx.setLineDash([6, 4]); ctx.strokeRect(-100, -100, 200, 200); ctx.setLineDash([]); Bx.qr(ctx, -85, -85, 170, 31, { col: "#3A2A1A" }); ctx.restore(); if (opt.label) text(ctx, opt.label, x + 130, y - 16, 20, { align: "center", weight: 900, color: C.bad }); }
+  };
+  // layar aplikasi bayar di HP: mode "pindai" | "konfirmasi" | "pin" | "berhasil"; opt {nama, nominal, warn}
+  Bx.app = function (ctx, cx, cy, mode, opt = {}) {
+    const sc = D.phone(ctx, cx, cy, 300, 540); ctx.fillStyle = "#fff"; rr(ctx, sc.x, sc.y, sc.w, sc.h, 24); ctx.fill();
+    ctx.fillStyle = "#2E7E9A"; rr(ctx, sc.x, sc.y, sc.w, 60, 24); ctx.fill(); ctx.fillRect(sc.x, sc.y + 30, sc.w, 30); text(ctx, "DompetKu", cx, sc.y + 40, 22, { align: "center", weight: 900, color: "#fff" });
+    if (mode === "pindai") { ctx.strokeStyle = "#2E7E9A"; ctx.lineWidth = 6; const s = 180, x0 = cx - s / 2, y0 = sc.y + 120; [[0, 0], [1, 0], [0, 1], [1, 1]].forEach(([a, b]) => { ctx.beginPath(); ctx.moveTo(x0 + a * s + (a ? -30 : 30), y0 + b * s); ctx.lineTo(x0 + a * s, y0 + b * s); ctx.lineTo(x0 + a * s, y0 + b * s + (b ? -30 : 30)); ctx.stroke(); }); Bx.qr(ctx, x0 + 30, y0 + 30, 120, opt.seed || 7); text(ctx, "arahkan ke kode QR", cx, y0 + s + 50, 18, { align: "center", weight: 800, color: C.ink2 }); }
+    if (mode === "konfirmasi") { text(ctx, "bayar ke", cx, sc.y + 120, 18, { align: "center", weight: 800, color: C.ink2 }); card(ctx, sc.x + 20, sc.y + 136, sc.w - 40, 70, { fill: opt.warn ? C.badBg : "#FFF3D6", stroke: opt.warn ? C.bad : C.accent, lw: 4, r: 12 }); text(ctx, opt.nama || "Kedai Sari", cx, sc.y + 181, 24, { align: "center", weight: 900, color: opt.warn ? C.bad : C.ink }); text(ctx, "nominal", cx, sc.y + 250, 18, { align: "center", weight: 800, color: C.ink2 }); text(ctx, opt.nominal || "Rp15.000", cx, sc.y + 296, 36, { align: "center", weight: 900 }); ctx.fillStyle = "#2E7E9A"; rr(ctx, sc.x + 30, sc.y + sc.h - 90, sc.w - 60, 56, 14); ctx.fill(); text(ctx, "Bayar", cx, sc.y + sc.h - 53, 24, { align: "center", weight: 900, color: "#fff" }); }
+    if (mode === "pin") { text(ctx, "masukkan PIN", cx, sc.y + 120, 22, { align: "center", weight: 900 }); for (let i = 0; i < 6; i++) { ctx.beginPath(); ctx.arc(cx - 75 + i * 30, sc.y + 160, 9, 0, Math.PI * 2); ctx.fillStyle = i < (opt.n || 4) ? "#2E7E9A" : "#DCE6EC"; ctx.fill(); } for (let k = 0; k < 9; k++) { const bx = sc.x + 45 + (k % 3) * 75, by = sc.y + 200 + Math.floor(k / 3) * 70; ctx.fillStyle = "#EEF3F6"; ctx.beginPath(); ctx.arc(bx + 30, by + 30, 28, 0, Math.PI * 2); ctx.fill(); text(ctx, String(k + 1), bx + 30, by + 40, 24, { align: "center", weight: 800 }); } text(ctx, "jangan perlihatkan ke siapa pun", cx, sc.y + sc.h - 24, 15, { align: "center", weight: 800, color: C.bad }); }
+    if (mode === "berhasil") { ctx.fillStyle = C.good; ctx.beginPath(); ctx.arc(cx, sc.y + 170, 56, 0, Math.PI * 2); ctx.fill(); text(ctx, "✓", cx, sc.y + 192, 64, { align: "center", weight: 900, color: "#fff" }); text(ctx, "pembayaran berhasil", cx, sc.y + 270, 22, { align: "center", weight: 900 }); text(ctx, (opt.nama || "Kedai Sari") + " · " + (opt.nominal || "Rp15.000"), cx, sc.y + 306, 18, { align: "center", weight: 800, color: C.ink2 }); }
+    return sc;
+  };
+  // alur kotak berpanah: steps [[ikon, teks]], active indeks; opt {w, gap}
+  Bx.flow = function (ctx, x, y, steps, active, opt = {}) {
+    const w = opt.w || 230, gap = opt.gap || 50, h = opt.h || 130;
+    steps.forEach(([ic, t], i) => { const bx = x + i * (w + gap); const on = i === active, done = active != null && i < active; ctx.save(); if (active != null && i > active) ctx.globalAlpha = 0.25; card(ctx, bx, y, w, h, { fill: on ? "#FFF3D6" : done ? C.goodBg : C.bg2, stroke: on ? C.accent : done ? C.good : undefined, lw: 4, r: 16 }); text(ctx, ic, bx + w / 2, y + 56, 40, { align: "center" }); para(ctx, t, bx + w / 2, y + 96, 19, w - 20, { align: "center", weight: 900 }); ctx.restore();
+      if (i < steps.length - 1) { ctx.fillStyle = "#7B8B95"; ctx.beginPath(); const ax = bx + w + 8, ay = y + h / 2; ctx.moveTo(ax, ay - 12); ctx.lineTo(ax + gap - 16, ay); ctx.lineTo(ax, ay + 12); ctx.closePath(); ctx.fill(); } });
+  };
+  // gelembung chat masuk: msgs [teks]; opt {from, warn}
+  Bx.chat = function (ctx, x, y, w, from, msgs, opt = {}) {
+    card(ctx, x, y, w, 60 + msgs.length * 92, { fill: "#EAF2EE", r: 16 }); text(ctx, from, x + 20, y + 38, 20, { weight: 900, color: C.ink2 });
+    msgs.forEach((m, i) => { card(ctx, x + 16, y + 56 + i * 92, w - 60, 80, { fill: "#fff", stroke: opt.warn && opt.warn.includes(i) ? C.bad : "#D7E2DC", lw: opt.warn && opt.warn.includes(i) ? 4 : 2, r: 14 }); para(ctx, m, x + 32, y + 88 + i * 92, 18, w - 100, { weight: 800 }); });
+  };
+  K.bayar = Bx;
+})(typeof window !== "undefined" ? window : globalThis);
+
+/* Adegan episode F12.5: Transaksi Digital yang Aman. Gaya diagram Fase F. Semua toko, nama, nomor, dan pesan fiktif.
+   Muat setelah kiko-core.js, kiko-devices.js, bayar.js. */
+(function (global) {
+  const K = global.Kiko, H = K.helpers, C = K.C, Bx = K.bayar, SCENES = K.SCENES;
+  const { text, para, card, kiko, kid, bubble, rr, clamp } = H;
+  const reveal = (l, t0, step, n) => clamp(Math.floor((l - t0) / step) + 1, 0, n);
+  const label = (ctx, s, x, y, opt = {}) => text(ctx, s, x, y, opt.size || 28, { align: "center", weight: 900, color: opt.color || C.accentDark });
+  const heading = (ctx, s, y = 215) => text(ctx, s, 960, y, 34, { align: "center", color: C.accentDark, weight: 800 });
+  const dim = (ctx, on, fn) => { ctx.save(); if (!on) ctx.globalAlpha = 0.2; fn(); ctx.restore(); };
+  const fiktif = (ctx, x = 1780, y = 870) => text(ctx, "contoh fiktif", x, y, 16, { align: "right", weight: 800, color: "#9AA7AF" });
+  const items = (ctx, x, y, w, rows, n, opt = {}) => rows.forEach(([ic, t, s], i) => dim(ctx, n > i, () => { const gap = opt.gap || 120; card(ctx, x, y + i * gap, w, gap - 16, { fill: i === n - 1 && opt.hl ? "#FFF3D6" : C.bg2, stroke: i === n - 1 && opt.hl ? C.accent : undefined, lw: 3, r: 14 }); text(ctx, ic, x + 50, y + i * gap + (gap - 16) / 2 + 14, 38, { align: "center" }); text(ctx, t, x + 100, y + i * gap + (s ? 42 : (gap - 16) / 2 + 10), 26, { weight: 900 }); if (s) text(ctx, s, x + 100, y + i * gap + 78, 20, { weight: 800, color: C.ink2 }); }));
+
+  Object.assign(SCENES, {
+    title_q(ctx, b, l) {
+      card(ctx, 120, 150, 1680, 740);
+      kiko(ctx, 270, 560, 170, 0, { mood: "happy" });
+      const n = reveal(l, 1.5, 1.6, 5);
+      [["🛒", "loka pasar"], ["🏦", "perbankan digital"], ["👛", "dompet digital"]].forEach(([ic, t], i) => dim(ctx, n >= i + 1, () => { const x = 480 + i * 410; card(ctx, x, 260, 380, 160, { fill: C.bg2, r: 18 }); text(ctx, ic, x + 70, 360, 56, { align: "center" }); text(ctx, t, x + 130, 352, 28, { weight: 900 }); }));
+      dim(ctx, n >= 4, () => { card(ctx, 480, 460, 1200, 110, { fill: "#FFF3D6", stroke: C.accent, lw: 4, r: 16 }); text(ctx, "perjalanan satu pembayaran QRIS · titik rawan penipuan", 1080, 528, 28, { align: "center", weight: 900, color: C.accentDark }); });
+      dim(ctx, n >= 5, () => { card(ctx, 480, 600, 1200, 90, { fill: C.goodBg, stroke: C.good, lw: 3, r: 16 }); text(ctx, "autentikasi dua langkah · bila tertipu", 1080, 657, 26, { align: "center", weight: 900, color: C.good }); });
+    },
+    prereq(ctx, b, l) {
+      card(ctx, 260, 200, 1400, 600);
+      text(ctx, "EPISODE SEBELUMNYA", 960, 290, 34, { align: "center", color: C.accentDark, weight: 800 });
+      [["D7.3", "Kata Sandi Aman dan Rekam Jejak Digital"], ["E.3", "Keamanan Akun dan Jaringan Dasar"]].forEach(([c, t], i) => { const x = 360 + i * 640; card(ctx, x, 340, 580, 260, { fill: C.bg2 }); text(ctx, "Episode " + c, x + 290, 420, 50, { align: "center", weight: 900 }); para(ctx, t, x + 290, 490, 26, 520, { align: "center", weight: 700, color: C.ink2 }); });
+      if (l > 6) label(ctx, "semua toko, nama, nomor, dan pesan fiktif", 960, 680, { size: 26, color: C.ink2 });
+      kiko(ctx, 1600, 760, 150, 0);
+    },
+    unplugged_pasar(ctx, b, l) {
+      card(ctx, 120, 150, 1680, 740);
+      heading(ctx, "MAIN DULU: REKENING BERSAMA");
+      const n = reveal(l, 2.0, 3.0, 4);
+      kid(ctx, 360, 540, 120, {}); text(ctx, "pembeli", 360, 700, 24, { align: "center", weight: 900 });
+      kid(ctx, 1560, 540, 120, { hair: "long" }); text(ctx, "penjual", 1560, 700, 24, { align: "center", weight: 900 });
+      card(ctx, 820, 380, 280, 220, { fill: "#F4F0FA", stroke: "#8E6BBF", lw: 4, r: 18 }); text(ctx, "🔒", 960, 460, 50, { align: "center" }); text(ctx, "rekening bersama", 960, 520, 24, { align: "center", weight: 900, color: "#8E6BBF" });
+      const env = (x, y, lab) => { ctx.fillStyle = "#FFF3D6"; rr(ctx, x - 50, y - 32, 100, 64, 8); ctx.fill(); ctx.strokeStyle = "#E0B04B"; ctx.lineWidth = 3; rr(ctx, x - 50, y - 32, 100, 64, 8); ctx.stroke(); text(ctx, lab, x, y + 8, 18, { align: "center", weight: 900 }); };
+      if (n === 1) env(560, 400, "Rp15rb"); if (n === 2) env(960, 350, "Rp15rb"); if (n >= 4) env(1340, 400, "Rp15rb");
+      if (n >= 1) text(ctx, "1. titip uang", 560, 330, 22, { align: "center", weight: 900, color: C.kiko });
+      if (n >= 3) { text(ctx, "📦 barang diterima ✓", 960, 680, 24, { align: "center", weight: 900, color: C.good }); }
+      if (n >= 4) text(ctx, "3. baru diteruskan", 1340, 330, 22, { align: "center", weight: 900, color: C.good });
+    },
+    unplugged_stiker(ctx, b, l) {
+      card(ctx, 120, 150, 1680, 740);
+      heading(ctx, "MAIN DULU: STIKER QR PALSU");
+      const n = reveal(l, 2.0, 3.0, 4);
+      Bx.stand(ctx, 300, 300, "Kedai Sari", { palsu: n >= 1, label: n >= 1 ? "ditempel diam-diam" : null });
+      if (n >= 2) { ctx.save(); ctx.translate(960, 470); ctx.scale(0.85, 0.85); Bx.app(ctx, 0, 0, "konfirmasi", { nama: "Pulsa Murah 88", warn: true }); ctx.restore(); }
+      if (n >= 3) { card(ctx, 1220, 300, 480, 150, { fill: C.badBg, stroke: C.bad, lw: 4, r: 16 }); text(ctx, "langsung bayar tanpa membaca?", 1460, 360, 22, { align: "center", weight: 900, color: C.bad }); text(ctx, "uang masuk ke penipu", 1460, 408, 26, { align: "center", weight: 900, color: C.bad }); }
+      if (n >= 4) { card(ctx, 1220, 480, 480, 150, { fill: C.goodBg, stroke: C.good, lw: 4, r: 16 }); text(ctx, "baca nama penerima dulu", 1460, 540, 24, { align: "center", weight: 900, color: C.good }); text(ctx, "tidak cocok? batalkan", 1460, 588, 24, { align: "center", weight: 900, color: C.good }); }
+      fiktif(ctx);
+    },
+    loka_pasar(ctx, b, l) {
+      card(ctx, 120, 150, 1680, 740);
+      heading(ctx, "LOKA PASAR: UANG DITAHAN DULU");
+      const n = reveal(l, 1.5, 3.0, 5);
+      Bx.flow(ctx, 220, 290, [["🙋", "pembeli membayar"], ["🔒", "platform menahan uang"], ["📦", "penjual mengirim"], ["✅", "pesanan diterima"], ["💸", "uang ke penjual"]], Math.min(n, 5) - 1, { w: 250, gap: 57 });
+      dim(ctx, n >= 5, () => { card(ctx, 220, 500, 1480, 180, { fill: C.badBg, stroke: C.bad, lw: 4, r: 16 }); text(ctx, "\"transfer langsung saja ke rekeningku, lebih murah\"", 960, 560, 26, { align: "center", weight: 900 }); text(ctx, "di luar aplikasi = perlindungan rekening bersama hilang", 960, 620, 26, { align: "center", weight: 900, color: C.bad }); });
+      fiktif(ctx);
+    },
+    dompet_bank(ctx, b, l) {
+      card(ctx, 120, 150, 1680, 740);
+      heading(ctx, "PERBANKAN DIGITAL DAN DOMPET DIGITAL");
+      const n = reveal(l, 1.5, 2.6, 5);
+      dim(ctx, n >= 1, () => { card(ctx, 220, 270, 700, 170, { fill: C.bg2, r: 18 }); text(ctx, "🏦 perbankan digital", 260, 330, 30, { weight: 900 }); text(ctx, "memindahkan uang di rekening bank lewat aplikasi", 260, 380, 21, { weight: 800, color: C.ink2 }); });
+      dim(ctx, n >= 2, () => { card(ctx, 1000, 270, 700, 170, { fill: C.bg2, r: 18 }); text(ctx, "👛 dompet digital", 1040, 330, 30, { weight: 900 }); text(ctx, "saldo untuk belanja sehari-hari", 1040, 380, 21, { weight: 800, color: C.ink2 }); });
+      [["🔢", "PIN", "hanya kamu yang tahu"], ["📩", "OTP", "kode sekali pakai, berlaku singkat"], ["🔔", "notifikasi", "tiap transaksi tercatat"]].forEach(([ic, t, s], i) => dim(ctx, n >= i + 3, () => { const x = 220 + i * 500; card(ctx, x, 480, 460, 200, { fill: "#FFF3D6", stroke: C.accent, lw: 3, r: 18 }); text(ctx, ic, x + 230, 550, 50, { align: "center" }); text(ctx, t, x + 230, 610, 30, { align: "center", weight: 900 }); text(ctx, s, x + 230, 650, 20, { align: "center", weight: 800, color: C.ink2 }); }));
+    },
+    perjalanan_qris(ctx, b, l) {
+      card(ctx, 120, 150, 1680, 740);
+      heading(ctx, "PERJALANAN SATU PEMBAYARAN QRIS");
+      const k = reveal(l, 1.5, 2.8, 6);
+      const mode = k <= 1 ? "pindai" : k === 2 ? "konfirmasi" : k === 3 ? "pin" : "berhasil";
+      ctx.save(); ctx.translate(400, 470); ctx.scale(0.85, 0.85); Bx.app(ctx, 0, 0, mode, {}); ctx.restore();
+      Bx.flow(ctx, 660, 300, [["📷", "pindai kode"], ["👀", "cek nama + nominal"], ["🔢", "masukkan PIN"], ["🏦", "penerbit memproses"]], k <= 4 ? k - 1 : 3, { w: 230, gap: 40, h: 130 });
+      dim(ctx, k >= 5, () => Bx.flow(ctx, 660, 470, [["🏪", "uang masuk ke Kedai Sari"], ["🔔", "notifikasi ke kedua pihak"]], k >= 6 ? 1 : 0, { w: 520, gap: 40, h: 130 }));
+      if (k >= 2) label(ctx, "Kedai Sari · Rp15.000", 1180, 680, { size: 26 });
+      fiktif(ctx);
+    },
+    titik_rawan(ctx, b, l) {
+      card(ctx, 120, 150, 1680, 740);
+      heading(ctx, "DUA TITIK RAWAN");
+      const n = reveal(l, 1.5, 3.4, 4);
+      dim(ctx, n >= 1, () => { Bx.stand(ctx, 240, 280, "Kedai Sari", { palsu: true }); card(ctx, 540, 300, 360, 150, { fill: C.badBg, stroke: C.bad, lw: 3, r: 14 }); text(ctx, "1. stiker QR palsu", 720, 360, 24, { align: "center", weight: 900, color: C.bad }); text(ctx, "ditempel di atas yang asli", 720, 400, 20, { align: "center", weight: 800 }); });
+      dim(ctx, n >= 2, () => { card(ctx, 540, 470, 360, 140, { fill: C.goodBg, stroke: C.good, lw: 3, r: 14 }); text(ctx, "baca nama penjual", 720, 528, 24, { align: "center", weight: 900, color: C.good }); text(ctx, "sebelum memasukkan PIN", 720, 568, 20, { align: "center", weight: 800 }); });
+      dim(ctx, n >= 3, () => { card(ctx, 1000, 280, 330, 330, { fill: "#fff", stroke: C.bad, lw: 4, r: 16 }); text(ctx, "screenshot dari pembeli", 1165, 320, 18, { align: "center", weight: 900, color: C.ink2 }); ctx.fillStyle = C.good; ctx.beginPath(); ctx.arc(1165, 400, 40, 0, Math.PI * 2); ctx.fill(); text(ctx, "✓", 1165, 416, 44, { align: "center", weight: 900, color: "#fff" }); text(ctx, "Rp15.000", 1165, 490, 28, { align: "center", weight: 900 }); text(ctx, "hasil sunting?", 1165, 560, 24, { align: "center", weight: 900, color: C.bad }); });
+      dim(ctx, n >= 4, () => { card(ctx, 1360, 280, 340, 330, { fill: C.goodBg, stroke: C.good, lw: 4, r: 16 }); text(ctx, "2. penjual mengecek", 1530, 340, 22, { align: "center", weight: 900, color: C.good }); text(ctx, "🔔", 1530, 430, 56, { align: "center" }); para(ctx, "notifikasi di aplikasinya sendiri", 1530, 500, 22, 300, { align: "center", weight: 900 }); });
+      fiktif(ctx);
+    },
+    rekayasa_sosial(ctx, b, l) {
+      card(ctx, 120, 150, 1680, 740);
+      heading(ctx, "PENIPUAN YANG MEMBUJUK ORANGNYA");
+      const n = reveal(l, 2.0, 3.4, 3);
+      dim(ctx, n >= 1, () => Bx.chat(ctx, 220, 270, 480, "+62 8xx (nomor tak dikenal)", ["Selamat! Kamu menang hadiah Rp5 juta.", "Kirim kode OTP yang masuk untuk klaim, ya!"], { warn: [1] }));
+      dim(ctx, n >= 2, () => { card(ctx, 740, 270, 440, 330, { fill: "#EAF2EE", r: 16 }); text(ctx, "📞 panggilan masuk", 960, 320, 22, { align: "center", weight: 900, color: C.ink2 }); text(ctx, "\"Petugas Bank\"", 960, 380, 28, { align: "center", weight: 900 }); para(ctx, "\"Ada transaksi mencurigakan. Sebutkan kode yang baru masuk untuk membatalkannya.\"", 960, 440, 20, 380, { align: "center", weight: 800 }); });
+      dim(ctx, n >= 3, () => Bx.chat(ctx, 1220, 270, 480, "Kurir Paket (nomor baru)", ["Paketmu tertahan, cek resi di sini:", "📎 Resi_Paket.apk"], { warn: [1] }));
+      if (n >= 3) label(ctx, "APK asing bisa diam-diam membaca SMS berisi OTP", 960, 690, { size: 26, color: C.bad });
+      fiktif(ctx);
+    },
+    tanda_bahaya(ctx, b, l) {
+      card(ctx, 120, 150, 1680, 740);
+      heading(ctx, "EMPAT TANDA BAHAYA");
+      const n = reveal(l, 1.5, 2.6, 5);
+      [["⏰", "mendesak", "\"harus sekarang juga!\""], ["🎁", "terlalu bagus", "hadiah tanpa ikut lomba"], ["🔑", "meminta kode", "OTP, PIN, kata sandi"], ["🔗", "link atau file asing", ".apk, situs mirip asli"]].forEach(([ic, t, s], i) => dim(ctx, n >= i + 1, () => { const x = 220 + (i % 2) * 750, y = 270 + Math.floor(i / 2) * 170; card(ctx, x, y, 730, 150, { fill: C.badBg, stroke: C.bad, lw: 3, r: 16 }); text(ctx, ic, x + 70, y + 92, 52, { align: "center" }); text(ctx, t, x + 140, y + 68, 30, { weight: 900, color: C.bad }); text(ctx, s, x + 140, y + 110, 22, { weight: 800 }); }));
+      if (n >= 5) { card(ctx, 220, 620, 1480, 90, { fill: "#FFF3D6", stroke: C.accent, lw: 4, r: 16 }); text(ctx, "bank dan dompet digital resmi tidak pernah meminta OTP atau PIN-mu", 960, 678, 28, { align: "center", weight: 900, color: C.accentDark }); }
+    },
+    tiga_faktor(ctx, b, l) {
+      card(ctx, 120, 150, 1680, 740);
+      heading(ctx, "AUTENTIKASI DUA LANGKAH: DUA FAKTOR BERBEDA JENIS");
+      const n = reveal(l, 1.5, 3.2, 4);
+      [["🧠", "yang kamu tahu", "kata sandi, PIN"], ["📱", "yang kamu punya", "HP, kunci keamanan"], ["🖐️", "yang ada pada dirimu", "sidik jari, wajah"]].forEach(([ic, t, s], i) => dim(ctx, n >= i + 2, () => { const x = 220 + i * 500; card(ctx, x, 280, 460, 300, { fill: C.bg2, r: 18 }); text(ctx, ic, x + 230, 380, 70, { align: "center" }); text(ctx, t, x + 230, 460, 30, { align: "center", weight: 900 }); text(ctx, s, x + 230, 505, 22, { align: "center", weight: 800, color: C.ink2 }); }));
+      dim(ctx, n >= 1, () => text(ctx, "2 faktor = 2 jenis berbeda dari tiga ini", 960, 640, 26, { align: "center", weight: 900, color: C.accentDark }));
+    },
+    moda_2fa(ctx, b, l) {
+      card(ctx, 120, 150, 1680, 740);
+      heading(ctx, "MODA AUTENTIKASI DUA LANGKAH");
+      const n = reveal(l, 1.5, 2.8, 5);
+      const rows = [["📩", "kode lewat SMS", "mudah, tetapi bisa dicegat", 1], ["⏱️", "aplikasi autentikator", "kode baru tiap 30 detik", 2], ["🔑", "kunci keamanan / passkey", "paling tahan terhadap situs palsu", 3], ["🖐️", "biometrik di HP", "membuka kunci di perangkatmu sendiri", 2]];
+      rows.forEach(([ic, t, s, lv], i) => dim(ctx, n >= i + 1, () => { const y = 270 + i * 100; card(ctx, 220, y, 1480, 84, { fill: C.bg2, r: 14 }); text(ctx, ic, 270, y + 56, 36, { align: "center" }); text(ctx, t, 320, y + 54, 28, { weight: 900 }); text(ctx, s, 820, y + 54, 22, { weight: 800, color: C.ink2 }); for (let k = 0; k < 3; k++) { ctx.fillStyle = k < lv ? C.good : "#DCE6EC"; rr(ctx, 1500 + k * 60, y + 30, 50, 24, 6); ctx.fill(); } }));
+      text(ctx, "kekuatan", 1590, 262, 18, { align: "center", weight: 900, color: C.ink2 });
+      if (n >= 5) label(ctx, "mulai dari akun email: kunci pemulihan akun-akun lain", 960, 700, { size: 26 });
+    },
+    bila_tertipu(ctx, b, l) {
+      card(ctx, 120, 150, 1680, 740);
+      heading(ctx, "TERLANJUR TERTIPU? BERGERAK CEPAT");
+      const n = reveal(l, 1.5, 3.0, 4);
+      items(ctx, 300, 270, 1320, [["📞", "hubungi bank atau penyedia lewat nomor resmi", "nomor di aplikasi atau kartu, minta blokir"], ["🔐", "ganti kata sandi, keluarkan akun dari semua perangkat", ""], ["🗂️", "simpan bukti", "screenshot chat, nomor, waktu, jumlah"], ["📣", "laporkan ke platform dan pihak berwenang", ""]], n, { hl: true });
+    },
+    kebiasaan(ctx, b, l) {
+      card(ctx, 120, 150, 1680, 740);
+      heading(ctx, "KEBIASAAN AMAN");
+      const n = reveal(l, 1.5, 2.6, 5);
+      items(ctx, 300, 270, 1320, [["🔔", "notifikasi transaksi selalu aktif", ""], ["📉", "batas transaksi harian secukupnya", ""], ["🏬", "aplikasi hanya dari toko resmi", ""], ["⏳", "tiga detik: baca nama dan nominal sebelum bayar", ""]], n, { hl: true, gap: 104 });
+    },
+    make_show(ctx, b, l) {
+      card(ctx, 160, 150, 1600, 740);
+      text(ctx, "GILIRANMU", 960, 230, 34, { align: "center", color: C.accentDark, weight: 900 });
+      const its = [["Simulasi kasir QRIS", "cek nama dan nominal", (x, y) => { ctx.save(); ctx.translate(x, y - 12); ctx.scale(0.5, 0.5); Bx.app(ctx, 0, 0, "konfirmasi", { nama: "Pulsa Murah 88", warn: true }); ctx.restore(); }],
+        ["Detektif pesan penipuan", "temukan tanda bahayanya", (x, y) => ["⏰ mendesak", "🎁 terlalu bagus", "🔑 meminta kode"].forEach((s, i) => { card(ctx, x - 200, y - 100 + i * 66, 400, 56, { fill: C.badBg, r: 10 }); text(ctx, s, x - 180, y - 64 + i * 66, 22, { weight: 900 }); })],
+        ["Penyusun 2FA", "pasangkan dua faktor", (x, y) => [["kata sandi", "tahu"], ["autentikator", "punya"], ["sidik jari", "diri"]].forEach(([a, s], i) => { card(ctx, x - 200, y - 100 + i * 66, 400, 56, { fill: "#fff", stroke: "#B7C4CC", lw: 2, r: 10 }); text(ctx, a, x - 180, y - 64 + i * 66, 22, { weight: 800 }); text(ctx, s, x + 180, y - 64 + i * 66, 22, { align: "right", weight: 900, color: C.kiko }); })]];
+      its.forEach(([t1, t2, draw], i) => { const x = 400 + i * 560; card(ctx, x - 250, 270, 500, 400, { fill: C.bg2 }); ctx.fillStyle = C.kiko; ctx.beginPath(); ctx.arc(x - 200, 320, 28, 0, Math.PI * 2); ctx.fill(); text(ctx, String(i + 1), x - 200, 332, 30, { align: "center", color: "#fff", weight: 900 }); text(ctx, t1, x - 160, 332, 24, { weight: 900 }); text(ctx, t2, x - 160, 366, 19, { weight: 700, color: C.ink2 }); draw(x, 530); });
+      text(ctx, "lalu di rumah bersama orang tua: cek notifikasi, batas transaksi, dan 2FA satu aplikasi", 960, 725, 24, { align: "center", color: C.ink2, weight: 800 });
+    }
+  });
+})(typeof window !== "undefined" ? window : globalThis);
+</script>
+<script>/* Inti halaman latihan: pemutar (kanvas + narasi), tombol suara nyala/mati (berpindah antara timeline suara dan teks),
+   kuis dengan petunjuk, dan kemajuan di localStorage (perangkat ini saja).
+   Pakai:  const P = PageCore({ suara: TIMELINE_SUARA_atau_null, teks: TIMELINE_TEKS });
+   Episode menambahkan latihannya sendiri lewat P.$, P.K, P.H, P.progress, P.save(), P.speed(), P.onProgress(fn). */
+function PageCore(TLS, opt = {}) {
+  const $ = id => document.getElementById(id);
+  const K = Kiko, H = K.helpers;
+  let voice = !!TLS.suara; let TL = voice ? TLS.suara : TLS.teks;
+  // ---------- progress storage (per device only) ----------
+  const KEY = opt.key || TL.episode.replace(/\./g, "").toLowerCase() + "-progress";   // D7.5 -> "d75-progress"
+  let progress = { quiz: {} };
+  try { const s = localStorage.getItem(KEY); if (s) progress = { quiz: {}, ...JSON.parse(s) }; } catch (e) {}
+  const extras = [];
+  function renderProgress() {
+    const el = $("progress"); if (!el) return; el.innerHTML = "";
+    Object.keys(TL.quizzes).forEach((id, i) => { const s = document.createElement("span"); s.textContent = "Cek " + (i + 1); s.className = progress.quiz[id] ? "ok" : ""; el.appendChild(s); });
+    extras.forEach(f => f(el));
+  }
+  function save() { try { localStorage.setItem(KEY, JSON.stringify(progress)); } catch (e) {} renderProgress(); }
+
+  // ---------- player ----------
+  const cv = $("screen"), ctx = cv.getContext("2d");
+  let t = 0, playing = false, last = 0, speed = 1, hasAudio = false;
+  const nar = $("nar"); nar.addEventListener("canplay", () => { hasAudio = true; }); nar.addEventListener("error", () => { hasAudio = false; });
+  function fmt(s) { s = Math.max(0, Math.floor(s)); return Math.floor(s / 60) + ":" + String(s % 60).padStart(2, "0"); }
+  function segStart(i) { return TL.beats.find(b => b.seg === i).start; }
+  function syncAudio() { if (voice && hasAudio) { try { nar.currentTime = t; } catch (e) {} } }
+  function drawNow() {
+    const b = K.draw(ctx, Math.min(t, TL.total - 0.01), TL);
+    $("barfill").style.width = (t / TL.total * 100) + "%"; $("bar").setAttribute("aria-valuenow", Math.round(t / TL.total * 100));
+    $("timelabel").textContent = fmt(t) + " / " + fmt(TL.total);
+    [...$("chapters").children].forEach((c, i) => c.classList.toggle("now", i === b.seg));
+    return b;
+  }
+  function loop(now) {
+    if (!playing) return;
+    const dt = Math.min(0.1, (now - last) / 1000); last = now; if (voice && hasAudio && !nar.paused) t = nar.currentTime; else t += dt * speed;
+    if (t >= TL.total) { t = TL.total - 0.01; setPlaying(false); }
+    drawNow(); requestAnimationFrame(loop);
+  }
+  function setPlaying(p) {
+    playing = p; $("bigplay").hidden = p; $("playbtn").textContent = p ? "❚❚ Jeda" : "▶ Putar";
+    if (p) { last = performance.now(); if (voice && hasAudio) { try { nar.currentTime = t; nar.playbackRate = speed; nar.play().catch(() => {}); } catch (e) {} } requestAnimationFrame(loop); } else nar.pause();
+  }
+  $("bigplay").addEventListener("click", () => setPlaying(true));
+  $("playbtn").addEventListener("click", () => setPlaying(!playing));
+  $("replay").addEventListener("click", () => { const b = K.beatAt(TL, t); t = segStart(b.seg); syncAudio(); drawNow(); setPlaying(true); });
+  $("slow").addEventListener("click", e => { speed = speed === 1 ? 0.8 : 1; nar.playbackRate = speed; e.currentTarget.setAttribute("aria-pressed", speed !== 1); });
+  function seekFromBar(ev) { const r = $("bar").getBoundingClientRect(); const x = (ev.touches ? ev.touches[0].clientX : ev.clientX) - r.left; t = Math.max(0, Math.min(TL.total - 0.01, x / r.width * TL.total)); syncAudio(); drawNow(); }
+  $("bar").addEventListener("click", seekFromBar);
+  $("bar").addEventListener("keydown", e => { if (e.key === "ArrowRight") { t = Math.min(TL.total - 0.01, t + 5); syncAudio(); drawNow(); } if (e.key === "ArrowLeft") { t = Math.max(0, t - 5); syncAudio(); drawNow(); } });
+  TL.segments.forEach((name, i) => { const b = document.createElement("button"); b.textContent = (i + 1) + ". " + name; b.addEventListener("click", () => { t = segStart(i); syncAudio(); drawNow(); setPlaying(true); }); $("chapters").appendChild(b); });
+  // voice on/off: switches between the narrated timeline and the reading-paced one, staying on the same beat
+  const vb = $("voice");
+  function setVoice(on) {
+    const cur = K.beatAt(TL, t);
+    voice = on && !!TLS.suara; TL = voice ? TLS.suara : TLS.teks;
+    const nb = TL.beats.find(b => b.id === cur.id) || TL.beats[0]; t = nb.start;
+    if (vb) { vb.setAttribute("aria-pressed", voice); vb.textContent = voice ? "🔊 Suara: nyala" : "🔇 Suara: mati"; }
+    if (playing) { if (voice && hasAudio) { try { nar.currentTime = t; nar.playbackRate = speed; nar.play().catch(() => {}); } catch (e) {} } else nar.pause(); }
+    drawNow();
+  }
+  if (vb) { if (!TLS.suara || !TLS.teks) vb.hidden = true; else { vb.addEventListener("click", () => setVoice(!voice)); vb.setAttribute("aria-pressed", voice); vb.textContent = voice ? "🔊 Suara: nyala" : "🔇 Suara: mati"; } }
+  drawNow();
+
+  // ---------- quiz ----------
+  const quizEl = $("quiz");
+  if (quizEl) Object.entries(TL.quizzes).forEach(([id, q], qi) => {
+    const box = document.createElement("div"); box.className = "q";
+    box.innerHTML = `<h3>${qi + 1}. ${q.q}</h3><div class="opts"></div><div class="fb"></div>`;
+    const opts = box.querySelector(".opts"), fb = box.querySelector(".fb");
+    q.options.forEach((o, i) => {
+      const b = document.createElement("button"); b.innerHTML = `<b>${"ABC"[i]}</b><span>${o}</span>`;
+      b.addEventListener("click", () => {
+        [...opts.children].forEach(c => c.classList.remove("wrong"));
+        if (i === q.answer) { b.classList.add("right"); fb.className = "fb good"; fb.textContent = "Benar! " + (q.explain || ""); progress.quiz[id] = true; save(); [...opts.children].forEach(c => c.disabled = true); }
+        else { b.classList.add("wrong"); fb.className = "fb bad"; fb.textContent = "Belum tepat. Petunjuk: " + q.hint; }
+      });
+      opts.appendChild(b);
+    });
+    if (progress.quiz[id]) { opts.children[q.answer].classList.add("right"); [...opts.children].forEach(c => c.disabled = true); fb.className = "fb good"; fb.textContent = "Sudah dijawab benar."; }
+    quizEl.appendChild(box);
+  });
+  renderProgress();
+
+  return { $, K, H, progress, save, renderProgress, speed: () => speed, timeline: () => TL,
+           onProgress(fn) { extras.push(fn); renderProgress(); } };
+}
+</script>
+<script>
+(function () {
+  const P = PageCore({ suara: {"episode": "F12.5", "title": "Transaksi Digital yang Aman", "hook": "membayar digital dengan aman: mengenali titik rawan penipuan saat memakai QRIS, loka pasar, dan dompet digital, lalu mengaktifkan autentikasi dua langkah.", "engine": ["../_alat/kiko-core.js", "../_alat/kiko-devices.js", "bayar.js", "scenes.js"], "parts": {"F12.5a": {"segs": [0, 1, 2, 3], "post": "Lanjut ke Bagian 2: Penipuan dan Autentikasi Dua Langkah"}, "F12.5b": {"segs": [4, 5, 6, 7], "pre": "Bagian 2: Penipuan dan Autentikasi Dua Langkah"}}, "youtube": {"ringkas": "Transaksi digital yang aman untuk kelas XII. Kiko mengikuti perjalanan satu pembayaran QRIS Rp15.000 di Kedai Sari (fiktif): pindai, cek nama penjual dan nominal, PIN, diproses penerbit, uang masuk, notifikasi. Di sepanjang jalan ada titik rawan: stiker QR palsu, bukti transfer hasil sunting, ajakan bertransaksi di luar aplikasi loka pasar, pesan hadiah yang meminta OTP, telepon petugas bank palsu, dan file APK kiriman. Lalu autentikasi dua langkah dengan beragam moda (SMS, aplikasi autentikator, kunci keamanan atau passkey, biometrik) dan langkah bila sudah tertipu. Semua nama dan kejadian fiktif. Gaya diagram Fase F. Empat cek pemahaman; simulasi kasir QRIS di halaman latihan.", "belajar": ["menjelaskan cara kerja loka pasar, perbankan digital, dan dompet digital beserta perlindungannya", "menelusuri perjalanan pembayaran QRIS dan memeriksa nama penjual serta nominal sebelum membayar", "mengenali tanda penipuan rekayasa sosial: mendesak, terlalu bagus, meminta kode, link atau APK asing", "membedakan faktor autentikasi dan memilih moda autentikasi dua langkah yang tepat", "mengambil langkah cepat bila terlanjur tertipu"], "bagian": {"F12.5a": "Loka Pasar, Dompet Digital, dan QRIS", "F12.5b": "Penipuan dan Autentikasi Dua Langkah"}, "cari": ["cara aman bayar qris", "modus penipuan otp", "autentikasi dua langkah penjelasan", "keamanan dompet digital", "transaksi digital aman informatika kelas 12"], "prasyarat": "episode D7.3 dan E.3", "jp": 12, "tagar": ["#Kelas12", "#TransaksiDigital", "#QRIS", "#KeamananDigital", "#2FA", "#SMA"]}, "recap": ["Sebelum bayar: cek nama penjual dan nominal.", "OTP dan PIN rahasia; mendesak = tanda bahaya.", "Aktifkan 2FA; tertipu? hubungi nomor resmi."], "next": {"code": "F12.6", "title": "Kreasi Konten Digital dengan Metode Bervariasi", "note": "Simulasi kasir QRIS dan detektif pesan penipuan ada di halaman episode ini."}, "segments": ["Pembuka", "Main dulu tanpa komputer", "Loka pasar dan dompet digital", "Perjalanan QRIS", "Penipuan rekayasa sosial", "Autentikasi dua langkah", "Bila tertipu", "Giliranmu"], "quizzes": {"q1": {"q": "Penjual di loka pasar mengajak transfer langsung ke rekeningnya, \"lebih murah\". Apa risikonya?", "options": ["Tidak ada risiko", "Kehilangan perlindungan rekening bersama", "Barang pasti lebih cepat"], "answer": 1, "hint": "Siapa yang menahan uangmu sampai barang diterima, dan apakah ia ikut serta kalau transfer langsung?"}, "q2": {"q": "Kamu di Kedai Sari, tetapi setelah memindai muncul nama \"Pulsa Murah 88\". Apa yang kamu lakukan?", "options": ["Tetap bayar", "Batalkan, lalu beri tahu penjual", "Bayar dua kali supaya aman"], "answer": 1, "hint": "Nama penerima harus cocok dengan toko tempatmu berbelanja."}, "q3": {"q": "\"Petugas bank\" menelepon dan meminta kode OTP yang baru masuk. Apa yang tepat?", "options": ["Berikan kodenya", "Tutup, lalu hubungi bank lewat nomor resmi", "Kirim foto kartu"], "answer": 1, "hint": "Bank resmi tidak pernah meminta OTP. Hubungi lewat jalur yang kamu cari sendiri."}, "q4": {"q": "Pasangan mana yang benar-benar dua faktor berbeda?", "options": ["Kata sandi dan PIN", "Kata sandi dan kode aplikasi autentikator", "Dua kata sandi berbeda"], "answer": 1, "hint": "Bedakan: yang kamu tahu, yang kamu punya, yang ada pada dirimu."}}, "beats": [{"id": "intro1", "seg": 0, "scene": "title", "text": "Halo, kelas dua belas! Aku Kiko. Sekarang membayar cukup dengan memindai kode. Cepat, tetapi penipu juga ikut cepat. Setelah menonton, kamu bisa membayar digital dengan aman dan mengaktifkan autentikasi dua langkah.", "hold": 1.0, "start": 0.0, "speech": 0.4, "audio": 14.933, "dur": 17.54}, {"id": "intro2", "seg": 0, "scene": "title_q", "text": "Kita kenali tiga layanan: loka pasar, perbankan digital, dan dompet digital. Lalu kita ikuti perjalanan satu pembayaran QRIS dan titik-titik rawannya, modus penipuan, autentikasi dua langkah, dan apa yang dilakukan bila tertipu.", "hold": 0.8, "start": 17.54, "speech": 17.94, "audio": 15.968, "dur": 17.84}, {"id": "intro3", "seg": 0, "scene": "prereq", "text": "Episode ini melanjutkan D7.3 tentang kata sandi aman dan E.3 tentang keamanan akun. Semua toko, nama, nomor, dan pesan di episode ini fiktif. Jangan pernah memakai data asli saat berlatih.", "hold": 0.8, "start": 35.38, "speech": 35.78, "audio": 15.52, "dur": 17.02}, {"id": "play1", "seg": 1, "scene": "unplugged_pasar", "text": "Main dulu. Tiga teman berperan: pembeli, penjual, dan rekening bersama. Pembeli menitipkan uang mainan ke rekening bersama. Uang baru diteruskan ke penjual setelah pembeli bilang barangnya sudah diterima dengan baik.", "hold": 1.0, "start": 52.4, "speech": 52.8, "audio": 14.445, "dur": 17.04}, {"id": "play2", "seg": 1, "scene": "unplugged_stiker", "text": "Lalu satu teman menjadi penipu. Diam-diam ia menempelkan kartu QR palsu di atas kartu QR penjual. Pembeli yang langsung membayar tanpa membaca nama penerima, uangnya masuk ke penipu. Siapa yang sempat membaca namanya?", "hold": 1.0, "start": 69.44, "speech": 69.84, "audio": 15.028, "dur": 18.54}, {"id": "s1a", "seg": 2, "scene": "loka_pasar", "text": "Loka pasar mempertemukan banyak penjual dan pembeli. Uangmu ditahan dulu oleh platform, seperti rekening bersama, dan baru diteruskan ke penjual setelah pesanan diterima. Perlindungan itu hilang kalau kamu bertransaksi di luar aplikasi.", "hold": 0.8, "start": 87.98, "speech": 88.38, "audio": 15.204, "dur": 17.84}, {"id": "s1b", "seg": 2, "scene": "dompet_bank", "text": "Perbankan digital memindahkan uang di rekening bank lewat aplikasi. Dompet digital menyimpan saldo untuk belanja sehari-hari. Keduanya dijaga PIN, kode sekali pakai yang disebut OTP, dan notifikasi tiap transaksi.", "hold": 0.8, "start": 105.82, "speech": 106.22, "audio": 14.252, "dur": 16.34}, {"id": "q1", "seg": 2, "scene": "quiz", "quiz": "q1", "text": "Cek pemahaman. Penjual di loka pasar mengajak: transfer langsung saja ke rekeningku, lebih murah. Apa risikonya: tidak ada, kehilangan perlindungan rekening bersama, atau barang pasti lebih cepat? Pikirkan dulu.", "hold": 4.0, "start": 122.16, "speech": 122.56, "audio": 16.16, "dur": 20.86}, {"id": "q1a", "seg": 2, "scene": "quiz_answer", "quiz": "q1", "text": "Jawabannya: kehilangan perlindungan rekening bersama. Kalau barang tidak dikirim, platform tidak bisa mengembalikan uang yang tidak pernah lewat sistemnya.", "hold": 1.0, "start": 143.02, "speech": 143.42, "audio": 9.457, "dur": 11.54}, {"id": "s2a", "seg": 3, "scene": "perjalanan_qris", "text": "Perjalanan satu pembayaran QRIS. Kamu memindai kode di Kedai Sari. Aplikasi menampilkan nama penjual dan nominal lima belas ribu. Kamu memasukkan PIN. Penerbit aplikasimu memproses, uang masuk ke penjual, dan keduanya mendapat notifikasi.", "hold": 0.8, "start": 154.56, "speech": 154.96, "audio": 16.928, "dur": 18.428}, {"id": "s2b", "seg": 3, "scene": "titik_rawan", "text": "Titik rawan pertama: stiker QR palsu ditempel di atas yang asli, jadi baca nama penjual sebelum memasukkan PIN. Titik rawan kedua: bukti transfer hasil sunting. Penjual mengecek notifikasi di aplikasinya sendiri, bukan screenshot pembeli.", "hold": 0.8, "start": 172.988, "speech": 173.388, "audio": 17.377, "dur": 18.877}, {"id": "q2", "seg": 3, "scene": "quiz", "quiz": "q2", "text": "Cek pemahaman. Kamu di Kedai Sari, tetapi setelah memindai muncul nama Pulsa Murah delapan delapan. Apa yang kamu lakukan: tetap bayar, batalkan lalu beri tahu penjual, atau bayar dua kali supaya aman? Pikirkan dulu.", "hold": 4.0, "start": 191.865, "speech": 192.265, "audio": 16.167, "dur": 22.04}, {"id": "q2a", "seg": 3, "scene": "quiz_answer", "quiz": "q2", "text": "Jawabannya: batalkan, lalu beri tahu penjual. Nama yang tidak cocok adalah tanda kodenya palsu atau ditempel orang lain.", "hold": 1.0, "start": 213.905, "speech": 214.305, "audio": 8.861, "dur": 11.04}, {"id": "s3a", "seg": 4, "scene": "rekayasa_sosial", "text": "Bagian dua. Banyak penipuan tidak membobol sistem, melainkan membujuk orangnya. Pesan menang hadiah yang meminta OTP. Telepon dari petugas bank palsu. File APK kiriman berkedok undangan atau resi, yang diam-diam membaca SMS-mu.", "hold": 0.8, "start": 224.945, "speech": 225.345, "audio": 17.059, "dur": 18.559}, {"id": "s3b", "seg": 4, "scene": "tanda_bahaya", "text": "Kenali empat tanda bahaya. Mendesak: harus sekarang juga. Terlalu bagus: hadiah tanpa ikut lomba. Meminta kode: OTP, PIN, atau kata sandi. Link atau file asing. Ingat: bank dan dompet digital resmi tidak pernah meminta OTP atau PIN-mu.", "hold": 0.8, "start": 243.504, "speech": 243.904, "audio": 19.713, "dur": 21.213}, {"id": "q3", "seg": 4, "scene": "quiz", "quiz": "q3", "text": "Cek pemahaman. Seseorang mengaku petugas bank dan meminta OTP yang baru masuk. Apa yang tepat: berikan kodenya, tutup lalu hubungi bank lewat nomor resmi, atau kirim foto kartu? Pikirkan dulu.", "hold": 4.0, "start": 264.717, "speech": 265.117, "audio": 14.726, "dur": 20.04}, {"id": "q3a", "seg": 4, "scene": "quiz_answer", "quiz": "q3", "text": "Jawabannya: tutup teleponnya, lalu hubungi bank lewat nomor resmi di aplikasi atau kartumu. OTP adalah kunci terakhir; siapa pun yang memintanya patut dicurigai.", "hold": 1.0, "start": 284.757, "speech": 285.157, "audio": 12.16, "dur": 13.86}, {"id": "s4a", "seg": 5, "scene": "tiga_faktor", "text": "Autentikasi dua langkah memakai dua faktor yang berbeda jenis. Sesuatu yang kamu tahu, seperti kata sandi atau PIN. Sesuatu yang kamu punya, seperti HP atau kunci keamanan. Sesuatu yang ada pada dirimu, seperti sidik jari atau wajah.", "hold": 0.8, "start": 298.617, "speech": 299.017, "audio": 16.478, "dur": 20.34}, {"id": "s4b", "seg": 5, "scene": "moda_2fa", "text": "Modanya beragam. Kode lewat SMS mudah, tetapi bisa dicegat. Aplikasi autentikator membuat kode baru tiap tiga puluh detik dan lebih kuat. Kunci keamanan atau passkey paling tahan terhadap situs palsu. Mulailah dari akun email.", "hold": 0.8, "start": 318.957, "speech": 319.357, "audio": 16.56, "dur": 18.84}, {"id": "q4", "seg": 5, "scene": "quiz", "quiz": "q4", "text": "Cek pemahaman. Pasangan mana yang benar-benar dua faktor berbeda: kata sandi dan PIN, kata sandi dan kode dari aplikasi autentikator, atau dua kata sandi yang berbeda? Pikirkan dulu.", "hold": 4.0, "start": 337.797, "speech": 338.197, "audio": 12.355, "dur": 19.04}, {"id": "q4a", "seg": 5, "scene": "quiz_answer", "quiz": "q4", "text": "Jawabannya: kata sandi dan kode dari aplikasi autentikator. Satu yang kamu tahu, satu dari benda yang kamu punya. Kata sandi dan PIN sama-sama hal yang kamu tahu.", "hold": 1.0, "start": 356.837, "speech": 357.237, "audio": 11.389, "dur": 15.54}, {"id": "s5a", "seg": 6, "scene": "bila_tertipu", "text": "Kalau terlanjur tertipu, bergeraklah cepat. Hubungi bank atau penyedia lewat nomor resmi dan minta blokir. Ganti kata sandi dan keluarkan akun dari semua perangkat. Simpan bukti, lalu laporkan ke platform dan pihak berwenang.", "hold": 0.8, "start": 372.377, "speech": 372.777, "audio": 14.49, "dur": 18.34}, {"id": "s5b", "seg": 6, "scene": "kebiasaan", "text": "Bangun kebiasaan aman: notifikasi transaksi selalu aktif, batas transaksi harian secukupnya, aplikasi hanya dari toko resmi, dan tiga detik untuk membaca nama dan nominal sebelum menekan bayar.", "hold": 1.0, "start": 390.717, "speech": 391.117, "audio": 13.811, "dur": 15.54}, {"id": "s6a", "seg": 7, "scene": "make_show", "text": "Sekarang giliranmu. Di halaman latihan: simulasi kasir QRIS, periksa nama dan nominal sebelum membayar; detektif pesan penipuan; dan penyusun autentikasi dua langkah.", "hold": 1.0, "start": 406.257, "speech": 406.657, "audio": 12.596, "dur": 14.296}, {"id": "s6b", "seg": 7, "scene": "make_show", "text": "Lalu di rumah bersama orang tua: periksa pengaturan keamanan satu aplikasi pembayaran, yaitu notifikasi, batas transaksi, dan autentikasi dua langkah, tanpa membuka saldo atau kata sandi.", "hold": 1.0, "start": 420.553, "speech": 420.953, "audio": 13.115, "dur": 15.04}, {"id": "recap", "seg": 7, "scene": "recap", "text": "Tiga hal untuk diingat. Satu: sebelum membayar, cek nama penjual dan nominal. Dua: OTP dan PIN itu rahasia, dan desakan adalah tanda bahaya. Tiga: aktifkan autentikasi dua langkah; kalau tertipu, hubungi nomor resmi secepatnya.", "hold": 1.5, "start": 435.593, "speech": 435.993, "audio": 18.32, "dur": 20.52}, {"id": "outro", "seg": 7, "scene": "outro", "text": "Sampai jumpa di episode berikutnya: kreasi konten digital. Kita sampaikan satu pesan dalam tiga format: infografik, video pendek, dan halaman web. Sampai jumpa!", "hold": 1.0, "start": 456.113, "speech": 456.513, "audio": 11.75, "dur": 13.54}], "total": 469.653}, teks: {"episode": "F12.5", "title": "Transaksi Digital yang Aman", "hook": "membayar digital dengan aman: mengenali titik rawan penipuan saat memakai QRIS, loka pasar, dan dompet digital, lalu mengaktifkan autentikasi dua langkah.", "engine": ["../_alat/kiko-core.js", "../_alat/kiko-devices.js", "bayar.js", "scenes.js"], "parts": {"F12.5a": {"segs": [0, 1, 2, 3], "post": "Lanjut ke Bagian 2: Penipuan dan Autentikasi Dua Langkah"}, "F12.5b": {"segs": [4, 5, 6, 7], "pre": "Bagian 2: Penipuan dan Autentikasi Dua Langkah"}}, "youtube": {"ringkas": "Transaksi digital yang aman untuk kelas XII. Kiko mengikuti perjalanan satu pembayaran QRIS Rp15.000 di Kedai Sari (fiktif): pindai, cek nama penjual dan nominal, PIN, diproses penerbit, uang masuk, notifikasi. Di sepanjang jalan ada titik rawan: stiker QR palsu, bukti transfer hasil sunting, ajakan bertransaksi di luar aplikasi loka pasar, pesan hadiah yang meminta OTP, telepon petugas bank palsu, dan file APK kiriman. Lalu autentikasi dua langkah dengan beragam moda (SMS, aplikasi autentikator, kunci keamanan atau passkey, biometrik) dan langkah bila sudah tertipu. Semua nama dan kejadian fiktif. Gaya diagram Fase F. Empat cek pemahaman; simulasi kasir QRIS di halaman latihan.", "belajar": ["menjelaskan cara kerja loka pasar, perbankan digital, dan dompet digital beserta perlindungannya", "menelusuri perjalanan pembayaran QRIS dan memeriksa nama penjual serta nominal sebelum membayar", "mengenali tanda penipuan rekayasa sosial: mendesak, terlalu bagus, meminta kode, link atau APK asing", "membedakan faktor autentikasi dan memilih moda autentikasi dua langkah yang tepat", "mengambil langkah cepat bila terlanjur tertipu"], "bagian": {"F12.5a": "Loka Pasar, Dompet Digital, dan QRIS", "F12.5b": "Penipuan dan Autentikasi Dua Langkah"}, "cari": ["cara aman bayar qris", "modus penipuan otp", "autentikasi dua langkah penjelasan", "keamanan dompet digital", "transaksi digital aman informatika kelas 12"], "prasyarat": "episode D7.3 dan E.3", "jp": 12, "tagar": ["#Kelas12", "#TransaksiDigital", "#QRIS", "#KeamananDigital", "#2FA", "#SMA"]}, "recap": ["Sebelum bayar: cek nama penjual dan nominal.", "OTP dan PIN rahasia; mendesak = tanda bahaya.", "Aktifkan 2FA; tertipu? hubungi nomor resmi."], "next": {"code": "F12.6", "title": "Kreasi Konten Digital dengan Metode Bervariasi", "note": "Simulasi kasir QRIS dan detektif pesan penipuan ada di halaman episode ini."}, "segments": ["Pembuka", "Main dulu tanpa komputer", "Loka pasar dan dompet digital", "Perjalanan QRIS", "Penipuan rekayasa sosial", "Autentikasi dua langkah", "Bila tertipu", "Giliranmu"], "quizzes": {"q1": {"q": "Penjual di loka pasar mengajak transfer langsung ke rekeningnya, \"lebih murah\". Apa risikonya?", "options": ["Tidak ada risiko", "Kehilangan perlindungan rekening bersama", "Barang pasti lebih cepat"], "answer": 1, "hint": "Siapa yang menahan uangmu sampai barang diterima, dan apakah ia ikut serta kalau transfer langsung?"}, "q2": {"q": "Kamu di Kedai Sari, tetapi setelah memindai muncul nama \"Pulsa Murah 88\". Apa yang kamu lakukan?", "options": ["Tetap bayar", "Batalkan, lalu beri tahu penjual", "Bayar dua kali supaya aman"], "answer": 1, "hint": "Nama penerima harus cocok dengan toko tempatmu berbelanja."}, "q3": {"q": "\"Petugas bank\" menelepon dan meminta kode OTP yang baru masuk. Apa yang tepat?", "options": ["Berikan kodenya", "Tutup, lalu hubungi bank lewat nomor resmi", "Kirim foto kartu"], "answer": 1, "hint": "Bank resmi tidak pernah meminta OTP. Hubungi lewat jalur yang kamu cari sendiri."}, "q4": {"q": "Pasangan mana yang benar-benar dua faktor berbeda?", "options": ["Kata sandi dan PIN", "Kata sandi dan kode aplikasi autentikator", "Dua kata sandi berbeda"], "answer": 1, "hint": "Bedakan: yang kamu tahu, yang kamu punya, yang ada pada dirimu."}}, "beats": [{"id": "intro1", "seg": 0, "scene": "title", "text": "Halo, kelas dua belas! Aku Kiko. Sekarang membayar cukup dengan memindai kode. Cepat, tetapi penipu juga ikut cepat. Setelah menonton, kamu bisa membayar digital dengan aman dan mengaktifkan autentikasi dua langkah.", "hold": 1.0, "start": 0.0, "speech": 0.0, "audio": 20.175, "dur": 22.175}, {"id": "intro2", "seg": 0, "scene": "title_q", "text": "Kita kenali tiga layanan: loka pasar, perbankan digital, dan dompet digital. Lalu kita ikuti perjalanan satu pembayaran QRIS dan titik-titik rawannya, modus penipuan, autentikasi dua langkah, dan apa yang dilakukan bila tertipu.", "hold": 0.8, "start": 22.175, "speech": 22.175, "audio": 20.8, "dur": 22.6}, {"id": "intro3", "seg": 0, "scene": "prereq", "text": "Episode ini melanjutkan D7.3 tentang kata sandi aman dan E.3 tentang keamanan akun. Semua toko, nama, nomor, dan pesan di episode ini fiktif. Jangan pernah memakai data asli saat berlatih.", "hold": 0.8, "start": 44.775, "speech": 44.775, "audio": 19.55, "dur": 21.35}, {"id": "play1", "seg": 1, "scene": "unplugged_pasar", "text": "Main dulu. Tiga teman berperan: pembeli, penjual, dan rekening bersama. Pembeli menitipkan uang mainan ke rekening bersama. Uang baru diteruskan ke penjual setelah pembeli bilang barangnya sudah diterima dengan baik.", "hold": 1.0, "start": 66.125, "speech": 66.125, "audio": 19.55, "dur": 21.55}, {"id": "play2", "seg": 1, "scene": "unplugged_stiker", "text": "Lalu satu teman menjadi penipu. Diam-diam ia menempelkan kartu QR palsu di atas kartu QR penjual. Pembeli yang langsung membayar tanpa membaca nama penerima, uangnya masuk ke penipu. Siapa yang sempat membaca namanya?", "hold": 1.0, "start": 87.675, "speech": 87.675, "audio": 21.425, "dur": 23.425}, {"id": "s1a", "seg": 2, "scene": "loka_pasar", "text": "Loka pasar mempertemukan banyak penjual dan pembeli. Uangmu ditahan dulu oleh platform, seperti rekening bersama, dan baru diteruskan ke penjual setelah pesanan diterima. Perlindungan itu hilang kalau kamu bertransaksi di luar aplikasi.", "hold": 0.8, "start": 111.1, "speech": 111.1, "audio": 20.8, "dur": 22.6}, {"id": "s1b", "seg": 2, "scene": "dompet_bank", "text": "Perbankan digital memindahkan uang di rekening bank lewat aplikasi. Dompet digital menyimpan saldo untuk belanja sehari-hari. Keduanya dijaga PIN, kode sekali pakai yang disebut OTP, dan notifikasi tiap transaksi.", "hold": 0.8, "start": 133.7, "speech": 133.7, "audio": 18.925, "dur": 20.725}, {"id": "q1", "seg": 2, "scene": "quiz", "quiz": "q1", "text": "Cek pemahaman. Penjual di loka pasar mengajak: transfer langsung saja ke rekeningku, lebih murah. Apa risikonya: tidak ada, kehilangan perlindungan rekening bersama, atau barang pasti lebih cepat? Pikirkan dulu.", "hold": 4.0, "start": 154.425, "speech": 154.425, "audio": 18.925, "dur": 23.925}, {"id": "q1a", "seg": 2, "scene": "quiz_answer", "quiz": "q1", "text": "Jawabannya: kehilangan perlindungan rekening bersama. Kalau barang tidak dikirim, platform tidak bisa mengembalikan uang yang tidak pernah lewat sistemnya.", "hold": 1.0, "start": 178.35, "speech": 178.35, "audio": 12.675, "dur": 14.675}, {"id": "s2a", "seg": 3, "scene": "perjalanan_qris", "text": "Perjalanan satu pembayaran QRIS. Kamu memindai kode di Kedai Sari. Aplikasi menampilkan nama penjual dan nominal lima belas ribu. Kamu memasukkan PIN. Penerbit aplikasimu memproses, uang masuk ke penjual, dan keduanya mendapat notifikasi.", "hold": 0.8, "start": 193.025, "speech": 193.025, "audio": 21.425, "dur": 23.225}, {"id": "s2b", "seg": 3, "scene": "titik_rawan", "text": "Titik rawan pertama: stiker QR palsu ditempel di atas yang asli, jadi baca nama penjual sebelum memasukkan PIN. Titik rawan kedua: bukti transfer hasil sunting. Penjual mengecek notifikasi di aplikasinya sendiri, bukan screenshot pembeli.", "hold": 0.8, "start": 216.25, "speech": 216.25, "audio": 22.05, "dur": 23.85}, {"id": "q2", "seg": 3, "scene": "quiz", "quiz": "q2", "text": "Cek pemahaman. Kamu di Kedai Sari, tetapi setelah memindai muncul nama Pulsa Murah delapan delapan. Apa yang kamu lakukan: tetap bayar, batalkan lalu beri tahu penjual, atau bayar dua kali supaya aman? Pikirkan dulu.", "hold": 4.0, "start": 240.1, "speech": 240.1, "audio": 22.05, "dur": 27.05}, {"id": "q2a", "seg": 3, "scene": "quiz_answer", "quiz": "q2", "text": "Jawabannya: batalkan, lalu beri tahu penjual. Nama yang tidak cocok adalah tanda kodenya palsu atau ditempel orang lain.", "hold": 1.0, "start": 267.15, "speech": 267.15, "audio": 12.05, "dur": 14.05}, {"id": "s3a", "seg": 4, "scene": "rekayasa_sosial", "text": "Bagian dua. Banyak penipuan tidak membobol sistem, melainkan membujuk orangnya. Pesan menang hadiah yang meminta OTP. Telepon dari petugas bank palsu. File APK kiriman berkedok undangan atau resi, yang diam-diam membaca SMS-mu.", "hold": 0.8, "start": 281.2, "speech": 281.2, "audio": 20.8, "dur": 22.6}, {"id": "s3b", "seg": 4, "scene": "tanda_bahaya", "text": "Kenali empat tanda bahaya. Mendesak: harus sekarang juga. Terlalu bagus: hadiah tanpa ikut lomba. Meminta kode: OTP, PIN, atau kata sandi. Link atau file asing. Ingat: bank dan dompet digital resmi tidak pernah meminta OTP atau PIN-mu.", "hold": 0.8, "start": 303.8, "speech": 303.8, "audio": 23.925, "dur": 25.725}, {"id": "q3", "seg": 4, "scene": "quiz", "quiz": "q3", "text": "Cek pemahaman. Seseorang mengaku petugas bank dan meminta OTP yang baru masuk. Apa yang tepat: berikan kodenya, tutup lalu hubungi bank lewat nomor resmi, atau kirim foto kartu? Pikirkan dulu.", "hold": 4.0, "start": 329.525, "speech": 329.525, "audio": 19.55, "dur": 24.55}, {"id": "q3a", "seg": 4, "scene": "quiz_answer", "quiz": "q3", "text": "Jawabannya: tutup teleponnya, lalu hubungi bank lewat nomor resmi di aplikasi atau kartumu. OTP adalah kunci terakhir; siapa pun yang memintanya patut dicurigai.", "hold": 1.0, "start": 354.075, "speech": 354.075, "audio": 15.175, "dur": 17.175}, {"id": "s4a", "seg": 5, "scene": "tiga_faktor", "text": "Autentikasi dua langkah memakai dua faktor yang berbeda jenis. Sesuatu yang kamu tahu, seperti kata sandi atau PIN. Sesuatu yang kamu punya, seperti HP atau kunci keamanan. Sesuatu yang ada pada dirimu, seperti sidik jari atau wajah.", "hold": 0.8, "start": 371.25, "speech": 371.25, "audio": 23.925, "dur": 25.725}, {"id": "s4b", "seg": 5, "scene": "moda_2fa", "text": "Modanya beragam. Kode lewat SMS mudah, tetapi bisa dicegat. Aplikasi autentikator membuat kode baru tiap tiga puluh detik dan lebih kuat. Kunci keamanan atau passkey paling tahan terhadap situs palsu. Mulailah dari akun email.", "hold": 0.8, "start": 396.975, "speech": 396.975, "audio": 22.05, "dur": 23.85}, {"id": "q4", "seg": 5, "scene": "quiz", "quiz": "q4", "text": "Cek pemahaman. Pasangan mana yang benar-benar dua faktor berbeda: kata sandi dan PIN, kata sandi dan kode dari aplikasi autentikator, atau dua kata sandi yang berbeda? Pikirkan dulu.", "hold": 4.0, "start": 420.825, "speech": 420.825, "audio": 18.3, "dur": 23.3}, {"id": "q4a", "seg": 5, "scene": "quiz_answer", "quiz": "q4", "text": "Jawabannya: kata sandi dan kode dari aplikasi autentikator. Satu yang kamu tahu, satu dari benda yang kamu punya. Kata sandi dan PIN sama-sama hal yang kamu tahu.", "hold": 1.0, "start": 444.125, "speech": 444.125, "audio": 17.675, "dur": 19.675}, {"id": "s5a", "seg": 6, "scene": "bila_tertipu", "text": "Kalau terlanjur tertipu, bergeraklah cepat. Hubungi bank atau penyedia lewat nomor resmi dan minta blokir. Ganti kata sandi dan keluarkan akun dari semua perangkat. Simpan bukti, lalu laporkan ke platform dan pihak berwenang.", "hold": 0.8, "start": 463.8, "speech": 463.8, "audio": 21.425, "dur": 23.225}, {"id": "s5b", "seg": 6, "scene": "kebiasaan", "text": "Bangun kebiasaan aman: notifikasi transaksi selalu aktif, batas transaksi harian secukupnya, aplikasi hanya dari toko resmi, dan tiga detik untuk membaca nama dan nominal sebelum menekan bayar.", "hold": 1.0, "start": 487.025, "speech": 487.025, "audio": 17.675, "dur": 19.675}, {"id": "s6a", "seg": 7, "scene": "make_show", "text": "Sekarang giliranmu. Di halaman latihan: simulasi kasir QRIS, periksa nama dan nominal sebelum membayar; detektif pesan penipuan; dan penyusun autentikasi dua langkah.", "hold": 1.0, "start": 506.7, "speech": 506.7, "audio": 14.55, "dur": 16.55}, {"id": "s6b", "seg": 7, "scene": "make_show", "text": "Lalu di rumah bersama orang tua: periksa pengaturan keamanan satu aplikasi pembayaran, yaitu notifikasi, batas transaksi, dan autentikasi dua langkah, tanpa membuka saldo atau kata sandi.", "hold": 1.0, "start": 523.25, "speech": 523.25, "audio": 17.05, "dur": 19.05}, {"id": "recap", "seg": 7, "scene": "recap", "text": "Tiga hal untuk diingat. Satu: sebelum membayar, cek nama penjual dan nominal. Dua: OTP dan PIN itu rahasia, dan desakan adalah tanda bahaya. Tiga: aktifkan autentikasi dua langkah; kalau tertipu, hubungi nomor resmi secepatnya.", "hold": 1.5, "start": 542.3, "speech": 542.3, "audio": 22.05, "dur": 24.55}, {"id": "outro", "seg": 7, "scene": "outro", "text": "Sampai jumpa di episode berikutnya: kreasi konten digital. Kita sampaikan satu pesan dalam tiga format: infografik, video pendek, dan halaman web. Sampai jumpa!", "hold": 1.0, "start": 566.85, "speech": 566.85, "audio": 15.175, "dur": 17.175}], "total": 584.025} });
+  const { $, progress, save } = P; progress.levels = progress.levels || {};
+  const esc = s => String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;");
+  const shuffle = a => a.map(x => [Math.random(), x]).sort((p, q) => p[0] - q[0]).map(x => x[1]);
+  // ---- kasir QRIS: [toko, total, nama di layar, nominal di layar, jawaban "bayar"|"batal", alasan]
+  const KS = [["Kedai Sari", "Rp15.000", "Kedai Sari", "Rp15.000", "bayar", "Nama dan nominal cocok."],
+    ["Fotokopi Jaya", "Rp7.500", "Pulsa Murah 88", "Rp7.500", "batal", "Nama penerima tidak cocok: kemungkinan stiker QR palsu. Beri tahu penjual."],
+    ["Toko Buku Pena", "Rp42.000", "Toko Buku Pena", "Rp420.000", "batal", "Nominalnya sepuluh kali lipat. Minta kasir mengulang tagihan."],
+    ["Koperasi Sekolah", "Rp12.000", "Koperasi Sekolah", "Rp12.000", "bayar", "Nama dan nominal cocok."]];
+  let si = 0;
+  function renderKasir() {
+    const area = $("exarea");
+    if (si === KS.length) { area.innerHTML = `<div class="qnum">Giliran 5 dari 5: kamu penjualnya</div><div class="ctx">Pembeli menunjukkan HP: "Sudah transfer Rp25.000 ya, Kak. Ini buktinya." Di layarnya ada tanda centang hijau.</div><div class="opts" id="opts"></div>`;
+      [["Terima screenshot itu, serahkan barangnya", false], ["Cek notifikasi di aplikasi penjual sendiri dulu", true]].forEach(([t, ok]) => { const b = document.createElement("button"); b.textContent = t; b.addEventListener("click", () => { if (ok) { b.classList.add("right"); [...$("opts").children].forEach(x => x.disabled = true); setResult("good", "Tepat. Screenshot bisa disunting; notifikasi di aplikasimu sendiri yang menjadi bukti."); si++; setTimeout(() => { setResult(); renderKasir(); }, 2000); } else { b.classList.add("wrong"); setResult("bad", "Belum tepat. Petunjuk: gambar di HP orang lain bisa hasil sunting. Di mana kamu bisa memastikan uangnya benar-benar masuk?"); } }); $("opts").appendChild(b); }); return; }
+    if (si > KS.length) { finish("Lima transaksi aman. Tiga detik membaca nama dan nominal menyelamatkan uangmu."); return; }
+    const [toko, total, nm, nom, ans, why] = KS[si];
+    area.innerHTML = `<div class="qnum">Giliran ${si + 1} dari 5</div><div class="ctx">Kamu belanja di <b>${esc(toko)}</b>, totalnya <b>${total}</b>. Kamu sudah memindai kodenya.</div><div class="hp"><div class="bar">DompetKu</div><div class="bd"><small>bayar ke</small><div class="nm">${esc(nm)}</div><small>nominal</small><div class="nom">${nom}</div></div></div><div class="dir" style="grid-template-columns:1fr 1fr"><button id="bayar">Bayar</button><button id="batal">Batalkan</button></div>`;
+    const pick = a => { if (a === ans) { setResult("good", (a === "bayar" ? "Tepat, bayar. " : "Tepat, batalkan. ") + why); si++; setTimeout(() => { setResult(); renderKasir(); }, 1900); } else setResult("bad", "Belum tepat. Petunjuk: bandingkan nama di layar dengan nama toko, dan nominal di layar dengan totalmu."); };
+    $("bayar").addEventListener("click", () => pick("bayar")); $("batal").addEventListener("click", () => pick("batal"));
+  }
+  // ---- detektif pesan penipuan
+  const SIGNS = ["mendesak", "terlalu bagus", "meminta kode", "link atau file asing", "aman (tidak ada tanda bahaya)"];
+  const MS = [["+62 8xx (nomor tak dikenal)", "SEGERA! Akunmu diblokir dalam 10 menit. Verifikasi sekarang di link berikut: bit.ly/xxxx", [0, 3]],
+    ["+62 8xx (nomor tak dikenal)", "Selamat, nomormu terpilih mendapat Rp10 juta dari undian. Kirim kode OTP untuk pencairan.", [1, 2]],
+    ["Nomor baru", "Undangan pernikahan kami 🙏 Silakan buka file Undangan.apk", [3]],
+    ["Notifikasi aplikasi DompetKu", "Pembayaran Rp15.000 ke Kedai Sari berhasil, 10.32. (Kamu memang baru saja membayar di sana.)", [4]],
+    ["\"Customer Service\"", "Halo Kak, untuk verifikasi data, mohon sebutkan PIN dompet digital Kakak.", [2]]];
+  let mi = 0;
+  function renderDetektif() {
+    const area = $("exarea"); if (mi >= MS.length) { finish("Lima pesan diperiksa. Bank dan dompet digital resmi tidak pernah meminta OTP atau PIN."); return; }
+    const [from, msg, ok] = MS[mi]; area.innerHTML = `<div class="qnum">Pesan ${mi + 1} dari ${MS.length}</div><div class="draft"><small>${esc(from)}</small><br>${esc(msg)}</div><div class="qtext" style="font-size:16px">Tanda bahaya apa yang paling jelas?</div><div class="opts" id="opts"></div>`;
+    SIGNS.forEach((o, i) => { const b = document.createElement("button"); b.textContent = o; b.addEventListener("click", () => { if (ok.includes(i)) { b.classList.add("right"); [...$("opts").children].forEach(x => x.disabled = true); setResult("good", ok.includes(4) ? "Tepat. Ini notifikasi yang cocok dengan transaksi yang memang kamu lakukan, tanpa permintaan apa pun." : "Tepat. Jangan balas, jangan klik, jangan kirim kode; hapus dan laporkan."); mi++; setTimeout(() => { setResult(); renderDetektif(); }, 1900); } else { b.classList.add("wrong"); setResult("bad", "Belum tepat. Petunjuk: apakah pesannya memburu-buru, menjanjikan hadiah, meminta kode, atau mengirim link dan file?"); } }); $("opts").appendChild(b); });
+  }
+  // ---- penyusun 2FA: kelompokkan faktor lalu pilih pasangan
+  const FK = [["kata sandi", 0], ["PIN", 0], ["kode dari aplikasi autentikator di HP", 1], ["kunci keamanan USB", 1], ["sidik jari", 2], ["wajah", 2], ["jawaban pertanyaan rahasia", 0], ["kode SMS ke nomor HP-mu", 1]];
+  const PAIRS = [[["Kata sandi + PIN", "Kata sandi + sidik jari", "Dua kata sandi berbeda"], 1], [["PIN + jawaban pertanyaan rahasia", "Kunci keamanan + kode SMS", "Kata sandi + kunci keamanan"], 2]];
+  const JENIS = ["yang kamu tahu", "yang kamu punya", "yang ada pada dirimu"];
+  let fi = 0;
+  function renderFaktor() {
+    const area = $("exarea");
+    if (fi < FK.length) { const [t, a] = FK[fi]; area.innerHTML = `<div class="qnum">Faktor ${fi + 1} dari ${FK.length}</div><div class="qtext">${esc(t)}</div><div class="opts" id="opts"></div>`;
+      JENIS.forEach((o, i) => { const b = document.createElement("button"); b.textContent = o; b.addEventListener("click", () => { if (i === a) { b.classList.add("right"); [...$("opts").children].forEach(x => x.disabled = true); setResult("good", "Tepat."); fi++; setTimeout(() => { setResult(); renderFaktor(); }, 1000); } else { b.classList.add("wrong"); setResult("bad", "Belum tepat. Petunjuk: apakah kamu mengingatnya, memegang bendanya, atau itu bagian dari tubuhmu?"); } }); $("opts").appendChild(b); }); return; }
+    const pi = fi - FK.length; if (pi >= PAIRS.length) { finish("Dua faktor berarti dua jenis berbeda: tahu, punya, atau diri."); return; }
+    const [opts, a] = PAIRS[pi]; area.innerHTML = `<div class="qnum">Pasangan ${pi + 1} dari ${PAIRS.length}</div><div class="qtext">Mana yang benar-benar dua faktor berbeda jenis?</div><div class="opts" id="opts"></div>`;
+    opts.forEach((o, i) => { const b = document.createElement("button"); b.textContent = o; b.addEventListener("click", () => { if (i === a) { b.classList.add("right"); [...$("opts").children].forEach(x => x.disabled = true); setResult("good", "Tepat. Satu faktor dari jenis yang berbeda dengan yang lain."); fi++; setTimeout(() => { setResult(); renderFaktor(); }, 1500); } else { b.classList.add("wrong"); setResult("bad", "Belum tepat. Petunjuk: tentukan jenis tiap faktor dulu. Dua dari jenis yang sama tidak dihitung dua faktor."); } }); $("opts").appendChild(b); });
+  }
+  const LEVELS = [
+    { id: "kasir", name: "1 Simulasi kasir QRIS", kind: "kasir", task: "Lima transaksi. Baca nama dan nominal di layar, lalu putuskan: bayar atau batalkan." },
+    { id: "detektif", name: "2 Detektif pesan", kind: "detektif", task: "Lima pesan masuk. Tentukan tanda bahayanya, atau pilih aman bila tidak ada." },
+    { id: "faktor", name: "3 Penyusun 2FA", kind: "faktor", task: "Kelompokkan delapan cara masuk ke jenis faktornya, lalu pilih pasangan yang benar-benar dua faktor." }];
+  let L = 0; const level = () => LEVELS[L];
+  function setResult(kind, msg) { $("result").innerHTML = msg ? `<div class="result ${kind}">${msg}</div>` : ""; }
+  function finish(extra) { progress.levels[level().id] = true; save(); renderLevels(); setResult("good", `${level().name} selesai! ` + extra); }
+  function loadLevel(i) { L = i; si = 0; mi = 0; fi = 0; $("task").textContent = level().task; setResult(); renderLevels(); ({ kasir: renderKasir, detektif: renderDetektif, faktor: renderFaktor })[level().kind](); }
+  function renderLevels() { const el = $("levels"); el.innerHTML = ""; LEVELS.forEach((lv, i) => { const b = document.createElement("button"); b.textContent = lv.name; b.className = progress.levels[lv.id] ? "done" : ""; b.setAttribute("aria-pressed", i === L); b.addEventListener("click", () => loadLevel(i)); el.appendChild(b); }); }
+  $("redo").addEventListener("click", () => { progress.levels[level().id] = false; save(); loadLevel(L); });
+  P.onProgress(el => LEVELS.forEach(lv => { const s = document.createElement("span"); s.textContent = lv.name.slice(2); s.className = progress.levels[lv.id] ? "ok" : ""; el.appendChild(s); }));
+  loadLevel(0);
+})();
+</script>
