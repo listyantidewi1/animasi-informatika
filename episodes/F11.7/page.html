@@ -88,8 +88,8 @@ __PAGE_CSS__
   const { $, progress, save } = P; progress.levels = progress.levels || {};
   const esc = s => String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;");
   // ---- Latihan 1: pembungkus paket
-  const LAY = [["aplikasi", "isi pesan: foto.jpg bagian 3", "d"], ["transport", "port 8080, segmen no. 3", "t"], ["internet", "IP tujuan 10.0.3.12", "i"], ["tautan", "MAC 5A:2F:…", "l"]];
-  const HQ = [["Nomor port ada di header lapisan mana?", ["transport", "internet", "tautan"], 0], ["Alamat IP tujuan ditambahkan oleh lapisan?", ["aplikasi", "internet", "tautan"], 1], ["Di penerima, header yang dibuka paling dulu?", ["tautan (MAC)", "transport (port)", "aplikasi"], 0], ["Alamat MAC dipakai untuk?", ["lompatan ke perangkat berikutnya di jaringan lokal", "memilih aplikasi", "menandai urutan segmen"], 0]];
+  const LAY = [["aplikasi", "isi pesan: foto.jpg bagian 3", "d"], ["transport", "port 8080, segmen no. 3", "t"], ["internet", "IP tujuan 10.0.3.12", "i"], ["link", "MAC 5A:2F:…", "l"]];
+  const HQ = [["Nomor port ada di header lapisan mana?", ["transport", "internet", "link"], 0], ["Alamat IP tujuan ditambahkan oleh lapisan?", ["aplikasi", "internet", "link"], 1], ["Di penerima, header yang dibuka paling dulu?", ["link (MAC)", "transport (port)", "aplikasi"], 0], ["Alamat MAC dipakai untuk?", ["lompatan ke perangkat berikutnya di jaringan lokal", "memilih aplikasi", "menandai urutan segmen"], 0]];
   let wrapStep = 0, unwrapStep = 0, hq = 0, phase = 0;
   function renderBungkus() {
     const area = $("exarea");
@@ -97,18 +97,18 @@ __PAGE_CSS__
     const pkt = `<div class="pkt">${LAY.slice(1, 1 + headers).reverse().map(l => `<span class="${l[2]}">${esc(l[1])}</span>`).join("")}<span class="d">${esc(LAY[0][1])}</span></div>`;
     if (phase === 0) {
       area.innerHTML = `<div class="qnum">Langkah 1: pengirim. Ketuk lapisan berikutnya yang membungkus (dari atas ke bawah).</div>${pkt}<div class="opts" id="opts">${LAY.slice(1).map((l, i) => `<button data-i="${i + 1}" class="${i + 1 <= wrapStep ? "used" : ""}" ${i + 1 <= wrapStep ? "disabled" : ""}>${esc(l[0])}: tambah ${esc(l[1])}</button>`).join("")}</div>`;
-      [...area.querySelectorAll("#opts button")].forEach(b => b.addEventListener("click", () => { if (+b.dataset.i === wrapStep + 1) { wrapStep++; setResult("good", "Tepat: " + LAY[wrapStep][0] + " menambah headernya."); if (wrapStep === 3) { phase = 1; setTimeout(() => { setResult(); renderBungkus(); }, 1000); } else renderBungkus(); } else { b.classList.add("wrong"); setResult("bad", "Belum. Petunjuk: urutan turun adalah aplikasi → transport → internet → tautan; header baru selalu ditambahkan di luar yang sudah ada."); } }));
+      [...area.querySelectorAll("#opts button")].forEach(b => b.addEventListener("click", () => { if (+b.dataset.i === wrapStep + 1) { wrapStep++; setResult("good", "Tepat: " + LAY[wrapStep][0] + " menambah headernya."); if (wrapStep === 3) { phase = 1; setTimeout(() => { setResult(); renderBungkus(); }, 1000); } else renderBungkus(); } else { b.classList.add("wrong"); setResult("bad", "Belum. Petunjuk: urutan turun adalah aplikasi → transport → internet → link; header baru selalu ditambahkan di luar yang sudah ada."); } }));
       return;
     }
     if (phase === 1) {
       area.innerHTML = `<div class="qnum">Langkah 2: penerima. Ketuk header yang dibuka berikutnya (dari luar ke dalam).</div>${pkt}<div class="opts" id="opts">${[3, 2, 1].map(i => `<button data-i="${i}" class="${i > 3 - unwrapStep ? "used" : ""}" ${i > 3 - unwrapStep ? "disabled" : ""}>buka header ${esc(LAY[i][0])}</button>`).join("")}</div>`;
-      [...area.querySelectorAll("#opts button")].forEach(b => b.addEventListener("click", () => { if (+b.dataset.i === 3 - unwrapStep) { unwrapStep++; setResult("good", "Tepat."); if (unwrapStep === 3) { phase = 2; setTimeout(() => { setResult(); renderBungkus(); }, 900); } else renderBungkus(); } else { b.classList.add("wrong"); setResult("bad", "Belum. Petunjuk: yang terluar dibuka lebih dulu: tautan, lalu internet, lalu transport."); } }));
+      [...area.querySelectorAll("#opts button")].forEach(b => b.addEventListener("click", () => { if (+b.dataset.i === 3 - unwrapStep) { unwrapStep++; setResult("good", "Tepat."); if (unwrapStep === 3) { phase = 2; setTimeout(() => { setResult(); renderBungkus(); }, 900); } else renderBungkus(); } else { b.classList.add("wrong"); setResult("bad", "Belum. Petunjuk: yang terluar dibuka lebih dulu: link, lalu internet, lalu transport."); } }));
       return;
     }
     if (hq >= HQ.length) { area.innerHTML = pkt; done("Dibungkus turun, dibuka naik: tiap lapisan mengurus headernya sendiri."); return; }
     const [t, opts, a] = HQ[hq];
     area.innerHTML = `${pkt}<div class="qnum">Pertanyaan ${hq + 1} dari ${HQ.length}</div><div class="qtext">${esc(t)}</div><div class="opts" id="opts">${opts.map((o, i) => `<button data-i="${i}">${esc(o)}</button>`).join("")}</div>`;
-    [...area.querySelectorAll("#opts button")].forEach(b => b.addEventListener("click", () => { if (+b.dataset.i === a) { b.classList.add("right"); [...area.querySelectorAll("#opts button")].forEach(x => x.disabled = true); setResult("good", "Tepat."); hq++; setTimeout(() => { setResult(); renderBungkus(); }, 900); } else { b.classList.add("wrong"); setResult("bad", "Belum tepat. Petunjuk: port di transport, IP di internet, MAC di tautan; yang terluar dibuka dulu."); } }));
+    [...area.querySelectorAll("#opts button")].forEach(b => b.addEventListener("click", () => { if (+b.dataset.i === a) { b.classList.add("right"); [...area.querySelectorAll("#opts button")].forEach(x => x.disabled = true); setResult("good", "Tepat."); hq++; setTimeout(() => { setResult(); renderBungkus(); }, 900); } else { b.classList.add("wrong"); setResult("bad", "Belum tepat. Petunjuk: port di transport, IP di internet, MAC di link; yang terluar dibuka dulu."); } }));
   }
   // ---- Latihan 2: topologi
   const TOPO = { bus: { nodes: [[40, 60], [120, 160], [200, 60], [280, 160], [360, 60]], links: [[0, 1], [1, 2], [2, 3], [3, 4]] }, bintang: { nodes: [[200, 110], [60, 40], [340, 40], [60, 180], [340, 180]], links: [[0, 1], [0, 2], [0, 3], [0, 4]], hub: 0 }, mesh: { nodes: [[60, 40], [340, 40], [60, 180], [340, 180], [200, 110]], links: [[0, 1], [0, 2], [0, 4], [1, 3], [1, 4], [2, 3], [2, 4], [3, 4]] }, pohon: { nodes: [[200, 30], [100, 100], [300, 100], [50, 180], [150, 180], [250, 180], [350, 180]], links: [[0, 1], [0, 2], [1, 3], [1, 4], [2, 5], [2, 6]], hubs: [0, 1, 2] } };

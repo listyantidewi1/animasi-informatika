@@ -4,7 +4,7 @@
   const K = global.Kiko, H = K.helpers, C = K.C, J = K.jaringan;
   const { rr, text, para, card, clamp } = H;
   const Lp = {};
-  Lp.LAYERS = [["aplikasi", "HTTP, pesan, isi berkas", "#2E9E5B"], ["transport", "TCP/UDP: segmen bernomor, port", "#2E7E9A"], ["internet", "IP: alamat tujuan, jalur", "#8E6BBF"], ["tautan", "MAC, kabel atau Wi-Fi", "#B57A12"]];
+  Lp.LAYERS = [["aplikasi", "HTTP, pesan, isi file", "#2E9E5B"], ["transport", "TCP/UDP: segmen bernomor, port", "#2E7E9A"], ["internet", "IP: alamat tujuan, jalur", "#8E6BBF"], ["link", "MAC, kabel atau Wi-Fi", "#B57A12"]];
   // tumpukan lapisan: n tampil dari atas, active disorot
   Lp.stack = function (ctx, x, y, w, n, opt = {}) {
     Lp.LAYERS.forEach(([nm, s, col], i) => { ctx.save(); if (i >= n) ctx.globalAlpha = 0.2; const ry = y + i * (opt.h || 90); const on = opt.active === i; card(ctx, x, ry, w, (opt.h || 90) - 10, { fill: on ? "#FFF3D6" : "#fff", stroke: col, lw: on ? 6 : 4, r: 12 }); ctx.fillStyle = col; rr(ctx, x, ry, 14, (opt.h || 90) - 10, 6); ctx.fill(); text(ctx, (4 - i) + ". " + nm, x + 30, ry + 34, 24, { weight: 900, color: col }); text(ctx, s, x + 30, ry + 62, 18, { weight: 700, color: C.ink2 }); ctx.restore(); });

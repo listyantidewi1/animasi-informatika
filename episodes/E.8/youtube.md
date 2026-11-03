@@ -23,7 +23,7 @@ Bab:
 0:00 Pembuka
 0:49 Main dulu tanpa komputer
 1:26 Kumpulkan dengan formulir
-2:40 Labeli dengan panduan
+2:39 Labeli dengan panduan
 
 Latihan interaktif (kuis dengan petunjuk, bisa dipakai luring di HP): berkas episode-e8.html di repositori proyek. Prasyarat: episode D8.6 Proyek: Cek Data, Cek Fakta dan E.5 Struktur Data Standar.
 

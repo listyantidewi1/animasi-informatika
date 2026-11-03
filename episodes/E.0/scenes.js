@@ -80,22 +80,22 @@
     },
     antrean_tumpukan(ctx, b, l) {
       card(ctx, 120, 150, 1680, 740);
-      heading(ctx, "ANTREAN · TUMPUKAN · HIERARKI", 215);
+      heading(ctx, "QUEUE · STACK · HIERARKI", 215);
       const n = reveal(l, 1.0, 3.0, 3);
       // antrean
-      ctx.save(); if (n < 1) ctx.globalAlpha = 0.2; card(ctx, 200, 260, 500, 420, { fill: C.bg2, r: 16 }); text(ctx, "ANTREAN", 450, 305, 24, { align: "center", weight: 900, color: C.kiko });
+      ctx.save(); if (n < 1) ctx.globalAlpha = 0.2; card(ctx, 200, 260, 500, 420, { fill: C.bg2, r: 16 }); text(ctx, "QUEUE (antrean)", 450, 305, 24, { align: "center", weight: 900, color: C.kiko });
       ["A", "B", "C", "D"].forEach((s, i) => { ctx.fillStyle = i === 0 ? C.good : "#fff"; ctx.strokeStyle = "#7B8B95"; ctx.lineWidth = 3; rr(ctx, 260 + i * 100, 400, 80, 80, 10); ctx.fill(); ctx.stroke(); text(ctx, s, 300 + i * 100, 452, 36, { align: "center", weight: 900, color: i === 0 ? "#fff" : C.ink }); });
       arrowIcon(ctx, "left", 230, 440, 26, C.good); text(ctx, "keluar", 230, 500, 18, { align: "center", weight: 800, color: C.good }); arrowIcon(ctx, "left", 680, 440, 26, C.ink2); text(ctx, "masuk", 680, 500, 18, { align: "center", weight: 800, color: C.ink2 });
       text(ctx, "pertama masuk, pertama keluar", 450, 600, 22, { align: "center", weight: 800, color: C.ink2 }); text(ctx, "FIFO", 450, 640, 22, { align: "center", weight: 900, color: C.kiko }); ctx.restore();
       // tumpukan
-      ctx.save(); if (n < 2) ctx.globalAlpha = 0.2; card(ctx, 740, 260, 440, 420, { fill: C.bg2, r: 16 }); text(ctx, "TUMPUKAN", 960, 305, 24, { align: "center", weight: 900, color: C.kiko });
+      ctx.save(); if (n < 2) ctx.globalAlpha = 0.2; card(ctx, 740, 260, 440, 420, { fill: C.bg2, r: 16 }); text(ctx, "STACK (tumpukan)", 960, 305, 24, { align: "center", weight: 900, color: C.kiko });
       ["1", "2", "3"].forEach((s, i) => { ctx.fillStyle = i === 2 ? C.accent : "#fff"; ctx.strokeStyle = "#7B8B95"; ctx.lineWidth = 3; rr(ctx, 860, 540 - i * 70, 200, 60, 10); ctx.fill(); ctx.stroke(); text(ctx, "buku " + s, 960, 580 - i * 70, 26, { align: "center", weight: 900 }); });
       arrowIcon(ctx, "down", 1110, 360, 26, C.ink2); text(ctx, "taruh / ambil di atas", 960, 640, 22, { align: "center", weight: 800, color: C.ink2 }); ctx.restore();
       // hierarki
       ctx.save(); if (n < 3) ctx.globalAlpha = 0.2; card(ctx, 1220, 260, 480, 420, { fill: C.bg2, r: 16 }); text(ctx, "HIERARKI", 1460, 305, 24, { align: "center", weight: 900, color: C.kiko });
       St.tree(ctx, { label: "Sekolah", kids: [{ label: "Kelas X", kids: [{ label: "X-A" }, { label: "X-B" }] }, { label: "Kelas XI" }] }, 1240, 340, 440, { levelH: 95, bw: 120, bh: 44, size: 20 });
       text(ctx, "induk dan anak", 1460, 650, 22, { align: "center", weight: 800, color: C.ink2 }); ctx.restore();
-      if (n >= 3) label(ctx, "di kelas X: antrean dan tumpukan dipakai di dalam program", 960, 740, { size: 26 });
+      if (n >= 3) label(ctx, "di kelas X: queue dan stack dipakai di dalam program", 960, 740, { size: 26 });
     },
 
     pseudo_dasar(ctx, b, l) {
@@ -120,7 +120,7 @@
       card(ctx, 120, 150, 1680, 740);
       heading(ctx, "BEKAL 4 · KEAMANAN AKUN: PANJANG, UNIK, RAHASIA", 215);
       const n = reveal(l, 1.0, 1.0, 3);
-      [["✉️", "surel sekolah"], ["🏫", "kelas daring"], ["📚", "perpustakaan digital"]].forEach(([ic, t], i) => { ctx.save(); if (i >= n) ctx.globalAlpha = 0.2; card(ctx, 220 + i * 300, 260, 280, 100, { fill: C.bg2, r: 14 }); text(ctx, ic, 270 + i * 300, 325, 40, { align: "center" }); text(ctx, t, 310 + i * 300, 318, 22, { weight: 900 }); ctx.restore(); });
+      [["✉️", "email sekolah"], ["🏫", "kelas daring"], ["📚", "perpustakaan digital"]].forEach(([ic, t], i) => { ctx.save(); if (i >= n) ctx.globalAlpha = 0.2; card(ctx, 220 + i * 300, 260, 280, 100, { fill: C.bg2, r: 14 }); text(ctx, ic, 270 + i * 300, 325, 40, { align: "center" }); text(ctx, t, 310 + i * 300, 318, 22, { weight: 900 }); ctx.restore(); });
       const m = reveal(l, 5.0, 2.0, 2);
       if (m >= 1) { Sd.pwBox(ctx, 220, 420, 600, "Sma10!", { size: 40, count: true }); Sd.meter(ctx, 220, 530, 600, 0); text(ctx, "pendek, rumit, mudah ditebak", 520, 640, 24, { align: "center", weight: 800, color: C.bad }); }
       if (m >= 2) { Sd.pwBox(ctx, 1000, 420, 700, "kucing oren makan roti", { size: 36, count: true }); Sd.meter(ctx, 1000, 530, 700, 3); text(ctx, "frasa empat kata acak: panjang, mudah diingat", 1350, 640, 24, { align: "center", weight: 800, color: C.good }); }

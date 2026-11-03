@@ -71,7 +71,7 @@ Seri Animasi Informatika untuk SMP–SMA mengikuti CP 2025 (Keputusan Kepala BSK
 ## Komentar tersemat (pin) — D9.0
 
 ```
-📌 Jembatan Kelas IX: Flowchart, Pseudocode, dan Tabel — materi Informatika kelas 7 (unit D9.0).
+📌 Jembatan Kelas IX: Flowchart, Pseudocode, dan Tabel — materi Informatika kelas 9 (unit D9.0).
 Setelah menonton, kamu bisa mengingat flowchart, pseudocode bercabang, dan tabel, lalu tahu bagian yang perlu diulang.
 Kata kunci materi ini: informatika kelas 9 semester 1; flowchart dan pseudocode kelas 9; mengulang percabangan dan tabel data kelas 8; materi awal informatika kelas 9 kurikulum merdeka.
 Latihan interaktif (bisa luring di HP): berkas episode-d90.html. Tonton dulu episode D8.2 dan D8.3 (bila kuis diagnostik menyarankan) bila belum.

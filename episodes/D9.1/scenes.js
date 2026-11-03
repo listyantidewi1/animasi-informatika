@@ -97,7 +97,7 @@
 
     list_intro(ctx, b, l) {
       card(ctx, 120, 150, 1680, 740);
-      text(ctx, "DAFTAR (LARIK): SATU NAMA, BANYAK KOTAK BERNOMOR", 960, 230, 32, { align: "center", color: C.accentDark, weight: 800 });
+      text(ctx, "DAFTAR (ARRAY): SATU NAMA, BANYAK KOTAK BERNOMOR", 960, 230, 32, { align: "center", color: C.accentDark, weight: 800 });
       const n = reveal(l, 1.0, 0.7, 5);
       M.list(ctx, 300, 330, NILAI.slice(0, n).concat(Array(5 - n).fill("")), { name: "nilai", w: 150, h: 80, hl: n });
       if (n >= 1) text(ctx, "nilai[1] = 80", 1300, 380, 32, { weight: 900, color: C.kiko });

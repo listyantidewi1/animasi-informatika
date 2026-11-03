@@ -32,7 +32,7 @@
   A.authApp = function (ctx, cx, cy, code, secs, opt = {}) {
     const sc = D.phone(ctx, cx, cy, 220, 360);
     text(ctx, "Autentikator", cx, sc.y + 50, 18, { align: "center", weight: 900, color: C.ink2 });
-    text(ctx, opt.name || "Surel sekolah", cx, sc.y + 110, 16, { align: "center", weight: 700, color: C.ink2 });
+    text(ctx, opt.name || "Email sekolah", cx, sc.y + 110, 16, { align: "center", weight: 700, color: C.ink2 });
     text(ctx, code, cx, sc.y + 170, 40, { align: "center", weight: 900, color: C.kiko });
     ctx.strokeStyle = "#E6EDF2"; ctx.lineWidth = 8; ctx.beginPath(); ctx.arc(cx, sc.y + 250, 34, 0, Math.PI * 2); ctx.stroke(); ctx.strokeStyle = secs < 8 ? C.bad : C.good; ctx.beginPath(); ctx.arc(cx, sc.y + 250, 34, -Math.PI / 2, -Math.PI / 2 + Math.PI * 2 * secs / 30); ctx.stroke(); text(ctx, String(Math.ceil(secs)), cx, sc.y + 258, 22, { align: "center", weight: 900 });
     text(ctx, "berganti tiap 30 detik", cx, sc.y + 320, 14, { align: "center", weight: 700, color: C.muted });

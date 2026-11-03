@@ -5,9 +5,9 @@
   const reveal = (l, t0, step, n) => clamp(Math.floor((l - t0) / step) + 1, 0, n);
   const banner = (ctx, s, y = 745, w = 1000, opt = {}) => { card(ctx, 960 - w / 2, y, w, 80, { fill: opt.fill || "#FFF3D6", stroke: opt.stroke || C.accent, lw: 4 }); text(ctx, s, 960, y + 52, opt.size || 34, { align: "center", weight: 900, color: opt.color || C.ink }); };
   const label = (ctx, s, x, y, opt = {}) => text(ctx, s, x, y, opt.size || 28, { align: "center", weight: 900, color: opt.color || C.accentDark });
-  const KINDS = [["virus", "Virus", "menumpang berkas"], ["worm", "Worm", "menjalar lewat jaringan"], ["trojan", "Trojan", "menyamar jadi aplikasi"], ["ransomware", "Ransomware", "mengunci berkas"], ["spyware", "Spyware", "mengintip diam-diam"]];
-  const DOORS = ["berkas", "jaringan", "unduhan", "tautan", "izin aplikasi"];
-  const HABITS = [["Perbarui", "sistem dan aplikasi selalu versi terbaru"], ["Sumber resmi", "unduh hanya dari toko aplikasi resmi"], ["Jangan klik sembarangan", "tautan dan lampiran tak dikenal: lewati"], ["Antivirus", "nyalakan antivirus bawaan"], ["Cadangan", "salin berkas penting ke tempat lain"]];
+  const KINDS = [["virus", "Virus", "menumpang file"], ["worm", "Worm", "menjalar lewat jaringan"], ["trojan", "Trojan", "menyamar jadi aplikasi"], ["ransomware", "Ransomware", "mengunci file"], ["spyware", "Spyware", "mengintip diam-diam"]];
+  const DOORS = ["file", "jaringan", "download", "link", "izin aplikasi"];
+  const HABITS = [["Perbarui", "sistem dan aplikasi selalu versi terbaru"], ["Sumber resmi", "download hanya dari toko aplikasi resmi"], ["Jangan klik sembarangan", "link dan lampiran tak dikenal: lewati"], ["Antivirus", "nyalakan antivirus bawaan"], ["Cadangan", "salin file penting ke tempat lain"]];
   const kindCard = (ctx, x, y, w, h, i, opt = {}) => { const [k, t, s] = KINDS[i]; ctx.save(); if (opt.dim) ctx.globalAlpha = 0.2; card(ctx, x, y, w, h, { fill: opt.on ? "#FFF3D6" : C.bg2, stroke: opt.on ? C.accent : undefined, lw: 5, r: 16 }); Mw.bug(ctx, x + w / 2, y + h * 0.38, Math.min(90, h * 0.4), k, { t: opt.t }); text(ctx, t, x + w / 2, y + h * 0.72, 26, { align: "center", weight: 900, color: Mw.color(k) }); text(ctx, s, x + w / 2, y + h * 0.88, 18, { align: "center", weight: 700, color: C.ink2 }); ctx.restore(); };
 
   Object.assign(SCENES, {
@@ -16,7 +16,7 @@
       kiko(ctx, 330, 560, 200, 0, { mood: "happy" });
       const n = reveal(l, 0.6, 0.9, 5);
       KINDS.forEach((k, i) => kindCard(ctx, 620 + i * 230, 260, 210, 240, i, { dim: i >= n, t: l }));
-      if (l > 5.5) { text(ctx, "malware = malicious software: perangkat lunak jahat", 1195, 580, 28, { align: "center", weight: 900, color: C.accentDark }); banner(ctx, "kenali pintunya, tutup pintunya", 640, 700); }
+      if (l > 5.5) { text(ctx, "malware = malicious software: software jahat", 1195, 580, 28, { align: "center", weight: 900, color: C.accentDark }); banner(ctx, "kenali pintunya, tutup pintunya", 640, 700); }
     },
     prereq(ctx, b, l) {
       card(ctx, 260, 200, 1400, 600);
@@ -45,18 +45,18 @@
     malware_def(ctx, b, l) {
       card(ctx, 120, 150, 1680, 740);
       text(ctx, "MALWARE = MALICIOUS + SOFTWARE", 960, 230, 34, { align: "center", color: C.accentDark, weight: 800 });
-      text(ctx, "perangkat lunak jahat: merusak, mencuri, mengunci", 960, 280, 26, { align: "center", weight: 800, color: C.ink2 });
+      text(ctx, "software jahat: merusak, mencuri, mengunci", 960, 280, 26, { align: "center", weight: 800, color: C.ink2 });
       D.phone(ctx, 420, 560, 300, 440);
       const n = reveal(l, 1.5, 1.1, 4);
-      const sym = [["🐢", "perangkat lambat"], ["📢", "iklan muncul sendiri"], ["🔋", "baterai cepat habis"], ["📄", "berkas hilang / berubah"]];
+      const sym = [["🐢", "perangkat lambat"], ["📢", "iklan muncul sendiri"], ["🔋", "baterai cepat habis"], ["📄", "file hilang / berubah"]];
       sym.forEach(([e, t], i) => { if (i < n) { card(ctx, 700 + (i % 2) * 520, 330 + Math.floor(i / 2) * 170, 480, 140, { fill: C.badBg, stroke: C.bad, lw: 3, r: 14 }); text(ctx, e, 760 + (i % 2) * 520, 415 + Math.floor(i / 2) * 170, 50, { align: "center" }); text(ctx, t, 820 + (i % 2) * 520, 410 + Math.floor(i / 2) * 170, 26, { weight: 900 }); } });
       if (n >= 4) label(ctx, "gejala ada tamu tak diundang", 1220, 720, { size: 26, color: C.bad });
     },
     virus_worm(ctx, b, l) {
       card(ctx, 120, 150, 1680, 740);
-      card(ctx, 200, 230, 740, 480, { fill: C.bg2 }); text(ctx, "VIRUS: menumpang berkas", 570, 290, 30, { align: "center", weight: 900, color: Mw.color("virus") });
+      card(ctx, 200, 230, 740, 480, { fill: C.bg2 }); text(ctx, "VIRUS: menumpang file", 570, 290, 30, { align: "center", weight: 900, color: Mw.color("virus") });
       const p = clamp((l - 1) / 3, 0, 1); Mw.file(ctx, 380, 450, 150, { infected: true, name: "tugas.docx" }); if (p > 0.4) Mw.file(ctx, 620, 450, 150, { infected: p > 0.9, name: "foto.jpg" }); if (p > 0.4 && p < 0.9) Mw.bug(ctx, lerp(410, 650, (p - 0.4) / 0.5), 490, 60, "virus");
-      text(ctx, "aktif saat berkas dibuka, lalu menular", 570, 640, 24, { align: "center", weight: 800, color: C.ink2 });
+      text(ctx, "aktif saat file dibuka, lalu menular", 570, 640, 24, { align: "center", weight: 800, color: C.ink2 });
       if (l > 4) { card(ctx, 980, 230, 740, 480, { fill: C.bg2 }); text(ctx, "WORM: menjalar sendiri lewat jaringan", 1350, 290, 30, { align: "center", weight: 900, color: Mw.color("worm") }); const pts = [[1100, 450], [1350, 380], [1600, 450], [1350, 560]]; pts.forEach(pt => { ctx.strokeStyle = "#B7C4CC"; ctx.lineWidth = 4; ctx.setLineDash([8, 8]); ctx.beginPath(); ctx.moveTo(1350, 470); ctx.lineTo(pt[0], pt[1]); ctx.stroke(); ctx.setLineDash([]); D.monitor(ctx, pt[0] - 40, pt[1] - 30, 80, 60); }); const k = Math.floor((l - 4) / 0.8); pts.slice(0, Math.min(4, k)).forEach(pt => Mw.bug(ctx, pt[0], pt[1] - 10, 44, "worm", { t: l })); text(ctx, "tanpa dibuka, tanpa menumpang: lewat Wi-Fi atau kabel", 1350, 640, 22, { align: "center", weight: 800, color: C.ink2 }); }
       if (l > 8) label(ctx, "dua tamu pertama: menumpang vs menjalar", 960, 700);
     },
@@ -73,9 +73,9 @@
     },
     ransom_spy(ctx, b, l) {
       card(ctx, 120, 150, 1680, 740);
-      card(ctx, 200, 230, 740, 480, { fill: C.bg2 }); text(ctx, "RANSOMWARE: mengunci berkas", 570, 290, 30, { align: "center", weight: 900, color: C.ink });
+      card(ctx, 200, 230, 740, 480, { fill: C.bg2 }); text(ctx, "RANSOMWARE: mengunci file", 570, 290, 30, { align: "center", weight: 900, color: C.ink });
       const lock = l > 1.5; ["tugas", "foto", "video"].forEach((nm, i) => Mw.file(ctx, 380 + i * 190, 430, 140, { locked: lock, name: lock ? nm + ".xq7" : nm }));
-      if (l > 3) { card(ctx, 300, 560, 540, 90, { fill: C.badBg, stroke: C.bad, lw: 3, r: 12 }); text(ctx, "\"Bayar untuk membuka berkasmu\"", 570, 615, 24, { align: "center", weight: 900, color: C.bad }); }
+      if (l > 3) { card(ctx, 300, 560, 540, 90, { fill: C.badBg, stroke: C.bad, lw: 3, r: 12 }); text(ctx, "\"Bayar untuk membuka file-mu\"", 570, 615, 24, { align: "center", weight: 900, color: C.bad }); }
       if (l > 4.5) { card(ctx, 980, 230, 740, 480, { fill: C.bg2 }); text(ctx, "SPYWARE: mengintip diam-diam", 1350, 290, 30, { align: "center", weight: 900, color: Mw.color("spyware") }); D.keyboard(ctx, 1060, 380, 420, { small: true }); Mw.bug(ctx, 1600, 420, 80, "spyware", { look: Math.sin(l * 3) }); const typed = "kata sandi: ra***"; text(ctx, typed, 1270, 540, 26, { align: "center", weight: 800 }); arrowIcon(ctx, "right", 1480, 530, 36, C.bad); text(ctx, "dikirim ke pembuatnya", 1350, 640, 22, { align: "center", weight: 800, color: C.bad }); }
       if (l > 8) banner(ctx, "lima tamu: menumpang, menjalar, menyamar, mengunci, mengintip", 745, 1200, { size: 30 });
     },
@@ -93,14 +93,14 @@
       Mw.habit(ctx, 200, 240, 740, 1, HABITS[0][0], HABITS[0][1], { on: n === 1, dim: n < 1 });
       Mw.habit(ctx, 980, 240, 740, 2, HABITS[1][0], HABITS[1][1], { on: n === 2, dim: n < 2 });
       if (n >= 1) { D.phone(ctx, 420, 600, 220, 300); card(ctx, 330, 520, 180, 60, { fill: C.goodBg, stroke: C.good, lw: 3, r: 10 }); text(ctx, "Perbarui sekarang", 420, 558, 18, { align: "center", weight: 900, color: C.good }); text(ctx, "menambal lubang yang dipakai worm", 760, 600, 22, { align: "center", weight: 800, color: C.ink2 }); }
-      if (n >= 2) { card(ctx, 1060, 420, 260, 200, { fill: C.goodBg, stroke: C.good, lw: 4, r: 14 }); text(ctx, "toko resmi", 1190, 470, 24, { align: "center", weight: 900, color: C.good }); text(ctx, "★★★★☆ 12 rb ulasan", 1190, 520, 20, { align: "center", weight: 800 }); card(ctx, 1380, 420, 300, 200, { fill: C.badBg, stroke: C.bad, lw: 4, r: 14 }); text(ctx, "unduh dari tautan grup", 1530, 470, 22, { align: "center", weight: 900, color: C.bad }); text(ctx, "tanpa ulasan, tanpa nama pembuat", 1530, 520, 18, { align: "center", weight: 800 }); text(ctx, "trojan paling sering dari sini", 1370, 680, 22, { align: "center", weight: 800, color: C.bad }); }
+      if (n >= 2) { card(ctx, 1060, 420, 260, 200, { fill: C.goodBg, stroke: C.good, lw: 4, r: 14 }); text(ctx, "toko resmi", 1190, 470, 24, { align: "center", weight: 900, color: C.good }); text(ctx, "★★★★☆ 12 rb ulasan", 1190, 520, 20, { align: "center", weight: 800 }); card(ctx, 1380, 420, 300, 200, { fill: C.badBg, stroke: C.bad, lw: 4, r: 14 }); text(ctx, "download dari link grup", 1530, 470, 22, { align: "center", weight: 900, color: C.bad }); text(ctx, "tanpa ulasan, tanpa nama pembuat", 1530, 520, 18, { align: "center", weight: 800 }); text(ctx, "trojan paling sering dari sini", 1370, 680, 22, { align: "center", weight: 800, color: C.bad }); }
     },
 
     habit_click(ctx, b, l) {
       card(ctx, 120, 150, 1680, 740);
       Mw.habit(ctx, 200, 230, 1520, 3, HABITS[2][0], HABITS[2][1], { on: true });
       const n = reveal(l, 1.2, 1.3, 3);
-      const traps = [["pesan dari nomor tak dikenal", "\"Selamat! Kamu menang hadiah, klik di sini\""], ["lampiran tak terduga", "\"nilai_rapor_final.exe\""], ["tombol unduh raksasa", "DOWNLOAD NOW di situs gratisan"]];
+      const traps = [["pesan dari nomor tak dikenal", "\"Selamat! Kamu menang hadiah, klik di sini\""], ["lampiran tak terduga", "\"nilai_rapor_final.exe\""], ["tombol download raksasa", "DOWNLOAD NOW di situs gratisan"]];
       traps.forEach(([t, s], i) => { if (i < n) { card(ctx, 200 + i * 520, 400, 480, 200, { fill: C.badBg, stroke: C.bad, lw: 3, r: 14 }); text(ctx, "✕ " + t, 440 + i * 520, 450, 24, { align: "center", weight: 900, color: C.bad }); para(ctx, s, 440 + i * 520, 500, 20, 440, { align: "center", weight: 700, color: C.ink2, lh: 1.3 }); text(ctx, "→ lewati", 440 + i * 520, 575, 22, { align: "center", weight: 900, color: C.good }); } });
       if (n >= 3) banner(ctx, "ragu? tanya pengirimnya lewat jalur lain", 745, 900, { fill: C.goodBg, stroke: C.good, color: C.good });
     },
@@ -131,7 +131,7 @@
       card(ctx, 160, 150, 1600, 740);
       text(ctx, "GILIRANMU", 960, 240, 34, { align: "center", color: C.accentDark, weight: 900 });
       const items = [["Pasangkan tamu dan pintu", "lima jenis, lima cara masuk", (x, y) => { [0, 2, 4].forEach((k, i) => { Mw.bug(ctx, x - 150 + i * 150, y - 60, 50, KINDS[k][0]); arrowIcon(ctx, "down", x - 150 + i * 150, y - 10, 24, C.ink2); Mw.door(ctx, x - 150 + i * 150, y + 90, 50, 80, DOORS[k], {}); }); }],
-        ["Aman atau bahaya?", "sepuluh situasi", (x, y) => { card(ctx, x - 200, y - 80, 400, 60, { fill: C.goodBg, stroke: C.good, lw: 3, r: 12 }); text(ctx, "✓ unduh dari toko resmi", x, y - 42, 22, { align: "center", weight: 900, color: C.good }); card(ctx, x - 200, y, 400, 60, { fill: C.badBg, stroke: C.bad, lw: 3, r: 12 }); text(ctx, "✕ klik tautan hadiah", x, y + 38, 22, { align: "center", weight: 900, color: C.bad }); }],
+        ["Aman atau bahaya?", "sepuluh situasi", (x, y) => { card(ctx, x - 200, y - 80, 400, 60, { fill: C.goodBg, stroke: C.good, lw: 3, r: 12 }); text(ctx, "✓ download dari toko resmi", x, y - 42, 22, { align: "center", weight: 900, color: C.good }); card(ctx, x - 200, y, 400, 60, { fill: C.badBg, stroke: C.bad, lw: 3, r: 12 }); text(ctx, "✕ klik link hadiah", x, y + 38, 22, { align: "center", weight: 900, color: C.bad }); }],
         ["Periksa izin aplikasi", "masuk akal atau tidak", (x, y) => { ctx.save(); ctx.translate(x - 200, y - 100); ctx.scale(0.65, 0.65); Mw.perms(ctx, 0, 0, 600, "Kalkulator", [["tidak perlu izin", true], ["mengakses kamera", false]], {}); ctx.restore(); }]];
       items.forEach(([t1, t2, draw], i) => { const x = 400 + i * 560; card(ctx, x - 250, 290, 500, 440, { fill: C.bg2 }); ctx.fillStyle = C.kiko; ctx.beginPath(); ctx.arc(x - 200, 340, 28, 0, Math.PI * 2); ctx.fill(); text(ctx, String(i + 1), x - 200, 352, 30, { align: "center", color: "#fff", weight: 900 }); draw(x, 470); text(ctx, t1, x, 630, 26, { align: "center", weight: 900 }); text(ctx, t2, x, 668, 22, { align: "center", weight: 700, color: C.ink2 }); });
       text(ctx, "di halaman latihan episode ini — lalu rapikan HP-mu bersama orang tua", 960, 820, 28, { align: "center", color: C.ink2, weight: 700 });

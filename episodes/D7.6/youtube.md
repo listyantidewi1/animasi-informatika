@@ -53,10 +53,10 @@ Video ini cocok untuk yang mencari: data terstruktur kelas 7; antrean dan tumpuk
 
 Bab:
 0:00 Pembuka bagian
-0:04 Antrean
-0:31 Tumpukan
-1:37 Hierarki
-2:45 Giliranmu
+0:04 Antrean (queue)
+0:34 Tumpukan (stack)
+1:42 Hierarki
+2:50 Giliranmu
 
 Latihan interaktif (kuis dengan petunjuk, bisa dipakai luring di HP): berkas episode-d76.html di repositori proyek. Prasyarat: episode D7.1 Berpikir Komputasional di Sekitar Kita.
 
@@ -118,10 +118,10 @@ Video ini cocok untuk yang mencari: data terstruktur kelas 7; antrean dan tumpuk
 
 Bab:
 0:00 Pembuka bagian
-0:04 Antrean
-0:38 Tumpukan
-2:00 Hierarki
-3:25 Giliranmu
+0:04 Antrean (queue)
+0:42 Tumpukan (stack)
+2:06 Hierarki
+3:31 Giliranmu
 
 Latihan interaktif (kuis dengan petunjuk, bisa dipakai luring di HP): berkas episode-d76.html di repositori proyek. Prasyarat: episode D7.1 Berpikir Komputasional di Sekitar Kita.
 

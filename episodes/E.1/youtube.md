@@ -9,7 +9,7 @@ Informatika Kelas 10 | Komputer Von Neumann (1/2): Lima Bagian dan Siklus Mesin
 ```
 Komputer Von Neumann — bagian 1 dari 2: Lima Bagian dan Siklus Mesin. Narasi suara plus teks besar di layar; ada versi tanpa suara di video terpisah.
 
-Apa yang terjadi di dalam komputer saat program berjalan? Kita buka tutupnya dengan model Von Neumann: unit pemroses (unit kendali, ALU, register), memori yang menyimpan program dan data bersama-sama, masukan, keluaran, dan bus yang menghubungkannya. Lalu kita jalankan komputer mini: program lima instruksi (MUAT, TAMBAH, SIMPAN, KELUAR, BERHENTI) ditelusuri satu siklus ambil, terjemahkan, jalankan tiap kali, dengan isi register dan memori yang terlihat. Ganti datanya, program yang sama memberi hasil berbeda. Ditutup dengan bus, detak (clock), dan perangkat nyata. Empat cek pemahaman dengan jeda berpikir; simulator interaktif di halaman latihan.
+Apa yang terjadi di dalam komputer saat program berjalan? Kita buka tutupnya dengan model Von Neumann: unit pemroses (unit kendali, ALU, register), memori yang menyimpan program dan data bersama-sama, input, output, dan bus yang menghubungkannya. Lalu kita jalankan komputer mini: program lima instruksi (MUAT, TAMBAH, SIMPAN, KELUAR, BERHENTI) ditelusuri satu siklus ambil, terjemahkan, jalankan tiap kali, dengan isi register dan memori yang terlihat. Ganti datanya, program yang sama memberi hasil berbeda. Ditutup dengan bus, detak (clock), dan perangkat nyata. Empat cek pemahaman dengan jeda berpikir; simulator interaktif di halaman latihan.
 
 Setelah menonton, murid bisa:
 • menyebut lima bagian model Von Neumann dan tugas masing-masing
@@ -23,7 +23,7 @@ Bab:
 0:00 Pembuka
 0:50 Main dulu tanpa komputer
 1:27 Lima bagian
-2:37 Siklus mesin
+2:35 Siklus mesin
 
 Latihan interaktif (kuis dengan petunjuk, bisa dipakai luring di HP): berkas episode-e1.html di repositori proyek. Prasyarat: episode D7.2 Mengenal Komputer dan E.0 Jembatan ke Kelas X.
 
@@ -41,7 +41,7 @@ Informatika Kelas 10 | Komputer Von Neumann (2/2): Program Lima Instruksi
 ```
 Komputer Von Neumann — bagian 2 dari 2: Program Lima Instruksi. Narasi suara plus teks besar di layar; ada versi tanpa suara di video terpisah.
 
-Apa yang terjadi di dalam komputer saat program berjalan? Kita buka tutupnya dengan model Von Neumann: unit pemroses (unit kendali, ALU, register), memori yang menyimpan program dan data bersama-sama, masukan, keluaran, dan bus yang menghubungkannya. Lalu kita jalankan komputer mini: program lima instruksi (MUAT, TAMBAH, SIMPAN, KELUAR, BERHENTI) ditelusuri satu siklus ambil, terjemahkan, jalankan tiap kali, dengan isi register dan memori yang terlihat. Ganti datanya, program yang sama memberi hasil berbeda. Ditutup dengan bus, detak (clock), dan perangkat nyata. Empat cek pemahaman dengan jeda berpikir; simulator interaktif di halaman latihan.
+Apa yang terjadi di dalam komputer saat program berjalan? Kita buka tutupnya dengan model Von Neumann: unit pemroses (unit kendali, ALU, register), memori yang menyimpan program dan data bersama-sama, input, output, dan bus yang menghubungkannya. Lalu kita jalankan komputer mini: program lima instruksi (MUAT, TAMBAH, SIMPAN, KELUAR, BERHENTI) ditelusuri satu siklus ambil, terjemahkan, jalankan tiap kali, dengan isi register dan memori yang terlihat. Ganti datanya, program yang sama memberi hasil berbeda. Ditutup dengan bus, detak (clock), dan perangkat nyata. Empat cek pemahaman dengan jeda berpikir; simulator interaktif di halaman latihan.
 
 Setelah menonton, murid bisa:
 • menyebut lima bagian model Von Neumann dan tugas masing-masing
@@ -74,7 +74,7 @@ Informatika Kelas 10 | Komputer Von Neumann (1/2): Lima Bagian dan Siklus Mesin 
 ```
 Komputer Von Neumann — bagian 1 dari 2: Lima Bagian dan Siklus Mesin. Versi tanpa narasi suara: teks narasi tampil besar di layar dengan garis kemajuan baca, cocok untuk ditonton tanpa speaker atau untuk murid yang lebih suka membaca.
 
-Apa yang terjadi di dalam komputer saat program berjalan? Kita buka tutupnya dengan model Von Neumann: unit pemroses (unit kendali, ALU, register), memori yang menyimpan program dan data bersama-sama, masukan, keluaran, dan bus yang menghubungkannya. Lalu kita jalankan komputer mini: program lima instruksi (MUAT, TAMBAH, SIMPAN, KELUAR, BERHENTI) ditelusuri satu siklus ambil, terjemahkan, jalankan tiap kali, dengan isi register dan memori yang terlihat. Ganti datanya, program yang sama memberi hasil berbeda. Ditutup dengan bus, detak (clock), dan perangkat nyata. Empat cek pemahaman dengan jeda berpikir; simulator interaktif di halaman latihan.
+Apa yang terjadi di dalam komputer saat program berjalan? Kita buka tutupnya dengan model Von Neumann: unit pemroses (unit kendali, ALU, register), memori yang menyimpan program dan data bersama-sama, input, output, dan bus yang menghubungkannya. Lalu kita jalankan komputer mini: program lima instruksi (MUAT, TAMBAH, SIMPAN, KELUAR, BERHENTI) ditelusuri satu siklus ambil, terjemahkan, jalankan tiap kali, dengan isi register dan memori yang terlihat. Ganti datanya, program yang sama memberi hasil berbeda. Ditutup dengan bus, detak (clock), dan perangkat nyata. Empat cek pemahaman dengan jeda berpikir; simulator interaktif di halaman latihan.
 
 Setelah menonton, murid bisa:
 • menyebut lima bagian model Von Neumann dan tugas masing-masing
@@ -88,7 +88,7 @@ Bab:
 0:00 Pembuka
 1:01 Main dulu tanpa komputer
 1:47 Lima bagian
-3:07 Siklus mesin
+3:06 Siklus mesin
 
 Latihan interaktif (kuis dengan petunjuk, bisa dipakai luring di HP): berkas episode-e1.html di repositori proyek. Prasyarat: episode D7.2 Mengenal Komputer dan E.0 Jembatan ke Kelas X.
 
@@ -106,7 +106,7 @@ Informatika Kelas 10 | Komputer Von Neumann (2/2): Program Lima Instruksi (versi
 ```
 Komputer Von Neumann — bagian 2 dari 2: Program Lima Instruksi. Versi tanpa narasi suara: teks narasi tampil besar di layar dengan garis kemajuan baca, cocok untuk ditonton tanpa speaker atau untuk murid yang lebih suka membaca.
 
-Apa yang terjadi di dalam komputer saat program berjalan? Kita buka tutupnya dengan model Von Neumann: unit pemroses (unit kendali, ALU, register), memori yang menyimpan program dan data bersama-sama, masukan, keluaran, dan bus yang menghubungkannya. Lalu kita jalankan komputer mini: program lima instruksi (MUAT, TAMBAH, SIMPAN, KELUAR, BERHENTI) ditelusuri satu siklus ambil, terjemahkan, jalankan tiap kali, dengan isi register dan memori yang terlihat. Ganti datanya, program yang sama memberi hasil berbeda. Ditutup dengan bus, detak (clock), dan perangkat nyata. Empat cek pemahaman dengan jeda berpikir; simulator interaktif di halaman latihan.
+Apa yang terjadi di dalam komputer saat program berjalan? Kita buka tutupnya dengan model Von Neumann: unit pemroses (unit kendali, ALU, register), memori yang menyimpan program dan data bersama-sama, input, output, dan bus yang menghubungkannya. Lalu kita jalankan komputer mini: program lima instruksi (MUAT, TAMBAH, SIMPAN, KELUAR, BERHENTI) ditelusuri satu siklus ambil, terjemahkan, jalankan tiap kali, dengan isi register dan memori yang terlihat. Ganti datanya, program yang sama memberi hasil berbeda. Ditutup dengan bus, detak (clock), dan perangkat nyata. Empat cek pemahaman dengan jeda berpikir; simulator interaktif di halaman latihan.
 
 Setelah menonton, murid bisa:
 • menyebut lima bagian model Von Neumann dan tugas masing-masing

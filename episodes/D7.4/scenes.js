@@ -45,7 +45,7 @@
       PAGES.forEach(([x, y, t], i) => { if (i) Q.link(ctx, PAGES[i - 1][0] + 80, PAGES[i - 1][1] + 60, x + 80, y + 60, false); });
       PAGES.forEach(([x, y, t]) => Q.page(ctx, x, y, 160, 120, t, {}));
       const u = clamp((l - 1.0) / 1.5, 0, 1); Q.spider(ctx, lerp(200, 470, u), lerp(500, 270, u), 60, { label: "laba-laba perayap", above: true });
-      banner(ctx, "merayapi (crawling): kunjungi halaman, baca, ikuti tautan", 750, 1100);
+      banner(ctx, "merayapi (crawling): kunjungi halaman, baca, ikuti link", 750, 1100);
     },
     crawl_links(ctx, b, l) {
       const u = clamp(l * 0.9, 0, PAGES.length - 1); const i = Math.floor(u), f = u - i;

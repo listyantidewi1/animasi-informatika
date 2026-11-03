@@ -12,7 +12,7 @@ Flowchart dan Pseudocode Dasar — bagian 1 dari 2: Lima Bentuk dan Urutan. Nara
 Bagaimana menulis langkah yang bisa dibaca orang lain dan mesin? Bersama Kiko, Dito, dan Sinta kita belajar dua cara: flowchart (bagan alir) dengan lima bentuknya, dan pseudocode berkosakata terbatas. Mulai dari urutan (membuat teh manis), lalu percabangan: JIKA hujan MAKA bawa payung, LAINNYA tidak. Sebuah token berjalan mengikuti panah dan memilih cabang sesuai kondisi, sehingga kita bisa menelusuri algoritma sebelum dijalankan. Empat cek pemahaman dengan jeda berpikir.
 
 Setelah menonton, murid bisa:
-• mengenali lima bentuk flowchart: mulai/selesai, proses, masukan/keluaran, keputusan, panah
+• mengenali lima bentuk flowchart: mulai/selesai, proses, input/output, keputusan, panah
 • mengubah urutan langkah sehari-hari menjadi flowchart dan pseudocode
 • menulis percabangan JIKA–MAKA–LAINNYA dengan kondisi yang jelas
 • menelusuri flowchart dengan token untuk menebak hasil sebelum dijalankan
@@ -44,7 +44,7 @@ Flowchart dan Pseudocode Dasar — bagian 2 dari 2: Percabangan dan Menelusuri. 
 Bagaimana menulis langkah yang bisa dibaca orang lain dan mesin? Bersama Kiko, Dito, dan Sinta kita belajar dua cara: flowchart (bagan alir) dengan lima bentuknya, dan pseudocode berkosakata terbatas. Mulai dari urutan (membuat teh manis), lalu percabangan: JIKA hujan MAKA bawa payung, LAINNYA tidak. Sebuah token berjalan mengikuti panah dan memilih cabang sesuai kondisi, sehingga kita bisa menelusuri algoritma sebelum dijalankan. Empat cek pemahaman dengan jeda berpikir.
 
 Setelah menonton, murid bisa:
-• mengenali lima bentuk flowchart: mulai/selesai, proses, masukan/keluaran, keputusan, panah
+• mengenali lima bentuk flowchart: mulai/selesai, proses, input/output, keputusan, panah
 • mengubah urutan langkah sehari-hari menjadi flowchart dan pseudocode
 • menulis percabangan JIKA–MAKA–LAINNYA dengan kondisi yang jelas
 • menelusuri flowchart dengan token untuk menebak hasil sebelum dijalankan
@@ -77,7 +77,7 @@ Flowchart dan Pseudocode Dasar — bagian 1 dari 2: Lima Bentuk dan Urutan. Vers
 Bagaimana menulis langkah yang bisa dibaca orang lain dan mesin? Bersama Kiko, Dito, dan Sinta kita belajar dua cara: flowchart (bagan alir) dengan lima bentuknya, dan pseudocode berkosakata terbatas. Mulai dari urutan (membuat teh manis), lalu percabangan: JIKA hujan MAKA bawa payung, LAINNYA tidak. Sebuah token berjalan mengikuti panah dan memilih cabang sesuai kondisi, sehingga kita bisa menelusuri algoritma sebelum dijalankan. Empat cek pemahaman dengan jeda berpikir.
 
 Setelah menonton, murid bisa:
-• mengenali lima bentuk flowchart: mulai/selesai, proses, masukan/keluaran, keputusan, panah
+• mengenali lima bentuk flowchart: mulai/selesai, proses, input/output, keputusan, panah
 • mengubah urutan langkah sehari-hari menjadi flowchart dan pseudocode
 • menulis percabangan JIKA–MAKA–LAINNYA dengan kondisi yang jelas
 • menelusuri flowchart dengan token untuk menebak hasil sebelum dijalankan
@@ -109,7 +109,7 @@ Flowchart dan Pseudocode Dasar — bagian 2 dari 2: Percabangan dan Menelusuri. 
 Bagaimana menulis langkah yang bisa dibaca orang lain dan mesin? Bersama Kiko, Dito, dan Sinta kita belajar dua cara: flowchart (bagan alir) dengan lima bentuknya, dan pseudocode berkosakata terbatas. Mulai dari urutan (membuat teh manis), lalu percabangan: JIKA hujan MAKA bawa payung, LAINNYA tidak. Sebuah token berjalan mengikuti panah dan memilih cabang sesuai kondisi, sehingga kita bisa menelusuri algoritma sebelum dijalankan. Empat cek pemahaman dengan jeda berpikir.
 
 Setelah menonton, murid bisa:
-• mengenali lima bentuk flowchart: mulai/selesai, proses, masukan/keluaran, keputusan, panah
+• mengenali lima bentuk flowchart: mulai/selesai, proses, input/output, keputusan, panah
 • mengubah urutan langkah sehari-hari menjadi flowchart dan pseudocode
 • menulis percabangan JIKA–MAKA–LAINNYA dengan kondisi yang jelas
 • menelusuri flowchart dengan token untuk menebak hasil sebelum dijalankan
@@ -133,7 +133,7 @@ Seri Animasi Informatika untuk SMP–SMA mengikuti CP 2025 (Keputusan Kepala BSK
 ## Komentar tersemat (pin) — D8.3a
 
 ```
-📌 Flowchart dan Pseudocode Dasar (1/2): Lima Bentuk dan Urutan — materi Informatika kelas 7 (unit D8.3).
+📌 Flowchart dan Pseudocode Dasar (1/2): Lima Bentuk dan Urutan — materi Informatika kelas 8 (unit D8.3).
 Setelah menonton, kamu bisa membaca dan menggambar flowchart, menulis JIKA–MAKA–LAINNYA, dan menelusurinya dengan token.
 Kata kunci materi ini: flowchart dan pseudocode kelas 8; simbol flowchart dan contohnya; percabangan jika maka informatika SMP; cara membuat flowchart sederhana.
 Latihan interaktif (bisa luring di HP): berkas episode-d83.html. Tonton dulu episode D8.0 Jembatan Kelas VIII (instruksi untuk mesin) bila belum.
@@ -143,7 +143,7 @@ Ada yang belum jelas? Tulis di komentar, pertanyaanmu membantu teman lain juga.
 ## Komentar tersemat (pin) — D8.3b
 
 ```
-📌 Flowchart dan Pseudocode Dasar (2/2): Percabangan dan Menelusuri — materi Informatika kelas 7 (unit D8.3).
+📌 Flowchart dan Pseudocode Dasar (2/2): Percabangan dan Menelusuri — materi Informatika kelas 8 (unit D8.3).
 Setelah menonton, kamu bisa membaca dan menggambar flowchart, menulis JIKA–MAKA–LAINNYA, dan menelusurinya dengan token.
 Kata kunci materi ini: flowchart dan pseudocode kelas 8; simbol flowchart dan contohnya; percabangan jika maka informatika SMP; cara membuat flowchart sederhana.
 Latihan interaktif (bisa luring di HP): berkas episode-d83.html. Tonton dulu episode D8.0 Jembatan Kelas VIII (instruksi untuk mesin) bila belum.

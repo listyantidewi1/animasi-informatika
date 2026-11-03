@@ -15,7 +15,7 @@ Setelah menonton, murid bisa:
 • menelusuri pseudocode dengan variabel, percabangan, dan perulangan memakai tabel pelacakan
 • mengevaluasi ekspresi logika dengan DAN, ATAU, TIDAK dan membaca tabel kebenaran
 • membaca, menjalankan, dan mengubah program Python pertama: print, variabel, input, if, for
-• membaca pesan galat sederhana dan memperbaikinya
+• membaca pesan error sederhana dan memperbaikinya
 
 Video ini cocok untuk yang mencari: informatika kelas 11 python pertama; dari pseudocode ke python pemula; logika and or not tabel kebenaran kelas 11; program python pertama print input if.
 
@@ -47,16 +47,16 @@ Setelah menonton, murid bisa:
 • menelusuri pseudocode dengan variabel, percabangan, dan perulangan memakai tabel pelacakan
 • mengevaluasi ekspresi logika dengan DAN, ATAU, TIDAK dan membaca tabel kebenaran
 • membaca, menjalankan, dan mengubah program Python pertama: print, variabel, input, if, for
-• membaca pesan galat sederhana dan memperbaikinya
+• membaca pesan error sederhana dan memperbaikinya
 
 Video ini cocok untuk yang mencari: informatika kelas 11 python pertama; dari pseudocode ke python pemula; logika and or not tabel kebenaran kelas 11; program python pertama print input if.
 
 Bab:
 0:00 Pembuka bagian
 0:04 Python pertama
-1:17 Lacak dan galat
+1:17 Lacak dan error
 2:31 Ubah program, peta kelas XI
-3:11 Giliranmu
+3:10 Giliranmu
 
 Latihan interaktif (kuis dengan petunjuk, bisa dipakai luring di HP): berkas episode-f110.html di repositori proyek. Tidak ada prasyarat.
 
@@ -80,7 +80,7 @@ Setelah menonton, murid bisa:
 • menelusuri pseudocode dengan variabel, percabangan, dan perulangan memakai tabel pelacakan
 • mengevaluasi ekspresi logika dengan DAN, ATAU, TIDAK dan membaca tabel kebenaran
 • membaca, menjalankan, dan mengubah program Python pertama: print, variabel, input, if, for
-• membaca pesan galat sederhana dan memperbaikinya
+• membaca pesan error sederhana dan memperbaikinya
 
 Video ini cocok untuk yang mencari: informatika kelas 11 python pertama; dari pseudocode ke python pemula; logika and or not tabel kebenaran kelas 11; program python pertama print input if.
 
@@ -112,14 +112,14 @@ Setelah menonton, murid bisa:
 • menelusuri pseudocode dengan variabel, percabangan, dan perulangan memakai tabel pelacakan
 • mengevaluasi ekspresi logika dengan DAN, ATAU, TIDAK dan membaca tabel kebenaran
 • membaca, menjalankan, dan mengubah program Python pertama: print, variabel, input, if, for
-• membaca pesan galat sederhana dan memperbaikinya
+• membaca pesan error sederhana dan memperbaikinya
 
 Video ini cocok untuk yang mencari: informatika kelas 11 python pertama; dari pseudocode ke python pemula; logika and or not tabel kebenaran kelas 11; program python pertama print input if.
 
 Bab:
 0:00 Pembuka bagian
 0:04 Python pertama
-1:32 Lacak dan galat
+1:32 Lacak dan error
 3:03 Ubah program, peta kelas XI
 3:50 Giliranmu
 

@@ -119,9 +119,9 @@ Video ini cocok untuk yang mencari: membaca lateral literasi digital; operator p
 Bab:
 0:00 Pembuka bagian
 0:04 Tiga langkah dan ekosistem periksa fakta
-1:31 Telusuri klaim dan tanda bahaya
-2:56 Konten negatif
-3:39 Giliranmu
+1:30 Telusuri klaim dan tanda bahaya
+2:55 Konten negatif
+3:37 Giliranmu
 
 Latihan interaktif (kuis dengan petunjuk, bisa dipakai luring di HP): berkas episode-e4.html di repositori proyek. Prasyarat: episode D7.4 Mesin Pencari serta D8.4 dan D8.5 tentang menilai informasi dan hoaks.
 

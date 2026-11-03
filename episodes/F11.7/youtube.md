@@ -9,7 +9,7 @@ Informatika Kelas 11 | Model Jaringan dan Pengiriman Data (1/2): Topologi dan Mo
 ```
 Model Jaringan dan Pengiriman Data — bagian 1 dari 2: Topologi dan Model Jaringan. Narasi suara plus teks besar di layar; ada versi tanpa suara di video terpisah.
 
-Bagaimana foto dari HP-mu sampai ke laptop teman, lalu ke server di benua lain? Bersama Kiko kita susun modelnya: topologi (bus, bintang, mesh, pohon; jaringan sekolah sebagai pohon dari lab bintang), model klien–server dan peer-to-peer, empat lapisan TCP/IP (aplikasi, transport, internet, tautan), enkapsulasi: pesan dibungkus header tiap lapisan lalu dibuka lapis demi lapis di penerima, serta perjalanan paket di jaringan lokal (MAC, IP lokal, port) dan ke internet (router, hop, TCP yang meminta kirim ulang). Ditutup praktik mengirim data antarperangkat dengan ping dan server web kecil dari Python. Gaya diagram Fase F. Empat cek pemahaman; pembungkus paket dan penghubung topologi di halaman latihan.
+Bagaimana foto dari HP-mu sampai ke laptop teman, lalu ke server di benua lain? Bersama Kiko kita susun modelnya: topologi (bus, bintang, mesh, pohon; jaringan sekolah sebagai pohon dari lab bintang), model klien–server dan peer-to-peer, empat lapisan TCP/IP (aplikasi, transport, internet, link), enkapsulasi: pesan dibungkus header tiap lapisan lalu dibuka lapis demi lapis di penerima, serta perjalanan paket di jaringan lokal (MAC, IP lokal, port) dan ke internet (router, hop, TCP yang meminta kirim ulang). Ditutup praktik mengirim data antarperangkat dengan ping dan server web kecil dari Python. Gaya diagram Fase F. Empat cek pemahaman; pembungkus paket dan penghubung topologi di halaman latihan.
 
 Setelah menonton, murid bisa:
 • membandingkan topologi bus, bintang, mesh, dan pohon beserta dampak satu kabel putus
@@ -41,7 +41,7 @@ Informatika Kelas 11 | Model Jaringan dan Pengiriman Data (2/2): Lapisan TCP/IP 
 ```
 Model Jaringan dan Pengiriman Data — bagian 2 dari 2: Lapisan TCP/IP dan Perjalanan Paket. Narasi suara plus teks besar di layar; ada versi tanpa suara di video terpisah.
 
-Bagaimana foto dari HP-mu sampai ke laptop teman, lalu ke server di benua lain? Bersama Kiko kita susun modelnya: topologi (bus, bintang, mesh, pohon; jaringan sekolah sebagai pohon dari lab bintang), model klien–server dan peer-to-peer, empat lapisan TCP/IP (aplikasi, transport, internet, tautan), enkapsulasi: pesan dibungkus header tiap lapisan lalu dibuka lapis demi lapis di penerima, serta perjalanan paket di jaringan lokal (MAC, IP lokal, port) dan ke internet (router, hop, TCP yang meminta kirim ulang). Ditutup praktik mengirim data antarperangkat dengan ping dan server web kecil dari Python. Gaya diagram Fase F. Empat cek pemahaman; pembungkus paket dan penghubung topologi di halaman latihan.
+Bagaimana foto dari HP-mu sampai ke laptop teman, lalu ke server di benua lain? Bersama Kiko kita susun modelnya: topologi (bus, bintang, mesh, pohon; jaringan sekolah sebagai pohon dari lab bintang), model klien–server dan peer-to-peer, empat lapisan TCP/IP (aplikasi, transport, internet, link), enkapsulasi: pesan dibungkus header tiap lapisan lalu dibuka lapis demi lapis di penerima, serta perjalanan paket di jaringan lokal (MAC, IP lokal, port) dan ke internet (router, hop, TCP yang meminta kirim ulang). Ditutup praktik mengirim data antarperangkat dengan ping dan server web kecil dari Python. Gaya diagram Fase F. Empat cek pemahaman; pembungkus paket dan penghubung topologi di halaman latihan.
 
 Setelah menonton, murid bisa:
 • membandingkan topologi bus, bintang, mesh, dan pohon beserta dampak satu kabel putus
@@ -55,7 +55,7 @@ Bab:
 0:00 Pembuka bagian
 0:04 Lapisan TCP/IP
 1:11 Perjalanan paket
-2:19 Mengirim data sungguhan
+2:18 Mengirim data sungguhan
 2:56 Giliranmu
 
 Latihan interaktif (kuis dengan petunjuk, bisa dipakai luring di HP): berkas episode-f117.html di repositori proyek. Prasyarat: episode D9.2 Jaringan Lokal dan Internet dan E.3 Keamanan Akun dan Jaringan Dasar.
@@ -74,7 +74,7 @@ Informatika Kelas 11 | Model Jaringan dan Pengiriman Data (1/2): Topologi dan Mo
 ```
 Model Jaringan dan Pengiriman Data — bagian 1 dari 2: Topologi dan Model Jaringan. Versi tanpa narasi suara: teks narasi tampil besar di layar dengan garis kemajuan baca, cocok untuk ditonton tanpa speaker atau untuk murid yang lebih suka membaca.
 
-Bagaimana foto dari HP-mu sampai ke laptop teman, lalu ke server di benua lain? Bersama Kiko kita susun modelnya: topologi (bus, bintang, mesh, pohon; jaringan sekolah sebagai pohon dari lab bintang), model klien–server dan peer-to-peer, empat lapisan TCP/IP (aplikasi, transport, internet, tautan), enkapsulasi: pesan dibungkus header tiap lapisan lalu dibuka lapis demi lapis di penerima, serta perjalanan paket di jaringan lokal (MAC, IP lokal, port) dan ke internet (router, hop, TCP yang meminta kirim ulang). Ditutup praktik mengirim data antarperangkat dengan ping dan server web kecil dari Python. Gaya diagram Fase F. Empat cek pemahaman; pembungkus paket dan penghubung topologi di halaman latihan.
+Bagaimana foto dari HP-mu sampai ke laptop teman, lalu ke server di benua lain? Bersama Kiko kita susun modelnya: topologi (bus, bintang, mesh, pohon; jaringan sekolah sebagai pohon dari lab bintang), model klien–server dan peer-to-peer, empat lapisan TCP/IP (aplikasi, transport, internet, link), enkapsulasi: pesan dibungkus header tiap lapisan lalu dibuka lapis demi lapis di penerima, serta perjalanan paket di jaringan lokal (MAC, IP lokal, port) dan ke internet (router, hop, TCP yang meminta kirim ulang). Ditutup praktik mengirim data antarperangkat dengan ping dan server web kecil dari Python. Gaya diagram Fase F. Empat cek pemahaman; pembungkus paket dan penghubung topologi di halaman latihan.
 
 Setelah menonton, murid bisa:
 • membandingkan topologi bus, bintang, mesh, dan pohon beserta dampak satu kabel putus
@@ -106,7 +106,7 @@ Informatika Kelas 11 | Model Jaringan dan Pengiriman Data (2/2): Lapisan TCP/IP 
 ```
 Model Jaringan dan Pengiriman Data — bagian 2 dari 2: Lapisan TCP/IP dan Perjalanan Paket. Versi tanpa narasi suara: teks narasi tampil besar di layar dengan garis kemajuan baca, cocok untuk ditonton tanpa speaker atau untuk murid yang lebih suka membaca.
 
-Bagaimana foto dari HP-mu sampai ke laptop teman, lalu ke server di benua lain? Bersama Kiko kita susun modelnya: topologi (bus, bintang, mesh, pohon; jaringan sekolah sebagai pohon dari lab bintang), model klien–server dan peer-to-peer, empat lapisan TCP/IP (aplikasi, transport, internet, tautan), enkapsulasi: pesan dibungkus header tiap lapisan lalu dibuka lapis demi lapis di penerima, serta perjalanan paket di jaringan lokal (MAC, IP lokal, port) dan ke internet (router, hop, TCP yang meminta kirim ulang). Ditutup praktik mengirim data antarperangkat dengan ping dan server web kecil dari Python. Gaya diagram Fase F. Empat cek pemahaman; pembungkus paket dan penghubung topologi di halaman latihan.
+Bagaimana foto dari HP-mu sampai ke laptop teman, lalu ke server di benua lain? Bersama Kiko kita susun modelnya: topologi (bus, bintang, mesh, pohon; jaringan sekolah sebagai pohon dari lab bintang), model klien–server dan peer-to-peer, empat lapisan TCP/IP (aplikasi, transport, internet, link), enkapsulasi: pesan dibungkus header tiap lapisan lalu dibuka lapis demi lapis di penerima, serta perjalanan paket di jaringan lokal (MAC, IP lokal, port) dan ke internet (router, hop, TCP yang meminta kirim ulang). Ditutup praktik mengirim data antarperangkat dengan ping dan server web kecil dari Python. Gaya diagram Fase F. Empat cek pemahaman; pembungkus paket dan penghubung topologi di halaman latihan.
 
 Setelah menonton, murid bisa:
 • membandingkan topologi bus, bintang, mesh, dan pohon beserta dampak satu kabel putus

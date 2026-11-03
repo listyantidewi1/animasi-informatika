@@ -54,8 +54,8 @@ Video ini cocok untuk yang mencari: cara membuat kata sandi yang kuat; jejak dig
 Bab:
 0:00 Pembuka bagian
 0:04 Jejak digital
-1:20 Berpikir sebelum unggah
-2:31 Giliranmu
+1:21 Berpikir sebelum unggah
+2:32 Giliranmu
 
 Latihan interaktif (kuis dengan petunjuk, bisa dipakai luring di HP): berkas episode-d73.html di repositori proyek. Prasyarat: episode D7.0 Cara Memakai Komputer dan HP.
 
@@ -118,8 +118,8 @@ Video ini cocok untuk yang mencari: cara membuat kata sandi yang kuat; jejak dig
 Bab:
 0:00 Pembuka bagian
 0:04 Jejak digital
-1:38 Berpikir sebelum unggah
-3:08 Giliranmu
+1:39 Berpikir sebelum unggah
+3:09 Giliranmu
 
 Latihan interaktif (kuis dengan petunjuk, bisa dipakai luring di HP): berkas episode-d73.html di repositori proyek. Prasyarat: episode D7.0 Cara Memakai Komputer dan HP.
 

@@ -7,7 +7,7 @@
   const label = (ctx, s, x, y, opt = {}) => text(ctx, s, x, y, opt.size || 28, { align: "center", weight: 900, color: opt.color || C.accentDark });
   const heading = (ctx, s, y = 230) => text(ctx, s, 960, y, 34, { align: "center", color: C.accentDark, weight: 800 });
   const stageHead = (ctx, i, title) => { heading(ctx, title, 215); A.STAGES.forEach(([n, t], k) => { const x = 300 + k * 230; ctx.fillStyle = k === i ? C.accent : "#E6EDF2"; rr(ctx, x, 245, 210, 30, 8); ctx.fill(); text(ctx, n + " " + t, x + 105, 266, 15, { align: "center", weight: 900, color: k === i ? "#fff" : C.ink2 }); }); };
-  const NEEDS = [["catat pemasukan dan pengeluaran", "wajib"], ["lihat saldo kapan saja", "wajib"], ["simpan ke berkas, jangan hilang", "wajib"], ["grafik bulanan", "tambahan"], ["pengingat iuran", "tambahan"], ["ekspor ke lembar kerja", "tambahan"]];
+  const NEEDS = [["catat pemasukan dan pengeluaran", "wajib"], ["lihat saldo kapan saja", "wajib"], ["simpan ke file, jangan hilang", "wajib"], ["grafik bulanan", "tambahan"], ["pengingat iuran", "tambahan"], ["ekspor ke lembar kerja", "tambahan"]];
 
   Object.assign(SCENES, {
     title_q(ctx, b, l) {
@@ -61,12 +61,12 @@
       ctx.save(); if (n < 1) ctx.globalAlpha = 0.2; A.wire(ctx, 420, 540, "Kas Kelas", [["Rp 350.000", "big"], ["+ Tambah", "btn"], ["03/11 iuran +10.000", "row"], ["02/11 spidol −15.000", "row"]]); ctx.restore();
       if (n >= 2) arrowIcon(ctx, "right", 620, 540, 40, C.accent);
       ctx.save(); if (n < 2) ctx.globalAlpha = 0.2; A.wire(ctx, 820, 540, "Tambah transaksi", [["tanggal", "field"], ["jenis: masuk / keluar", "field"], ["jumlah", "field"], ["keterangan", "field"], ["Simpan", "btn"]]); ctx.restore();
-      ctx.save(); if (n < 3) ctx.globalAlpha = 0.2; card(ctx, 1080, 320, 620, 300, { fill: "#fff", stroke: "#8E6BBF", lw: 4, r: 14 }); ctx.fillStyle = "#8E6BBF"; rr(ctx, 1080, 320, 620, 44, 14); ctx.fill(); ctx.fillRect(1080, 342, 620, 22); text(ctx, "rekaman transaksi", 1100, 350, 20, { weight: 900, color: "#fff" }); [[".tanggal", "teks tanggal"], [".jenis", "masuk | keluar"], [".jumlah", "bulat > 0"], [".keterangan", "teks"]].forEach(([k, v], i) => { text(ctx, k, 1110, 405 + i * 46, 22, { weight: 900, color: C.kiko }); text(ctx, v, 1670, 405 + i * 46, 20, { align: "right", weight: 800 }); }); text(ctx, "daftar transaksi = larik berisi rekaman", 1390, 650, 18, { align: "center", weight: 800, color: C.ink2 }); ctx.restore();
+      ctx.save(); if (n < 3) ctx.globalAlpha = 0.2; card(ctx, 1080, 320, 620, 300, { fill: "#fff", stroke: "#8E6BBF", lw: 4, r: 14 }); ctx.fillStyle = "#8E6BBF"; rr(ctx, 1080, 320, 620, 44, 14); ctx.fill(); ctx.fillRect(1080, 342, 620, 22); text(ctx, "record transaksi", 1100, 350, 20, { weight: 900, color: "#fff" }); [[".tanggal", "teks tanggal"], [".jenis", "masuk | keluar"], [".jumlah", "integer > 0"], [".keterangan", "string"]].forEach(([k, v], i) => { text(ctx, k, 1110, 405 + i * 46, 22, { weight: 900, color: C.kiko }); text(ctx, v, 1670, 405 + i * 46, 20, { align: "right", weight: 800 }); }); text(ctx, "daftar transaksi = array berisi record", 1390, 650, 18, { align: "center", weight: 800, color: C.ink2 }); ctx.restore();
     },
     desain_pseudo(ctx, b, l) {
       card(ctx, 120, 150, 1680, 740); stageHead(ctx, 1, "DESAIN: PSEUDOCODE BAGIAN INTI");
       const n = reveal(l, 1.5, 1.4, 6);
-      const lines = [{ t: "FUNGSI saldo(daftar) → bulat" }, { t: "KEMBALIKAN jumlah(masuk) − jumlah(keluar)", ind: 1 }, { t: "" }, { t: "PROSEDUR tambah(tanggal, jenis, jumlah, ket)" }, { t: "JIKA jumlah bukan angka ATAU jumlah ≤ 0 MAKA tolak", ind: 1 }, { t: "simpan rekaman ke daftar, tulis ke berkas", ind: 1 }];
+      const lines = [{ t: "FUNGSI saldo(daftar) → integer" }, { t: "KEMBALIKAN jumlah(masuk) − jumlah(keluar)", ind: 1 }, { t: "" }, { t: "PROSEDUR tambah(tanggal, jenis, jumlah, ket)" }, { t: "JIKA jumlah bukan angka ATAU jumlah ≤ 0 MAKA tolak", ind: 1 }, { t: "simpan record ke daftar, tulis ke file", ind: 1 }];
       K.kode ? K.kode.code(ctx, 240, 300, 1000, lines.map((p, i) => ({ ...p, hl: i === n - 1 })), { rh: 50, size: 22 }) : null;
       if (n >= 6) { card(ctx, 1280, 300, 440, 200, { fill: "#FFF3D6", stroke: C.accent, lw: 3, r: 14 }); para(ctx, "desain yang jelas membuat kode tinggal diterjemahkan", 1500, 370, 24, 400, { align: "center", weight: 900, color: C.accentDark }); }
     },
@@ -74,7 +74,7 @@
     implementasi(ctx, b, l) {
       card(ctx, 120, 150, 1680, 740); stageHead(ctx, 2, "TAHAP 3 · IMPLEMENTASI: SEDIKIT DEMI SEDIKIT, JALANKAN TIAP KALI");
       const n = reveal(l, 1.5, 2.6, 3);
-      const steps = [["fungsi saldo", [{ t: "def saldo(daftar):" }, { t: "    masuk = 0; keluar = 0" }, { t: "    for t in daftar:" }, { t: '        if t["jenis"] == "masuk": masuk += t["jumlah"]' }, { t: '        else: keluar += t["jumlah"]' }, { t: "    return masuk - keluar" }], "saldo([]) → 0 ✓"], ["tambah transaksi", [{ t: "def tambah(daftar, tgl, jenis, jumlah, ket):" }, { t: "    if jumlah <= 0: return False" }, { t: "    daftar.append({...})" }, { t: "    return True" }], "tambah(..., 10000) → True ✓"], ["simpan ke berkas", [{ t: "def simpan(daftar):" }, { t: '    with open("kas.csv", "w") as f:' }, { t: "        ..." }], "kas.csv tersimpan ✓"]];
+      const steps = [["fungsi saldo", [{ t: "def saldo(daftar):" }, { t: "    masuk = 0; keluar = 0" }, { t: "    for t in daftar:" }, { t: '        if t["jenis"] == "masuk": masuk += t["jumlah"]' }, { t: '        else: keluar += t["jumlah"]' }, { t: "    return masuk - keluar" }], "saldo([]) → 0 ✓"], ["tambah transaksi", [{ t: "def tambah(daftar, tgl, jenis, jumlah, ket):" }, { t: "    if jumlah <= 0: return False" }, { t: "    daftar.append({...})" }, { t: "    return True" }], "tambah(..., 10000) → True ✓"], ["simpan ke file", [{ t: "def simpan(daftar):" }, { t: '    with open("kas.csv", "w") as f:' }, { t: "        ..." }], "kas.csv tersimpan ✓"]];
       steps.forEach(([t, code, out], i) => { ctx.save(); if (i >= n) ctx.globalAlpha = 0.2; const x = 230 + i * 500; text(ctx, (i + 1) + ". " + t, x + 230, 320, 22, { align: "center", weight: 900 }); Py.code(ctx, x, 335, 460, code, { rh: 30, size: 12, title: "" }); card(ctx, x, 560, 460, 50, { fill: C.goodBg, stroke: C.good, lw: 2, r: 10 }); text(ctx, "jalankan: " + out, x + 230, 592, 18, { align: "center", weight: 900, color: C.good }); ctx.restore(); });
       if (n >= 3) label(ctx, "jangan menulis seratus baris lalu baru menjalankan", 960, 680, { size: 24 });
     },
@@ -88,8 +88,8 @@
     rilis(ctx, b, l) {
       card(ctx, 120, 150, 1680, 740); stageHead(ctx, 4, "TAHAP 5 · RILIS: VERSI 1.0 KE TANGAN PENGGUNA");
       const n = reveal(l, 1.5, 2.2, 3);
-      ctx.save(); if (n < 1) ctx.globalAlpha = 0.2; A.version(ctx, 240, 310, 600, "1.0", ["catat pemasukan dan pengeluaran", "lihat saldo", "simpan ke berkas kas.csv"], { title: "fitur" }); ctx.restore();
-      ctx.save(); if (n < 2) ctx.globalAlpha = 0.2; card(ctx, 880, 310, 400, 190, { fill: "#FFF9E0", stroke: "#E0B04B", lw: 3, r: 14 }); text(ctx, "PANDUAN SINGKAT", 1080, 350, 20, { align: "center", weight: 900, color: C.accentDark }); ["1. tekan Tambah, isi, Simpan", "2. saldo tampil di atas", "3. berkas: kas.csv"].forEach((s, i) => text(ctx, s, 900, 395 + i * 34, 19, { weight: 800 })); ctx.restore();
+      ctx.save(); if (n < 1) ctx.globalAlpha = 0.2; A.version(ctx, 240, 310, 600, "1.0", ["catat pemasukan dan pengeluaran", "lihat saldo", "simpan ke file kas.csv"], { title: "fitur" }); ctx.restore();
+      ctx.save(); if (n < 2) ctx.globalAlpha = 0.2; card(ctx, 880, 310, 400, 190, { fill: "#FFF9E0", stroke: "#E0B04B", lw: 3, r: 14 }); text(ctx, "PANDUAN SINGKAT", 1080, 350, 20, { align: "center", weight: 900, color: C.accentDark }); ["1. tekan Tambah, isi, Simpan", "2. saldo tampil di atas", "3. file: kas.csv"].forEach((s, i) => text(ctx, s, 900, 395 + i * 34, 19, { weight: 800 })); ctx.restore();
       ctx.save(); if (n < 3) ctx.globalAlpha = 0.2; kid(ctx, 1500, 500, 130, { hair: "long" }); bubble(ctx, 1320, 330, 360, "Kupakai seminggu, lalu kuberi masukan.", 20, { tailX: 1480 }); ctx.restore();
       if (n >= 3) label(ctx, "umpan balik dari pemakaian sungguhan", 960, 680, { size: 24 });
     },

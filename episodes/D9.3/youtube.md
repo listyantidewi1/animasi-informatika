@@ -9,13 +9,13 @@ Informatika Kelas 9 | Melindungi Perangkat dari Malware (1/2): Lima Jenis Malwar
 ```
 Melindungi Perangkat dari Malware — bagian 1 dari 2: Lima Jenis Malware. Narasi suara plus teks besar di layar; ada versi tanpa suara di video terpisah.
 
-Laptop Dito tiba-tiba lambat, muncul iklan, dan sebuah berkas tugas berubah nama. Ada tamu tak diundang: malware. Bersama Kiko kita bedakan lima jenisnya dari cara masuk dan ulahnya: virus menumpang berkas, worm menjalar sendiri lewat jaringan, trojan menyamar jadi aplikasi gratis, ransomware mengunci berkas dan minta tebusan, spyware mengintip diam-diam. Lalu lima kebiasaan menutup pintunya: perbarui, unduh dari sumber resmi, jangan klik sembarangan, antivirus, dan cadangan. Semua digambarkan secara konseptual, tanpa kode berbahaya. Empat cek pemahaman dengan jeda berpikir.
+Laptop Dito tiba-tiba lambat, muncul iklan, dan sebuah file tugas berubah nama. Ada tamu tak diundang: malware. Bersama Kiko kita bedakan lima jenisnya dari cara masuk dan ulahnya: virus menumpang file, worm menjalar sendiri lewat jaringan, trojan menyamar jadi aplikasi gratis, ransomware mengunci file dan minta tebusan, spyware mengintip diam-diam. Lalu lima kebiasaan menutup pintunya: perbarui, download dari sumber resmi, jangan klik sembarangan, antivirus, dan cadangan. Semua digambarkan secara konseptual, tanpa kode berbahaya. Empat cek pemahaman dengan jeda berpikir.
 
 Setelah menonton, murid bisa:
 • menjelaskan arti malware dan gejala perangkat yang terinfeksi
 • membedakan virus, worm, trojan, ransomware, dan spyware dari cara masuk dan ulahnya
 • menyebut lima kebiasaan pengaman: pembaruan, sumber resmi, tidak klik sembarangan, antivirus, cadangan
-• memutuskan tindakan yang tepat saat menemukan tautan, lampiran, atau aplikasi mencurigakan
+• memutuskan tindakan yang tepat saat menemukan link, lampiran, atau aplikasi mencurigakan
 
 Video ini cocok untuk yang mencari: jenis malware kelas 9; perbedaan virus worm trojan untuk pelajar; cara melindungi hp dan laptop dari virus; materi informatika kelas 9 keamanan perangkat.
 
@@ -23,7 +23,7 @@ Bab:
 0:00 Pembuka
 0:38 Main dulu tanpa komputer
 1:05 Virus dan worm
-2:09 Trojan, ransomware, spyware
+2:07 Trojan, ransomware, spyware
 
 Latihan interaktif (kuis dengan petunjuk, bisa dipakai luring di HP): berkas episode-d93.html di repositori proyek. Prasyarat: episode D9.2 Jaringan Lokal dan Internet.
 
@@ -41,13 +41,13 @@ Informatika Kelas 9 | Melindungi Perangkat dari Malware (2/2): Menutup Pintu Mas
 ```
 Melindungi Perangkat dari Malware — bagian 2 dari 2: Menutup Pintu Masuk. Narasi suara plus teks besar di layar; ada versi tanpa suara di video terpisah.
 
-Laptop Dito tiba-tiba lambat, muncul iklan, dan sebuah berkas tugas berubah nama. Ada tamu tak diundang: malware. Bersama Kiko kita bedakan lima jenisnya dari cara masuk dan ulahnya: virus menumpang berkas, worm menjalar sendiri lewat jaringan, trojan menyamar jadi aplikasi gratis, ransomware mengunci berkas dan minta tebusan, spyware mengintip diam-diam. Lalu lima kebiasaan menutup pintunya: perbarui, unduh dari sumber resmi, jangan klik sembarangan, antivirus, dan cadangan. Semua digambarkan secara konseptual, tanpa kode berbahaya. Empat cek pemahaman dengan jeda berpikir.
+Laptop Dito tiba-tiba lambat, muncul iklan, dan sebuah file tugas berubah nama. Ada tamu tak diundang: malware. Bersama Kiko kita bedakan lima jenisnya dari cara masuk dan ulahnya: virus menumpang file, worm menjalar sendiri lewat jaringan, trojan menyamar jadi aplikasi gratis, ransomware mengunci file dan minta tebusan, spyware mengintip diam-diam. Lalu lima kebiasaan menutup pintunya: perbarui, download dari sumber resmi, jangan klik sembarangan, antivirus, dan cadangan. Semua digambarkan secara konseptual, tanpa kode berbahaya. Empat cek pemahaman dengan jeda berpikir.
 
 Setelah menonton, murid bisa:
 • menjelaskan arti malware dan gejala perangkat yang terinfeksi
 • membedakan virus, worm, trojan, ransomware, dan spyware dari cara masuk dan ulahnya
 • menyebut lima kebiasaan pengaman: pembaruan, sumber resmi, tidak klik sembarangan, antivirus, cadangan
-• memutuskan tindakan yang tepat saat menemukan tautan, lampiran, atau aplikasi mencurigakan
+• memutuskan tindakan yang tepat saat menemukan link, lampiran, atau aplikasi mencurigakan
 
 Video ini cocok untuk yang mencari: jenis malware kelas 9; perbedaan virus worm trojan untuk pelajar; cara melindungi hp dan laptop dari virus; materi informatika kelas 9 keamanan perangkat.
 
@@ -56,7 +56,7 @@ Bab:
 0:04 Pintu dan pembaruan
 1:00 Klik, antivirus, cadangan
 1:55 Izin aplikasi
-2:28 Giliranmu
+2:29 Giliranmu
 
 Latihan interaktif (kuis dengan petunjuk, bisa dipakai luring di HP): berkas episode-d93.html di repositori proyek. Prasyarat: episode D9.2 Jaringan Lokal dan Internet.
 
@@ -74,13 +74,13 @@ Informatika Kelas 9 | Melindungi Perangkat dari Malware (1/2): Lima Jenis Malwar
 ```
 Melindungi Perangkat dari Malware — bagian 1 dari 2: Lima Jenis Malware. Versi tanpa narasi suara: teks narasi tampil besar di layar dengan garis kemajuan baca, cocok untuk ditonton tanpa speaker atau untuk murid yang lebih suka membaca.
 
-Laptop Dito tiba-tiba lambat, muncul iklan, dan sebuah berkas tugas berubah nama. Ada tamu tak diundang: malware. Bersama Kiko kita bedakan lima jenisnya dari cara masuk dan ulahnya: virus menumpang berkas, worm menjalar sendiri lewat jaringan, trojan menyamar jadi aplikasi gratis, ransomware mengunci berkas dan minta tebusan, spyware mengintip diam-diam. Lalu lima kebiasaan menutup pintunya: perbarui, unduh dari sumber resmi, jangan klik sembarangan, antivirus, dan cadangan. Semua digambarkan secara konseptual, tanpa kode berbahaya. Empat cek pemahaman dengan jeda berpikir.
+Laptop Dito tiba-tiba lambat, muncul iklan, dan sebuah file tugas berubah nama. Ada tamu tak diundang: malware. Bersama Kiko kita bedakan lima jenisnya dari cara masuk dan ulahnya: virus menumpang file, worm menjalar sendiri lewat jaringan, trojan menyamar jadi aplikasi gratis, ransomware mengunci file dan minta tebusan, spyware mengintip diam-diam. Lalu lima kebiasaan menutup pintunya: perbarui, download dari sumber resmi, jangan klik sembarangan, antivirus, dan cadangan. Semua digambarkan secara konseptual, tanpa kode berbahaya. Empat cek pemahaman dengan jeda berpikir.
 
 Setelah menonton, murid bisa:
 • menjelaskan arti malware dan gejala perangkat yang terinfeksi
 • membedakan virus, worm, trojan, ransomware, dan spyware dari cara masuk dan ulahnya
 • menyebut lima kebiasaan pengaman: pembaruan, sumber resmi, tidak klik sembarangan, antivirus, cadangan
-• memutuskan tindakan yang tepat saat menemukan tautan, lampiran, atau aplikasi mencurigakan
+• memutuskan tindakan yang tepat saat menemukan link, lampiran, atau aplikasi mencurigakan
 
 Video ini cocok untuk yang mencari: jenis malware kelas 9; perbedaan virus worm trojan untuk pelajar; cara melindungi hp dan laptop dari virus; materi informatika kelas 9 keamanan perangkat.
 
@@ -88,7 +88,7 @@ Bab:
 0:00 Pembuka
 0:48 Main dulu tanpa komputer
 1:23 Virus dan worm
-2:41 Trojan, ransomware, spyware
+2:37 Trojan, ransomware, spyware
 
 Latihan interaktif (kuis dengan petunjuk, bisa dipakai luring di HP): berkas episode-d93.html di repositori proyek. Prasyarat: episode D9.2 Jaringan Lokal dan Internet.
 
@@ -106,13 +106,13 @@ Informatika Kelas 9 | Melindungi Perangkat dari Malware (2/2): Menutup Pintu Mas
 ```
 Melindungi Perangkat dari Malware — bagian 2 dari 2: Menutup Pintu Masuk. Versi tanpa narasi suara: teks narasi tampil besar di layar dengan garis kemajuan baca, cocok untuk ditonton tanpa speaker atau untuk murid yang lebih suka membaca.
 
-Laptop Dito tiba-tiba lambat, muncul iklan, dan sebuah berkas tugas berubah nama. Ada tamu tak diundang: malware. Bersama Kiko kita bedakan lima jenisnya dari cara masuk dan ulahnya: virus menumpang berkas, worm menjalar sendiri lewat jaringan, trojan menyamar jadi aplikasi gratis, ransomware mengunci berkas dan minta tebusan, spyware mengintip diam-diam. Lalu lima kebiasaan menutup pintunya: perbarui, unduh dari sumber resmi, jangan klik sembarangan, antivirus, dan cadangan. Semua digambarkan secara konseptual, tanpa kode berbahaya. Empat cek pemahaman dengan jeda berpikir.
+Laptop Dito tiba-tiba lambat, muncul iklan, dan sebuah file tugas berubah nama. Ada tamu tak diundang: malware. Bersama Kiko kita bedakan lima jenisnya dari cara masuk dan ulahnya: virus menumpang file, worm menjalar sendiri lewat jaringan, trojan menyamar jadi aplikasi gratis, ransomware mengunci file dan minta tebusan, spyware mengintip diam-diam. Lalu lima kebiasaan menutup pintunya: perbarui, download dari sumber resmi, jangan klik sembarangan, antivirus, dan cadangan. Semua digambarkan secara konseptual, tanpa kode berbahaya. Empat cek pemahaman dengan jeda berpikir.
 
 Setelah menonton, murid bisa:
 • menjelaskan arti malware dan gejala perangkat yang terinfeksi
 • membedakan virus, worm, trojan, ransomware, dan spyware dari cara masuk dan ulahnya
 • menyebut lima kebiasaan pengaman: pembaruan, sumber resmi, tidak klik sembarangan, antivirus, cadangan
-• memutuskan tindakan yang tepat saat menemukan tautan, lampiran, atau aplikasi mencurigakan
+• memutuskan tindakan yang tepat saat menemukan link, lampiran, atau aplikasi mencurigakan
 
 Video ini cocok untuk yang mencari: jenis malware kelas 9; perbedaan virus worm trojan untuk pelajar; cara melindungi hp dan laptop dari virus; materi informatika kelas 9 keamanan perangkat.
 
@@ -121,7 +121,7 @@ Bab:
 0:04 Pintu dan pembaruan
 1:12 Klik, antivirus, cadangan
 2:20 Izin aplikasi
-3:00 Giliranmu
+2:59 Giliranmu
 
 Latihan interaktif (kuis dengan petunjuk, bisa dipakai luring di HP): berkas episode-d93.html di repositori proyek. Prasyarat: episode D9.2 Jaringan Lokal dan Internet.
 
@@ -133,7 +133,7 @@ Seri Animasi Informatika untuk SMP–SMA mengikuti CP 2025 (Keputusan Kepala BSK
 ## Komentar tersemat (pin) — D9.3a
 
 ```
-📌 Melindungi Perangkat dari Malware (1/2): Lima Jenis Malware — materi Informatika kelas 7 (unit D9.3).
+📌 Melindungi Perangkat dari Malware (1/2): Lima Jenis Malware — materi Informatika kelas 9 (unit D9.3).
 Setelah menonton, kamu bisa membedakan virus, worm, trojan, ransomware, dan spyware dari cara masuknya, lalu menutup pintunya.
 Kata kunci materi ini: jenis malware kelas 9; perbedaan virus worm trojan untuk pelajar; cara melindungi hp dan laptop dari virus; materi informatika kelas 9 keamanan perangkat.
 Latihan interaktif (bisa luring di HP): berkas episode-d93.html. Tonton dulu episode D9.2 Jaringan Lokal dan Internet bila belum.
@@ -143,7 +143,7 @@ Ada yang belum jelas? Tulis di komentar, pertanyaanmu membantu teman lain juga.
 ## Komentar tersemat (pin) — D9.3b
 
 ```
-📌 Melindungi Perangkat dari Malware (2/2): Menutup Pintu Masuk — materi Informatika kelas 7 (unit D9.3).
+📌 Melindungi Perangkat dari Malware (2/2): Menutup Pintu Masuk — materi Informatika kelas 9 (unit D9.3).
 Setelah menonton, kamu bisa membedakan virus, worm, trojan, ransomware, dan spyware dari cara masuknya, lalu menutup pintunya.
 Kata kunci materi ini: jenis malware kelas 9; perbedaan virus worm trojan untuk pelajar; cara melindungi hp dan laptop dari virus; materi informatika kelas 9 keamanan perangkat.
 Latihan interaktif (bisa luring di HP): berkas episode-d93.html. Tonton dulu episode D9.2 Jaringan Lokal dan Internet bila belum.

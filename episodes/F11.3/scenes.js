@@ -50,7 +50,7 @@
       if (n >= 12) label(ctx, "11 bukaan lawan 4 bukaan: catat, nanti dibandingkan dengan program", 960, 690, { size: 24 });
     },
     linear_kode(ctx, b, l) {
-      card(ctx, 120, 150, 1680, 740); heading(ctx, "PENCARIAN LINEAR SEBAGAI FUNGSI", 215);
+      card(ctx, 120, 150, 1680, 740); heading(ctx, "LINEAR SEARCH SEBAGAI FUNGSI", 215);
       const n = reveal(l, 1.5, 1.5, 9); const k = clamp(n - 5, 0, LINS.length); const st = k > 0 ? LINS[k - 1] : null;
       const pair = Math.min(n, 5) - 1;
       Kd.code(ctx, 200, 260, 700, LINEAR_PS.map((p, i) => ({ ...p, hl: i === pair && n <= 5 })), { rh: 44, size: 20 });
@@ -59,7 +59,7 @@
       if (n >= 9) label(ctx, "return -1 berarti tidak ketemu", 1300, 700, { size: 24 });
     },
     biner_kode(ctx, b, l) {
-      card(ctx, 120, 150, 1680, 740); heading(ctx, "PENCARIAN BINER: KIRI, KANAN, TENGAH", 215);
+      card(ctx, 120, 150, 1680, 740); heading(ctx, "BINARY SEARCH: KIRI, KANAN, TENGAH", 215);
       const n = reveal(l, 1.5, 1.6, 8); const k = clamp(n - 4, 0, BIN.length); const st = k > 0 ? BIN[k - 1] : null;
       const hl = n <= 1 ? [0, 1] : n === 2 ? [2] : n === 3 ? [3, 4] : st ? (st.found ? [5, 6] : st.v < 90 ? [7, 8] : [9, 10]) : [];
       Py.code(ctx, 200, 255, 760, BINER_PY.map((p, i) => ({ ...p, hl: hl.includes(i) })), { rh: 38, size: 19 });
@@ -104,7 +104,7 @@
       if (n >= 3) { card(ctx, 200, 500, 760, 90, { fill: "#FFF3D6", stroke: C.accent, lw: 3, r: 12 }); text(ctx, "range(3 - 1) → 0, 1 saja; indeks 2 tak pernah diperiksa", 580, 540, 22, { align: "center", weight: 900, color: C.accentDark }); text(ctx, "perbaikan: range(len(daftar))", 580, 572, 20, { align: "center", weight: 800, color: C.good }); }
       if (n >= 4) Qk.traceback(ctx, 1000, 260, 700, [["Traceback (most recent call last):", ""], ['  File "cari.py", line 9, in <module>', n >= 5 ? "hl" : ""], ["    print(daftar[3])", ""], ["IndexError: list index out of range", n >= 6 ? "err" : ""]]);
       if (n >= 5) text(ctx, "① baris ke-9 yang bermasalah", 1000, 470, 22, { weight: 900, color: C.accentDark });
-      if (n >= 6) text(ctx, "② jenis galat: indeks di luar daftar", 1000, 510, 22, { weight: 900, color: C.bad });
+      if (n >= 6) text(ctx, "② jenis error: indeks di luar daftar", 1000, 510, 22, { weight: 900, color: C.bad });
       if (n >= 6) label(ctx, "baca dari bawah ke atas", 1350, 600, { size: 26 });
     },
     keterbacaan(ctx, b, l) {

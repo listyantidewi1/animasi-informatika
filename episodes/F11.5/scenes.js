@@ -19,7 +19,7 @@
       kiko(ctx, 260, 500, 150, 0, { mood: "happy" });
       const n = reveal(l, 1.5, 1.4, 7);
       Tb.flow(ctx, 420, 280, 1300, Tb.STEPS, Math.min(n, 6), { h: 190 });
-      if (n >= 7) banner(ctx, "data terbuka: bisa diunduh siapa saja, terpercaya, boleh dipakai ulang", 560, 1300, { size: 28 });
+      if (n >= 7) banner(ctx, "data terbuka: bisa di-download siapa saja, terpercaya, boleh dipakai ulang", 560, 1300, { size: 28 });
     },
     prereq(ctx, b, l) {
       card(ctx, 260, 200, 1400, 600);
@@ -58,7 +58,7 @@
       const n = reveal(l, 1.5, 1.8, 7);
       Tb.flow(ctx, 240, 255, 1440, Tb.STEPS, 6, { h: 110, active: 1 });
       if (n >= 2) Tb.portal(ctx, 240, 390, 760, 320, { metaN: n >= 4 ? 3 : n >= 3 ? 1 : 0 });
-      Tb.check(ctx, 1040, 400, 640, "terbuka", "bisa diunduh, format CSV/JSON", n >= 5 ? true : null, { dim: n < 5 });
+      Tb.check(ctx, 1040, 400, 640, "terbuka", "bisa di-download, format CSV/JSON", n >= 5 ? true : null, { dim: n < 5 });
       Tb.check(ctx, 1040, 505, 640, "terpercaya", "lembaga yang mengukur, ada metadata, diperbarui", n >= 6 ? true : null, { dim: n < 6 });
       Tb.check(ctx, 1040, 610, 640, "legal", "lisensi mengizinkan pakai ulang, sebut sumber", n >= 7 ? true : null, { dim: n < 7 });
       if (n < 2) [["portal data pemerintah", "🏛️"], ["badan statistik", "📊"], ["lembaga cuaca", "🌦️"]].forEach(([t, ic], i) => { card(ctx, 240 + i * 260, 420, 240, 120, { fill: C.bg2, r: 14 }); text(ctx, ic, 360 + i * 260, 475, 40, { align: "center" }); text(ctx, t, 360 + i * 260, 520, 18, { align: "center", weight: 900 }); });

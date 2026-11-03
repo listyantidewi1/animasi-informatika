@@ -50,7 +50,7 @@
       card(ctx, 120, 150, 1680, 740);
       text(ctx, "LIMA BENTUK FLOWCHART", 960, 230, 34, { align: "center", color: C.accentDark, weight: 800 });
       const n = reveal(l, 1.0, 1.1, 5);
-      const items = [["term", "MULAI / SELESAI", "oval", 160, 50], ["proc", "proses", "kotak: pekerjaan", 180, 56], ["io", "masukan / keluaran", "jajar genjang", 200, 56], ["dec", "keputusan?", "belah ketupat: ya/tidak", 200, 100]];
+      const items = [["term", "MULAI / SELESAI", "oval", 160, 50], ["proc", "proses", "kotak: pekerjaan", 180, 56], ["io", "input / output", "jajar genjang", 200, 56], ["dec", "keputusan?", "belah ketupat: ya/tidak", 200, 100]];
       items.forEach(([k, lab, desc, w, h], i) => { if (i < n) { const x = 330 + i * 330; card(ctx, x - 150, 290, 300, 300, { fill: C.bg2 }); A.node(ctx, k, x, 400, w, h, lab, { size: 20 }); text(ctx, desc, x, 550, 22, { align: "center", weight: 800, color: C.ink2 }); } });
       if (n >= 5) { card(ctx, 1500, 290, 260, 300, { fill: C.bg2 }); A.arrow(ctx, [[1630, 340], [1630, 470]], { on: true }); text(ctx, "panah: arah", 1630, 550, 22, { align: "center", weight: 800, color: C.ink2 }); banner(ctx, "bentuknya bercerita, panahnya mengarahkan", 745, 900); }
     },

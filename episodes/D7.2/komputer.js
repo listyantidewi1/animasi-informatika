@@ -66,7 +66,7 @@
   M.board = function (ctx, opt = {}) {
     const show = opt.show === undefined ? 4 : opt.show, st = opt.stage;
     const X = [160, 700, 1240], Y = 250, W = 520, Hh = 300;
-    const titles = ["MASUKAN (input)", "PROSES", "KELUARAN (output)"];
+    const titles = ["INPUT (masukan)", "PROSES", "OUTPUT (keluaran)"];
     for (let i = 0; i < 3; i++) if (i < show) M.station(ctx, X[i], Y, W, Hh, titles[i], { on: st === i, done: st !== undefined && i < st });
     if (show >= 1) { D.keyboard(ctx, X[0] + 40, Y + 90, 300, { pressed: opt.key ? ["H"] : [] }); D.mouse(ctx, X[0] + 430, Y + 190, 60, {}); }
     if (show >= 2) { M.chip(ctx, X[1] + 150, Y + 170, 110, { hot: st === 1 }); M.ram(ctx, X[1] + 260, Y + 110, 230, 110, { cells: opt.ramCells }); }

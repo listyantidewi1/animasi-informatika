@@ -23,7 +23,7 @@
     if (pair) { const y1 = y + 50 + pair[0] * rh + rh / 2, y2 = y + 50 + pair[1] * rh + rh / 2; ctx.strokeStyle = C.accent; ctx.lineWidth = 5; ctx.beginPath(); ctx.moveTo(x + wl + 4, y1); ctx.lineTo(x + wl + gap - 4, y2); ctx.stroke(); ctx.fillStyle = C.accent; ctx.beginPath(); ctx.arc(x + wl + gap - 4, y2, 7, 0, Math.PI * 2); ctx.fill(); }
     return 50 + rh * Math.max(ps.length, py.length);
   };
-  T.TYPES = [["int", "bilangan bulat", "17, -3", "#2E7E9A"], ["float", "pecahan", "3.5", "#8E6BBF"], ["str", "teks", "\"Sinta\"", "#2E9E5B"], ["bool", "benar-salah", "True, False", "#B57A12"]];
+  T.TYPES = [["int", "integer (bulat)", "17, -3", "#2E7E9A"], ["float", "pecahan", "3.5", "#8E6BBF"], ["str", "string (teks)", "\"Sinta\"", "#2E9E5B"], ["bool", "benar-salah", "True, False", "#B57A12"]];
   T.typeCards = function (ctx, x, y, w, n, opt = {}) {
     const cw = (w - 3 * 20) / 4; T.TYPES.forEach(([nm, id, ex, col], i) => { ctx.save(); if (i >= n) ctx.globalAlpha = 0.2; const cx = x + i * (cw + 20); card(ctx, cx, y, cw, 130, { fill: "#fff", stroke: col, lw: opt.on === i ? 6 : 3, r: 14 }); ctx.fillStyle = col; rr(ctx, cx, y, cw, 42, 14); ctx.fill(); ctx.fillRect(cx, y + 21, cw, 21); text(ctx, nm, cx + cw / 2, y + 30, 24, { align: "center", weight: 900, color: "#fff" }); text(ctx, id, cx + cw / 2, y + 76, 20, { align: "center", weight: 800, color: C.ink2 }); text(ctx, ex, cx + cw / 2, y + 110, 22, { align: "center", weight: 900 }); ctx.restore(); });
   };
@@ -43,7 +43,7 @@
       if (checked && ok != null) text(ctx, ok ? "✓ benar, jalankan" : "✕ salah, lewati", x + w - 20, ry + 44, 22, { align: "right", weight: 900, color: ok ? C.good : C.bad });
       ctx.restore(); });
   };
-  T.PRIMM = [["P", "Predict · Tebak", "tulis dugaan keluaran"], ["R", "Run · Jalankan", "bandingkan dengan dugaan"], ["I", "Investigate · Selidiki", "ubah satu angka, lihat"], ["M", "Modify · Ubah", "tambah satu fitur kecil"], ["M", "Make · Buat", "program versimu sendiri"]];
+  T.PRIMM = [["P", "Predict · Tebak", "tulis dugaan output"], ["R", "Run · Jalankan", "bandingkan dengan dugaan"], ["I", "Investigate · Selidiki", "ubah satu angka, lihat"], ["M", "Modify · Ubah", "tambah satu fitur kecil"], ["M", "Make · Buat", "program versimu sendiri"]];
   T.primm = function (ctx, x, y, n, opt = {}) {
     const w = opt.w || 300; T.PRIMM.forEach(([ltr, t, s], i) => { ctx.save(); if (i >= n) ctx.globalAlpha = 0.2; const cx = x + i * (w + 20); card(ctx, cx, y, w, 190, { fill: i === n - 1 ? "#FFF3D6" : C.bg2, stroke: i === n - 1 ? C.accent : undefined, lw: 4, r: 16 }); ctx.fillStyle = C.kiko; ctx.beginPath(); ctx.arc(cx + 44, y + 44, 28, 0, Math.PI * 2); ctx.fill(); text(ctx, ltr, cx + 44, y + 55, 30, { align: "center", weight: 900, color: "#fff" }); text(ctx, t, cx + 86, y + 54, 22, { weight: 900 }); para(ctx, s, cx + 20, y + 110, 22, w - 40, { weight: 700, color: C.ink2 }); ctx.restore(); });
   };

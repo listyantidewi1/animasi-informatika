@@ -44,7 +44,7 @@
     variabel(ctx, b, l) {
       card(ctx, 120, 150, 1680, 740); heading(ctx, "BAHAN 1 · VARIABEL: LAHIR SAAT PERTAMA DIISI", 215);
       const n = reveal(l, 1.5, 1.8, 4);
-      T.side(ctx, 220, 260, [{ t: "DEKLARASI saldo: bulat" }, { t: "DEKLARASI nama: teks" }, { t: "saldo ← 0" }, { t: "nama ← \"Sinta\"" }], [{ t: "" }, { t: "" }, { t: "saldo = 0" }, { t: 'nama = "Sinta"' }], { pairs: [[0, 2], [1, 3], [2, 2], [3, 3]], hl: n >= 1 ? Math.min(n, 4) - 1 : null, rh: 46, size: 22 });
+      T.side(ctx, 220, 260, [{ t: "DEKLARASI saldo: integer" }, { t: "DEKLARASI nama: string" }, { t: "saldo ← 0" }, { t: "nama ← \"Sinta\"" }], [{ t: "" }, { t: "" }, { t: "saldo = 0" }, { t: 'nama = "Sinta"' }], { pairs: [[0, 2], [1, 3], [2, 2], [3, 3]], hl: n >= 1 ? Math.min(n, 4) - 1 : null, rh: 46, size: 22 });
       if (n >= 1) text(ctx, "tanpa deklarasi", 1340, 322, 20, { weight: 800, color: "#7B8B95" });
       if (n >= 3) T.cell(ctx, 240, 560, 300, { name: "saldo", value: 0, type: "int", changed: n === 3 });
       if (n >= 4) T.cell(ctx, 580, 560, 300, { name: "nama", value: "\"Sinta\"", type: "str", changed: true });
@@ -56,7 +56,7 @@
       T.typeCards(ctx, 240, 260, 1440, Math.min(n, 4));
       if (n >= 5) { Py.code(ctx, 240, 430, 640, [{ t: "jumlah = input()", hl: n === 5 }, { t: "jumlah = int(input())", hl: n >= 7 }], { rh: 46, size: 24 }); }
       if (n >= 5) T.cell(ctx, 940, 440, 320, { name: "jumlah", value: "\"50000\"", type: "str", warn: true });
-      if (n >= 6) { text(ctx, "teks! tidak bisa dihitung", 1100, 585, 22, { align: "center", weight: 900, color: C.bad }); }
+      if (n >= 6) { text(ctx, "string! tidak bisa dihitung", 1100, 585, 22, { align: "center", weight: 900, color: C.bad }); }
       if (n >= 7) { arrowIcon(ctx, "right", 1290, 495, 40, C.good); T.cell(ctx, 1340, 440, 320, { name: "jumlah", value: 50000, type: "int", changed: true }); label(ctx, "bungkus dengan int() supaya jadi bilangan", 960, 690, { size: 26, color: C.good }); }
     },
     percabangan(ctx, b, l) {
@@ -98,17 +98,17 @@
     fungsi(ctx, b, l) {
       card(ctx, 120, 150, 1680, 740); heading(ctx, "BAHAN 4 · FUNGSI: def, PARAMETER, return", 215);
       const n = reveal(l, 1.5, 1.8, 6);
-      T.side(ctx, 220, 260, [{ t: "FUNGSI hitung_saldo(daftar) → bulat" }, { t: "total ← 0", ind: 1 }, { t: "UNTUK tiap t dalam daftar:", ind: 1 }, { t: "total ← total + t", ind: 2 }, { t: "KEMBALIKAN total", ind: 1 }, { t: "" }, { t: "saldo ← hitung_saldo(daftar)" }], [{ t: "def hitung_saldo(daftar):" }, { t: "    total = 0" }, { t: "    for t in daftar:" }, { t: "        total = total + t" }, { t: "    return total" }, { t: "" }, { t: "saldo = hitung_saldo(daftar)" }], { pairs: [[0, 0], [1, 1], [2, 2], [3, 3], [4, 4], [6, 6]], hl: n >= 1 ? Math.min(n, 6) - 1 : null, rh: 42, size: 20 });
+      T.side(ctx, 220, 260, [{ t: "FUNGSI hitung_saldo(daftar) → integer" }, { t: "total ← 0", ind: 1 }, { t: "UNTUK tiap t dalam daftar:", ind: 1 }, { t: "total ← total + t", ind: 2 }, { t: "KEMBALIKAN total", ind: 1 }, { t: "" }, { t: "saldo ← hitung_saldo(daftar)" }], [{ t: "def hitung_saldo(daftar):" }, { t: "    total = 0" }, { t: "    for t in daftar:" }, { t: "        total = total + t" }, { t: "    return total" }, { t: "" }, { t: "saldo = hitung_saldo(daftar)" }], { pairs: [[0, 0], [1, 1], [2, 2], [3, 3], [4, 4], [6, 6]], hl: n >= 1 ? Math.min(n, 6) - 1 : null, rh: 42, size: 20 });
       [["def nama(parameter):", "kepala fungsi"], ["return nilai", "hasil dikirim ke pemanggil"], ["nama(argumen)", "memanggil fungsi"]].forEach(([t, s], i) => { ctx.save(); if (n < [1, 5, 6][i]) ctx.globalAlpha = 0.2; card(ctx, 1500, 270 + i * 110, 200, 96, { fill: C.bg2, r: 12 }); text(ctx, t, 1600, 308 + i * 110, 17, { align: "center", weight: 900, color: C.kiko }); text(ctx, s, 1600, 340 + i * 110, 15, { align: "center", weight: 700, color: C.ink2 }); ctx.restore(); });
       if (n >= 6) label(ctx, "kode yang sama dipakai lagi tanpa ditulis ulang", 960, 690, { size: 26 });
     },
     fungsi_bingkai(ctx, b, l) {
-      card(ctx, 120, 150, 1680, 740); heading(ctx, "SAAT DIPANGGIL: BINGKAI BARU, LALU DIBUANG", 215);
+      card(ctx, 120, 150, 1680, 740); heading(ctx, "SAAT DIPANGGIL: FRAME BARU, LALU DIBUANG", 215);
       const n = reveal(l, 1.5, 2.2, 5);
       Py.code(ctx, 220, 260, 600, [{ t: "def hitung_saldo(daftar):", hl: n === 1 }, { t: "    total = 0", hl: n === 2 }, { t: "    for t in daftar:" }, { t: "        total = total + t", hl: n === 2 }, { t: "    return total", hl: n === 3 }, { t: "" }, { t: "saldo = hitung_saldo(daftar)", hl: n === 4 }], { rh: 42, size: 20 });
       Mm.list(ctx, 880, 310, DAFTAR, { name: "daftar", w: 100, h: 56 }); Mm.board(ctx, 1260, 260, 420, [{ name: "saldo", value: n >= 4 ? 45000 : null, changed: n === 4 }], { bw: 380, bh: 100, title: "MEMORI UTAMA" });
       if (n >= 1 && n <= 3) Kd.frame(ctx, 860, 470, 500, "hitung_saldo", [["daftar", "[20000, 15000, 10000]"], ["total", n >= 2 ? 45000 : 0]], { ret: n >= 3 ? 45000 : null });
-      if (n >= 4) { card(ctx, 860, 470, 500, 110, { fill: C.bg2, stroke: "#B7C4CC", lw: 3, r: 14 }); text(ctx, "bingkai dibuang; total tidak terlihat dari luar", 1110, 535, 22, { align: "center", weight: 900, color: C.ink2 }); }
+      if (n >= 4) { card(ctx, 860, 470, 500, 110, { fill: C.bg2, stroke: "#B7C4CC", lw: 3, r: 14 }); text(ctx, "frame dibuang; total tidak terlihat dari luar", 1110, 535, 22, { align: "center", weight: 900, color: C.ink2 }); }
       if (n >= 5) label(ctx, "karena itu fungsi aman dipakai berulang", 1270, 690, { size: 26 });
     },
     program_utuh(ctx, b, l) {

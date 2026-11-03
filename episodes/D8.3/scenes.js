@@ -69,7 +69,7 @@
       card(ctx, 120, 150, 1680, 740);
       text(ctx, "LIMA BENTUK FLOWCHART", 960, 230, 34, { align: "center", color: C.accentDark, weight: 800 });
       const n = reveal(l, 0.8, 1.3, 5);
-      const items = [["term", "MULAI / SELESAI", "oval", 160, 50], ["proc", "proses", "kotak: pekerjaan", 180, 56], ["io", "masukan / keluaran", "jajar genjang", 200, 56], ["dec", "keputusan?", "belah ketupat: ya/tidak", 200, 100]];
+      const items = [["term", "MULAI / SELESAI", "oval", 160, 50], ["proc", "proses", "kotak: pekerjaan", 180, 56], ["io", "input / output", "jajar genjang", 200, 56], ["dec", "keputusan?", "belah ketupat: ya/tidak", 200, 100]];
       items.forEach(([k, lab, desc, w, h], i) => { if (i < n) { const x = 330 + i * 330; card(ctx, x - 150, 290, 300, 300, { fill: C.bg2 }); Q.node(ctx, k, x, 400, w, h, lab, { size: 20 }); text(ctx, desc, x, 550, 22, { align: "center", weight: 800, color: C.ink2 }); } });
       if (n >= 5) { card(ctx, 1500, 290, 260, 300, { fill: C.bg2 }); Q.arrow(ctx, [[1630, 340], [1630, 470]], { on: true }); text(ctx, "panah: arah", 1630, 550, 22, { align: "center", weight: 800, color: C.ink2 }); }
       if (n >= 5) banner(ctx, "bentuknya bercerita, panahnya mengarahkan", 745, 900);
@@ -137,7 +137,7 @@
       const pos = Q.along(path, u); Q.token(ctx, pos[0], pos[1], {});
       card(ctx, 1240, 260, 460, 120, { fill: "#FFF3D6", stroke: C.accent, lw: 4 }); text(ctx, "nilai = 78", 1470, 335, 44, { align: "center", weight: 900 });
       if (u >= 0.3) { card(ctx, 1240, 410, 460, 130, { fill: C.bg2 }); text(ctx, "78 > 70?", 1470, 460, 30, { align: "center", weight: 900 }); text(ctx, "YA → belok ke LULUS", 1470, 510, 28, { align: "center", weight: 900, color: C.good }); }
-      if (u >= 0.8) { Q.pseudo(ctx, 1240, 570, 460, [{ t: "keluaran: LULUS", good: true }], { title: "HASIL", rh: 56, size: 28 }); }
+      if (u >= 0.8) { Q.pseudo(ctx, 1240, 570, 460, [{ t: "output: LULUS", good: true }], { title: "HASIL", rh: 56, size: 28 }); }
     },
     token_run2(ctx, b, l) {
       card(ctx, 120, 150, 1680, 740);
@@ -146,7 +146,7 @@
       const pos = Q.along(path, u); Q.token(ctx, pos[0], pos[1], { color: C.bad });
       card(ctx, 1240, 260, 460, 120, { fill: "#FFF3D6", stroke: C.accent, lw: 4 }); text(ctx, "nilai = 65", 1470, 335, 44, { align: "center", weight: 900 });
       if (u >= 0.3) { card(ctx, 1240, 410, 460, 130, { fill: C.bg2 }); text(ctx, "65 > 70?", 1470, 460, 30, { align: "center", weight: 900 }); text(ctx, "TIDAK → belok ke REMEDI", 1470, 510, 28, { align: "center", weight: 900, color: C.bad }); }
-      if (u >= 0.8) { Q.pseudo(ctx, 1240, 570, 460, [{ t: "keluaran: REMEDI", bad: true }], { title: "HASIL", rh: 56, size: 28 }); label(ctx, "satu flowchart, dua jalan, tergantung datanya", 960, 820, { size: 26, color: C.ink2 }); }
+      if (u >= 0.8) { Q.pseudo(ctx, 1240, 570, 460, [{ t: "output: REMEDI", bad: true }], { title: "HASIL", rh: 56, size: 28 }); label(ctx, "satu flowchart, dua jalan, tergantung datanya", 960, 820, { size: 26, color: C.ink2 }); }
     },
 
     nested(ctx, b, l) {
@@ -169,7 +169,7 @@
     make_show(ctx, b, l) {
       card(ctx, 160, 150, 1600, 740);
       text(ctx, "GILIRANMU", 960, 240, 34, { align: "center", color: C.accentDark, weight: 900 });
-      const items = [["Pasangkan bentuk", "oval, kotak, jajar genjang, belah ketupat", (x, y) => { Q.node(ctx, "proc", x - 100, y - 40, 150, 46, "proses", { size: 20 }); Q.node(ctx, "dec", x + 100, y - 40, 170, 80, "ya/tidak?", { size: 18 }); Q.node(ctx, "io", x, y + 50, 170, 46, "keluaran", { size: 20 }); }],
+      const items = [["Pasangkan bentuk", "oval, kotak, jajar genjang, belah ketupat", (x, y) => { Q.node(ctx, "proc", x - 100, y - 40, 150, 46, "proses", { size: 20 }); Q.node(ctx, "dec", x + 100, y - 40, 170, 80, "ya/tidak?", { size: 18 }); Q.node(ctx, "io", x, y + 50, 170, 46, "output", { size: 20 }); }],
         ["Jalankan token", "pilih nilainya, tebak jalannya", (x, y) => { const d = Q.node(ctx, "dec", x, y - 40, 200, 90, "nilai > 70?", { size: 20 }); Q.arrow(ctx, [d.left, [x - 170, y - 40], [x - 170, y + 40]], { label: "ya" }); Q.arrow(ctx, [d.right, [x + 170, y - 40], [x + 170, y + 40]], { label: "tidak" }); Q.token(ctx, x, y - 110, {}); }],
         ["Susun pseudocode", "JIKA, MAKA, LAINNYA", (x, y) => Q.pseudo(ctx, x - 200, y - 100, 400, [{ t: "JIKA hujan MAKA" }, { t: "bawa payung", ind: 1 }, { t: "LAINNYA" }], { title: "", rh: 40, size: 20 })]];
       items.forEach(([t1, t2, draw], i) => { const x = 400 + i * 560; card(ctx, x - 250, 290, 500, 440, { fill: C.bg2 }); ctx.fillStyle = C.kiko; ctx.beginPath(); ctx.arc(x - 200, 340, 28, 0, Math.PI * 2); ctx.fill(); text(ctx, String(i + 1), x - 200, 352, 30, { align: "center", color: "#fff", weight: 900 }); draw(x, 470); text(ctx, t1, x, 630, 26, { align: "center", weight: 900 }); text(ctx, t2, x, 668, 22, { align: "center", weight: 700, color: C.ink2 }); });

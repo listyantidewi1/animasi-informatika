@@ -21,9 +21,9 @@ Video ini cocok untuk yang mencari: data pribadi kelas 9; apa yang boleh dibagik
 
 Bab:
 0:00 Pembuka
-0:42 Main dulu tanpa komputer
-1:17 Data pribadi
-2:28 Apa yang boleh kubagikan?
+0:43 Main dulu tanpa komputer
+1:18 Data pribadi
+2:29 Apa yang boleh kubagikan?
 
 Latihan interaktif (kuis dengan petunjuk, bisa dipakai luring di HP): berkas episode-d94.html di repositori proyek. Prasyarat: episode D7.3 Kata Sandi Aman dan Rekam Jejak Digital serta D7.7 Ruang Publik Virtual dan Empati.
 
@@ -86,9 +86,9 @@ Video ini cocok untuk yang mencari: data pribadi kelas 9; apa yang boleh dibagik
 
 Bab:
 0:00 Pembuka
-0:53 Main dulu tanpa komputer
-1:36 Data pribadi
-3:05 Apa yang boleh kubagikan?
+0:54 Main dulu tanpa komputer
+1:37 Data pribadi
+3:07 Apa yang boleh kubagikan?
 
 Latihan interaktif (kuis dengan petunjuk, bisa dipakai luring di HP): berkas episode-d94.html di repositori proyek. Prasyarat: episode D7.3 Kata Sandi Aman dan Rekam Jejak Digital serta D7.7 Ruang Publik Virtual dan Empati.
 
@@ -133,7 +133,7 @@ Seri Animasi Informatika untuk SMP–SMA mengikuti CP 2025 (Keputusan Kepala BSK
 ## Komentar tersemat (pin) — D9.4a
 
 ```
-📌 Data Pribadi, Identitas Digital, dan Kesadaran Penuh (1/2): Privat atau Publik? — materi Informatika kelas 7 (unit D9.4).
+📌 Data Pribadi, Identitas Digital, dan Kesadaran Penuh (1/2): Privat atau Publik? — materi Informatika kelas 9 (unit D9.4).
 Setelah menonton, kamu bisa memilah data privat dan publik, memeriksa unggahan sebelum tayang, dan merapikan identitas digitalmu.
 Kata kunci materi ini: data pribadi kelas 9; apa yang boleh dibagikan di media sosial untuk pelajar; identitas digital informatika smp; cara mengatur akun media sosial agar aman.
 Latihan interaktif (bisa luring di HP): berkas episode-d94.html. Tonton dulu episode D7.3 Kata Sandi Aman dan Rekam Jejak Digital serta D7.7 Ruang Publik Virtual dan Empati bila belum.
@@ -143,7 +143,7 @@ Ada yang belum jelas? Tulis di komentar, pertanyaanmu membantu teman lain juga.
 ## Komentar tersemat (pin) — D9.4b
 
 ```
-📌 Data Pribadi, Identitas Digital, dan Kesadaran Penuh (2/2): Identitas Digital dan Jeda Sadar — materi Informatika kelas 7 (unit D9.4).
+📌 Data Pribadi, Identitas Digital, dan Kesadaran Penuh (2/2): Identitas Digital dan Jeda Sadar — materi Informatika kelas 9 (unit D9.4).
 Setelah menonton, kamu bisa memilah data privat dan publik, memeriksa unggahan sebelum tayang, dan merapikan identitas digitalmu.
 Kata kunci materi ini: data pribadi kelas 9; apa yang boleh dibagikan di media sosial untuk pelajar; identitas digital informatika smp; cara mengatur akun media sosial agar aman.
 Latihan interaktif (bisa luring di HP): berkas episode-d94.html. Tonton dulu episode D7.3 Kata Sandi Aman dan Rekam Jejak Digital serta D7.7 Ruang Publik Virtual dan Empati bila belum.

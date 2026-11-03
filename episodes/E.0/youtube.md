@@ -9,11 +9,11 @@ Informatika Kelas 10 | Jembatan ke Kelas X: Empat Bekal dari SMP (1/2): Berpikir
 ```
 Jembatan ke Kelas X: Empat Bekal dari SMP — bagian 1 dari 2: Berpikir Komputasional dan Data Terstruktur. Narasi suara plus teks besar di layar; ada versi tanpa suara di video terpisah.
 
-Selamat datang di kelas X! Teman sekelasmu datang dari SMP yang berbeda-beda, jadi kita samakan dulu empat bekal: empat jurus berpikir komputasional (dekomposisi, pengenalan pola, abstraksi, algoritma), data terstruktur (tabel, antrean, tumpukan, hierarki), pseudocode dasar (variabel, JIKA, ULANGI, ditelusuri dengan tabel pelacakan), dan keamanan akun dasar (kata sandi panjang, unik, rahasia). Bukan ulangan: di halaman latihan ada kuis diagnostik dua belas soal yang menghasilkan peta belajar pribadi, lalu peta materi kelas X. Gaya baru Fase E: lebih banyak diagram.
+Selamat datang di kelas X! Teman sekelasmu datang dari SMP yang berbeda-beda, jadi kita samakan dulu empat bekal: empat jurus berpikir komputasional (dekomposisi, pengenalan pola, abstraksi, algoritma), data terstruktur (tabel, queue, stack, hierarki), pseudocode dasar (variabel, JIKA, ULANGI, ditelusuri dengan tabel pelacakan), dan keamanan akun dasar (kata sandi panjang, unik, rahasia). Bukan ulangan: di halaman latihan ada kuis diagnostik dua belas soal yang menghasilkan peta belajar pribadi, lalu peta materi kelas X. Gaya baru Fase E: lebih banyak diagram.
 
 Setelah menonton, murid bisa:
 • menyebut dan menerapkan empat jurus berpikir komputasional pada masalah sehari-hari
-• membaca tabel, antrean, tumpukan, dan hierarki sebagai data terstruktur
+• membaca tabel, queue, stack, dan hierarki sebagai data terstruktur
 • menelusuri pseudocode dengan variabel, JIKA, dan ULANGI memakai tabel pelacakan
 • membuat kata sandi panjang, unik, dan rahasia untuk akun sekolah yang baru
 
@@ -41,11 +41,11 @@ Informatika Kelas 10 | Jembatan ke Kelas X: Empat Bekal dari SMP (2/2): Pseudoco
 ```
 Jembatan ke Kelas X: Empat Bekal dari SMP — bagian 2 dari 2: Pseudocode, Keamanan Akun, dan Peta Kelas X. Narasi suara plus teks besar di layar; ada versi tanpa suara di video terpisah.
 
-Selamat datang di kelas X! Teman sekelasmu datang dari SMP yang berbeda-beda, jadi kita samakan dulu empat bekal: empat jurus berpikir komputasional (dekomposisi, pengenalan pola, abstraksi, algoritma), data terstruktur (tabel, antrean, tumpukan, hierarki), pseudocode dasar (variabel, JIKA, ULANGI, ditelusuri dengan tabel pelacakan), dan keamanan akun dasar (kata sandi panjang, unik, rahasia). Bukan ulangan: di halaman latihan ada kuis diagnostik dua belas soal yang menghasilkan peta belajar pribadi, lalu peta materi kelas X. Gaya baru Fase E: lebih banyak diagram.
+Selamat datang di kelas X! Teman sekelasmu datang dari SMP yang berbeda-beda, jadi kita samakan dulu empat bekal: empat jurus berpikir komputasional (dekomposisi, pengenalan pola, abstraksi, algoritma), data terstruktur (tabel, queue, stack, hierarki), pseudocode dasar (variabel, JIKA, ULANGI, ditelusuri dengan tabel pelacakan), dan keamanan akun dasar (kata sandi panjang, unik, rahasia). Bukan ulangan: di halaman latihan ada kuis diagnostik dua belas soal yang menghasilkan peta belajar pribadi, lalu peta materi kelas X. Gaya baru Fase E: lebih banyak diagram.
 
 Setelah menonton, murid bisa:
 • menyebut dan menerapkan empat jurus berpikir komputasional pada masalah sehari-hari
-• membaca tabel, antrean, tumpukan, dan hierarki sebagai data terstruktur
+• membaca tabel, queue, stack, dan hierarki sebagai data terstruktur
 • menelusuri pseudocode dengan variabel, JIKA, dan ULANGI memakai tabel pelacakan
 • membuat kata sandi panjang, unik, dan rahasia untuk akun sekolah yang baru
 
@@ -54,9 +54,9 @@ Video ini cocok untuk yang mencari: informatika kelas 10 materi awal; jembatan s
 Bab:
 0:00 Pembuka bagian
 0:04 Bekal 3: pseudocode dasar
-1:13 Bekal 4: keamanan akun
-2:26 Peta kelas X
-3:03 Giliranmu
+1:15 Bekal 4: keamanan akun
+2:27 Peta kelas X
+3:05 Giliranmu
 
 Latihan interaktif (kuis dengan petunjuk, bisa dipakai luring di HP): berkas episode-e0.html di repositori proyek. Tidak ada prasyarat.
 
@@ -74,11 +74,11 @@ Informatika Kelas 10 | Jembatan ke Kelas X: Empat Bekal dari SMP (1/2): Berpikir
 ```
 Jembatan ke Kelas X: Empat Bekal dari SMP — bagian 1 dari 2: Berpikir Komputasional dan Data Terstruktur. Versi tanpa narasi suara: teks narasi tampil besar di layar dengan garis kemajuan baca, cocok untuk ditonton tanpa speaker atau untuk murid yang lebih suka membaca.
 
-Selamat datang di kelas X! Teman sekelasmu datang dari SMP yang berbeda-beda, jadi kita samakan dulu empat bekal: empat jurus berpikir komputasional (dekomposisi, pengenalan pola, abstraksi, algoritma), data terstruktur (tabel, antrean, tumpukan, hierarki), pseudocode dasar (variabel, JIKA, ULANGI, ditelusuri dengan tabel pelacakan), dan keamanan akun dasar (kata sandi panjang, unik, rahasia). Bukan ulangan: di halaman latihan ada kuis diagnostik dua belas soal yang menghasilkan peta belajar pribadi, lalu peta materi kelas X. Gaya baru Fase E: lebih banyak diagram.
+Selamat datang di kelas X! Teman sekelasmu datang dari SMP yang berbeda-beda, jadi kita samakan dulu empat bekal: empat jurus berpikir komputasional (dekomposisi, pengenalan pola, abstraksi, algoritma), data terstruktur (tabel, queue, stack, hierarki), pseudocode dasar (variabel, JIKA, ULANGI, ditelusuri dengan tabel pelacakan), dan keamanan akun dasar (kata sandi panjang, unik, rahasia). Bukan ulangan: di halaman latihan ada kuis diagnostik dua belas soal yang menghasilkan peta belajar pribadi, lalu peta materi kelas X. Gaya baru Fase E: lebih banyak diagram.
 
 Setelah menonton, murid bisa:
 • menyebut dan menerapkan empat jurus berpikir komputasional pada masalah sehari-hari
-• membaca tabel, antrean, tumpukan, dan hierarki sebagai data terstruktur
+• membaca tabel, queue, stack, dan hierarki sebagai data terstruktur
 • menelusuri pseudocode dengan variabel, JIKA, dan ULANGI memakai tabel pelacakan
 • membuat kata sandi panjang, unik, dan rahasia untuk akun sekolah yang baru
 
@@ -106,11 +106,11 @@ Informatika Kelas 10 | Jembatan ke Kelas X: Empat Bekal dari SMP (2/2): Pseudoco
 ```
 Jembatan ke Kelas X: Empat Bekal dari SMP — bagian 2 dari 2: Pseudocode, Keamanan Akun, dan Peta Kelas X. Versi tanpa narasi suara: teks narasi tampil besar di layar dengan garis kemajuan baca, cocok untuk ditonton tanpa speaker atau untuk murid yang lebih suka membaca.
 
-Selamat datang di kelas X! Teman sekelasmu datang dari SMP yang berbeda-beda, jadi kita samakan dulu empat bekal: empat jurus berpikir komputasional (dekomposisi, pengenalan pola, abstraksi, algoritma), data terstruktur (tabel, antrean, tumpukan, hierarki), pseudocode dasar (variabel, JIKA, ULANGI, ditelusuri dengan tabel pelacakan), dan keamanan akun dasar (kata sandi panjang, unik, rahasia). Bukan ulangan: di halaman latihan ada kuis diagnostik dua belas soal yang menghasilkan peta belajar pribadi, lalu peta materi kelas X. Gaya baru Fase E: lebih banyak diagram.
+Selamat datang di kelas X! Teman sekelasmu datang dari SMP yang berbeda-beda, jadi kita samakan dulu empat bekal: empat jurus berpikir komputasional (dekomposisi, pengenalan pola, abstraksi, algoritma), data terstruktur (tabel, queue, stack, hierarki), pseudocode dasar (variabel, JIKA, ULANGI, ditelusuri dengan tabel pelacakan), dan keamanan akun dasar (kata sandi panjang, unik, rahasia). Bukan ulangan: di halaman latihan ada kuis diagnostik dua belas soal yang menghasilkan peta belajar pribadi, lalu peta materi kelas X. Gaya baru Fase E: lebih banyak diagram.
 
 Setelah menonton, murid bisa:
 • menyebut dan menerapkan empat jurus berpikir komputasional pada masalah sehari-hari
-• membaca tabel, antrean, tumpukan, dan hierarki sebagai data terstruktur
+• membaca tabel, queue, stack, dan hierarki sebagai data terstruktur
 • menelusuri pseudocode dengan variabel, JIKA, dan ULANGI memakai tabel pelacakan
 • membuat kata sandi panjang, unik, dan rahasia untuk akun sekolah yang baru
 
@@ -119,9 +119,9 @@ Video ini cocok untuk yang mencari: informatika kelas 10 materi awal; jembatan s
 Bab:
 0:00 Pembuka bagian
 0:04 Bekal 3: pseudocode dasar
-1:26 Bekal 4: keamanan akun
-2:58 Peta kelas X
-3:46 Giliranmu
+1:28 Bekal 4: keamanan akun
+2:59 Peta kelas X
+3:45 Giliranmu
 
 Latihan interaktif (kuis dengan petunjuk, bisa dipakai luring di HP): berkas episode-e0.html di repositori proyek. Tidak ada prasyarat.
 

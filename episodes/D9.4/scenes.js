@@ -141,7 +141,7 @@
     bocor(ctx, b, l) {
       card(ctx, 120, 150, 1680, 740);
       heading(ctx, "KALAU DATA TELANJUR TERSEBAR");
-      const steps = [["🗑️", "Hapus unggahannya", "secepatnya, sebelum makin menyebar"], ["🔑", "Ganti kata sandi", "akun yang terkait dengan data itu"], ["📸", "Simpan bukti", "tangkapan layar sebelum dihapus"], ["🧑‍🏫", "Beri tahu orang dewasa", "orang tua atau guru; jangan sendirian"]];
+      const steps = [["🗑️", "Hapus unggahannya", "secepatnya, sebelum makin menyebar"], ["🔑", "Ganti kata sandi", "akun yang terkait dengan data itu"], ["📸", "Simpan bukti", "screenshot sebelum dihapus"], ["🧑‍🏫", "Beri tahu orang dewasa", "orang tua atau guru; jangan sendirian"]];
       const n = reveal(l, 1.2, 1.5, 4);
       steps.forEach(([ic, t, s], i) => Em.step(ctx, 220 + (i % 2) * 760, 290 + Math.floor(i / 2) * 180, 720, i + 1, t, s, i < n));
       if (n >= 4) label(ctx, "yang sudah tersebar sulit ditarik penuh: itulah gunanya jeda", 960, 700, { size: 26, color: C.bad });

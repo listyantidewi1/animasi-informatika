@@ -4,7 +4,7 @@
   const K = global.Kiko, H = K.helpers, C = K.C, D = K.devices;
   const { rr, text, wrap, card, clamp, lerp } = H;
   const O = {};
-  O.APPS = [["🎵", "Musik", "#8E6BBF"], ["💬", "Chat", "#2E9E5B"], ["🌐", "Peramban", "#2E7E9A"], ["🎮", "Game", "#D9443B"]];
+  O.APPS = [["🎵", "Musik", "#8E6BBF"], ["💬", "Chat", "#2E9E5B"], ["🌐", "Browser", "#2E7E9A"], ["🎮", "Game", "#D9443B"]];
   // kartu proses kecil
   O.proc = function (ctx, cx, cy, w, app, opt = {}) {
     const [ic, name, col] = app; ctx.save(); if (opt.dim) ctx.globalAlpha = 0.25;

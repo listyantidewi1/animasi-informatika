@@ -6,7 +6,7 @@
   const banner = (ctx, s, y = 745, w = 1000, opt = {}) => { card(ctx, 960 - w / 2, y, w, 80, { fill: opt.fill || "#FFF3D6", stroke: opt.stroke || C.accent, lw: 4 }); text(ctx, s, 960, y + 52, opt.size || 34, { align: "center", weight: 900, color: opt.color || C.accentDark }); };
   const label = (ctx, s, x, y, opt = {}) => text(ctx, s, x, y, opt.size || 28, { align: "center", weight: 900, color: opt.color || C.accentDark });
   const heading = (ctx, s, y = 230) => text(ctx, s, 960, y, 34, { align: "center", color: C.accentDark, weight: 800 });
-  const ACC = [["✉️", "Surel"], ["🎮", "Game"], ["📱", "Media sosial"], ["🏦", "Bank"], ["🏫", "Kelas daring"]];
+  const ACC = [["✉️", "Email"], ["🎮", "Game"], ["📱", "Media sosial"], ["🏦", "Bank"], ["🏫", "Kelas daring"]];
   const TOOLS = [["🔐", "Brankas sandi", "satu sandi induk"], ["🔢", "Kode dua langkah", "sandi + kode"], ["⚙️", "Pengaturan akun", "privasi, sesi"], ["📶", "Router rumah", "dua sandi, WPA"]];
   const code = l => String(100000 + Math.floor(l / 30) * 73177 % 900000).padStart(6, "0");
 
@@ -55,14 +55,14 @@
       if (l > 2) { card(ctx, 480, 320, 360, 160, { fill: "#fff", stroke: C.bad, lw: 3, r: 10 }); text(ctx, "daftar yang beredar", 660, 350, 16, { weight: 800, color: C.ink2, align: "center" }); ["dito@…  · dito2010", "sinta@… · sinta2011", "bayu@…  · bayu123"].forEach((s, i) => text(ctx, s, 500, 390 + i * 30, 20, { weight: 800, color: i === 0 ? C.bad : C.ink })); }
       if (l > 4) { text(ctx, "🤖 mesin penipu", 1000, 330, 22, { align: "center", weight: 900, color: C.bad }); text(ctx, "mencoba pasangan yang sama", 1000, 360, 18, { align: "center", weight: 700, color: C.ink2 }); text(ctx, "ribuan kali per menit", 1000, 385, 18, { align: "center", weight: 700, color: C.ink2 }); }
       const n = reveal(l, 6, 1.2, 4);
-      [["✉️", "Surel"], ["📱", "Media sosial"], ["🏦", "Bank"], ["🏫", "Kelas daring"]].forEach(([ic, nm], i) => { if (i < n) { A.account(ctx, 1200, 280 + i * 105, 480, ic, nm, "dito2010", "open"); ctx.strokeStyle = C.bad; ctx.lineWidth = 4; ctx.setLineDash([8, 8]); ctx.beginPath(); ctx.moveTo(1130, 400); ctx.lineTo(1200, 325 + i * 105); ctx.stroke(); ctx.setLineDash([]); } });
+      [["✉️", "Email"], ["📱", "Media sosial"], ["🏦", "Bank"], ["🏫", "Kelas daring"]].forEach(([ic, nm], i) => { if (i < n) { A.account(ctx, 1200, 280 + i * 105, 480, ic, nm, "dito2010", "open"); ctx.strokeStyle = C.bad; ctx.lineWidth = 4; ctx.setLineDash([8, 8]); ctx.beginPath(); ctx.moveTo(1130, 400); ctx.lineTo(1200, 325 + i * 105); ctx.stroke(); ctx.setLineDash([]); } });
       if (n >= 4) label(ctx, "isian kredensial: pasangan yang sama masuk di mana-mana", 960, 740, { size: 24, color: C.bad });
     },
     manajer_sandi(ctx, b, l) {
       card(ctx, 120, 150, 1680, 740);
-      heading(ctx, "MANAJER KATA SANDI: BRANKAS DENGAN SATU SANDI INDUK", 215);
+      heading(ctx, "PASSWORD MANAGER: BRANKAS DENGAN SATU SANDI INDUK", 215);
       const n = reveal(l, 1.5, 1.0, 5);
-      A.vault(ctx, 260, 270, 620, 430, [["Surel", "Vq7!kd92Lm#pa"], ["Game", "r3Zt-8Hn@wQ1"], ["Media sosial", "Xp2$mv61Kz!e"], ["Bank", "Lw9#qa44Rt@u"], ["Kelas daring", "Hd5!zn27Pq#s"]], { n, master: l > 8 ? "kucing oren makan roti tujuh kali" : null });
+      A.vault(ctx, 260, 270, 620, 430, [["Email", "Vq7!kd92Lm#pa"], ["Game", "r3Zt-8Hn@wQ1"], ["Media sosial", "Xp2$mv61Kz!e"], ["Bank", "Lw9#qa44Rt@u"], ["Kelas daring", "Hd5!zn27Pq#s"]], { n, master: l > 8 ? "kucing oren makan roti tujuh kali" : null });
       const m = reveal(l, 8, 2.2, 3);
       [["🧠", "kamu ingat satu sandi induk: frasa panjang"], ["🎲", "brankas membuat sandi acak berbeda tiap akun"], ["🔢", "dua langkah untuk brankasnya; bawaan HP juga boleh"]].forEach(([ic, t], i) => { ctx.save(); if (i >= m) ctx.globalAlpha = 0.2; card(ctx, 960, 290 + i * 130, 740, 110, { fill: C.bg2, r: 14 }); text(ctx, ic, 1010, 358 + i * 130, 40, { align: "center" }); para(ctx, t, 1060, 338 + i * 130, 24, 600, { weight: 900 }); ctx.restore(); });
     },
@@ -99,7 +99,7 @@
       card(ctx, 120, 150, 1680, 740);
       heading(ctx, "PENGATURAN AKUN: TIGA HAL YANG DIPERIKSA", 215);
       const n = reveal(l, 1.5, 3.0, 3);
-      const items = [["👁️", "Privasi", [["profil", "teman saja ✓"], ["unggahan", "teman saja ✓"], ["nomor HP", "disembunyikan ✓"]]], ["🛟", "Pemulihan", [["surel cadangan", "masih dipegang ✓"], ["nomor HP", "nomor lama ✕ → perbarui"]]], ["❓", "Pertanyaan keamanan", [["\"nama sekolah?\"", "bisa dicari ✕"], ["jawaban acak dari brankas", "✓"]]]];
+      const items = [["👁️", "Privasi", [["profil", "teman saja ✓"], ["unggahan", "teman saja ✓"], ["nomor HP", "disembunyikan ✓"]]], ["🛟", "Pemulihan", [["email cadangan", "masih dipegang ✓"], ["nomor HP", "nomor lama ✕ → perbarui"]]], ["❓", "Pertanyaan keamanan", [["\"nama sekolah?\"", "bisa dicari ✕"], ["jawaban acak dari brankas", "✓"]]]];
       items.forEach(([ic, t, rows], i) => { ctx.save(); if (i >= n) ctx.globalAlpha = 0.2; const x = 230 + i * 500; card(ctx, x, 270, 460, 400, { fill: i === n - 1 ? "#FFF3D6" : C.bg2, stroke: i === n - 1 ? C.accent : undefined, lw: 4, r: 16 }); text(ctx, ic + " " + t, x + 230, 320, 26, { align: "center", weight: 900 }); rows.forEach(([k, v], r) => { card(ctx, x + 24, 350 + r * 90, 412, 74, { fill: "#fff", stroke: "#C9D4DB", lw: 2, r: 10 }); text(ctx, k, x + 40, 380 + r * 90, 18, { weight: 800, color: C.ink2 }); text(ctx, v, x + 40, 410 + r * 90, 19, { weight: 900, color: v.includes("✕") ? C.bad : C.good }); }); ctx.restore(); });
     },
     sesi_aktif(ctx, b, l) {
@@ -138,7 +138,7 @@
     checklist(ctx, b, l) {
       card(ctx, 120, 150, 1680, 740);
       heading(ctx, "DAFTAR PERIKSA ENAM LANGKAH", 215);
-      const items = ["Manajer kata sandi + sandi induk", "Dua langkah di surel dan akun penting", "Periksa sesi aktif", "Ganti sandi admin router", "WPA2/WPA3 + jaringan tamu", "Hati-hati di Wi-Fi publik"];
+      const items = ["Password manager + sandi induk", "Dua langkah di email dan akun penting", "Periksa sesi aktif", "Ganti sandi admin router", "WPA2/WPA3 + jaringan tamu", "Hati-hati di Wi-Fi publik"];
       const n = reveal(l, 1.2, 1.5, 6);
       items.forEach((t, i) => { ctx.save(); if (i >= n) ctx.globalAlpha = 0.2; const x = 240 + (i % 2) * 740, y = 270 + Math.floor(i / 2) * 130; card(ctx, x, y, 700, 110, { fill: C.goodBg, stroke: C.good, lw: 3, r: 14 }); ctx.strokeStyle = C.good; ctx.lineWidth = 4; rr(ctx, x + 20, y + 33, 44, 44, 8); ctx.stroke(); text(ctx, "✓", x + 42, y + 68, 34, { align: "center", weight: 900, color: C.good }); text(ctx, (i + 1) + ". " + t, x + 84, y + 66, 24, { weight: 900 }); ctx.restore(); });
       if (n >= 6) label(ctx, "enam langkah, satu sore bersama orang tua", 960, 700);
@@ -147,7 +147,7 @@
       card(ctx, 160, 150, 1600, 740);
       text(ctx, "GILIRANMU", 960, 240, 34, { align: "center", color: C.accentDark, weight: 900 });
       const items = [["Simulasi dua langkah", "termasuk saat penipu mencoba", (x, y) => { ctx.save(); ctx.translate(x - 190, y - 100); ctx.scale(0.75, 0.75); A.login(ctx, 0, 0, 500, 1, { pw: "••••••••", code: "4 8 2 _ _ _" }); ctx.restore(); }],
-        ["Audit akun fiktif", "temukan lima masalah", (x, y) => [["sandi = nama+tahun", false], ["dua langkah: mati", false], ["surel cadangan: lama", false], ["profil: teman saja", true]].forEach(([t, ok], i) => { card(ctx, x - 190, y - 100 + i * 52, 380, 44, { fill: ok ? C.goodBg : C.badBg, stroke: ok ? C.good : C.bad, lw: 2, r: 10 }); text(ctx, (ok ? "✓ " : "✕ ") + t, x - 175, y - 72 + i * 52, 19, { weight: 900, color: ok ? C.good : C.bad }); })],
+        ["Audit akun fiktif", "temukan lima masalah", (x, y) => [["sandi = nama+tahun", false], ["dua langkah: mati", false], ["email cadangan: lama", false], ["profil: teman saja", true]].forEach(([t, ok], i) => { card(ctx, x - 190, y - 100 + i * 52, 380, 44, { fill: ok ? C.goodBg : C.badBg, stroke: ok ? C.good : C.bad, lw: 2, r: 10 }); text(ctx, (ok ? "✓ " : "✕ ") + t, x - 175, y - 72 + i * 52, 19, { weight: 900, color: ok ? C.good : C.bad }); })],
         ["Atur router fiktif", "sampai semua lampu hijau", (x, y) => { ctx.save(); ctx.translate(x - 200, y - 110); ctx.scale(0.7, 0.7); A.routerPanel(ctx, 0, 0, 560, [["Sandi admin", "admin ✕", false], ["Keamanan", "WPA2 ✓", true], ["Jaringan tamu", "mati ✕", false]]); ctx.restore(); }]];
       items.forEach(([t1, t2, draw], i) => { const x = 400 + i * 560; card(ctx, x - 250, 290, 500, 440, { fill: C.bg2 }); ctx.fillStyle = C.kiko; ctx.beginPath(); ctx.arc(x - 200, 340, 28, 0, Math.PI * 2); ctx.fill(); text(ctx, String(i + 1), x - 200, 352, 30, { align: "center", color: "#fff", weight: 900 }); text(ctx, t1, x - 160, 352, 28, { weight: 900 }); text(ctx, t2, x - 160, 386, 20, { weight: 700, color: C.ink2 }); draw(x, 560); });
       text(ctx, "di halaman latihan episode ini — lalu rapikan akun dan router bersama orang tua", 960, 820, 28, { align: "center", color: C.ink2, weight: 700 });

@@ -23,11 +23,11 @@ Bab:
 0:00 Pembuka
 0:35 Main dulu tanpa komputer
 1:03 Merayapi
-1:27 Mengindeks
-2:22 Memeringkat
-2:58 Kata kunci jitu
-4:00 Menilai hasil
-5:01 Giliranmu
+1:28 Mengindeks
+2:23 Memeringkat
+2:59 Kata kunci jitu
+4:01 Menilai hasil
+5:02 Giliranmu
 
 Latihan interaktif (kuis dengan petunjuk, bisa dipakai luring di HP): berkas episode-d74.html di repositori proyek. Prasyarat: episode D7.0 Cara Memakai Komputer dan HP.
 
@@ -59,10 +59,10 @@ Bab:
 0:00 Pembuka
 0:45 Main dulu tanpa komputer
 1:20 Merayapi
-1:49 Mengindeks
+1:50 Mengindeks
 2:57 Memeringkat
-3:42 Kata kunci jitu
-5:00 Menilai hasil
+3:43 Kata kunci jitu
+5:01 Menilai hasil
 6:17 Giliranmu
 
 Latihan interaktif (kuis dengan petunjuk, bisa dipakai luring di HP): berkas episode-d74.html di repositori proyek. Prasyarat: episode D7.0 Cara Memakai Komputer dan HP.

@@ -13,7 +13,7 @@
       card(ctx, 120, 150, 1680, 740);
       kiko(ctx, 280, 560, 170, 0, { mood: "think" });
       const n = reveal(l, 1.5, 2.2, 3);
-      [["🔎", "riset", "pertanyaan → kueri → sumber primer"], ["🧭", "verifikasi", "teks, foto, video → konteks asli"]].forEach(([ic, t, s], i) => { ctx.save(); if (i >= n) ctx.globalAlpha = 0.2; const x = 560 + i * 560; card(ctx, x, 280, 520, 300, { fill: i === n - 1 ? "#FFF3D6" : C.bg2, stroke: i === n - 1 ? C.accent : undefined, lw: 3, r: 18 }); text(ctx, ic, x + 260, 380, 64, { align: "center" }); text(ctx, t, x + 260, 450, 30, { align: "center", weight: 900 }); para(ctx, s, x + 260, 500, 22, 460, { align: "center", weight: 800, color: C.ink2 }); ctx.restore(); });
+      [["🔎", "riset", "pertanyaan → query → sumber primer"], ["🧭", "verifikasi", "teks, foto, video → konteks asli"]].forEach(([ic, t, s], i) => { ctx.save(); if (i >= n) ctx.globalAlpha = 0.2; const x = 560 + i * 560; card(ctx, x, 280, 520, 300, { fill: i === n - 1 ? "#FFF3D6" : C.bg2, stroke: i === n - 1 ? C.accent : undefined, lw: 3, r: 18 }); text(ctx, ic, x + 260, 380, 64, { align: "center" }); text(ctx, t, x + 260, 450, 30, { align: "center", weight: 900 }); para(ctx, s, x + 260, 500, 22, 460, { align: "center", weight: 800, color: C.ink2 }); ctx.restore(); });
       if (n >= 3) R.photo(ctx, 1200, 620, 220, 130, { caption: "banjir kemarin?!" });
       if (n >= 3) label(ctx, "satu foto di grup kelas: kita ikuti jejaknya", 760, 700, { size: 26 });
     },
@@ -66,15 +66,15 @@
     jejak_kutipan(ctx, b, l) {
       card(ctx, 120, 150, 1680, 740); heading(ctx, "JEJAK KUTIPAN: TELEPON RUSAK", 215);
       const n = reveal(l, 1.5, 2.0, 6);
-      Hx.msg(ctx, 460, 265, 1000, "“Menurut studi, 90% sekolah rusak akibat banjir.” — KabarKilat.id, tanpa tautan", { who: "klaim", size: 22 });
+      Hx.msg(ctx, 460, 265, 1000, "“Menurut studi, 90% sekolah rusak akibat banjir.” — KabarKilat.id, tanpa link", { who: "klaim", size: 22 });
       if (n >= 2) R.chain(ctx, 200, 400, 1520, [["studi asli (primer)", "9% dari 10 sekolah sampel"], ["blog ulasan", "hampir 10% sekolah rusak"], ["KabarKilat.id", "90% sekolah rusak"], ["grup kelas", "SEMUA sekolah rusak!!"]], [3, 2, 1, 0][clamp(5 - n, 0, 3)] + 1 > 4 ? 4 : clamp(n - 1, 0, 4));
       if (n >= 6) banner(ctx, "lacak sampai studi aslinya: ada? berkata begitu? sampelnya berapa?", 620, 1300, { size: 28 });
     },
     verifikasi_teks(ctx, b, l) {
-      card(ctx, 120, 150, 1680, 740); heading(ctx, "VERIFIKASI TEKS: TANGKAPAN LAYAR KUTIPAN", 215);
+      card(ctx, 120, 150, 1680, 740); heading(ctx, "VERIFIKASI TEKS: SCREENSHOT KUTIPAN", 215);
       const n = reveal(l, 1.5, 1.8, 6);
-      card(ctx, 240, 270, 620, 300, { fill: "#fff", stroke: "#C9D4DB", lw: 3, r: 14 }); ctx.fillStyle = "#E6EDF2"; rr(ctx, 240, 270, 620, 60, 14); ctx.fill(); ctx.fillRect(240, 300, 620, 30); text(ctx, "📱 tangkapan layar · akun “Wali Kota Sukamaju”", 264, 308, 20, { weight: 900, color: C.ink2 });
-      para(ctx, "“Semua sekolah diliburkan satu bulan penuh mulai besok.”", 550, 390, 26, 560, { align: "center", weight: 900 }); text(ctx, "tanpa tanggal · tanpa tautan · tanda centang buram", 550, 530, 18, { align: "center", weight: 800, color: C.bad });
+      card(ctx, 240, 270, 620, 300, { fill: "#fff", stroke: "#C9D4DB", lw: 3, r: 14 }); ctx.fillStyle = "#E6EDF2"; rr(ctx, 240, 270, 620, 60, 14); ctx.fill(); ctx.fillRect(240, 300, 620, 30); text(ctx, "📱 screenshot · akun “Wali Kota Sukamaju”", 264, 308, 20, { weight: 900, color: C.ink2 });
+      para(ctx, "“Semua sekolah diliburkan satu bulan penuh mulai besok.”", 550, 390, 26, 560, { align: "center", weight: 900 }); text(ctx, "tanpa tanggal · tanpa link · tanda centang buram", 550, 530, 18, { align: "center", weight: 800, color: C.bad });
       [["cari kalimat persis dengan tanda kutip", "“diliburkan satu bulan penuh”", n >= 3 ? "0 hasil di situs resmi" : ""], ["periksa sumber primer", "akun resmi, transkrip, rekaman", n >= 4 ? "tidak ada unggahan itu" : ""], ["cek tanggal dan konteks", "kapan, menjawab apa?", n >= 5 ? "tidak ditemukan" : ""]].forEach(([t, s, r], i) => { ctx.save(); if (n < i + 2) ctx.globalAlpha = 0.2; card(ctx, 920, 270 + i * 110, 760, 96, { fill: n === i + 2 ? "#FFF3D6" : C.bg2, stroke: n === i + 2 ? C.accent : undefined, lw: 3, r: 12 }); text(ctx, (i + 1) + ". " + t, 944, 306 + i * 110, 22, { weight: 900 }); text(ctx, s, 944, 338 + i * 110, 18, { weight: 700, color: C.ink2 }); if (r) text(ctx, r, 1656, 322 + i * 110, 20, { align: "right", weight: 900, color: C.bad }); ctx.restore(); });
       if (n >= 6) { R.verdicts(ctx, 920, 610, 760, 1); label(ctx, "tidak ketemu di mana pun: curigai", 550, 650, { size: 26, color: C.bad }); }
     },
@@ -83,17 +83,17 @@
       const n = reveal(l, 1.5, 1.7, 7);
       R.photo(ctx, 240, 270, 520, 320, { caption: "“banjir kemarin di kota kita”", hl: n >= 6 ? ["sign", "shadow"] : [] });
       if (n >= 2) { arrowIcon(ctx, "right", 800, 420, 40, C.accent); text(ctx, "pencarian gambar terbalik", 920, 300, 22, { weight: 900, color: C.kiko }); }
-      if (n >= 2) R.timeline(ctx, 980, 420, 640, [["2023", "berita lokal: banjir Kota Sukamaju, Jl. Melati", C.good], ["2025", "diunggah ulang, keterangan dihapus", "#B57A12"], ["2026", "grup kelas: “kemarin, kota kita”", C.bad]], clamp(n - 1, 0, 3));
+      if (n >= 2) R.timeline(ctx, 980, 420, 640, [["2023", "berita lokal: banjir Kota Sukamaju, Jl. Melati", C.good], ["2025", "di-upload ulang, keterangan dihapus", "#B57A12"], ["2026", "grup kelas: “kemarin, kota kita”", C.bad]], clamp(n - 1, 0, 3));
       if (n >= 5) R.exif(ctx, 980, 560, 400, [["tanggal", "2023-02-14", false], ["kamera", "ponsel", false], ["lokasi GPS", "", true]], { title: "METADATA · versi media sosial" });
       if (n >= 7) { card(ctx, 1400, 560, 280, 150, { fill: C.goodBg, stroke: C.good, lw: 3, r: 12 }); para(ctx, "petunjuk visual: papan Jl. Melati, bayangan sore, cocok dengan 2023", 1540, 605, 19, 250, { align: "center", weight: 900, color: C.good }); }
       if (n >= 7) label(ctx, "foto asli, konteks salah", 500, 650, { size: 28, color: C.bad });
     },
     verifikasi_video(ctx, b, l) {
-      card(ctx, 120, 150, 1680, 740); heading(ctx, "VERIFIKASI VIDEO: BINGKAI, TANGGAL, POTONGAN", 215);
+      card(ctx, 120, 150, 1680, 740); heading(ctx, "VERIFIKASI VIDEO: FRAME, TANGGAL, POTONGAN", 215);
       const n = reveal(l, 1.5, 1.8, 6);
       R.frames(ctx, 240, 280, 4, { hl: n >= 2 ? 1 : null });
-      if (n >= 2) text(ctx, "tangkap bingkai kunci → cari gambar terbalik", 560, 430, 22, { align: "center", weight: 900, color: C.kiko });
-      [["tanggal unggah paling awal", "siapa pengunggah pertamanya?"], ["potongan yang mengubah makna", "cari versi utuh, catat menitnya"], ["suara diganti, wajah rekayasa", "bibir tak sinkron, kedipan janggal, tepi wajah"]].forEach(([t, s], i) => { ctx.save(); if (n < i + 3) ctx.globalAlpha = 0.2; card(ctx, 940, 270 + i * 110, 740, 96, { fill: n === i + 3 ? "#FFF3D6" : C.bg2, stroke: n === i + 3 ? C.accent : undefined, lw: 3, r: 12 }); text(ctx, "🎬 " + t, 964, 306 + i * 110, 23, { weight: 900 }); text(ctx, s, 964, 338 + i * 110, 18, { weight: 700, color: C.ink2 }); ctx.restore(); });
+      if (n >= 2) text(ctx, "ambil frame penting → cari gambar terbalik", 560, 430, 22, { align: "center", weight: 900, color: C.kiko });
+      [["tanggal upload paling awal", "siapa pengunggah pertamanya?"], ["potongan yang mengubah makna", "cari versi utuh, catat menitnya"], ["suara diganti, wajah rekayasa", "bibir tak sinkron, kedipan janggal, tepi wajah"]].forEach(([t, s], i) => { ctx.save(); if (n < i + 3) ctx.globalAlpha = 0.2; card(ctx, 940, 270 + i * 110, 740, 96, { fill: n === i + 3 ? "#FFF3D6" : C.bg2, stroke: n === i + 3 ? C.accent : undefined, lw: 3, r: 12 }); text(ctx, "🎬 " + t, 964, 306 + i * 110, 23, { weight: 900 }); text(ctx, s, 964, 338 + i * 110, 18, { weight: 700, color: C.ink2 }); ctx.restore(); });
       if (n >= 6) { card(ctx, 240, 480, 640, 170, { fill: C.bg2, r: 14 }); text(ctx, "contoh: video pidato 12 detik", 560, 520, 22, { align: "center", weight: 900 }); para(ctx, "versi utuh 9 menit: kalimat itu diucapkan saat mengutip pendapat orang lain, lalu dibantah", 560, 560, 20, 600, { align: "center", weight: 800, color: C.ink2 }); }
       if (n >= 6) label(ctx, "potongan asli pun bisa menyesatkan", 1310, 650, { size: 26 });
     },
@@ -102,13 +102,13 @@
       const n = reveal(l, 1.5, 1.6, 8);
       ["siapa", "apa", "kapan", "di mana", "mengapa dibagikan"].forEach((q, i) => { ctx.save(); if (i >= n) ctx.globalAlpha = 0.2; ctx.fillStyle = i === n - 1 ? C.accent : "#E6EDF2"; rr(ctx, 240 + i * 290, 270, 260, 60, 30); ctx.fill(); text(ctx, q, 370 + i * 290, 309, 24, { align: "center", weight: 900, color: i === n - 1 ? "#fff" : C.ink }); ctx.restore(); });
       if (n >= 6) R.verdicts(ctx, 240, 380, 1440, n >= 7 ? 2 : null);
-      if (n >= 7) { card(ctx, 240, 510, 1440, 120, { fill: "#FFF3D6", stroke: C.accent, lw: 3, r: 14 }); text(ctx, "foto banjir: SALAH KONTEKS — foto asli 2023, bukan kemarin", 960, 555, 28, { align: "center", weight: 900, color: C.accentDark }); text(ctx, "balas di grup dengan tautan berita aslinya", 960, 600, 22, { align: "center", weight: 800, color: C.ink2 }); }
+      if (n >= 7) { card(ctx, 240, 510, 1440, 120, { fill: "#FFF3D6", stroke: C.accent, lw: 3, r: 14 }); text(ctx, "foto banjir: SALAH KONTEKS — foto asli 2023, bukan kemarin", 960, 555, 28, { align: "center", weight: 900, color: C.accentDark }); text(ctx, "balas di grup dengan link berita aslinya", 960, 600, 22, { align: "center", weight: 800, color: C.ink2 }); }
       if (n >= 8) label(ctx, "yang belum pasti tidak dibagikan: menahan jempol juga verifikasi", 960, 700, { size: 26 });
     },
     alur_riset(ctx, b, l) {
       card(ctx, 120, 150, 1680, 740); heading(ctx, "ALUR RISET DIGITAL", 215);
       const n = reveal(l, 1.5, 1.9, 7);
-      R.flow(ctx, 200, 280, 1520, [["pertanyaan", "jelas, bisa dijawab data"], ["kueri beroperator", "site:, filetype:, kutip, tahun"], ["tiga sumber", "beragam, sampai ke primer"], ["verifikasi klaim", "teks, foto, video"], ["catatan sumber", "judul, penulis, tahun, tautan, akses"], ["simpulan", "yakin · cukup yakin · belum pasti"]], Math.min(n, 6), { h: 220 });
+      R.flow(ctx, 200, 280, 1520, [["pertanyaan", "jelas, bisa dijawab data"], ["query beroperator", "site:, filetype:, kutip, tahun"], ["tiga sumber", "beragam, sampai ke primer"], ["verifikasi klaim", "teks, foto, video"], ["catatan sumber", "judul, penulis, tahun, link, akses"], ["simpulan", "yakin · cukup yakin · belum pasti"]], Math.min(n, 6), { h: 220 });
       if (n >= 7) banner(ctx, "tunjukkan jejaknya, bukan hanya jawabannya", 600, 1000);
     },
     etika(ctx, b, l) {
@@ -120,7 +120,7 @@
     make_show(ctx, b, l) {
       card(ctx, 160, 150, 1600, 740);
       text(ctx, "GILIRANMU", 960, 240, 34, { align: "center", color: C.accentDark, weight: 900 });
-      const items = [["Penyusun kueri", "pilih operator untuk tiap kebutuhan", (x, y) => { L.query(ctx, x - 230, y - 110, 460, [["banjir sekolah", "kw"], [" site:go.id", "op"]]); card(ctx, x - 230, y - 20, 460, 60, { fill: "#fff", stroke: "#B7C4CC", lw: 2, r: 10 }); text(ctx, "filetype:pdf · “…” · -kata · 2023..2026", x, y + 18, 20, { align: "center", weight: 900, color: C.accentDark }); }],
+      const items = [["Penyusun query", "pilih operator untuk tiap kebutuhan", (x, y) => { L.query(ctx, x - 230, y - 110, 460, [["banjir sekolah", "kw"], [" site:go.id", "op"]]); card(ctx, x - 230, y - 20, 460, 60, { fill: "#fff", stroke: "#B7C4CC", lw: 2, r: 10 }); text(ctx, "filetype:pdf · “…” · -kata · 2023..2026", x, y + 18, 20, { align: "center", weight: 900, color: C.accentDark }); }],
         ["Jejak foto", "pilih langkah, baca temuannya", (x, y) => { R.photo(ctx, x - 230, y - 120, 220, 140, { caption: "kemarin?" }); R.timeline(ctx, x + 20, y - 50, 180, [["2023", "", C.good], ["2026", "", C.bad]], 2); }],
         ["Putusan klaim", "benar, salah, salah konteks, belum pasti", (x, y) => R.verdicts(ctx, x - 230, y - 90, 460, 2, { size: 13 })]];
       items.forEach(([t1, t2, draw], i) => { const x = 400 + i * 560; card(ctx, x - 250, 290, 500, 440, { fill: C.bg2 }); ctx.fillStyle = C.kiko; ctx.beginPath(); ctx.arc(x - 200, 340, 28, 0, Math.PI * 2); ctx.fill(); text(ctx, String(i + 1), x - 200, 352, 30, { align: "center", color: "#fff", weight: 900 }); text(ctx, t1, x - 160, 352, 26, { weight: 900 }); para(ctx, t2, x - 160, 386, 20, 400, { weight: 700, color: C.ink2 }); draw(x, 560); });

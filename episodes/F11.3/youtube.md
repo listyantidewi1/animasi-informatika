@@ -9,7 +9,7 @@ Informatika Kelas 11 | Algoritma Standar dalam Kode dan Kualitas Program (1/2): 
 ```
 Algoritma Standar dalam Kode dan Kualitas Program — bagian 1 dari 2: Pencarian dan Pengurutan dalam Python. Narasi suara plus teks besar di layar; ada versi tanpa suara di video terpisah.
 
-Pencarian linear dan biner serta pengurutan bubble dan selection sudah dikenal dari kelas X; kini kita tulis dalam Python sebagai fungsi yang bisa dipanggil ulang. Bersama Kiko kita terjemahkan tiap algoritma dari pseudocode, mengujinya dengan kasus batas (daftar kosong, satu elemen, target di ujung), membaca traceback untuk menangkap bug selisih satu, merapikan nama variabel, komentar, dan fungsi kecil agar mudah dibaca, lalu membandingkan efisiensi dengan menghitung operasi: n, log n, dan n kuadrat, termasuk balapan bubble sort melawan sorted() bawaan pada seribu data. Gaya diagram Fase F. Empat cek pemahaman; balapan algoritma di halaman latihan.
+Linear search dan biner serta pengurutan bubble dan selection sudah dikenal dari kelas X; kini kita tulis dalam Python sebagai fungsi yang bisa dipanggil ulang. Bersama Kiko kita terjemahkan tiap algoritma dari pseudocode, mengujinya dengan kasus batas (daftar kosong, satu elemen, target di ujung), membaca traceback untuk menangkap bug selisih satu, merapikan nama variabel, komentar, dan fungsi kecil agar mudah dibaca, lalu membandingkan efisiensi dengan menghitung operasi: n, log n, dan n kuadrat, termasuk balapan bubble sort melawan sorted() bawaan pada seribu data. Gaya diagram Fase F. Empat cek pemahaman; balapan algoritma di halaman latihan.
 
 Setelah menonton, murid bisa:
 • menulis cari_linear, cari_biner, dan bubble sort sebagai fungsi Python
@@ -17,7 +17,7 @@ Setelah menonton, murid bisa:
 • merapikan kode: nama bermakna, komentar yang menjelaskan alasan, fungsi kecil
 • membandingkan efisiensi algoritma dengan menghitung operasi pada ukuran data berbeda
 
-Video ini cocok untuk yang mencari: pencarian biner python kelas 11; bubble sort python penjelasan langkah demi langkah; cara membaca traceback error python pemula; efisiensi algoritma menghitung operasi n log n n kuadrat.
+Video ini cocok untuk yang mencari: binary search python kelas 11; bubble sort python penjelasan langkah demi langkah; cara membaca traceback error python pemula; efisiensi algoritma menghitung operasi n log n n kuadrat.
 
 Bab:
 0:00 Pembuka
@@ -41,7 +41,7 @@ Informatika Kelas 11 | Algoritma Standar dalam Kode dan Kualitas Program (2/2): 
 ```
 Algoritma Standar dalam Kode dan Kualitas Program — bagian 2 dari 2: Uji, Debug, Keterbacaan, Efisiensi. Narasi suara plus teks besar di layar; ada versi tanpa suara di video terpisah.
 
-Pencarian linear dan biner serta pengurutan bubble dan selection sudah dikenal dari kelas X; kini kita tulis dalam Python sebagai fungsi yang bisa dipanggil ulang. Bersama Kiko kita terjemahkan tiap algoritma dari pseudocode, mengujinya dengan kasus batas (daftar kosong, satu elemen, target di ujung), membaca traceback untuk menangkap bug selisih satu, merapikan nama variabel, komentar, dan fungsi kecil agar mudah dibaca, lalu membandingkan efisiensi dengan menghitung operasi: n, log n, dan n kuadrat, termasuk balapan bubble sort melawan sorted() bawaan pada seribu data. Gaya diagram Fase F. Empat cek pemahaman; balapan algoritma di halaman latihan.
+Linear search dan biner serta pengurutan bubble dan selection sudah dikenal dari kelas X; kini kita tulis dalam Python sebagai fungsi yang bisa dipanggil ulang. Bersama Kiko kita terjemahkan tiap algoritma dari pseudocode, mengujinya dengan kasus batas (daftar kosong, satu elemen, target di ujung), membaca traceback untuk menangkap bug selisih satu, merapikan nama variabel, komentar, dan fungsi kecil agar mudah dibaca, lalu membandingkan efisiensi dengan menghitung operasi: n, log n, dan n kuadrat, termasuk balapan bubble sort melawan sorted() bawaan pada seribu data. Gaya diagram Fase F. Empat cek pemahaman; balapan algoritma di halaman latihan.
 
 Setelah menonton, murid bisa:
 • menulis cari_linear, cari_biner, dan bubble sort sebagai fungsi Python
@@ -49,14 +49,14 @@ Setelah menonton, murid bisa:
 • merapikan kode: nama bermakna, komentar yang menjelaskan alasan, fungsi kecil
 • membandingkan efisiensi algoritma dengan menghitung operasi pada ukuran data berbeda
 
-Video ini cocok untuk yang mencari: pencarian biner python kelas 11; bubble sort python penjelasan langkah demi langkah; cara membaca traceback error python pemula; efisiensi algoritma menghitung operasi n log n n kuadrat.
+Video ini cocok untuk yang mencari: binary search python kelas 11; bubble sort python penjelasan langkah demi langkah; cara membaca traceback error python pemula; efisiensi algoritma menghitung operasi n log n n kuadrat.
 
 Bab:
 0:00 Pembuka bagian
 0:04 Uji dan debug
-1:20 Keterbacaan
-2:27 Efisiensi
-3:05 Giliranmu
+1:19 Keterbacaan
+2:26 Efisiensi
+3:04 Giliranmu
 
 Latihan interaktif (kuis dengan petunjuk, bisa dipakai luring di HP): berkas episode-f113.html di repositori proyek. Prasyarat: episode E.6 Pencarian dan Pengurutan dan F11.2 Dari Pseudocode ke Kode.
 
@@ -74,7 +74,7 @@ Informatika Kelas 11 | Algoritma Standar dalam Kode dan Kualitas Program (1/2): 
 ```
 Algoritma Standar dalam Kode dan Kualitas Program — bagian 1 dari 2: Pencarian dan Pengurutan dalam Python. Versi tanpa narasi suara: teks narasi tampil besar di layar dengan garis kemajuan baca, cocok untuk ditonton tanpa speaker atau untuk murid yang lebih suka membaca.
 
-Pencarian linear dan biner serta pengurutan bubble dan selection sudah dikenal dari kelas X; kini kita tulis dalam Python sebagai fungsi yang bisa dipanggil ulang. Bersama Kiko kita terjemahkan tiap algoritma dari pseudocode, mengujinya dengan kasus batas (daftar kosong, satu elemen, target di ujung), membaca traceback untuk menangkap bug selisih satu, merapikan nama variabel, komentar, dan fungsi kecil agar mudah dibaca, lalu membandingkan efisiensi dengan menghitung operasi: n, log n, dan n kuadrat, termasuk balapan bubble sort melawan sorted() bawaan pada seribu data. Gaya diagram Fase F. Empat cek pemahaman; balapan algoritma di halaman latihan.
+Linear search dan biner serta pengurutan bubble dan selection sudah dikenal dari kelas X; kini kita tulis dalam Python sebagai fungsi yang bisa dipanggil ulang. Bersama Kiko kita terjemahkan tiap algoritma dari pseudocode, mengujinya dengan kasus batas (daftar kosong, satu elemen, target di ujung), membaca traceback untuk menangkap bug selisih satu, merapikan nama variabel, komentar, dan fungsi kecil agar mudah dibaca, lalu membandingkan efisiensi dengan menghitung operasi: n, log n, dan n kuadrat, termasuk balapan bubble sort melawan sorted() bawaan pada seribu data. Gaya diagram Fase F. Empat cek pemahaman; balapan algoritma di halaman latihan.
 
 Setelah menonton, murid bisa:
 • menulis cari_linear, cari_biner, dan bubble sort sebagai fungsi Python
@@ -82,7 +82,7 @@ Setelah menonton, murid bisa:
 • merapikan kode: nama bermakna, komentar yang menjelaskan alasan, fungsi kecil
 • membandingkan efisiensi algoritma dengan menghitung operasi pada ukuran data berbeda
 
-Video ini cocok untuk yang mencari: pencarian biner python kelas 11; bubble sort python penjelasan langkah demi langkah; cara membaca traceback error python pemula; efisiensi algoritma menghitung operasi n log n n kuadrat.
+Video ini cocok untuk yang mencari: binary search python kelas 11; bubble sort python penjelasan langkah demi langkah; cara membaca traceback error python pemula; efisiensi algoritma menghitung operasi n log n n kuadrat.
 
 Bab:
 0:00 Pembuka
@@ -106,7 +106,7 @@ Informatika Kelas 11 | Algoritma Standar dalam Kode dan Kualitas Program (2/2): 
 ```
 Algoritma Standar dalam Kode dan Kualitas Program — bagian 2 dari 2: Uji, Debug, Keterbacaan, Efisiensi. Versi tanpa narasi suara: teks narasi tampil besar di layar dengan garis kemajuan baca, cocok untuk ditonton tanpa speaker atau untuk murid yang lebih suka membaca.
 
-Pencarian linear dan biner serta pengurutan bubble dan selection sudah dikenal dari kelas X; kini kita tulis dalam Python sebagai fungsi yang bisa dipanggil ulang. Bersama Kiko kita terjemahkan tiap algoritma dari pseudocode, mengujinya dengan kasus batas (daftar kosong, satu elemen, target di ujung), membaca traceback untuk menangkap bug selisih satu, merapikan nama variabel, komentar, dan fungsi kecil agar mudah dibaca, lalu membandingkan efisiensi dengan menghitung operasi: n, log n, dan n kuadrat, termasuk balapan bubble sort melawan sorted() bawaan pada seribu data. Gaya diagram Fase F. Empat cek pemahaman; balapan algoritma di halaman latihan.
+Linear search dan biner serta pengurutan bubble dan selection sudah dikenal dari kelas X; kini kita tulis dalam Python sebagai fungsi yang bisa dipanggil ulang. Bersama Kiko kita terjemahkan tiap algoritma dari pseudocode, mengujinya dengan kasus batas (daftar kosong, satu elemen, target di ujung), membaca traceback untuk menangkap bug selisih satu, merapikan nama variabel, komentar, dan fungsi kecil agar mudah dibaca, lalu membandingkan efisiensi dengan menghitung operasi: n, log n, dan n kuadrat, termasuk balapan bubble sort melawan sorted() bawaan pada seribu data. Gaya diagram Fase F. Empat cek pemahaman; balapan algoritma di halaman latihan.
 
 Setelah menonton, murid bisa:
 • menulis cari_linear, cari_biner, dan bubble sort sebagai fungsi Python
@@ -114,14 +114,14 @@ Setelah menonton, murid bisa:
 • merapikan kode: nama bermakna, komentar yang menjelaskan alasan, fungsi kecil
 • membandingkan efisiensi algoritma dengan menghitung operasi pada ukuran data berbeda
 
-Video ini cocok untuk yang mencari: pencarian biner python kelas 11; bubble sort python penjelasan langkah demi langkah; cara membaca traceback error python pemula; efisiensi algoritma menghitung operasi n log n n kuadrat.
+Video ini cocok untuk yang mencari: binary search python kelas 11; bubble sort python penjelasan langkah demi langkah; cara membaca traceback error python pemula; efisiensi algoritma menghitung operasi n log n n kuadrat.
 
 Bab:
 0:00 Pembuka bagian
 0:04 Uji dan debug
-1:39 Keterbacaan
-3:00 Efisiensi
-3:47 Giliranmu
+1:38 Keterbacaan
+2:59 Efisiensi
+3:46 Giliranmu
 
 Latihan interaktif (kuis dengan petunjuk, bisa dipakai luring di HP): berkas episode-f113.html di repositori proyek. Prasyarat: episode E.6 Pencarian dan Pengurutan dan F11.2 Dari Pseudocode ke Kode.
 
@@ -134,8 +134,8 @@ Seri Animasi Informatika untuk SMP–SMA mengikuti CP 2025 (Keputusan Kepala BSK
 
 ```
 📌 Algoritma Standar dalam Kode dan Kualitas Program (1/2): Pencarian dan Pengurutan dalam Python — materi Informatika kelas 11 (unit F11.3).
-Setelah menonton, kamu bisa menulis pencarian dan pengurutan dalam Python, mengujinya, lalu membandingkan efisiensinya dengan menghitung operasi.
-Kata kunci materi ini: pencarian biner python kelas 11; bubble sort python penjelasan langkah demi langkah; cara membaca traceback error python pemula; efisiensi algoritma menghitung operasi n log n n kuadrat.
+Setelah menonton, kamu bisa menulis dan menguji pencarian serta pengurutan dalam Python, lalu membandingkan efisiensinya.
+Kata kunci materi ini: binary search python kelas 11; bubble sort python penjelasan langkah demi langkah; cara membaca traceback error python pemula; efisiensi algoritma menghitung operasi n log n n kuadrat.
 Latihan interaktif (bisa luring di HP): berkas episode-f113.html. Tonton dulu episode E.6 Pencarian dan Pengurutan dan F11.2 Dari Pseudocode ke Kode bila belum.
 Ada yang belum jelas? Tulis di komentar, pertanyaanmu membantu teman lain juga.
 ```
@@ -144,8 +144,8 @@ Ada yang belum jelas? Tulis di komentar, pertanyaanmu membantu teman lain juga.
 
 ```
 📌 Algoritma Standar dalam Kode dan Kualitas Program (2/2): Uji, Debug, Keterbacaan, Efisiensi — materi Informatika kelas 11 (unit F11.3).
-Setelah menonton, kamu bisa menulis pencarian dan pengurutan dalam Python, mengujinya, lalu membandingkan efisiensinya dengan menghitung operasi.
-Kata kunci materi ini: pencarian biner python kelas 11; bubble sort python penjelasan langkah demi langkah; cara membaca traceback error python pemula; efisiensi algoritma menghitung operasi n log n n kuadrat.
+Setelah menonton, kamu bisa menulis dan menguji pencarian serta pengurutan dalam Python, lalu membandingkan efisiensinya.
+Kata kunci materi ini: binary search python kelas 11; bubble sort python penjelasan langkah demi langkah; cara membaca traceback error python pemula; efisiensi algoritma menghitung operasi n log n n kuadrat.
 Latihan interaktif (bisa luring di HP): berkas episode-f113.html. Tonton dulu episode E.6 Pencarian dan Pengurutan dan F11.2 Dari Pseudocode ke Kode bila belum.
 Ada yang belum jelas? Tulis di komentar, pertanyaanmu membantu teman lain juga.
 ```

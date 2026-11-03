@@ -6,16 +6,16 @@
   const banner = (ctx, s, y = 745, w = 1000, opt = {}) => { card(ctx, 960 - w / 2, y, w, 80, { fill: opt.fill || "#FFF3D6", stroke: opt.stroke || C.accent, lw: 4 }); text(ctx, s, 960, y + 52, opt.size || 34, { align: "center", weight: 900, color: opt.color || C.accentDark }); };
   const label = (ctx, s, x, y, opt = {}) => text(ctx, s, x, y, opt.size || 28, { align: "center", weight: 900, color: opt.color || C.accentDark });
   const heading = (ctx, s, y = 230) => text(ctx, s, 960, y, 34, { align: "center", color: C.accentDark, weight: 800 });
-  const TASKS = [["⏱️", "Proses", "giliran prosesor"], ["🧠", "Memori", "wilayah tiap proses"], ["📁", "Berkas", "nama, folder, izin"], ["🖨️", "Perangkat", "driver, antrean"]];
+  const TASKS = [["⏱️", "Proses", "giliran prosesor"], ["🧠", "Memori", "wilayah tiap proses"], ["📁", "File", "nama, folder, izin"], ["🖨️", "Perangkat", "driver, antrean"]];
   const A = O.APPS;
 
   Object.assign(SCENES, {
     title_q(ctx, b, l) {
       card(ctx, 120, 150, 1680, 740);
       kiko(ctx, 300, 560, 180, 0, { mood: "happy" });
-      card(ctx, 520, 250, 1200, 90, { fill: C.bg2, r: 16 }); text(ctx, "APLIKASI: musik · chat · peramban · game · …", 1120, 305, 26, { align: "center", weight: 900 });
+      card(ctx, 520, 250, 1200, 90, { fill: C.bg2, r: 16 }); text(ctx, "APLIKASI: musik · chat · browser · game · …", 1120, 305, 26, { align: "center", weight: 900 });
       card(ctx, 520, 390, 1200, 110, { fill: "#FFF3D6", stroke: C.accent, lw: 4, r: 16 }); text(ctx, "SISTEM OPERASI", 1120, 435, 30, { align: "center", weight: 900, color: C.accentDark }); text(ctx, "pengatur lalu lintas: Windows · Android · iOS · Linux", 1120, 475, 22, { align: "center", weight: 700, color: C.ink2 });
-      card(ctx, 520, 550, 1200, 90, { fill: C.bg2, r: 16 }); text(ctx, "PERANGKAT KERAS: prosesor · RAM · penyimpanan · layar · printer", 1120, 605, 24, { align: "center", weight: 900 });
+      card(ctx, 520, 550, 1200, 90, { fill: C.bg2, r: 16 }); text(ctx, "HARDWARE: prosesor · RAM · penyimpanan · layar · printer", 1120, 605, 24, { align: "center", weight: 900 });
       arrowIcon(ctx, "down", 1120, 365, 26, C.ink2); arrowIcon(ctx, "down", 1120, 525, 26, C.ink2);
       const n = reveal(l, 6.5, 0.9, 4);
       TASKS.forEach(([ic, t], i) => { ctx.save(); if (i >= n) ctx.globalAlpha = 0.2; card(ctx, 560 + i * 290, 670, 260, 70, { fill: "#fff", stroke: C.kiko, lw: 3, r: 12 }); text(ctx, ic + " " + t, 690 + i * 290, 715, 24, { align: "center", weight: 900 }); ctx.restore(); });
@@ -24,7 +24,7 @@
       card(ctx, 260, 200, 1400, 600);
       text(ctx, "TONTON DULU", 960, 300, 34, { align: "center", color: C.accentDark, weight: 800 });
       text(ctx, "Episode E.1", 960, 420, 60, { align: "center", weight: 900 }); text(ctx, "Komputer Von Neumann", 960, 500, 48, { align: "center", weight: 700, color: C.ink2 });
-      ["Prosesor dan register", "Memori dan alamat", "Masukan, keluaran, bus"].forEach((s, i) => { card(ctx, 420 + i * 380, 580, 340, 120, { fill: C.bg2 }); para(ctx, s, 590 + i * 380, 632, 28, 300, { align: "center", weight: 800 }); });
+      ["Prosesor dan register", "Memori dan alamat", "Input, output, bus"].forEach((s, i) => { card(ctx, 420 + i * 380, 580, 340, 120, { fill: C.bg2 }); para(ctx, s, 590 + i * 380, 632, 28, 300, { align: "center", weight: 800 }); });
       kiko(ctx, 1600, 760, 150, 0);
     },
     unplugged_giliran(ctx, b, l) {
@@ -63,8 +63,8 @@
       A.forEach((app, i) => { const a = -Math.PI / 2 + i * Math.PI / 2; const x = 470 + Math.cos(a) * 170, y = 480 + Math.sin(a) * 150; O.proc(ctx, x, y, 220, app, { on: i === k }); });
       ctx.strokeStyle = "#B7C4CC"; ctx.lineWidth = 6; ctx.setLineDash([12, 10]); ctx.beginPath(); ctx.ellipse(470, 480, 170, 150, 0, 0, Math.PI * 2); ctx.stroke(); ctx.setLineDash([]); text(ctx, "↻", 470, 500, 60, { align: "center", weight: 900, color: C.kiko });
       const n = reveal(l, 5, 3.5, 2);
-      if (n >= 1) { card(ctx, 820, 280, 400, 120, { fill: "#FFF3D6", stroke: C.accent, lw: 3, r: 14 }); text(ctx, "prioritas", 1020, 325, 24, { align: "center", weight: 900, color: C.accentDark }); text(ctx, "panggilan video > unduhan latar", 1020, 365, 20, { align: "center", weight: 700, color: C.ink2 }); }
-      if (n >= 2) { O.taskman(ctx, 1260, 260, 460, [["Musik", "2%", "120 MB"], ["Chat", "1%", "210 MB"], ["Peramban", "35%", "1,1 GB"], ["Game (tidak merespons)", "98%", "2,4 GB"]], { hl: 3 }); card(ctx, 1380, 560, 220, 50, { fill: C.bad, r: 10 }); text(ctx, "Akhiri tugas", 1490, 593, 20, { align: "center", weight: 900, color: "#fff" }); text(ctx, "yang macet dihentikan, yang lain jalan terus", 1490, 650, 18, { align: "center", weight: 800, color: C.ink2 }); }
+      if (n >= 1) { card(ctx, 820, 280, 400, 120, { fill: "#FFF3D6", stroke: C.accent, lw: 3, r: 14 }); text(ctx, "prioritas", 1020, 325, 24, { align: "center", weight: 900, color: C.accentDark }); text(ctx, "panggilan video > download di latar", 1020, 365, 20, { align: "center", weight: 700, color: C.ink2 }); }
+      if (n >= 2) { O.taskman(ctx, 1260, 260, 460, [["Musik", "2%", "120 MB"], ["Chat", "1%", "210 MB"], ["Browser", "35%", "1,1 GB"], ["Game (tidak merespons)", "98%", "2,4 GB"]], { hl: 3 }); card(ctx, 1380, 560, 220, 50, { fill: C.bad, r: 10 }); text(ctx, "Akhiri tugas", 1490, 593, 20, { align: "center", weight: 900, color: "#fff" }); text(ctx, "yang macet dihentikan, yang lain jalan terus", 1490, 650, 18, { align: "center", weight: 800, color: C.ink2 }); }
     },
     memori(ctx, b, l) {
       card(ctx, 120, 150, 1680, 740);
@@ -72,7 +72,7 @@
       const n = reveal(l, 1.5, 1.4, 4);
       const alloc = [{ app: A[0], start: 0, size: 3 }, { app: A[1], start: 3, size: 2 }, { app: A[2], start: 5, size: 5 }, { app: A[3], start: 10, size: 4 }].slice(0, n);
       O.memmap(ctx, 240, 300, 1440, 120, 16, alloc, { title: "RAM 16 GB (1 blok = 1 GB)" });
-      if (n >= 4) { card(ctx, 240, 480, 700, 200, { fill: "#fff", stroke: "#8E6BBF", lw: 3, r: 14 }); text(ctx, "PETA (dipegang sistem operasi)", 590, 520, 20, { align: "center", weight: 900, color: "#8E6BBF" }); ["Musik: blok 0–2", "Chat: blok 3–4", "Peramban: blok 5–9", "Game: blok 10–13 · kosong: 14–15"].forEach((s, i) => text(ctx, s, 270, 560 + i * 32, 20, { weight: 800 })); }
+      if (n >= 4) { card(ctx, 240, 480, 700, 200, { fill: "#fff", stroke: "#8E6BBF", lw: 3, r: 14 }); text(ctx, "PETA (dipegang sistem operasi)", 590, 520, 20, { align: "center", weight: 900, color: "#8E6BBF" }); ["Musik: blok 0–2", "Chat: blok 3–4", "Browser: blok 5–9", "Game: blok 10–13 · kosong: 14–15"].forEach((s, i) => text(ctx, s, 270, 560 + i * 32, 20, { weight: 800 })); }
       if (l > 9) { card(ctx, 1000, 480, 680, 200, { fill: C.badBg, stroke: C.bad, lw: 3, r: 14 }); text(ctx, "✕ Game mencoba membaca blok 3 (milik Chat)", 1340, 540, 22, { align: "center", weight: 900, color: C.bad }); text(ctx, "sistem operasi menolak: aplikasi rusak", 1340, 585, 20, { align: "center", weight: 700, color: C.ink2 }); text(ctx, "tidak merusak aplikasi lain", 1340, 620, 20, { align: "center", weight: 700, color: C.ink2 }); }
     },
     memori_penuh(ctx, b, l) {
@@ -89,7 +89,7 @@
 
     berkas(ctx, b, l) {
       card(ctx, 120, 150, 1680, 740);
-      heading(ctx, "TUGAS 3 · BERKAS: YANG KAMU LIHAT DAN YANG DICATAT", 215);
+      heading(ctx, "TUGAS 3 · FILE: YANG KAMU LIHAT DAN YANG DICATAT", 215);
       St.tree(ctx, { label: "Dokumen", kids: [{ label: "Tugas", kids: [{ label: "fisika.docx" }, { label: "foto.jpg" }] }, { label: "Musik" }] }, 220, 280, 600, { levelH: 110, bw: 170, bh: 50, size: 20, path: l > 4 ? ["Dokumen", "Tugas", "fisika.docx"] : [] });
       text(ctx, "yang kamu lihat: nama, folder, jenis", 520, 640, 22, { align: "center", weight: 800, color: C.ink2 });
       const n = reveal(l, 4.0, 1.0, 4);
@@ -100,7 +100,7 @@
       card(ctx, 120, 150, 1680, 740);
       heading(ctx, "SISTEM OPERASI MENJAGA PINTU: IZIN", 215);
       const n = reveal(l, 1.5, 3.0, 2);
-      ctx.save(); if (n < 1) ctx.globalAlpha = 0.2; card(ctx, 220, 280, 700, 400, { fill: C.bg2, r: 16 }); text(ctx, "IZIN BERKAS", 570, 325, 24, { align: "center", weight: 900, color: C.kiko });
+      ctx.save(); if (n < 1) ctx.globalAlpha = 0.2; card(ctx, 220, 280, 700, 400, { fill: C.bg2, r: 16 }); text(ctx, "IZIN FILE", 570, 325, 24, { align: "center", weight: 900, color: C.kiko });
       [["rapor_sinta.pdf", "Sinta", "baca ✓ ubah ✓"], ["", "Dito", "baca ✕ ubah ✕"], ["", "Guru", "baca ✓ ubah ✓"]].forEach(([f, who, p], i) => { card(ctx, 260, 360 + i * 90, 620, 70, { fill: "#fff", stroke: "#B7C4CC", lw: 2, r: 10 }); if (f) text(ctx, "📄 " + f, 280, 404 + i * 90, 20, { weight: 900 }); text(ctx, who, 560, 404 + i * 90, 22, { weight: 800, color: C.ink2 }); text(ctx, p, 860, 404 + i * 90, 20, { align: "right", weight: 900, color: p.includes("✕") ? C.bad : C.good }); }); ctx.restore();
       ctx.save(); if (n < 2) ctx.globalAlpha = 0.2; card(ctx, 1000, 280, 700, 400, { fill: C.bg2, r: 16 }); text(ctx, "IZIN APLIKASI", 1350, 325, 24, { align: "center", weight: 900, color: C.kiko });
       card(ctx, 1080, 360, 540, 260, { fill: "#fff", stroke: "#B7C4CC", lw: 3, r: 16 }); para(ctx, "Aplikasi Senter meminta izin mengakses Kamera", 1350, 410, 22, 480, { align: "center", weight: 800 }); card(ctx, 1110, 520, 230, 60, { fill: C.bad, r: 10 }); text(ctx, "Tolak", 1225, 560, 22, { align: "center", weight: 900, color: "#fff" }); card(ctx, 1360, 520, 230, 60, { fill: C.good, r: 10 }); text(ctx, "Izinkan", 1475, 560, 22, { align: "center", weight: 900, color: "#fff" });

@@ -60,7 +60,7 @@
       Q.queueKids(ctx, 1180, 540, NAMES.slice(0, 5), { s: 110, gap: 150, labels: true, hlFront: l > 1.5, hlBack: l > 4 });
       if (l > 1.5) bubble(ctx, 1040, 340, 300, "dilayani pertama", 26, { tailX: 1180, tailDir: 0, fill: C.goodBg, stroke: C.good, color: C.good });
       if (l > 4) bubble(ctx, 420, 340, 320, "menunggu paling lama", 26, { tailX: 580, tailDir: 0, fill: "#FFF3D6", stroke: C.accent, color: C.accentDark });
-      if (l > 7) banner(ctx, "ANTREAN: pertama masuk, pertama keluar", 760, 900);
+      if (l > 7) banner(ctx, "ANTREAN (queue): pertama masuk, pertama keluar", 760, 900);
     },
     unplugged_stack(ctx, b, l) {
       card(ctx, 120, 150, 1680, 740);
@@ -69,7 +69,7 @@
       card(ctx, 940, 260, 760, 420, { fill: C.bg2 });
       const rows = [["ditaruh terakhir", "ada di paling atas"], ["diambil pertama", "ya yang paling atas"]];
       rows.forEach(([a, c], i) => { if (l > 1.5 + i * 2.5) { text(ctx, a, 980, 340 + i * 110, 32, { weight: 900, color: C.kiko }); arrowIcon(ctx, "right", 1310, 328 + i * 110, 40, C.ink2); text(ctx, c, 1360, 340 + i * 110, 32, { weight: 800 }); } });
-      if (l > 7) { card(ctx, 980, 560, 680, 90, { fill: C.badBg, stroke: C.bad, lw: 4 }); text(ctx, "TUMPUKAN: terakhir masuk, pertama keluar", 1320, 616, 30, { align: "center", weight: 900, color: C.bad }); }
+      if (l > 7) { card(ctx, 980, 560, 680, 90, { fill: C.badBg, stroke: C.bad, lw: 4 }); text(ctx, "TUMPUKAN (stack): terakhir masuk, pertama keluar", 1320, 616, 30, { align: "center", weight: 900, color: C.bad }); }
       if (l > 9) banner(ctx, "terbalik dari antrean", 760, 600, { fill: C.goodBg, stroke: C.good, color: C.good });
     },
 
@@ -126,7 +126,7 @@
     queue_intro(ctx, b, l) {
       card(ctx, 120, 150, 1680, 740);
       queueAnim(ctx, l, 1400, 480, { arrows: true, step: 1.8 });
-      banner(ctx, "ANTREAN: pertama masuk, pertama keluar", 745, 900);
+      banner(ctx, "ANTREAN (queue): pertama masuk, pertama keluar", 745, 900);
     },
     queue_computer(ctx, b, l) {
       card(ctx, 120, 150, 1680, 740);
@@ -149,7 +149,7 @@
       text(ctx, "piring baru dicuci", 980, 350, 30, { weight: 900, color: C.kiko }); arrowIcon(ctx, "right", 1330, 338, 40, C.ink2); text(ctx, "ditaruh di atas", 1380, 350, 30, { weight: 800 });
       if (l > 3) { text(ctx, "yang diambil berikutnya", 980, 450, 30, { weight: 900, color: C.good }); arrowIcon(ctx, "right", 1400, 438, 40, C.ink2); text(ctx, "yang di atas", 1450, 450, 30, { weight: 800 }); }
       if (l > 5) text(ctx, "yang paling bawah menunggu paling lama", 1320, 540, 26, { align: "center", weight: 800, color: C.ink2 });
-      banner(ctx, "TUMPUKAN: terakhir masuk, pertama keluar", 745, 900, { fill: C.badBg, stroke: C.bad, color: C.bad });
+      banner(ctx, "TUMPUKAN (stack): terakhir masuk, pertama keluar", 745, 900, { fill: C.badBg, stroke: C.bad, color: C.bad });
     },
     stack_computer(ctx, b, l) {
       card(ctx, 120, 150, 1680, 740);
@@ -174,7 +174,7 @@
     },
     queue_vs_stack(ctx, b, l) {
       card(ctx, 120, 150, 820, 740); card(ctx, 980, 150, 820, 740);
-      text(ctx, "ANTREAN", 530, 230, 34, { align: "center", weight: 900, color: C.kiko }); text(ctx, "TUMPUKAN", 1390, 230, 34, { align: "center", weight: 900, color: C.bad });
+      text(ctx, "ANTREAN (queue)", 530, 230, 34, { align: "center", weight: 900, color: C.kiko }); text(ctx, "TUMPUKAN (stack)", 1390, 230, 34, { align: "center", weight: 900, color: C.bad });
       Q.counter(ctx, 700, 470, 180, "Bu Warung"); Q.queueKids(ctx, 560, 480, ["", "", "", ""], { s: 80, gap: 100 });
       Q.plates(ctx, 1390, 560, 5, { hlTop: true });
       text(ctx, "pertama masuk, pertama keluar", 530, 660, 28, { align: "center", weight: 900 }); text(ctx, "terakhir masuk, pertama keluar", 1390, 660, 28, { align: "center", weight: 900 });

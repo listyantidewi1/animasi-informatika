@@ -27,7 +27,7 @@
     unplugged_roles(ctx, b, l) {
       card(ctx, 120, 150, 1680, 740);
       kid(ctx, 420, 450, 170, { point: true }); kid(ctx, 960, 450, 170, { hair: "long" }); kid(ctx, 1500, 450, 170, { hairColor: "#4A3A2A" });
-      const n = reveal(l, 0.8, 1.1, 3); const names = ["MASUKAN", "MENGOLAH", "KELUARAN"];
+      const n = reveal(l, 0.8, 1.1, 3); const names = ["INPUT", "PROSES", "OUTPUT"];
       names.forEach((s, i) => { if (i >= n) return; card(ctx, 260 + i * 540, 650, 320, 90, { fill: "#FFF3D6", stroke: C.accent, lw: 4 }); text(ctx, s, 420 + i * 540, 708, 36, { align: "center", weight: 900 }); if (i) M.arrow(ctx, 600 + (i - 1) * 540, 695, 740 + (i - 1) * 540, 695, { color: C.accentDark }); });
       if (n >= 3) text(ctx, "komputer bekerja seperti barisan ini", 960, 800, 32, { align: "center", color: C.ink2, weight: 800 });
     },
@@ -40,7 +40,7 @@
     },
     input_more(ctx, b, l) {
       card(ctx, 120, 150, 1680, 740);
-      text(ctx, "ALAT MASUKAN (input)", 960, 230, 34, { align: "center", color: C.accentDark, weight: 800 });
+      text(ctx, "ALAT INPUT (masukan)", 960, 230, 34, { align: "center", color: C.accentDark, weight: 800 });
       const items = [["layar sentuh", (x, y) => { D.phone(ctx, x, y, 90, 160); D.finger(ctx, x + 10, y + 10, { s: 20, press: true }); }], ["mikrofon", (x, y) => M.mic(ctx, x, y, 110)], ["kamera", (x, y) => M.camera(ctx, x, y, 110)], ["scanner", (x, y) => M.scanner(ctx, x, y, 120)]];
       const n = reveal(l, 0.6, 1.0, 4);
       items.forEach(([t, draw], i) => { if (i >= n) return; const x = 330 + i * 420; card(ctx, x - 160, 290, 320, 420, { fill: C.bg2 }); draw(x, 450); text(ctx, t, x, 650, 34, { align: "center", weight: 900 }); });
@@ -92,11 +92,11 @@
       const u = clamp((l - 0.5) / 1.5, 0, 1); M.board(ctx, { show: 3, stage: 2, u: 2 + u * 2, screen: u >= 1 ? "H" : "", sound: u >= 1 });
       const n = reveal(l, 2.5, 1.0, 3); const items = [["layar", "menampilkan"], ["speaker", "membunyikan"], ["printer", "mencetak"]];
       items.forEach(([t1, t2], i) => { if (i >= n) return; card(ctx, 300 + i * 460, 640, 420, 110, { fill: C.bg2 }); text(ctx, t1 + ": " + t2, 510 + i * 460, 706, 32, { align: "center", weight: 900 }); if (i === 2) M.printer(ctx, 1720, 690, 56, { text: "H" }); });
-      text(ctx, "alat keluaran (output)", 960, 830, 34, { align: "center", color: C.accentDark, weight: 800 });
+      text(ctx, "alat output (keluaran)", 960, 830, 34, { align: "center", color: C.accentDark, weight: 800 });
     },
     ipo_flow(ctx, b, l) {
       const u = ((l * 1.2) % 5); M.board(ctx, { show: 3, u: u > 4 ? undefined : u, screen: u > 3.5 ? "H" : "", key: u < 1 });
-      card(ctx, 360, 640, 1200, 110, { fill: "#FFF3D6", stroke: C.accent, lw: 4 }); text(ctx, "masukan → proses → keluaran", 960, 690, 40, { align: "center", weight: 900 }); text(ctx, "keyboard → prosesor → layar", 960, 730, 28, { align: "center", color: C.ink2, weight: 700 });
+      card(ctx, 360, 640, 1200, 110, { fill: "#FFF3D6", stroke: C.accent, lw: 4 }); text(ctx, "input → proses → output", 960, 690, 40, { align: "center", weight: 900 }); text(ctx, "keyboard → prosesor → layar", 960, 730, 28, { align: "center", color: C.ink2, weight: 700 });
       text(ctx, "lebih cepat dari kedipan mata", 960, 830, 32, { align: "center", color: C.ink2, weight: 800 });
     },
 
@@ -131,7 +131,7 @@
 
     hardware(ctx, b, l) {
       card(ctx, 120, 150, 1680, 740);
-      text(ctx, "PERANGKAT KERAS (hardware)", 960, 230, 34, { align: "center", color: C.accentDark, weight: 800 });
+      text(ctx, "HARDWARE (perangkat keras)", 960, 230, 34, { align: "center", color: C.accentDark, weight: 800 });
       const items = [["keyboard", (x, y) => D.keyboard(ctx, x - 130, y - 50, 260, {})], ["prosesor", (x, y) => M.chip(ctx, x, y, 110)], ["layar", (x, y) => D.monitor(ctx, x - 110, y - 80, 220, 130)], ["hard disk", (x, y) => M.disk(ctx, x, y, 90)]];
       const n = reveal(l, 0.6, 0.9, 4);
       items.forEach(([t, draw], i) => { if (i >= n) return; const x = 330 + i * 420; card(ctx, x - 170, 290, 340, 420, { fill: C.bg2 }); draw(x, 450); text(ctx, t, x, 660, 32, { align: "center", weight: 900 }); });
@@ -145,7 +145,7 @@
       else { const win = D.windowFrame(ctx, sc.x + 30, sc.y + 30, sc.w - 60, sc.h - 60, "Pengolah kata"); text(ctx, "Halo, Ibu.", win.x + 20, win.y + 60, 40, { weight: 700 }); }
       text(ctx, on ? "hardware + software: bekerja" : "hardware saja: kotak diam", 590, 820, 34, { align: "center", weight: 900, color: on ? C.good : C.ink2 });
       card(ctx, 1080, 300, 640, 380, { fill: on ? "#FFF3D6" : C.bg2, stroke: on ? C.accent : "#D7E2DC", lw: 4 });
-      text(ctx, "PERANGKAT LUNAK", 1400, 380, 34, { align: "center", color: C.accentDark, weight: 800 }); text(ctx, "(software)", 1400, 430, 30, { align: "center", color: C.ink2, weight: 700 });
+      text(ctx, "SOFTWARE", 1400, 380, 34, { align: "center", color: C.accentDark, weight: 800 }); text(ctx, "(perangkat lunak)", 1400, 430, 30, { align: "center", color: C.ink2, weight: 700 });
       text(ctx, "program yang memberi perintah", 1400, 530, 32, { align: "center", weight: 900 }); text(ctx, "tidak bisa dipegang", 1400, 600, 32, { align: "center", color: C.ink2, weight: 800 });
       if (on) M.arrow(ctx, 1080, 490, 960, 490, { color: C.accentDark });
     },
@@ -171,7 +171,7 @@
 
     phone_is_computer(ctx, b, l) {
       const sc = D.phone(ctx, 560, 520, 360, 680); D.appGrid(ctx, sc);
-      const tags = [["MASUKAN: layar sentuh, mikrofon", 1000, 300, 560, 330], ["PROSES: prosesor + RAM di dalam", 1000, 420, 560, 520], ["KELUARAN: layar, speaker", 1000, 540, 560, 620], ["PENYIMPANAN: memori HP", 1000, 660, 560, 760]];
+      const tags = [["INPUT: layar sentuh, mikrofon", 1000, 300, 560, 330], ["PROSES: prosesor + RAM di dalam", 1000, 420, 560, 520], ["OUTPUT: layar, speaker", 1000, 540, 560, 620], ["PENYIMPANAN: memori HP", 1000, 660, 560, 760]];
       const n = reveal(l, 0.8, 1.1, 4);
       tags.forEach(([s, x, y, tx, ty], i) => { if (i >= n) return; card(ctx, x, y - 50, 760, 80, { fill: i === 1 ? "#FFF3D6" : C.bg2, stroke: i === 1 ? C.accent : "#D7E2DC", lw: 3 }); text(ctx, s, x + 24, y + 2, 30, { weight: 800 }); ctx.strokeStyle = "#9AAFA6"; ctx.lineWidth = 4; ctx.beginPath(); ctx.moveTo(x, y - 10); ctx.lineTo(tx + 180, ty); ctx.stroke(); });
       if (n >= 4) text(ctx, "HP juga komputer", 1380, 800, 40, { align: "center", weight: 900, color: C.accentDark });
@@ -181,7 +181,7 @@
       const items = [["mesin kasir", (x, y) => { D.monitor(ctx, x - 90, y - 90, 180, 110); text(ctx, "Rp13.000", x, y - 30, 26, { align: "center", weight: 900 }); }], ["ATM", (x, y) => { ctx.fillStyle = "#6B7B88"; rr(ctx, x - 100, y - 130, 200, 260, 16); ctx.fill(); ctx.fillStyle = "#8FD0E6"; rr(ctx, x - 70, y - 100, 140, 90, 8); ctx.fill(); D.keyboard(ctx, x - 60, y + 10, 120, {}); }], ["smart TV", (x, y) => { ctx.fillStyle = "#2B3A46"; rr(ctx, x - 150, y - 90, 300, 180, 10); ctx.fill(); ctx.fillStyle = "#8FD0E6"; rr(ctx, x - 138, y - 78, 276, 156, 6); ctx.fill(); }]];
       const n = reveal(l, 0.6, 1.0, 3);
       items.forEach(([t, draw], i) => { if (i >= n) return; const x = 400 + i * 560; card(ctx, x - 220, 250, 440, 440, { fill: C.bg2 }); draw(x, 440); text(ctx, t, x, 650, 32, { align: "center", weight: 900 }); });
-      if (n >= 3) { card(ctx, 360, 740, 1200, 100, { fill: "#FFF3D6", stroke: C.accent, lw: 4 }); text(ctx, "bentuk beda, empat bagian sama: masukan, proses, keluaran, penyimpanan", 960, 800, 30, { align: "center", weight: 900 }); }
+      if (n >= 3) { card(ctx, 360, 740, 1200, 100, { fill: "#FFF3D6", stroke: C.accent, lw: 4 }); text(ctx, "bentuk beda, empat bagian sama: input, proses, output, penyimpanan", 960, 800, 30, { align: "center", weight: 900 }); }
     },
     make_show(ctx, b, l) {
       card(ctx, 160, 150, 1600, 740);

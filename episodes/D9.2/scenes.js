@@ -34,7 +34,7 @@
       text(ctx, "TONTON DULU", 960, 300, 34, { align: "center", color: C.accentDark, weight: 800 });
       text(ctx, "Episode D7.2", 960, 420, 60, { align: "center", weight: 900 });
       text(ctx, "Mengenal Komputer: Perjalanan Satu Ketukan", 960, 500, 44, { align: "center", weight: 700, color: C.ink2 });
-      ["Input, proses, output", "Penyimpanan", "Perangkat lunak"].forEach((s, i) => { card(ctx, 420 + i * 380, 580, 340, 120, { fill: C.bg2 }); text(ctx, s, 590 + i * 380, 652, 28, { align: "center", weight: 800 }); });
+      ["Input, proses, output", "Penyimpanan", "Software"].forEach((s, i) => { card(ctx, 420 + i * 380, 580, 340, 120, { fill: C.bg2 }); text(ctx, s, 590 + i * 380, 652, 28, { align: "center", weight: 800 }); });
       kiko(ctx, 1600, 760, 150, 0);
     },
     unplugged_letter(ctx, b, l) {

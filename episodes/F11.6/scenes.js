@@ -97,23 +97,23 @@
       const n = reveal(l, 1.5, 2.0, 6);
       Py.code(ctx, 240, 270, 820, SUM_PY.map((p, i) => ({ ...p, hl: (n === 3 && (i === 1 || i === 2)) || (n === 4 && i === 3) })), { rh: 52, size: 24 });
       if (n >= 2) { card(ctx, 1120, 270, 560, 110, { fill: C.bg2, r: 12 }); text(ctx, "jumlah([2, 5, 3])", 1400, 315, 26, { align: "center", weight: 900, color: C.kiko }); text(ctx, "= 2 + jumlah([5, 3])", 1400, 355, 22, { align: "center", weight: 800, color: C.ink2 }); }
-      if (n >= 3) { card(ctx, 1120, 410, 560, 100, { fill: C.goodBg, stroke: C.good, lw: 3, r: 12 }); text(ctx, "kasus dasar: berhenti", 1400, 450, 24, { align: "center", weight: 900, color: C.good }); text(ctx, "daftar kosong → 0", 1400, 485, 20, { align: "center", weight: 800, color: C.ink2 }); }
-      if (n >= 4) { card(ctx, 1120, 530, 560, 100, { fill: "#F4F0FA", stroke: "#8E6BBF", lw: 3, r: 12 }); text(ctx, "kasus rekursif: mengecilkan", 1400, 570, 24, { align: "center", weight: 900, color: "#5B3F8E" }); text(ctx, "persoalan dengan satu elemen lebih sedikit", 1400, 605, 20, { align: "center", weight: 800, color: C.ink2 }); }
+      if (n >= 3) { card(ctx, 1120, 410, 560, 100, { fill: C.goodBg, stroke: C.good, lw: 3, r: 12 }); text(ctx, "base case: berhenti", 1400, 450, 24, { align: "center", weight: 900, color: C.good }); text(ctx, "daftar kosong → 0", 1400, 485, 20, { align: "center", weight: 800, color: C.ink2 }); }
+      if (n >= 4) { card(ctx, 1120, 530, 560, 100, { fill: "#F4F0FA", stroke: "#8E6BBF", lw: 3, r: 12 }); text(ctx, "recursive case: mengecilkan", 1400, 570, 24, { align: "center", weight: 900, color: "#5B3F8E" }); text(ctx, "persoalan dengan satu elemen lebih sedikit", 1400, 605, 20, { align: "center", weight: 800, color: C.ink2 }); }
       if (n >= 6) label(ctx, "dua bagian wajib: berhenti dan mengecil", 650, 580, { size: 26 });
     },
     rekursi_lacak(ctx, b, l) {
-      card(ctx, 120, 150, 1680, 740); heading(ctx, "LACAK: BINGKAI BERTUMPUK, LALU TERBUKA LAGI", 215);
+      card(ctx, 120, 150, 1680, 740); heading(ctx, "LACAK: FRAME BERTUMPUK DI CALL STACK, LALU TERBUKA", 215);
       const n = reveal(l, 1.5, 1.5, 10);
       const open = clamp(n, 0, 4), closing = clamp(n - 4, 0, 4);
       St.stack(ctx, 240, 290, 760, SUM_FRAMES, open, { closing });
-      text(ctx, ["", "2 + jumlah([5, 3])", "5 + jumlah([3])", "3 + jumlah([])", "kasus dasar: 0", "3 + 0 = 3", "5 + 3 = 8", "2 + 8 = 10", "hasil: 10"][clamp(n, 0, 8)], 1340, 340, 30, { align: "center", weight: 900, color: n >= 8 ? C.good : C.ink });
-      if (n >= 9) { card(ctx, 1080, 400, 600, 150, { fill: C.badBg, stroke: C.bad, lw: 3, r: 14 }); text(ctx, "⚠ tanpa kasus dasar", 1380, 445, 24, { align: "center", weight: 900, color: C.bad }); para(ctx, "tumpukan bertambah tanpa henti → RecursionError: maximum recursion depth exceeded", 1380, 485, 18, 560, { align: "center", weight: 800 }); }
-      if (n >= 10) label(ctx, "kasus dasar ditulis lebih dulu", 1380, 640, { size: 26 });
+      text(ctx, ["", "2 + jumlah([5, 3])", "5 + jumlah([3])", "3 + jumlah([])", "base case: 0", "3 + 0 = 3", "5 + 3 = 8", "2 + 8 = 10", "hasil: 10"][clamp(n, 0, 8)], 1340, 340, 30, { align: "center", weight: 900, color: n >= 8 ? C.good : C.ink });
+      if (n >= 9) { card(ctx, 1080, 400, 600, 150, { fill: C.badBg, stroke: C.bad, lw: 3, r: 14 }); text(ctx, "⚠ tanpa base case", 1380, 445, 24, { align: "center", weight: 900, color: C.bad }); para(ctx, "call stack bertambah tanpa henti → RecursionError: maximum recursion depth exceeded", 1380, 485, 18, 560, { align: "center", weight: 800 }); }
+      if (n >= 10) label(ctx, "base case ditulis lebih dulu", 1380, 640, { size: 26 });
     },
     justifikasi(ctx, b, l) {
       card(ctx, 120, 150, 1680, 740); heading(ctx, "PILIH DENGAN ALASAN: BENAR? CEPAT? MUDAH?", 215);
       const n = reveal(l, 1.5, 2.0, 6);
-      St.table(ctx, 240, 270, [420, 360, 340, 320], [["brute force", "✓", "✕", "✓"], ["greedy", "△ harus dibuktikan", "✓", "✓"], ["divide and conquer", "✓", "✓", "△ lebih rumit"], ["rekursi", "✓ dengan kasus dasar", "△", "△"]], Math.min(4, Math.max(0, n - 1)), { hlRow: n - 2 });
+      St.table(ctx, 240, 270, [420, 360, 340, 320], [["brute force", "✓", "✕", "✓"], ["greedy", "△ harus dibuktikan", "✓", "✓"], ["divide and conquer", "✓", "✓", "△ lebih rumit"], ["rekursi", "✓ dengan base case", "△", "△"]], Math.min(4, Math.max(0, n - 1)), { hlRow: n - 2 });
       if (n >= 6) banner(ctx, "tidak ada strategi terbaik untuk semua: ada yang paling cocok untuk persoalanmu", 600, 1300, { size: 26 });
     },
     alternatif(ctx, b, l) {
@@ -130,7 +130,7 @@
       text(ctx, "GILIRANMU", 960, 240, 34, { align: "center", color: C.accentDark, weight: 900 });
       const items = [["Mesin kembalian", "greedy lawan brute force", (x, y) => { St.coins(ctx, x - 200, y - 110, [1, 3, 4], { r: 26 }); text(ctx, "greedy: 4+1+1 = 3 koin", x - 200, y + 10, 20, { weight: 900, color: C.bad }); text(ctx, "brute force: 3+3 = 2 koin", x - 200, y + 44, 20, { weight: 900, color: C.good }); }],
         ["Tebak angka", "urut lawan tengah, hitung tebakan", (x, y) => { St.range(ctx, x - 200, y - 60, 400, 100, 51, 74, 62, { secret: 67 }); Kt.counter(ctx, x - 60, y + 10, 3, "tebakan"); }],
-        ["Pelacak rekursi", "buka dan tutup bingkai", (x, y) => St.stack(ctx, x - 220, y - 130, 440, SUM_FRAMES.slice(0, 3), 3, { closing: 1 })]];
+        ["Pelacak rekursi", "buka dan tutup frame", (x, y) => St.stack(ctx, x - 220, y - 130, 440, SUM_FRAMES.slice(0, 3), 3, { closing: 1 })]];
       items.forEach(([t1, t2, draw], i) => { const x = 400 + i * 560; card(ctx, x - 250, 290, 500, 440, { fill: C.bg2 }); ctx.fillStyle = C.kiko; ctx.beginPath(); ctx.arc(x - 200, 340, 28, 0, Math.PI * 2); ctx.fill(); text(ctx, String(i + 1), x - 200, 352, 30, { align: "center", color: "#fff", weight: 900 }); text(ctx, t1, x - 160, 352, 26, { weight: 900 }); para(ctx, t2, x - 160, 386, 20, 400, { weight: 700, color: C.ink2 }); draw(x, 560); });
       text(ctx, "di halaman latihan episode ini — lalu dua versi kembalian dalam Python dan satu paragraf justifikasi", 960, 820, 24, { align: "center", color: C.ink2, weight: 700 });
     }

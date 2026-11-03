@@ -2,28 +2,28 @@
 
 ## E.3a
 
-**Judul** (108 karakter):
-Informatika Kelas 10 | Keamanan Akun dan Jaringan Dasar (1/2): Manajer Kata Sandi dan Verifikasi Dua Langkah
+**Judul** (106 karakter):
+Informatika Kelas 10 | Keamanan Akun dan Jaringan Dasar (1/2): Password Manager dan Verifikasi Dua Langkah
 
 **Deskripsi:**
 ```
-Keamanan Akun dan Jaringan Dasar — bagian 1 dari 2: Manajer Kata Sandi dan Verifikasi Dua Langkah. Narasi suara plus teks besar di layar; ada versi tanpa suara di video terpisah.
+Keamanan Akun dan Jaringan Dasar — bagian 1 dari 2: Password Manager dan Verifikasi Dua Langkah. Narasi suara plus teks besar di layar; ada versi tanpa suara di video terpisah.
 
-Satu kata sandi untuk semua akun: begitu satu situs bocor, mesin penipu mencobanya di semua situs lain. Bersama Kiko kita pakai alatnya: manajer kata sandi (brankas dengan sandi induk), verifikasi dua langkah (sesuatu yang kamu tahu plus sesuatu yang kamu punya; alur kode enam digit yang berubah tiap tiga puluh detik), dan aturan emas: kode OTP tidak pernah dibagikan. Bagian dua: pengaturan privasi dan sesi aktif akun, dua sandi router rumah (Wi-Fi dan admin), WPA2/WPA3, jaringan tamu, dan kehati-hatian di Wi-Fi publik. Gaya diagram Fase E. Empat cek pemahaman; simulasi verifikasi dua langkah dan audit akun di halaman latihan.
+Satu kata sandi untuk semua akun: begitu satu situs bocor, mesin penipu mencobanya di semua situs lain. Bersama Kiko kita pakai alatnya: password manager (brankas dengan sandi induk), verifikasi dua langkah (sesuatu yang kamu tahu plus sesuatu yang kamu punya; alur kode enam digit yang berubah tiap tiga puluh detik), dan aturan emas: kode OTP tidak pernah dibagikan. Bagian dua: pengaturan privasi dan sesi aktif akun, dua sandi router rumah (Wi-Fi dan admin), WPA2/WPA3, jaringan tamu, dan kehati-hatian di Wi-Fi publik. Gaya diagram Fase E. Empat cek pemahaman; simulasi verifikasi dua langkah dan audit akun di halaman latihan.
 
 Setelah menonton, murid bisa:
-• menjelaskan mengapa satu kata sandi untuk banyak akun berbahaya dan memakai manajer kata sandi
+• menjelaskan mengapa satu kata sandi untuk banyak akun berbahaya dan memakai password manager
 • menjelaskan alur verifikasi dua langkah dan menolak permintaan kode OTP
 • memeriksa pengaturan privasi, pemulihan, dan sesi aktif sebuah akun
 • mengamankan jaringan rumah: sandi admin router, WPA2/WPA3, jaringan tamu, dan kehati-hatian di Wi-Fi publik
 
-Video ini cocok untuk yang mencari: verifikasi dua langkah cara kerja; manajer kata sandi untuk pelajar; cara mengamankan wifi rumah ganti sandi router; keamanan akun informatika kelas 10.
+Video ini cocok untuk yang mencari: verifikasi dua langkah cara kerja; password manager untuk pelajar; cara mengamankan wifi rumah ganti sandi router; keamanan akun informatika kelas 10.
 
 Bab:
 0:00 Pembuka
-0:52 Main dulu tanpa komputer
-1:28 Satu sandi, banyak pintu
-2:46 Verifikasi dua langkah
+0:50 Main dulu tanpa komputer
+1:26 Satu sandi, banyak pintu
+2:42 Verifikasi dua langkah
 
 Latihan interaktif (kuis dengan petunjuk, bisa dipakai luring di HP): berkas episode-e3.html di repositori proyek. Prasyarat: episode D7.3 Kata Sandi Aman dan Rekam Jejak Digital serta D9.2 Jaringan Lokal dan Internet.
 
@@ -41,15 +41,15 @@ Informatika Kelas 10 | Keamanan Akun dan Jaringan Dasar (2/2): Privasi Akun dan 
 ```
 Keamanan Akun dan Jaringan Dasar — bagian 2 dari 2: Privasi Akun dan Jaringan Rumah. Narasi suara plus teks besar di layar; ada versi tanpa suara di video terpisah.
 
-Satu kata sandi untuk semua akun: begitu satu situs bocor, mesin penipu mencobanya di semua situs lain. Bersama Kiko kita pakai alatnya: manajer kata sandi (brankas dengan sandi induk), verifikasi dua langkah (sesuatu yang kamu tahu plus sesuatu yang kamu punya; alur kode enam digit yang berubah tiap tiga puluh detik), dan aturan emas: kode OTP tidak pernah dibagikan. Bagian dua: pengaturan privasi dan sesi aktif akun, dua sandi router rumah (Wi-Fi dan admin), WPA2/WPA3, jaringan tamu, dan kehati-hatian di Wi-Fi publik. Gaya diagram Fase E. Empat cek pemahaman; simulasi verifikasi dua langkah dan audit akun di halaman latihan.
+Satu kata sandi untuk semua akun: begitu satu situs bocor, mesin penipu mencobanya di semua situs lain. Bersama Kiko kita pakai alatnya: password manager (brankas dengan sandi induk), verifikasi dua langkah (sesuatu yang kamu tahu plus sesuatu yang kamu punya; alur kode enam digit yang berubah tiap tiga puluh detik), dan aturan emas: kode OTP tidak pernah dibagikan. Bagian dua: pengaturan privasi dan sesi aktif akun, dua sandi router rumah (Wi-Fi dan admin), WPA2/WPA3, jaringan tamu, dan kehati-hatian di Wi-Fi publik. Gaya diagram Fase E. Empat cek pemahaman; simulasi verifikasi dua langkah dan audit akun di halaman latihan.
 
 Setelah menonton, murid bisa:
-• menjelaskan mengapa satu kata sandi untuk banyak akun berbahaya dan memakai manajer kata sandi
+• menjelaskan mengapa satu kata sandi untuk banyak akun berbahaya dan memakai password manager
 • menjelaskan alur verifikasi dua langkah dan menolak permintaan kode OTP
 • memeriksa pengaturan privasi, pemulihan, dan sesi aktif sebuah akun
 • mengamankan jaringan rumah: sandi admin router, WPA2/WPA3, jaringan tamu, dan kehati-hatian di Wi-Fi publik
 
-Video ini cocok untuk yang mencari: verifikasi dua langkah cara kerja; manajer kata sandi untuk pelajar; cara mengamankan wifi rumah ganti sandi router; keamanan akun informatika kelas 10.
+Video ini cocok untuk yang mencari: verifikasi dua langkah cara kerja; password manager untuk pelajar; cara mengamankan wifi rumah ganti sandi router; keamanan akun informatika kelas 10.
 
 Bab:
 0:00 Pembuka bagian
@@ -67,28 +67,28 @@ Seri Animasi Informatika untuk SMP–SMA mengikuti CP 2025 (Keputusan Kepala BSK
 
 ## E.3a (versi teks, tanpa suara)
 
-**Judul** (134 karakter):
-Informatika Kelas 10 | Keamanan Akun dan Jaringan Dasar (1/2): Manajer Kata Sandi dan Verifikasi Dua Langkah (versi teks, tanpa suara)
+**Judul** (132 karakter):
+Informatika Kelas 10 | Keamanan Akun dan Jaringan Dasar (1/2): Password Manager dan Verifikasi Dua Langkah (versi teks, tanpa suara)
 
 **Deskripsi:**
 ```
-Keamanan Akun dan Jaringan Dasar — bagian 1 dari 2: Manajer Kata Sandi dan Verifikasi Dua Langkah. Versi tanpa narasi suara: teks narasi tampil besar di layar dengan garis kemajuan baca, cocok untuk ditonton tanpa speaker atau untuk murid yang lebih suka membaca.
+Keamanan Akun dan Jaringan Dasar — bagian 1 dari 2: Password Manager dan Verifikasi Dua Langkah. Versi tanpa narasi suara: teks narasi tampil besar di layar dengan garis kemajuan baca, cocok untuk ditonton tanpa speaker atau untuk murid yang lebih suka membaca.
 
-Satu kata sandi untuk semua akun: begitu satu situs bocor, mesin penipu mencobanya di semua situs lain. Bersama Kiko kita pakai alatnya: manajer kata sandi (brankas dengan sandi induk), verifikasi dua langkah (sesuatu yang kamu tahu plus sesuatu yang kamu punya; alur kode enam digit yang berubah tiap tiga puluh detik), dan aturan emas: kode OTP tidak pernah dibagikan. Bagian dua: pengaturan privasi dan sesi aktif akun, dua sandi router rumah (Wi-Fi dan admin), WPA2/WPA3, jaringan tamu, dan kehati-hatian di Wi-Fi publik. Gaya diagram Fase E. Empat cek pemahaman; simulasi verifikasi dua langkah dan audit akun di halaman latihan.
+Satu kata sandi untuk semua akun: begitu satu situs bocor, mesin penipu mencobanya di semua situs lain. Bersama Kiko kita pakai alatnya: password manager (brankas dengan sandi induk), verifikasi dua langkah (sesuatu yang kamu tahu plus sesuatu yang kamu punya; alur kode enam digit yang berubah tiap tiga puluh detik), dan aturan emas: kode OTP tidak pernah dibagikan. Bagian dua: pengaturan privasi dan sesi aktif akun, dua sandi router rumah (Wi-Fi dan admin), WPA2/WPA3, jaringan tamu, dan kehati-hatian di Wi-Fi publik. Gaya diagram Fase E. Empat cek pemahaman; simulasi verifikasi dua langkah dan audit akun di halaman latihan.
 
 Setelah menonton, murid bisa:
-• menjelaskan mengapa satu kata sandi untuk banyak akun berbahaya dan memakai manajer kata sandi
+• menjelaskan mengapa satu kata sandi untuk banyak akun berbahaya dan memakai password manager
 • menjelaskan alur verifikasi dua langkah dan menolak permintaan kode OTP
 • memeriksa pengaturan privasi, pemulihan, dan sesi aktif sebuah akun
 • mengamankan jaringan rumah: sandi admin router, WPA2/WPA3, jaringan tamu, dan kehati-hatian di Wi-Fi publik
 
-Video ini cocok untuk yang mencari: verifikasi dua langkah cara kerja; manajer kata sandi untuk pelajar; cara mengamankan wifi rumah ganti sandi router; keamanan akun informatika kelas 10.
+Video ini cocok untuk yang mencari: verifikasi dua langkah cara kerja; password manager untuk pelajar; cara mengamankan wifi rumah ganti sandi router; keamanan akun informatika kelas 10.
 
 Bab:
 0:00 Pembuka
-1:06 Main dulu tanpa komputer
-1:51 Satu sandi, banyak pintu
-3:30 Verifikasi dua langkah
+1:03 Main dulu tanpa komputer
+1:49 Satu sandi, banyak pintu
+3:25 Verifikasi dua langkah
 
 Latihan interaktif (kuis dengan petunjuk, bisa dipakai luring di HP): berkas episode-e3.html di repositori proyek. Prasyarat: episode D7.3 Kata Sandi Aman dan Rekam Jejak Digital serta D9.2 Jaringan Lokal dan Internet.
 
@@ -106,15 +106,15 @@ Informatika Kelas 10 | Keamanan Akun dan Jaringan Dasar (2/2): Privasi Akun dan 
 ```
 Keamanan Akun dan Jaringan Dasar — bagian 2 dari 2: Privasi Akun dan Jaringan Rumah. Versi tanpa narasi suara: teks narasi tampil besar di layar dengan garis kemajuan baca, cocok untuk ditonton tanpa speaker atau untuk murid yang lebih suka membaca.
 
-Satu kata sandi untuk semua akun: begitu satu situs bocor, mesin penipu mencobanya di semua situs lain. Bersama Kiko kita pakai alatnya: manajer kata sandi (brankas dengan sandi induk), verifikasi dua langkah (sesuatu yang kamu tahu plus sesuatu yang kamu punya; alur kode enam digit yang berubah tiap tiga puluh detik), dan aturan emas: kode OTP tidak pernah dibagikan. Bagian dua: pengaturan privasi dan sesi aktif akun, dua sandi router rumah (Wi-Fi dan admin), WPA2/WPA3, jaringan tamu, dan kehati-hatian di Wi-Fi publik. Gaya diagram Fase E. Empat cek pemahaman; simulasi verifikasi dua langkah dan audit akun di halaman latihan.
+Satu kata sandi untuk semua akun: begitu satu situs bocor, mesin penipu mencobanya di semua situs lain. Bersama Kiko kita pakai alatnya: password manager (brankas dengan sandi induk), verifikasi dua langkah (sesuatu yang kamu tahu plus sesuatu yang kamu punya; alur kode enam digit yang berubah tiap tiga puluh detik), dan aturan emas: kode OTP tidak pernah dibagikan. Bagian dua: pengaturan privasi dan sesi aktif akun, dua sandi router rumah (Wi-Fi dan admin), WPA2/WPA3, jaringan tamu, dan kehati-hatian di Wi-Fi publik. Gaya diagram Fase E. Empat cek pemahaman; simulasi verifikasi dua langkah dan audit akun di halaman latihan.
 
 Setelah menonton, murid bisa:
-• menjelaskan mengapa satu kata sandi untuk banyak akun berbahaya dan memakai manajer kata sandi
+• menjelaskan mengapa satu kata sandi untuk banyak akun berbahaya dan memakai password manager
 • menjelaskan alur verifikasi dua langkah dan menolak permintaan kode OTP
 • memeriksa pengaturan privasi, pemulihan, dan sesi aktif sebuah akun
 • mengamankan jaringan rumah: sandi admin router, WPA2/WPA3, jaringan tamu, dan kehati-hatian di Wi-Fi publik
 
-Video ini cocok untuk yang mencari: verifikasi dua langkah cara kerja; manajer kata sandi untuk pelajar; cara mengamankan wifi rumah ganti sandi router; keamanan akun informatika kelas 10.
+Video ini cocok untuk yang mencari: verifikasi dua langkah cara kerja; password manager untuk pelajar; cara mengamankan wifi rumah ganti sandi router; keamanan akun informatika kelas 10.
 
 Bab:
 0:00 Pembuka bagian
@@ -133,9 +133,9 @@ Seri Animasi Informatika untuk SMP–SMA mengikuti CP 2025 (Keputusan Kepala BSK
 ## Komentar tersemat (pin) — E.3a
 
 ```
-📌 Keamanan Akun dan Jaringan Dasar (1/2): Manajer Kata Sandi dan Verifikasi Dua Langkah — materi Informatika kelas 10 (unit E.3).
-Setelah menonton, kamu bisa memakai manajer kata sandi, verifikasi dua langkah, memeriksa sesi akun, dan mengamankan Wi-Fi rumah.
-Kata kunci materi ini: verifikasi dua langkah cara kerja; manajer kata sandi untuk pelajar; cara mengamankan wifi rumah ganti sandi router; keamanan akun informatika kelas 10.
+📌 Keamanan Akun dan Jaringan Dasar (1/2): Password Manager dan Verifikasi Dua Langkah — materi Informatika kelas 10 (unit E.3).
+Setelah menonton, kamu bisa memakai password manager, verifikasi dua langkah, memeriksa sesi akun, dan mengamankan Wi-Fi rumah.
+Kata kunci materi ini: verifikasi dua langkah cara kerja; password manager untuk pelajar; cara mengamankan wifi rumah ganti sandi router; keamanan akun informatika kelas 10.
 Latihan interaktif (bisa luring di HP): berkas episode-e3.html. Tonton dulu episode D7.3 Kata Sandi Aman dan Rekam Jejak Digital serta D9.2 Jaringan Lokal dan Internet bila belum.
 Ada yang belum jelas? Tulis di komentar, pertanyaanmu membantu teman lain juga.
 ```
@@ -144,8 +144,8 @@ Ada yang belum jelas? Tulis di komentar, pertanyaanmu membantu teman lain juga.
 
 ```
 📌 Keamanan Akun dan Jaringan Dasar (2/2): Privasi Akun dan Jaringan Rumah — materi Informatika kelas 10 (unit E.3).
-Setelah menonton, kamu bisa memakai manajer kata sandi, verifikasi dua langkah, memeriksa sesi akun, dan mengamankan Wi-Fi rumah.
-Kata kunci materi ini: verifikasi dua langkah cara kerja; manajer kata sandi untuk pelajar; cara mengamankan wifi rumah ganti sandi router; keamanan akun informatika kelas 10.
+Setelah menonton, kamu bisa memakai password manager, verifikasi dua langkah, memeriksa sesi akun, dan mengamankan Wi-Fi rumah.
+Kata kunci materi ini: verifikasi dua langkah cara kerja; password manager untuk pelajar; cara mengamankan wifi rumah ganti sandi router; keamanan akun informatika kelas 10.
 Latihan interaktif (bisa luring di HP): berkas episode-e3.html. Tonton dulu episode D7.3 Kata Sandi Aman dan Rekam Jejak Digital serta D9.2 Jaringan Lokal dan Internet bila belum.
 Ada yang belum jelas? Tulis di komentar, pertanyaanmu membantu teman lain juga.
 ```

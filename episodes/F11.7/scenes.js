@@ -71,7 +71,7 @@
       if (n >= 2) { const u = (l % 2) / 2; const [px, py] = J.along([P[0], P[4]], u); J.packet(ctx, px, py - 40, 1, { color: C.accent }); const [qx, qy] = J.along([P[3], P[1]], u); J.packet(ctx, qx, qy - 40, 1, { color: C.good }); }
       if (n >= 3) { card(ctx, 240, 700, 560, 60, { fill: C.goodBg, stroke: C.good, lw: 2, r: 10 }); text(ctx, "✓ tahan: tidak ada pusat yang bisa padam", 520, 738, 20, { align: "center", weight: 900, color: C.good }); }
       if (n >= 4) { card(ctx, 1120, 700, 560, 60, { fill: C.badBg, stroke: C.bad, lw: 2, r: 10 }); text(ctx, "✕ sulit dikendalikan dan diamankan", 1400, 738, 20, { align: "center", weight: 900, color: C.bad }); }
-      if (n >= 5) label(ctx, "berbagi berkas langsung · panggilan video langsung", 960, 280, { size: 22, color: C.ink2 });
+      if (n >= 5) label(ctx, "berbagi file langsung · panggilan video langsung", 960, 280, { size: 22, color: C.ink2 });
     },
     lapisan(ctx, b, l) {
       card(ctx, 120, 150, 1680, 740); heading(ctx, "EMPAT LAPISAN TCP/IP", 215);

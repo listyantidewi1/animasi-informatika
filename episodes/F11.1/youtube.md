@@ -17,7 +17,7 @@ Setelah menonton, murid bisa:
 • menyusun kasus uji normal, batas, dan salah, lalu mencatat bug
 • menjelaskan rilis, versi, catatan perubahan, dan pemeliharaan sebagai siklus
 
-Video ini cocok untuk yang mencari: alur pengembangan perangkat lunak kelas 11; tahap pengembangan aplikasi analisis desain implementasi pengujian; siklus hidup pengembangan program sma; kasus uji dan bug penjelasan pemula.
+Video ini cocok untuk yang mencari: alur pengembangan software kelas 11; tahap pengembangan aplikasi analisis desain implementasi pengujian; siklus hidup pengembangan program sma; kasus uji dan bug penjelasan pemula.
 
 Bab:
 0:00 Pembuka
@@ -49,14 +49,14 @@ Setelah menonton, murid bisa:
 • menyusun kasus uji normal, batas, dan salah, lalu mencatat bug
 • menjelaskan rilis, versi, catatan perubahan, dan pemeliharaan sebagai siklus
 
-Video ini cocok untuk yang mencari: alur pengembangan perangkat lunak kelas 11; tahap pengembangan aplikasi analisis desain implementasi pengujian; siklus hidup pengembangan program sma; kasus uji dan bug penjelasan pemula.
+Video ini cocok untuk yang mencari: alur pengembangan software kelas 11; tahap pengembangan aplikasi analisis desain implementasi pengujian; siklus hidup pengembangan program sma; kasus uji dan bug penjelasan pemula.
 
 Bab:
 0:00 Pembuka bagian
 0:04 Implementasi dan pengujian
 1:18 Rilis dan pemeliharaan
-2:30 Siklus dan tim
-3:06 Giliranmu
+2:31 Siklus dan tim
+3:07 Giliranmu
 
 Latihan interaktif (kuis dengan petunjuk, bisa dipakai luring di HP): berkas episode-f111.html di repositori proyek. Prasyarat: episode F11.0 Jembatan Menuju Pemrograman dan D9.6 Proyek Akhir Fase D.
 
@@ -82,7 +82,7 @@ Setelah menonton, murid bisa:
 • menyusun kasus uji normal, batas, dan salah, lalu mencatat bug
 • menjelaskan rilis, versi, catatan perubahan, dan pemeliharaan sebagai siklus
 
-Video ini cocok untuk yang mencari: alur pengembangan perangkat lunak kelas 11; tahap pengembangan aplikasi analisis desain implementasi pengujian; siklus hidup pengembangan program sma; kasus uji dan bug penjelasan pemula.
+Video ini cocok untuk yang mencari: alur pengembangan software kelas 11; tahap pengembangan aplikasi analisis desain implementasi pengujian; siklus hidup pengembangan program sma; kasus uji dan bug penjelasan pemula.
 
 Bab:
 0:00 Pembuka
@@ -114,14 +114,14 @@ Setelah menonton, murid bisa:
 • menyusun kasus uji normal, batas, dan salah, lalu mencatat bug
 • menjelaskan rilis, versi, catatan perubahan, dan pemeliharaan sebagai siklus
 
-Video ini cocok untuk yang mencari: alur pengembangan perangkat lunak kelas 11; tahap pengembangan aplikasi analisis desain implementasi pengujian; siklus hidup pengembangan program sma; kasus uji dan bug penjelasan pemula.
+Video ini cocok untuk yang mencari: alur pengembangan software kelas 11; tahap pengembangan aplikasi analisis desain implementasi pengujian; siklus hidup pengembangan program sma; kasus uji dan bug penjelasan pemula.
 
 Bab:
 0:00 Pembuka bagian
 0:04 Implementasi dan pengujian
 1:33 Rilis dan pemeliharaan
 3:01 Siklus dan tim
-3:47 Giliranmu
+3:46 Giliranmu
 
 Latihan interaktif (kuis dengan petunjuk, bisa dipakai luring di HP): berkas episode-f111.html di repositori proyek. Prasyarat: episode F11.0 Jembatan Menuju Pemrograman dan D9.6 Proyek Akhir Fase D.
 
@@ -135,7 +135,7 @@ Seri Animasi Informatika untuk SMP–SMA mengikuti CP 2025 (Keputusan Kepala BSK
 ```
 📌 Alur Pengembangan Program dan Produk Digital (1/2): Kebutuhan dan Desain — materi Informatika kelas 11 (unit F11.1).
 Setelah menonton, kamu bisa menjelaskan enam tahap pengembangan produk digital, dari kebutuhan sampai pemeliharaan.
-Kata kunci materi ini: alur pengembangan perangkat lunak kelas 11; tahap pengembangan aplikasi analisis desain implementasi pengujian; siklus hidup pengembangan program sma; kasus uji dan bug penjelasan pemula.
+Kata kunci materi ini: alur pengembangan software kelas 11; tahap pengembangan aplikasi analisis desain implementasi pengujian; siklus hidup pengembangan program sma; kasus uji dan bug penjelasan pemula.
 Latihan interaktif (bisa luring di HP): berkas episode-f111.html. Tonton dulu episode F11.0 Jembatan Menuju Pemrograman dan D9.6 Proyek Akhir Fase D bila belum.
 Ada yang belum jelas? Tulis di komentar, pertanyaanmu membantu teman lain juga.
 ```
@@ -145,7 +145,7 @@ Ada yang belum jelas? Tulis di komentar, pertanyaanmu membantu teman lain juga.
 ```
 📌 Alur Pengembangan Program dan Produk Digital (2/2): Implementasi, Pengujian, Rilis, Pemeliharaan — materi Informatika kelas 11 (unit F11.1).
 Setelah menonton, kamu bisa menjelaskan enam tahap pengembangan produk digital, dari kebutuhan sampai pemeliharaan.
-Kata kunci materi ini: alur pengembangan perangkat lunak kelas 11; tahap pengembangan aplikasi analisis desain implementasi pengujian; siklus hidup pengembangan program sma; kasus uji dan bug penjelasan pemula.
+Kata kunci materi ini: alur pengembangan software kelas 11; tahap pengembangan aplikasi analisis desain implementasi pengujian; siklus hidup pengembangan program sma; kasus uji dan bug penjelasan pemula.
 Latihan interaktif (bisa luring di HP): berkas episode-f111.html. Tonton dulu episode F11.0 Jembatan Menuju Pemrograman dan D9.6 Proyek Akhir Fase D bila belum.
 Ada yang belum jelas? Tulis di komentar, pertanyaanmu membantu teman lain juga.
 ```

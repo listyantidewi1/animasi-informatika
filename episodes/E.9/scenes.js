@@ -60,8 +60,8 @@
       heading(ctx, "LANGKAH 3 · METADATA: DATA TENTANG DATA", 215);
       const n = reveal(l, 1.0, 0.7, 8);
       Dq.table(ctx, 220, 270, [230, 90, 130, 130, 140, 120, 120, 170], META[0].slice(0, Math.max(1, n)), META.slice(1).map(r => r.slice(0, Math.max(1, n))), {}, { rh: 52 });
-      if (l > 8) { card(ctx, 220, 460, 700, 130, { fill: "#1F2A33", r: 12 }); text(ctx, "nama berkas seragam", 240, 495, 16, { weight: 900, color: "#8FD0E6" }); text(ctx, "lagu_cublak-cublak-suweng_2026-11-03.mp3", 240, 535, 20, { weight: 900, color: "#fff" }); text(ctx, "video_gasing-bambu_2026-11-05.mp4", 240, 568, 20, { weight: 900, color: "#fff" }); }
-      if (l > 11) { card(ctx, 980, 460, 720, 130, { fill: C.badBg, stroke: C.bad, lw: 3, r: 12 }); text(ctx, "tanpa metadata: 100 berkas = tumpukan", 1340, 515, 26, { align: "center", weight: 900, color: C.bad }); text(ctx, "video1.mp4, video2.mp4, rekaman nenek.mp3 …", 1340, 555, 18, { align: "center", weight: 700, color: C.ink2 }); }
+      if (l > 8) { card(ctx, 220, 460, 700, 130, { fill: "#1F2A33", r: 12 }); text(ctx, "nama file seragam", 240, 495, 16, { weight: 900, color: "#8FD0E6" }); text(ctx, "lagu_cublak-cublak-suweng_2026-11-03.mp3", 240, 535, 20, { weight: 900, color: "#fff" }); text(ctx, "video_gasing-bambu_2026-11-05.mp4", 240, 568, 20, { weight: 900, color: "#fff" }); }
+      if (l > 11) { card(ctx, 980, 460, 720, 130, { fill: C.badBg, stroke: C.bad, lw: 3, r: 12 }); text(ctx, "tanpa metadata: 100 file = tumpukan", 1340, 515, 26, { align: "center", weight: 900, color: C.bad }); text(ctx, "video1.mp4, video2.mp4, rekaman nenek.mp3 …", 1340, 555, 18, { align: "center", weight: 700, color: C.ink2 }); }
     },
     label_budaya(ctx, b, l) {
       card(ctx, 120, 150, 1680, 740);

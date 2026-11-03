@@ -23,7 +23,7 @@ Bab:
 0:00 Pembuka
 0:47 Main dulu tanpa komputer
 1:26 Pertanyaan dan sumber data terbuka
-2:43 Bersihkan data
+2:41 Bersihkan data
 
 Latihan interaktif (kuis dengan petunjuk, bisa dipakai luring di HP): berkas episode-f115.html di repositori proyek. Prasyarat: episode E.8 Data Berkualitas dari Manusia dan D8.1 Lembar Kerja.
 
@@ -88,7 +88,7 @@ Bab:
 0:00 Pembuka
 0:57 Main dulu tanpa komputer
 1:45 Pertanyaan dan sumber data terbuka
-3:18 Bersihkan data
+3:17 Bersihkan data
 
 Latihan interaktif (kuis dengan petunjuk, bisa dipakai luring di HP): berkas episode-f115.html di repositori proyek. Prasyarat: episode E.8 Data Berkualitas dari Manusia dan D8.1 Lembar Kerja.
 

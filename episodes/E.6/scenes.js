@@ -55,7 +55,7 @@
 
     linear(ctx, b, l) {
       card(ctx, 120, 150, 1680, 740);
-      heading(ctx, "PENCARIAN LINEAR: SATU PER SATU", 215);
+      heading(ctx, "LINEAR SEARCH: SATU PER SATU", 215);
       const steps = U.linear(LIN, 65); const st = l < 1.5 ? { a: LIN, hl: [], cmp: 0, note: "cari 65" } : stepAt(steps, l, 1.5, 1.1);
       U.cards(ctx, 260, 330, st, { w: 150, h: 130, gap: 20 });
       Kr.counter(ctx, 1500, 560, st.cmp, "langkah", {}); card(ctx, 260, 560, 700, 70, { fill: C.bg2, r: 12 }); text(ctx, st.note, 610, 605, 24, { align: "center", weight: 900, color: st.found ? C.good : C.ink });
@@ -63,8 +63,8 @@
     },
     biner(ctx, b, l) {
       card(ctx, 120, 150, 1680, 740);
-      heading(ctx, "PENCARIAN BINER: BELAH DUA (DATA URUT)", 215);
-      const steps = U.binary(SRT, 65); const st = l < 1.5 ? { a: SRT, hl: [], cmp: 0, note: "cari 65 · larik sudah urut" } : stepAt(steps, l, 1.5, 3.2);
+      heading(ctx, "BINARY SEARCH: BELAH DUA (DATA URUT)", 215);
+      const steps = U.binary(SRT, 65); const st = l < 1.5 ? { a: SRT, hl: [], cmp: 0, note: "cari 65 · array sudah urut" } : stepAt(steps, l, 1.5, 3.2);
       U.cards(ctx, 260, 330, st, { w: 150, h: 130, gap: 20 });
       if (st.lo != null) { if (st.lo === st.hi) text(ctx, "kiri = kanan", 260 + st.lo * 170 + 75, 310, 18, { align: "center", weight: 900, color: C.kiko }); else { text(ctx, "kiri", 260 + st.lo * 170 + 75, 310, 18, { align: "center", weight: 900, color: C.kiko }); text(ctx, "kanan", 260 + st.hi * 170 + 75, 310, 18, { align: "center", weight: 900, color: C.kiko }); } }
       Kr.counter(ctx, 1500, 560, st.cmp, "langkah", {}); card(ctx, 260, 560, 900, 70, { fill: C.bg2, r: 12 }); text(ctx, st.note, 710, 605, 24, { align: "center", weight: 900, color: st.found ? C.good : C.ink });
@@ -79,7 +79,7 @@
     },
     pseudo_cari(ctx, b, l) {
       card(ctx, 120, 150, 1680, 740);
-      heading(ctx, "PSEUDOCODE PENCARIAN BINER", 215);
+      heading(ctx, "PSEUDOCODE BINARY SEARCH", 215);
       const n = reveal(l, 1.0, 1.4, 7);
       Al.pseudo(ctx, 220, 250, 900, [{ t: "kiri ← 1, kanan ← n" }, { t: "SELAMA kiri ≤ kanan:" }, { t: "tengah ← (kiri + kanan) / 2, dibulatkan ke atas", ind: 1 }, { t: "JIKA data[tengah] = target MAKA ketemu, berhenti", ind: 1 }, { t: "JIKA target < data[tengah] MAKA kanan ← tengah − 1", ind: 1 }, { t: "LAINNYA kiri ← tengah + 1", ind: 1 }, { t: "tidak ketemu" }].map((p, i) => ({ ...p, hl: i === n - 1, t: i < n ? p.t : "" })), { rh: 56, size: 22 });
       if (n >= 7) { const steps = U.binary(SRT, 65); card(ctx, 1180, 260, 540, 400, { fill: C.bg2, r: 14 }); text(ctx, "pelacakan: cari 65", 1450, 300, 20, { align: "center", weight: 900, color: C.ink2 }); text(ctx, "kiri · kanan · tengah · data", 1450, 340, 18, { align: "center", weight: 800, color: C.ink2 }); steps.forEach((s, i) => { const mid = Math.ceil((s.lo + s.hi) / 2); text(ctx, `${s.lo + 1} · ${s.hi + 1} · ${mid + 1} · ${SRT[mid]}` + (s.found ? " ✓" : ""), 1450, 400 + i * 50, 26, { align: "center", weight: 900, color: s.found ? C.good : C.ink }); }); }

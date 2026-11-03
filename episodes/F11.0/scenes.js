@@ -40,7 +40,7 @@
       heading(ctx, "ROBOT KATA: TIGA PERINTAH, HARUS PERSIS");
       kid(ctx, 420, 560, 150, { point: true }); kid(ctx, 1500, 560, 150, { hair: "long" }); text(ctx, "komputer: tulis · simpan · jika", 1500, 740, 20, { align: "center", weight: 900, color: C.ink2 });
       const n = reveal(l, 2.0, 2.6, 3);
-      [["simpan 5 ke x", "✓ x = 5", true], ["tuliskan x", "✕ galat: perintah 'tuliskan' tidak dikenal", false], ["tulis x", "✓ layar: 5", true]].forEach(([cmd, res, ok], i) => { ctx.save(); if (i >= n) ctx.globalAlpha = 0.2; card(ctx, 640, 290 + i * 130, 660, 110, { fill: ok ? C.goodBg : C.badBg, stroke: ok ? C.good : C.bad, lw: 3, r: 14 }); text(ctx, "\"" + cmd + "\"", 670, 335 + i * 130, 26, { weight: 900 }); text(ctx, res, 670, 375 + i * 130, 20, { weight: 800, color: ok ? C.good : C.bad }); ctx.restore(); });
+      [["simpan 5 ke x", "✓ x = 5", true], ["tuliskan x", "✕ error: perintah 'tuliskan' tidak dikenal", false], ["tulis x", "✓ layar: 5", true]].forEach(([cmd, res, ok], i) => { ctx.save(); if (i >= n) ctx.globalAlpha = 0.2; card(ctx, 640, 290 + i * 130, 660, 110, { fill: ok ? C.goodBg : C.badBg, stroke: ok ? C.good : C.bad, lw: 3, r: 14 }); text(ctx, "\"" + cmd + "\"", 670, 335 + i * 130, 26, { weight: 900 }); text(ctx, res, 670, 375 + i * 130, 20, { weight: 800, color: ok ? C.good : C.bad }); ctx.restore(); });
       if (n >= 3) label(ctx, "salah satu huruf, komputer berhenti: itulah rasanya menulis kode", 960, 700, { size: 24 });
     },
 
@@ -113,12 +113,12 @@
     },
     galat(ctx, b, l) {
       card(ctx, 120, 150, 1680, 740);
-      heading(ctx, "SENGAJA SALAH: BACA PESAN GALATNYA", 215);
+      heading(ctx, "SENGAJA SALAH: BACA PESAN ERROR-NYA", 215);
       const n = reveal(l, 1.5, 2.6, 4);
       Py.code(ctx, 220, 260, 760, PYL.map((p, i) => ({ ...p, t: i === 3 && n >= 1 ? "    if n >= 75" : p.t, bad: i === 3 && n >= 2 })), { rh: 48, size: 22 });
       if (n >= 2) Py.error(ctx, 1040, 270, 660, "SyntaxError", ["File \"lulus.py\", line 4", "    if n >= 75", "               ^", "expected ':'"]);
       if (n >= 3) { ["1. baca nomor barisnya: 4", "2. baca jenisnya: SyntaxError, kurang ':'", "3. perbaiki, jalankan lagi"].forEach((s, i) => { card(ctx, 1040, 460 + i * 64, 660, 54, { fill: C.bg2, r: 10 }); text(ctx, s, 1064, 495 + i * 64, 22, { weight: 900 }); }); }
-      if (n >= 4) label(ctx, "galat adalah petunjuk, bukan hukuman", 1370, 700);
+      if (n >= 4) label(ctx, "error adalah petunjuk, bukan hukuman", 1370, 700);
     },
     ubah_program(ctx, b, l) {
       card(ctx, 120, 150, 1680, 740);

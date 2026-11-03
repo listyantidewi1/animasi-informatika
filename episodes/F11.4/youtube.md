@@ -9,10 +9,10 @@ Informatika Kelas 11 | Riset Digital dan Verifikasi Konten (1/2): Riset dengan M
 ```
 Riset Digital dan Verifikasi Konten — bagian 1 dari 2: Riset dengan Mesin Pencari dan Membaca Lateral. Narasi suara plus teks besar di layar; ada versi tanpa suara di video terpisah.
 
-Mesin pencari untuk riset sungguhan, bukan sekadar mencari jawaban cepat. Bersama Kiko kita susun pertanyaan riset menjadi kueri beroperator (site:, filetype:, kutip, minus, rentang waktu), memilah sumber primer, sekunder, dan tersier, lalu membaca lateral yang kompleks: siapa di balik sebuah situs dan ke mana jejak kutipan sebuah klaim berujung. Bagian dua mengikuti jejak sebuah foto banjir yang viral: pencarian gambar terbalik, metadata, petunjuk visual, lalu verifikasi video lewat bingkai kunci dan tanggal unggah, sampai putusan: benar, salah, salah konteks, atau belum bisa dipastikan. Semua situs dan tokoh fiktif. Gaya diagram Fase F. Empat cek pemahaman; simulasi jejak foto di halaman latihan.
+Mesin pencari untuk riset sungguhan, bukan sekadar mencari jawaban cepat. Bersama Kiko kita susun pertanyaan riset menjadi query beroperator (site:, filetype:, kutip, minus, rentang waktu), memilah sumber primer, sekunder, dan tersier, lalu membaca lateral yang kompleks: siapa di balik sebuah situs dan ke mana jejak kutipan sebuah klaim berujung. Bagian dua mengikuti jejak sebuah foto banjir yang viral: pencarian gambar terbalik, metadata, petunjuk visual, lalu verifikasi video lewat frame kunci dan tanggal upload, sampai putusan: benar, salah, salah konteks, atau belum bisa dipastikan. Semua situs dan tokoh fiktif. Gaya diagram Fase F. Empat cek pemahaman; simulasi jejak foto di halaman latihan.
 
 Setelah menonton, murid bisa:
-• mengubah pertanyaan riset menjadi kueri beroperator dan memilih sumber primer yang tepat
+• mengubah pertanyaan riset menjadi query beroperator dan memilih sumber primer yang tepat
 • membaca lateral: menelusuri siapa di balik situs dan jejak kutipan sebuah klaim
 • memverifikasi foto dengan pencarian gambar terbalik, metadata, dan petunjuk visual
 • memverifikasi video dan memutuskan: benar, salah, salah konteks, atau belum pasti
@@ -23,7 +23,7 @@ Bab:
 0:00 Pembuka
 0:47 Main dulu tanpa komputer
 1:27 Riset dengan mesin pencari
-2:42 Membaca lateral tingkat lanjut
+2:41 Membaca lateral tingkat lanjut
 
 Latihan interaktif (kuis dengan petunjuk, bisa dipakai luring di HP): berkas episode-f114.html di repositori proyek. Prasyarat: episode E.4 Mencari, Memeriksa, Membaca Lateral dan D8.5 Fakta, Opini, dan Hoaks.
 
@@ -41,10 +41,10 @@ Informatika Kelas 11 | Riset Digital dan Verifikasi Konten (2/2): Verifikasi Tek
 ```
 Riset Digital dan Verifikasi Konten — bagian 2 dari 2: Verifikasi Teks, Foto, dan Video. Narasi suara plus teks besar di layar; ada versi tanpa suara di video terpisah.
 
-Mesin pencari untuk riset sungguhan, bukan sekadar mencari jawaban cepat. Bersama Kiko kita susun pertanyaan riset menjadi kueri beroperator (site:, filetype:, kutip, minus, rentang waktu), memilah sumber primer, sekunder, dan tersier, lalu membaca lateral yang kompleks: siapa di balik sebuah situs dan ke mana jejak kutipan sebuah klaim berujung. Bagian dua mengikuti jejak sebuah foto banjir yang viral: pencarian gambar terbalik, metadata, petunjuk visual, lalu verifikasi video lewat bingkai kunci dan tanggal unggah, sampai putusan: benar, salah, salah konteks, atau belum bisa dipastikan. Semua situs dan tokoh fiktif. Gaya diagram Fase F. Empat cek pemahaman; simulasi jejak foto di halaman latihan.
+Mesin pencari untuk riset sungguhan, bukan sekadar mencari jawaban cepat. Bersama Kiko kita susun pertanyaan riset menjadi query beroperator (site:, filetype:, kutip, minus, rentang waktu), memilah sumber primer, sekunder, dan tersier, lalu membaca lateral yang kompleks: siapa di balik sebuah situs dan ke mana jejak kutipan sebuah klaim berujung. Bagian dua mengikuti jejak sebuah foto banjir yang viral: pencarian gambar terbalik, metadata, petunjuk visual, lalu verifikasi video lewat frame kunci dan tanggal upload, sampai putusan: benar, salah, salah konteks, atau belum bisa dipastikan. Semua situs dan tokoh fiktif. Gaya diagram Fase F. Empat cek pemahaman; simulasi jejak foto di halaman latihan.
 
 Setelah menonton, murid bisa:
-• mengubah pertanyaan riset menjadi kueri beroperator dan memilih sumber primer yang tepat
+• mengubah pertanyaan riset menjadi query beroperator dan memilih sumber primer yang tepat
 • membaca lateral: menelusuri siapa di balik situs dan jejak kutipan sebuah klaim
 • memverifikasi foto dengan pencarian gambar terbalik, metadata, dan petunjuk visual
 • memverifikasi video dan memutuskan: benar, salah, salah konteks, atau belum pasti
@@ -74,10 +74,10 @@ Informatika Kelas 11 | Riset Digital dan Verifikasi Konten (1/2): Riset dengan M
 ```
 Riset Digital dan Verifikasi Konten — bagian 1 dari 2: Riset dengan Mesin Pencari dan Membaca Lateral. Versi tanpa narasi suara: teks narasi tampil besar di layar dengan garis kemajuan baca, cocok untuk ditonton tanpa speaker atau untuk murid yang lebih suka membaca.
 
-Mesin pencari untuk riset sungguhan, bukan sekadar mencari jawaban cepat. Bersama Kiko kita susun pertanyaan riset menjadi kueri beroperator (site:, filetype:, kutip, minus, rentang waktu), memilah sumber primer, sekunder, dan tersier, lalu membaca lateral yang kompleks: siapa di balik sebuah situs dan ke mana jejak kutipan sebuah klaim berujung. Bagian dua mengikuti jejak sebuah foto banjir yang viral: pencarian gambar terbalik, metadata, petunjuk visual, lalu verifikasi video lewat bingkai kunci dan tanggal unggah, sampai putusan: benar, salah, salah konteks, atau belum bisa dipastikan. Semua situs dan tokoh fiktif. Gaya diagram Fase F. Empat cek pemahaman; simulasi jejak foto di halaman latihan.
+Mesin pencari untuk riset sungguhan, bukan sekadar mencari jawaban cepat. Bersama Kiko kita susun pertanyaan riset menjadi query beroperator (site:, filetype:, kutip, minus, rentang waktu), memilah sumber primer, sekunder, dan tersier, lalu membaca lateral yang kompleks: siapa di balik sebuah situs dan ke mana jejak kutipan sebuah klaim berujung. Bagian dua mengikuti jejak sebuah foto banjir yang viral: pencarian gambar terbalik, metadata, petunjuk visual, lalu verifikasi video lewat frame kunci dan tanggal upload, sampai putusan: benar, salah, salah konteks, atau belum bisa dipastikan. Semua situs dan tokoh fiktif. Gaya diagram Fase F. Empat cek pemahaman; simulasi jejak foto di halaman latihan.
 
 Setelah menonton, murid bisa:
-• mengubah pertanyaan riset menjadi kueri beroperator dan memilih sumber primer yang tepat
+• mengubah pertanyaan riset menjadi query beroperator dan memilih sumber primer yang tepat
 • membaca lateral: menelusuri siapa di balik situs dan jejak kutipan sebuah klaim
 • memverifikasi foto dengan pencarian gambar terbalik, metadata, dan petunjuk visual
 • memverifikasi video dan memutuskan: benar, salah, salah konteks, atau belum pasti
@@ -106,10 +106,10 @@ Informatika Kelas 11 | Riset Digital dan Verifikasi Konten (2/2): Verifikasi Tek
 ```
 Riset Digital dan Verifikasi Konten — bagian 2 dari 2: Verifikasi Teks, Foto, dan Video. Versi tanpa narasi suara: teks narasi tampil besar di layar dengan garis kemajuan baca, cocok untuk ditonton tanpa speaker atau untuk murid yang lebih suka membaca.
 
-Mesin pencari untuk riset sungguhan, bukan sekadar mencari jawaban cepat. Bersama Kiko kita susun pertanyaan riset menjadi kueri beroperator (site:, filetype:, kutip, minus, rentang waktu), memilah sumber primer, sekunder, dan tersier, lalu membaca lateral yang kompleks: siapa di balik sebuah situs dan ke mana jejak kutipan sebuah klaim berujung. Bagian dua mengikuti jejak sebuah foto banjir yang viral: pencarian gambar terbalik, metadata, petunjuk visual, lalu verifikasi video lewat bingkai kunci dan tanggal unggah, sampai putusan: benar, salah, salah konteks, atau belum bisa dipastikan. Semua situs dan tokoh fiktif. Gaya diagram Fase F. Empat cek pemahaman; simulasi jejak foto di halaman latihan.
+Mesin pencari untuk riset sungguhan, bukan sekadar mencari jawaban cepat. Bersama Kiko kita susun pertanyaan riset menjadi query beroperator (site:, filetype:, kutip, minus, rentang waktu), memilah sumber primer, sekunder, dan tersier, lalu membaca lateral yang kompleks: siapa di balik sebuah situs dan ke mana jejak kutipan sebuah klaim berujung. Bagian dua mengikuti jejak sebuah foto banjir yang viral: pencarian gambar terbalik, metadata, petunjuk visual, lalu verifikasi video lewat frame kunci dan tanggal upload, sampai putusan: benar, salah, salah konteks, atau belum bisa dipastikan. Semua situs dan tokoh fiktif. Gaya diagram Fase F. Empat cek pemahaman; simulasi jejak foto di halaman latihan.
 
 Setelah menonton, murid bisa:
-• mengubah pertanyaan riset menjadi kueri beroperator dan memilih sumber primer yang tepat
+• mengubah pertanyaan riset menjadi query beroperator dan memilih sumber primer yang tepat
 • membaca lateral: menelusuri siapa di balik situs dan jejak kutipan sebuah klaim
 • memverifikasi foto dengan pencarian gambar terbalik, metadata, dan petunjuk visual
 • memverifikasi video dan memutuskan: benar, salah, salah konteks, atau belum pasti
@@ -121,7 +121,7 @@ Bab:
 0:04 Verifikasi teks dan foto
 1:36 Verifikasi video dan putusan
 3:00 Alur riset dan etika
-3:47 Giliranmu
+3:46 Giliranmu
 
 Latihan interaktif (kuis dengan petunjuk, bisa dipakai luring di HP): berkas episode-f114.html di repositori proyek. Prasyarat: episode E.4 Mencari, Memeriksa, Membaca Lateral dan D8.5 Fakta, Opini, dan Hoaks.
 

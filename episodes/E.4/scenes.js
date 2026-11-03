@@ -53,7 +53,7 @@
       card(ctx, 120, 150, 1680, 740);
       heading(ctx, "PENCARIAN GAMBAR TERBALIK", 215);
       const n = reveal(l, 1.5, 2.6, 3);
-      ctx.save(); if (n < 1) ctx.globalAlpha = 0.2; card(ctx, 240, 280, 440, 360, { fill: "#fff", stroke: C.bad, lw: 4, r: 14 }); ctx.fillStyle = "#9FD6EA"; rr(ctx, 260, 300, 400, 200, 8); ctx.fill(); ctx.fillStyle = "#4C9BE0"; rr(ctx, 260, 400, 400, 100, 0); ctx.fill(); ctx.fillStyle = "#7B8B95"; rr(ctx, 300, 330, 80, 120, 4); ctx.fill(); rr(ctx, 420, 350, 100, 100, 4); ctx.fill(); text(ctx, "\"Banjir di kota kita HARI INI!\"", 460, 540, 20, { align: "center", weight: 900, color: C.bad }); text(ctx, "pesan viral di grup", 460, 580, 16, { align: "center", weight: 700, color: C.ink2 }); text(ctx, "📤 unggah foto ke pencarian gambar", 460, 620, 16, { align: "center", weight: 800, color: C.kiko }); ctx.restore();
+      ctx.save(); if (n < 1) ctx.globalAlpha = 0.2; card(ctx, 240, 280, 440, 360, { fill: "#fff", stroke: C.bad, lw: 4, r: 14 }); ctx.fillStyle = "#9FD6EA"; rr(ctx, 260, 300, 400, 200, 8); ctx.fill(); ctx.fillStyle = "#4C9BE0"; rr(ctx, 260, 400, 400, 100, 0); ctx.fill(); ctx.fillStyle = "#7B8B95"; rr(ctx, 300, 330, 80, 120, 4); ctx.fill(); rr(ctx, 420, 350, 100, 100, 4); ctx.fill(); text(ctx, "\"Banjir di kota kita HARI INI!\"", 460, 540, 20, { align: "center", weight: 900, color: C.bad }); text(ctx, "pesan viral di grup", 460, 580, 16, { align: "center", weight: 700, color: C.ink2 }); text(ctx, "📤 upload foto ke pencarian gambar", 460, 620, 16, { align: "center", weight: 800, color: C.kiko }); ctx.restore();
       if (n >= 2) arrowIcon(ctx, "right", 740, 450, 40, C.ink2);
       ctx.save(); if (n < 2) ctx.globalAlpha = 0.2; Pc.results(ctx, 820, 290, 860, [{ title: "Banjir melanda Kota Y, 2021", url: "arsip-berita.example · 5 tahun lalu", date: "" }, { title: "Foto banjir Kota Y dipakai ulang untuk hoaks", url: "cekfakta.example · tahun lalu", date: "" }, { title: "Galeri: banjir 2021", url: "fotonews.example", date: "" }], { hl: n >= 3 ? 1 : -1 }); ctx.restore();
       if (n >= 3) label(ctx, "foto lama, kota lain: klaim \"hari ini\" gugur", 1250, 680, { size: 24, color: C.bad });
@@ -98,11 +98,11 @@
       card(ctx, 120, 150, 1680, 740);
       heading(ctx, "TELUSURI KLAIM KE SUMBER ASLINYA", 215);
       card(ctx, 220, 280, 620, 190, { fill: "#fff", stroke: "#B7C4CC", lw: 3, r: 14 }); text(ctx, "artikel:", 240, 312, 18, { weight: 800, color: C.ink2 }); para(ctx, "\"Menurut penelitian Universitas X, vaksin ini berbahaya.\"", 530, 350, 22, 580, { align: "center", weight: 900 });
-      if (l > 2) { Lt.flag(ctx, 250, 418, "tanpa tautan"); Lt.flag(ctx, 430, 418, "tanpa nama peneliti"); }
+      if (l > 2) { Lt.flag(ctx, 250, 418, "tanpa link"); Lt.flag(ctx, 430, 418, "tanpa nama peneliti"); }
       arrowIcon(ctx, "right", 900, 355, 40, C.ink2); text(ctx, "cari penelitiannya", 900, 410, 18, { align: "center", weight: 800, color: C.ink2 });
       const n = reveal(l, 4, 2.2, 3);
       [["🐭", "ternyata tentang hal lain", "penelitian itu soal dosis pada 10 tikus"], ["🔍", "sampelnya terlalu kecil", "tidak bisa disimpulkan untuk manusia"], ["👻", "tidak pernah ada", "nama universitas dipinjam"]].forEach(([ic, t, s], i) => { ctx.save(); if (i >= n) ctx.globalAlpha = 0.2; card(ctx, 980, 280 + i * 130, 720, 112, { fill: C.badBg, stroke: C.bad, lw: 3, r: 14 }); text(ctx, ic, 1030, 350 + i * 130, 40, { align: "center" }); text(ctx, t, 1080, 325 + i * 130, 24, { weight: 900 }); text(ctx, s, 1080, 360 + i * 130, 19, { weight: 700, color: C.ink2 }); ctx.restore(); });
-      if (n >= 3) label(ctx, "kutipan tanpa tautan adalah tanda bahaya", 960, 720, { color: C.bad });
+      if (n >= 3) label(ctx, "kutipan tanpa link adalah tanda bahaya", 960, 720, { color: C.bad });
     },
     tanda_bahaya(ctx, b, l) {
       card(ctx, 120, 150, 1680, 740);
@@ -132,7 +132,7 @@
     make_show(ctx, b, l) {
       card(ctx, 160, 150, 1600, 740);
       text(ctx, "GILIRANMU", 960, 240, 34, { align: "center", color: C.accentDark, weight: 900 });
-      const items = [["Susun kueri", "operator yang tepat", (x, y) => { ctx.save(); ctx.translate(x - 210, y - 90); ctx.scale(0.42, 0.42); Lt.query(ctx, 0, 0, 1000, [["beasiswa", "kw"], ["site:go.id", "op"]]); Lt.query(ctx, 0, 110, 1000, [["\"gempa", "op"], ["hari ini\"", "op"], ["-film", "op"]]); ctx.restore(); }],
+      const items = [["Susun query", "operator yang tepat", (x, y) => { ctx.save(); ctx.translate(x - 210, y - 90); ctx.scale(0.42, 0.42); Lt.query(ctx, 0, 0, 1000, [["beasiswa", "kw"], ["site:go.id", "op"]]); Lt.query(ctx, 0, 110, 1000, [["\"gempa", "op"], ["hari ini\"", "op"], ["-film", "op"]]); ctx.restore(); }],
         ["Simulasi membaca lateral", "tab-tab fiktif, temukan pemiliknya", (x, y) => { ctx.save(); ctx.translate(x - 210, y - 100); ctx.scale(0.46, 0.46); Lt.browser(ctx, 0, 0, 900, 380, [{ title: "artikel" }, { title: "siapa pemilik…", active: true, hl: true }, { title: "cek fakta" }], "cari.example", { plus: true }); ctx.restore(); }],
         ["Pilah konten", "tindakan yang tepat", (x, y) => [["kenali", "🚫 jangan sebar"], ["🚩 lapor", "⛔ blokir"]].forEach((row, r) => row.forEach((t, c) => { card(ctx, x - 200 + c * 205, y - 90 + r * 80, 195, 66, { fill: "#fff", stroke: "#B7C4CC", lw: 2, r: 10 }); text(ctx, t, x - 102 + c * 205, y - 48 + r * 80, 20, { align: "center", weight: 900 }); }))]];
       items.forEach(([t1, t2, draw], i) => { const x = 400 + i * 560; card(ctx, x - 250, 290, 500, 440, { fill: C.bg2 }); ctx.fillStyle = C.kiko; ctx.beginPath(); ctx.arc(x - 200, 340, 28, 0, Math.PI * 2); ctx.fill(); text(ctx, String(i + 1), x - 200, 352, 30, { align: "center", color: "#fff", weight: 900 }); text(ctx, t1, x - 160, 352, 26, { weight: 900 }); text(ctx, t2, x - 160, 386, 20, { weight: 700, color: C.ink2 }); draw(x, 560); });

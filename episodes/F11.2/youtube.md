@@ -23,7 +23,7 @@ Bab:
 0:00 Pembuka
 0:46 Main dulu tanpa komputer
 1:23 Variabel dan tipe data
-2:34 Percabangan
+2:32 Percabangan
 
 Latihan interaktif (kuis dengan petunjuk, bisa dipakai luring di HP): berkas episode-f112.html di repositori proyek. Prasyarat: episode F11.0 Jembatan Menuju Pemrograman dan F11.1 Alur Pengembangan Program dan Produk Digital.
 
@@ -55,7 +55,7 @@ Bab:
 0:00 Pembuka bagian
 0:04 Perulangan
 1:22 Fungsi
-2:37 Program utuh dan PRIMM
+2:38 Program utuh dan PRIMM
 3:14 Giliranmu
 
 Latihan interaktif (kuis dengan petunjuk, bisa dipakai luring di HP): berkas episode-f112.html di repositori proyek. Prasyarat: episode F11.0 Jembatan Menuju Pemrograman dan F11.1 Alur Pengembangan Program dan Produk Digital.
@@ -88,7 +88,7 @@ Bab:
 0:00 Pembuka
 0:57 Main dulu tanpa komputer
 1:44 Variabel dan tipe data
-3:13 Percabangan
+3:10 Percabangan
 
 Latihan interaktif (kuis dengan petunjuk, bisa dipakai luring di HP): berkas episode-f112.html di repositori proyek. Prasyarat: episode F11.0 Jembatan Menuju Pemrograman dan F11.1 Alur Pengembangan Program dan Produk Digital.
 

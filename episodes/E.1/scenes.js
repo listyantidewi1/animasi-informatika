@@ -17,7 +17,7 @@
     if (phase === 3) { const op = st.ir.split(" ")[0]; const u = (f - 0.62) / 0.38; if (op === "MUAT" || op === "TAMBAH" || op === "KURANG") tokens.push({ path: V.PATH.memToCpu, u, label: st.mem[+st.ir.split(" ")[1]] }); if (op === "SIMPAN") tokens.push({ path: V.PATH.cpuToMem, u, label: st.aku }); if (op === "KELUAR") tokens.push({ path: V.PATH.memToOut, u, label: st.out }); }
     return { st, tokens, c, phase };
   };
-  const PARTS = [["🧭", "Unit kendali", "membaca instruksi, mengatur"], ["➕", "ALU", "menghitung, membandingkan"], ["🗄️", "Memori", "menyimpan program dan data"], ["⌨️", "Masukan", "pintu masuk data"], ["🖥️", "Keluaran", "pintu keluar hasil"]];
+  const PARTS = [["🧭", "Unit kendali", "membaca instruksi, mengatur"], ["➕", "ALU", "menghitung, membandingkan"], ["🗄️", "Memori", "menyimpan program dan data"], ["⌨️", "Input", "pintu masuk data"], ["🖥️", "Output", "pintu keluar hasil"]];
 
   Object.assign(SCENES, {
     title_q(ctx, b, l) {
@@ -36,7 +36,7 @@
     unplugged_peran(ctx, b, l) {
       card(ctx, 120, 150, 1680, 740);
       heading(ctx, "MAIN DULU TANPA KOMPUTER: KOMPUTER MANUSIA, LIMA PERAN");
-      const roles = [["Memori", "pegang kartu 0–15", null], ["Unit kendali", "baca kartu, beri perintah", "long"], ["ALU", "menghitung", null], ["Masukan", "memberi angka", "long"], ["Keluaran", "menulis di papan", null]];
+      const roles = [["Memori", "pegang kartu 0–15", null], ["Unit kendali", "baca kartu, beri perintah", "long"], ["ALU", "menghitung", null], ["Input", "memberi angka", "long"], ["Output", "menulis di papan", null]];
       const n = reveal(l, 1.5, 1.4, 5);
       roles.forEach(([t, s, hair], i) => { ctx.save(); if (i >= n) ctx.globalAlpha = 0.2; const x = 330 + i * 320; kid(ctx, x, 520, 130, { hair, point: i === 1 }); ctx.fillStyle = C.kiko; rr(ctx, x - 110, 300, 220, 44, 10); ctx.fill(); text(ctx, t, x, 330, 22, { align: "center", weight: 900, color: "#fff" }); para(ctx, s, x, 680, 20, 220, { align: "center", weight: 700, color: C.ink2 }); if (i === 0) for (let k = 0; k < 4; k++) { ctx.fillStyle = "#FFF9E0"; ctx.strokeStyle = "#E0B04B"; ctx.lineWidth = 2; rr(ctx, x - 150 + k * 14, 400 + k * 6, 60, 80, 6); ctx.fill(); ctx.stroke(); } if (i === 4) { ctx.fillStyle = "#1F2A33"; rr(ctx, x + 60, 380, 120, 90, 6); ctx.fill(); text(ctx, "12", x + 120, 440, 36, { align: "center", weight: 900, color: "#fff" }); } ctx.restore(); });
     },
@@ -134,7 +134,7 @@
       card(ctx, 120, 150, 1680, 740);
       heading(ctx, "DI PERANGKATMU", 215);
       const n = reveal(l, 1.0, 1.6, 4);
-      const items = [["CPU", "cip kecil di papan utama", (x, y) => Km.chip(ctx, x, y, 90)], ["Memori", "keping RAM", (x, y) => Km.ram(ctx, x - 110, y - 30, 220, 60)], ["Masukan", "layar sentuh, keyboard", (x, y) => D.keyboard(ctx, x - 110, y - 30, 220, {})], ["Keluaran", "layar, speaker", (x, y) => { ctx.fillStyle = "#1F2A33"; rr(ctx, x - 90, y - 55, 180, 110, 8); ctx.fill(); ctx.fillStyle = "#8FD0E6"; rr(ctx, x - 80, y - 45, 160, 90, 4); ctx.fill(); }]];
+      const items = [["CPU", "cip kecil di papan utama", (x, y) => Km.chip(ctx, x, y, 90)], ["Memori", "keping RAM", (x, y) => Km.ram(ctx, x - 110, y - 30, 220, 60)], ["Input", "layar sentuh, keyboard", (x, y) => D.keyboard(ctx, x - 110, y - 30, 220, {})], ["Output", "layar, speaker", (x, y) => { ctx.fillStyle = "#1F2A33"; rr(ctx, x - 90, y - 55, 180, 110, 8); ctx.fill(); ctx.fillStyle = "#8FD0E6"; rr(ctx, x - 80, y - 45, 160, 90, 4); ctx.fill(); }]];
       items.forEach(([t, s, d], i) => { ctx.save(); if (i >= n) ctx.globalAlpha = 0.2; const x = 230 + i * 300; card(ctx, x, 270, 270, 300, { fill: C.bg2, r: 16 }); d(x + 135, 380); text(ctx, t, x + 135, 500, 26, { align: "center", weight: 900 }); text(ctx, s, x + 135, 535, 18, { align: "center", weight: 700, color: C.ink2 }); ctx.restore(); });
       if (l > 8) { const sc = D.phone(ctx, 1560, 450, 200, 330); text(ctx, "📱", 1560, 470, 70, { align: "center" }); text(ctx, "HP = komputer", 1560, 540, 20, { align: "center", weight: 900 }); text(ctx, "Von Neumann", 1560, 566, 20, { align: "center", weight: 900 }); }
       if (l > 11) label(ctx, "video ini: miliaran siklus kecil seperti tadi", 960, 700, { size: 26 });
