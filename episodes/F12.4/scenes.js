@@ -38,7 +38,7 @@
       heading(ctx, "TERGANTUNG APA?");
       const n = reveal(l, 3.0, 2.4, 4);
       kid(ctx, 330, 560, 120, { point: true }); kid(ctx, 560, 560, 120, { hair: "long" }); kid(ctx, 790, 560, 120);
-      bubble(ctx, 200, 330, 330, "boleh, kan cuma catatan?", 22); bubble(ctx, 600, 330, 330, "sudah izin pemiliknya?", 22);
+      bubble(ctx, 165, 420, 330, "boleh, kan cuma catatan?", 22, { tailX: 330 }); bubble(ctx, 625, 420, 330, "sudah izin pemiliknya?", 22, { tailX: 790 });
       [["🙋", "izin pemiliknya"], ["✅", "kebenaran isinya"], ["🛡️", "siapa yang bisa dirugikan"]].forEach(([ic, t], i) => dim(ctx, n >= i + 1, () => { card(ctx, 1060, 280 + i * 130, 640, 110, { fill: "#FFF3D6", stroke: C.accent, lw: 3, r: 16 }); text(ctx, ic + "  " + t, 1100, 348 + i * 130, 30, { weight: 900 }); }));
       if (n >= 4) label(ctx, "inilah yang diatur undang-undang", 1380, 700, { size: 26 });
     },
