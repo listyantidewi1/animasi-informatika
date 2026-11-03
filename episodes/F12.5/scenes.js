@@ -44,7 +44,7 @@
       heading(ctx, "MAIN DULU: STIKER QR PALSU");
       const n = reveal(l, 2.0, 3.0, 4);
       Bx.stand(ctx, 300, 300, "Kedai Sari", { palsu: n >= 1, label: n >= 1 ? "ditempel diam-diam" : null });
-      if (n >= 2) { ctx.save(); ctx.translate(960, 470); ctx.scale(0.85, 0.85); Bx.app(ctx, 0, 0, "konfirmasi", { nama: "Pulsa Murah 88", warn: true }); ctx.restore(); }
+      if (n >= 2) { ctx.save(); ctx.translate(960, 495); ctx.scale(0.78, 0.78); Bx.app(ctx, 0, 0, "konfirmasi", { nama: "Pulsa Murah 88", warn: true }); ctx.restore(); }
       if (n >= 3) { card(ctx, 1220, 300, 480, 150, { fill: C.badBg, stroke: C.bad, lw: 4, r: 16 }); text(ctx, "langsung bayar tanpa membaca?", 1460, 360, 22, { align: "center", weight: 900, color: C.bad }); text(ctx, "uang masuk ke penipu", 1460, 408, 26, { align: "center", weight: 900, color: C.bad }); }
       if (n >= 4) { card(ctx, 1220, 480, 480, 150, { fill: C.goodBg, stroke: C.good, lw: 4, r: 16 }); text(ctx, "baca nama penerima dulu", 1460, 540, 24, { align: "center", weight: 900, color: C.good }); text(ctx, "tidak cocok? batalkan", 1460, 588, 24, { align: "center", weight: 900, color: C.good }); }
       fiktif(ctx);

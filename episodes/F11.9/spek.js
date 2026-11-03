@@ -47,7 +47,7 @@
   Sp.budget = function (ctx, x, y, w, parts, opt = {}) {
     const total = parts.reduce((a, p) => a + p[1], 0), max = opt.max || total; let cx = x;
     ctx.fillStyle = "#E6EDF2"; rr(ctx, x, y, w, 60, 12); ctx.fill();
-    parts.forEach(([lab, v, col], i) => { if (opt.n != null && i >= opt.n) return; const bw = w * v / max; ctx.fillStyle = col; ctx.fillRect(cx, y, bw, 60); if (bw > 70) text(ctx, lab, cx + bw / 2, y + 38, 16, { align: "center", weight: 900, color: "#fff" }); else { ctx.strokeStyle = col; ctx.lineWidth = 3; ctx.beginPath(); ctx.moveTo(cx + bw / 2, y + 62); ctx.lineTo(cx + bw / 2, y + 72); ctx.stroke(); text(ctx, lab, cx + bw / 2, y + 92, 16, { align: "center", weight: 900, color: col }); } cx += bw; });
+    parts.forEach(([lab, v, col], i) => { if (opt.n != null && i >= opt.n) return; const bw = w * v / max; ctx.fillStyle = col; ctx.fillRect(cx, y, bw, 60); if (bw > 70) text(ctx, lab, cx + bw / 2, y + 38, 16, { align: "center", weight: 900, color: "#fff" }); else if (lab) { ctx.strokeStyle = col; ctx.lineWidth = 3; ctx.beginPath(); ctx.moveTo(cx + bw / 2, y + 62); ctx.lineTo(cx + bw / 2, y + 72); ctx.stroke(); text(ctx, lab, cx + bw / 2, y + 92, 16, { align: "center", weight: 900, color: col }); } cx += bw; });
     if (opt.label) text(ctx, opt.label, x, y - 12, 20, { weight: 900, color: C.ink2 });
     if (opt.total !== false) text(ctx, "Rp " + (opt.shown != null ? opt.shown : total).toLocaleString("id-ID") + (opt.unit || " juta"), x + w, y - 12, 20, { align: "right", weight: 900, color: C.accentDark });
   };

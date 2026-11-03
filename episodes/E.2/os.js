@@ -38,8 +38,8 @@
   // jendela pengelola tugas: rows [[nama, cpu%, ram]], opt.hl
   O.taskman = function (ctx, x, y, w, rows, opt = {}) {
     const sc = D.windowFrame(ctx, x, y, w, 90 + rows.length * 44 + 20, "Pengelola Tugas");
-    text(ctx, "Proses", sc.x + 10, sc.y + 22, 18, { weight: 900, color: C.ink2 }); text(ctx, "CPU", sc.x + sc.w - 180, sc.y + 22, 18, { align: "right", weight: 900, color: C.ink2 }); text(ctx, "RAM", sc.x + sc.w - 20, sc.y + 22, 18, { align: "right", weight: 900, color: C.ink2 });
-    rows.forEach(([n, cpu, ram], i) => { const ry = sc.y + 36 + i * 44; if (opt.hl === i) { ctx.fillStyle = C.badBg; rr(ctx, sc.x, ry, sc.w, 40, 8); ctx.fill(); } text(ctx, n, sc.x + 10, ry + 27, 20, { weight: 800, color: opt.hl === i ? C.bad : C.ink }); text(ctx, cpu, sc.x + sc.w - 180, ry + 27, 20, { align: "right", weight: 800 }); text(ctx, ram, sc.x + sc.w - 20, ry + 27, 20, { align: "right", weight: 800 }); });
+    text(ctx, "Proses", sc.x + 10, sc.y + 22, 18, { weight: 900, color: C.ink2 }); text(ctx, "CPU", sc.x + sc.w - 130, sc.y + 22, 18, { align: "right", weight: 900, color: C.ink2 }); text(ctx, "RAM", sc.x + sc.w - 20, sc.y + 22, 18, { align: "right", weight: 900, color: C.ink2 });
+    rows.forEach(([n, cpu, ram], i) => { const ry = sc.y + 36 + i * 44; if (opt.hl === i) { ctx.fillStyle = C.badBg; rr(ctx, sc.x, ry, sc.w, 40, 8); ctx.fill(); } text(ctx, n, sc.x + 10, ry + 27, 20, { weight: 800, color: opt.hl === i ? C.bad : C.ink }); text(ctx, cpu, sc.x + sc.w - 130, ry + 27, 20, { align: "right", weight: 800 }); text(ctx, ram, sc.x + sc.w - 20, ry + 27, 20, { align: "right", weight: 800 }); });
     return sc;
   };
   // steker / driver
