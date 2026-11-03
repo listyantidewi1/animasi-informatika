@@ -28,10 +28,11 @@
     },
     unplugged_label(ctx, b, l) {
       card(ctx, 120, 150, 1680, 740);
-      heading(ctx, "MAIN DULU TANPA KOMPUTER: LIMA PELABEL, TANPA ATURAN");
+      heading(ctx, "MAIN DULU TANPA KOMPUTER: PELABEL TANPA ATURAN");
       const n = reveal(l, 1.5, 1.2, 6);
       const labs = [[["A", "buah"], ["B", "buah"], ["C", "buah"]], [["A", "buah"], ["B", "sayur"], ["C", "sayur"]], [["A", "sayur"], ["B", "sayur"], ["C", "sayur"]], [["A", "sayur"], ["B", "buah"], ["C", "sayur"]], [["A", "buah"], ["B", "buah"], ["C", "buah"]], [["A", "sayur"], ["B", "sayur"], ["C", "sayur"]]];
       KINDS.forEach((k, i) => { if (i < n) Dq.photo(ctx, 240 + i * 250, 290, 220, k, labs[i], { agree: l > 9 ? labs[i].every(x => x[1] === labs[i][0][1]) : null }); });
+      if (n >= 1) text(ctx, "contoh: label dari 3 pelabel (A, B, C); di kelas ada 5 murid", 960, 512, 22, { align: "center", weight: 800, color: C.ink2 });
       if (l > 9) Dq.agree(ctx, 560, 600, 800, 67, { label: "contoh 6 gambar: labelnya sama 4 dari 6" });
       if (l > 11) label(ctx, "tomat dan jagung jadi rebutan", 960, 700, { color: C.bad });
     },
