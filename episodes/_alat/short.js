@@ -32,10 +32,15 @@
     });
   }
 
-  function narration(ctx, b, l) {
+  // kotak narasi: tingginya mengikuti jumlah baris, dasarnya tidak melewati y 1590 (keterangan Shorts di bawahnya)
+  function narrationBox(ctx, b) {
     let size = 50, lines = wrap(ctx, b.text, size, 700, 860);
     if (lines.length > 4) { size = 44; lines = wrap(ctx, b.text, size, 700, 860); }
-    const h = lines.length * size * 1.3 + 48, y0 = 1268;
+    const h = lines.length * size * 1.3 + 48;
+    return { size, lines, h, y0: Math.min(1268, 1590 - h) };
+  }
+  function narration(ctx, b, l, nb) {
+    const { size, lines, h, y0 } = nb;
     ctx.fillStyle = "rgba(31,42,51,0.94)"; rr(ctx, 50, y0, 900, h, 24); ctx.fill();
     const frac = clamp(l / b.audio, 0, 1); ctx.fillStyle = C.accent; rr(ctx, 50, y0 + h - 9, 900 * frac, 9, 4); ctx.fill();
     lines.forEach((ln, i) => text(ctx, ln, 500, y0 + 24 + size + i * size * 1.3, size, { align: "center", color: C.subText, weight: 700 }));
@@ -63,16 +68,17 @@
     ctx.save(); ctx.setTransform(1, 0, 0, 1, 0, 0);
     ctx.fillStyle = C.bg; ctx.fillRect(0, 0, SW, SH);
     hookBand(ctx, TL, t);
+    const nb = narrationBox(ctx, b), bot = Math.min(IMG_BOT, nb.y0 - 38);
     if (VSCENES[b.scene]) VSCENES[b.scene](ctx, b, l, TL);
     else {
       octx.save(); octx.setTransform(1, 0, 0, 1, 0, 0); octx.fillStyle = "#fff"; octx.fillRect(0, 0, K.W, K.H);
       const sl = l * (b.src_dur ? b.src_dur / b.dur : 1) + (b.at || 0);
       const fn = K.SCENES[b.scene]; if (fn) fn(octx, { ...b, id: b.src || b.id }, sl, t, TL);
       octx.restore();
-      crops(ctx, off, b.crops || [[120, 150, 1680, 740]], IMG_TOP, b.note ? IMG_BOT - 60 : IMG_BOT);
-      if (b.note) text(ctx, b.note, SW / 2, IMG_BOT - 8, 30, { align: "center", weight: 800, color: C.bad });
+      crops(ctx, off, b.crops || [[120, 150, 1680, 740]], IMG_TOP, b.note ? bot - 60 : bot);
+      if (b.note) text(ctx, b.note, SW / 2, bot - 8, 30, { align: "center", weight: 800, color: C.bad });
     }
-    narration(ctx, b, l);
+    narration(ctx, b, l, nb);
     ctx.restore();
     return b;
   }
