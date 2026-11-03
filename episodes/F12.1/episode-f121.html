@@ -1,0 +1,976 @@
+<title>Kiko: Struktur Data Kompleks</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<style>
+/* Inti gaya halaman latihan: satu kolom, pemutar di atas, latihan di bawah; palet kantin sama dengan video. */
+:root {
+  --bg: #EAF2EE; --surface: #FFFFFF; --surface2: #DCE9E2; --ink: #1F2A33; --ink2: #4A5A66; --line: #C9D8D0;
+  --accent: #2E7E9A; --accent-ink: #FFFFFF; --warm: #F2B134; --warm-ink: #5E3E05; --good: #2E9E5B; --good-bg: #DDF3E4; --bad: #D9443B; --bad-bg: #FBE1DF;
+  --font: Inter, "Segoe UI", Roboto, Arial, sans-serif;
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) { --bg: #141C1A; --surface: #1E2926; --surface2: #273532; --ink: #EAF2EE; --ink2: #A9BBB3; --line: #3A4A45; --accent: #5FB3CE; --accent-ink: #0F1D22; --warm: #F2B134; --warm-ink: #2B1C02; --good: #5FCB8A; --good-bg: #1F3A2B; --bad: #F07A72; --bad-bg: #442523; color-scheme: dark } }
+:root[data-theme="dark"] { --bg: #141C1A; --surface: #1E2926; --surface2: #273532; --ink: #EAF2EE; --ink2: #A9BBB3; --line: #3A4A45; --accent: #5FB3CE; --accent-ink: #0F1D22; --warm: #F2B134; --warm-ink: #2B1C02; --good: #5FCB8A; --good-bg: #1F3A2B; --bad: #F07A72; --bad-bg: #442523; color-scheme: dark }
+* { box-sizing: border-box }
+body { background: var(--bg); color: var(--ink); font-family: var(--font); font-size: 17px; line-height: 1.5; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); padding-block: 16px 48px }
+.wrap { max-width: 980px; margin: 0 auto; display: grid; gap: 28px }
+h1 { font-size: clamp(26px, 5vw, 38px); line-height: 1.15; margin: 0; text-wrap: balance; font-weight: 900 }
+h2 { font-size: 22px; margin: 0 0 12px; font-weight: 800 }
+h3 { font-size: 18px; margin: 0 0 8px; font-weight: 800 }
+p { margin: 0 0 10px; max-width: 65ch }
+.eyebrow { font-size: 13px; letter-spacing: .08em; text-transform: uppercase; color: var(--ink2); font-weight: 800; margin-bottom: 6px }
+.card { background: var(--surface); border-radius: 18px; padding: 18px; border: 1px solid var(--line) }
+button { font: inherit; font-weight: 800; border: 0; border-radius: 12px; padding: 12px 16px; cursor: pointer; background: var(--surface2); color: var(--ink); min-height: 48px; touch-action: manipulation }
+button:focus-visible, [tabindex]:focus-visible { outline: 3px solid var(--warm); outline-offset: 2px }
+button.primary { background: var(--accent); color: var(--accent-ink) }
+button.warm { background: var(--warm); color: var(--warm-ink) }
+button[aria-pressed="true"] { box-shadow: inset 0 0 0 3px var(--accent) }
+button:disabled { opacity: .45; cursor: default }
+.row { display: flex; flex-wrap: wrap; gap: 10px; align-items: center }
+/* player */
+.player { display: grid; gap: 12px }
+.stage { position: relative; width: 100%; aspect-ratio: 16 / 9; max-width: 100%; background: #EAF2EE; border-radius: 14px; overflow: hidden; border: 1px solid var(--line) }
+.stage canvas { width: 100%; height: 100%; display: block }
+.bigplay { position: absolute; inset: 0; display: grid; place-items: center; background: rgba(31,42,51,.25); border: 0; border-radius: 0; color: #fff; font-size: 20px; min-height: 0 }
+.bigplay span { background: var(--accent); color: var(--accent-ink); padding: 14px 26px; border-radius: 999px; font-weight: 900 }
+.bar { height: 10px; background: var(--surface2); border-radius: 999px; overflow: hidden; cursor: pointer }
+.bar > i { display: block; height: 100%; width: 0; background: var(--warm) }
+.chapters { display: flex; flex-wrap: wrap; gap: 8px }
+.chapters button { font-size: 14px; padding: 8px 12px; min-height: 40px }
+.chapters button.now { background: var(--warm); color: var(--warm-ink) }
+.hint { color: var(--ink2); font-size: 15px }
+/* exercises (generic parts) */
+.levels { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 12px }
+.levels button { font-size: 14px; padding: 8px 12px; min-height: 40px }
+.levels button.done::after { content: " ✓"; color: var(--good) }
+.task { background: var(--surface2); border-radius: 12px; padding: 12px 14px; margin-bottom: 12px; font-weight: 700 }
+.result { border-radius: 12px; padding: 12px 14px; font-weight: 800; margin-top: 10px }
+.result.good { background: var(--good-bg); color: var(--good) }
+.result.bad { background: var(--bad-bg); color: var(--bad) }
+.result.info { background: var(--surface2); color: var(--ink) }
+/* quiz */
+.quiz { display: grid; gap: 16px }
+.q { border-top: 1px solid var(--line); padding-top: 14px }
+.q:first-child { border-top: 0; padding-top: 0 }
+.opts { display: grid; gap: 8px; margin-top: 8px }
+.opts button { text-align: left; font-weight: 700; background: var(--surface2); display: flex; gap: 10px; align-items: center }
+.opts button b { width: 30px; height: 30px; border-radius: 50%; background: var(--accent); color: var(--accent-ink); display: grid; place-items: center; flex: none }
+.opts button.right { background: var(--good-bg); box-shadow: inset 0 0 0 3px var(--good) }
+.opts button.wrong { background: var(--bad-bg) }
+.fb { margin-top: 8px; font-weight: 700 }
+.fb.good { color: var(--good) } .fb.bad { color: var(--bad) }
+details summary { cursor: pointer; font-weight: 800; font-size: 18px }
+details[open] summary { margin-bottom: 10px }
+ul.plain { padding-left: 20px; margin: 0 0 10px } ul.plain li { margin-bottom: 6px; max-width: 65ch }
+.progress { display: flex; gap: 8px; flex-wrap: wrap } .progress span { background: var(--surface2); border-radius: 999px; padding: 6px 12px; font-size: 14px; font-weight: 700 }
+.progress span.ok { background: var(--good-bg); color: var(--good) }
+@media (prefers-reduced-motion: reduce) { * { transition: none !important } }
+
+/* latihan F12.1 */
+.qnum { font-weight: 800; color: var(--ink2); font-size: 14px; margin-bottom: 4px }
+.qtext { font-weight: 800; font-size: 18px; margin-bottom: 8px }
+.pic { background: var(--surface2); border-radius: 12px; padding: 12px; margin: 8px 0; font-size: 15px; font-weight: 700; display: grid; gap: 6px }
+.pic .big { font-size: 34px; letter-spacing: 6px }
+.pic .row2 { display: flex; flex-wrap: wrap; gap: 6px } .pic .chip { background: var(--surface); border: 2px solid var(--line); border-radius: 8px; padding: 4px 8px }
+.grid5 { border-collapse: collapse; margin: 6px auto } .grid5 td, .grid5 th { width: 44px; height: 44px; text-align: center; border: 1px solid var(--line); font-size: 14px; font-weight: 800; padding: 0 }
+.grid5 th { background: var(--surface2) } .grid5 td button { width: 100%; height: 100%; border: 0; border-radius: 0; background: transparent; font-size: 18px; min-height: 44px; padding: 0 }
+.grid5 td button.right { background: var(--good-bg) } .grid5 td button.wrong { background: var(--bad-bg) } .grid5 td.start { background: #FFF3D6 }
+.opts { display: grid; gap: 8px; margin: 8px 0 }
+.opts button { text-align: left; font-size: 15px; min-height: 44px; padding: 10px 12px; background: var(--surface); border: 2px solid var(--line) }
+.opts button.right { border-color: var(--good); background: var(--good-bg) } .opts button.wrong { border-color: var(--bad); background: var(--bad-bg) } .opts button.picked { border-color: var(--accent); background: color-mix(in srgb, var(--accent) 14%, var(--surface)) }
+.peta { display: grid; gap: 10px; margin: 8px 0 }
+.peta .ep { border-radius: 12px; padding: 12px 14px; display: grid; gap: 4px; font-weight: 700 } .peta .ep.ok { background: var(--good-bg) } .peta .ep.redo { background: color-mix(in srgb, var(--accent) 18%, var(--surface)) }
+.peta .ep b { font-size: 16px } .peta .ep small { color: var(--ink2) }
+.rev { display: grid; gap: 6px; margin-top: 8px } .rev div { font-size: 14px; padding: 8px 10px; border-radius: 10px; background: var(--surface2) } .rev div.bad { background: var(--bad-bg) }
+.tr { border-collapse: collapse; width: 100%; font-size: 15px; margin: 8px 0 } .tr th, .tr td { border: 1px solid var(--line); padding: 6px 8px; text-align: center } .tr th { background: var(--surface2) } .tr td.blank { background: #FFF3D6; font-weight: 900 } .tr td.ok { background: var(--good-bg); font-weight: 900 }
+.code { background: #1F2A33; color: #fff; border-radius: 12px; padding: 10px 12px; font-family: ui-monospace, monospace; font-size: 14px; white-space: pre; margin: 8px 0; line-height: 1.6 }
+.mem { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; margin: 8px 0 } .mem div { background: var(--surface); border: 2px solid var(--line); border-radius: 10px; padding: 6px; text-align: center } .mem div b { display: block; font-size: 12px; color: var(--ink2) } .mem div span { font-size: 18px; font-weight: 900 } .mem div.chg { border-color: var(--accent); background: #FFF3D6 }
+.py { background: #1F2A33; color: #fff; border-radius: 12px; padding: 10px 12px; font-family: ui-monospace, monospace; font-size: 13px; white-space: pre-wrap; margin: 8px 0; line-height: 1.7 } .py .hl { background: #B57A12; border-radius: 4px; padding: 0 4px }
+.scr { background: #0E1418; color: #fff; border-radius: 10px; padding: 8px 12px; font-family: ui-monospace, monospace; font-size: 14px; min-height: 20px; margin: 6px 0 }
+.tree svg { width: 100%; height: auto; display: block; background: var(--surface2); border-radius: 12px; margin: 8px 0 }
+.tree circle { fill: var(--surface); stroke: #2E7E9A; stroke-width: 2.5 } .tree circle.cur { fill: #FFF3D6; stroke: #E09A1A; stroke-width: 4 } .tree circle.path { fill: #FFF3D6; stroke: #E09A1A } .tree circle.fresh { fill: var(--good-bg); stroke: var(--good) }
+.tree line { stroke: #B7C4CC; stroke-width: 2.5 } .tree line.path { stroke: #E09A1A; stroke-width: 4 } .tree text { font: 800 12px Inter, sans-serif; text-anchor: middle; fill: #1F2A33 }
+.dir { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; margin: 8px 0 } .dir button { min-height: 48px; font-size: 16px; font-weight: 800 }
+.todo { display: flex; flex-wrap: wrap; gap: 6px; margin: 6px 0 } .todo span { border: 2px solid var(--line); border-radius: 8px; padding: 2px 8px; font-weight: 800 } .todo span.now { border-color: #E09A1A; background: #FFF3D6 } .todo span.ok { background: var(--good-bg); border-color: var(--good) }
+</style>
+
+<div class="wrap">
+  <header>
+    <div class="eyebrow">Informatika · Fase F · Kelas XII · Episode F12.1</div>
+    <h1>Struktur Data Kompleks dan Abstrak</h1>
+    <p class="hint">Tonton videonya (dua bagian), lalu kerjakan tiga latihan: binary search tree interaktif, pemilih struktur data, dan pelacak stack dan queue. Suara bisa dimatikan; teks selalu tampil di layar.</p>
+  </header>
+  <section class="card player" aria-label="Pemutar episode">
+    <div class="stage">
+      <canvas id="screen" width="1920" height="1080" aria-label="Animasi episode"></canvas>
+      <audio id="nar" preload="auto" src="narasi.mp3"></audio>
+      <button class="bigplay" id="bigplay" aria-label="Putar"><span>▶ Putar episode</span></button>
+    </div>
+    <div class="bar" id="bar" role="slider" aria-label="Posisi episode" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" tabindex="0"><i id="barfill"></i></div>
+    <div class="row">
+      <button class="primary" id="playbtn">▶ Putar</button>
+      <button id="replay">↺ Ulangi bagian ini</button>
+      <button id="voice" aria-pressed="true">🔊 Suara: nyala</button>
+      <button id="slow" aria-pressed="false">🐢 Mode lambat</button>
+      <span class="hint" id="timelabel">0:00 / 0:00</span>
+    </div>
+    <div>
+      <div class="eyebrow">Bagian</div>
+      <div class="chapters" id="chapters"></div>
+    </div>
+  </section>
+
+  <section class="card" aria-label="Cek pemahaman">
+    <h2>Cek pemahaman</h2>
+    <p class="hint">Pilih satu jawaban. Kalau salah, kamu dapat petunjuk, lalu coba lagi.</p>
+    <div class="quiz" id="quiz"></div>
+  </section>
+
+  <section class="card" aria-label="Latihan">
+    <h2>Binary search tree, pemilih struktur, pelacak stack dan queue</h2>
+    <p class="hint">Tiga latihan. Jawaban salah memberi petunjuk. Kemajuan tersimpan di perangkat ini.</p>
+    <div class="levels" id="levels"></div>
+    <div class="task" id="task"></div>
+    <div id="exarea"></div>
+    <div id="result"></div>
+    <div class="row" style="margin-top:10px"><button id="redo">↺ Ulangi bagian ini</button></div>
+  </section>
+
+  <section class="card" aria-label="Kemajuan">
+    <h2>Kemajuanmu</h2>
+    <div class="progress" id="progress"></div>
+    <p class="hint" style="margin-top:8px">Kemajuan tersimpan di perangkat ini saja.</p>
+  </section>
+
+  <section class="card">
+    <details>
+      <summary>Untuk guru: cara memakai episode ini (24 JP)</summary>
+      <p><b>Tujuan (F12.1, elemen BK dan AP, Fase F):</b> murid merancang dan mengimplementasikan program yang memakai struktur data kompleks dan abstrak (linked list, tree, graph, hash map) dengan library yang tersedia. Target minimum: memakai list sebagai stack, deque sebagai queue, dan dictionary sebagai hash map, serta membaca gambar tree dan graph. Target lanjutan: membuat linked list dan binary search tree sendiri (node berupa dictionary).</p>
+      <ul class="plain">
+        <li><b>Pertemuan 1 (2 JP):</b> permainan rantai kartu nama dan loker. Tonton Bagian 1 sampai segmen library. Latihan 3 (pelacak stack dan queue).</li>
+        <li><b>Pertemuan 2–3 (4 JP), stack dan queue:</b> fitur undo sederhana dengan list; antrean kantin dengan deque. Bandingkan waktu <code>list.pop(0)</code> dan <code>deque.popleft()</code> untuk 100.000 data dengan modul <code>time</code>.</li>
+        <li><b>Pertemuan 4–5 (4 JP), linked list:</b> gambar di kertas dulu, lalu kode: tambah di depan, cetak semua isi, sisip setelah node tertentu. Lanjutan: hapus node.</li>
+        <li><b>Pertemuan 6–7 (4 JP), hash map:</b> tonton segmen Hash map. Hitung kata dalam cerpen dengan dictionary; simulasi fungsi hash dan collision dengan kartu dan kotak.</li>
+        <li><b>Pertemuan 8–9 (4 JP), tree:</b> Latihan 1 (binary search tree interaktif), menggambar BST dari urutan sisip berbeda (urutan terurut menghasilkan pohon miring). Lanjutan: fungsi sisip dan cari BST.</li>
+        <li><b>Pertemuan 10–11 (4 JP), graph:</b> peta sekolah atau jalur angkot sebagai dictionary berisi list: daftar tetangga, cek dua tempat terhubung langsung. Latihan 2 (pemilih struktur data).</li>
+        <li><b>Pertemuan 12 (2 JP), asesmen:</b> kasus aplikasi perpustakaan kelas: murid memilih struktur untuk tiap fitur (antrean pinjam, cari judul, riwayat, rak bertingkat) dan menuliskan alasannya.</li>
+      </ul>
+      <p><b>Catatan:</b> rumus hash "banyak huruf % 5" di video hanya contoh; Python memakai fungsi hash yang jauh lebih rumit. Semua nama dan data dalam episode ini fiktif.</p>
+    </details>
+  </section>
+</div>
+
+<script>/* Kiko core: mesin gambar bersama untuk semua episode Fase D.
+   Kiko.draw(ctx, t, TL) menggambar frame pada detik t di kanvas 1920x1080 secara deterministik.
+   Berisi palet, pembantu gambar, tokoh (Kiko, murid), dan adegan umum (judul, kuis, ringkasan, penutup).
+   Setiap episode menambahkan adegannya sendiri di scenes.js: Object.assign(Kiko.SCENES, {...}). */
+(function (global) {
+  const W = 1920, H = 1080;
+  const FONT = "Inter, 'Segoe UI', Roboto, Arial, sans-serif";
+  const C = {
+    bg: "#EAF2EE", bg2: "#DCE9E2", ink: "#1F2A33", ink2: "#4A5A66", panel: "#FFFFFF",
+    tile: "#F7FAF8", tileLine: "#C9D8D0", table: "#A4653A", tableTop: "#C98A57",
+    kiko: "#2E7E9A", kikoDark: "#1F5A6E", kikoLight: "#8FD0E6", eye: "#FFFFFF", pupil: "#1F2A33",
+    accent: "#F2B134", accentDark: "#B57A12", good: "#2E9E5B", bad: "#D9443B", goodBg: "#DDF3E4", badBg: "#FBE1DF",
+    sub: "#1F2A33", subText: "#FFFFFF", star: "#F2B134", skin: "#F1C9A5", skin2: "#C98A57", hair: "#2B2118",
+    uniform: "#FFFFFF", pants: "#2F4E7D", bubble: "#FFFFFF", muted: "#9AAFA6"
+  };
+  const ease = u => u < 0 ? 0 : u > 1 ? 1 : u * u * (3 - 2 * u);
+  const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
+  const lerp = (a, b, u) => a + (b - a) * u;
+
+  // ---------- drawing helpers ----------
+  function rr(ctx, x, y, w, h, r) {
+    ctx.beginPath(); ctx.moveTo(x + r, y); ctx.arcTo(x + w, y, x + w, y + h, r); ctx.arcTo(x + w, y + h, x, y + h, r);
+    ctx.arcTo(x, y + h, x, y, r); ctx.arcTo(x, y, x + w, y, r); ctx.closePath();
+  }
+  function text(ctx, s, x, y, size, opt = {}) {
+    ctx.font = `${opt.weight || 600} ${size}px ${FONT}`; ctx.fillStyle = opt.color || C.ink;
+    ctx.textAlign = opt.align || "left"; ctx.textBaseline = opt.base || "alphabetic"; ctx.fillText(s, x, y);
+  }
+  function wrap(ctx, s, size, weight, maxW) {
+    ctx.font = `${weight} ${size}px ${FONT}`;
+    const words = s.split(" "), lines = []; let cur = "";
+    for (const w of words) {
+      const test = cur ? cur + " " + w : w;
+      if (ctx.measureText(test).width > maxW && cur) { lines.push(cur); cur = w; } else cur = test;
+    }
+    if (cur) lines.push(cur);
+    return lines;
+  }
+  function para(ctx, s, x, y, size, maxW, opt = {}) {
+    const lines = wrap(ctx, s, size, opt.weight || 500, maxW); const lh = size * (opt.lh || 1.35);
+    lines.forEach((l, i) => text(ctx, l, x, y + i * lh, size, opt));
+    return lines.length * lh;
+  }
+  function arrowIcon(ctx, kind, cx, cy, s, color) {
+    ctx.save(); ctx.translate(cx, cy); ctx.strokeStyle = color; ctx.fillStyle = color; ctx.lineWidth = s * 0.16; ctx.lineCap = "round"; ctx.lineJoin = "round";
+    if (kind === "up") {
+      ctx.beginPath(); ctx.moveTo(0, s * 0.45); ctx.lineTo(0, -s * 0.3); ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(-s * 0.32, -s * 0.05); ctx.lineTo(0, -s * 0.45); ctx.lineTo(s * 0.32, -s * 0.05); ctx.stroke();
+    } else if (kind === "left" || kind === "right") {
+      const k = kind === "left" ? -1 : 1;
+      ctx.beginPath(); ctx.moveTo(0, s * 0.45); ctx.lineTo(0, -s * 0.05); ctx.quadraticCurveTo(0, -s * 0.32, k * s * 0.28, -s * 0.32); ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(k * s * 0.12, -s * 0.5); ctx.lineTo(k * s * 0.4, -s * 0.32); ctx.lineTo(k * s * 0.12, -s * 0.14); ctx.stroke();
+    } else if (kind === "east") {
+      ctx.beginPath(); ctx.moveTo(-s * 0.4, 0); ctx.lineTo(s * 0.3, 0); ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(s * 0.05, -s * 0.28); ctx.lineTo(s * 0.4, 0); ctx.lineTo(s * 0.05, s * 0.28); ctx.stroke();
+    } else if (kind === "grab") {
+      ctx.beginPath(); ctx.arc(0, s * 0.12, s * 0.22, 0, Math.PI * 2); ctx.fill();
+      ctx.beginPath(); ctx.moveTo(-s * 0.4, -s * 0.42); ctx.lineTo(-s * 0.4, -s * 0.12); ctx.moveTo(s * 0.4, -s * 0.42); ctx.lineTo(s * 0.4, -s * 0.12);
+      ctx.moveTo(-s * 0.4, -s * 0.42); ctx.lineTo(s * 0.4, -s * 0.42); ctx.stroke();
+    }
+    ctx.restore();
+  }
+  function bakso(ctx, cx, cy, s, opt = {}) {
+    // a bowl of bakso: the goal
+    ctx.save(); ctx.translate(cx, cy);
+    if (opt.glow) { ctx.beginPath(); ctx.arc(0, 0, s * 0.62, 0, Math.PI * 2); ctx.fillStyle = "rgba(242,177,52,0.22)"; ctx.fill(); }
+    ctx.fillStyle = "#E4EEF5"; ctx.beginPath(); ctx.moveTo(-s * 0.46, -s * 0.05); ctx.quadraticCurveTo(-s * 0.4, s * 0.45, 0, s * 0.45); ctx.quadraticCurveTo(s * 0.4, s * 0.45, s * 0.46, -s * 0.05); ctx.closePath(); ctx.fill();
+    ctx.strokeStyle = "#8FA9BD"; ctx.lineWidth = s * 0.05; ctx.stroke();
+    ctx.fillStyle = "#C8B49A"; ctx.beginPath(); ctx.ellipse(0, -s * 0.05, s * 0.44, s * 0.14, 0, 0, Math.PI * 2); ctx.fill();
+    for (const [dx, dy, r] of [[-0.16, -0.1, 0.13], [0.14, -0.12, 0.13], [0, -0.22, 0.12]]) {
+      ctx.fillStyle = "#9A7B5B"; ctx.beginPath(); ctx.arc(dx * s, dy * s, r * s, 0, Math.PI * 2); ctx.fill();
+      ctx.fillStyle = "#B8977A"; ctx.beginPath(); ctx.arc(dx * s - r * s * 0.3, dy * s - r * s * 0.3, r * s * 0.4, 0, Math.PI * 2); ctx.fill();
+    }
+    ctx.fillStyle = "#4CA64C"; for (const dx of [-0.26, 0.1, 0.26]) { ctx.beginPath(); ctx.arc(dx * s, -s * 0.07, s * 0.045, 0, Math.PI * 2); ctx.fill(); }
+    ctx.restore();
+  }
+  function table(ctx, x, y, w, h) {
+    ctx.fillStyle = C.table; rr(ctx, x + w * 0.1, y + h * 0.3, w * 0.8, h * 0.55, 10); ctx.fill();
+    ctx.fillStyle = C.tableTop; rr(ctx, x + w * 0.06, y + h * 0.18, w * 0.88, h * 0.3, 10); ctx.fill();
+    ctx.fillStyle = "rgba(0,0,0,0.12)"; ctx.fillRect(x + w * 0.16, y + h * 0.5, w * 0.08, h * 0.35); ctx.fillRect(x + w * 0.76, y + h * 0.5, w * 0.08, h * 0.35);
+  }
+  function kiko(ctx, cx, cy, s, ang, opt = {}) {
+    ctx.save(); ctx.translate(cx, cy);
+    // shadow
+    ctx.fillStyle = "rgba(0,0,0,0.12)"; ctx.beginPath(); ctx.ellipse(0, s * 0.42, s * 0.42, s * 0.12, 0, 0, Math.PI * 2); ctx.fill();
+    ctx.rotate(ang);
+    // wheels
+    ctx.fillStyle = C.kikoDark; rr(ctx, -s * 0.46, -s * 0.2, s * 0.12, s * 0.5, 5); ctx.fill(); rr(ctx, s * 0.34, -s * 0.2, s * 0.12, s * 0.5, 5); ctx.fill();
+    // body
+    ctx.fillStyle = opt.flash ? `rgba(217,68,59,${0.5 + 0.5 * opt.flash})` : C.kiko; rr(ctx, -s * 0.38, -s * 0.36, s * 0.76, s * 0.72, s * 0.16); ctx.fill();
+    // visor (front, facing up)
+    ctx.fillStyle = C.kikoLight; rr(ctx, -s * 0.26, -s * 0.33, s * 0.52, s * 0.3, s * 0.1); ctx.fill();
+    // eyes
+    const mood = opt.mood || "happy";
+    ctx.fillStyle = C.pupil;
+    if (mood === "sad") { ctx.beginPath(); ctx.arc(-s * 0.12, -s * 0.18, s * 0.05, 0, Math.PI * 2); ctx.arc(s * 0.12, -s * 0.18, s * 0.05, 0, Math.PI * 2); ctx.fill(); ctx.strokeStyle = C.pupil; ctx.lineWidth = s * 0.03; ctx.beginPath(); ctx.arc(0, -s * 0.03, s * 0.08, Math.PI * 1.15, Math.PI * 1.85); ctx.stroke(); }
+    else if (mood === "confused") { ctx.beginPath(); ctx.arc(-s * 0.12, -s * 0.18, s * 0.05, 0, Math.PI * 2); ctx.arc(s * 0.12, -s * 0.18, s * 0.035, 0, Math.PI * 2); ctx.fill(); ctx.strokeStyle = C.pupil; ctx.lineWidth = s * 0.03; ctx.beginPath(); ctx.moveTo(-s * 0.08, -s * 0.06); ctx.lineTo(s * 0.08, -s * 0.09); ctx.stroke(); }
+    else { ctx.beginPath(); ctx.arc(-s * 0.12, -s * 0.18, s * 0.055, 0, Math.PI * 2); ctx.arc(s * 0.12, -s * 0.18, s * 0.055, 0, Math.PI * 2); ctx.fill(); ctx.strokeStyle = C.pupil; ctx.lineWidth = s * 0.03; ctx.beginPath(); ctx.arc(0, -s * 0.1, s * 0.08, Math.PI * 0.15, Math.PI * 0.85); ctx.stroke(); }
+    // front pointer
+    ctx.fillStyle = C.accent; ctx.beginPath(); ctx.moveTo(-s * 0.1, -s * 0.38); ctx.lineTo(s * 0.1, -s * 0.38); ctx.lineTo(0, -s * 0.5); ctx.closePath(); ctx.fill();
+    // antenna
+    ctx.strokeStyle = C.kikoDark; ctx.lineWidth = s * 0.04; ctx.beginPath(); ctx.moveTo(0, s * 0.36); ctx.lineTo(0, s * 0.5); ctx.stroke();
+    ctx.fillStyle = C.accent; ctx.beginPath(); ctx.arc(0, s * 0.52, s * 0.07, 0, Math.PI * 2); ctx.fill();
+    // tray with bakso when grabbed
+    if (opt.grabbed) bakso(ctx, 0, s * 0.05, s * 0.45);
+    ctx.restore();
+    if (opt.wave !== undefined) { // arm waving (title scene)
+      ctx.save(); ctx.translate(cx + s * 0.42, cy - s * 0.1); ctx.rotate(-0.6 + Math.sin(opt.wave * 6) * 0.4);
+      ctx.strokeStyle = C.kikoDark; ctx.lineWidth = s * 0.08; ctx.lineCap = "round"; ctx.beginPath(); ctx.moveTo(0, 0); ctx.lineTo(s * 0.3, -s * 0.3); ctx.stroke();
+      ctx.fillStyle = C.kikoLight; ctx.beginPath(); ctx.arc(s * 0.32, -s * 0.33, s * 0.09, 0, Math.PI * 2); ctx.fill(); ctx.restore();
+    }
+  }
+  function kid(ctx, cx, cy, s, opt = {}) {
+    // simple student figure, standing, facing viewer
+    ctx.save(); ctx.translate(cx, cy);
+    ctx.fillStyle = "rgba(0,0,0,0.12)"; ctx.beginPath(); ctx.ellipse(0, s * 1.02, s * 0.5, s * 0.1, 0, 0, Math.PI * 2); ctx.fill();
+    ctx.fillStyle = C.pants; rr(ctx, -s * 0.3, s * 0.35, s * 0.6, s * 0.5, s * 0.1); ctx.fill();
+    ctx.fillStyle = C.skin; ctx.fillRect(-s * 0.24, s * 0.8, s * 0.16, s * 0.2); ctx.fillRect(s * 0.08, s * 0.8, s * 0.16, s * 0.2);
+    ctx.fillStyle = C.uniform; rr(ctx, -s * 0.36, -s * 0.12, s * 0.72, s * 0.56, s * 0.12); ctx.fill();
+    ctx.strokeStyle = "#D5DDE2"; ctx.lineWidth = s * 0.025; rr(ctx, -s * 0.36, -s * 0.12, s * 0.72, s * 0.56, s * 0.12); ctx.stroke();
+    ctx.fillStyle = C.skin; ctx.beginPath(); ctx.arc(0, -s * 0.42, s * 0.32, 0, Math.PI * 2); ctx.fill();
+    ctx.fillStyle = opt.hairColor || C.hair; ctx.beginPath(); ctx.arc(0, -s * 0.5, s * 0.33, Math.PI, 0); ctx.fill();
+    if (opt.hair === "long") { ctx.fillRect(-s * 0.33, -s * 0.5, s * 0.12, s * 0.45); ctx.fillRect(s * 0.21, -s * 0.5, s * 0.12, s * 0.45); }
+    ctx.fillStyle = C.pupil; ctx.beginPath(); ctx.arc(-s * 0.11, -s * 0.4, s * 0.035, 0, Math.PI * 2); ctx.arc(s * 0.11, -s * 0.4, s * 0.035, 0, Math.PI * 2); ctx.fill();
+    ctx.strokeStyle = C.pupil; ctx.lineWidth = s * 0.025; ctx.beginPath(); ctx.arc(0, -s * 0.33, s * 0.08, Math.PI * 0.15, Math.PI * 0.85); ctx.stroke();
+    // arms
+    ctx.strokeStyle = C.skin; ctx.lineWidth = s * 0.11; ctx.lineCap = "round"; ctx.beginPath();
+    if (opt.point) { ctx.moveTo(s * 0.32, s * 0.02); ctx.lineTo(s * 0.75, -s * 0.2); } else { ctx.moveTo(s * 0.34, s * 0.02); ctx.lineTo(s * 0.42, s * 0.38); }
+    ctx.moveTo(-s * 0.34, s * 0.02); ctx.lineTo(-s * 0.42, s * 0.38); ctx.stroke();
+    ctx.restore();
+  }
+  function bubble(ctx, x, y, w, s, size, opt = {}) {
+    const lines = wrap(ctx, s, size, 600, w - 48); const h = lines.length * size * 1.3 + 40;
+    ctx.fillStyle = opt.fill || C.bubble; ctx.strokeStyle = opt.stroke || "#B7C7BF"; ctx.lineWidth = 3;
+    rr(ctx, x, y - h, w, h, 22); ctx.fill(); ctx.stroke();
+    const tx = opt.tailX !== undefined ? opt.tailX : x + 60;
+    ctx.beginPath(); ctx.moveTo(tx - 16, y); ctx.lineTo(tx + 16, y); ctx.lineTo(tx + (opt.tailDir || 0), y + 28); ctx.closePath(); ctx.fillStyle = opt.fill || C.bubble; ctx.fill();
+    ctx.strokeStyle = opt.stroke || "#B7C7BF"; ctx.beginPath(); ctx.moveTo(tx - 16, y); ctx.lineTo(tx + (opt.tailDir || 0), y + 28); ctx.lineTo(tx + 16, y); ctx.stroke();
+    lines.forEach((l, i) => text(ctx, l, x + 24, y - h + 24 + size + i * size * 1.3, size, { color: opt.color || C.ink, weight: 600 }));
+    return h;
+  }
+  function card(ctx, x, y, w, h, opt = {}) { ctx.fillStyle = opt.fill || C.panel; rr(ctx, x, y, w, h, opt.r || 26); ctx.fill(); if (opt.stroke) { ctx.strokeStyle = opt.stroke; ctx.lineWidth = opt.lw || 4; ctx.stroke(); } }
+
+  // ---------- adegan umum (semua episode) ----------
+  const SCENES = {
+    title(ctx, b, l, t, TL) {
+      card(ctx, 160, 160, 1600, 700, { fill: C.panel });
+      kiko(ctx, 420, 520, 260, 0, { wave: l, mood: "happy" });
+      text(ctx, "Informatika · Fase " + (TL.episode || "D")[0] + " · Episode " + TL.episode, 720, 330, 34, { color: C.ink2, weight: 700 });
+      const ts = TL.title.length > 34 ? 74 : 92; const th = para(ctx, TL.title, 720, 440, ts, 1000, { weight: 900, lh: 1.1 }); const hy = Math.max(640, 440 + th - ts * 0.35 + 30);
+      if (TL.hook) { text(ctx, "SETELAH MENONTON, KAMU BISA:", 720, hy, 26, { color: C.accentDark, weight: 800 }); para(ctx, TL.hook, 720, hy + 50, 34, 1000, { weight: 800, lh: 1.3 }); if (hy <= 660) text(ctx, "Dengarkan, atau baca teksnya pelan-pelan.", 720, 800, 26, { color: C.ink2, weight: 600 }); }
+      else text(ctx, "Dengarkan, atau baca teksnya pelan-pelan.", 720, 700, 36, { color: C.ink2, weight: 600 });
+      arrowIcon(ctx, "up", 1560, 250, 70, C.kikoLight); arrowIcon(ctx, "right", 1660, 250, 70, C.kikoLight);
+    },
+    quiz(ctx, b, l, t, TL, answered) {
+      const q = TL.quizzes[b.quiz]; card(ctx, 200, 150, 1520, 740, { stroke: C.accent, lw: 6 });
+      text(ctx, "CEK PEMAHAMAN", 960, 230, 32, { align: "center", color: C.accentDark, weight: 800 });
+      para(ctx, q.q, 960, 320, 44, 1360, { weight: 800, align: "center", lh: 1.3 });
+      q.options.forEach((o, i) => {
+        const y = 470 + i * 120; const right = answered && i === q.answer;
+        card(ctx, 320, y, 1280, 96, { fill: right ? C.goodBg : answered ? "#F4F6F5" : C.bg2, stroke: right ? C.good : "#CFDCD5", lw: right ? 6 : 3 });
+        ctx.fillStyle = right ? C.good : C.kiko; ctx.beginPath(); ctx.arc(380, y + 48, 30, 0, Math.PI * 2); ctx.fill();
+        text(ctx, "ABC"[i], 380, y + 61, 34, { align: "center", color: "#fff", weight: 900 });
+        text(ctx, o, 440, y + 62, 38, { weight: 700, color: answered && !right ? C.muted : C.ink });
+        if (right) text(ctx, "✓", 1540, y + 66, 54, { align: "center", color: C.good, weight: 900 });
+      });
+      if (!answered) { // thinking timer
+        const frac = clamp(l / b.dur, 0, 1); ctx.strokeStyle = "#D7E2DC"; ctx.lineWidth = 14; ctx.beginPath(); ctx.arc(1640, 230, 40, 0, Math.PI * 2); ctx.stroke();
+        ctx.strokeStyle = C.accent; ctx.beginPath(); ctx.arc(1640, 230, 40, -Math.PI / 2, -Math.PI / 2 + frac * Math.PI * 2); ctx.stroke();
+        text(ctx, "Pikirkan dulu, jangan buru-buru.", 960, 860, 32, { align: "center", color: C.ink2, weight: 600 });
+      }
+    },
+    quiz_answer(ctx, b, l, t, TL) { SCENES.quiz(ctx, b, l, t, TL, true); },
+    recap(ctx, b, l, t, TL) {
+      // TL.recap: tiga kalimat pendek dari script.json
+      card(ctx, 160, 140, 1600, 760);
+      text(ctx, "TIGA HAL UNTUK DIINGAT", 960, 230, 34, { align: "center", color: C.accentDark, weight: 900 });
+      const items = TL.recap || [];
+      const show = clamp(Math.floor((l - 0.6) / 2.2) + 1, 1, Math.max(1, items.length));
+      items.forEach((s, i) => { if (i >= show) return; card(ctx, 300, 290 + i * 180, 1320, 140, { fill: C.bg2 }); ctx.fillStyle = C.kiko; ctx.beginPath(); ctx.arc(380, 360 + i * 180, 40, 0, Math.PI * 2); ctx.fill(); text(ctx, String(i + 1), 380, 376 + i * 180, 40, { align: "center", color: "#fff", weight: 900 }); text(ctx, s, 450, 375 + i * 180, 42, { weight: 800 }); });
+      kiko(ctx, 1620, 820, 130, 0);
+    },
+    outro(ctx, b, l, t, TL) {
+      // TL.next: {code, title, note} episode berikutnya, dari script.json
+      const n = TL.next || {};
+      card(ctx, 260, 200, 1400, 600);
+      text(ctx, "EPISODE BERIKUTNYA", 960, 320, 34, { align: "center", color: C.accentDark, weight: 900 });
+      text(ctx, n.code || "", 960, 440, 60, { align: "center", weight: 900 });
+      text(ctx, n.title || "", 960, 530, 54, { align: "center", weight: 800, color: C.ink2 });
+      text(ctx, n.note || "", 960, 680, 34, { align: "center", color: C.ink2, weight: 600 });
+      kiko(ctx, 960, 760 + 20, 140, 0, { wave: l });
+    }
+  };
+
+  function beatAt(TL, t) {
+    let b = TL.beats[0];
+    for (const x of TL.beats) { if (t >= x.start) b = x; else break; }
+    return b;
+  }
+  function draw(ctx, t, TL, opt = {}) {
+    const b = beatAt(TL, t); const l = t - b.start;
+    ctx.save(); ctx.setTransform(1, 0, 0, 1, 0, 0);
+    ctx.fillStyle = C.bg; ctx.fillRect(0, 0, W, H);
+    // header
+    text(ctx, TL.episode + " · " + TL.title, 60, 78, 30, { color: C.ink2, weight: 700 });
+    text(ctx, TL.segments[b.seg], 1860, 78, 30, { color: C.accentDark, weight: 800, align: "right" });
+    ctx.fillStyle = C.bg2; ctx.fillRect(0, 100, W, 6); ctx.fillStyle = C.accent; ctx.fillRect(0, 100, W * clamp(t / TL.total, 0, 1), 6);
+    const fn = SCENES[b.scene]; if (fn) fn(ctx, b, l, t, TL);
+    // narration card (burned-in text the student reads)
+    if (opt.subtitles !== false) {
+      const size = 44; const lines = wrap(ctx, b.text, size, 700, 1660);
+      const h = lines.length * size * 1.3 + 44; const y0 = 1056 - h;
+      ctx.fillStyle = "rgba(31,42,51,0.92)"; rr(ctx, 100, y0, 1720, h, 20); ctx.fill();
+      // reading progress (how far along the text the reader should be)
+      const frac = clamp(l / b.audio, 0, 1); ctx.fillStyle = C.accent; rr(ctx, 100, y0 + h - 8, 1720 * frac, 8, 4); ctx.fill();
+      lines.forEach((ln, i) => text(ctx, ln, 960, y0 + 22 + size + i * size * 1.3, size, { align: "center", color: C.subText, weight: 700 }));
+    }
+    ctx.restore();
+    return b;
+  }
+
+  global.Kiko = { draw, beatAt, W, H, C, FONT, SCENES,
+    helpers: { rr, text, wrap, para, arrowIcon, bakso, table, kiko, kid, bubble, card, ease, clamp, lerp } };
+})(typeof window !== "undefined" ? window : globalThis);
+
+/* Pembantu gambar perangkat (dipakai D7.0, D7.2, …): monitor, mouse, pointer, keyboard, HP, jari, ikon file/folder, jendela.
+   Semua digambar dengan kode (tanpa aset unduhan). Muat setelah ../_alat/kiko-core.js; dipakai scenes.js. */
+(function (global) {
+  const K = global.Kiko, H = K.helpers, C = K.C;
+  const { rr, text, wrap, card, ease, clamp, lerp } = H;
+  const D = {};
+  const SCREEN_BG = "#F4F8FB", BEZEL = "#2B3A46", BEZEL2 = "#1A262F", SEL = "rgba(46,126,154,0.22)";
+
+  // ---------- komputer ----------
+  // monitor di atas meja; mengembalikan kotak layar {x,y,w,h}
+  D.monitor = function (ctx, x, y, w, h) {
+    ctx.fillStyle = BEZEL; rr(ctx, x - 18, y - 18, w + 36, h + 36, 22); ctx.fill();
+    ctx.fillStyle = SCREEN_BG; rr(ctx, x, y, w, h, 10); ctx.fill();
+    // kaki dan meja
+    ctx.fillStyle = BEZEL2; rr(ctx, x + w / 2 - 40, y + h + 18, 80, 36, 8); ctx.fill(); rr(ctx, x + w / 2 - 140, y + h + 50, 280, 16, 8); ctx.fill();
+    ctx.fillStyle = C.tableTop; rr(ctx, x - 80, y + h + 66, w + 160, 22, 8); ctx.fill();
+    return { x, y, w, h };
+  };
+  // panah pointer
+  D.pointer = function (ctx, x, y, s = 34, color = C.ink) {
+    ctx.save(); ctx.translate(x, y); ctx.fillStyle = color; ctx.strokeStyle = "#fff"; ctx.lineWidth = s * 0.08; ctx.lineJoin = "round";
+    ctx.beginPath(); ctx.moveTo(0, 0); ctx.lineTo(0, s); ctx.lineTo(s * 0.27, s * 0.78); ctx.lineTo(s * 0.45, s * 1.15); ctx.lineTo(s * 0.62, s * 1.07); ctx.lineTo(s * 0.45, s * 0.7); ctx.lineTo(s * 0.75, s * 0.7); ctx.closePath();
+    ctx.fill(); ctx.stroke(); ctx.restore();
+  };
+  // mouse tampak atas; opt.left / opt.right = tombol ditekan; opt.label = tulis "kiri/kanan"
+  D.mouse = function (ctx, cx, cy, s, opt = {}) {
+    ctx.save(); ctx.translate(cx, cy);
+    ctx.fillStyle = "rgba(0,0,0,0.12)"; ctx.beginPath(); ctx.ellipse(0, s * 0.62, s * 0.5, s * 0.1, 0, 0, Math.PI * 2); ctx.fill();
+    // kabel
+    ctx.strokeStyle = "#7B8B95"; ctx.lineWidth = s * 0.05; ctx.beginPath(); ctx.moveTo(0, -s * 0.6); ctx.quadraticCurveTo(0, -s * 1.0, s * 0.5, -s * 1.1); ctx.stroke();
+    // badan
+    ctx.fillStyle = "#E8EEF2"; rr(ctx, -s * 0.42, -s * 0.62, s * 0.84, s * 1.24, s * 0.4); ctx.fill(); ctx.strokeStyle = "#A9B7C0"; ctx.lineWidth = s * 0.04; ctx.stroke();
+    // dua tombol
+    const btn = (side, on) => { ctx.fillStyle = on ? C.accent : "#F7FAFC"; ctx.beginPath(); const sx = side === "left" ? -1 : 1;
+      ctx.moveTo(sx * s * 0.03, -s * 0.6); ctx.lineTo(sx * s * 0.03, -s * 0.1); ctx.lineTo(sx * s * 0.4, -s * 0.1); ctx.lineTo(sx * s * 0.4, -s * 0.28); ctx.quadraticCurveTo(sx * s * 0.4, -s * 0.6, sx * s * 0.1, -s * 0.6); ctx.closePath(); ctx.fill(); ctx.strokeStyle = "#A9B7C0"; ctx.lineWidth = s * 0.03; ctx.stroke(); };
+    btn("left", opt.left); btn("right", opt.right);
+    ctx.fillStyle = "#A9B7C0"; rr(ctx, -s * 0.04, -s * 0.5, s * 0.08, s * 0.26, s * 0.04); ctx.fill(); // roda
+    ctx.restore();
+    if (opt.label) { text(ctx, "kiri", cx - s * 0.22, cy - s * 0.72, 26, { align: "center", color: opt.left ? C.accentDark : C.ink2, weight: 800 }); text(ctx, "kanan", cx + s * 0.22, cy - s * 0.72, 26, { align: "center", color: opt.right ? C.accentDark : C.ink2, weight: 800 }); }
+  };
+  // riak "klik" di sekitar titik
+  D.ripple = function (ctx, x, y, u, color = C.accent) { if (u <= 0 || u >= 1) return; ctx.strokeStyle = color; ctx.globalAlpha = 1 - u; ctx.lineWidth = 6; ctx.beginPath(); ctx.arc(x, y, 12 + u * 60, 0, Math.PI * 2); ctx.stroke(); ctx.globalAlpha = 1; };
+
+  // ---------- ikon file & folder ----------
+  const KIND = { folder: "#F2B134", foto: "#5FA8D3", tulisan: "#7B8B95", lagu: "#8E6BBF", video: "#D9443B" };
+  D.fileIcon = function (ctx, cx, cy, s, kind, opt = {}) {
+    ctx.save(); ctx.translate(cx, cy);
+    if (opt.selected) { ctx.fillStyle = SEL; rr(ctx, -s * 0.62, -s * 0.62, s * 1.24, s * 1.24 + (opt.name ? s * 0.5 : 0), s * 0.14); ctx.fill(); }
+    if (kind === "folder") {
+      ctx.fillStyle = "#D99A1B"; rr(ctx, -s * 0.5, -s * 0.32, s * 0.45, s * 0.2, s * 0.06); ctx.fill();
+      ctx.fillStyle = opt.open ? "#F7C860" : KIND.folder; rr(ctx, -s * 0.5, -s * 0.22, s, s * 0.7, s * 0.08); ctx.fill();
+      if (opt.open) { ctx.fillStyle = "#D99A1B"; rr(ctx, -s * 0.46, -s * 0.02, s * 0.92, s * 0.5, s * 0.08); ctx.fill(); }
+    } else {
+      ctx.fillStyle = "#FFFFFF"; ctx.strokeStyle = "#B7C4CC"; ctx.lineWidth = s * 0.05;
+      ctx.beginPath(); ctx.moveTo(-s * 0.36, -s * 0.5); ctx.lineTo(s * 0.12, -s * 0.5); ctx.lineTo(s * 0.36, -s * 0.26); ctx.lineTo(s * 0.36, s * 0.5); ctx.lineTo(-s * 0.36, s * 0.5); ctx.closePath(); ctx.fill(); ctx.stroke();
+      ctx.fillStyle = KIND[kind] || KIND.tulisan;
+      if (kind === "foto") { rr(ctx, -s * 0.26, -s * 0.2, s * 0.52, s * 0.44, s * 0.04); ctx.fill(); ctx.fillStyle = "#fff"; ctx.beginPath(); ctx.arc(-s * 0.12, -s * 0.08, s * 0.06, 0, Math.PI * 2); ctx.fill(); ctx.beginPath(); ctx.moveTo(-s * 0.26, s * 0.24); ctx.lineTo(-s * 0.06, s * 0.02); ctx.lineTo(s * 0.06, s * 0.14); ctx.lineTo(s * 0.14, s * 0.06); ctx.lineTo(s * 0.26, s * 0.24); ctx.closePath(); ctx.fill(); }
+      else if (kind === "lagu") { ctx.beginPath(); ctx.arc(-s * 0.1, s * 0.22, s * 0.1, 0, Math.PI * 2); ctx.arc(s * 0.16, s * 0.16, s * 0.1, 0, Math.PI * 2); ctx.fill(); ctx.lineWidth = s * 0.06; ctx.strokeStyle = KIND.lagu; ctx.beginPath(); ctx.moveTo(0, s * 0.2); ctx.lineTo(0, -s * 0.2); ctx.lineTo(s * 0.26, -s * 0.26); ctx.lineTo(s * 0.26, s * 0.14); ctx.stroke(); }
+      else if (kind === "video") { rr(ctx, -s * 0.26, -s * 0.16, s * 0.52, s * 0.4, s * 0.04); ctx.fill(); ctx.fillStyle = "#fff"; ctx.beginPath(); ctx.moveTo(-s * 0.06, -s * 0.04); ctx.lineTo(s * 0.12, s * 0.04); ctx.lineTo(-s * 0.06, s * 0.12); ctx.closePath(); ctx.fill(); }
+      else { for (let i = 0; i < 4; i++) { rr(ctx, -s * 0.22, -s * 0.14 + i * s * 0.14, s * (i === 3 ? 0.26 : 0.44), s * 0.06, s * 0.03); ctx.fill(); } }
+    }
+    ctx.restore();
+    if (opt.name) { const lines = wrap(ctx, opt.name, opt.size || 24, 700, s * 1.6); lines.slice(0, 2).forEach((ln, i) => text(ctx, ln, cx, cy + s * 0.78 + i * (opt.size || 24) * 1.15, opt.size || 24, { align: "center", weight: 700, color: opt.color || C.ink })); }
+  };
+  D.KIND = KIND;
+
+  // jendela aplikasi (file manager / editor) di dalam layar; mengembalikan area isi
+  D.windowFrame = function (ctx, x, y, w, h, title, opt = {}) {
+    ctx.fillStyle = "#FFFFFF"; rr(ctx, x, y, w, h, 14); ctx.fill(); ctx.strokeStyle = "#C9D4DB"; ctx.lineWidth = 3; ctx.stroke();
+    ctx.fillStyle = "#E6EDF2"; rr(ctx, x, y, w, 54, 14); ctx.fill(); ctx.fillRect(x, y + 30, w, 24);
+    ["#E0655C", "#F2B134", "#2E9E5B"].forEach((c, i) => { ctx.fillStyle = c; ctx.beginPath(); ctx.arc(x + 26 + i * 26, y + 27, 8, 0, Math.PI * 2); ctx.fill(); });
+    if (title) text(ctx, title, x + w / 2, y + 36, 24, { align: "center", color: C.ink2, weight: 800 });
+    if (opt.path) { ctx.fillStyle = "#F4F8FB"; rr(ctx, x + 16, y + 66, w - 32, 44, 10); ctx.fill(); text(ctx, opt.path, x + 32, y + 96, 24, { color: C.ink2, weight: 700 }); }
+    return { x: x + 16, y: y + (opt.path ? 124 : 70), w: w - 32, h: h - (opt.path ? 140 : 86) };
+  };
+  // kotak teks dengan kursor berkedip; opt.cursor = posisi karakter (bawaan akhir)
+  D.textBox = function (ctx, x, y, w, h, lines, tt, opt = {}) {
+    ctx.fillStyle = "#FFFFFF"; rr(ctx, x, y, w, h, 14); ctx.fill(); ctx.strokeStyle = opt.stroke || "#C9D4DB"; ctx.lineWidth = 3; ctx.stroke();
+    const size = opt.size || 48, lh = size * 1.4;
+    lines.forEach((ln, i) => text(ctx, ln, x + 28, y + 24 + size + i * lh, size, { weight: 700, color: opt.color || C.ink }));
+    if (opt.cursor !== false) {
+      const li = lines.length - 1, s = lines[li] || ""; ctx.font = `700 ${size}px ${K.FONT}`; const cw = ctx.measureText(s).width;
+      if (Math.floor(tt * 2.5) % 2 === 0 || opt.cursorOn) { ctx.fillStyle = C.kiko; ctx.fillRect(x + 30 + cw, y + 22 + li * lh, 5, size * 1.15); }
+      return [x + 32 + cw, y + 22 + li * lh + size * 0.6];
+    }
+  };
+
+  // ---------- keyboard ----------
+  const ROWS = [["Q", "W", "E", "R", "T", "Y", "U", "I", "O", "P"], ["A", "S", "D", "F", "G", "H", "J", "K", "L"], ["Z", "X", "C", "V", "B", "N", "M"]];
+  // keyboard sederhana: 3 baris huruf + Shift, Spasi, Backspace, Enter. opt.pressed = [tombol], opt.glow = [tombol] disorot lembut
+  D.keyboard = function (ctx, x, y, w, opt = {}) {
+    const key = w / 11.6, gap = key * 0.12, k = key - gap, h = k * 4 + gap * 5;
+    ctx.fillStyle = BEZEL; rr(ctx, x - 16, y - 16, w + 32, h + 32, 22); ctx.fill();
+    const pressed = opt.pressed || [], glow = opt.glow || [];
+    const draw = (kx, ky, kw, label, small) => {
+      const on = pressed.includes(label), soft = glow.includes(label);
+      ctx.fillStyle = on ? C.accent : soft ? "#FFF3D6" : "#F7FAFC"; rr(ctx, kx, ky + (on ? 4 : 0), kw, k - (on ? 4 : 0), 10); ctx.fill();
+      ctx.strokeStyle = on ? C.accentDark : soft ? C.accent : "#B7C4CC"; ctx.lineWidth = on || soft ? 4 : 2; ctx.stroke();
+      // ukuran huruf mengikuti ukuran tombol; pada keyboard mini (tombol < 40 px) label tombol khusus tidak digambar
+      const fs = small ? Math.min(24, k * 0.45) : Math.min(32, k * 0.6);
+      if (small ? k >= 40 : k >= 18) text(ctx, label, kx + kw / 2, ky + k / 2 + fs * 0.38, fs, { align: "center", weight: 800, color: on ? "#fff" : C.ink });
+    };
+    ROWS.forEach((row, r) => { const off = r === 0 ? 0 : r === 1 ? key * 0.35 : key * 0.85; row.forEach((lab, i) => draw(x + gap + off + i * key, y + gap + r * key, k, lab)); });
+    draw(x + gap + key * 0.85 + 7 * key + gap, y + gap + 2 * key, key * 2.4 - gap, "Backspace", true);
+    draw(x + gap, y + gap + 3 * key, key * 1.9 - gap, "Shift", true);
+    draw(x + gap + key * 1.9, y + gap + 3 * key, key * 6.2 - gap, "Spasi", true);
+    draw(x + gap + key * 8.1, y + gap + 3 * key, key * 2.3 - gap, "Enter", true);
+    draw(x + gap + key * 0.35 + 9 * key, y + gap + 1 * key, key * 1.9 - gap, "Enter", true);
+    return { x, y, w, h };
+  };
+
+  // ---------- HP & jari ----------
+  // HP tegak; mengembalikan kotak layar
+  D.phone = function (ctx, cx, cy, w, h) {
+    ctx.fillStyle = BEZEL; rr(ctx, cx - w / 2 - 14, cy - h / 2 - 22, w + 28, h + 44, 40); ctx.fill();
+    ctx.fillStyle = SCREEN_BG; rr(ctx, cx - w / 2, cy - h / 2, w, h, 26); ctx.fill();
+    ctx.fillStyle = BEZEL2; rr(ctx, cx - 40, cy - h / 2 + 8, 80, 12, 6); ctx.fill();
+    return { x: cx - w / 2, y: cy - h / 2, w, h };
+  };
+  // kisi ikon aplikasi generik di layar HP; mengembalikan posisi tiap ikon
+  const APPS = [["Kamera", "#2E7E9A"], ["Galeri", "#5FA8D3"], ["Pesan", "#2E9E5B"], ["Musik", "#8E6BBF"], ["Kalkulator", "#7B8B95"], ["Peta", "#F2B134"], ["Catatan", "#E0A23B"], ["Jam", "#D9443B"], ["Cuaca", "#4C9BE0"]];
+  D.appGrid = function (ctx, sc, opt = {}) {
+    const cols = 3, cell = sc.w / cols, out = [];
+    APPS.forEach(([name, col], i) => {
+      const r = Math.floor(i / cols), c = i % cols; const ax = sc.x + cell * c + cell / 2, ay = sc.y + 90 + r * (cell + 26);
+      const on = opt.active === name; const sz = cell * 0.56 * (on && opt.scale ? opt.scale : 1);
+      ctx.fillStyle = col; rr(ctx, ax - sz / 2, ay - sz / 2, sz, sz, sz * 0.24); ctx.fill();
+      if (on) { ctx.strokeStyle = C.accent; ctx.lineWidth = 6; ctx.stroke(); }
+      text(ctx, name, ax, ay + sz / 2 + 26, 20, { align: "center", weight: 700, color: C.ink2 });
+      out.push({ name, x: ax, y: ay });
+    });
+    return out;
+  };
+  // ujung jari yang menyentuh layar di (x,y); opt.press = sedang menekan (riak); opt.second = jari kedua
+  D.finger = function (ctx, x, y, opt = {}) {
+    const s = opt.s || 46;
+    ctx.save(); ctx.translate(x, y); ctx.rotate(opt.angle !== undefined ? opt.angle : 0.5);
+    ctx.fillStyle = "rgba(0,0,0,0.10)"; ctx.beginPath(); ctx.ellipse(0, s * 0.25, s * 0.7, s * 0.4, 0, 0, Math.PI * 2); ctx.fill();
+    ctx.fillStyle = C.skin; rr(ctx, -s * 0.5, -s * 0.3, s, s * 3.2, s * 0.5); ctx.fill();
+    ctx.fillStyle = "#F7D9BE"; ctx.beginPath(); ctx.ellipse(0, s * 0.1, s * 0.3, s * 0.42, 0, 0, Math.PI * 2); ctx.fill();
+    ctx.restore();
+    if (opt.press) { ctx.fillStyle = "rgba(46,126,154,0.25)"; ctx.beginPath(); ctx.arc(x, y, s * 0.8, 0, Math.PI * 2); ctx.fill(); }
+  };
+  // menu konteks (klik kanan / tekan lama)
+  D.menu = function (ctx, x, y, items, opt = {}) {
+    const w = opt.w || 300, rowH = 52; ctx.fillStyle = "#FFFFFF"; rr(ctx, x, y, w, rowH * items.length + 16, 12); ctx.fill(); ctx.strokeStyle = "#B7C4CC"; ctx.lineWidth = 3; ctx.stroke();
+    ctx.fillStyle = "rgba(0,0,0,0.08)";
+    items.forEach((it, i) => { if (opt.active === i) { ctx.fillStyle = "#FFF3D6"; rr(ctx, x + 8, y + 8 + i * rowH, w - 16, rowH, 8); ctx.fill(); } text(ctx, it, x + 24, y + 8 + i * rowH + 36, 28, { weight: 700 }); });
+  };
+  // kartu keterangan kecil di kanan/bawah adegan
+  D.note = function (ctx, x, y, w, s, opt = {}) { card(ctx, x, y, w, opt.h || 96, { fill: opt.fill || "#FFF3D6", stroke: opt.stroke || C.accent, lw: 4 }); text(ctx, s, x + w / 2, y + (opt.h || 96) / 2 + 14, opt.size || 36, { align: "center", weight: 900, color: opt.color || C.ink }); };
+
+  K.devices = D;
+})(typeof window !== "undefined" ? window : globalThis);
+
+/* Pembantu gambar F11.0: blok kode Python dengan pewarnaan kata kunci, konsol keluaran, kotak galat, tabel kebenaran,
+   kartu berdiri/duduk. Gaya diagram Fase F. Muat setelah kiko-core.js dan kiko-devices.js. */
+(function (global) {
+  const K = global.Kiko, H = K.helpers, C = K.C;
+  const { rr, text, wrap, card, clamp } = H;
+  const Py = {};
+  const KW = /^(if|else|elif|for|in|while|def|return|print|input|int|str|and|or|not|True|False|range|len)$/;
+  // blok kode python: lines [{t, hl, bad}] ; opt.title, rh, size
+  Py.code = function (ctx, x, y, w, lines, opt = {}) {
+    const rh = opt.rh || 44, size = opt.size || 22; card(ctx, x, y, w, 50 + rh * lines.length, { fill: "#1F2A33", r: 14 });
+    text(ctx, opt.title || "PYTHON", x + 18, y + 32, 16, { weight: 900, color: "#8FD0E6" });
+    lines.forEach((ln, i) => { const ly = y + 50 + i * rh; if (ln.hl) { ctx.fillStyle = "rgba(242,177,52,0.35)"; rr(ctx, x + 8, ly + 2, w - 16, rh - 4, 8); ctx.fill(); } if (ln.bad) { ctx.fillStyle = "rgba(217,68,59,0.45)"; rr(ctx, x + 8, ly + 2, w - 16, rh - 4, 8); ctx.fill(); }
+      text(ctx, String(i + 1), x + 30, ly + rh / 2 + 7, 15, { align: "center", weight: 800, color: "#7B8B95" });
+      const t = ln.t || ""; const lead = t.match(/^ */)[0].length; let cx = x + 56 + lead * 11; const body = t.slice(lead);
+      body.split(/(\s+|\(|\)|:|,|\[|\]|"[^"]*"|'[^']*')/).forEach(tok => { if (!tok) return; const kw = KW.test(tok); const str = /^["'].*["']$/.test(tok); const num = /^\d+$/.test(tok); const col = kw ? "#F2B134" : str ? "#A5D6A7" : num ? "#8FD0E6" : "#FFFFFF"; text(ctx, tok, cx, ly + rh / 2 + 7, size, { weight: kw ? 900 : 700, color: col }); ctx.font = `${kw ? 900 : 700} ${size}px Inter, sans-serif`; cx += ctx.measureText(tok).width; }); });
+    return 50 + rh * lines.length;
+  };
+  Py.console = function (ctx, x, y, w, lines, opt = {}) { const h = 40 + lines.length * 36 + 16; card(ctx, x, y, w, h, { fill: "#0E1418", stroke: "#4A5A66", lw: 3, r: 12 }); text(ctx, "LAYAR", x + 14, y + 26, 14, { weight: 900, color: "#8FD0E6" }); lines.forEach(([t, kind], i) => text(ctx, t, x + 16, y + 60 + i * 36, 20, { weight: 800, color: kind === "in" ? C.accent : kind === "err" ? "#FF8A80" : "#fff" })); return h; };
+  Py.error = function (ctx, x, y, w, title, lines) { card(ctx, x, y, w, 60 + lines.length * 30, { fill: C.badBg, stroke: C.bad, lw: 4, r: 12 }); text(ctx, "⚠ " + title, x + 16, y + 36, 22, { weight: 900, color: C.bad }); lines.forEach((s, i) => text(ctx, s, x + 16, y + 70 + i * 30, 18, { weight: 800, color: C.ink })); };
+  // tabel kebenaran: op "DAN"|"ATAU"; opt.hlRow
+  Py.truth = function (ctx, x, y, op, opt = {}) {
+    const rows = [[true, true], [true, false], [false, true], [false, false]]; const f = (a, b) => op === "DAN" ? a && b : a || b; const cw = 120, rh = 46;
+    card(ctx, x, y, cw * 3, rh * 5, { fill: "#fff", stroke: "#B7C4CC", lw: 3, r: 10 }); ctx.fillStyle = C.bg2; rr(ctx, x, y, cw * 3, rh, 10); ctx.fill(); ctx.fillRect(x, y + rh / 2, cw * 3, rh / 2);
+    ["A", "B", "A " + op + " B"].forEach((h, c) => text(ctx, h, x + c * cw + cw / 2, y + rh / 2 + 7, 18, { align: "center", weight: 900, color: C.ink2 }));
+    rows.forEach((r, i) => { const ry = y + rh * (i + 1); if (opt.hlRow === i) { ctx.fillStyle = "#FFF3D6"; ctx.fillRect(x + 2, ry, cw * 3 - 4, rh); } [r[0], r[1], f(r[0], r[1])].forEach((v, c) => text(ctx, v ? "benar" : "salah", x + c * cw + cw / 2, ry + rh / 2 + 7, 18, { align: "center", weight: c === 2 ? 900 : 700, color: v ? C.good : C.bad })); });
+  };
+  K.py = Py;
+})(typeof window !== "undefined" ? window : globalThis);
+
+/* Pembantu gambar F12.1 (dipakai ulang F12.2): node linked list dan rantainya, stack tegak, queue mendatar, laci hash map,
+   binary search tree (tata letak otomatis, jalur pencarian), graph berbobot. Gaya diagram Fase F.
+   Muat setelah kiko-core.js. */
+(function (global) {
+  const K = global.Kiko, H = K.helpers, C = K.C;
+  const { rr, text, card } = H;
+  const Sk = {};
+  const arrow = Sk.arrow = (ctx, x1, y1, x2, y2, col = C.kiko, lw = 5) => { ctx.strokeStyle = col; ctx.fillStyle = col; ctx.lineWidth = lw; ctx.beginPath(); ctx.moveTo(x1, y1); ctx.lineTo(x2, y2); ctx.stroke(); const a = Math.atan2(y2 - y1, x2 - x1); ctx.beginPath(); ctx.moveTo(x2, y2); ctx.lineTo(x2 - 18 * Math.cos(a - 0.45), y2 - 18 * Math.sin(a - 0.45)); ctx.lineTo(x2 - 18 * Math.cos(a + 0.45), y2 - 18 * Math.sin(a + 0.45)); ctx.closePath(); ctx.fill(); };
+  // node linked list: kotak data + kotak penunjuk; opt {hl, fresh, dim, w}
+  Sk.NW = 190; Sk.NH = 76;
+  Sk.node = function (ctx, x, y, data, opt = {}) {
+    const w = opt.w || Sk.NW, h = Sk.NH, pw = 50; ctx.save(); if (opt.dim) ctx.globalAlpha = 0.25;
+    const st = opt.hl ? C.accent : opt.fresh ? C.good : C.kiko;
+    card(ctx, x, y, w, h, { fill: opt.hl ? "#FFF3D6" : opt.fresh ? C.goodBg : "#fff", stroke: st, lw: opt.hl || opt.fresh ? 5 : 3, r: 12 });
+    ctx.strokeStyle = st; ctx.lineWidth = 3; ctx.beginPath(); ctx.moveTo(x + w - pw, y + 6); ctx.lineTo(x + w - pw, y + h - 6); ctx.stroke();
+    text(ctx, data, x + (w - pw) / 2, y + h / 2 + 9, 26, { align: "center", weight: 900 });
+    ctx.fillStyle = st; ctx.beginPath(); ctx.arc(x + w - pw / 2, y + h / 2, 8, 0, Math.PI * 2); ctx.fill(); ctx.restore();
+    return { x, y, w, h, px: x + w - pw / 2, py: y + h / 2 };
+  };
+  // rantai mendatar: items [teks], opt {gap, hl, head, none, dimFrom}
+  Sk.chain = function (ctx, x, y, items, opt = {}) {
+    const gap = opt.gap || 70, out = [];
+    items.forEach((d, i) => { out.push(Sk.node(ctx, x + i * (Sk.NW + gap), y, d, { hl: opt.hl === i, dim: opt.dimFrom != null && i >= opt.dimFrom })); });
+    out.forEach((n, i) => { if (i < out.length - 1) arrow(ctx, n.px, n.py, out[i + 1].x - 4, n.py); });
+    if (opt.none !== false && out.length) { const n = out[out.length - 1]; arrow(ctx, n.px, n.py, n.px + 70, n.py, "#7B8B95"); text(ctx, "None", n.px + 80, n.py + 8, 22, { weight: 900, color: "#7B8B95" }); }
+    if (opt.head !== false && out.length) { text(ctx, "head", out[0].x + 70, y - 40, 22, { align: "center", weight: 900, color: C.accentDark }); arrow(ctx, out[0].x + 70, y - 32, out[0].x + 70, y - 4, C.accentDark, 4); }
+    return out;
+  };
+  // stack tegak dari bawah: items [teks]; opt {w, hl (indeks), label}
+  Sk.stack = function (ctx, x, yb, items, opt = {}) {
+    const w = opt.w || 200, h = 60; ctx.strokeStyle = "#7B8B95"; ctx.lineWidth = 4; ctx.beginPath(); ctx.moveTo(x - 10, yb - (opt.cap || 5) * (h + 6) - 10); ctx.lineTo(x - 10, yb + 8); ctx.lineTo(x + w + 10, yb + 8); ctx.lineTo(x + w + 10, yb - (opt.cap || 5) * (h + 6) - 10); ctx.stroke();
+    items.forEach((d, i) => { const y = yb - (i + 1) * (h + 6); const top = i === items.length - 1; card(ctx, x, y, w, h, { fill: top ? "#FFF3D6" : "#fff", stroke: top ? C.accent : "#B7C4CC", lw: 3, r: 10 }); text(ctx, String(d), x + w / 2, y + 40, 26, { align: "center", weight: 900 }); });
+    if (items.length) text(ctx, "← atas", x + w + 24, yb - items.length * (h + 6) + 38, 20, { weight: 900, color: C.accentDark });
+    if (opt.label) text(ctx, opt.label, x + w / 2, yb + 44, 22, { align: "center", weight: 900, color: C.ink2 });
+  };
+  // queue mendatar: items [teks]; opt {w, label}
+  Sk.queue = function (ctx, x, y, items, opt = {}) {
+    const w = opt.w || 140, h = 64, cap = opt.cap || 5; ctx.strokeStyle = "#7B8B95"; ctx.lineWidth = 4; ctx.beginPath(); ctx.moveTo(x - 10, y - 10); ctx.lineTo(x + cap * (w + 8) + 2, y - 10); ctx.moveTo(x - 10, y + h + 10); ctx.lineTo(x + cap * (w + 8) + 2, y + h + 10); ctx.stroke();
+    items.forEach((d, i) => { const cx = x + i * (w + 8); card(ctx, cx, y, w, h, { fill: i === 0 ? "#FFF3D6" : "#fff", stroke: i === 0 ? C.accent : "#B7C4CC", lw: 3, r: 10 }); text(ctx, String(d), cx + w / 2, y + 42, 24, { align: "center", weight: 900 }); });
+    text(ctx, "depan", x + w / 2, y + h + 44, 20, { align: "center", weight: 900, color: C.accentDark }); text(ctx, "belakang", x + cap * (w + 8) - w / 2, y + h + 44, 20, { align: "center", weight: 900, color: C.ink2 });
+    if (opt.label) text(ctx, opt.label, x, y - 24, 22, { weight: 900, color: C.ink2 });
+  };
+  // laci hash map: n laci tegak; isi = {indeks: [[kunci, nilai, hl]]}; opt {hl indeks, w}
+  Sk.buckets = function (ctx, x, y, n, isi, opt = {}) {
+    const w = opt.w || 520, h = opt.h || 76;
+    for (let i = 0; i < n; i++) { const by = y + i * (h + 10); const on = opt.hl === i; card(ctx, x, by, w, h, { fill: on ? "#FFF3D6" : "#F4F8FB", stroke: on ? C.accent : "#B7C4CC", lw: on ? 5 : 3, r: 12 });
+      ctx.fillStyle = on ? C.accent : C.kiko; rr(ctx, x + 10, by + 10, 56, h - 20, 10); ctx.fill(); text(ctx, String(i), x + 38, by + h / 2 + 10, 26, { align: "center", weight: 900, color: "#fff" });
+      (isi[i] || []).forEach(([k, v, hl], j) => { const cx = x + 86 + j * 210; card(ctx, cx, by + 12, 196, h - 24, { fill: hl === "bad" ? C.badBg : hl ? C.goodBg : "#fff", stroke: hl === "bad" ? C.bad : hl ? C.good : "#B7C4CC", lw: 3, r: 10 }); text(ctx, k + ": " + v, cx + 98, by + h / 2 + 8, 22, { align: "center", weight: 900 }); }); }
+    text(ctx, "laci", x + 38, y - 14, 18, { align: "center", weight: 900, color: C.ink2 });
+  };
+  // binary search tree: sisipkan berurutan; kembalikan node dengan posisi
+  Sk.bstBuild = function (values) {
+    let root = null; const all = [];
+    values.forEach(v => { const nd = { v, l: null, r: null, d: 0, parent: null }; all.push(nd); if (!root) { root = nd; return; } let c = root; while (true) { if (v < c.v) { if (c.l) c = c.l; else { c.l = nd; break; } } else { if (c.r) c = c.r; else { c.r = nd; break; } } } nd.parent = c; nd.d = c.d + 1; });
+    return { root, all };
+  };
+  Sk.bstPath = function (values, target) { const { root } = Sk.bstBuild(values); const path = []; let c = root; while (c) { path.push(c.v); if (target === c.v) return { path, found: true }; c = target < c.v ? c.l : c.r; } return { path, found: false }; };
+  // gambar BST: values (urutan sisip), cx pusat, y0 atas; opt {n tampil, path [v], ghost {v, parent, side}, spread, dy, r}
+  Sk.bst = function (ctx, cx, y0, values, opt = {}) {
+    const vs = values.slice(0, opt.n == null ? values.length : opt.n); const { root, all } = Sk.bstBuild(vs); const spread = opt.spread || 380, dy = opt.dy || 120, r = opt.r || 40;
+    const place = (nd, x, y, s) => { if (!nd) return; nd.x = x; nd.y = y; place(nd.l, x - s, y + dy, s / 2); place(nd.r, x + s, y + dy, s / 2); };
+    place(root, cx, y0, spread);
+    const onPath = v => opt.path && opt.path.includes(v);
+    all.forEach(nd => { if (nd.parent) { const on = onPath(nd.v) && onPath(nd.parent.v); ctx.strokeStyle = on ? C.accent : "#B7C4CC"; ctx.lineWidth = on ? 7 : 4; ctx.beginPath(); ctx.moveTo(nd.parent.x, nd.parent.y); ctx.lineTo(nd.x, nd.y); ctx.stroke(); } });
+    if (opt.ghost) { const p = all.find(n => n.v === opt.ghost.parent); if (p) { const s = spread / Math.pow(2, p.d + 1); const gx = p.x + (opt.ghost.side === "l" ? -s : s), gy = p.y + dy; ctx.save(); ctx.setLineDash([10, 8]); ctx.strokeStyle = C.good; ctx.lineWidth = 5; ctx.beginPath(); ctx.moveTo(p.x, p.y); ctx.lineTo(gx, gy); ctx.stroke(); ctx.beginPath(); ctx.arc(gx, gy, r, 0, Math.PI * 2); ctx.fillStyle = C.goodBg; ctx.fill(); ctx.stroke(); ctx.restore(); text(ctx, String(opt.ghost.v), gx, gy + 10, 28, { align: "center", weight: 900, color: C.good }); } }
+    all.forEach(nd => { const on = onPath(nd.v), last = opt.path && opt.path[opt.path.length - 1] === nd.v; ctx.beginPath(); ctx.arc(nd.x, nd.y, r, 0, Math.PI * 2); ctx.fillStyle = last ? C.accent : on ? "#FFF3D6" : nd === all[all.length - 1] && opt.fresh ? C.goodBg : "#fff"; ctx.fill(); ctx.strokeStyle = on ? C.accent : C.kiko; ctx.lineWidth = on ? 6 : 4; ctx.stroke(); text(ctx, String(nd.v), nd.x, nd.y + 10, 28, { align: "center", weight: 900, color: last ? "#fff" : C.ink }); });
+    return { root, all };
+  };
+  // graph: nodes {id: [x, y]}, edges [[a, b, w]]; opt {hlNodes, hlEdges [[a,b]], weights, r, done}
+  Sk.graph = function (ctx, nodes, edges, opt = {}) {
+    const r = opt.r || 54; const hasE = (a, b) => (opt.hlEdges || []).some(([p, q]) => (p === a && q === b) || (p === b && q === a));
+    edges.forEach(([a, b, w]) => { const [x1, y1] = nodes[a], [x2, y2] = nodes[b]; const on = hasE(a, b); ctx.strokeStyle = on ? C.accent : "#B7C4CC"; ctx.lineWidth = on ? 8 : 5; ctx.beginPath(); ctx.moveTo(x1, y1); ctx.lineTo(x2, y2); ctx.stroke();
+      if (opt.weights && w != null) { const mx = (x1 + x2) / 2, my = (y1 + y2) / 2; ctx.fillStyle = "#fff"; rr(ctx, mx - 30, my - 20, 60, 40, 10); ctx.fill(); ctx.strokeStyle = on ? C.accent : "#B7C4CC"; ctx.lineWidth = 2; rr(ctx, mx - 30, my - 20, 60, 40, 10); ctx.stroke(); text(ctx, String(w), mx, my + 8, 22, { align: "center", weight: 900, color: on ? C.accentDark : C.ink2 }); } });
+    Object.entries(nodes).forEach(([id, [x, y]]) => { const on = (opt.hlNodes || []).includes(id), dn = (opt.done || []).includes(id); ctx.beginPath(); ctx.arc(x, y, r, 0, Math.PI * 2); ctx.fillStyle = on ? "#FFF3D6" : dn ? C.goodBg : "#fff"; ctx.fill(); ctx.strokeStyle = on ? C.accent : dn ? C.good : C.kiko; ctx.lineWidth = on ? 6 : 4; ctx.stroke(); text(ctx, id, x, y + 7, opt.size || 19, { align: "center", weight: 900 }); if (opt.tags && opt.tags[id] != null) { ctx.fillStyle = C.kiko; rr(ctx, x - 34, y - r - 34, 68, 30, 8); ctx.fill(); text(ctx, String(opt.tags[id]), x, y - r - 12, 18, { align: "center", weight: 900, color: "#fff" }); } });
+  };
+  K.struktur = Sk;
+})(typeof window !== "undefined" ? window : globalThis);
+
+/* Adegan episode F12.1: Struktur Data Kompleks dan Abstrak. Gaya diagram Fase F.
+   Muat setelah kiko-core.js, kiko-devices.js, py.js (F11.0), struktur.js. */
+(function (global) {
+  const K = global.Kiko, H = K.helpers, C = K.C, Py = K.py, Sk = K.struktur, SCENES = K.SCENES;
+  const { text, para, card, kiko, kid, rr, clamp } = H;
+  const reveal = (l, t0, step, n) => clamp(Math.floor((l - t0) / step) + 1, 0, n);
+  const banner = (ctx, s, y = 665, w = 1100, opt = {}) => { card(ctx, 960 - w / 2, y, w, 80, { fill: opt.fill || "#FFF3D6", stroke: opt.stroke || C.accent, lw: 4 }); text(ctx, s, 960, y + 52, opt.size || 30, { align: "center", weight: 900, color: opt.color || C.accentDark }); };
+  const label = (ctx, s, x, y, opt = {}) => text(ctx, s, x, y, opt.size || 28, { align: "center", weight: 900, color: opt.color || C.accentDark });
+  const heading = (ctx, s, y = 215) => text(ctx, s, 960, y, 34, { align: "center", color: C.accentDark, weight: 800 });
+  const dim = (ctx, on, fn) => { ctx.save(); if (!on) ctx.globalAlpha = 0.2; fn(); ctx.restore(); };
+  const arrow = Sk.arrow;
+  const BST = [50, 30, 70, 20, 40, 60, 80];
+  const HALTE = { "Pasar": [330, 330], "Sekolah": [640, 300], "Alun-alun": [880, 470], "Terminal": [380, 620], "Stasiun": [760, 660] };
+  const JALUR = [["Pasar", "Sekolah"], ["Pasar", "Terminal"], ["Sekolah", "Alun-alun"], ["Sekolah", "Terminal"], ["Alun-alun", "Stasiun"], ["Terminal", "Stasiun"]];
+
+  Object.assign(SCENES, {
+    title_q(ctx, b, l) {
+      card(ctx, 120, 150, 1680, 740);
+      kiko(ctx, 270, 560, 170, 0, { mood: "happy" });
+      const n = reveal(l, 1.5, 1.4, 4);
+      [["🔗", "linked list", "rantai node"], ["🗄️", "hash map", "laci berkunci"], ["🌳", "tree", "data bertingkat"], ["🕸️", "graph", "jaringan hubungan"]].forEach(([ic, t, s], i) => dim(ctx, i < n, () => { const x = 460 + i * 330; card(ctx, x, 270, 300, 280, { fill: C.bg2, r: 18 }); text(ctx, ic, x + 150, 370, 60, { align: "center" }); text(ctx, t, x + 150, 450, 30, { align: "center", weight: 900 }); text(ctx, s, x + 150, 495, 22, { align: "center", weight: 800, color: C.ink2 }); }));
+      if (n >= 4) banner(ctx, "pakai dulu yang disediakan Python, lalu intip cara membuatnya", 620, 1100);
+    },
+    prereq(ctx, b, l) {
+      card(ctx, 260, 200, 1400, 600);
+      text(ctx, "EPISODE SEBELUMNYA", 960, 290, 34, { align: "center", color: C.accentDark, weight: 800 });
+      [["E.5", "Struktur Data Standar: array, record, stack, queue"], ["F12.0", "Jembatan Kelas XII: perulangan, list, fungsi"]].forEach(([c, t], i) => { const x = 360 + i * 640; card(ctx, x, 340, 580, 280, { fill: C.bg2 }); text(ctx, "Episode " + c, x + 290, 430, 50, { align: "center", weight: 900 }); para(ctx, t, x + 290, 500, 28, 520, { align: "center", weight: 700, color: C.ink2 }); });
+      kiko(ctx, 1600, 760, 150, 0);
+    },
+    unplugged_rantai(ctx, b, l) {
+      card(ctx, 120, 150, 1680, 740);
+      heading(ctx, "MAIN DULU: RANTAI KARTU NAMA");
+      const P = [["Rani", 320, 430, "Bayu"], ["Bayu", 1130, 390, "Putu"], ["Putu", 640, 560, "Sinta"], ["Sinta", 1510, 520, "Dito"], ["Dito", 1000, 560, "(terakhir)"]];
+      const k = reveal(l, 4.0, 2.2, 5);
+      P.forEach(([nm, x, y, nx], i) => { const on = k >= 1 && i === k - 1; kid(ctx, x, y, 95, i % 2 ? { hair: "long" } : {}); text(ctx, nm, x, y + 118, 22, { align: "center", weight: 900, color: on ? C.accentDark : C.ink }); card(ctx, x + 50, y - 110, 150, 56, { fill: on ? "#FFF3D6" : "#FFF9E0", stroke: on ? C.accent : "#E0B04B", lw: 3, r: 8 }); text(ctx, nx[0] === "(" ? nx : "→ " + nx, x + 125, y - 74, 20, { align: "center", weight: 900 }); });
+      for (let i = 0; i < Math.min(k, 5) - 1; i++) { const [, x1, y1] = P[i], [, x2, y2] = P[i + 1]; const a = Math.atan2(y2 - y1, x2 - x1); ctx.save(); ctx.setLineDash([12, 10]); arrow(ctx, x1 + 75 * Math.cos(a), y1 + 75 * Math.sin(a), x2 - 75 * Math.cos(a), y2 - 75 * Math.sin(a), C.accent, 4); ctx.restore(); }
+      text(ctx, "mulai di sini", 320, 300, 20, { align: "center", weight: 900, color: C.accentDark });
+      if (k >= 4) label(ctx, "orang keempat (Sinta): harus melewati Rani, Bayu, Putu dulu", 960, 745, { size: 24 });
+    },
+    unplugged_loker(ctx, b, l) {
+      card(ctx, 120, 150, 1680, 740);
+      heading(ctx, "MAIN DULU: LOKER BERDASARKAN BANYAK HURUF");
+      const n = reveal(l, 3.0, 3.0, 3);
+      for (let i = 0; i < 5; i++) { const x = 1000 + i * 150, on = (n >= 2 && i === 4); card(ctx, x, 290, 130, 300, { fill: on ? "#FFF3D6" : "#DCE6EC", stroke: on ? C.accent : "#7B8B95", lw: on ? 5 : 3, r: 10 }); text(ctx, String(i), x + 65, 350, 40, { align: "center", weight: 900, color: on ? C.accentDark : C.ink2 }); ctx.fillStyle = "#7B8B95"; rr(ctx, x + 95, 430, 14, 50, 6); ctx.fill(); if (on && n >= 3) text(ctx, "🎒", x + 65, 540, 50, { align: "center" }); }
+      text(ctx, "loker", 1370, 640, 22, { align: "center", weight: 900, color: C.ink2 });
+      card(ctx, 240, 290, 660, 300, { fill: C.bg2, r: 16 });
+      text(ctx, "aturan: banyak huruf ÷ 5, sisanya", 570, 340, 24, { align: "center", weight: 900, color: C.kiko });
+      dim(ctx, n >= 1, () => { text(ctx, "D-i-t-o: 4 huruf", 570, 410, 30, { align: "center", weight: 900 }); text(ctx, "4 ÷ 5 = 0 sisa 4", 570, 460, 26, { align: "center", weight: 800, color: C.ink2 }); });
+      dim(ctx, n >= 2, () => text(ctx, "→ loker 4", 570, 530, 34, { align: "center", weight: 900, color: C.accentDark }));
+      if (n >= 3) label(ctx, "langsung ke loker 4, tidak membuka semua loker", 960, 720, { size: 26 });
+    },
+    adt(ctx, b, l) {
+      card(ctx, 120, 150, 1680, 740);
+      heading(ctx, "ABSTRACT DATA TYPE: APA, BUKAN BAGAIMANA");
+      const n = reveal(l, 1.5, 2.8, 4);
+      dim(ctx, n >= 1, () => { card(ctx, 220, 270, 700, 380, { fill: "#fff", stroke: C.kiko, lw: 4, r: 18 }); text(ctx, "YANG KAMU PAKAI: OPERASI", 570, 320, 24, { align: "center", weight: 900, color: C.kiko });
+        [["stack", "push · pop · peek"], ["queue", "enqueue (masuk belakang) · dequeue (keluar depan)"]].forEach(([t, s], i) => dim(ctx, n >= i + 2, () => { card(ctx, 250, 350 + i * 140, 640, 120, { fill: C.bg2, r: 14 }); text(ctx, t, 280, 400 + i * 140, 30, { weight: 900 }); text(ctx, s, 280, 440 + i * 140, 21, { weight: 800, color: C.ink2 }); })); });
+      dim(ctx, n >= 4, () => { card(ctx, 1000, 270, 700, 380, { fill: "#F4F8FB", stroke: "#B7C4CC", lw: 3, r: 18 }); text(ctx, "DI BALIK LAYAR: CARA MENYIMPAN", 1350, 320, 24, { align: "center", weight: 900, color: C.ink2 });
+        ["array?", "linked list?", "blok memori?"].forEach((s, i) => { ctx.save(); ctx.setLineDash([10, 8]); ctx.strokeStyle = "#7B8B95"; ctx.lineWidth = 3; rr(ctx, 1040, 345 + i * 82, 620, 64, 12); ctx.stroke(); ctx.restore(); text(ctx, s, 1350, 386 + i * 82, 26, { align: "center", weight: 800, color: "#7B8B95" }); });
+        text(ctx, "urusan pembuat library", 1350, 625, 24, { align: "center", weight: 900, color: C.accentDark }); });
+    },
+    library(ctx, b, l) {
+      card(ctx, 120, 150, 1680, 740);
+      heading(ctx, "SUDAH DISEDIAKAN PYTHON");
+      const n = reveal(l, 1.5, 2.6, 6);
+      dim(ctx, n >= 1, () => { text(ctx, "list sebagai stack", 560, 270, 26, { align: "center", weight: 900, color: C.kiko }); Py.code(ctx, 220, 290, 680, [{ t: "tumpuk = []" }, { t: "tumpuk.append(3)", hl: n === 1 }, { t: "tumpuk.append(5)", hl: n === 1 }, { t: "tumpuk.pop()   # 5", hl: n === 2 }], { rh: 44, size: 22 }); Sk.stack(ctx, 460, 720, n >= 2 ? [3] : [3, 5], { w: 200, cap: 2 }); });
+      dim(ctx, n >= 3, () => { text(ctx, "deque sebagai queue", 1360, 270, 26, { align: "center", weight: 900, color: C.kiko }); Py.code(ctx, 1020, 290, 680, [{ t: "from collections import deque" }, { t: "antre = deque()" }, { t: 'antre.append("Dito")', hl: n === 3 }, { t: 'antre.append("Sinta")', hl: n === 3 }, { t: 'antre.popleft()   # "Dito"', hl: n === 4 }], { rh: 44, size: 22 }); Sk.queue(ctx, 1080, 580, n >= 4 ? ["Sinta"] : ["Dito", "Sinta"], { w: 170, cap: 3 }); });
+      if (n >= 5) { card(ctx, 1010, 585, 720, 148, { fill: C.badBg, stroke: C.bad, lw: 4, r: 16 }); text(ctx, "list.pop(0) menggeser semua isi ke kiri", 1370, 625, 24, { align: "center", weight: 900, color: C.bad });
+        ["B", "C", "D", "E"].forEach((s, i) => { const x = 1080 + i * 150; card(ctx, x, 642, 110, 50, { fill: "#fff", stroke: "#B7C4CC", lw: 3, r: 8 }); text(ctx, s, x + 55, 676, 24, { align: "center", weight: 900 }); arrow(ctx, x + 20, 712, x - 30, 712, C.bad, 3); }); }
+    },
+    linked_list(ctx, b, l) {
+      card(ctx, 120, 150, 1680, 740);
+      heading(ctx, "LINKED LIST: NODE DAN PENUNJUK");
+      const n = reveal(l, 1.5, 2.2, 6);
+      const walk = n >= 4 ? clamp(Math.floor((l - 8.1) / 1.4), 0, 2) : null;
+      Sk.chain(ctx, 300, 330, ["Dito", "Sinta", "Bayu"], { hl: walk, head: n >= 2, none: n >= 3, dimFrom: n >= 1 ? null : 0 });
+      if (n >= 1) { text(ctx, "data", 395, 450, 20, { align: "center", weight: 900, color: C.ink2 }); text(ctx, "penunjuk", 465, 450, 20, { align: "left", weight: 900, color: C.ink2 }); }
+      dim(ctx, n >= 4, () => { Py.code(ctx, 300, 500, 760, [{ t: "n = head", hl: walk === 0 && l < 9 }, { t: "while n is not None:" }, { t: '    print(n["data"])', hl: walk != null }, { t: '    n = n["next"]' }], { rh: 44, size: 22 }); });
+      if (n >= 4) Py.console(ctx, 1120, 500, 480, ["Dito", "Sinta", "Bayu"].slice(0, (walk || 0) + 1).map(s => [s, "out"]));
+      if (n >= 6) label(ctx, "tiap node: dictionary {\"data\": …, \"next\": …}", 1360, 720, { size: 22, color: C.ink2 });
+    },
+    ll_insert(ctx, b, l) {
+      card(ctx, 120, 150, 1680, 740);
+      heading(ctx, "SISIP CEPAT, AMBIL LAMBAT");
+      const n = reveal(l, 1.5, 2.6, 5);
+      // atas: linked list sisip Rani di antara Dito dan Sinta
+      text(ctx, "linked list", 230, 290, 24, { weight: 900, color: C.kiko });
+      const a = Sk.node(ctx, 230, 320, "Dito"), c = Sk.node(ctx, 760, 320, "Sinta"), d = Sk.node(ctx, 1080, 320, "Bayu");
+      arrow(ctx, c.px, c.py, d.x - 4, d.py); arrow(ctx, d.px, d.py, d.px + 60, d.py, "#7B8B95"); text(ctx, "None", d.px + 70, d.py + 8, 20, { weight: 900, color: "#7B8B95" });
+      if (n < 2) arrow(ctx, a.px, a.py, c.x - 4, c.py);
+      if (n >= 1) { const r = Sk.node(ctx, 495, 440, "Rani", { fresh: true }); if (n >= 1) arrow(ctx, r.px, r.py, c.x + 40, c.y + Sk.NH + 4, C.good); if (n >= 2) arrow(ctx, a.px, a.py, r.x + 40, r.y - 4, C.good); }
+      if (n >= 2) label(ctx, "cukup 2 penunjuk berubah", 1060, 490, { size: 24, color: C.good });
+      // bawah kiri: ambil isi keseribu
+      dim(ctx, n >= 3, () => { card(ctx, 230, 580, 700, 120, { fill: C.badBg, stroke: C.bad, lw: 3, r: 14 }); text(ctx, "ambil isi keseribu: head → … → node ke-1000", 580, 625, 22, { align: "center", weight: 900, color: C.bad }); text(ctx, "langkah: " + (n >= 3 ? Math.min(1000, Math.max(1, Math.floor((l - 6.7) * 160))) : 0), 580, 672, 26, { align: "center", weight: 900 }); });
+      dim(ctx, n >= 4, () => { card(ctx, 990, 580, 700, 120, { fill: C.bg2, r: 14 }); text(ctx, "list Python: nilai[999] langsung", 1340, 625, 22, { align: "center", weight: 900, color: C.good }); text(ctx, "tetapi insert(0, …) menggeser semuanya", 1340, 668, 22, { align: "center", weight: 900, color: C.bad }); });
+    },
+    hash_map(ctx, b, l) {
+      card(ctx, 120, 150, 1680, 740);
+      heading(ctx, "HASH MAP: KUNCI → NOMOR LACI");
+      const n = reveal(l, 2.0, 2.6, 5);
+      dim(ctx, n >= 1, () => { card(ctx, 220, 290, 200, 80, { fill: "#fff", stroke: C.kiko, lw: 4, r: 14 }); text(ctx, "\"teh\"", 320, 342, 30, { align: "center", weight: 900, color: C.kiko }); text(ctx, "kunci", 320, 400, 20, { align: "center", weight: 900, color: C.ink2 }); });
+      dim(ctx, n >= 2, () => { arrow(ctx, 430, 330, 500, 330); card(ctx, 510, 270, 300, 120, { fill: "#F4F0FA", stroke: "#8E6BBF", lw: 4, r: 16 }); text(ctx, "fungsi hash", 660, 318, 26, { align: "center", weight: 900, color: "#8E6BBF" }); text(ctx, "contoh: banyak huruf % 5", 660, 356, 18, { align: "center", weight: 800, color: C.ink2 }); arrow(ctx, 820, 330, 900, 330); text(ctx, "3", 930, 342, 40, { align: "center", weight: 900, color: C.accentDark }); });
+      Sk.buckets(ctx, 1080, 260, 5, { 0: [["bakso", 9]], 2: [["es", 20]], 3: [["teh", 12, n >= 4]], 4: [["roti", 5]] }, { hl: n >= 3 ? 3 : null, w: 560, h: 72 });
+      dim(ctx, n >= 4, () => { Py.code(ctx, 220, 470, 760, [{ t: 'stok = {"teh": 12, "roti": 5, "es": 20, "bakso": 9}' }, { t: 'stok["teh"]   # 12', hl: true }], { rh: 44, size: 20 }); });
+      if (n >= 5) label(ctx, "Python memakai rumus hash yang jauh lebih rumit", 600, 700, { size: 22, color: C.ink2 });
+    },
+    collision(ctx, b, l) {
+      card(ctx, 120, 150, 1680, 740);
+      heading(ctx, "TABRAKAN (COLLISION): DUA KUNCI, SATU LACI");
+      const n = reveal(l, 1.5, 2.6, 5);
+      const isi = { 0: [["Sinta", "XII A"]], 4: [["Dito", "XII B", n >= 5 ? "bad" : false]] }; if (n >= 2) isi[4].push(["Kiko", "robot", n >= 5]);
+      Sk.buckets(ctx, 1000, 260, 5, isi, { hl: n >= 1 ? 4 : null, w: 680, h: 72 });
+      [["Sinta", 5, 0], ["Dito", 4, 4], ["Kiko", 4, 4]].forEach(([k, len, idx], i) => dim(ctx, i < 2 || n >= 1, () => { card(ctx, 220, 290 + i * 100, 660, 80, { fill: i === 2 ? "#FFF3D6" : C.bg2, stroke: i === 2 ? C.accent : undefined, lw: 3, r: 12 }); text(ctx, k + ": " + len + " huruf → " + len + " % 5 = " + idx, 250, 342 + i * 100, 26, { weight: 900 }); }));
+      if (n >= 3) { card(ctx, 220, 600, 660, 110, { fill: C.bg2, r: 14 }); text(ctx, "cari Kiko: buka laci 4,", 550, 645, 24, { align: "center", weight: 900 }); text(ctx, "cocokkan kunci: Dito ✕, Kiko ✓", 550, 685, 24, { align: "center", weight: 900, color: C.good }); }
+    },
+    tree(ctx, b, l) {
+      card(ctx, 120, 150, 1680, 740);
+      heading(ctx, "TREE: DATA BERTINGKAT");
+      const n = reveal(l, 2.0, 2.4, 5);
+      const T = { "Dokumen": [700, 300], "Sekolah": [440, 460], "Foto": [960, 460], "Informatika": [300, 620], "Matematika": [580, 620], "Liburan": [960, 620] };
+      const E = [["Dokumen", "Sekolah"], ["Dokumen", "Foto"], ["Sekolah", "Informatika"], ["Sekolah", "Matematika"], ["Foto", "Liburan"]];
+      E.forEach(([a, c]) => { ctx.strokeStyle = "#B7C4CC"; ctx.lineWidth = 4; ctx.beginPath(); ctx.moveTo(T[a][0], T[a][1] + 36); ctx.lineTo(T[c][0], T[c][1] - 36); ctx.stroke(); });
+      const role = id => id === "Dokumen" ? "root" : ["Informatika", "Matematika", "Liburan"].includes(id) ? "leaf" : "child";
+      Object.entries(T).forEach(([id, [x, y]]) => { const r = role(id); const on = (n >= 2 && r === "root") || (n >= 3 && r === "child") || (n >= 4 && r === "leaf"); card(ctx, x - 120, y - 36, 240, 72, { fill: on ? (r === "root" ? "#FFF3D6" : r === "leaf" ? C.goodBg : "#E5F1F6") : "#fff", stroke: on ? (r === "root" ? C.accent : r === "leaf" ? C.good : C.kiko) : "#B7C4CC", lw: 3, r: 12 }); text(ctx, "📁 " + id, x, y + 9, 22, { align: "center", weight: 900 }); });
+      [["root", "node paling atas", C.accentDark, 2], ["child", "node di bawah suatu node", C.kiko, 3], ["leaf", "node tanpa child", C.good, 4]].forEach(([t, s, col, k], i) => dim(ctx, n >= k, () => { card(ctx, 1220, 290 + i * 120, 480, 100, { fill: C.bg2, r: 14 }); text(ctx, t, 1250, 336 + i * 120, 28, { weight: 900, color: col }); text(ctx, s, 1250, 370 + i * 120, 20, { weight: 800, color: C.ink2 }); }));
+      if (n >= 1) text(ctx, "contoh: folder di laptop", 1460, 680, 22, { align: "center", weight: 900, color: C.ink2 });
+    },
+    bst(ctx, b, l) {
+      card(ctx, 120, 150, 1680, 740);
+      heading(ctx, "BINARY SEARCH TREE: KECIL KE KIRI, BESAR KE KANAN");
+      const k = reveal(l, 3.5, 1.3, 7); const searching = l > 14;
+      const path = searching ? Sk.bstPath(BST, 60).path.slice(0, clamp(Math.floor((l - 14) / 1.6) + 1, 1, 3)) : null;
+      Sk.bst(ctx, 800, 310, BST, { n: k, path, spread: 330, dy: 130, fresh: !searching });
+      text(ctx, "urutan sisip: " + BST.slice(0, k).join(", "), 230, 270, 22, { weight: 900, color: C.ink2 });
+      dim(ctx, true, () => { card(ctx, 1380, 560, 330, 150, { fill: C.bg2, r: 14 }); text(ctx, "aturan", 1545, 600, 22, { align: "center", weight: 900, color: C.ink2 }); text(ctx, "< ke kiri", 1545, 640, 24, { align: "center", weight: 900 }); text(ctx, "> ke kanan", 1545, 680, 24, { align: "center", weight: 900 }); });
+      if (searching) { card(ctx, 1380, 290, 330, 200, { fill: "#FFF3D6", stroke: C.accent, lw: 4, r: 14 }); text(ctx, "cari 60", 1545, 335, 26, { align: "center", weight: 900, color: C.accentDark }); text(ctx, path.join(" → "), 1545, 395, 26, { align: "center", weight: 900 }); text(ctx, path.length + " langkah", 1545, 455, 30, { align: "center", weight: 900, color: path.length === 3 ? C.good : C.ink }); }
+    },
+    graph(ctx, b, l) {
+      card(ctx, 120, 150, 1680, 740);
+      heading(ctx, "GRAPH: NODE DAN EDGE");
+      const n = reveal(l, 1.5, 2.6, 5);
+      Sk.graph(ctx, HALTE, JALUR, { hlNodes: n >= 4 ? ["Pasar"] : [], hlEdges: n >= 4 ? [["Pasar", "Sekolah"], ["Pasar", "Terminal"]] : [], r: 62, size: 18 });
+      if (n >= 1) { text(ctx, "node: halte", 300, 735, 20, { weight: 900, color: C.kiko }); text(ctx, "edge: jalur angkot", 520, 735, 20, { weight: 900, color: C.ink2 }); }
+      dim(ctx, n >= 3, () => Py.code(ctx, 1020, 280, 680, [{ t: "halte = {" }, { t: '  "Pasar": ["Sekolah", "Terminal"],', hl: n >= 4 }, { t: '  "Sekolah": ["Pasar", "Alun-alun",' }, { t: '              "Terminal"],' }, { t: '  "Alun-alun": ["Sekolah", "Stasiun"],' }, { t: '  "Terminal": ["Pasar", "Sekolah",' }, { t: '               "Stasiun"],' }, { t: '  "Stasiun": ["Alun-alun", "Terminal"]' }, { t: "}" }], { rh: 40, size: 18 }));
+      if (n >= 5) label(ctx, "rute terpendek: F12.2", 1360, 720, { size: 24 });
+    },
+    pilih(ctx, b, l) {
+      card(ctx, 120, 150, 1680, 740);
+      heading(ctx, "PILIH SESUAI KEBUTUHAN");
+      const rows = [["batalkan langkah terakhir (undo)", "stack", "🥞"], ["layani sesuai urutan datang", "queue", "🚶"], ["sering sisip di tengah", "linked list", "🔗"], ["cari lewat kunci", "dictionary", "🗄️"], ["data terurut, cepat dicari", "binary search tree", "🌳"], ["hubungan dan rute", "graph", "🕸️"]];
+      const n = reveal(l, 2.0, 2.4, 6);
+      rows.forEach(([need, st, ic], i) => dim(ctx, i < n, () => { const x = i < 3 ? 220 : 980, y = 270 + (i % 3) * 140; card(ctx, x, y, 720, 120, { fill: i === n - 1 ? "#FFF3D6" : C.bg2, stroke: i === n - 1 ? C.accent : undefined, lw: 4, r: 14 }); text(ctx, need, x + 26, y + 46, 22, { weight: 800, color: C.ink2 }); text(ctx, ic + "  " + st, x + 26, y + 92, 30, { weight: 900 }); }));
+    },
+    make_show(ctx, b, l) {
+      card(ctx, 160, 150, 1600, 740);
+      text(ctx, "GILIRANMU", 960, 230, 34, { align: "center", color: C.accentDark, weight: 900 });
+      const items = [["Binary search tree", "sisipkan dan cari, lihat jalurnya", (x, y) => { ctx.save(); ctx.translate(x, y - 120); ctx.scale(0.42, 0.42); Sk.bst(ctx, 0, 0, BST, { path: [50, 70, 60], spread: 360, dy: 130 }); ctx.restore(); }],
+        ["Pemilih struktur data", "enam kasus, enam pilihan", (x, y) => [["undo", "stack"], ["urutan datang", "queue"], ["cari lewat kunci", "dictionary"]].forEach(([a, s], i) => { card(ctx, x - 200, y - 100 + i * 66, 400, 56, { fill: "#fff", stroke: "#B7C4CC", lw: 2, r: 10 }); text(ctx, a, x - 180, y - 64 + i * 66, 20, { weight: 800 }); text(ctx, s, x + 180, y - 64 + i * 66, 20, { align: "right", weight: 900, color: C.kiko }); })],
+        ["Pelacak stack dan queue", "tebak isinya setiap langkah", (x, y) => { ctx.save(); ctx.translate(x - 210, y - 110); ctx.scale(0.7, 0.7); Py.code(ctx, 0, 0, 600, [{ t: "s.append(3)" }, { t: "s.append(5)" }, { t: "s.pop()", hl: true }], { rh: 44, size: 24 }); ctx.restore(); }]];
+      items.forEach(([t1, t2, draw], i) => { const x = 400 + i * 560; card(ctx, x - 250, 270, 500, 400, { fill: C.bg2 }); ctx.fillStyle = C.kiko; ctx.beginPath(); ctx.arc(x - 200, 320, 28, 0, Math.PI * 2); ctx.fill(); text(ctx, String(i + 1), x - 200, 332, 30, { align: "center", color: "#fff", weight: 900 }); text(ctx, t1, x - 160, 332, 24, { weight: 900 }); text(ctx, t2, x - 160, 366, 19, { weight: 700, color: C.ink2 }); draw(x, 530); });
+      text(ctx, "lalu di komputer: deque untuk antrean, dictionary untuk hitung kata, linked list buatan sendiri", 960, 725, 24, { align: "center", color: C.ink2, weight: 800 });
+    }
+  });
+})(typeof window !== "undefined" ? window : globalThis);
+</script>
+<script>/* Inti halaman latihan: pemutar (kanvas + narasi), tombol suara nyala/mati (berpindah antara timeline suara dan teks),
+   kuis dengan petunjuk, dan kemajuan di localStorage (perangkat ini saja).
+   Pakai:  const P = PageCore({ suara: TIMELINE_SUARA_atau_null, teks: TIMELINE_TEKS });
+   Episode menambahkan latihannya sendiri lewat P.$, P.K, P.H, P.progress, P.save(), P.speed(), P.onProgress(fn). */
+function PageCore(TLS, opt = {}) {
+  const $ = id => document.getElementById(id);
+  const K = Kiko, H = K.helpers;
+  let voice = !!TLS.suara; let TL = voice ? TLS.suara : TLS.teks;
+  // ---------- progress storage (per device only) ----------
+  const KEY = opt.key || TL.episode.replace(/\./g, "").toLowerCase() + "-progress";   // D7.5 -> "d75-progress"
+  let progress = { quiz: {} };
+  try { const s = localStorage.getItem(KEY); if (s) progress = { quiz: {}, ...JSON.parse(s) }; } catch (e) {}
+  const extras = [];
+  function renderProgress() {
+    const el = $("progress"); if (!el) return; el.innerHTML = "";
+    Object.keys(TL.quizzes).forEach((id, i) => { const s = document.createElement("span"); s.textContent = "Cek " + (i + 1); s.className = progress.quiz[id] ? "ok" : ""; el.appendChild(s); });
+    extras.forEach(f => f(el));
+  }
+  function save() { try { localStorage.setItem(KEY, JSON.stringify(progress)); } catch (e) {} renderProgress(); }
+
+  // ---------- player ----------
+  const cv = $("screen"), ctx = cv.getContext("2d");
+  let t = 0, playing = false, last = 0, speed = 1, hasAudio = false;
+  const nar = $("nar"); nar.addEventListener("canplay", () => { hasAudio = true; }); nar.addEventListener("error", () => { hasAudio = false; });
+  function fmt(s) { s = Math.max(0, Math.floor(s)); return Math.floor(s / 60) + ":" + String(s % 60).padStart(2, "0"); }
+  function segStart(i) { return TL.beats.find(b => b.seg === i).start; }
+  function syncAudio() { if (voice && hasAudio) { try { nar.currentTime = t; } catch (e) {} } }
+  function drawNow() {
+    const b = K.draw(ctx, Math.min(t, TL.total - 0.01), TL);
+    $("barfill").style.width = (t / TL.total * 100) + "%"; $("bar").setAttribute("aria-valuenow", Math.round(t / TL.total * 100));
+    $("timelabel").textContent = fmt(t) + " / " + fmt(TL.total);
+    [...$("chapters").children].forEach((c, i) => c.classList.toggle("now", i === b.seg));
+    return b;
+  }
+  function loop(now) {
+    if (!playing) return;
+    const dt = Math.min(0.1, (now - last) / 1000); last = now; if (voice && hasAudio && !nar.paused) t = nar.currentTime; else t += dt * speed;
+    if (t >= TL.total) { t = TL.total - 0.01; setPlaying(false); }
+    drawNow(); requestAnimationFrame(loop);
+  }
+  function setPlaying(p) {
+    playing = p; $("bigplay").hidden = p; $("playbtn").textContent = p ? "❚❚ Jeda" : "▶ Putar";
+    if (p) { last = performance.now(); if (voice && hasAudio) { try { nar.currentTime = t; nar.playbackRate = speed; nar.play().catch(() => {}); } catch (e) {} } requestAnimationFrame(loop); } else nar.pause();
+  }
+  $("bigplay").addEventListener("click", () => setPlaying(true));
+  $("playbtn").addEventListener("click", () => setPlaying(!playing));
+  $("replay").addEventListener("click", () => { const b = K.beatAt(TL, t); t = segStart(b.seg); syncAudio(); drawNow(); setPlaying(true); });
+  $("slow").addEventListener("click", e => { speed = speed === 1 ? 0.8 : 1; nar.playbackRate = speed; e.currentTarget.setAttribute("aria-pressed", speed !== 1); });
+  function seekFromBar(ev) { const r = $("bar").getBoundingClientRect(); const x = (ev.touches ? ev.touches[0].clientX : ev.clientX) - r.left; t = Math.max(0, Math.min(TL.total - 0.01, x / r.width * TL.total)); syncAudio(); drawNow(); }
+  $("bar").addEventListener("click", seekFromBar);
+  $("bar").addEventListener("keydown", e => { if (e.key === "ArrowRight") { t = Math.min(TL.total - 0.01, t + 5); syncAudio(); drawNow(); } if (e.key === "ArrowLeft") { t = Math.max(0, t - 5); syncAudio(); drawNow(); } });
+  TL.segments.forEach((name, i) => { const b = document.createElement("button"); b.textContent = (i + 1) + ". " + name; b.addEventListener("click", () => { t = segStart(i); syncAudio(); drawNow(); setPlaying(true); }); $("chapters").appendChild(b); });
+  // voice on/off: switches between the narrated timeline and the reading-paced one, staying on the same beat
+  const vb = $("voice");
+  function setVoice(on) {
+    const cur = K.beatAt(TL, t);
+    voice = on && !!TLS.suara; TL = voice ? TLS.suara : TLS.teks;
+    const nb = TL.beats.find(b => b.id === cur.id) || TL.beats[0]; t = nb.start;
+    if (vb) { vb.setAttribute("aria-pressed", voice); vb.textContent = voice ? "🔊 Suara: nyala" : "🔇 Suara: mati"; }
+    if (playing) { if (voice && hasAudio) { try { nar.currentTime = t; nar.playbackRate = speed; nar.play().catch(() => {}); } catch (e) {} } else nar.pause(); }
+    drawNow();
+  }
+  if (vb) { if (!TLS.suara || !TLS.teks) vb.hidden = true; else { vb.addEventListener("click", () => setVoice(!voice)); vb.setAttribute("aria-pressed", voice); vb.textContent = voice ? "🔊 Suara: nyala" : "🔇 Suara: mati"; } }
+  drawNow();
+
+  // ---------- quiz ----------
+  const quizEl = $("quiz");
+  if (quizEl) Object.entries(TL.quizzes).forEach(([id, q], qi) => {
+    const box = document.createElement("div"); box.className = "q";
+    box.innerHTML = `<h3>${qi + 1}. ${q.q}</h3><div class="opts"></div><div class="fb"></div>`;
+    const opts = box.querySelector(".opts"), fb = box.querySelector(".fb");
+    q.options.forEach((o, i) => {
+      const b = document.createElement("button"); b.innerHTML = `<b>${"ABC"[i]}</b><span>${o}</span>`;
+      b.addEventListener("click", () => {
+        [...opts.children].forEach(c => c.classList.remove("wrong"));
+        if (i === q.answer) { b.classList.add("right"); fb.className = "fb good"; fb.textContent = "Benar! " + (q.explain || ""); progress.quiz[id] = true; save(); [...opts.children].forEach(c => c.disabled = true); }
+        else { b.classList.add("wrong"); fb.className = "fb bad"; fb.textContent = "Belum tepat. Petunjuk: " + q.hint; }
+      });
+      opts.appendChild(b);
+    });
+    if (progress.quiz[id]) { opts.children[q.answer].classList.add("right"); [...opts.children].forEach(c => c.disabled = true); fb.className = "fb good"; fb.textContent = "Sudah dijawab benar."; }
+    quizEl.appendChild(box);
+  });
+  renderProgress();
+
+  return { $, K, H, progress, save, renderProgress, speed: () => speed, timeline: () => TL,
+           onProgress(fn) { extras.push(fn); renderProgress(); } };
+}
+</script>
+<script>
+(function () {
+  const P = PageCore({ suara: {"episode": "F12.1", "title": "Struktur Data Kompleks dan Abstrak", "hook": "memilih dan memakai stack, queue, linked list, dictionary, tree, dan graph di Python sesuai kebutuhan programmu.", "engine": ["../_alat/kiko-core.js", "../_alat/kiko-devices.js", "../F11.0/py.js", "struktur.js", "scenes.js"], "parts": {"F12.1a": {"segs": [0, 1, 2, 3], "post": "Lanjut ke Bagian 2: Hash Map, Tree, dan Graph"}, "F12.1b": {"segs": [4, 5, 6, 7], "pre": "Bagian 2: Hash Map, Tree, dan Graph"}}, "youtube": {"ringkas": "Struktur data kompleks dan abstrak untuk kelas XII. Kiko mulai dari ide abstract data type (yang penting operasinya, bukan cara menyimpannya), lalu memakai yang sudah disediakan Python: list sebagai stack, deque sebagai queue, dan dictionary sebagai hash map. Setelah itu linked list (node, penunjuk, head, sisip tanpa menggeser), fungsi hash dan collision, tree dengan root, child, dan leaf, binary search tree (kecil ke kiri, besar ke kanan, cari dalam beberapa langkah), serta graph sebagai dictionary berisi list untuk jalur angkot fiktif. Ditutup panduan memilih struktur sesuai kebutuhan. Gaya diagram Fase F. Empat cek pemahaman; binary search tree interaktif di halaman latihan.", "belajar": ["menjelaskan abstract data type dan memakai stack, queue, serta hash map dari library Python", "menggambar dan menelusuri linked list, serta menyebut kelebihan dan kekurangannya", "menyisipkan dan mencari nilai di binary search tree", "menyimpan graph sebagai dictionary berisi list", "memilih struktur data yang tepat untuk suatu kebutuhan"], "bagian": {"F12.1a": "ADT, Library, dan Linked List", "F12.1b": "Hash Map, Tree, dan Graph"}, "cari": ["struktur data python kelas 12", "linked list python penjelasan pemula", "binary search tree penjelasan", "hash map dictionary python", "graph struktur data sma"], "prasyarat": "episode E.5 dan F12.0", "jp": 24, "tagar": ["#Kelas12", "#StrukturData", "#LinkedList", "#BinarySearchTree", "#Python", "#SMA"]}, "recap": ["ADT: operasinya dulu; library menyediakan banyak.", "Linked list cepat disisipi; dictionary cepat dicari.", "Tree untuk data bertingkat; graph untuk hubungan."], "next": {"code": "F12.2", "title": "Memilih Solusi Optimal", "note": "Binary search tree interaktif dan pemilih struktur data ada di halaman episode ini."}, "segments": ["Pembuka", "Main dulu tanpa komputer", "Abstract data type dan library", "Linked list", "Hash map", "Tree dan binary search tree", "Graph dan memilih struktur", "Giliranmu"], "quizzes": {"q1": {"q": "Stack kosong: append(3), append(5), pop(), append(7). Isi stack dari bawah ke atas?", "options": ["3, 7", "5, 7", "3, 5, 7"], "answer": 0, "hint": "pop() mengambil yang paling atas, yaitu yang terakhir masuk."}, "q2": {"q": "Program riwayat pesan sering menyisipkan pesan baru di depan, jarang mengambil berdasarkan nomor. Mana yang lebih cocok?", "options": ["Linked list", "List Python biasa"], "answer": 0, "hint": "Di list biasa, menyisipkan di depan menggeser semua isi."}, "q3": {"q": "Menghitung berapa kali tiap kata muncul dalam cerpen. Struktur paling cocok?", "options": ["Stack", "Dictionary (kata sebagai kunci)", "Linked list"], "answer": 1, "hint": "Kamu perlu langsung menemukan hitungan untuk satu kata tertentu."}, "q4": {"q": "Pohon dari 50, 30, 70, 20, 40, 60, 80. Di mana 45 disisipkan?", "options": ["Kanan 40", "Kiri 30", "Kanan 70"], "answer": 0, "hint": "Bandingkan mulai dari root: lebih kecil ke kiri, lebih besar ke kanan."}}, "beats": [{"id": "intro1", "seg": 0, "scene": "title", "text": "Halo, kelas dua belas! Aku Kiko. Aplikasi peta, folder di laptop, dan daftar teman di media sosial menyimpan data yang saling terhubung. Setelah menonton, kamu bisa memilih dan memakai struktur data yang tepat untuk programmu.", "hold": 1.0, "start": 0.0, "speech": 0.4, "audio": 14.544, "dur": 19.54}, {"id": "intro2", "seg": 0, "scene": "title_q", "text": "Di kelas sepuluh kita mengenal array, record, stack, dan queue. Sekarang empat struktur baru: linked list, hash map, tree, dan graph. Kita mulai dengan memakai yang sudah disediakan Python, lalu mengintip cara membuatnya sendiri.", "hold": 0.8, "start": 19.54, "speech": 19.94, "audio": 16.331, "dur": 18.84}, {"id": "intro3", "seg": 0, "scene": "prereq", "text": "Episode ini melanjutkan E.5 tentang struktur data standar dan F12.0 tentang list, dictionary, dan fungsi. Kalau stack dan queue terasa asing, tonton lagi E.5, ya.", "hold": 0.8, "start": 38.38, "speech": 38.78, "audio": 12.898, "dur": 14.398}, {"id": "play1", "seg": 1, "scene": "unplugged_rantai", "text": "Main dulu. Lima teman duduk acak di kelas. Tiap orang hanya memegang kartu bertuliskan nama teman berikutnya. Untuk menemukan orang keempat, kamu harus mulai dari orang pertama dan mengikuti kartunya satu per satu. Itulah linked list.", "hold": 1.0, "start": 52.778, "speech": 53.178, "audio": 15.36, "dur": 20.04}, {"id": "play2", "seg": 1, "scene": "unplugged_loker", "text": "Lalu loker kelas bernomor nol sampai empat. Aturannya: banyak huruf nama dibagi lima, sisanya menjadi nomor loker. Dito, empat huruf: loker empat. Mencari tas Dito tidak perlu membuka semua loker. Itulah ide hash map.", "hold": 1.0, "start": 72.818, "speech": 73.218, "audio": 16.156, "dur": 19.04}, {"id": "s1a", "seg": 2, "scene": "adt", "text": "Abstract data type, atau tipe data abstrak, menjelaskan apa yang bisa dilakukan, bukan bagaimana data disimpan. Stack: push dan pop. Queue: masuk di belakang, keluar dari depan. Cara menyimpannya urusan pembuat library.", "hold": 0.8, "start": 91.858, "speech": 92.258, "audio": 16.0, "dur": 17.84}, {"id": "s1b", "seg": 2, "scene": "library", "text": "List Python bisa menjadi stack: append untuk push, pop mengambil yang teratas. Untuk queue, pakai deque dari modul collections: append di belakang, popleft dari depan. Mengapa bukan list? Mengambil dari depan list menggeser semua isinya.", "hold": 0.8, "start": 109.698, "speech": 110.098, "audio": 16.423, "dur": 19.34}, {"id": "q1", "seg": 2, "scene": "quiz", "quiz": "q1", "text": "Cek pemahaman. Stack kosong: append tiga, append lima, pop, append tujuh. Isi stack dari bawah ke atas: tiga dan tujuh; lima dan tujuh; atau tiga, lima, tujuh? Pikirkan dulu.", "hold": 4.0, "start": 129.038, "speech": 129.438, "audio": 15.343, "dur": 20.043}, {"id": "q1a", "seg": 2, "scene": "quiz_answer", "quiz": "q1", "text": "Jawabannya: tiga dan tujuh. pop mengambil lima yang paling atas, lalu tujuh ditaruh di atas tiga.", "hold": 1.0, "start": 149.081, "speech": 149.481, "audio": 7.549, "dur": 10.04}, {"id": "s2a", "seg": 3, "scene": "linked_list", "text": "Linked list terdiri dari node. Tiap node menyimpan data dan penunjuk ke node berikutnya. Node pertama disebut head, dan node terakhir menunjuk ke None. Untuk membaca isinya, mulai dari head, lalu ikuti penunjuknya satu per satu.", "hold": 0.8, "start": 159.121, "speech": 159.521, "audio": 15.672, "dur": 19.84}, {"id": "s2b", "seg": 3, "scene": "ll_insert", "text": "Kelebihannya: sisip di tengah cukup mengubah dua penunjuk. Kekurangannya: mengambil isi keseribu harus berjalan seribu langkah dari head. List Python sebaliknya: indeks mana pun langsung terambil, tetapi sisip di depan menggeser semuanya.", "hold": 0.8, "start": 178.961, "speech": 179.361, "audio": 16.968, "dur": 18.468}, {"id": "q2", "seg": 3, "scene": "quiz", "quiz": "q2", "text": "Cek pemahaman. Program riwayat pesan sering menyisipkan pesan baru di depan, tetapi jarang mengambil pesan berdasarkan nomor. Mana yang lebih cocok: linked list, atau list Python biasa? Pikirkan dulu.", "hold": 4.0, "start": 197.429, "speech": 197.829, "audio": 14.08, "dur": 19.54}, {"id": "q2a", "seg": 3, "scene": "quiz_answer", "quiz": "q2", "text": "Jawabannya: linked list. Menyisipkan di depan cukup membuat node baru yang menunjuk ke head lama. Di list biasa, semua isi harus digeser.", "hold": 1.0, "start": 216.969, "speech": 217.369, "audio": 9.901, "dur": 13.04}, {"id": "s3a", "seg": 4, "scene": "hash_map", "text": "Bagian dua. Hash map menyimpan pasangan kunci dan nilai. Fungsi hash mengubah kunci menjadi nomor laci. Dictionary Python adalah hash map. Saat kamu meminta stok teh, Python menghitung nomor laci untuk teh dan langsung membukanya.", "hold": 0.8, "start": 230.009, "speech": 230.409, "audio": 16.105, "dur": 19.34}, {"id": "s3b", "seg": 4, "scene": "collision", "text": "Dua kunci bisa mendapat laci yang sama. Dito dan Kiko sama-sama empat huruf: tabrakan, atau collision. Keduanya disimpan berdampingan di laci itu, lalu dicocokkan kuncinya. Selama lacinya cukup banyak, mencari tetap cepat.", "hold": 0.8, "start": 249.349, "speech": 249.749, "audio": 15.501, "dur": 17.84}, {"id": "q3", "seg": 4, "scene": "quiz", "quiz": "q3", "text": "Cek pemahaman. Kamu ingin menghitung berapa kali tiap kata muncul dalam satu cerpen. Struktur mana yang paling cocok: stack, dictionary dengan kata sebagai kunci, atau linked list? Pikirkan dulu.", "hold": 4.0, "start": 267.189, "speech": 267.589, "audio": 13.608, "dur": 19.54}, {"id": "q3a", "seg": 4, "scene": "quiz_answer", "quiz": "q3", "text": "Jawabannya: dictionary. Tiap kata menjadi kunci, nilainya jumlah kemunculan. Bertemu kata yang sama, tinggal tambah satu di lacinya.", "hold": 1.0, "start": 286.729, "speech": 287.129, "audio": 9.578, "dur": 11.278}, {"id": "s4a", "seg": 5, "scene": "tree", "text": "Tree, atau pohon, menyimpan data bertingkat: folder di laptop, silsilah keluarga, struktur organisasi OSIS. Node paling atas disebut root. Node di bawah suatu node disebut child, dan node tanpa child disebut leaf.", "hold": 0.8, "start": 298.007, "speech": 298.407, "audio": 15.896, "dur": 17.84}, {"id": "s4b", "seg": 5, "scene": "bst", "text": "Aturan binary search tree: yang lebih kecil ke kiri, yang lebih besar ke kanan. Sisipkan lima puluh, tiga puluh, tujuh puluh, dua puluh, empat puluh, enam puluh, delapan puluh. Mencari enam puluh: lima puluh, kanan, kiri. Tiga langkah.", "hold": 0.8, "start": 315.847, "speech": 316.247, "audio": 18.4, "dur": 20.84}, {"id": "q4", "seg": 5, "scene": "quiz", "quiz": "q4", "text": "Cek pemahaman. Empat puluh lima disisipkan ke pohon tadi. Di kanan empat puluh, di kiri tiga puluh, atau di kanan tujuh puluh? Pikirkan dulu.", "hold": 4.0, "start": 336.687, "speech": 337.087, "audio": 9.989, "dur": 17.04}, {"id": "q4a", "seg": 5, "scene": "quiz_answer", "quiz": "q4", "text": "Jawabannya: di kanan empat puluh. Empat puluh lima lebih kecil dari lima puluh, jadi ke kiri; lebih besar dari tiga puluh, ke kanan; lebih besar dari empat puluh, ke kanan lagi.", "hold": 1.0, "start": 353.727, "speech": 354.127, "audio": 12.487, "dur": 17.54}, {"id": "s5a", "seg": 6, "scene": "graph", "text": "Graph menyimpan hubungan: node dan garis penghubung yang disebut edge. Contohnya halte angkot dan jalurnya, atau siapa berteman dengan siapa. Di Python cukup dictionary berisi list: tiap halte menyimpan daftar tetangganya.", "hold": 0.8, "start": 371.267, "speech": 371.667, "audio": 15.165, "dur": 17.34}, {"id": "s5b", "seg": 6, "scene": "pilih", "text": "Pilih sesuai kebutuhan. Batalkan langkah terakhir: stack. Layani sesuai urutan datang: queue. Sering sisip di tengah: linked list. Cari lewat kunci: dictionary. Data terurut yang cepat dicari: binary search tree. Hubungan dan rute: graph.", "hold": 1.0, "start": 388.607, "speech": 389.007, "audio": 19.12, "dur": 20.82}, {"id": "s6a", "seg": 7, "scene": "make_show", "text": "Sekarang giliranmu. Di halaman latihan: binary search tree interaktif, sisipkan dan cari nilai sambil melihat jalurnya; pemilih struktur data untuk enam kasus; dan pelacak stack dan queue di Python.", "hold": 1.0, "start": 409.427, "speech": 409.827, "audio": 13.985, "dur": 16.54}, {"id": "s6b", "seg": 7, "scene": "make_show", "text": "Lalu di komputer: pakai deque untuk antrean kantin dan dictionary untuk menghitung kata. Tantangan: buat linked list sendiri dengan dictionary sebagai node, lalu tulis fungsi yang mencetak semua isinya.", "hold": 1.0, "start": 425.967, "speech": 426.367, "audio": 13.562, "dur": 16.54}, {"id": "recap", "seg": 7, "scene": "recap", "text": "Tiga hal untuk diingat. Satu: abstract data type menjelaskan operasinya; Python menyediakan stack, queue, dan hash map. Dua: linked list cepat disisipi, dictionary cepat dicari. Tiga: tree untuk data bertingkat, graph untuk hubungan.", "hold": 1.5, "start": 442.507, "speech": 442.907, "audio": 18.212, "dur": 20.412}, {"id": "outro", "seg": 7, "scene": "outro", "text": "Sampai jumpa di episode berikutnya: memilih solusi optimal. Kita cari rute terpendek antarkota dengan algoritma Dijkstra. Sampai jumpa!", "hold": 1.0, "start": 462.919, "speech": 463.319, "audio": 9.352, "dur": 11.052}], "total": 473.971}, teks: {"episode": "F12.1", "title": "Struktur Data Kompleks dan Abstrak", "hook": "memilih dan memakai stack, queue, linked list, dictionary, tree, dan graph di Python sesuai kebutuhan programmu.", "engine": ["../_alat/kiko-core.js", "../_alat/kiko-devices.js", "../F11.0/py.js", "struktur.js", "scenes.js"], "parts": {"F12.1a": {"segs": [0, 1, 2, 3], "post": "Lanjut ke Bagian 2: Hash Map, Tree, dan Graph"}, "F12.1b": {"segs": [4, 5, 6, 7], "pre": "Bagian 2: Hash Map, Tree, dan Graph"}}, "youtube": {"ringkas": "Struktur data kompleks dan abstrak untuk kelas XII. Kiko mulai dari ide abstract data type (yang penting operasinya, bukan cara menyimpannya), lalu memakai yang sudah disediakan Python: list sebagai stack, deque sebagai queue, dan dictionary sebagai hash map. Setelah itu linked list (node, penunjuk, head, sisip tanpa menggeser), fungsi hash dan collision, tree dengan root, child, dan leaf, binary search tree (kecil ke kiri, besar ke kanan, cari dalam beberapa langkah), serta graph sebagai dictionary berisi list untuk jalur angkot fiktif. Ditutup panduan memilih struktur sesuai kebutuhan. Gaya diagram Fase F. Empat cek pemahaman; binary search tree interaktif di halaman latihan.", "belajar": ["menjelaskan abstract data type dan memakai stack, queue, serta hash map dari library Python", "menggambar dan menelusuri linked list, serta menyebut kelebihan dan kekurangannya", "menyisipkan dan mencari nilai di binary search tree", "menyimpan graph sebagai dictionary berisi list", "memilih struktur data yang tepat untuk suatu kebutuhan"], "bagian": {"F12.1a": "ADT, Library, dan Linked List", "F12.1b": "Hash Map, Tree, dan Graph"}, "cari": ["struktur data python kelas 12", "linked list python penjelasan pemula", "binary search tree penjelasan", "hash map dictionary python", "graph struktur data sma"], "prasyarat": "episode E.5 dan F12.0", "jp": 24, "tagar": ["#Kelas12", "#StrukturData", "#LinkedList", "#BinarySearchTree", "#Python", "#SMA"]}, "recap": ["ADT: operasinya dulu; library menyediakan banyak.", "Linked list cepat disisipi; dictionary cepat dicari.", "Tree untuk data bertingkat; graph untuk hubungan."], "next": {"code": "F12.2", "title": "Memilih Solusi Optimal", "note": "Binary search tree interaktif dan pemilih struktur data ada di halaman episode ini."}, "segments": ["Pembuka", "Main dulu tanpa komputer", "Abstract data type dan library", "Linked list", "Hash map", "Tree dan binary search tree", "Graph dan memilih struktur", "Giliranmu"], "quizzes": {"q1": {"q": "Stack kosong: append(3), append(5), pop(), append(7). Isi stack dari bawah ke atas?", "options": ["3, 7", "5, 7", "3, 5, 7"], "answer": 0, "hint": "pop() mengambil yang paling atas, yaitu yang terakhir masuk."}, "q2": {"q": "Program riwayat pesan sering menyisipkan pesan baru di depan, jarang mengambil berdasarkan nomor. Mana yang lebih cocok?", "options": ["Linked list", "List Python biasa"], "answer": 0, "hint": "Di list biasa, menyisipkan di depan menggeser semua isi."}, "q3": {"q": "Menghitung berapa kali tiap kata muncul dalam cerpen. Struktur paling cocok?", "options": ["Stack", "Dictionary (kata sebagai kunci)", "Linked list"], "answer": 1, "hint": "Kamu perlu langsung menemukan hitungan untuk satu kata tertentu."}, "q4": {"q": "Pohon dari 50, 30, 70, 20, 40, 60, 80. Di mana 45 disisipkan?", "options": ["Kanan 40", "Kiri 30", "Kanan 70"], "answer": 0, "hint": "Bandingkan mulai dari root: lebih kecil ke kiri, lebih besar ke kanan."}}, "beats": [{"id": "intro1", "seg": 0, "scene": "title", "text": "Halo, kelas dua belas! Aku Kiko. Aplikasi peta, folder di laptop, dan daftar teman di media sosial menyimpan data yang saling terhubung. Setelah menonton, kamu bisa memilih dan memakai struktur data yang tepat untuk programmu.", "hold": 1.0, "start": 0.0, "speech": 0.0, "audio": 22.675, "dur": 24.675}, {"id": "intro2", "seg": 0, "scene": "title_q", "text": "Di kelas sepuluh kita mengenal array, record, stack, dan queue. Sekarang empat struktur baru: linked list, hash map, tree, dan graph. Kita mulai dengan memakai yang sudah disediakan Python, lalu mengintip cara membuatnya sendiri.", "hold": 0.8, "start": 24.675, "speech": 24.675, "audio": 22.05, "dur": 23.85}, {"id": "intro3", "seg": 0, "scene": "prereq", "text": "Episode ini melanjutkan E.5 tentang struktur data standar dan F12.0 tentang list, dictionary, dan fungsi. Kalau stack dan queue terasa asing, tonton lagi E.5, ya.", "hold": 0.8, "start": 48.525, "speech": 48.525, "audio": 16.425, "dur": 18.225}, {"id": "play1", "seg": 1, "scene": "unplugged_rantai", "text": "Main dulu. Lima teman duduk acak di kelas. Tiap orang hanya memegang kartu bertuliskan nama teman berikutnya. Untuk menemukan orang keempat, kamu harus mulai dari orang pertama dan mengikuti kartunya satu per satu. Itulah linked list.", "hold": 1.0, "start": 66.75, "speech": 66.75, "audio": 23.3, "dur": 25.3}, {"id": "play2", "seg": 1, "scene": "unplugged_loker", "text": "Lalu loker kelas bernomor nol sampai empat. Aturannya: banyak huruf nama dibagi lima, sisanya menjadi nomor loker. Dito, empat huruf: loker empat. Mencari tas Dito tidak perlu membuka semua loker. Itulah ide hash map.", "hold": 1.0, "start": 92.05, "speech": 92.05, "audio": 22.05, "dur": 24.05}, {"id": "s1a", "seg": 2, "scene": "adt", "text": "Abstract data type, atau tipe data abstrak, menjelaskan apa yang bisa dilakukan, bukan bagaimana data disimpan. Stack: push dan pop. Queue: masuk di belakang, keluar dari depan. Cara menyimpannya urusan pembuat library.", "hold": 0.8, "start": 116.1, "speech": 116.1, "audio": 20.8, "dur": 22.6}, {"id": "s1b", "seg": 2, "scene": "library", "text": "List Python bisa menjadi stack: append untuk push, pop mengambil yang teratas. Untuk queue, pakai deque dari modul collections: append di belakang, popleft dari depan. Mengapa bukan list? Mengambil dari depan list menggeser semua isinya.", "hold": 0.8, "start": 138.7, "speech": 138.7, "audio": 22.675, "dur": 24.475}, {"id": "q1", "seg": 2, "scene": "quiz", "quiz": "q1", "text": "Cek pemahaman. Stack kosong: append tiga, append lima, pop, append tujuh. Isi stack dari bawah ke atas: tiga dan tujuh; lima dan tujuh; atau tiga, lima, tujuh? Pikirkan dulu.", "hold": 4.0, "start": 163.175, "speech": 163.175, "audio": 18.925, "dur": 23.925}, {"id": "q1a", "seg": 2, "scene": "quiz_answer", "quiz": "q1", "text": "Jawabannya: tiga dan tujuh. pop mengambil lima yang paling atas, lalu tujuh ditaruh di atas tiga.", "hold": 1.0, "start": 187.1, "speech": 187.1, "audio": 10.8, "dur": 12.8}, {"id": "s2a", "seg": 3, "scene": "linked_list", "text": "Linked list terdiri dari node. Tiap node menyimpan data dan penunjuk ke node berikutnya. Node pertama disebut head, dan node terakhir menunjuk ke None. Untuk membaca isinya, mulai dari head, lalu ikuti penunjuknya satu per satu.", "hold": 0.8, "start": 199.9, "speech": 199.9, "audio": 23.3, "dur": 25.1}, {"id": "s2b", "seg": 3, "scene": "ll_insert", "text": "Kelebihannya: sisip di tengah cukup mengubah dua penunjuk. Kekurangannya: mengambil isi keseribu harus berjalan seribu langkah dari head. List Python sebaliknya: indeks mana pun langsung terambil, tetapi sisip di depan menggeser semuanya.", "hold": 0.8, "start": 225.0, "speech": 225.0, "audio": 20.8, "dur": 22.6}, {"id": "q2", "seg": 3, "scene": "quiz", "quiz": "q2", "text": "Cek pemahaman. Program riwayat pesan sering menyisipkan pesan baru di depan, tetapi jarang mengambil pesan berdasarkan nomor. Mana yang lebih cocok: linked list, atau list Python biasa? Pikirkan dulu.", "hold": 4.0, "start": 247.6, "speech": 247.6, "audio": 18.925, "dur": 23.925}, {"id": "q2a", "seg": 3, "scene": "quiz_answer", "quiz": "q2", "text": "Jawabannya: linked list. Menyisipkan di depan cukup membuat node baru yang menunjuk ke head lama. Di list biasa, semua isi harus digeser.", "hold": 1.0, "start": 271.525, "speech": 271.525, "audio": 14.55, "dur": 16.55}, {"id": "s3a", "seg": 4, "scene": "hash_map", "text": "Bagian dua. Hash map menyimpan pasangan kunci dan nilai. Fungsi hash mengubah kunci menjadi nomor laci. Dictionary Python adalah hash map. Saat kamu meminta stok teh, Python menghitung nomor laci untuk teh dan langsung membukanya.", "hold": 0.8, "start": 288.075, "speech": 288.075, "audio": 22.675, "dur": 24.475}, {"id": "s3b", "seg": 4, "scene": "collision", "text": "Dua kunci bisa mendapat laci yang sama. Dito dan Kiko sama-sama empat huruf: tabrakan, atau collision. Keduanya disimpan berdampingan di laci itu, lalu dicocokkan kuncinya. Selama lacinya cukup banyak, mencari tetap cepat.", "hold": 0.8, "start": 312.55, "speech": 312.55, "audio": 20.8, "dur": 22.6}, {"id": "q3", "seg": 4, "scene": "quiz", "quiz": "q3", "text": "Cek pemahaman. Kamu ingin menghitung berapa kali tiap kata muncul dalam satu cerpen. Struktur mana yang paling cocok: stack, dictionary dengan kata sebagai kunci, atau linked list? Pikirkan dulu.", "hold": 4.0, "start": 335.15, "speech": 335.15, "audio": 18.925, "dur": 23.925}, {"id": "q3a", "seg": 4, "scene": "quiz_answer", "quiz": "q3", "text": "Jawabannya: dictionary. Tiap kata menjadi kunci, nilainya jumlah kemunculan. Bertemu kata yang sama, tinggal tambah satu di lacinya.", "hold": 1.0, "start": 359.075, "speech": 359.075, "audio": 12.05, "dur": 14.05}, {"id": "s4a", "seg": 5, "scene": "tree", "text": "Tree, atau pohon, menyimpan data bertingkat: folder di laptop, silsilah keluarga, struktur organisasi OSIS. Node paling atas disebut root. Node di bawah suatu node disebut child, dan node tanpa child disebut leaf.", "hold": 0.8, "start": 373.125, "speech": 373.125, "audio": 20.8, "dur": 22.6}, {"id": "s4b", "seg": 5, "scene": "bst", "text": "Aturan binary search tree: yang lebih kecil ke kiri, yang lebih besar ke kanan. Sisipkan lima puluh, tiga puluh, tujuh puluh, dua puluh, empat puluh, enam puluh, delapan puluh. Mencari enam puluh: lima puluh, kanan, kiri. Tiga langkah.", "hold": 0.8, "start": 395.725, "speech": 395.725, "audio": 24.55, "dur": 26.35}, {"id": "q4", "seg": 5, "scene": "quiz", "quiz": "q4", "text": "Cek pemahaman. Empat puluh lima disisipkan ke pohon tadi. Di kanan empat puluh, di kiri tiga puluh, atau di kanan tujuh puluh? Pikirkan dulu.", "hold": 4.0, "start": 422.075, "speech": 422.075, "audio": 15.8, "dur": 20.8}, {"id": "q4a", "seg": 5, "scene": "quiz_answer", "quiz": "q4", "text": "Jawabannya: di kanan empat puluh. Empat puluh lima lebih kecil dari lima puluh, jadi ke kiri; lebih besar dari tiga puluh, ke kanan; lebih besar dari empat puluh, ke kanan lagi.", "hold": 1.0, "start": 442.875, "speech": 442.875, "audio": 20.175, "dur": 22.175}, {"id": "s5a", "seg": 6, "scene": "graph", "text": "Graph menyimpan hubungan: node dan garis penghubung yang disebut edge. Contohnya halte angkot dan jalurnya, atau siapa berteman dengan siapa. Di Python cukup dictionary berisi list: tiap halte menyimpan daftar tetangganya.", "hold": 0.8, "start": 465.05, "speech": 465.05, "audio": 20.175, "dur": 21.975}, {"id": "s5b", "seg": 6, "scene": "pilih", "text": "Pilih sesuai kebutuhan. Batalkan langkah terakhir: stack. Layani sesuai urutan datang: queue. Sering sisip di tengah: linked list. Cari lewat kunci: dictionary. Data terurut yang cepat dicari: binary search tree. Hubungan dan rute: graph.", "hold": 1.0, "start": 487.025, "speech": 487.025, "audio": 22.05, "dur": 24.05}, {"id": "s6a", "seg": 7, "scene": "make_show", "text": "Sekarang giliranmu. Di halaman latihan: binary search tree interaktif, sisipkan dan cari nilai sambil melihat jalurnya; pemilih struktur data untuk enam kasus; dan pelacak stack dan queue di Python.", "hold": 1.0, "start": 511.075, "speech": 511.075, "audio": 18.925, "dur": 20.925}, {"id": "s6b", "seg": 7, "scene": "make_show", "text": "Lalu di komputer: pakai deque untuk antrean kantin dan dictionary untuk menghitung kata. Tantangan: buat linked list sendiri dengan dictionary sebagai node, lalu tulis fungsi yang mencetak semua isinya.", "hold": 1.0, "start": 532.0, "speech": 532.0, "audio": 18.925, "dur": 20.925}, {"id": "recap", "seg": 7, "scene": "recap", "text": "Tiga hal untuk diingat. Satu: abstract data type menjelaskan operasinya; Python menyediakan stack, queue, dan hash map. Dua: linked list cepat disisipi, dictionary cepat dicari. Tiga: tree untuk data bertingkat, graph untuk hubungan.", "hold": 1.5, "start": 552.925, "speech": 552.925, "audio": 21.425, "dur": 23.925}, {"id": "outro", "seg": 7, "scene": "outro", "text": "Sampai jumpa di episode berikutnya: memilih solusi optimal. Kita cari rute terpendek antarkota dengan algoritma Dijkstra. Sampai jumpa!", "hold": 1.0, "start": 576.85, "speech": 576.85, "audio": 12.05, "dur": 14.05}], "total": 590.9} });
+  const { $, progress, save } = P; progress.levels = progress.levels || {};
+  const esc = s => String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;");
+  const shuffle = a => a.map(x => [Math.random(), x]).sort((p, q) => p[0] - q[0]).map(x => x[1]);
+  // ---- BST
+  const INS = [30, 70, 20, 40, 60, 80, 45, 65], CARI = [65, 25];
+  function build(vals) { let root = null; vals.forEach(v => { const nd = { v, l: null, r: null }; if (!root) { root = nd; return; } let c = root; while (true) { const k = v < c.v ? "l" : "r"; if (c[k]) c = c[k]; else { c[k] = nd; break; } } }); return root; }
+  function svgTree(root, opt = {}) {
+    const items = [], lines = []; const place = (nd, x, y, s, px, py) => { if (!nd) return; if (px != null) lines.push([px, py, x, y, (opt.path || []).includes(nd.v) && (opt.path || []).includes(opt.parentOf(nd.v))]); items.push([nd, x, y]); place(nd.l, x - s, y + 52, s / 2, x, y); place(nd.r, x + s, y + 52, s / 2, x, y); };
+    place(root, 180, 24, 88);
+    return `<svg viewBox="0 0 360 ${Math.max(...items.map(i => i[2])) + 30}" role="img" aria-label="gambar binary search tree">${lines.map(([a, b, c, d, on]) => `<line x1="${a}" y1="${b}" x2="${c}" y2="${d}" class="${on ? "path" : ""}"/>`).join("")}${items.map(([nd, x, y]) => `<circle cx="${x}" cy="${y}" r="16" class="${nd.v === opt.cur ? "cur" : (opt.path || []).includes(nd.v) ? "path" : nd.v === opt.fresh ? "fresh" : ""}"/><text x="${x}" y="${y + 4}">${nd.v}</text>`).join("")}</svg>`;
+  }
+  const parentMap = root => { const m = {}; const walk = (nd, p) => { if (!nd) return; m[nd.v] = p ? p.v : null; walk(nd.l, nd); walk(nd.r, nd); }; walk(root, null); return v => m[v]; };
+  let bi = 0, cur = null, path = [], fresh = null, phase = "ins";
+  function renderBst() {
+    const area = $("exarea");
+    if (phase === "ins" && bi >= INS.length) { phase = "cari"; bi = 0; cur = null; path = []; fresh = null; }
+    const root = build([50, ...(phase === "ins" ? INS.slice(0, bi) : INS)]);
+    if (phase === "cari" && bi >= CARI.length) { area.innerHTML = `<div class="tree">${svgTree(root, { parentOf: parentMap(root) })}</div>`; finish("Pohon tersusun dan dua pencarian selesai. Tiap langkah membuang separuh sisa pohon."); return; }
+    const v = phase === "ins" ? INS[bi] : CARI[bi]; if (cur == null) { cur = 50; path = [50]; }
+    const todo = phase === "ins" ? INS.map((x, i) => `<span class="${i < bi ? "ok" : i === bi ? "now" : ""}">${x}</span>`).join("") : CARI.map((x, i) => `<span class="${i < bi ? "ok" : i === bi ? "now" : ""}">cari ${x}</span>`).join("");
+    area.innerHTML = `<div class="qnum">${phase === "ins" ? "Langkah A: sisipkan" : "Langkah B: cari"} · nilai ${v}</div><div class="todo">${todo}</div><div class="tree">${svgTree(root, { cur, path, fresh, parentOf: parentMap(root) })}</div><div class="ex">Sekarang di node <b>${cur}</b>. ${phase === "ins" ? `${v} pergi ke mana?` : `Apakah ${v} di sini, atau terus ke kiri/kanan?`}</div><div class="dir"><button id="gl">← kiri</button><button id="gh" ${phase === "ins" ? "disabled" : ""}>${phase === "ins" ? "·" : "ketemu"}</button><button id="gr">kanan →</button></div>${phase === "cari" ? `<div class="row"><button id="gn">tidak ada di pohon</button></div>` : ""}`;
+    const find = x => { let c = root; while (c && c.v !== x) c = x < c.v ? c.l : c.r; return c; };
+    const go = k => { const c = find(cur); const want = v === c.v ? "h" : v < c.v ? "l" : "r";
+      if (k !== want) { setResult("bad", want === "h" ? `Belum tepat. Petunjuk: lihat lagi angka di node yang disorot.` : `Belum tepat. Petunjuk: bandingkan ${v} dengan ${c.v}: mana yang lebih besar? Ingat aturannya: lebih kecil ke kiri, lebih besar ke kanan.`); return; }
+      if (k === "h") { setResult("good", `Ketemu dalam ${path.length} langkah. Di list berurutan sisip, linear search butuh ${[50, ...INS].indexOf(v) + 1} langkah.`); bi++; cur = null; path = []; setTimeout(renderBst, 1500); return; }
+      const nx = c[want];
+      if (!nx) { if (phase === "ins") { setResult("good", `Tepat. ${c.v} belum punya child di ${want === "l" ? "kiri" : "kanan"}, jadi ${v} ditaruh di sana.`); fresh = v; bi++; cur = null; path = []; setTimeout(renderBst, 1100); } else { setResult("good", `Tepat: ${c.v} tidak punya child di ${want === "l" ? "kiri" : "kanan"}, jadi ${v} tidak ada di pohon. Cukup ${path.length} langkah untuk memastikannya; linear search harus memeriksa semua ${INS.length + 1} isi.`); bi++; cur = null; path = []; setTimeout(renderBst, 1700); } return; }
+      setResult(); cur = nx.v; path.push(cur); renderBst(); };
+    $("gl").addEventListener("click", () => go("l")); $("gr").addEventListener("click", () => go("r")); if (phase === "cari") { $("gh").addEventListener("click", () => go("h"));
+      $("gn").addEventListener("click", () => { const c = find(cur); const want = v === c.v ? "h" : v < c.v ? "l" : "r"; if (want !== "h" && !c[want]) { setResult("good", `Tepat: ${v} tidak ada. Cukup ${path.length} langkah untuk memastikannya; linear search harus memeriksa semua ${INS.length + 1} isi.`); bi++; cur = null; path = []; setTimeout(renderBst, 1700); } else setResult("bad", `Belum tepat. Petunjuk: masih ada jalan ke ${want === "l" ? "kiri" : want === "r" ? "kanan" : "node ini"}. Teruskan dulu.`); }); }
+  }
+  // ---- pemilih struktur
+  const OPS = ["stack", "queue", "linked list", "dictionary", "binary search tree", "graph"];
+  const CASES = [["Tombol undo di aplikasi gambar: batalkan langkah terakhir lebih dulu.", "stack", "Yang terakhir masuk, pertama keluar."],
+    ["Printer lab mencetak tugas sesuai urutan kiriman.", "queue", "Yang datang pertama dilayani pertama."],
+    ["Kamus istilah informatika: cari arti dari sebuah kata, berulang-ulang.", "dictionary", "Kamu mencari lewat kunci (kata), bukan lewat nomor urut."],
+    ["Peta halte angkot fiktif: cari jalur dari Pasar ke Stasiun.", "graph", "Yang disimpan adalah hubungan antartempat."],
+    ["Daftar skor turnamen yang terus bertambah dan harus cepat dicari secara terurut.", "binary search tree", "Kecil ke kiri, besar ke kanan: data tetap terurut dan pencarian membuang separuh tiap langkah."],
+    ["Playlist yang sering disisipi lagu baru di tengah, lalu diputar berurutan dari awal.", "linked list", "Sisip di tengah cukup mengubah dua penunjuk; pemutaran berjalan dari head."]];
+  let ci = 0, order = null;
+  function renderPilih() {
+    const area = $("exarea"); if (ci >= CASES.length) { finish("Enam kasus, enam struktur. Pilih struktur dari kebutuhannya."); return; }
+    const [q, a, why] = CASES[ci]; order = order || shuffle(OPS);
+    area.innerHTML = `<div class="qnum">Kasus ${ci + 1} dari ${CASES.length}</div><div class="qtext">${esc(q)}</div><div class="opts" id="opts"></div>`;
+    order.forEach(o => { const b = document.createElement("button"); b.textContent = o; b.addEventListener("click", () => { if (o === a) { b.classList.add("right"); [...$("opts").children].forEach(x => x.disabled = true); setResult("good", "Tepat. " + why); ci++; order = null; setTimeout(() => { setResult(); renderPilih(); }, 1600); } else { b.classList.add("wrong"); setResult("bad", "Belum tepat. Petunjuk: " + HINT[a]); } }); $("opts").appendChild(b); });
+  }
+  const HINT = { "stack": "pikirkan mana yang harus dibatalkan lebih dulu: yang paling baru.", "queue": "pikirkan keadilan urutan datang.", "dictionary": "kamu tahu kuncinya; cari yang langsung membuka laci yang tepat.", "graph": "yang penting adalah siapa terhubung dengan siapa.", "binary search tree": "datanya harus tetap terurut walau terus ditambah, dan dicari cepat.", "linked list": "yang sering terjadi adalah menyisipkan di tengah, bukan mengambil nomor tertentu." };
+  // ---- pelacak stack dan queue
+  const TR = [{ code: 's = []\ns.append("A")\ns.append("B")\ns.pop()\ns.append("C")', q: "Isi s dari bawah ke atas?", opts: ["A, C", "B, C", "A, B, C"], a: 0, hint: "pop() mengambil yang paling atas: yang terakhir di-append." },
+    { code: "from collections import deque\nq = deque()\nq.append(1)\nq.append(2)\nq.append(3)\nx = q.popleft()", q: "Berapa isi x?", opts: ["1", "3", "2"], a: 0, hint: "popleft() mengambil dari depan: yang pertama masuk." },
+    { code: "s = [5, 8]\ns.pop()\ns.pop()\ns.append(2)\nprint(s)", q: "Apa yang ditampilkan?", opts: ["[5, 2]", "[2]", "[8, 2]"], a: 1, hint: "Dua kali pop() mengosongkan s sebelum 2 masuk." },
+    { code: 'from collections import deque\nq = deque(["Dito", "Sinta"])\nq.append("Bayu")\nq.popleft()\nprint(q[0])', q: "Apa yang ditampilkan?", opts: ["Dito", "Bayu", "Sinta"], a: 2, hint: "Dito keluar dari depan; siapa yang sekarang paling depan?" }];
+  let ti = 0;
+  function renderLacak() {
+    const area = $("exarea"); if (ti >= TR.length) { finish("Empat program terlacak. Stack: terakhir masuk, pertama keluar. Queue: pertama masuk, pertama keluar."); return; }
+    const t = TR[ti]; area.innerHTML = `<div class="qnum">Program ${ti + 1} dari ${TR.length}</div><div class="py">${esc(t.code)}</div><div class="qtext">${t.q}</div><div class="opts" id="opts"></div>`;
+    t.opts.forEach((o, i) => { const b = document.createElement("button"); b.textContent = o; b.addEventListener("click", () => { if (i === t.a) { b.classList.add("right"); [...$("opts").children].forEach(x => x.disabled = true); setResult("good", "Tepat."); ti++; setTimeout(() => { setResult(); renderLacak(); }, 1200); } else { b.classList.add("wrong"); setResult("bad", "Belum tepat. Petunjuk: " + t.hint); } }); $("opts").appendChild(b); });
+  }
+  const LEVELS = [
+    { id: "bst", name: "1 Binary search tree", kind: "bst", task: "Root-nya 50. Sisipkan delapan nilai dengan mengetuk kiri atau kanan di tiap node, lalu cari dua nilai. Lebih kecil ke kiri, lebih besar ke kanan." },
+    { id: "pilih", name: "2 Pemilih struktur", kind: "pilih", task: "Enam kasus. Pilih struktur data yang paling cocok untuk tiap kebutuhan." },
+    { id: "lacak", name: "3 Pelacak stack dan queue", kind: "lacak", task: "Empat program Python. Lacak isinya baris demi baris, lalu pilih jawabannya." }];
+  let L = 0; const level = () => LEVELS[L];
+  function setResult(kind, msg) { $("result").innerHTML = msg ? `<div class="result ${kind}">${msg}</div>` : ""; }
+  function finish(extra) { progress.levels[level().id] = true; save(); renderLevels(); setResult("good", `${level().name} selesai! ` + extra); }
+  function loadLevel(i) { L = i; bi = 0; cur = null; path = []; fresh = null; phase = "ins"; ci = 0; order = null; ti = 0; $("task").textContent = level().task; setResult(); renderLevels(); ({ bst: renderBst, pilih: renderPilih, lacak: renderLacak })[level().kind](); }
+  function renderLevels() { const el = $("levels"); el.innerHTML = ""; LEVELS.forEach((lv, i) => { const b = document.createElement("button"); b.textContent = lv.name; b.className = progress.levels[lv.id] ? "done" : ""; b.setAttribute("aria-pressed", i === L); b.addEventListener("click", () => loadLevel(i)); el.appendChild(b); }); }
+  $("redo").addEventListener("click", () => { progress.levels[level().id] = false; save(); loadLevel(L); });
+  P.onProgress(el => LEVELS.forEach(lv => { const s = document.createElement("span"); s.textContent = lv.name.slice(2); s.className = progress.levels[lv.id] ? "ok" : ""; el.appendChild(s); }));
+  loadLevel(0);
+})();
+</script>
