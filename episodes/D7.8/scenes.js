@@ -149,8 +149,8 @@
       const items = [["Perencana proyek", "pembaca, tujuan, peran tim", (x, y) => { ["Pembaca: kelas 6", "Tujuan: aman", "Tim: 4 peran"].forEach((s, i) => { card(ctx, x - 170, y - 90 + i * 60, 340, 50, { fill: "#fff", stroke: "#CFDCD5", lw: 3, r: 10 }); text(ctx, s, x - 150, y - 56 + i * 60, 22, { weight: 800 }); }); }],
         ["Kerangka slide", "lima slide, lima kata", (x, y) => { ["Judul", "Bab 1", "Bab 2"].forEach((s, i) => Q.slide(ctx, x - 190 + i * 130, y - 50, 120, { title: s })); }],
         ["Cek rubrik", "nilai sendiri sebelum tampil", (x, y) => { ["Isi benar", "Bahasa sesuai", "Tampilan jelas"].forEach((s, i) => { text(ctx, "☑ " + s, x - 150, y - 60 + i * 50, 26, { weight: 800, color: C.good }); }); }]];
-      items.forEach(([t1, t2, draw], i) => { const x = 400 + i * 560; card(ctx, x - 250, 290, 500, 440, { fill: C.bg2 }); ctx.fillStyle = C.kiko; ctx.beginPath(); ctx.arc(x - 200, 340, 28, 0, Math.PI * 2); ctx.fill(); text(ctx, String(i + 1), x - 200, 352, 30, { align: "center", color: "#fff", weight: 900 }); draw(x, 470); text(ctx, t1, x, 610, 28, { align: "center", weight: 900 }); text(ctx, t2, x, 650, 22, { align: "center", weight: 700, color: C.ink2 }); });
-      text(ctx, "di halaman latihan episode ini — lalu kerjakan proyeknya empat pertemuan di kelas", 960, 820, 28, { align: "center", color: C.ink2, weight: 700 });
+      items.forEach(([t1, t2, draw], i) => { const x = 440 + i * 520; card(ctx, x - 240, 290, 480, 410, { fill: C.bg2 }); ctx.fillStyle = C.kiko; ctx.beginPath(); ctx.arc(x - 200, 340, 28, 0, Math.PI * 2); ctx.fill(); text(ctx, String(i + 1), x - 200, 352, 30, { align: "center", color: "#fff", weight: 900 }); draw(x, 470); text(ctx, t1, x, 610, 28, { align: "center", weight: 900 }); text(ctx, t2, x, 650, 22, { align: "center", weight: 700, color: C.ink2 }); });
+      text(ctx, "di halaman latihan episode ini — lalu kerjakan proyeknya empat pertemuan di kelas", 960, 745, 28, { align: "center", color: C.ink2, weight: 700 });
     }
   });
 })(typeof window !== "undefined" ? window : globalThis);

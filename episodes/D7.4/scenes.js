@@ -138,8 +138,8 @@
       card(ctx, 160, 150, 1600, 740);
       text(ctx, "GILIRANMU", 960, 240, 34, { align: "center", color: C.accentDark, weight: 900 });
       const items = [["Urutkan pekerjaannya", "merayap, mengindeks, memeringkat", (x, y) => { Q.spider(ctx, x - 90, y, 36); Q.cabinet(ctx, x - 30, y - 50, 70, 100, ["a", "b"], {}); text(ctx, "#1", x + 110, y + 12, 36, { align: "center", weight: 900, color: C.accentDark }); }], ["Susun kata kunci", "spesifik, tanpa kata tak perlu", (x, y) => Q.searchBox(ctx, x - 190, y - 40, 380, "kucing … makan", { size: 24 })], ["Pilih hasil tepercaya", "sumber, tanggal, iklan", (x, y) => Q.results(ctx, x - 190, y - 50, 380, [{ title: "Hasil", url: "sumber?", date: "tahun?" }], {})]];
-      items.forEach(([t1, t2, draw], i) => { const x = 400 + i * 560; card(ctx, x - 250, 290, 500, 440, { fill: C.bg2 }); ctx.fillStyle = C.kiko; ctx.beginPath(); ctx.arc(x - 200, 340, 28, 0, Math.PI * 2); ctx.fill(); text(ctx, String(i + 1), x - 200, 352, 30, { align: "center", color: "#fff", weight: 900 }); draw(x, 470); text(ctx, t1, x, 610, 30, { align: "center", weight: 900 }); text(ctx, t2, x, 655, 24, { align: "center", weight: 700, color: C.ink2 }); });
-      text(ctx, "di halaman latihan episode ini — lalu coba sungguhan untuk tugas sekolahmu", 960, 820, 28, { align: "center", color: C.ink2, weight: 700 });
+      items.forEach(([t1, t2, draw], i) => { const x = 440 + i * 520; card(ctx, x - 240, 290, 480, 410, { fill: C.bg2 }); ctx.fillStyle = C.kiko; ctx.beginPath(); ctx.arc(x - 200, 340, 28, 0, Math.PI * 2); ctx.fill(); text(ctx, String(i + 1), x - 200, 352, 30, { align: "center", color: "#fff", weight: 900 }); draw(x, 470); text(ctx, t1, x, 610, 30, { align: "center", weight: 900 }); text(ctx, t2, x, 655, 24, { align: "center", weight: 700, color: C.ink2 }); });
+      text(ctx, "di halaman latihan episode ini — lalu coba sungguhan untuk tugas sekolahmu", 960, 745, 28, { align: "center", color: C.ink2, weight: 700 });
     }
   });
 })(typeof window !== "undefined" ? window : globalThis);

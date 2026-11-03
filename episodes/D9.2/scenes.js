@@ -158,8 +158,8 @@
       const items = [["Susun perjalanan pesan", "HP, Wi-Fi, router, ISP, server", (x, y) => { ["HP", "Wi-Fi", "router", "ISP", "server"].forEach((s, i) => { card(ctx, x - 210 + i * 86, y - 40, 78, 50, { fill: "#fff", stroke: "#CFDCD5", lw: 3, r: 10 }); text(ctx, s, x - 171 + i * 86, y - 8, 16, { align: "center", weight: 900 }); }); }],
         ["Simulasi paket", "tiba tidak urut, susun lagi", (x, y) => { [3, 1, 2].forEach((k, i) => J.packet(ctx, x - 80 + i * 70, y - 40, k, {})); [1, 2, 3].forEach((k, i) => J.packet(ctx, x - 80 + i * 70, y + 30, k, { color: C.good })); }],
         ["Cari yang putus", "dari gejalanya", (x, y) => { J.router(ctx, x, y - 20, 100, { alert: true, label: false }); text(ctx, "lampu merah?", x, y + 60, 22, { align: "center", weight: 900, color: C.bad }); }]];
-      items.forEach(([t1, t2, draw], i) => { const x = 400 + i * 560; card(ctx, x - 250, 290, 500, 440, { fill: C.bg2 }); ctx.fillStyle = C.kiko; ctx.beginPath(); ctx.arc(x - 200, 340, 28, 0, Math.PI * 2); ctx.fill(); text(ctx, String(i + 1), x - 200, 352, 30, { align: "center", color: "#fff", weight: 900 }); draw(x, 470); text(ctx, t1, x, 630, 26, { align: "center", weight: 900 }); text(ctx, t2, x, 668, 22, { align: "center", weight: 700, color: C.ink2 }); });
-      text(ctx, "di halaman latihan episode ini — lalu temukan router di rumah atau sekolahmu", 960, 820, 28, { align: "center", color: C.ink2, weight: 700 });
+      items.forEach(([t1, t2, draw], i) => { const x = 440 + i * 520; card(ctx, x - 240, 290, 480, 410, { fill: C.bg2 }); ctx.fillStyle = C.kiko; ctx.beginPath(); ctx.arc(x - 200, 340, 28, 0, Math.PI * 2); ctx.fill(); text(ctx, String(i + 1), x - 200, 352, 30, { align: "center", color: "#fff", weight: 900 }); draw(x, 470); text(ctx, t1, x, 630, 26, { align: "center", weight: 900 }); text(ctx, t2, x, 668, 22, { align: "center", weight: 700, color: C.ink2 }); });
+      text(ctx, "di halaman latihan episode ini — lalu temukan router di rumah atau sekolahmu", 960, 745, 28, { align: "center", color: C.ink2, weight: 700 });
     }
   });
 })(typeof window !== "undefined" ? window : globalThis);

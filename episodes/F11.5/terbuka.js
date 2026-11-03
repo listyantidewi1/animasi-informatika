@@ -11,7 +11,8 @@
   // alur bernomor mendatar; n tampil, active disorot
   Tb.flow = function (ctx, x, y, w, items, n, opt = {}) {
     const bw = (w - (items.length - 1) * 20) / items.length, h = opt.h || 170;
-    items.forEach(([t, s], i) => { const cx = x + i * (bw + 20); ctx.save(); if (i >= n) ctx.globalAlpha = 0.2; const on = opt.active != null ? opt.active === i : i === n - 1; card(ctx, cx, y, bw, h, { fill: on ? "#FFF3D6" : C.bg2, stroke: on ? C.accent : undefined, lw: 4, r: 16 }); ctx.fillStyle = C.kiko; ctx.beginPath(); ctx.arc(cx + 28, y + 30, 18, 0, Math.PI * 2); ctx.fill(); text(ctx, String(i + 1), cx + 28, y + 37, 18, { align: "center", weight: 900, color: "#fff" }); para(ctx, t, cx + 12, y + 84, 22, bw - 24, { weight: 900 }); para(ctx, s, cx + 12, y + 122, 17, bw - 24, { weight: 700, color: C.ink2 }); ctx.restore(); });
+    items.forEach(([t, s], i) => { const cx = x + i * (bw + 20); ctx.save(); if (i >= n) ctx.globalAlpha = 0.2; const on = opt.active != null ? opt.active === i : i === n - 1; card(ctx, cx, y, bw, h, { fill: on ? "#FFF3D6" : C.bg2, stroke: on ? C.accent : undefined, lw: 4, r: 16 }); ctx.fillStyle = C.kiko; ctx.beginPath(); ctx.arc(cx + 28, y + 30, 18, 0, Math.PI * 2); ctx.fill(); text(ctx, String(i + 1), cx + 28, y + 37, 18, { align: "center", weight: 900, color: "#fff" }); if (h <= 130) { text(ctx, t, cx + 56, y + 38, 22, { weight: 900 }); para(ctx, s, cx + 12, y + 72, 16, bw - 24, { weight: 700, color: C.ink2, lh: 1.25 }); }
+      else { para(ctx, t, cx + 12, y + 84, 22, bw - 24, { weight: 900 }); para(ctx, s, cx + 12, y + 122, 17, bw - 24, { weight: 700, color: C.ink2 }); } ctx.restore(); });
   };
   // kartu portal data terbuka fiktif
   Tb.portal = function (ctx, x, y, w, h, opt = {}) {

@@ -197,8 +197,8 @@
       card(ctx, 160, 150, 1600, 740);
       text(ctx, "GILIRANMU", 960, 240, 34, { align: "center", color: C.accentDark, weight: 900 });
       const items = [["Pengukur kata sandi", "contoh fiktif saja, bukan sandimu", (x, y) => { S.pwBox(ctx, x - 170, y - 50, 340, "contoh-sandi", { h: 60, size: 26 }); S.meter(ctx, x - 170, y + 30, 340, 2); }], ["Pilah jejak digital", "kamu buat sendiri, atau tercatat diam-diam?", (x, y) => S.footprints(ctx, [[x - 90, y], [x - 30, y - 10], [x + 30, y], [x + 90, y - 10]])], ["Di rumah bersama orang tua", "ganti sandi pendek, nyalakan dua langkah", (x, y) => { S.lock(ctx, x - 40, y, 60, {}); D.phone(ctx, x + 60, y, 70, 120); }]];
-      items.forEach(([t1, t2, draw], i) => { const x = 400 + i * 560; card(ctx, x - 250, 290, 500, 440, { fill: C.bg2 }); ctx.fillStyle = C.kiko; ctx.beginPath(); ctx.arc(x - 200, 340, 28, 0, Math.PI * 2); ctx.fill(); text(ctx, String(i + 1), x - 200, 352, 30, { align: "center", color: "#fff", weight: 900 }); draw(x, 470); text(ctx, t1, x, 610, 30, { align: "center", weight: 900 }); para(ctx, t2, x, 655, 22, 440, { align: "center", weight: 700, color: C.ink2, lh: 1.25 }); });
-      text(ctx, "di halaman latihan episode ini", 960, 820, 30, { align: "center", color: C.ink2, weight: 700 });
+      items.forEach(([t1, t2, draw], i) => { const x = 440 + i * 520; card(ctx, x - 240, 290, 480, 410, { fill: C.bg2 }); ctx.fillStyle = C.kiko; ctx.beginPath(); ctx.arc(x - 200, 340, 28, 0, Math.PI * 2); ctx.fill(); text(ctx, String(i + 1), x - 200, 352, 30, { align: "center", color: "#fff", weight: 900 }); draw(x, 470); text(ctx, t1, x, 610, 30, { align: "center", weight: 900 }); para(ctx, t2, x, 655, 22, 440, { align: "center", weight: 700, color: C.ink2, lh: 1.25 }); });
+      text(ctx, "di halaman latihan episode ini", 960, 745, 30, { align: "center", color: C.ink2, weight: 700 });
     }
   });
 })(typeof window !== "undefined" ? window : globalThis);

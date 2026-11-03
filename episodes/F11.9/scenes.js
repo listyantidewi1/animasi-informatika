@@ -118,8 +118,8 @@
       const items = [["Konfigurator", "profil → komponen → anggaran", (x, y) => { Sp.budget(ctx, x - 210, y - 60, 420, [["", 9, "#2E7E9A"], ["", 2, "#8E6BBF"], ["", 2, "#2E9E5B"]], { max: 15, total: false }); Sp.warn(ctx, x - 210, y + 20, 420, "RAM kurang untuk 20 tab"); }],
         ["Pembaca spesifikasi", "angka ↔ artinya", (x, y) => Sp.sheet(ctx, x - 210, y - 120, 420, [["RAM", "16 GB", ""], ["SSD", "512 GB", ""]], { rh: 46, title: "LAPTOP B" })],
         ["Penyusun anggaran", "biaya lima tahun yang terlewat", (x, y) => [["perangkat", true], ["lisensi", false], ["garansi", false]].forEach(([t, ok], i) => { card(ctx, x - 200, y - 110 + i * 64, 400, 54, { fill: ok ? C.goodBg : "#FFF3D6", r: 10 }); text(ctx, (ok ? "✓ " : "＋ ") + t, x, y - 76 + i * 64, 22, { align: "center", weight: 900, color: ok ? C.good : C.accentDark }); })]];
-      items.forEach(([t1, t2, draw], i) => { const x = 400 + i * 560; card(ctx, x - 250, 290, 500, 440, { fill: C.bg2 }); ctx.fillStyle = C.kiko; ctx.beginPath(); ctx.arc(x - 200, 340, 28, 0, Math.PI * 2); ctx.fill(); text(ctx, String(i + 1), x - 200, 352, 30, { align: "center", color: "#fff", weight: 900 }); text(ctx, t1, x - 160, 352, 26, { weight: 900 }); para(ctx, t2, x - 160, 386, 20, 400, { weight: 700, color: C.ink2 }); draw(x, 560); });
-      text(ctx, "di halaman latihan episode ini — lalu wawancarai satu guru dan susun rekomendasinya", 960, 820, 24, { align: "center", color: C.ink2, weight: 700 });
+      items.forEach(([t1, t2, draw], i) => { const x = 440 + i * 520; card(ctx, x - 240, 290, 480, 410, { fill: C.bg2 }); ctx.fillStyle = C.kiko; ctx.beginPath(); ctx.arc(x - 200, 340, 28, 0, Math.PI * 2); ctx.fill(); text(ctx, String(i + 1), x - 200, 352, 30, { align: "center", color: "#fff", weight: 900 }); text(ctx, t1, x - 160, 352, 26, { weight: 900 }); para(ctx, t2, x - 160, 386, 20, 380, { weight: 700, color: C.ink2 }); draw(x, 560); });
+      text(ctx, "di halaman latihan episode ini — lalu wawancarai satu guru dan susun rekomendasinya", 960, 745, 24, { align: "center", color: C.ink2, weight: 700 });
     }
   });
 })(typeof window !== "undefined" ? window : globalThis);

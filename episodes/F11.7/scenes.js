@@ -126,8 +126,8 @@
       const items = [["Pembungkus paket", "susun header tiap lapisan", (x, y) => { ctx.save(); ctx.translate(x - 230, y - 100); ctx.scale(0.6, 0.6); Lp.packet(ctx, 0, 0, 3, { hw: 150, dw: 300, h: 70 }); ctx.restore(); Lp.stack(ctx, x - 220, y - 20, 440, 4, { h: 36 }); }],
         ["Penghubung topologi", "pilih bentuk, putuskan kabel", (x, y) => Lp.topo(ctx, x, y - 20, "star", { cut: 2, scale: 0.6 })],
         ["Pelacak lompatan", "ikuti paket dari HP ke server", (x, y) => Lp.hops(ctx, x - 200, y - 40, 400, [["HP", "📱"], ["router", "📡"], ["ISP", "🏢"], ["server", "🗄️"]], 1.5)]];
-      items.forEach(([t1, t2, draw], i) => { const x = 400 + i * 560; card(ctx, x - 250, 290, 500, 440, { fill: C.bg2 }); ctx.fillStyle = C.kiko; ctx.beginPath(); ctx.arc(x - 200, 340, 28, 0, Math.PI * 2); ctx.fill(); text(ctx, String(i + 1), x - 200, 352, 30, { align: "center", color: "#fff", weight: 900 }); text(ctx, t1, x - 160, 352, 26, { weight: 900 }); para(ctx, t2, x - 160, 386, 20, 400, { weight: 700, color: C.ink2 }); draw(x, 560); });
-      text(ctx, "di halaman latihan episode ini — lalu ping dan server web kecil di lab", 960, 820, 26, { align: "center", color: C.ink2, weight: 700 });
+      items.forEach(([t1, t2, draw], i) => { const x = 440 + i * 520; card(ctx, x - 240, 290, 480, 410, { fill: C.bg2 }); ctx.fillStyle = C.kiko; ctx.beginPath(); ctx.arc(x - 200, 340, 28, 0, Math.PI * 2); ctx.fill(); text(ctx, String(i + 1), x - 200, 352, 30, { align: "center", color: "#fff", weight: 900 }); text(ctx, t1, x - 160, 352, 26, { weight: 900 }); para(ctx, t2, x - 160, 386, 20, 380, { weight: 700, color: C.ink2 }); draw(x, 560); });
+      text(ctx, "di halaman latihan episode ini — lalu ping dan server web kecil di lab", 960, 745, 26, { align: "center", color: C.ink2, weight: 700 });
     }
   });
 })(typeof window !== "undefined" ? window : globalThis);

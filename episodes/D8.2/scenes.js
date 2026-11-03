@@ -159,8 +159,8 @@
       const items = [["Cari dengan langkah sedikit", "kartu acak vs kartu urut", (x, y) => { Q.row(ctx, x - 200, y - 70, [55, 68, 78, 90], { w: 80, h: 100, gap: 12, open: new Set([1]), hl: { 1: C.accent } }); }],
         ["Urutkan, hitung langkah", "dua cara, bandingkan", (x, y) => { Q.row(ctx, x - 200, y - 90, [78, 55, 90], { w: 80, h: 100, gap: 12 }); Q.counter(ctx, x + 60, y - 80, 7, "langkah", { w: 150 }); }],
         ["Saring dan kelompokkan", "jawab pertanyaan Bu Guru", (x, y) => { Q.condition(ctx, x - 200, y - 90, 400, ["nilai < 70", "DAN", "belum remedi"], {}); }]];
-      items.forEach(([t1, t2, draw], i) => { const x = 400 + i * 560; card(ctx, x - 250, 290, 500, 440, { fill: C.bg2 }); ctx.fillStyle = C.kiko; ctx.beginPath(); ctx.arc(x - 200, 340, 28, 0, Math.PI * 2); ctx.fill(); text(ctx, String(i + 1), x - 200, 352, 30, { align: "center", color: "#fff", weight: 900 }); draw(x, 470); text(ctx, t1, x, 630, 26, { align: "center", weight: 900 }); text(ctx, t2, x, 668, 22, { align: "center", weight: 700, color: C.ink2 }); });
-      text(ctx, "di halaman latihan episode ini — lalu coba dengan data kelasmu di lembar kerja", 960, 820, 28, { align: "center", color: C.ink2, weight: 700 });
+      items.forEach(([t1, t2, draw], i) => { const x = 440 + i * 520; card(ctx, x - 240, 290, 480, 410, { fill: C.bg2 }); ctx.fillStyle = C.kiko; ctx.beginPath(); ctx.arc(x - 200, 340, 28, 0, Math.PI * 2); ctx.fill(); text(ctx, String(i + 1), x - 200, 352, 30, { align: "center", color: "#fff", weight: 900 }); draw(x, 470); text(ctx, t1, x, 630, 26, { align: "center", weight: 900 }); text(ctx, t2, x, 668, 22, { align: "center", weight: 700, color: C.ink2 }); });
+      text(ctx, "di halaman latihan episode ini — lalu coba dengan data kelasmu di lembar kerja", 960, 745, 28, { align: "center", color: C.ink2, weight: 700 });
     }
   });
 })(typeof window !== "undefined" ? window : globalThis);

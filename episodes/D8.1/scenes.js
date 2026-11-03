@@ -164,8 +164,8 @@
       const items = [["Rumus yang hidup", "ubah angka, tebak sel yang ikut", (x, y) => Q.sheet(ctx, x - 180, y - 80, [["", "B"], ["Sen", 15], ["Sel", 20], ["Jml", 35]], { cw: 120, rh: 40, size: 18, changed: ["B3", "B4"] })],
         ["Tulis rumusnya", "=SUM(…), =AVERAGE(…)", (x, y) => { Q.formulaBar(ctx, x - 200, y - 60, 400, "B5", "=SUM(B2:B4)", {}); Q.formulaBar(ctx, x - 200, y + 10, 400, "C5", "=AVERAGE(…)", {}); }],
         ["Pilih grafik", "batang atau garis?", (x, y) => { Q.barChart(ctx, x - 200, y - 90, 190, 170, [["", 3], ["", 5], ["", 4]], {}); Q.lineChart(ctx, x + 10, y - 90, 190, 170, [["", 2], ["", 4], ["", 3], ["", 5]], {}); }]];
-      items.forEach(([t1, t2, draw], i) => { const x = 400 + i * 560; card(ctx, x - 250, 290, 500, 440, { fill: C.bg2 }); ctx.fillStyle = C.kiko; ctx.beginPath(); ctx.arc(x - 200, 340, 28, 0, Math.PI * 2); ctx.fill(); text(ctx, String(i + 1), x - 200, 352, 30, { align: "center", color: "#fff", weight: 900 }); draw(x, 470); text(ctx, t1, x, 610, 28, { align: "center", weight: 900 }); text(ctx, t2, x, 650, 22, { align: "center", weight: 700, color: C.ink2 }); });
-      text(ctx, "di halaman latihan episode ini — lalu coba di aplikasi lembar kerja apa pun", 960, 820, 28, { align: "center", color: C.ink2, weight: 700 });
+      items.forEach(([t1, t2, draw], i) => { const x = 440 + i * 520; card(ctx, x - 240, 290, 480, 410, { fill: C.bg2 }); ctx.fillStyle = C.kiko; ctx.beginPath(); ctx.arc(x - 200, 340, 28, 0, Math.PI * 2); ctx.fill(); text(ctx, String(i + 1), x - 200, 352, 30, { align: "center", color: "#fff", weight: 900 }); draw(x, 470); text(ctx, t1, x, 610, 28, { align: "center", weight: 900 }); text(ctx, t2, x, 650, 22, { align: "center", weight: 700, color: C.ink2 }); });
+      text(ctx, "di halaman latihan episode ini — lalu coba di aplikasi lembar kerja apa pun", 960, 745, 28, { align: "center", color: C.ink2, weight: 700 });
     }
   });
 })(typeof window !== "undefined" ? window : globalThis);

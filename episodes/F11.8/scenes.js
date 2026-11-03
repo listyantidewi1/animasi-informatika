@@ -129,8 +129,8 @@
       const items = [["Detektif jaringan", "pilih uji, persempit penyebab", (x, y) => { ctx.save(); ctx.translate(x - 230, y - 120); ctx.scale(0.5, 0.5); Dt.chain(ctx, 40, 80, 840, { 3: "ok", 4: "bad" }, { broken: 4, reveal: true }); ctx.restore(); Dt.terminal(ctx, x - 220, y + 10, 440, [["ping 10.0.3.1", "cmd"], ["balasan 2 ms", "ok"]], {}); }],
         ["Penjaga firewall", "paket mana yang lolos?", (x, y) => { ctx.save(); ctx.translate(x - 230, y - 120); ctx.scale(0.62, 0.62); Dt.firewall(ctx, 0, 0, 740, RULES, { hit: 2 }); ctx.restore(); Dt.packetCard(ctx, x - 220, y + 50, "22", "HP tamu", "tolak"); }],
         ["Audit router", "temuan → tindakan", (x, y) => Dt.checklist(ctx, x - 220, y - 110, 440, [["sandi bawaan", "ganti"], ["WEP", "→ WPA3"], ["port 3389 terbuka", "tutup"], ["log mati", "aktifkan"]], 4, { rh: 54 })]];
-      items.forEach(([t1, t2, draw], i) => { const x = 400 + i * 560; card(ctx, x - 250, 290, 500, 440, { fill: C.bg2 }); ctx.fillStyle = C.kiko; ctx.beginPath(); ctx.arc(x - 200, 340, 28, 0, Math.PI * 2); ctx.fill(); text(ctx, String(i + 1), x - 200, 352, 30, { align: "center", color: "#fff", weight: 900 }); text(ctx, t1, x - 160, 352, 26, { weight: 900 }); para(ctx, t2, x - 160, 386, 20, 400, { weight: 700, color: C.ink2 }); draw(x, 560); });
-      text(ctx, "di halaman latihan episode ini — lalu ping, ipconfig, traceroute, nslookup di lab dengan izin guru", 960, 820, 24, { align: "center", color: C.ink2, weight: 700 });
+      items.forEach(([t1, t2, draw], i) => { const x = 440 + i * 520; card(ctx, x - 240, 290, 480, 410, { fill: C.bg2 }); ctx.fillStyle = C.kiko; ctx.beginPath(); ctx.arc(x - 200, 340, 28, 0, Math.PI * 2); ctx.fill(); text(ctx, String(i + 1), x - 200, 352, 30, { align: "center", color: "#fff", weight: 900 }); text(ctx, t1, x - 160, 352, 26, { weight: 900 }); para(ctx, t2, x - 160, 386, 20, 380, { weight: 700, color: C.ink2 }); draw(x, 560); });
+      text(ctx, "di halaman latihan episode ini — lalu ping, ipconfig, traceroute, nslookup di lab dengan izin guru", 960, 745, 24, { align: "center", color: C.ink2, weight: 700 });
     }
   });
 })(typeof window !== "undefined" ? window : globalThis);

@@ -145,8 +145,8 @@
       const items = [["Urutkan perjalanan berita", "peristiwa, wartawan, redaksi, layar", (x, y) => Q.journey(ctx, x - 230, y - 80, 460, ["1", "2", "3", "4"], {})],
         ["Nilai empat kabar", "dengan empat pertanyaan", (x, y) => { ctx.save(); ctx.translate(x - 150, y - 120); ctx.scale(0.62, 0.62); Q.fourQ(ctx, 0, 0, 480, ["ok", "bad", "ok", "ok"], {}); ctx.restore(); }],
         ["Pers atau bukan?", "nama, redaksi, koreksi", (x, y) => { Q.news(ctx, x - 200, y - 100, 190, 200, "pers", { title: "ada nama & redaksi", size: 18, badge: "ok" }); Q.news(ctx, x + 10, y - 100, 190, 200, "akun", { title: "tanpa nama", size: 18, badge: "bad" }); }]];
-      items.forEach(([t1, t2, draw], i) => { const x = 400 + i * 560; card(ctx, x - 250, 290, 500, 440, { fill: C.bg2 }); ctx.fillStyle = C.kiko; ctx.beginPath(); ctx.arc(x - 200, 340, 28, 0, Math.PI * 2); ctx.fill(); text(ctx, String(i + 1), x - 200, 352, 30, { align: "center", color: "#fff", weight: 900 }); draw(x, 470); text(ctx, t1, x, 630, 26, { align: "center", weight: 900 }); text(ctx, t2, x, 668, 22, { align: "center", weight: 700, color: C.ink2 }); });
-      text(ctx, "di halaman latihan episode ini — lalu nilai satu berita yang sedang ramai", 960, 820, 28, { align: "center", color: C.ink2, weight: 700 });
+      items.forEach(([t1, t2, draw], i) => { const x = 440 + i * 520; card(ctx, x - 240, 290, 480, 410, { fill: C.bg2 }); ctx.fillStyle = C.kiko; ctx.beginPath(); ctx.arc(x - 200, 340, 28, 0, Math.PI * 2); ctx.fill(); text(ctx, String(i + 1), x - 200, 352, 30, { align: "center", color: "#fff", weight: 900 }); draw(x, 470); text(ctx, t1, x, 630, 26, { align: "center", weight: 900 }); text(ctx, t2, x, 668, 22, { align: "center", weight: 700, color: C.ink2 }); });
+      text(ctx, "di halaman latihan episode ini — lalu nilai satu berita yang sedang ramai", 960, 745, 28, { align: "center", color: C.ink2, weight: 700 });
     }
   });
 })(typeof window !== "undefined" ? window : globalThis);

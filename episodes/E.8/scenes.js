@@ -116,8 +116,8 @@
       const items = [["Rancang formulir", "tipe dan aturan tiap kolom", (x, y) => { ctx.save(); ctx.translate(x - 200, y - 110); ctx.scale(0.72, 0.72); Dq.form(ctx, 0, 0, 540, [["Kelas", "pilihan", "X-A ▾", true], ["Umur", "angka 10–20", "16", true]], {}); ctx.restore(); }],
         ["Labeli dan ukur", "delapan gambar, panduan", (x, y) => { [["tomat", "buah"], ["wortel", "sayur"]].forEach(([k, lb], i) => Dq.photo(ctx, x - 200 + i * 205, y - 100, 190, k, [["kamu", lb]], { agree: true })); Dq.agree(ctx, x - 200, y + 70, 400, 88, {}); }],
         ["Bersihkan tabel", "temukan dan tangani", (x, y) => { ctx.save(); ctx.translate(x - 210, y - 100); ctx.scale(0.6, 0.6); Dq.table(ctx, 0, 0, [130, 150, 100, 200], ["NIS", "Nama", "Umur", "Tgl"], DIRTY.slice(0, 4), { "1,2": "bad", "2,3": "bad" }, { rh: 46 }); ctx.restore(); }]];
-      items.forEach(([t1, t2, draw], i) => { const x = 400 + i * 560; card(ctx, x - 250, 290, 500, 440, { fill: C.bg2 }); ctx.fillStyle = C.kiko; ctx.beginPath(); ctx.arc(x - 200, 340, 28, 0, Math.PI * 2); ctx.fill(); text(ctx, String(i + 1), x - 200, 352, 30, { align: "center", color: "#fff", weight: 900 }); text(ctx, t1, x - 160, 352, 28, { weight: 900 }); text(ctx, t2, x - 160, 386, 20, { weight: 700, color: C.ink2 }); draw(x, 560); });
-      text(ctx, "di halaman latihan episode ini — lalu kumpulkan satu data kecil di kelas", 960, 820, 28, { align: "center", color: C.ink2, weight: 700 });
+      items.forEach(([t1, t2, draw], i) => { const x = 440 + i * 520; card(ctx, x - 240, 290, 480, 410, { fill: C.bg2 }); ctx.fillStyle = C.kiko; ctx.beginPath(); ctx.arc(x - 200, 340, 28, 0, Math.PI * 2); ctx.fill(); text(ctx, String(i + 1), x - 200, 352, 30, { align: "center", color: "#fff", weight: 900 }); text(ctx, t1, x - 160, 352, 28, { weight: 900 }); text(ctx, t2, x - 160, 386, 20, { weight: 700, color: C.ink2 }); draw(x, 560); });
+      text(ctx, "di halaman latihan episode ini — lalu kumpulkan satu data kecil di kelas", 960, 745, 28, { align: "center", color: C.ink2, weight: 700 });
     }
   });
 })(typeof window !== "undefined" ? window : globalThis);

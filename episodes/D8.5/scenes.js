@@ -149,8 +149,8 @@
       const items = [["Pilah 12 kalimat", "fakta, opini, atau hoaks", (x, y) => { Q.sentence(ctx, x - 200, y - 90, 400, "Kantin buka jam 09.00", "fakta", { size: 20, h: 50 }); Q.sentence(ctx, x - 200, y - 20, 400, "Kantin paling enak", "opini", { size: 20, h: 50 }); Q.sentence(ctx, x - 200, y + 50, 400, "Kantin tutup selamanya!", "hoaks", { size: 20, h: 50 }); }],
         ["Centang ciri hoaks", "pada tiga pesan", (x, y) => { ctx.save(); ctx.translate(x - 190, y - 100); ctx.scale(0.6, 0.6); Q.signs(ctx, 0, 0, 640, [true, true, false, true, true], {}); ctx.restore(); }],
         ["Simulasi penyebaran", "bagikan vs periksa dulu", (x, y) => { Q.spreadTree(ctx, x - 200, y - 90, 400, 160, 3, { stop: [1, 1] }); }]];
-      items.forEach(([t1, t2, draw], i) => { const x = 400 + i * 560; card(ctx, x - 250, 290, 500, 440, { fill: C.bg2 }); ctx.fillStyle = C.kiko; ctx.beginPath(); ctx.arc(x - 200, 340, 28, 0, Math.PI * 2); ctx.fill(); text(ctx, String(i + 1), x - 200, 352, 30, { align: "center", color: "#fff", weight: 900 }); draw(x, 470); text(ctx, t1, x, 630, 26, { align: "center", weight: 900 }); text(ctx, t2, x, 668, 22, { align: "center", weight: 700, color: C.ink2 }); });
-      text(ctx, "di halaman latihan episode ini — lalu buat kesepakatan grup kelasmu: periksa dulu", 960, 820, 28, { align: "center", color: C.ink2, weight: 700 });
+      items.forEach(([t1, t2, draw], i) => { const x = 440 + i * 520; card(ctx, x - 240, 290, 480, 410, { fill: C.bg2 }); ctx.fillStyle = C.kiko; ctx.beginPath(); ctx.arc(x - 200, 340, 28, 0, Math.PI * 2); ctx.fill(); text(ctx, String(i + 1), x - 200, 352, 30, { align: "center", color: "#fff", weight: 900 }); draw(x, 470); text(ctx, t1, x, 630, 26, { align: "center", weight: 900 }); text(ctx, t2, x, 668, 22, { align: "center", weight: 700, color: C.ink2 }); });
+      text(ctx, "di halaman latihan episode ini — lalu buat kesepakatan grup kelasmu: periksa dulu", 960, 745, 28, { align: "center", color: C.ink2, weight: 700 });
     }
   });
 })(typeof window !== "undefined" ? window : globalThis);

@@ -196,8 +196,8 @@
       const items = [["Mainkan 3 skenario", "pilih tanggapanmu, lihat akibatnya", (x, y) => { Q.choice(ctx, x - 200, y - 80, 400, 70, 1, "ikut tertawa", { dim: true }); Q.choice(ctx, x - 200, y, 400, 70, 3, "bela dengan sopan", { good: true }); }],
         ["Susun lima langkah", "jangan ikut, dukung, bukti, lapor, blokir", (x, y) => { ["jangan ikut", "dukung", "simpan bukti"].forEach((s, i) => { card(ctx, x - 150, y - 90 + i * 60, 300, 50, { fill: C.bg2, stroke: "#CFDCD5", lw: 3, r: 10 }); text(ctx, (i + 1) + ". " + s, x - 130, y - 56 + i * 60, 24, { weight: 800 }); }); }],
         ["Satu pesan baik", "untuk teman di grup kelasmu minggu ini", (x, y) => { const ph = D.phone(ctx, x, y - 20, 190, 190); card(ctx, ph.x + 14, ph.y + 60, 160, 56, { fill: C.goodBg, r: 10 }); text(ctx, "semangat ya!", ph.x + 24, ph.y + 96, 20, { weight: 800, color: C.good }); }]];
-      items.forEach(([t1, t2, draw], i) => { const x = 400 + i * 560; card(ctx, x - 250, 290, 500, 440, { fill: C.bg2 }); ctx.fillStyle = C.kiko; ctx.beginPath(); ctx.arc(x - 200, 340, 28, 0, Math.PI * 2); ctx.fill(); text(ctx, String(i + 1), x - 200, 352, 30, { align: "center", color: "#fff", weight: 900 }); draw(x, 470); text(ctx, t1, x, 610, 28, { align: "center", weight: 900 }); text(ctx, t2, x, 650, 22, { align: "center", weight: 700, color: C.ink2 }); });
-      text(ctx, "di halaman latihan episode ini", 960, 820, 28, { align: "center", color: C.ink2, weight: 700 });
+      items.forEach(([t1, t2, draw], i) => { const x = 440 + i * 520; card(ctx, x - 240, 290, 480, 410, { fill: C.bg2 }); ctx.fillStyle = C.kiko; ctx.beginPath(); ctx.arc(x - 200, 340, 28, 0, Math.PI * 2); ctx.fill(); text(ctx, String(i + 1), x - 200, 352, 30, { align: "center", color: "#fff", weight: 900 }); draw(x, 470); text(ctx, t1, x, 610, 28, { align: "center", weight: 900 }); text(ctx, t2, x, 650, 22, { align: "center", weight: 700, color: C.ink2 }); });
+      text(ctx, "di halaman latihan episode ini", 960, 745, 28, { align: "center", color: C.ink2, weight: 700 });
     }
   });
 })(typeof window !== "undefined" ? window : globalThis);

@@ -128,8 +128,8 @@
       const items = [["Perencana proyek", "klaim → pertanyaan → rencana data", (x, y) => { Q.claim(ctx, x - 200, y - 90, 400, "Klaim: …", null, { size: 20, h: 50 }); Q.claim(ctx, x - 200, y - 20, 400, "Pertanyaan: berapa …?", "uji", { size: 20, h: 50 }); Q.claim(ctx, x - 200, y + 50, 400, "Apa · siapa · kapan · berapa lama", null, { size: 18, h: 50 }); }],
         ["Lembar data contoh", "AVERAGE, MAX, grafik", (x, y) => { ctx.save(); ctx.translate(x - 200, y - 100); ctx.scale(0.7, 0.7); Q.sheet(ctx, 0, 0, [["Hari", "K7", "K8"], ["1", 3, 3], ["2", 2, 3], ["Rata", 2.5, 3]], { cw: [120, 90, 90], rh: 44, changed: ["B4", "C4"] }); ctx.restore(); }],
         ["Latihan menyimpulkan", "benar, salah, belum cukup", (x, y) => { Q.verdict(ctx, x - 200, y - 110, 400, "kurang", "BELUM CUKUP DATA", "3 hari saja", { on: true }); }]];
-      items.forEach(([t1, t2, draw], i) => { const x = 400 + i * 560; card(ctx, x - 250, 290, 500, 440, { fill: C.bg2 }); ctx.fillStyle = C.kiko; ctx.beginPath(); ctx.arc(x - 200, 340, 28, 0, Math.PI * 2); ctx.fill(); text(ctx, String(i + 1), x - 200, 352, 30, { align: "center", color: "#fff", weight: 900 }); draw(x, 470); text(ctx, t1, x, 630, 26, { align: "center", weight: 900 }); text(ctx, t2, x, 668, 22, { align: "center", weight: 700, color: C.ink2 }); });
-      text(ctx, "di halaman latihan episode ini — lalu kerjakan proyeknya enam pertemuan di kelas", 960, 820, 28, { align: "center", color: C.ink2, weight: 700 });
+      items.forEach(([t1, t2, draw], i) => { const x = 440 + i * 520; card(ctx, x - 240, 290, 480, 410, { fill: C.bg2 }); ctx.fillStyle = C.kiko; ctx.beginPath(); ctx.arc(x - 200, 340, 28, 0, Math.PI * 2); ctx.fill(); text(ctx, String(i + 1), x - 200, 352, 30, { align: "center", color: "#fff", weight: 900 }); draw(x, 470); text(ctx, t1, x, 630, 26, { align: "center", weight: 900 }); text(ctx, t2, x, 668, 22, { align: "center", weight: 700, color: C.ink2 }); });
+      text(ctx, "di halaman latihan episode ini — lalu kerjakan proyeknya enam pertemuan di kelas", 960, 745, 28, { align: "center", color: C.ink2, weight: 700 });
     }
   });
 })(typeof window !== "undefined" ? window : globalThis);

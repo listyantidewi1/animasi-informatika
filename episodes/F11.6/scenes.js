@@ -131,8 +131,8 @@
       const items = [["Mesin kembalian", "greedy lawan brute force", (x, y) => { St.coins(ctx, x - 200, y - 110, [1, 3, 4], { r: 26 }); text(ctx, "greedy: 4+1+1 = 3 koin", x - 200, y + 10, 20, { weight: 900, color: C.bad }); text(ctx, "brute force: 3+3 = 2 koin", x - 200, y + 44, 20, { weight: 900, color: C.good }); }],
         ["Tebak angka", "urut lawan tengah, hitung tebakan", (x, y) => { St.range(ctx, x - 200, y - 60, 400, 100, 51, 74, 62, { secret: 67 }); Kt.counter(ctx, x - 60, y + 10, 3, "tebakan"); }],
         ["Pelacak rekursi", "buka dan tutup frame", (x, y) => St.stack(ctx, x - 220, y - 130, 440, SUM_FRAMES.slice(0, 3), 3, { closing: 1 })]];
-      items.forEach(([t1, t2, draw], i) => { const x = 400 + i * 560; card(ctx, x - 250, 290, 500, 440, { fill: C.bg2 }); ctx.fillStyle = C.kiko; ctx.beginPath(); ctx.arc(x - 200, 340, 28, 0, Math.PI * 2); ctx.fill(); text(ctx, String(i + 1), x - 200, 352, 30, { align: "center", color: "#fff", weight: 900 }); text(ctx, t1, x - 160, 352, 26, { weight: 900 }); para(ctx, t2, x - 160, 386, 20, 400, { weight: 700, color: C.ink2 }); draw(x, 560); });
-      text(ctx, "di halaman latihan episode ini — lalu dua versi kembalian dalam Python dan satu paragraf justifikasi", 960, 820, 24, { align: "center", color: C.ink2, weight: 700 });
+      items.forEach(([t1, t2, draw], i) => { const x = 440 + i * 520; card(ctx, x - 240, 290, 480, 410, { fill: C.bg2 }); ctx.fillStyle = C.kiko; ctx.beginPath(); ctx.arc(x - 200, 340, 28, 0, Math.PI * 2); ctx.fill(); text(ctx, String(i + 1), x - 200, 352, 30, { align: "center", color: "#fff", weight: 900 }); text(ctx, t1, x - 160, 352, 26, { weight: 900 }); para(ctx, t2, x - 160, 386, 20, 380, { weight: 700, color: C.ink2 }); draw(x, 560); });
+      text(ctx, "di halaman latihan episode ini — lalu dua versi kembalian dalam Python dan satu paragraf justifikasi", 960, 745, 24, { align: "center", color: C.ink2, weight: 700 });
     }
   });
 })(typeof window !== "undefined" ? window : globalThis);

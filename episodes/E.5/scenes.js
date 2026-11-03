@@ -140,8 +140,8 @@
       const items = [["Simulator", "push · pop · enqueue · dequeue", (x, y) => { Sd.stack(ctx, x - 100, y + 90, ["A", "B"], { w: 120, h: 40, cap: 3, hlTop: true }); Sd.queue(ctx, x + 10, y - 60, ["A", "B"], { w: 70, h: 44, cap: 3, hlFront: true, noLabels: true }); }],
         ["Tebak isi array", "setelah serangkaian operasi", (x, y) => { Sd.array(ctx, x - 200, y - 60, [70, "?", 90, "?"], { w: 90, h: 60, hl: 2 }); text(ctx, "nilai[2] ← nilai[1] + 5", x, y + 70, 20, { align: "center", weight: 900, color: C.kiko }); }],
         ["Pilih struktur data", "delapan persoalan", (x, y) => WADAH.forEach(([ic, t], i) => { card(ctx, x - 200 + (i % 2) * 205, y - 90 + Math.floor(i / 2) * 80, 195, 66, { fill: "#fff", stroke: "#B7C4CC", lw: 2, r: 10 }); text(ctx, t, x - 102 + (i % 2) * 205, y - 48 + Math.floor(i / 2) * 80, 22, { align: "center", weight: 900 }); })]];
-      items.forEach(([t1, t2, draw], i) => { const x = 400 + i * 560; card(ctx, x - 250, 290, 500, 440, { fill: C.bg2 }); ctx.fillStyle = C.kiko; ctx.beginPath(); ctx.arc(x - 200, 340, 28, 0, Math.PI * 2); ctx.fill(); text(ctx, String(i + 1), x - 200, 352, 30, { align: "center", color: "#fff", weight: 900 }); text(ctx, t1, x - 160, 352, 28, { weight: 900 }); text(ctx, t2, x - 160, 386, 20, { weight: 700, color: C.ink2 }); draw(x, 560); });
-      text(ctx, "di halaman latihan episode ini — tebak dulu, lalu tekan tombolnya", 960, 820, 28, { align: "center", color: C.ink2, weight: 700 });
+      items.forEach(([t1, t2, draw], i) => { const x = 440 + i * 520; card(ctx, x - 240, 290, 480, 410, { fill: C.bg2 }); ctx.fillStyle = C.kiko; ctx.beginPath(); ctx.arc(x - 200, 340, 28, 0, Math.PI * 2); ctx.fill(); text(ctx, String(i + 1), x - 200, 352, 30, { align: "center", color: "#fff", weight: 900 }); text(ctx, t1, x - 160, 352, 28, { weight: 900 }); text(ctx, t2, x - 160, 386, 20, { weight: 700, color: C.ink2 }); draw(x, 560); });
+      text(ctx, "di halaman latihan episode ini — tebak dulu, lalu tekan tombolnya", 960, 745, 28, { align: "center", color: C.ink2, weight: 700 });
     }
   });
 })(typeof window !== "undefined" ? window : globalThis);

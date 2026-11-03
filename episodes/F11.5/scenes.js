@@ -137,8 +137,8 @@
       const items = [["Pembersih data", "temukan baris bermasalah, pilih tindakan", (x, y) => Dq.table(ctx, x - 220, y - 110, [200, 180], ["tanggal", "mm"], [["2025-08-04", "1,5 cm"], ["2025-08-05", "-5"], ["2025-08-06", "3"]], { "0,1": "bad", "1,1": "bad" }, { rh: 40 })],
         ["Ukuran dan grafik", "cocokkan dengan pertanyaannya", (x, y) => { Lb.barChart(ctx, x - 220, y - 120, 440, 220, [["Jun", 7], ["Jul", 5], ["Agu", 3], ["Sep", 6]], { hl: 2 }); }],
         ["Pembuat keputusan", "baca grafik, pilih rekomendasi + keyakinan", (x, y) => { card(ctx, x - 220, y - 110, 440, 110, { fill: "#FFF3D6", stroke: C.accent, lw: 3, r: 12 }); para(ctx, "kemah minggu kedua Agustus, cadangan minggu ketiga", x, y - 70, 20, 400, { align: "center", weight: 900 }); Tb.confidence(ctx, x - 200, y + 40, 400, 0.78); }]];
-      items.forEach(([t1, t2, draw], i) => { const x = 400 + i * 560; card(ctx, x - 250, 290, 500, 440, { fill: C.bg2 }); ctx.fillStyle = C.kiko; ctx.beginPath(); ctx.arc(x - 200, 340, 28, 0, Math.PI * 2); ctx.fill(); text(ctx, String(i + 1), x - 200, 352, 30, { align: "center", color: "#fff", weight: 900 }); text(ctx, t1, x - 160, 352, 26, { weight: 900 }); para(ctx, t2, x - 160, 386, 20, 400, { weight: 700, color: C.ink2 }); draw(x, 560); });
-      text(ctx, "di halaman latihan episode ini — lalu satu set data terbuka sungguhan untuk sekolahmu", 960, 820, 26, { align: "center", color: C.ink2, weight: 700 });
+      items.forEach(([t1, t2, draw], i) => { const x = 440 + i * 520; card(ctx, x - 240, 290, 480, 410, { fill: C.bg2 }); ctx.fillStyle = C.kiko; ctx.beginPath(); ctx.arc(x - 200, 340, 28, 0, Math.PI * 2); ctx.fill(); text(ctx, String(i + 1), x - 200, 352, 30, { align: "center", color: "#fff", weight: 900 }); text(ctx, t1, x - 160, 352, 26, { weight: 900 }); para(ctx, t2, x - 160, 386, 20, 380, { weight: 700, color: C.ink2 }); draw(x, 560); });
+      text(ctx, "di halaman latihan episode ini — lalu satu set data terbuka sungguhan untuk sekolahmu", 960, 745, 26, { align: "center", color: C.ink2, weight: 700 });
     }
   });
 })(typeof window !== "undefined" ? window : globalThis);

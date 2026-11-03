@@ -122,8 +122,8 @@
       const items = [["Pilah kebutuhan", "wajib atau tambahan", (x, y) => [["catat transaksi", "wajib"], ["grafik bulanan", "tambahan"]].forEach(([s, k], i) => A.need(ctx, x - 200, y - 90 + i * 70, 400, s, k))],
         ["Kasus uji dan bug", "normal, batas, salah", (x, y) => { ctx.save(); ctx.translate(x - 215, y - 100); ctx.scale(0.52, 0.52); A.tests(ctx, 0, 0, [["normal", "masuk 50.000", "saldo +50.000", "ok"], ["salah", "−50.000", "ditolak", "bug"]], {}); ctx.restore(); }],
         ["Urutkan ke tahapnya", "kejadian sehari-hari", (x, y) => { ctx.save(); ctx.translate(x, y + 20); ctx.scale(0.45, 0.45); A.cycle(ctx, 0, 0, 220, 2, {}); ctx.restore(); }]];
-      items.forEach(([t1, t2, draw], i) => { const x = 400 + i * 560; card(ctx, x - 250, 290, 500, 440, { fill: C.bg2 }); ctx.fillStyle = C.kiko; ctx.beginPath(); ctx.arc(x - 200, 340, 28, 0, Math.PI * 2); ctx.fill(); text(ctx, String(i + 1), x - 200, 352, 30, { align: "center", color: "#fff", weight: 900 }); text(ctx, t1, x - 160, 352, 28, { weight: 900 }); text(ctx, t2, x - 160, 386, 20, { weight: 700, color: C.ink2 }); draw(x, 560); });
-      text(ctx, "di halaman latihan episode ini — lalu wawancara dan aplikasi kertas berpasangan", 960, 820, 26, { align: "center", color: C.ink2, weight: 700 });
+      items.forEach(([t1, t2, draw], i) => { const x = 440 + i * 520; card(ctx, x - 240, 290, 480, 410, { fill: C.bg2 }); ctx.fillStyle = C.kiko; ctx.beginPath(); ctx.arc(x - 200, 340, 28, 0, Math.PI * 2); ctx.fill(); text(ctx, String(i + 1), x - 200, 352, 30, { align: "center", color: "#fff", weight: 900 }); text(ctx, t1, x - 160, 352, 28, { weight: 900 }); text(ctx, t2, x - 160, 386, 20, { weight: 700, color: C.ink2 }); draw(x, 560); });
+      text(ctx, "di halaman latihan episode ini — lalu wawancara dan aplikasi kertas berpasangan", 960, 745, 26, { align: "center", color: C.ink2, weight: 700 });
     }
   });
 })(typeof window !== "undefined" ? window : globalThis);

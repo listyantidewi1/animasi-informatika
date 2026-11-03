@@ -216,8 +216,8 @@
       const items = [["Simulasi antrean & tumpukan", "tebak siapa keluar berikutnya", (x, y) => { Q.queueKids(ctx, x - 40, y - 40, ["", "", ""], { s: 56, gap: 56 }); Q.plates(ctx, x + 130, y + 40, 4, { w: 110 }); }],
         ["Baca tabel jadwal", "baris hari, kolom jam", (x, y) => Q.table(ctx, x - 180, y - 70, ["Hari", "Jam 1", "Jam 2"], [["Sen", "Mat", "IPA"], ["Sel", "IPS", "Seni"]], { cw: 120, rh: 44, size: 20, hlCell: [1, 2] })],
         ["Cocokkan contoh", "daftar, tabel, antrean, tumpukan, hierarki", (x, y) => { Q.tokens(ctx, x - 200, y - 60, ["daftar", "tabel"], { w: 130, h: 48, gap: 10, size: 22 }); Q.tokens(ctx, x - 200, y, ["antrean", "tumpukan"], { w: 130, h: 48, gap: 10, size: 22 }); Q.tokens(ctx, x + 90, y - 30, ["hierarki"], { w: 130, h: 48, size: 22, hl: 0 }); }]];
-      items.forEach(([t1, t2, draw], i) => { const x = 400 + i * 560; card(ctx, x - 250, 290, 500, 440, { fill: C.bg2 }); ctx.fillStyle = C.kiko; ctx.beginPath(); ctx.arc(x - 200, 340, 28, 0, Math.PI * 2); ctx.fill(); text(ctx, String(i + 1), x - 200, 352, 30, { align: "center", color: "#fff", weight: 900 }); draw(x, 470); text(ctx, t1, x, 610, 28, { align: "center", weight: 900 }); text(ctx, t2, x, 650, 22, { align: "center", weight: 700, color: C.ink2 }); });
-      text(ctx, "di halaman latihan episode ini — lalu amati sehari: temukan lima susunan di sekitarmu", 960, 820, 28, { align: "center", color: C.ink2, weight: 700 });
+      items.forEach(([t1, t2, draw], i) => { const x = 440 + i * 520; card(ctx, x - 240, 290, 480, 410, { fill: C.bg2 }); ctx.fillStyle = C.kiko; ctx.beginPath(); ctx.arc(x - 200, 340, 28, 0, Math.PI * 2); ctx.fill(); text(ctx, String(i + 1), x - 200, 352, 30, { align: "center", color: "#fff", weight: 900 }); draw(x, 470); text(ctx, t1, x, 610, 28, { align: "center", weight: 900 }); text(ctx, t2, x, 650, 22, { align: "center", weight: 700, color: C.ink2 }); });
+      text(ctx, "di halaman latihan episode ini — lalu amati sehari: temukan lima susunan di sekitarmu", 960, 745, 28, { align: "center", color: C.ink2, weight: 700 });
     }
   });
 })(typeof window !== "undefined" ? window : globalThis);
