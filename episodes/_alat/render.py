@@ -3,13 +3,15 @@
   python3 episodes/_alat/render.py D7.0                 semua bagian, semua versi yang bahannya ada
   python3 episodes/_alat/render.py D7.0 D7.0a --suara   satu bagian, satu versi
   ... --mux   hanya suara/subtitel yang berubah: berkas segmen di video/ dipakai ulang, gambar tidak dirender ulang.
+  ... --lanjut lanjutkan render yang terputus: segmen yang sudah ada dan lebih baru dari semua sumbernya
+              (timeline, script.json, berkas engine, render.html) tidak dirender ulang.
 Dari dalam folder episode kodenya boleh dihilangkan: python3 ../_alat/render.py D7.0a
 Bagian (segmen, kartu pembuka/penutup) dibaca dari kunci "parts" di script.json."""
 import json, os, base64, subprocess, sys
 from playwright.sync_api import sync_playwright
 import episode as E
 
-flags = [a for a in sys.argv[1:] if a.startswith("--")]; MUX = "--mux" in flags
+flags = [a for a in sys.argv[1:] if a.startswith("--")]; MUX = "--mux" in flags; LANJUT = "--lanjut" in flags
 ROOT, only = E.find_root([a for a in sys.argv[1:] if not a.startswith("--")])
 OUT = os.path.join(ROOT, "video"); os.makedirs(OUT, exist_ok=True)
 FPS = 30
@@ -27,13 +29,20 @@ def finish(proc, tmp, final):
     if rc != 0: raise SystemExit(f"ffmpeg failed on {tmp}")
     os.replace(tmp, final)
 
+def fresh(final, variant):
+    """--lanjut: berkas segmen dianggap sah bila ada dan lebih baru dari semua sumber gambarnya."""
+    if not LANJUT or not os.path.exists(final): return False
+    src = [E.timeline_path(ROOT, variant), os.path.join(ROOT, "script.json"), os.path.join(E.ALAT, "render.html")]
+    src += [os.path.normpath(os.path.join(ROOT, f)) for f in SCRIPT.get("engine", [])]
+    return os.path.getmtime(final) > max(os.path.getmtime(f) for f in src if os.path.exists(f))
+
 def srt_time(s):
     ms = int(round(s * 1000)); h, ms = divmod(ms, 3600000); m, ms = divmod(ms, 60000); sec, ms = divmod(ms, 1000)
     return f"{h:02}:{m:02}:{sec:02},{ms:03}"
 
-def still(pg, txt, seg, final, secs):
+def still(pg, txt, seg, final, secs, variant):
     """Kartu diam (pembuka/penutup bagian) selama `secs` detik."""
-    if MUX: return
+    if MUX or fresh(final, variant): return
     tmp = final.replace(".mp4", ".tmp.mp4")
     frame = base64.b64decode(pg.evaluate("a => window.__card(a[0], a[1])", [txt, seg]).split(",", 1)[1])
     pr = enc(tmp)
@@ -54,7 +63,7 @@ def render_variant(pg, variant):
         post = (p["post"], p.get("post_secs", 3)) if p.get("post") else None
         tag = f"{name}_{variant}"; files = []; offset = 0.0; srt = []
         if pre:
-            final = os.path.join(OUT, f"{tag}_pre.mp4"); still(pg, pre[0], p["segs"][0], final, pre[1]); files.append(final); offset += pre[1]
+            final = os.path.join(OUT, f"{tag}_pre.mp4"); still(pg, pre[0], p["segs"][0], final, pre[1], variant); files.append(final); offset += pre[1]
         for seg in p["segs"]:  # one file per segment
             sb = [b for b in beats if b["seg"] == seg]
             t0, t1 = sb[0]["start"], sb[-1]["start"] + sb[-1]["dur"]
@@ -62,6 +71,8 @@ def render_variant(pg, variant):
             tmp = os.path.join(OUT, f"{tag}_seg{seg}.tmp.mp4"); final = tmp.replace(".tmp.mp4", ".mp4")
             if MUX:
                 if not os.path.exists(final): raise SystemExit(f"--mux: {final} belum ada; render dulu tanpa --mux")
+            elif fresh(final, variant):
+                print(f"{tag} seg{seg} dipakai ulang (--lanjut)", flush=True)
             else:
                 pr = enc(tmp)
                 for i in range(n):
@@ -75,7 +86,7 @@ def render_variant(pg, variant):
             offset += n / FPS
             print(f"{tag} seg{seg} done ({n} frames)", flush=True)
         if post:
-            final = os.path.join(OUT, f"{tag}_post.mp4"); still(pg, post[0], p["segs"][-1], final, post[1]); files.append(final)
+            final = os.path.join(OUT, f"{tag}_post.mp4"); still(pg, post[0], p["segs"][-1], final, post[1], variant); files.append(final)
         # join, then audio track: narration (suara) or silence (teks)
         lst = os.path.join(OUT, f"{tag}_list.txt"); open(lst, "w").write("".join(f"file '{f}'\n" for f in files))
         joined = os.path.join(OUT, f"{tag}_joined.mp4")
