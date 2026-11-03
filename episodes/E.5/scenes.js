@@ -124,7 +124,7 @@
       card(ctx, 120, 150, 1680, 740);
       heading(ctx, "MEMILIH STRUKTUR DATA: EMPAT PERTANYAAN", 215);
       const n = reveal(l, 1.5, 2.6, 4);
-      [["Data sejenis, diakses lewat nomor?", "Array", "nilai[3]"], ["Satu benda, banyak keterangan?", "Record", "siswa.nama"], ["Yang terakhir harus keluar dulu (undo)?", "Stack", "pop"], ["Yang datang dulu dilayani dulu?", "Queue", "dequeue"]].forEach(([q, w, ex], i) => { ctx.save(); if (i >= n) ctx.globalAlpha = 0.2; const y = 270 + i * 110; card(ctx, 230, y, 1460, 96, { fill: i === n - 1 ? "#FFF3D6" : C.bg2, stroke: i === n - 1 ? C.accent : undefined, lw: 4, r: 14 }); text(ctx, q, 260, y + 58, 26, { weight: 800 }); arrowIcon(ctx, "right", 1080, y + 48, 26, C.ink2); text(ctx, w, 1140, y + 58, 28, { weight: 900, color: C.kiko }); text(ctx, ex, 1660, y + 58, 22, { align: "right", weight: 800, color: C.ink2 }); ctx.restore(); });
+      [["Data sejenis, diakses lewat nomor?", "Array", "nilai[3]"], ["Satu benda, banyak keterangan?", "Record", "siswa.nama"], ["Yang terakhir harus keluar dulu (undo)?", "Stack", "pop"], ["Yang datang dulu dilayani dulu?", "Queue", "dequeue"]].forEach(([q, w, ex], i) => { ctx.save(); if (i >= n) ctx.globalAlpha = 0.2; const y = 270 + i * 110; card(ctx, 230, y, 1460, 96, { fill: i === n - 1 ? "#FFF3D6" : C.bg2, stroke: i === n - 1 ? C.accent : undefined, lw: 4, r: 14 }); text(ctx, q, 260, y + 58, 26, { weight: 800 }); arrowIcon(ctx, "east", 1080, y + 48, 26, C.ink2); text(ctx, w, 1140, y + 58, 28, { weight: 900, color: C.kiko }); text(ctx, ex, 1660, y + 58, 22, { align: "right", weight: 800, color: C.ink2 }); ctx.restore(); });
     },
     contoh_gabungan(ctx, b, l) {
       card(ctx, 120, 150, 1680, 740);

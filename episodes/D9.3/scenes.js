@@ -76,7 +76,7 @@
       card(ctx, 200, 230, 740, 480, { fill: C.bg2 }); text(ctx, "RANSOMWARE: mengunci file", 570, 290, 30, { align: "center", weight: 900, color: C.ink });
       const lock = l > 1.5; ["tugas", "foto", "video"].forEach((nm, i) => Mw.file(ctx, 380 + i * 190, 430, 140, { locked: lock, name: lock ? nm + ".xq7" : nm }));
       if (l > 3) { card(ctx, 300, 560, 540, 90, { fill: C.badBg, stroke: C.bad, lw: 3, r: 12 }); text(ctx, "\"Bayar untuk membuka file-mu\"", 570, 615, 24, { align: "center", weight: 900, color: C.bad }); }
-      if (l > 4.5) { card(ctx, 980, 230, 740, 480, { fill: C.bg2 }); text(ctx, "SPYWARE: mengintip diam-diam", 1350, 290, 30, { align: "center", weight: 900, color: Mw.color("spyware") }); D.keyboard(ctx, 1060, 330, 420, { small: true }); Mw.bug(ctx, 1600, 400, 80, "spyware", { look: Math.sin(l * 3) }); const typed = "kata sandi: ra***"; text(ctx, typed, 1270, 600, 26, { align: "center", weight: 800 }); arrowIcon(ctx, "right", 1490, 592, 36, C.bad); text(ctx, "dikirim ke pembuatnya", 1350, 670, 22, { align: "center", weight: 800, color: C.bad }); }
+      if (l > 4.5) { card(ctx, 980, 230, 740, 480, { fill: C.bg2 }); text(ctx, "SPYWARE: mengintip diam-diam", 1350, 290, 30, { align: "center", weight: 900, color: Mw.color("spyware") }); D.keyboard(ctx, 1060, 330, 420, { small: true }); Mw.bug(ctx, 1600, 400, 80, "spyware", { look: Math.sin(l * 3) }); const typed = "kata sandi: ra***"; text(ctx, typed, 1270, 600, 26, { align: "center", weight: 800 }); arrowIcon(ctx, "east", 1490, 592, 36, C.bad); text(ctx, "dikirim ke pembuatnya", 1350, 670, 22, { align: "center", weight: 800, color: C.bad }); }
       if (l > 8) banner(ctx, "lima tamu: menumpang, menjalar, menyamar, mengunci, mengintip", 745, 1200, { size: 30 });
     },
 
@@ -110,7 +110,7 @@
       Mw.habit(ctx, 200, 240, 740, 4, HABITS[3][0], HABITS[3][1], { on: n === 1, dim: n < 1 });
       Mw.habit(ctx, 980, 240, 740, 5, HABITS[4][0], HABITS[4][1], { on: n === 2, dim: n < 2 });
       if (n >= 1) { Mw.shield(ctx, 420, 560, 160); text(ctx, "memindai dan menghentikan malware", 570, 690, 22, { align: "center", weight: 800, color: C.ink2 }); Mw.bug(ctx, 620, 540, 50, "virus"); ctx.strokeStyle = C.bad; ctx.lineWidth = 6; ctx.beginPath(); ctx.moveTo(595, 515); ctx.lineTo(645, 565); ctx.moveTo(645, 515); ctx.lineTo(595, 565); ctx.stroke(); }
-      if (n >= 2) { Mw.file(ctx, 1150, 540, 130, { name: "tugas" }); arrowIcon(ctx, "right", 1280, 530, 40, C.good); D.fileIcon(ctx, 1420, 520, 70, "folder", {}); text(ctx, "awan / flashdisk", 1420, 590, 20, { align: "center", weight: 800, color: C.ink2 }); text(ctx, "ransomware mengunci? pulihkan, tak perlu bayar", 1350, 690, 22, { align: "center", weight: 900, color: C.good }); }
+      if (n >= 2) { Mw.file(ctx, 1150, 540, 130, { name: "tugas" }); arrowIcon(ctx, "east", 1280, 530, 40, C.good); D.fileIcon(ctx, 1420, 520, 70, "folder", {}); text(ctx, "awan / flashdisk", 1420, 590, 20, { align: "center", weight: 800, color: C.ink2 }); text(ctx, "ransomware mengunci? pulihkan, tak perlu bayar", 1350, 690, 22, { align: "center", weight: 900, color: C.good }); }
     },
 
     izin(ctx, b, l) {

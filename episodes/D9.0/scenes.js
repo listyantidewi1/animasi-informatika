@@ -91,8 +91,8 @@
       card(ctx, 120, 150, 1680, 740);
       text(ctx, "BEKAL BARU KELAS IX: PERULANGAN", 960, 230, 34, { align: "center", color: C.accentDark, weight: 800 });
       A.pseudo(ctx, 240, 290, 600, [{ t: "tulis halo" }, { t: "tulis halo" }, { t: "tulis halo" }], { title: "TIGA BARIS YANG SAMA", rh: 56, size: 28 });
-      if (l > 3.5) { arrowIcon(ctx, "right", 930, 420, 50, C.ink2); A.pseudo(ctx, 1060, 290, 640, [{ t: "ULANGI 3 kali:", hl: true }, { t: "tulis halo", ind: 1 }], { title: "DITULIS SATU KALI", rh: 56, size: 28 }); }
-      if (l > 6) { card(ctx, 1060, 480, 640, 150, { fill: C.goodBg, stroke: C.good, lw: 4 }); ["halo", "halo", "halo"].forEach((s, i) => text(ctx, s, 1160 + i * 160, 565, 36, { align: "center", weight: 900, color: C.good })); label(ctx, "hasilnya sama", 1380, 700, { size: 26, color: C.good }); }
+      if (l > 3.5) { ctx.strokeStyle = C.ink2; ctx.fillStyle = C.ink2; ctx.lineWidth = 6; ctx.beginPath(); ctx.moveTo(905, 420); ctx.lineTo(1030, 420); ctx.stroke(); ctx.beginPath(); ctx.moveTo(1048, 420); ctx.lineTo(1024, 404); ctx.lineTo(1024, 436); ctx.closePath(); ctx.fill(); A.pseudo(ctx, 1060, 290, 640, [{ t: "ULANGI 3 kali:", hl: true }, { t: "tulis halo", ind: 1 }], { title: "DITULIS SATU KALI", rh: 56, size: 28 }); }
+      if (l > 6) { card(ctx, 1060, 480, 640, 150, { fill: C.goodBg, stroke: C.good, lw: 4 }); ["halo", "halo", "halo"].forEach((s, i) => text(ctx, s, 1220 + i * 160, 565, 36, { align: "center", weight: 900, color: C.good })); label(ctx, "hasilnya sama", 1380, 700, { size: 26, color: C.good }); }
     },
     map9(ctx, b, l) {
       card(ctx, 120, 150, 1680, 740);

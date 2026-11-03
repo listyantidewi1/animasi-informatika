@@ -41,7 +41,7 @@
       const steps = ["1. bentuk tim 3 bagian", "2. tiap tim tulis daftar barang", "3. belanja hari Jumat", "4. pasang dekorasi jam 7", "5. mulai acara jam 8"];
       card(ctx, 300, 290, 560, 400, { fill: "#FFF9E0", stroke: "#E0B04B", lw: 3, r: 12 }); text(ctx, "Kertas tim A", 580, 335, 24, { align: "center", weight: 900, color: C.accentDark });
       steps.forEach((s, i) => text(ctx, s, 340, 390 + i * 54, 26, { weight: 700 }));
-      arrowIcon(ctx, "right", 960, 480, 50, C.ink2);
+      arrowIcon(ctx, "east", 960, 480, 50, C.ink2);
       const n = reveal(l, 2.0, 2.0, 3);
       [["✓", "bisa diikuti", C.good], ["?", "\"beli di mana?\" belum jelas", C.accentDark], ["✎", "perbaiki langkah 3", C.kiko]].forEach(([m, t, col], i) => { ctx.save(); if (i >= n) ctx.globalAlpha = 0.2; card(ctx, 1060, 300 + i * 130, 620, 110, { fill: C.bg2, r: 14 }); text(ctx, m, 1110, 370 + i * 130, 44, { align: "center", weight: 900, color: col }); text(ctx, t, 1160, 365 + i * 130, 26, { weight: 800 }); ctx.restore(); });
       if (n >= 3) label(ctx, "langkah yang bisa diikuti tanpa bertanya = algoritma", 960, 740, { size: 26 });
@@ -51,7 +51,7 @@
       card(ctx, 120, 150, 1680, 740);
       heading(ctx, "BEKAL 1 · EMPAT JURUS BERPIKIR KOMPUTASIONAL");
       const n = reveal(l, 1.5, 2.6, 4);
-      JURUS.forEach(([t, s], i) => { const x = 230 + i * 380; box(ctx, x, 290, 340, 260, (i + 1) + ". " + t, [s], { dim: i >= n, on: i === n - 1 }); if (i < 3) arrowIcon(ctx, "right", x + 358, 420, 26, C.ink2);
+      JURUS.forEach(([t, s], i) => { const x = 230 + i * 380; box(ctx, x, 290, 340, 260, (i + 1) + ". " + t, [s], { dim: i >= n, on: i === n - 1 }); if (i < 3) arrowIcon(ctx, "east", x + 358, 420, 26, C.ink2);
         ctx.save(); if (i >= n) ctx.globalAlpha = 0.2; const cx = x + 170, cy = 470;
         if (i === 0) { ctx.fillStyle = C.bad; rr(ctx, cx - 60, cy - 30, 120, 60, 8); ctx.fill(); ctx.strokeStyle = "#fff"; ctx.lineWidth = 3; ctx.beginPath(); ctx.moveTo(cx - 20, cy - 30); ctx.lineTo(cx - 20, cy + 30); ctx.moveTo(cx + 20, cy - 30); ctx.lineTo(cx + 20, cy + 30); ctx.stroke(); }
         if (i === 1) for (let k = 0; k < 6; k++) { ctx.fillStyle = k % 2 ? C.kiko : C.accent; ctx.beginPath(); ctx.arc(cx - 75 + k * 30, cy, 12, 0, Math.PI * 2); ctx.fill(); }
@@ -85,7 +85,7 @@
       // antrean
       ctx.save(); if (n < 1) ctx.globalAlpha = 0.2; card(ctx, 200, 260, 500, 420, { fill: C.bg2, r: 16 }); text(ctx, "QUEUE (antrean)", 450, 305, 24, { align: "center", weight: 900, color: C.kiko });
       ["A", "B", "C", "D"].forEach((s, i) => { ctx.fillStyle = i === 0 ? C.good : "#fff"; ctx.strokeStyle = "#7B8B95"; ctx.lineWidth = 3; rr(ctx, 260 + i * 100, 400, 80, 80, 10); ctx.fill(); ctx.stroke(); text(ctx, s, 300 + i * 100, 452, 36, { align: "center", weight: 900, color: i === 0 ? "#fff" : C.ink }); });
-      arrowIcon(ctx, "left", 230, 440, 26, C.good); text(ctx, "keluar", 230, 500, 18, { align: "center", weight: 800, color: C.good }); arrowIcon(ctx, "left", 680, 440, 26, C.ink2); text(ctx, "masuk", 680, 500, 18, { align: "center", weight: 800, color: C.ink2 });
+      arrowIcon(ctx, "west", 230, 440, 26, C.good); text(ctx, "keluar", 230, 500, 18, { align: "center", weight: 800, color: C.good }); arrowIcon(ctx, "left", 680, 440, 26, C.ink2); text(ctx, "masuk", 680, 500, 18, { align: "center", weight: 800, color: C.ink2 });
       text(ctx, "pertama masuk, pertama keluar", 450, 600, 22, { align: "center", weight: 800, color: C.ink2 }); text(ctx, "FIFO", 450, 640, 22, { align: "center", weight: 900, color: C.kiko }); ctx.restore();
       // tumpukan
       ctx.save(); if (n < 2) ctx.globalAlpha = 0.2; card(ctx, 740, 260, 440, 420, { fill: C.bg2, r: 16 }); text(ctx, "STACK (tumpukan)", 960, 305, 24, { align: "center", weight: 900, color: C.kiko });
@@ -151,7 +151,7 @@
       card(ctx, 120, 150, 1680, 740);
       heading(ctx, "CARA BELAJAR: TIGA LAPIS, LALU BUKA TUTUP MESIN");
       const n = reveal(l, 1.5, 1.6, 3);
-      [["✋", "Konkret", "coba dulu tanpa komputer"], ["🎞️", "Gambar", "lihat animasinya"], ["🔣", "Simbol", "latihan di halaman web"]].forEach(([ic, t, s], i) => { ctx.save(); if (i >= n) ctx.globalAlpha = 0.2; const x = 230 + i * 400; card(ctx, x, 290, 360, 220, { fill: C.bg2, r: 16 }); text(ctx, ic, x + 180, 370, 56, { align: "center" }); text(ctx, t, x + 180, 430, 28, { align: "center", weight: 900 }); text(ctx, s, x + 180, 470, 22, { align: "center", weight: 700, color: C.ink2 }); if (i < 2) arrowIcon(ctx, "right", x + 380, 400, 26, C.ink2); ctx.restore(); });
+      [["✋", "Konkret", "coba dulu tanpa komputer"], ["🎞️", "Gambar", "lihat animasinya"], ["🔣", "Simbol", "latihan di halaman web"]].forEach(([ic, t, s], i) => { ctx.save(); if (i >= n) ctx.globalAlpha = 0.2; const x = 230 + i * 400; card(ctx, x, 290, 360, 220, { fill: C.bg2, r: 16 }); text(ctx, ic, x + 180, 370, 56, { align: "center" }); text(ctx, t, x + 180, 430, 28, { align: "center", weight: 900 }); text(ctx, s, x + 180, 470, 22, { align: "center", weight: 700, color: C.ink2 }); if (i < 2) arrowIcon(ctx, "east", x + 380, 400, 26, C.ink2); ctx.restore(); });
       if (l > 7) { card(ctx, 1440, 290, 260, 220, { fill: "#FFF3D6", stroke: C.accent, lw: 4, r: 16 }); ctx.fillStyle = "#1F2A33"; rr(ctx, 1480, 320, 180, 120, 10); ctx.fill(); ctx.fillStyle = "#EAF2EE"; rr(ctx, 1490, 330, 160, 100, 6); ctx.fill(); text(ctx, "⚙️", 1570, 400, 50, { align: "center" }); text(ctx, "buka tutup mesin", 1570, 480, 20, { align: "center", weight: 900, color: C.accentDark }); }
       if (l > 7) label(ctx, "melihat apa yang terjadi di dalam komputer", 960, 620);
     },

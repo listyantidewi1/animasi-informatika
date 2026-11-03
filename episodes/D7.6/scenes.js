@@ -68,8 +68,8 @@
       text(ctx, "tumpukan piring", 520, 790, 28, { align: "center", weight: 900, color: C.ink2 });
       card(ctx, 940, 260, 760, 420, { fill: C.bg2 });
       const rows = [["ditaruh terakhir", "ada di paling atas"], ["diambil pertama", "ya yang paling atas"]];
-      rows.forEach(([a, c], i) => { if (l > 1.5 + i * 2.5) { text(ctx, a, 980, 340 + i * 110, 32, { weight: 900, color: C.kiko }); arrowIcon(ctx, "right", 1310, 328 + i * 110, 40, C.ink2); text(ctx, c, 1360, 340 + i * 110, 32, { weight: 800 }); } });
-      if (l > 7) { card(ctx, 980, 560, 680, 90, { fill: C.badBg, stroke: C.bad, lw: 4 }); text(ctx, "TUMPUKAN (stack): terakhir masuk, pertama keluar", 1320, 616, 30, { align: "center", weight: 900, color: C.bad }); }
+      rows.forEach(([a, c], i) => { if (l > 1.5 + i * 2.5) { text(ctx, a, 980, 340 + i * 110, 32, { weight: 900, color: C.kiko }); arrowIcon(ctx, "east", 1310, 328 + i * 110, 40, C.ink2); text(ctx, c, 1360, 340 + i * 110, 32, { weight: 800 }); } });
+      if (l > 7) { card(ctx, 960, 560, 740, 90, { fill: C.badBg, stroke: C.bad, lw: 4 }); text(ctx, "TUMPUKAN (stack): terakhir masuk, pertama keluar", 1330, 615, 26, { align: "center", weight: 900, color: C.bad }); }
       if (l > 9) banner(ctx, "terbalik dari antrean", 760, 600, { fill: C.goodBg, stroke: C.good, color: C.good });
     },
 
@@ -118,7 +118,7 @@
       const rows1 = MENU.map(([m, h]) => [m, rp(h)]);
       Q.table(ctx, 220, 300, ["Menu warung", "Harga"], rows1, { cw: [280, 220], rh: 60, size: 26 });
       text(ctx, "asli", 470, 260, 28, { align: "center", weight: 900, color: C.ink2 });
-      if (l > 1.5) { arrowIcon(ctx, "right", 800, 480, 50, C.accentDark); label(ctx, "urutkan termurah", 800, 420, { size: 24 }); Q.table(ctx, 900, 300, ["Menu warung", "Harga"], sorted.map(([m, h]) => [m, rp(h)]), { cw: [280, 220], rh: 60, size: 26, fade: l > 4 ? sorted.map((r, i) => r[1] >= 10000 ? i : -1).filter(i => i >= 0) : [] }); text(ctx, "diurutkan", 1150, 260, 28, { align: "center", weight: 900, color: C.ink2 }); }
+      if (l > 1.5) { arrowIcon(ctx, "east", 800, 480, 50, C.accentDark); label(ctx, "urutkan termurah", 800, 420, { size: 24 }); Q.table(ctx, 900, 300, ["Menu warung", "Harga"], sorted.map(([m, h]) => [m, rp(h)]), { cw: [280, 220], rh: 60, size: 26, fade: l > 4 ? sorted.map((r, i) => r[1] >= 10000 ? i : -1).filter(i => i >= 0) : [] }); text(ctx, "diurutkan", 1150, 260, 28, { align: "center", weight: 900, color: C.ink2 }); }
       if (l > 4) { card(ctx, 1460, 300, 300, 120, { fill: C.goodBg, stroke: C.good, lw: 4 }); text(ctx, "saring:", 1610, 345, 26, { align: "center", weight: 800, color: C.good }); text(ctx, "di bawah Rp10.000", 1610, 390, 28, { align: "center", weight: 900, color: C.good }); }
       if (l > 7) banner(ctx, "di komputer namanya lembar kerja (spreadsheet)", 745, 1000, { size: 30 });
     },
@@ -146,10 +146,10 @@
       card(ctx, 120, 150, 1680, 740);
       stackAnim(ctx, l, 520, 690, { n: 4, arrows: true, w: 320 });
       card(ctx, 940, 280, 760, 300, { fill: C.bg2 });
-      text(ctx, "piring baru dicuci", 980, 350, 30, { weight: 900, color: C.kiko }); arrowIcon(ctx, "right", 1330, 338, 40, C.ink2); text(ctx, "ditaruh di atas", 1380, 350, 30, { weight: 800 });
-      if (l > 3) { text(ctx, "yang diambil berikutnya", 980, 450, 30, { weight: 900, color: C.good }); arrowIcon(ctx, "right", 1400, 438, 40, C.ink2); text(ctx, "yang di atas", 1450, 450, 30, { weight: 800 }); }
+      text(ctx, "piring baru dicuci", 980, 350, 30, { weight: 900, color: C.kiko }); arrowIcon(ctx, "east", 1330, 338, 40, C.ink2); text(ctx, "ditaruh di atas", 1380, 350, 30, { weight: 800 });
+      if (l > 3) { text(ctx, "yang diambil berikutnya", 980, 450, 30, { weight: 900, color: C.good }); arrowIcon(ctx, "east", 1400, 438, 40, C.ink2); text(ctx, "yang di atas", 1450, 450, 30, { weight: 800 }); }
       if (l > 5) text(ctx, "yang paling bawah menunggu paling lama", 1320, 540, 26, { align: "center", weight: 800, color: C.ink2 });
-      banner(ctx, "TUMPUKAN (stack): terakhir masuk, pertama keluar", 745, 900, { fill: C.badBg, stroke: C.bad, color: C.bad });
+      banner(ctx, "TUMPUKAN (stack): terakhir masuk, pertama keluar", 745, 1040, { fill: C.badBg, stroke: C.bad, color: C.bad });
     },
     stack_computer(ctx, b, l) {
       card(ctx, 120, 150, 1680, 740);
@@ -199,7 +199,7 @@
       // kanan: menu HP bertingkat
       text(ctx, "Menu HP", 1360, 230, 30, { align: "center", weight: 900, color: C.accentDark });
       const m = l > 5 ? reveal(l, 5, 1.0, 3) : 0;
-      ["Pengaturan", "Suara", "Nada dering"].forEach((s, i) => { if (i < m) { D.menu(ctx, 1000 + i * 240, 300 + i * 110, i === 0 ? ["Jaringan", "Suara", "Layar"] : i === 1 ? ["Volume", "Nada dering", "Getar"] : ["Nada 1", "Nada 2", "Nada 3"], { w: 230, active: i === 2 ? 0 : 1 }); text(ctx, s, 1115 + i * 240, 290 + i * 110, 24, { align: "center", weight: 900, color: C.kiko }); if (i) { arrowIcon(ctx, "right", 980 + i * 240 - 20, 300 + i * 110 + 90, 30, C.ink2); } } });
+      ["Pengaturan", "Suara", "Nada dering"].forEach((s, i) => { if (i < m) { D.menu(ctx, 1000 + i * 240, 300 + i * 110, i === 0 ? ["Jaringan", "Suara", "Layar"] : i === 1 ? ["Volume", "Nada dering", "Getar"] : ["Nada 1", "Nada 2", "Nada 3"], { w: 230, active: i === 2 ? 0 : 1 }); text(ctx, s, 1115 + i * 240, 290 + i * 110, 24, { align: "center", weight: 900, color: C.kiko }); if (i) { arrowIcon(ctx, "east", 980 + i * 240 - 20, 300 + i * 110 + 90, 30, C.ink2); } } });
       if (m >= 3) label(ctx, "Pengaturan → Suara → Nada dering", 1360, 740, { size: 26, color: C.ink2 });
     },
     tree_path(ctx, b, l) {

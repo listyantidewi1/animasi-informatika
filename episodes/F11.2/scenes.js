@@ -37,7 +37,7 @@
       const n = reveal(l, 1.5, 2.4, 4);
       Py.code(ctx, 240, 270, 520, [{ t: "x = 5" }, { t: "x = x + 2" }, { t: "x = x * 2", hl: n >= 4 }, { t: "print(x)" }], { rh: 48, size: 24 });
       ctx.save(); if (n < 1) ctx.globalAlpha = 0.2; card(ctx, 820, 270, 380, 150, { fill: "#FFFDF5", stroke: "#E0B04B", lw: 3, r: 14 }); text(ctx, "✏️ tebakanku", 1010, 320, 22, { align: "center", weight: 900, color: C.ink2 }); text(ctx, "12", 1010, 390, 44, { align: "center", weight: 900 }); ctx.restore();
-      if (n >= 2) { arrowIcon(ctx, "right", 1230, 345, 40, C.accent); Py.console(ctx, 1280, 270, 400, [["14", "out"]]); }
+      if (n >= 2) { arrowIcon(ctx, "east", 1230, 345, 40, C.accent); Py.console(ctx, 1280, 270, 400, [["14", "out"]]); }
       if (n >= 3) { card(ctx, 820, 470, 860, 110, { fill: C.badBg, stroke: C.bad, lw: 3, r: 14 }); text(ctx, "meleset: 12 ≠ 14 → di sinilah pelajarannya", 1250, 535, 28, { align: "center", weight: 900, color: C.bad }); }
       if (n >= 4) label(ctx, "baris 3 mengalikan setelah ditambah: (5 + 2) × 2 = 14", 960, 680, { size: 26 });
     },
@@ -57,7 +57,7 @@
       if (n >= 5) { Py.code(ctx, 240, 430, 640, [{ t: "jumlah = input()", hl: n === 5 }, { t: "jumlah = int(input())", hl: n >= 7 }], { rh: 46, size: 24 }); }
       if (n >= 5) T.cell(ctx, 940, 440, 320, { name: "jumlah", value: "\"50000\"", type: "str", warn: true });
       if (n >= 6) { text(ctx, "string! tidak bisa dihitung", 1100, 585, 22, { align: "center", weight: 900, color: C.bad }); }
-      if (n >= 7) { arrowIcon(ctx, "right", 1290, 495, 40, C.good); T.cell(ctx, 1340, 440, 320, { name: "jumlah", value: 50000, type: "int", changed: true }); label(ctx, "bungkus dengan int() supaya jadi bilangan", 960, 690, { size: 26, color: C.good }); }
+      if (n >= 7) { arrowIcon(ctx, "east", 1290, 495, 40, C.good); T.cell(ctx, 1340, 440, 320, { name: "jumlah", value: 50000, type: "int", changed: true }); label(ctx, "bungkus dengan int() supaya jadi bilangan", 960, 690, { size: 26, color: C.good }); }
     },
     percabangan(ctx, b, l) {
       card(ctx, 120, 150, 1680, 740); heading(ctx, "BAHAN 2 · PERCABANGAN: TITIK DUA, LALU MENJOROK", 215);

@@ -108,9 +108,9 @@
       heading(ctx, "PELACAKAN PEMANGGILAN: ARGUMEN → PARAMETER → NILAI BALIK", 215);
       const n = reveal(l, 1.5, 2.4, 4);
       Kd.code(ctx, 220, 270, 640, [{ t: "FUNGSI luas_persegi(sisi : integer) → integer", hl: n === 2 }, { t: "KEMBALIKAN sisi × sisi", ind: 1, hl: n === 3 }, { t: "" }, { t: "ALGORITMA (program utama)" }, { t: "TULIS luas_persegi(3)", ind: 1, hl: n === 1 || n === 4 }], { rh: 46, size: 22 });
-      if (n >= 1) { arrowIcon(ctx, "right", 900, 420, 36, C.accent); text(ctx, "3", 900, 390, 26, { align: "center", weight: 900, color: C.accentDark }); }
+      if (n >= 1) { arrowIcon(ctx, "east", 900, 420, 36, C.accent); text(ctx, "3", 900, 390, 26, { align: "center", weight: 900, color: C.accentDark }); }
       if (n >= 2) Kd.frame(ctx, 960, 290, 420, "luas_persegi", [["sisi", 3]], { ret: n >= 3 ? 9 : null });
-      if (n >= 4) { arrowIcon(ctx, "left", 900, 560, 36, C.good); text(ctx, "9", 900, 530, 26, { align: "center", weight: 900, color: C.good }); Kd.console(ctx, 1420, 290, 280, [["9", "out"]]); }
+      if (n >= 4) { arrowIcon(ctx, "west", 900, 560, 36, C.good); text(ctx, "9", 900, 530, 26, { align: "center", weight: 900, color: C.good }); Kd.console(ctx, 1420, 290, 280, [["9", "out"]]); }
       if (n >= 4) label(ctx, "sisi hanya hidup di dalam fungsi: variabel lokal", 1200, 620, { size: 24 });
     },
     program_utuh(ctx, b, l) {

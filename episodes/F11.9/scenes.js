@@ -16,7 +16,7 @@
       card(ctx, 120, 150, 1680, 740); kiko(ctx, 260, 560, 160, 0, { mood: "think" });
       const n = reveal(l, 1.5, 1.3, 6);
       const steps = [["👤", "pengguna", "dan beban kerja"], ["🧩", "komponen", "dari beban"], ["📋", "spesifikasi", "baca satuannya"], ["💰", "anggaran", "lima tahun"], ["📝", "rekomendasi", "dengan alasan"]];
-      steps.forEach(([ic, t, s], i) => { ctx.save(); if (i >= n) ctx.globalAlpha = 0.2; const x = 460 + i * 260; card(ctx, x, 290, 240, 260, { fill: i === n - 1 ? "#FFF3D6" : C.bg2, stroke: i === n - 1 ? C.accent : undefined, lw: 3, r: 16 }); text(ctx, ic, x + 120, 380, 56, { align: "center" }); text(ctx, t, x + 120, 450, 24, { align: "center", weight: 900 }); text(ctx, s, x + 120, 488, 18, { align: "center", weight: 800, color: C.ink2 }); if (i < 4) arrowIcon(ctx, "right", x + 250, 420, 22, "#B7C4CC"); ctx.restore(); });
+      steps.forEach(([ic, t, s], i) => { ctx.save(); if (i >= n) ctx.globalAlpha = 0.2; const x = 460 + i * 260; card(ctx, x, 290, 240, 260, { fill: i === n - 1 ? "#FFF3D6" : C.bg2, stroke: i === n - 1 ? C.accent : undefined, lw: 3, r: 16 }); text(ctx, ic, x + 120, 380, 56, { align: "center" }); text(ctx, t, x + 120, 450, 24, { align: "center", weight: 900 }); text(ctx, s, x + 120, 488, 18, { align: "center", weight: 800, color: C.ink2 }); if (i < 4) arrowIcon(ctx, "east", x + 250, 420, 22, "#B7C4CC"); ctx.restore(); });
       if (n >= 6) banner(ctx, "merancang, bukan menebak: paling mahal belum tentu paling tepat", 640, 1200, { size: 28 });
     },
     prereq(ctx, b, l) {
@@ -54,7 +54,7 @@
       card(ctx, 120, 150, 1680, 740); heading(ctx, "LANGKAH 2 · TERJEMAHKAN BEBAN KE KOMPONEN", 215);
       const n = reveal(l, 1.5, 2.0, 5);
       const rows = [["banyak tab dan aplikasi bersamaan", "RAM", "ram"], ["menyunting video", "prosesor + kartu grafis", "cpu"], ["file besar", "penyimpanan (SSD)", "ssd"], ["lab: banyak murid", "jaringan andal, perawatan mudah", "net"]];
-      rows.forEach(([beban, komp, kind], i) => { ctx.save(); if (i >= n) ctx.globalAlpha = 0.18; const y = 280 + i * 110; card(ctx, 240, y, 620, 90, { fill: C.bg2, r: 14 }); text(ctx, beban, 270, y + 54, 24, { weight: 900 }); arrowIcon(ctx, "right", 900, y + 45, 34, C.accent); card(ctx, 960, y, 720, 90, { fill: i === n - 1 ? "#FFF3D6" : "#fff", stroke: i === n - 1 ? C.accent : "#B7C4CC", lw: 3, r: 14 }); text(ctx, komp, 1000, y + 54, 26, { weight: 900, color: C.kiko }); ctx.restore(); });
+      rows.forEach(([beban, komp, kind], i) => { ctx.save(); if (i >= n) ctx.globalAlpha = 0.18; const y = 280 + i * 110; card(ctx, 240, y, 620, 90, { fill: C.bg2, r: 14 }); text(ctx, beban, 270, y + 54, 24, { weight: 900 }); arrowIcon(ctx, "east", 900, y + 45, 34, C.accent); card(ctx, 960, y, 720, 90, { fill: i === n - 1 ? "#FFF3D6" : "#fff", stroke: i === n - 1 ? C.accent : "#B7C4CC", lw: 3, r: 14 }); text(ctx, komp, 1000, y + 54, 26, { weight: 900, color: C.kiko }); ctx.restore(); });
       if (n >= 5) label(ctx, "pertanyaan: beban apa yang paling berat untuk pengguna ini?", 960, 740, { size: 24 });
     },
     komponen(ctx, b, l) {
@@ -96,7 +96,7 @@
     tukar(ctx, b, l) {
       card(ctx, 120, 150, 1680, 740); heading(ctx, "ANGGARAN TERBATAS: MENUKAR DENGAN ALASAN", 215);
       const n = reveal(l, 1.5, 2.2, 5);
-      [["kartu grafis terpisah", "RAM 16 GB", "Bu Rina tidak menyunting video"], ["layar 27 inci", "SSD", "terasa cepat setiap hari"], ["10 komputer tersendat", "8 komputer bagus", "lab dipakai bergantian, bukan sekaligus"]].forEach(([a, c, why], i) => { ctx.save(); if (i >= n - 1 && n < 5) ctx.globalAlpha = i >= n ? 0.15 : 1; const y = 280 + i * 130; card(ctx, 240, y, 400, 100, { fill: C.badBg, stroke: C.bad, lw: 3, r: 14 }); text(ctx, "− " + a, 440, y + 60, 23, { align: "center", weight: 900, color: C.bad }); arrowIcon(ctx, "right", 680, y + 50, 34, C.accent); card(ctx, 730, y, 400, 100, { fill: C.goodBg, stroke: C.good, lw: 3, r: 14 }); text(ctx, "+ " + c, 930, y + 60, 23, { align: "center", weight: 900, color: C.good }); text(ctx, "alasan: " + why, 1170, y + 60, 20, { weight: 800, color: C.ink2 }); ctx.restore(); });
+      [["kartu grafis terpisah", "RAM 16 GB", "Bu Rina tidak menyunting video"], ["layar 27 inci", "SSD", "terasa cepat setiap hari"], ["10 komputer tersendat", "8 komputer bagus", "lab dipakai bergantian, bukan sekaligus"]].forEach(([a, c, why], i) => { ctx.save(); if (i >= n - 1 && n < 5) ctx.globalAlpha = i >= n ? 0.15 : 1; const y = 280 + i * 130; card(ctx, 240, y, 400, 100, { fill: C.badBg, stroke: C.bad, lw: 3, r: 14 }); text(ctx, "− " + a, 440, y + 60, 23, { align: "center", weight: 900, color: C.bad }); arrowIcon(ctx, "east", 680, y + 50, 34, C.accent); card(ctx, 730, y, 400, 100, { fill: C.goodBg, stroke: C.good, lw: 3, r: 14 }); text(ctx, "+ " + c, 930, y + 60, 23, { align: "center", weight: 900, color: C.good }); text(ctx, "alasan: " + why, 1170, y + 60, 20, { weight: 800, color: C.ink2 }); ctx.restore(); });
       if (n >= 5) banner(ctx, "setiap penukaran ditulis alasannya", 680, 900);
     },
     rekomendasi(ctx, b, l) {

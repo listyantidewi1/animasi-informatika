@@ -218,6 +218,9 @@ pre.ref { background: #1F2A33; color: #fff; border-radius: 10px; padding: 10px; 
     } else if (kind === "east") {
       ctx.beginPath(); ctx.moveTo(-s * 0.4, 0); ctx.lineTo(s * 0.3, 0); ctx.stroke();
       ctx.beginPath(); ctx.moveTo(s * 0.05, -s * 0.28); ctx.lineTo(s * 0.4, 0); ctx.lineTo(s * 0.05, s * 0.28); ctx.stroke();
+    } else if (kind === "west") {
+      ctx.beginPath(); ctx.moveTo(s * 0.4, 0); ctx.lineTo(-s * 0.3, 0); ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(-s * 0.05, -s * 0.28); ctx.lineTo(-s * 0.4, 0); ctx.lineTo(-s * 0.05, s * 0.28); ctx.stroke();
     } else if (kind === "grab") {
       ctx.beginPath(); ctx.arc(0, s * 0.12, s * 0.22, 0, Math.PI * 2); ctx.fill();
       ctx.beginPath(); ctx.moveTo(-s * 0.4, -s * 0.42); ctx.lineTo(-s * 0.4, -s * 0.12); ctx.moveTo(s * 0.4, -s * 0.42); ctx.lineTo(s * 0.4, -s * 0.12);
@@ -312,8 +315,8 @@ pre.ref { background: #1F2A33; color: #fff; border-radius: 10px; padding: 10px; 
       card(ctx, 160, 160, 1600, 700, { fill: C.panel });
       kiko(ctx, 420, 520, 260, 0, { wave: l, mood: "happy" });
       text(ctx, "Informatika · Fase " + (TL.episode || "D")[0] + " · Episode " + TL.episode, 720, 330, 34, { color: C.ink2, weight: 700 });
-      const ts = TL.title.length > 34 ? 74 : 92; const th = para(ctx, TL.title, 720, 440, ts, 1000, { weight: 900, lh: 1.1 }); const hy = Math.max(640, 440 + th - ts * 0.35 + 30);
-      if (TL.hook) { text(ctx, "SETELAH MENONTON, KAMU BISA:", 720, hy, 26, { color: C.accentDark, weight: 800 }); para(ctx, TL.hook, 720, hy + 50, 34, 1000, { weight: 800, lh: 1.3 }); if (hy <= 660) text(ctx, "Dengarkan, atau baca teksnya pelan-pelan.", 720, 800, 26, { color: C.ink2, weight: 600 }); }
+      const ts = TL.title.length > 34 ? 74 : 92; const th = para(ctx, TL.title, 720, 440, ts, 1000, { weight: 900, lh: 1.1 }); const hookLines = TL.hook ? wrap(ctx, TL.hook, 34, 800, 1000).length : 0; const hy = Math.max(hookLines >= 3 ? 600 : 640, 440 + th - ts * 0.35 + 30);
+      if (TL.hook) { text(ctx, "SETELAH MENONTON, KAMU BISA:", 720, hy, 26, { color: C.accentDark, weight: 800 }); para(ctx, TL.hook, 720, hy + 50, 34, 1000, { weight: 800, lh: 1.3 }); const ny = hy + 50 + wrap(ctx, TL.hook, 34, 800, 1000).length * 34 * 1.3 + 12; if (ny <= 830) text(ctx, "Dengarkan, atau baca teksnya pelan-pelan.", 720, Math.max(800, ny), 26, { color: C.ink2, weight: 600 }); }
       else text(ctx, "Dengarkan, atau baca teksnya pelan-pelan.", 720, 700, 36, { color: C.ink2, weight: 600 });
       arrowIcon(ctx, "up", 1560, 250, 70, C.kikoLight); arrowIcon(ctx, "right", 1660, 250, 70, C.kikoLight);
     },
@@ -321,13 +324,18 @@ pre.ref { background: #1F2A33; color: #fff; border-radius: 10px; padding: 10px; 
       const q = TL.quizzes[b.quiz]; card(ctx, 200, 150, 1520, 740, { stroke: C.accent, lw: 6 });
       text(ctx, "CEK PEMAHAMAN", 960, 230, 32, { align: "center", color: C.accentDark, weight: 800 });
       para(ctx, q.q, 960, 320, 44, 1360, { weight: 800, align: "center", lh: 1.3 });
+      // tata letak pilihan: mulai di bawah pertanyaan dan selesai di atas kartu narasi (narasi panjang = jarak dirapatkan)
+      const qLines = wrap(ctx, q.q, 44, 800, 1360).length, subTop = 1056 - (wrap(ctx, b.text, 44, 700, 1660).length * 44 * 1.3 + 44);
+      let oy = qLines <= 1 ? 420 : 470, gap = 120, oh = 96; const n = q.options.length;
+      if (oy + (n - 1) * gap + oh > subTop - 12) { gap = Math.max(104, Math.floor((subTop - 12 - oh - oy) / Math.max(1, n - 1))); }
+      if (oy + (n - 1) * gap + oh > subTop - 12) { oh = 86; gap = 100; oy = Math.max(320 + (qLines - 1) * 57 + 40, subTop - 12 - oh - (n - 1) * gap); }
       q.options.forEach((o, i) => {
-        const y = 470 + i * 120; const right = answered && i === q.answer;
-        card(ctx, 320, y, 1280, 96, { fill: right ? C.goodBg : answered ? "#F4F6F5" : C.bg2, stroke: right ? C.good : "#CFDCD5", lw: right ? 6 : 3 });
-        ctx.fillStyle = right ? C.good : C.kiko; ctx.beginPath(); ctx.arc(380, y + 48, 30, 0, Math.PI * 2); ctx.fill();
-        text(ctx, "ABC"[i], 380, y + 61, 34, { align: "center", color: "#fff", weight: 900 });
-        text(ctx, o, 440, y + 62, 38, { weight: 700, color: answered && !right ? C.muted : C.ink });
-        if (right) text(ctx, "✓", 1540, y + 66, 54, { align: "center", color: C.good, weight: 900 });
+        const y = oy + i * gap; const right = answered && i === q.answer;
+        card(ctx, 320, y, 1280, oh, { fill: right ? C.goodBg : answered ? "#F4F6F5" : C.bg2, stroke: right ? C.good : "#CFDCD5", lw: right ? 6 : 3 });
+        ctx.fillStyle = right ? C.good : C.kiko; ctx.beginPath(); ctx.arc(380, y + oh / 2, 30, 0, Math.PI * 2); ctx.fill();
+        text(ctx, "ABC"[i], 380, y + oh / 2 + 13, 34, { align: "center", color: "#fff", weight: 900 });
+        text(ctx, o, 440, y + oh / 2 + 14, 38, { weight: 700, color: answered && !right ? C.muted : C.ink });
+        if (right) text(ctx, "✓", 1540, y + oh / 2 + 18, 54, { align: "center", color: C.good, weight: 900 });
       });
       if (!answered) { // thinking timer
         const frac = clamp(l / b.dur, 0, 1); ctx.strokeStyle = "#D7E2DC"; ctx.lineWidth = 14; ctx.beginPath(); ctx.arc(1640, 230, 40, 0, Math.PI * 2); ctx.stroke();
@@ -719,7 +727,7 @@ pre.ref { background: #1F2A33; color: #fff; border-radius: 10px; padding: 10px; 
       const items = [["Skenario bercabang", "pilih tindakan, lihat akibatnya", (x, y) => { text(ctx, "pesanan terlambat. kamu…", x - 200, y - 80, 20, { weight: 800, color: C.ink2 }); [["A. tulis ulasan berisi fakta", "✓ hak konsumen", C.goodBg, C.good], ["B. tuduh penipu tanpa bukti", "✕ menyerang nama baik", C.badBg, C.bad]].forEach(([t, r, bg, col], i) => { card(ctx, x - 200, y - 60 + i * 92, 400, 80, { fill: bg, stroke: col, lw: 3, r: 12 }); text(ctx, t, x - 184, y - 26 + i * 92, 20, { weight: 900 }); text(ctx, r, x - 184, y + 2 + i * 92, 18, { weight: 900, color: col }); }); }],
         ["Pencocok aturan", "situasi ↔ undang-undang", (x, y) => [["ulasan menuduh", "UU ITE"], ["data peserta", "UU PDP"], ["lagu di video", "Hak Cipta"]].forEach(([a, s], i) => { card(ctx, x - 200, y - 100 + i * 66, 400, 56, { fill: "#fff", stroke: "#B7C4CC", lw: 2, r: 10 }); text(ctx, a, x - 180, y - 64 + i * 66, 20, { weight: 800 }); text(ctx, s, x + 180, y - 64 + i * 66, 20, { align: "right", weight: 900, color: C.kiko }); })],
         ["Empat pertanyaan", "sebelum mengunggah", (x, y) => ["hak siapa?", "benar?", "izin?", "akibat?"].forEach((s, i) => { card(ctx, x - 200, y - 110 + i * 54, 400, 46, { fill: "#FFF3D6", r: 10 }); text(ctx, (i + 1) + ". " + s, x - 180, y - 80 + i * 54, 20, { weight: 900 }); })]];
-      items.forEach(([t1, t2, draw], i) => { const x = 400 + i * 560; card(ctx, x - 250, 270, 500, 400, { fill: C.bg2 }); ctx.fillStyle = C.kiko; ctx.beginPath(); ctx.arc(x - 200, 320, 28, 0, Math.PI * 2); ctx.fill(); text(ctx, String(i + 1), x - 200, 332, 30, { align: "center", color: "#fff", weight: 900 }); text(ctx, t1, x - 160, 332, 24, { weight: 900 }); text(ctx, t2, x - 160, 366, 19, { weight: 700, color: C.ink2 }); draw(x, 530); });
+      items.forEach(([t1, t2, draw], i) => { const x = 440 + i * 520; card(ctx, x - 240, 270, 480, 400, { fill: C.bg2 }); ctx.fillStyle = C.kiko; ctx.beginPath(); ctx.arc(x - 200, 320, 28, 0, Math.PI * 2); ctx.fill(); text(ctx, String(i + 1), x - 200, 332, 30, { align: "center", color: "#fff", weight: 900 }); text(ctx, t1, x - 160, 332, 24, { weight: 900 }); text(ctx, t2, x - 160, 366, 19, { weight: 700, color: C.ink2 }); draw(x, 530); });
       text(ctx, "lalu bersama kelompok: tiga dilema dari sekolahmu, nama disamarkan, jadi panduan satu halaman", 960, 725, 24, { align: "center", color: C.ink2, weight: 800 });
     }
   });

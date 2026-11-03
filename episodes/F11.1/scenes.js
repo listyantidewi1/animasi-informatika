@@ -59,7 +59,7 @@
       card(ctx, 120, 150, 1680, 740); stageHead(ctx, 1, "TAHAP 2 · DESAIN: ALUR LAYAR DAN DATA");
       const n = reveal(l, 1.5, 2.4, 3);
       ctx.save(); if (n < 1) ctx.globalAlpha = 0.2; A.wire(ctx, 420, 540, "Kas Kelas", [["Rp 350.000", "big"], ["+ Tambah", "btn"], ["03/11 iuran +10.000", "row"], ["02/11 spidol −15.000", "row"]]); ctx.restore();
-      if (n >= 2) arrowIcon(ctx, "right", 620, 540, 40, C.accent);
+      if (n >= 2) arrowIcon(ctx, "east", 620, 540, 40, C.accent);
       ctx.save(); if (n < 2) ctx.globalAlpha = 0.2; A.wire(ctx, 820, 540, "Tambah transaksi", [["tanggal", "field"], ["jenis: masuk / keluar", "field"], ["jumlah", "field"], ["keterangan", "field"], ["Simpan", "btn"]]); ctx.restore();
       ctx.save(); if (n < 3) ctx.globalAlpha = 0.2; card(ctx, 1080, 320, 620, 300, { fill: "#fff", stroke: "#8E6BBF", lw: 4, r: 14 }); ctx.fillStyle = "#8E6BBF"; rr(ctx, 1080, 320, 620, 44, 14); ctx.fill(); ctx.fillRect(1080, 342, 620, 22); text(ctx, "record transaksi", 1100, 350, 20, { weight: 900, color: "#fff" }); [[".tanggal", "teks tanggal"], [".jenis", "masuk | keluar"], [".jumlah", "integer > 0"], [".keterangan", "string"]].forEach(([k, v], i) => { text(ctx, k, 1110, 405 + i * 46, 22, { weight: 900, color: C.kiko }); text(ctx, v, 1670, 405 + i * 46, 20, { align: "right", weight: 800 }); }); text(ctx, "daftar transaksi = array berisi record", 1390, 650, 18, { align: "center", weight: 800, color: C.ink2 }); ctx.restore();
     },
@@ -97,7 +97,7 @@
       card(ctx, 120, 150, 1680, 740); stageHead(ctx, 5, "TAHAP 6 · PEMELIHARAAN: SIKLUS BERPUTAR LAGI");
       const n = reveal(l, 1.5, 2.2, 3);
       ctx.save(); if (n < 1) ctx.globalAlpha = 0.2; card(ctx, 240, 310, 560, 170, { fill: C.bg2, r: 14 }); text(ctx, "UMPAN BALIK SEMINGGU", 520, 350, 20, { align: "center", weight: 900, color: C.ink2 }); text(ctx, "🐞 tanggal sering salah ketik", 270, 400, 22, { weight: 800 }); text(ctx, "✨ ingin daftar siapa yang belum bayar", 270, 440, 22, { weight: 800 }); ctx.restore();
-      if (n >= 2) arrowIcon(ctx, "right", 860, 395, 40, C.accent);
+      if (n >= 2) arrowIcon(ctx, "east", 860, 395, 40, C.accent);
       ctx.save(); if (n < 2) ctx.globalAlpha = 0.2; A.version(ctx, 940, 310, 620, "1.1", ["perbaikan: tanggal dipilih dari kalender", "baru: daftar belum bayar", "diuji ulang dengan 6 kasus"], {}); ctx.restore();
       if (n >= 3) { label(ctx, "kebutuhan baru → desain → kode → uji → rilis 1.1", 960, 560, { size: 24 }); label(ctx, "aplikasi hidup selama dipakai", 960, 640, { size: 26 }); }
     },

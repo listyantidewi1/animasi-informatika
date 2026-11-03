@@ -14,7 +14,7 @@
       card(ctx, 120, 150, 1680, 740);
       kiko(ctx, 330, 560, 200, 0, { mood: "happy" });
       pseudo(ctx, 620, 230, 520, [{ t: "total ← nilai1 + nilai2" }, { t: "      + nilai3 + nilai4" }, { t: "      + … + nilai32" }], -1, { title: "CARA PANJANG", rh: 50, size: 26 });
-      if (l > 2.5) { arrowIcon(ctx, "right", 1200, 380, 50, C.ink2); pseudo(ctx, 1270, 230, 460, [{ t: "total ← 0" }, { t: "UNTUK i dari 1 sampai 32:", hl: true }, { t: "total ← total + nilai[i]", ind: 1 }], -1, { title: "DENGAN PERULANGAN", rh: 50, size: 24 }); }
+      if (l > 2.5) { arrowIcon(ctx, "east", 1200, 380, 50, C.ink2); pseudo(ctx, 1270, 230, 460, [{ t: "total ← 0" }, { t: "UNTUK i dari 1 sampai 32:", hl: true }, { t: "total ← total + nilai[i]", ind: 1 }], -1, { title: "DENGAN PERULANGAN", rh: 50, size: 24 }); }
       if (l > 5) { M.board(ctx, 620, 520, 1100, [{ name: "total", value: 385, changed: true, old: 305 }, { name: "i", value: 5 }], { bw: 200, bh: 110, h: 190 }); }
     },
     prereq(ctx, b, l) {
@@ -86,7 +86,7 @@
     repeat_robot(ctx, b, l) {
       card(ctx, 120, 150, 1680, 740);
       pseudo(ctx, 200, 240, 520, [{ t: "maju" }, { t: "maju" }, { t: "maju" }, { t: "maju" }], -1, { title: "EMPAT BARIS", rh: 52, size: 28 });
-      arrowIcon(ctx, "right", 790, 420, 50, C.ink2);
+      arrowIcon(ctx, "east", 790, 420, 50, C.ink2);
       pseudo(ctx, 860, 240, 520, [{ t: "ULANGI 4 kali:" }, { t: "maju", ind: 1 }], -1, { title: "SATU KALI TULIS", rh: 52, size: 28 });
       kiko(ctx, 1560, 420, 140, 0, { mood: "happy" });
       const u = clamp(l / 5, 0, 1);

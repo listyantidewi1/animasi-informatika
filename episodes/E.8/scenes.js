@@ -58,7 +58,7 @@
       heading(ctx, "SATU FORMAT UNTUK TIAP KOLOM", 215);
       const marks = {}; RAW.forEach((r, i) => { marks[i + ",1"] = "bad"; marks[i + ",2"] = "bad"; marks[i + ",3"] = "bad"; });
       text(ctx, "✕ tidak seragam", 560, 290, 24, { align: "center", weight: 900, color: C.bad }); Dq.table(ctx, 220, 310, [120, 190, 170, 200], ["Nama", "Kelas", "Kota", "Tgl lahir"], RAW, l > 3 ? marks : {}, { rh: 50 });
-      if (l > 6) { arrowIcon(ctx, "right", 960, 420, 40, C.good); text(ctx, "✓ seragam", 1360, 290, 24, { align: "center", weight: 900, color: C.good }); Dq.table(ctx, 1020, 310, [120, 170, 170, 200], ["Nama", "Kelas", "Kota", "Tgl lahir"], CLEAN, {}, { rh: 50 }); }
+      if (l > 6) { arrowIcon(ctx, "east", 960, 420, 40, C.good); text(ctx, "✓ seragam", 1360, 290, 24, { align: "center", weight: 900, color: C.good }); Dq.table(ctx, 1020, 310, [120, 170, 170, 200], ["Nama", "Kelas", "Kota", "Tgl lahir"], CLEAN, {}, { rh: 50 }); }
       if (l > 9) { card(ctx, 1020, 540, 660, 120, { fill: C.goodBg, stroke: C.good, lw: 3, r: 14 }); text(ctx, "bisa disaring, diurutkan, dihitung", 1350, 590, 24, { align: "center", weight: 900, color: C.good }); text(ctx, "kiri: komputer menghitung 3 kelas dan 3 kota berbeda", 1350, 630, 18, { align: "center", weight: 800, color: C.ink2 }); }
     },
     panduan_label(ctx, b, l) {

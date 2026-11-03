@@ -122,7 +122,7 @@
       card(ctx, 120, 150, 1680, 740); heading(ctx, "DATA TERBUKA BUKAN DATA BEBAS", 215);
       const n = reveal(l, 1.5, 2.4, 4);
       [["📜", "patuhi lisensi, sebut sumber", "“Sumber: Portal Data Terbuka Kota Sukamaju, 2026”"], ["🫥", "jangan sampai orang dikenali", "data per orang → dirangkum per kelompok atau dianonimkan"], ["🙅", "data pribadi teman bukan data terbuka", "nilai, alamat, nomor HP: butuh izin, bukan portal"]].forEach(([ic, t, s], i) => { ctx.save(); if (i >= n) ctx.globalAlpha = 0.2; const x = 240 + i * 490; card(ctx, x, 280, 460, 340, { fill: i === n - 1 ? "#FFF3D6" : C.bg2, stroke: i === n - 1 ? C.accent : undefined, lw: 3, r: 18 }); text(ctx, ic, x + 230, 370, 64, { align: "center" }); para(ctx, t, x + 230, 440, 24, 420, { align: "center", weight: 900 }); para(ctx, s, x + 230, 520, 19, 420, { align: "center", weight: 700, color: C.ink2 }); ctx.restore(); });
-      if (n >= 2) { Dq.table(ctx, 760, 640, [120, 110], ["nama", "nilai"], [["Rani", "92"], ["Dito", "61"]], { "0,0": "bad", "1,0": "bad" }, { rh: 30 }); arrowIcon(ctx, "right", 1010, 690, 36, C.good); Dq.table(ctx, 1060, 640, [150, 110], ["kelas", "rata-rata"], [["XI-1", "78"], ["XI-2", "81"]], { "0,0": "fix", "1,0": "fix" }, { rh: 30 }); }
+      if (n >= 2) { Dq.table(ctx, 760, 640, [120, 110], ["nama", "nilai"], [["Rani", "92"], ["Dito", "61"]], { "0,0": "bad", "1,0": "bad" }, { rh: 30 }); arrowIcon(ctx, "east", 1010, 690, 36, C.good); Dq.table(ctx, 1060, 640, [150, 110], ["kelas", "rata-rata"], [["XI-1", "78"], ["XI-2", "81"]], { "0,0": "fix", "1,0": "fix" }, { rh: 30 }); }
     },
     batas_data(ctx, b, l) {
       card(ctx, 120, 150, 1680, 740); heading(ctx, "KENALI BATAS DATA", 215);

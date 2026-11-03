@@ -104,7 +104,7 @@
       Lp.hops(ctx, 280, 380, 1360, HOPS_NET, n >= 2 ? clamp((n - 2) * 0.8, 0, 5) : null);
       if (n >= 3) { card(ctx, 420, 470, 420, 70, { fill: "#FFF3D6", stroke: C.accent, lw: 2, r: 10 }); text(ctx, "NAT: 10.0.3.5 → alamat publik sekolah", 630, 513, 18, { align: "center", weight: 900, color: C.accentDark }); }
       if (n >= 7) { card(ctx, 240, 580, 700, 130, { fill: C.badBg, stroke: C.bad, lw: 3, r: 12 }); text(ctx, "paket no. 3 hilang di tengah jalan", 590, 625, 22, { align: "center", weight: 900, color: C.bad }); text(ctx, "tidak ada tanda terima untuk no. 3", 590, 660, 18, { align: "center", weight: 800, color: C.ink2 }); }
-      if (n >= 8) { arrowIcon(ctx, "right", 970, 645, 40, C.good); card(ctx, 1020, 580, 660, 130, { fill: C.goodBg, stroke: C.good, lw: 3, r: 12 }); text(ctx, "TCP mengirim ulang no. 3", 1350, 625, 22, { align: "center", weight: 900, color: C.good }); text(ctx, "aplikasi tidak perlu tahu", 1350, 660, 18, { align: "center", weight: 800, color: C.ink2 }); }
+      if (n >= 8) { arrowIcon(ctx, "east", 970, 645, 40, C.good); card(ctx, 1020, 580, 660, 130, { fill: C.goodBg, stroke: C.good, lw: 3, r: 12 }); text(ctx, "TCP mengirim ulang no. 3", 1350, 625, 22, { align: "center", weight: 900, color: C.good }); text(ctx, "aplikasi tidak perlu tahu", 1350, 660, 18, { align: "center", weight: 800, color: C.ink2 }); }
       if (n >= 10) label(ctx, "ping: bolak-balik berapa ms · traceroute: lewat router mana saja", 960, 745, { size: 22 });
     },
     praktik_kirim(ctx, b, l) {

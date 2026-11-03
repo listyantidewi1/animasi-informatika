@@ -52,7 +52,7 @@
       const per = 1.6, k = Math.floor(l / per) % 4, u = (l % per) / per;
       O.cpu(ctx, 560, 480, A[k], u, { label: "irisan waktu: beberapa milidetik" });
       A.forEach((app, i) => O.proc(ctx, 1200, 300 + i * 100, 420, app, { on: i === k, sub: i === k ? "giliran" : "menunggu" }));
-      arrowIcon(ctx, "left", 920, 300 + k * 100, 30, C.accent);
+      arrowIcon(ctx, "west", 920, 300 + k * 100, 30, C.accent);
       text(ctx, "proses = aplikasi yang sedang berjalan", 1200, 700, 22, { align: "center", weight: 800, color: C.ink2 });
       if (l > 9) label(ctx, "berganti ribuan kali tiap detik → terasa bersamaan", 560, 700, { size: 24 });
     },
@@ -83,7 +83,7 @@
       O.memmap(ctx, 240, 300, 1100, 120, 16, alloc, { title: "RAM 16 GB: penuh" });
       card(ctx, 1420, 280, 300, 180, { fill: "#F7FAF8", stroke: "#7B8B95", lw: 3, r: 14 }); text(ctx, "PENYIMPANAN", 1570, 320, 20, { align: "center", weight: 900, color: C.ink2 }); text(ctx, "lambat", 1570, 350, 18, { align: "center", weight: 700, color: C.muted });
       if (n >= 1) { text(ctx, "📷 Kamera butuh 2 GB", 790, 500, 26, { align: "center", weight: 900, color: C.bad }); }
-      if (n >= 2) { arrowIcon(ctx, "right", 1385, 360, 30, C.ink2); ctx.fillStyle = "#8E6BBF"; rr(ctx, 1450, 380, 240, 50, 8); ctx.fill(); text(ctx, "🎵 Musik (jarang dipakai)", 1570, 413, 18, { align: "center", weight: 900, color: "#fff" }); text(ctx, "bolak-balik RAM ↔ penyimpanan: tersendat", 790, 560, 24, { align: "center", weight: 800, color: C.ink2 }); }
+      if (n >= 2) { arrowIcon(ctx, "east", 1385, 360, 30, C.ink2); ctx.fillStyle = "#8E6BBF"; rr(ctx, 1450, 380, 240, 50, 8); ctx.fill(); text(ctx, "🎵 Musik (jarang dipakai)", 1570, 413, 18, { align: "center", weight: 900, color: "#fff" }); text(ctx, "bolak-balik RAM ↔ penyimpanan: tersendat", 790, 560, 24, { align: "center", weight: 800, color: C.ink2 }); }
       if (n >= 3) { card(ctx, 440, 610, 1040, 80, { fill: C.goodBg, stroke: C.good, lw: 3, r: 14 }); text(ctx, "✓ tutup aplikasi yang tidak dipakai → wilayahnya bebas lagi", 960, 660, 26, { align: "center", weight: 900, color: C.good }); }
     },
 
@@ -114,7 +114,7 @@
       const n = reveal(l, 2.0, 1.2, 3);
       [["printer", C.bad], ["kamera", C.good], ["keyboard", "#8E6BBF"]].forEach(([d, col], i) => { ctx.save(); if (i >= n) ctx.globalAlpha = 0.2; O.plug(ctx, 860 + i * 110, 450, 70, { color: col, label: "drv" }); text(ctx, d, 860 + i * 110, 520, 16, { align: "center", weight: 800, color: C.ink2 }); ctx.restore(); });
       text(ctx, "driver: penerjemah tiap perangkat", 960, 570, 20, { align: "center", weight: 800, color: C.ink2 });
-      arrowIcon(ctx, "right", 660, 450, 30, C.ink2); arrowIcon(ctx, "right", 1260, 450, 30, C.ink2);
+      arrowIcon(ctx, "east", 660, 450, 30, C.ink2); arrowIcon(ctx, "east", 1260, 450, 30, C.ink2);
       Km.printer(ctx, 1520, 440, 150); text(ctx, "printer baru dicolok → driver dipasang", 1520, 580, 18, { align: "center", weight: 800, color: C.ink2 });
       if (l > 9) label(ctx, "semua aplikasi langsung bisa mencetak, tanpa tahu merek printernya", 960, 680, { size: 24 });
     },
@@ -122,11 +122,11 @@
       card(ctx, 120, 150, 1680, 740);
       heading(ctx, "ANTREAN CETAK DAN INTERUPSI", 215);
       const n = reveal(l, 1.0, 2.0, 3);
-      ctx.save(); if (n < 1) ctx.globalAlpha = 0.2; text(ctx, "📄 tugas Sinta", 320, 330, 24, { align: "center", weight: 900 }); text(ctx, "📄 poster Dito", 320, 420, 24, { align: "center", weight: 900 }); arrowIcon(ctx, "right", 470, 330, 26, C.ink2); arrowIcon(ctx, "right", 470, 420, 26, C.ink2);
-      card(ctx, 520, 290, 420, 170, { fill: "#FFF3D6", stroke: C.accent, lw: 3, r: 14 }); text(ctx, "ANTREAN CETAK", 730, 330, 20, { align: "center", weight: 900, color: C.accentDark }); text(ctx, "1. tugas Sinta  →  2. poster Dito", 730, 380, 22, { align: "center", weight: 800 }); text(ctx, "satu per satu", 730, 420, 18, { align: "center", weight: 700, color: C.ink2 }); arrowIcon(ctx, "right", 980, 375, 26, C.ink2); Km.printer(ctx, 1120, 370, 120); ctx.restore();
+      ctx.save(); if (n < 1) ctx.globalAlpha = 0.2; text(ctx, "📄 tugas Sinta", 320, 330, 24, { align: "center", weight: 900 }); text(ctx, "📄 poster Dito", 320, 420, 24, { align: "center", weight: 900 }); arrowIcon(ctx, "east", 470, 330, 26, C.ink2); arrowIcon(ctx, "east", 470, 420, 26, C.ink2);
+      card(ctx, 520, 290, 420, 170, { fill: "#FFF3D6", stroke: C.accent, lw: 3, r: 14 }); text(ctx, "ANTREAN CETAK", 730, 330, 20, { align: "center", weight: 900, color: C.accentDark }); text(ctx, "1. tugas Sinta  →  2. poster Dito", 730, 380, 22, { align: "center", weight: 800 }); text(ctx, "satu per satu", 730, 420, 18, { align: "center", weight: 700, color: C.ink2 }); arrowIcon(ctx, "east", 980, 375, 26, C.ink2); Km.printer(ctx, 1120, 370, 120); ctx.restore();
       ctx.save(); if (n < 2) ctx.globalAlpha = 0.2; card(ctx, 220, 500, 1480, 190, { fill: C.bg2, r: 16 }); text(ctx, "INTERUPSI", 300, 545, 22, { weight: 900, color: C.kiko });
       const steps = ["proses A jalan", "⌨️ tombol ditekan → interupsi", "OS menyela, melayani keyboard", "lanjut proses A"];
-      steps.forEach((s, i) => { ctx.save(); if (n < 3 && i >= 2) ctx.globalAlpha = 0.25; card(ctx, 300 + i * 350, 580, 320, 80, { fill: i === 1 ? C.badBg : "#fff", stroke: i === 1 ? C.bad : "#B7C4CC", lw: 3, r: 12 }); para(ctx, s, 460 + i * 350, 612, 20, 290, { align: "center", weight: 800 }); if (i < 3) arrowIcon(ctx, "right", 635 + i * 350, 620, 22, C.ink2); ctx.restore(); }); ctx.restore();
+      steps.forEach((s, i) => { ctx.save(); if (n < 3 && i >= 2) ctx.globalAlpha = 0.25; card(ctx, 300 + i * 350, 580, 320, 80, { fill: i === 1 ? C.badBg : "#fff", stroke: i === 1 ? C.bad : "#B7C4CC", lw: 3, r: 12 }); para(ctx, s, 460 + i * 350, 612, 20, 290, { align: "center", weight: 800 }); if (i < 3) arrowIcon(ctx, "east", 635 + i * 350, 620, 22, C.ink2); ctx.restore(); }); ctx.restore();
     },
     make_show(ctx, b, l) {
       card(ctx, 160, 150, 1600, 740);

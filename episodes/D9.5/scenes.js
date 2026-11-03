@@ -21,7 +21,7 @@
       card(ctx, 120, 150, 1680, 740);
       kiko(ctx, 330, 560, 200, 0, { mood: "happy" });
       const n = reveal(l, 2.5, 1.2, 3);
-      STAGES.forEach(([ic, t, s], i) => { ctx.save(); if (i >= n) ctx.globalAlpha = 0.2; const x = 620 + i * 380; card(ctx, x, 270, 350, 300, { fill: C.bg2, r: 20 }); text(ctx, ic, x + 175, 380, 72, { align: "center" }); text(ctx, (i + 1) + ". " + t, x + 175, 450, 30, { align: "center", weight: 900 }); para(ctx, s, x + 175, 500, 22, 310, { align: "center", color: C.ink2, weight: 700 }); if (i < 2) arrowIcon(ctx, "right", x + 365, 420, 26, C.ink2); ctx.restore(); });
+      STAGES.forEach(([ic, t, s], i) => { ctx.save(); if (i >= n) ctx.globalAlpha = 0.2; const x = 620 + i * 380; card(ctx, x, 270, 350, 300, { fill: C.bg2, r: 20 }); text(ctx, ic, x + 175, 380, 72, { align: "center" }); text(ctx, (i + 1) + ". " + t, x + 175, 450, 30, { align: "center", weight: 900 }); para(ctx, s, x + 175, 500, 22, 310, { align: "center", color: C.ink2, weight: 700 }); if (i < 2) arrowIcon(ctx, "east", x + 365, 420, 26, C.ink2); ctx.restore(); });
       if (l > 1 && l < 2.5) label(ctx, "🍳 rencana → memasak → menyajikan", 1190, 650);
       if (n >= 3) banner(ctx, "seperti memasak: rencana, masak, sajikan", 640, 900);
     },

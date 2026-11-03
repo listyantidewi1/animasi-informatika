@@ -54,7 +54,7 @@
       heading(ctx, "PENCARIAN GAMBAR TERBALIK", 215);
       const n = reveal(l, 1.5, 2.6, 3);
       ctx.save(); if (n < 1) ctx.globalAlpha = 0.2; card(ctx, 240, 280, 440, 360, { fill: "#fff", stroke: C.bad, lw: 4, r: 14 }); ctx.fillStyle = "#9FD6EA"; rr(ctx, 260, 300, 400, 200, 8); ctx.fill(); ctx.fillStyle = "#4C9BE0"; rr(ctx, 260, 400, 400, 100, 0); ctx.fill(); ctx.fillStyle = "#7B8B95"; rr(ctx, 300, 330, 80, 120, 4); ctx.fill(); rr(ctx, 420, 350, 100, 100, 4); ctx.fill(); text(ctx, "\"Banjir di kota kita HARI INI!\"", 460, 540, 20, { align: "center", weight: 900, color: C.bad }); text(ctx, "pesan viral di grup", 460, 580, 16, { align: "center", weight: 700, color: C.ink2 }); text(ctx, "📤 upload foto ke pencarian gambar", 460, 620, 16, { align: "center", weight: 800, color: C.kiko }); ctx.restore();
-      if (n >= 2) arrowIcon(ctx, "right", 740, 450, 40, C.ink2);
+      if (n >= 2) arrowIcon(ctx, "east", 740, 450, 40, C.ink2);
       ctx.save(); if (n < 2) ctx.globalAlpha = 0.2; Pc.results(ctx, 820, 290, 860, [{ title: "Banjir melanda Kota Y, 2021", url: "arsip-berita.example · 5 tahun lalu", date: "" }, { title: "Foto banjir Kota Y dipakai ulang untuk hoaks", url: "cekfakta.example · tahun lalu", date: "" }, { title: "Galeri: banjir 2021", url: "fotonews.example", date: "" }], { hl: n >= 3 ? 1 : -1 }); ctx.restore();
       if (n >= 3) label(ctx, "foto lama, kota lain: klaim \"hari ini\" gugur", 1250, 680, { size: 24, color: C.bad });
     },
@@ -84,7 +84,7 @@
       card(ctx, 120, 150, 1680, 740);
       heading(ctx, "TIGA LANGKAH MEMBACA LATERAL");
       const n = reveal(l, 2.0, 3.2, 3);
-      [["✋", "1. BERHENTI", "jangan langsung percaya atau membagikan"], ["🗂️", "2. TAB BARU", "siapa di balik sumber ini? apa kata sumber lain?"], ["🧵", "3. TELUSURI KLAIM", "cari sumber aslinya"]].forEach(([ic, t, s], i) => { ctx.save(); if (i >= n) ctx.globalAlpha = 0.2; const x = 230 + i * 500; card(ctx, x, 290, 460, 360, { fill: i === n - 1 ? "#FFF3D6" : C.bg2, stroke: i === n - 1 ? C.accent : undefined, lw: 5, r: 18 }); text(ctx, ic, x + 230, 390, 72, { align: "center" }); text(ctx, t, x + 230, 460, 28, { align: "center", weight: 900 }); para(ctx, s, x + 230, 510, 22, 400, { align: "center", weight: 700, color: C.ink2 }); if (i < 2) arrowIcon(ctx, "right", x + 480, 470, 30, C.ink2); ctx.restore(); });
+      [["✋", "1. BERHENTI", "jangan langsung percaya atau membagikan"], ["🗂️", "2. TAB BARU", "siapa di balik sumber ini? apa kata sumber lain?"], ["🧵", "3. TELUSURI KLAIM", "cari sumber aslinya"]].forEach(([ic, t, s], i) => { ctx.save(); if (i >= n) ctx.globalAlpha = 0.2; const x = 230 + i * 500; card(ctx, x, 290, 460, 360, { fill: i === n - 1 ? "#FFF3D6" : C.bg2, stroke: i === n - 1 ? C.accent : undefined, lw: 5, r: 18 }); text(ctx, ic, x + 230, 390, 72, { align: "center" }); text(ctx, t, x + 230, 460, 28, { align: "center", weight: 900 }); para(ctx, s, x + 230, 510, 22, 400, { align: "center", weight: 700, color: C.ink2 }); if (i < 2) arrowIcon(ctx, "east", x + 480, 470, 30, C.ink2); ctx.restore(); });
       if (n >= 3) label(ctx, "cara kerja pemeriksa fakta profesional", 960, 720);
     },
     ekosistem(ctx, b, l) {
@@ -99,7 +99,7 @@
       heading(ctx, "TELUSURI KLAIM KE SUMBER ASLINYA", 215);
       card(ctx, 220, 280, 620, 190, { fill: "#fff", stroke: "#B7C4CC", lw: 3, r: 14 }); text(ctx, "artikel:", 240, 312, 18, { weight: 800, color: C.ink2 }); para(ctx, "\"Menurut penelitian Universitas X, vaksin ini berbahaya.\"", 530, 350, 22, 580, { align: "center", weight: 900 });
       if (l > 2) { Lt.flag(ctx, 250, 418, "tanpa link"); Lt.flag(ctx, 430, 418, "tanpa nama peneliti"); }
-      arrowIcon(ctx, "right", 900, 355, 40, C.ink2); text(ctx, "cari penelitiannya", 900, 410, 18, { align: "center", weight: 800, color: C.ink2 });
+      arrowIcon(ctx, "east", 900, 355, 40, C.ink2); text(ctx, "cari penelitiannya", 900, 410, 18, { align: "center", weight: 800, color: C.ink2 });
       const n = reveal(l, 4, 2.2, 3);
       [["🐭", "ternyata tentang hal lain", "penelitian itu soal dosis pada 10 tikus"], ["🔍", "sampelnya terlalu kecil", "tidak bisa disimpulkan untuk manusia"], ["👻", "tidak pernah ada", "nama universitas dipinjam"]].forEach(([ic, t, s], i) => { ctx.save(); if (i >= n) ctx.globalAlpha = 0.2; card(ctx, 980, 280 + i * 130, 720, 112, { fill: C.badBg, stroke: C.bad, lw: 3, r: 14 }); text(ctx, ic, 1030, 350 + i * 130, 40, { align: "center" }); text(ctx, t, 1080, 325 + i * 130, 24, { weight: 900 }); text(ctx, s, 1080, 360 + i * 130, 19, { weight: 700, color: C.ink2 }); ctx.restore(); });
       if (n >= 3) label(ctx, "kutipan tanpa link adalah tanda bahaya", 960, 720, { color: C.bad });

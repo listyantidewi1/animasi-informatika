@@ -42,7 +42,7 @@
       text(ctx, "MAIN DULU TANPA KOMPUTER: SURAT YANG DIPOTONG", 960, 230, 34, { align: "center", color: C.accentDark, weight: 800 });
       card(ctx, 220, 300, 420, 300, { fill: "#FFF9E0", stroke: "#E0B04B", lw: 3, r: 10 }); for (let i = 0; i < 7; i++) { ctx.fillStyle = "#D7C9A0"; rr(ctx, 250, 340 + i * 32, 360 * (0.6 + ((i * 7) % 4) * 0.1), 10, 5); ctx.fill(); } text(ctx, "pesan panjang", 430, 640, 24, { align: "center", weight: 800, color: C.ink2 });
       const n = reveal(l, 1.5, 1.2, 3);
-      if (n >= 1) arrowIcon(ctx, "right", 720, 450, 50, C.ink2);
+      if (n >= 1) arrowIcon(ctx, "east", 720, 450, 50, C.ink2);
       for (let i = 0; i < n; i++) { card(ctx, 820 + i * 220, 330 + (i % 2) * 20, 180, 220, { fill: "#FFF9E0", stroke: C.accent, lw: 4, r: 10 }); text(ctx, String(i + 1), 910 + i * 220, 400 + (i % 2) * 20, 60, { align: "center", weight: 900, color: C.accentDark }); text(ctx, "ke: meja Dito", 910 + i * 220, 500 + (i % 2) * 20, 20, { align: "center", weight: 800, color: C.ink2 }); }
       if (n >= 3) { for (let i = 0; i < 3; i++) kid(ctx, 870 + i * 220, 700, 70, { hair: i % 2 ? "long" : undefined }); label(ctx, "tiga teman, tiga jalan", 1130, 800, { size: 26, color: C.ink2 }); }
     },
@@ -52,7 +52,7 @@
       const order = [2, 3, 1]; const n = reveal(l, 0.8, 1.0, 3);
       order.slice(0, n).forEach((k, i) => { card(ctx, 600 + i * 160, 320, 130, 160, { fill: "#FFF9E0", stroke: C.accent, lw: 3, r: 10 }); text(ctx, String(k), 665 + i * 160, 420, 50, { align: "center", weight: 900, color: C.accentDark }); });
       if (n >= 3) text(ctx, "datang tidak urut: 2, 3, 1", 840, 530, 26, { align: "center", weight: 900, color: C.bad });
-      if (l > 4.5) { arrowIcon(ctx, "right", 1120, 400, 50, C.ink2); [1, 2, 3].forEach((k, i) => { card(ctx, 1200 + i * 160, 320, 130, 160, { fill: C.goodBg, stroke: C.good, lw: 3, r: 10 }); text(ctx, String(k), 1265 + i * 160, 420, 50, { align: "center", weight: 900, color: C.good }); }); text(ctx, "disusun lagi lewat nomornya", 1440, 530, 26, { align: "center", weight: 900, color: C.good }); }
+      if (l > 4.5) { arrowIcon(ctx, "east", 1120, 400, 50, C.ink2); [1, 2, 3].forEach((k, i) => { card(ctx, 1200 + i * 160, 320, 130, 160, { fill: C.goodBg, stroke: C.good, lw: 3, r: 10 }); text(ctx, String(k), 1265 + i * 160, 420, 50, { align: "center", weight: 900, color: C.good }); }); text(ctx, "disusun lagi lewat nomornya", 1440, 530, 26, { align: "center", weight: 900, color: C.good }); }
       if (l > 7.5) banner(ctx, "dipotong jadi paket, diantar lewat jalan berbeda, disusun lagi", 745, 1100, { size: 30 });
     },
 
@@ -90,7 +90,7 @@
       [[400, 380, "HP"], [400, 660, "laptop"], [1100, 380, "printer"]].forEach(([x, y, lab]) => { J.cable(ctx, [[x, y], [760, 520]], { color: "#B7C4CC", dash: true }); if (lab === "laptop") J.laptop(ctx, x, y, 100); else if (lab === "printer") J.printer(ctx, x, y, 100); else J.phoneSmall(ctx, x, y, 90); });
       const n = reveal(l, 1.0, 1.6, 3);
       ["membagi alamat IP", "mengatur lalu lintas data", "pintu keluar ke internet"].forEach((s, i) => { if (i < n) { card(ctx, 1220, 300 + i * 120, 480, 96, { fill: i === n - 1 ? "#FFF3D6" : C.bg2, stroke: i === n - 1 ? C.accent : undefined, lw: 4, r: 14 }); text(ctx, (i + 1) + ". " + s, 1250, 358 + i * 120, 26, { weight: 900 }); } });
-      if (n >= 3) { J.cable(ctx, [[760, 560], [760, 760], [1140, 760]], { color: C.kiko, lw: 8 }); arrowIcon(ctx, "right", 1180, 760, 40, C.kiko); text(ctx, "ke luar rumah", 1300, 770, 26, { weight: 900, color: C.kiko }); }
+      if (n >= 3) { J.cable(ctx, [[760, 560], [760, 760], [1140, 760]], { color: C.kiko, lw: 8 }); arrowIcon(ctx, "east", 1180, 760, 40, C.kiko); text(ctx, "ke luar rumah", 1300, 770, 26, { weight: 900, color: C.kiko }); }
     },
 
     isp_intro(ctx, b, l) {
@@ -136,7 +136,7 @@
       card(ctx, 120, 150, 1680, 740);
       text(ctx, "SATU FOTO = RIBUAN PAKET KECIL", 960, 230, 34, { align: "center", color: C.accentDark, weight: 800 });
       ctx.fillStyle = "#DCEBF2"; rr(ctx, 220, 300, 260, 200, 10); ctx.fill(); ctx.fillStyle = C.accent; ctx.beginPath(); ctx.arc(400, 350, 24, 0, Math.PI * 2); ctx.fill(); ctx.fillStyle = "#2E9E5B"; ctx.beginPath(); ctx.moveTo(224, 496); ctx.lineTo(330, 380); ctx.lineTo(476, 496); ctx.closePath(); ctx.fill(); text(ctx, "foto Sinta", 350, 540, 24, { align: "center", weight: 800, color: C.ink2 });
-      arrowIcon(ctx, "right", 540, 400, 44, C.ink2);
+      arrowIcon(ctx, "east", 540, 400, 44, C.ink2);
       const n = reveal(l, 1.0, 0.5, 6);
       for (let i = 0; i < n; i++) { J.packet(ctx, 660 + i * 70, 400, i + 1, {}); }
       if (n >= 6) { text(ctx, "nomor urut + alamat tujuan", 835, 460, 22, { align: "center", weight: 800, color: C.ink2 }); }

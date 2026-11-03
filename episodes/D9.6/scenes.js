@@ -89,7 +89,7 @@
       const steps = [["term", "Mulai"], ["proc", "ambil kartu nomor"], ["io", "tulis pesanan"], ["proc", "bayar di kasir"], ["proc", "tunggu nomor dipanggil"], ["proc", "ambil makanan"], ["term", "Selesai"]];
       const n = reveal(l, 1.0, 1.1, 7);
       steps.forEach(([k, t], i) => { const cx = 300 + i * 220; Al.node(ctx, k, cx, 380, 190, 76, t, { dim: i >= n, hl: i === n - 1 }); if (i < steps.length - 1) Al.arrow(ctx, [[cx + 95, 380], [cx + 125, 380]], { on: i < n - 1 }); });
-      Ak.ticket(ctx, 520, 600, 110, 17, { order: "mi ayam" }); arrowIcon(ctx, "right", 640, 600, 36, C.ink2); Ak.stall(ctx, 860, 640, 220, "KASIR", { color: C.kiko }); arrowIcon(ctx, "right", 1020, 600, 36, C.ink2);
+      Ak.ticket(ctx, 520, 600, 110, 17, { order: "mi ayam" }); arrowIcon(ctx, "east", 640, 600, 36, C.ink2); Ak.stall(ctx, 860, 640, 220, "KASIR", { color: C.kiko }); arrowIcon(ctx, "east", 1020, 600, 36, C.ink2);
       text(ctx, "📣 nomor 17!", 1220, 610, 34, { align: "center", weight: 900, color: C.accentDark }); kid(ctx, 1450, 620, 110, { hair: "long" });
       if (n >= 7) label(ctx, "satu antrean kasir, bukan tiga kerumunan", 960, 760, { size: 26 });
     },
@@ -108,7 +108,7 @@
       qs.forEach(([q, a], i) => { ctx.save(); if (i >= n) ctx.globalAlpha = 0.2; const y = 290 + i * 110; card(ctx, 220, y, 880, 90, { fill: i === n - 1 ? "#FFF3D6" : C.bg2, stroke: i === n - 1 ? C.accent : undefined, lw: 4, r: 14 }); text(ctx, q, 250, y + 56, 28, { weight: 900 }); text(ctx, a, 480, y + 56, 24, { weight: 800, color: C.ink2 }); ctx.restore(); });
       // poster
       card(ctx, 1180, 270, 520, 440, { fill: "#fff", stroke: C.kiko, lw: 6, r: 14 }); text(ctx, "ANTRE LEBIH CEPAT", 1440, 330, 30, { align: "center", weight: 900, color: C.kiko });
-      Ak.ticket(ctx, 1320, 470, 90, 1, {}); arrowIcon(ctx, "right", 1420, 470, 30, C.ink2); text(ctx, "💵", 1500, 485, 50, { align: "center" }); arrowIcon(ctx, "right", 1570, 470, 30, C.ink2); text(ctx, "🍜", 1640, 485, 50, { align: "center" });
+      Ak.ticket(ctx, 1320, 470, 90, 1, {}); arrowIcon(ctx, "east", 1420, 470, 30, C.ink2); text(ctx, "💵", 1500, 485, 50, { align: "center" }); arrowIcon(ctx, "east", 1570, 470, 30, C.ink2); text(ctx, "🍜", 1640, 485, 50, { align: "center" });
       text(ctx, "1 ambil nomor · 2 bayar di kasir · 3 tunggu dipanggil", 1440, 600, 20, { align: "center", weight: 800, color: C.ink2 }); text(ctx, "Tim 9B · 2026", 1440, 680, 18, { align: "center", weight: 700, color: C.muted });
       if (n >= 3) label(ctx, "poster + video: pesan yang sama, dua saluran", 660, 740, { size: 26 });
     },
@@ -118,7 +118,7 @@
       const p = ease((l - 1) / 3);
       card(ctx, 240, 280, 600, 400, { fill: C.badBg, stroke: C.bad, lw: 4, r: 18 }); text(ctx, "SEBELUM", 540, 330, 26, { align: "center", weight: 900, color: C.bad }); Ak.clock(ctx, 540, 480, 90, 12, { color: C.bad }); Ak.queue(ctx, 330, 620, 8, { s: 36, gap: 56 });
       card(ctx, 1080, 280, 600, 400, { fill: C.goodBg, stroke: C.good, lw: 4, r: 18 }); text(ctx, "SESUDAH", 1380, 330, 26, { align: "center", weight: 900, color: C.good }); Ak.clock(ctx, 1380, 480, 90, Math.round(lerp(12, 6, p)), { color: C.good }); Ak.queue(ctx, 1250, 620, 4, { s: 36, gap: 56 });
-      arrowIcon(ctx, "right", 960, 480, 60, C.ink2);
+      arrowIcon(ctx, "east", 960, 480, 60, C.ink2);
       if (l > 7) { card(ctx, 500, 700, 920, 60, { fill: "#FFF9E0", stroke: "#E0B04B", lw: 3, r: 12 }); text(ctx, "⚠ beberapa murid bingung dengan nomor → bahan perbaikan putaran berikutnya", 960, 740, 22, { align: "center", weight: 900, color: C.accentDark }); }
     },
     presentasi(ctx, b, l) {

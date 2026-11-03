@@ -104,7 +104,7 @@
       card(ctx, 120, 150, 1680, 740);
       heading(ctx, "IDENTITAS DIGITAL: GAMBARAN DIRIMU DI INTERNET");
       kid(ctx, 420, 540, 170, { hair: "long" }); text(ctx, "Sinta yang asli", 420, 740, 24, { align: "center", weight: 800, color: C.ink2 });
-      arrowIcon(ctx, "right", 640, 500, 40, C.ink2);
+      arrowIcon(ctx, "east", 640, 500, 40, C.ink2);
       const parts = [["👤", "nama akun & foto profil"], ["📝", "bio"], ["🖼️", "unggahan"], ["💬", "komentar"], ["♡", "tanda suka"], ["🏷️", "unggahan orang lain tentangmu"]];
       const n = reveal(l, 1.5, 1.0, 6);
       parts.forEach(([ic, t], i) => { ctx.save(); if (i >= n) ctx.globalAlpha = 0.2; const x = 720 + (i % 2) * 500, y = 290 + Math.floor(i / 2) * 130; card(ctx, x, y, 470, 110, { fill: i === 5 ? "#FFF3D6" : C.bg2, r: 16 }); text(ctx, ic, x + 50, y + 72, 40, { align: "center" }); para(ctx, t, x + 100, y + 48, 26, 350, { weight: 900 }); ctx.restore(); });

@@ -49,7 +49,7 @@
       card(ctx, 120, 150, 1680, 740);
       heading(ctx, "PALING BANYAK TUJUH TEBAKAN", 215);
       const n = reveal(l, 1.5, 1.0, 8);
-      [100, 50, 25, 13, 7, 4, 2, 1].forEach((v, i) => { ctx.save(); if (i >= n) ctx.globalAlpha = 0.2; const x = 250 + i * 190; card(ctx, x, 330, 160, 110, { fill: i === 7 ? C.goodBg : "#fff", stroke: i === 7 ? C.good : "#B7C4CC", lw: 3, r: 12 }); text(ctx, String(v), x + 80, 400, 40, { align: "center", weight: 900 }); text(ctx, i === 0 ? "sisa angka" : "÷2", x + 80, 470, 18, { align: "center", weight: 800, color: C.ink2 }); if (i < 7) arrowIcon(ctx, "right", x + 175, 385, 20, C.ink2); ctx.restore(); });
+      [100, 50, 25, 13, 7, 4, 2, 1].forEach((v, i) => { ctx.save(); if (i >= n) ctx.globalAlpha = 0.2; const x = 250 + i * 190; card(ctx, x, 330, 160, 110, { fill: i === 7 ? C.goodBg : "#fff", stroke: i === 7 ? C.good : "#B7C4CC", lw: 3, r: 12 }); text(ctx, String(v), x + 80, 400, 40, { align: "center", weight: 900 }); text(ctx, i === 0 ? "sisa angka" : "÷2", x + 80, 470, 18, { align: "center", weight: 800, color: C.ink2 }); if (i < 7) arrowIcon(ctx, "east", x + 175, 385, 20, C.ink2); ctx.restore(); });
       if (n >= 8) { label(ctx, "7 kali membelah dua: 100 → 1", 960, 560); card(ctx, 460, 610, 1000, 80, { fill: "#FFF3D6", stroke: C.accent, lw: 3, r: 14 }); text(ctx, "syaratnya satu: angkanya terurut", 960, 660, 28, { align: "center", weight: 900, color: C.accentDark }); }
     },
 

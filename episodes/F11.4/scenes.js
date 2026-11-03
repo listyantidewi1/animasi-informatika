@@ -82,7 +82,7 @@
       card(ctx, 120, 150, 1680, 740); heading(ctx, "JEJAK SEBUAH FOTO", 215);
       const n = reveal(l, 1.5, 1.7, 7);
       R.photo(ctx, 240, 270, 520, 320, { caption: "“banjir kemarin di kota kita”", hl: n >= 6 ? ["sign", "shadow"] : [] });
-      if (n >= 2) { arrowIcon(ctx, "right", 800, 420, 40, C.accent); text(ctx, "pencarian gambar terbalik", 920, 300, 22, { weight: 900, color: C.kiko }); }
+      if (n >= 2) { arrowIcon(ctx, "east", 800, 420, 40, C.accent); text(ctx, "pencarian gambar terbalik", 920, 300, 22, { weight: 900, color: C.kiko }); }
       if (n >= 2) R.timeline(ctx, 980, 420, 640, [["2023", "berita lokal: banjir Kota Sukamaju, Jl. Melati", C.good], ["2025", "di-upload ulang, keterangan dihapus", "#B57A12"], ["2026", "grup kelas: “kemarin, kota kita”", C.bad]], clamp(n - 1, 0, 3));
       if (n >= 5) R.exif(ctx, 980, 560, 400, [["tanggal", "2023-02-14", false], ["kamera", "ponsel", false], ["lokasi GPS", "", true]], { title: "METADATA · versi media sosial" });
       if (n >= 7) { card(ctx, 1400, 560, 280, 150, { fill: C.goodBg, stroke: C.good, lw: 3, r: 12 }); para(ctx, "petunjuk visual: papan Jl. Melati, bayangan sore, cocok dengan 2023", 1540, 605, 19, 250, { align: "center", weight: 900, color: C.good }); }

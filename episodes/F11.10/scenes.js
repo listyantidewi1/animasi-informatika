@@ -31,7 +31,7 @@
       card(ctx, 120, 150, 1680, 740); heading(ctx, "MAIN DULU: KARTU DATA BERPINDAH TANGAN", 215);
       const n = reveal(l, 1.5, 2.0, 6);
       Pd.rows(ctx, 220, 270, 420, RAW.map((r, i) => [r[0], r[1], n >= 3 ? (i === 2 ? "dup" : i === 3 || i === 4 ? "bad" : null) : null]), { title: "kartu data (fiktif)" });
-      [["🧹", "fungsi bersihkan"], ["🧮", "fungsi rangkum"], ["🏕️", "fungsi rekomendasi"]].forEach(([ic, t], i) => { ctx.save(); if (n < i + 2) ctx.globalAlpha = 0.2; const x = 760 + i * 330; kid(ctx, x + 120, 560, 120, { hair: i === 1 ? "long" : "short" }); card(ctx, x, 290, 240, 80, { fill: C.bg2, r: 12 }); text(ctx, ic + " " + t, x + 120, 340, 19, { align: "center", weight: 900 }); if (i < 2) arrowIcon(ctx, "right", x + 285, 330, 30, C.accent); ctx.restore(); });
+      [["🧹", "fungsi bersihkan"], ["🧮", "fungsi rangkum"], ["🏕️", "fungsi rekomendasi"]].forEach(([ic, t], i) => { ctx.save(); if (n < i + 2) ctx.globalAlpha = 0.2; const x = 760 + i * 330; kid(ctx, x + 120, 560, 120, { hair: i === 1 ? "long" : "short" }); card(ctx, x, 290, 240, 80, { fill: C.bg2, r: 12 }); text(ctx, ic + " " + t, x + 120, 340, 19, { align: "center", weight: 900 }); if (i < 2) arrowIcon(ctx, "east", x + 285, 330, 30, C.accent); ctx.restore(); });
       if (n >= 6) label(ctx, "kartu berpindah tangan seperti data berpindah antarfungsi", 960, 740, { size: 24 });
     },
     unplugged_estafet(ctx, b, l) {

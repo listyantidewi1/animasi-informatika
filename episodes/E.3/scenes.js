@@ -43,7 +43,7 @@
       card(ctx, 300, 300, 300, 200, { fill: "#FFF9E0", stroke: "#E0B04B", lw: 3, r: 12 }); text(ctx, "KARTU SANDI", 450, 345, 20, { align: "center", weight: 900, color: C.ink2 }); text(ctx, "mawar-7-bus", 450, 420, 28, { align: "center", weight: 900 });
       text(ctx, "+", 680, 420, 60, { align: "center", weight: 900, color: C.ink2 });
       card(ctx, 760, 300, 300, 200, { fill: "#DCEBF2", stroke: C.kiko, lw: 3, r: 12 }); text(ctx, "KARTU KODE (tiap menit)", 910, 345, 18, { align: "center", weight: 900, color: C.ink2 }); text(ctx, code(l * 2), 910, 420, 36, { align: "center", weight: 900, color: C.kiko }); text(ctx, "menit ke-" + (Math.floor(l / 15) + 1), 910, 470, 16, { align: "center", weight: 700, color: C.muted });
-      arrowIcon(ctx, "right", 1120, 400, 40, C.good); Sd.lock(ctx, 1260, 400, 90, { open: l > 7 && l < 11 ? false : false }); text(ctx, "pintu akun", 1260, 500, 20, { align: "center", weight: 800, color: C.ink2 });
+      arrowIcon(ctx, "east", 1120, 400, 40, C.good); Sd.lock(ctx, 1260, 400, 90, { open: l > 7 && l < 11 ? false : false }); text(ctx, "pintu akun", 1260, 500, 20, { align: "center", weight: 800, color: C.ink2 });
       if (l > 6) { card(ctx, 1380, 300, 360, 200, { fill: C.badBg, stroke: C.bad, lw: 3, r: 12 }); text(ctx, "🕵️ pencuri", 1560, 345, 22, { align: "center", weight: 900, color: C.bad }); text(ctx, "punya kartu sandi", 1560, 395, 20, { align: "center", weight: 800 }); text(ctx, "tidak punya kartu kode", 1560, 430, 20, { align: "center", weight: 800 }); text(ctx, "✕ tidak bisa masuk", 1560, 475, 22, { align: "center", weight: 900, color: C.bad }); }
       if (l > 9) label(ctx, "itulah verifikasi dua langkah", 960, 620);
     },
