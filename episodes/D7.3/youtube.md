@@ -56,7 +56,7 @@ Video ini cocok untuk yang mencari: cara membuat kata sandi yang kuat; jejak dig
 Bab:
 0:00 Pembuka bagian
 0:04 Jejak digital
-1:21 Berpikir sebelum unggah
+1:20 Berpikir sebelum unggah
 2:32 Giliranmu
 
 Latihan interaktif (kuis dengan petunjuk, bisa dipakai di HP): https://belajar-informatika.vercel.app/d73

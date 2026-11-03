@@ -153,7 +153,7 @@
       S.chat(ctx, sc, msgs);
       kid(ctx, 1200, 560, 200, { hair: "long" }); text(ctx, "Sinta", 1200, 830, 30, { align: "center", color: C.ink2, weight: 700 });
       if (ph === 1) bubble(ctx, 1050, 350, 380, "Aduh, hapus saja…", 30, { tailX: 1200, tailDir: 0 });
-      if (ph === 2) { for (let i = 0; i < 3; i++) { S.photo(ctx, 1480 + (i % 2) * 120, 360 + Math.floor(i / 2) * 130, 100); } para(ctx, "3 teman sudah menyimpan tangkapan layarnya", 1560, 630, 26, 300, { align: "center", weight: 900, color: C.bad, lh: 1.3 }); }
+      if (ph === 2) { for (let i = 0; i < 3; i++) { S.photo(ctx, 1480 + (i % 2) * 120, 360 + Math.floor(i / 2) * 130, 100); } para(ctx, "3 teman sudah menyimpan screenshot-nya", 1560, 630, 26, 300, { align: "center", weight: 900, color: C.bad, lh: 1.3 }); }
     },
     trace_copies(ctx, b, l) {
       card(ctx, 120, 150, 1680, 740);
