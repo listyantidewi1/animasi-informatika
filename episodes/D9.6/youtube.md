@@ -25,9 +25,9 @@ Bab:
 1:23 Langkah, tim, dan data
 2:29 Analisis data kecil
 
-Latihan interaktif (kuis dengan petunjuk, bisa dipakai di HP): https://listyantidewi1.github.io/animasi-informatika/episodes/D9.6/episode-d96.html
+Latihan interaktif (kuis dengan petunjuk, bisa dipakai di HP): https://belajar-informatika.vercel.app/d96
 Alat untuk latihan di komputer: Google Sheets (daring) https://sheets.google.com/; LibreOffice Calc (gratis, luring) https://www.libreoffice.org/download/download-libreoffice/
-Semua episode dan latihannya: https://listyantidewi1.github.io/animasi-informatika/
+Semua episode dan latihannya: https://belajar-informatika.vercel.app/
 Prasyarat: episode D8.6 Proyek: Cek Data, Cek Fakta, D9.1 Pseudocode Lengkap, dan D9.5 Produksi dan Diseminasi Konten Digital.
 
 Seri Animasi Informatika untuk SMP–SMA mengikuti CP 2025 (Keputusan Kepala BSKAP 046/H/KR/2025), unit D9.6 (12 JP). Tokoh: robot Kiko, Dito, dan Sinta. Semua gambar dibuat dengan kode; tanpa musik latar. Narasi: Kak Ceria (ElevenLabs).
@@ -61,9 +61,9 @@ Bab:
 2:27 Presentasi dan rubrik
 3:03 Giliranmu
 
-Latihan interaktif (kuis dengan petunjuk, bisa dipakai di HP): https://listyantidewi1.github.io/animasi-informatika/episodes/D9.6/episode-d96.html
+Latihan interaktif (kuis dengan petunjuk, bisa dipakai di HP): https://belajar-informatika.vercel.app/d96
 Alat untuk latihan di komputer: Google Sheets (daring) https://sheets.google.com/; LibreOffice Calc (gratis, luring) https://www.libreoffice.org/download/download-libreoffice/
-Semua episode dan latihannya: https://listyantidewi1.github.io/animasi-informatika/
+Semua episode dan latihannya: https://belajar-informatika.vercel.app/
 Prasyarat: episode D8.6 Proyek: Cek Data, Cek Fakta, D9.1 Pseudocode Lengkap, dan D9.5 Produksi dan Diseminasi Konten Digital.
 
 Seri Animasi Informatika untuk SMP–SMA mengikuti CP 2025 (Keputusan Kepala BSKAP 046/H/KR/2025), unit D9.6 (12 JP). Tokoh: robot Kiko, Dito, dan Sinta. Semua gambar dibuat dengan kode; tanpa musik latar. Narasi: Kak Ceria (ElevenLabs).
@@ -96,9 +96,9 @@ Bab:
 1:45 Langkah, tim, dan data
 3:05 Analisis data kecil
 
-Latihan interaktif (kuis dengan petunjuk, bisa dipakai di HP): https://listyantidewi1.github.io/animasi-informatika/episodes/D9.6/episode-d96.html
+Latihan interaktif (kuis dengan petunjuk, bisa dipakai di HP): https://belajar-informatika.vercel.app/d96
 Alat untuk latihan di komputer: Google Sheets (daring) https://sheets.google.com/; LibreOffice Calc (gratis, luring) https://www.libreoffice.org/download/download-libreoffice/
-Semua episode dan latihannya: https://listyantidewi1.github.io/animasi-informatika/
+Semua episode dan latihannya: https://belajar-informatika.vercel.app/
 Prasyarat: episode D8.6 Proyek: Cek Data, Cek Fakta, D9.1 Pseudocode Lengkap, dan D9.5 Produksi dan Diseminasi Konten Digital.
 
 Seri Animasi Informatika untuk SMP–SMA mengikuti CP 2025 (Keputusan Kepala BSKAP 046/H/KR/2025), unit D9.6 (12 JP). Tokoh: robot Kiko, Dito, dan Sinta. Semua gambar dibuat dengan kode; tanpa musik latar.
@@ -132,9 +132,9 @@ Bab:
 2:58 Presentasi dan rubrik
 3:44 Giliranmu
 
-Latihan interaktif (kuis dengan petunjuk, bisa dipakai di HP): https://listyantidewi1.github.io/animasi-informatika/episodes/D9.6/episode-d96.html
+Latihan interaktif (kuis dengan petunjuk, bisa dipakai di HP): https://belajar-informatika.vercel.app/d96
 Alat untuk latihan di komputer: Google Sheets (daring) https://sheets.google.com/; LibreOffice Calc (gratis, luring) https://www.libreoffice.org/download/download-libreoffice/
-Semua episode dan latihannya: https://listyantidewi1.github.io/animasi-informatika/
+Semua episode dan latihannya: https://belajar-informatika.vercel.app/
 Prasyarat: episode D8.6 Proyek: Cek Data, Cek Fakta, D9.1 Pseudocode Lengkap, dan D9.5 Produksi dan Diseminasi Konten Digital.
 
 Seri Animasi Informatika untuk SMP–SMA mengikuti CP 2025 (Keputusan Kepala BSKAP 046/H/KR/2025), unit D9.6 (12 JP). Tokoh: robot Kiko, Dito, dan Sinta. Semua gambar dibuat dengan kode; tanpa musik latar.
@@ -148,7 +148,7 @@ Seri Animasi Informatika untuk SMP–SMA mengikuti CP 2025 (Keputusan Kepala BSK
 📌 Proyek Akhir Fase D (1/2): Dari Masalah ke Data — materi Informatika kelas 9 (unit D9.6).
 Setelah menonton, kamu bisa memecahkan satu masalah nyata di sekolah dengan data kecil, pseudocode, dan konten digital.
 Kata kunci materi ini: proyek akhir informatika kelas 9; contoh proyek informatika smp memecahkan masalah sekolah; pseudocode solusi antrean kantin; proyek berpikir komputasional kelas 9.
-Latihan interaktif (bisa dipakai di HP): https://listyantidewi1.github.io/animasi-informatika/episodes/D9.6/episode-d96.html Tonton dulu episode D8.6 Proyek: Cek Data, Cek Fakta, D9.1 Pseudocode Lengkap, dan D9.5 Produksi dan Diseminasi Konten Digital bila belum.
+Latihan interaktif (bisa dipakai di HP): https://belajar-informatika.vercel.app/d96 Tonton dulu episode D8.6 Proyek: Cek Data, Cek Fakta, D9.1 Pseudocode Lengkap, dan D9.5 Produksi dan Diseminasi Konten Digital bila belum.
 Alat untuk latihan di komputer: Google Sheets (daring) https://sheets.google.com/; LibreOffice Calc (gratis, luring) https://www.libreoffice.org/download/download-libreoffice/
 Ada yang belum jelas? Tulis di komentar, pertanyaanmu membantu teman lain juga.
 ```
@@ -159,7 +159,7 @@ Ada yang belum jelas? Tulis di komentar, pertanyaanmu membantu teman lain juga.
 📌 Proyek Akhir Fase D (2/2): Algoritma, Konten, dan Uji Coba — materi Informatika kelas 9 (unit D9.6).
 Setelah menonton, kamu bisa memecahkan satu masalah nyata di sekolah dengan data kecil, pseudocode, dan konten digital.
 Kata kunci materi ini: proyek akhir informatika kelas 9; contoh proyek informatika smp memecahkan masalah sekolah; pseudocode solusi antrean kantin; proyek berpikir komputasional kelas 9.
-Latihan interaktif (bisa dipakai di HP): https://listyantidewi1.github.io/animasi-informatika/episodes/D9.6/episode-d96.html Tonton dulu episode D8.6 Proyek: Cek Data, Cek Fakta, D9.1 Pseudocode Lengkap, dan D9.5 Produksi dan Diseminasi Konten Digital bila belum.
+Latihan interaktif (bisa dipakai di HP): https://belajar-informatika.vercel.app/d96 Tonton dulu episode D8.6 Proyek: Cek Data, Cek Fakta, D9.1 Pseudocode Lengkap, dan D9.5 Produksi dan Diseminasi Konten Digital bila belum.
 Alat untuk latihan di komputer: Google Sheets (daring) https://sheets.google.com/; LibreOffice Calc (gratis, luring) https://www.libreoffice.org/download/download-libreoffice/
 Ada yang belum jelas? Tulis di komentar, pertanyaanmu membantu teman lain juga.
 ```

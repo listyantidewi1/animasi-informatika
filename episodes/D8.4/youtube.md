@@ -25,9 +25,9 @@ Bab:
 1:09 Dari peristiwa ke layar
 2:01 Pers dan bukan pers
 
-Latihan interaktif (kuis dengan petunjuk, bisa dipakai di HP): https://listyantidewi1.github.io/animasi-informatika/episodes/D8.4/episode-d84.html
+Latihan interaktif (kuis dengan petunjuk, bisa dipakai di HP): https://belajar-informatika.vercel.app/d84
 Alat untuk latihan di komputer: Google Sheets (daring) https://sheets.google.com/; LibreOffice Calc (gratis, luring) https://www.libreoffice.org/download/download-libreoffice/
-Semua episode dan latihannya: https://listyantidewi1.github.io/animasi-informatika/
+Semua episode dan latihannya: https://belajar-informatika.vercel.app/
 Prasyarat: episode D7.4 Mesin Pencari.
 
 Seri Animasi Informatika untuk SMP–SMA mengikuti CP 2025 (Keputusan Kepala BSKAP 046/H/KR/2025), unit D8.4 (8 JP). Tokoh: robot Kiko, Dito, dan Sinta. Semua gambar dibuat dengan kode; tanpa musik latar. Narasi: Kak Ceria (ElevenLabs).
@@ -61,9 +61,9 @@ Bab:
 2:10 Menilai tiga kabar
 2:44 Giliranmu
 
-Latihan interaktif (kuis dengan petunjuk, bisa dipakai di HP): https://listyantidewi1.github.io/animasi-informatika/episodes/D8.4/episode-d84.html
+Latihan interaktif (kuis dengan petunjuk, bisa dipakai di HP): https://belajar-informatika.vercel.app/d84
 Alat untuk latihan di komputer: Google Sheets (daring) https://sheets.google.com/; LibreOffice Calc (gratis, luring) https://www.libreoffice.org/download/download-libreoffice/
-Semua episode dan latihannya: https://listyantidewi1.github.io/animasi-informatika/
+Semua episode dan latihannya: https://belajar-informatika.vercel.app/
 Prasyarat: episode D7.4 Mesin Pencari.
 
 Seri Animasi Informatika untuk SMP–SMA mengikuti CP 2025 (Keputusan Kepala BSKAP 046/H/KR/2025), unit D8.4 (8 JP). Tokoh: robot Kiko, Dito, dan Sinta. Semua gambar dibuat dengan kode; tanpa musik latar. Narasi: Kak Ceria (ElevenLabs).
@@ -96,9 +96,9 @@ Bab:
 1:28 Dari peristiwa ke layar
 2:29 Pers dan bukan pers
 
-Latihan interaktif (kuis dengan petunjuk, bisa dipakai di HP): https://listyantidewi1.github.io/animasi-informatika/episodes/D8.4/episode-d84.html
+Latihan interaktif (kuis dengan petunjuk, bisa dipakai di HP): https://belajar-informatika.vercel.app/d84
 Alat untuk latihan di komputer: Google Sheets (daring) https://sheets.google.com/; LibreOffice Calc (gratis, luring) https://www.libreoffice.org/download/download-libreoffice/
-Semua episode dan latihannya: https://listyantidewi1.github.io/animasi-informatika/
+Semua episode dan latihannya: https://belajar-informatika.vercel.app/
 Prasyarat: episode D7.4 Mesin Pencari.
 
 Seri Animasi Informatika untuk SMP–SMA mengikuti CP 2025 (Keputusan Kepala BSKAP 046/H/KR/2025), unit D8.4 (8 JP). Tokoh: robot Kiko, Dito, dan Sinta. Semua gambar dibuat dengan kode; tanpa musik latar.
@@ -132,9 +132,9 @@ Bab:
 2:39 Menilai tiga kabar
 3:21 Giliranmu
 
-Latihan interaktif (kuis dengan petunjuk, bisa dipakai di HP): https://listyantidewi1.github.io/animasi-informatika/episodes/D8.4/episode-d84.html
+Latihan interaktif (kuis dengan petunjuk, bisa dipakai di HP): https://belajar-informatika.vercel.app/d84
 Alat untuk latihan di komputer: Google Sheets (daring) https://sheets.google.com/; LibreOffice Calc (gratis, luring) https://www.libreoffice.org/download/download-libreoffice/
-Semua episode dan latihannya: https://listyantidewi1.github.io/animasi-informatika/
+Semua episode dan latihannya: https://belajar-informatika.vercel.app/
 Prasyarat: episode D7.4 Mesin Pencari.
 
 Seri Animasi Informatika untuk SMP–SMA mengikuti CP 2025 (Keputusan Kepala BSKAP 046/H/KR/2025), unit D8.4 (8 JP). Tokoh: robot Kiko, Dito, dan Sinta. Semua gambar dibuat dengan kode; tanpa musik latar.
@@ -148,7 +148,7 @@ Seri Animasi Informatika untuk SMP–SMA mengikuti CP 2025 (Keputusan Kepala BSK
 📌 Menilai Informasi dan Ekosistem Pers Digital (1/2): Dari Peristiwa ke Layar — materi Informatika kelas 8 (unit D8.4).
 Setelah menonton, kamu bisa menelusuri perjalanan berita dari peristiwa ke layar HP, lalu menilai sumbernya dengan empat pertanyaan.
 Kata kunci materi ini: menilai informasi kelas 8; ekosistem pers digital informatika SMP; cara menilai sumber berita yang kredibel; literasi digital kelas 8 kurikulum merdeka.
-Latihan interaktif (bisa dipakai di HP): https://listyantidewi1.github.io/animasi-informatika/episodes/D8.4/episode-d84.html Tonton dulu episode D7.4 Mesin Pencari bila belum.
+Latihan interaktif (bisa dipakai di HP): https://belajar-informatika.vercel.app/d84 Tonton dulu episode D7.4 Mesin Pencari bila belum.
 Alat untuk latihan di komputer: Google Sheets (daring) https://sheets.google.com/; LibreOffice Calc (gratis, luring) https://www.libreoffice.org/download/download-libreoffice/
 Ada yang belum jelas? Tulis di komentar, pertanyaanmu membantu teman lain juga.
 ```
@@ -159,7 +159,7 @@ Ada yang belum jelas? Tulis di komentar, pertanyaanmu membantu teman lain juga.
 📌 Menilai Informasi dan Ekosistem Pers Digital (2/2): Empat Pertanyaan Penilai Informasi — materi Informatika kelas 8 (unit D8.4).
 Setelah menonton, kamu bisa menelusuri perjalanan berita dari peristiwa ke layar HP, lalu menilai sumbernya dengan empat pertanyaan.
 Kata kunci materi ini: menilai informasi kelas 8; ekosistem pers digital informatika SMP; cara menilai sumber berita yang kredibel; literasi digital kelas 8 kurikulum merdeka.
-Latihan interaktif (bisa dipakai di HP): https://listyantidewi1.github.io/animasi-informatika/episodes/D8.4/episode-d84.html Tonton dulu episode D7.4 Mesin Pencari bila belum.
+Latihan interaktif (bisa dipakai di HP): https://belajar-informatika.vercel.app/d84 Tonton dulu episode D7.4 Mesin Pencari bila belum.
 Alat untuk latihan di komputer: Google Sheets (daring) https://sheets.google.com/; LibreOffice Calc (gratis, luring) https://www.libreoffice.org/download/download-libreoffice/
 Ada yang belum jelas? Tulis di komentar, pertanyaanmu membantu teman lain juga.
 ```

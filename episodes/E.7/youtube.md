@@ -25,8 +25,8 @@ Bab:
 1:30 Tipe data dan deklarasi
 2:37 Operator, BACA, TULIS
 
-Latihan interaktif (kuis dengan petunjuk, bisa dipakai di HP): https://listyantidewi1.github.io/animasi-informatika/episodes/E.7/episode-e7.html
-Semua episode dan latihannya: https://listyantidewi1.github.io/animasi-informatika/
+Latihan interaktif (kuis dengan petunjuk, bisa dipakai di HP): https://belajar-informatika.vercel.app/e7
+Semua episode dan latihannya: https://belajar-informatika.vercel.app/
 Prasyarat: episode D9.1 Pseudocode Lengkap, E.5 Struktur Data Standar, dan E.6 Pencarian dan Pengurutan.
 
 Seri Animasi Informatika untuk SMP–SMA mengikuti CP 2025 (Keputusan Kepala BSKAP 046/H/KR/2025), unit E.7 (6 JP). Tokoh: robot Kiko, Dito, dan Sinta. Semua gambar dibuat dengan kode; tanpa musik latar. Narasi: Kak Ceria (ElevenLabs).
@@ -60,8 +60,8 @@ Bab:
 2:19 Program utuh dan menuju kode
 2:55 Giliranmu
 
-Latihan interaktif (kuis dengan petunjuk, bisa dipakai di HP): https://listyantidewi1.github.io/animasi-informatika/episodes/E.7/episode-e7.html
-Semua episode dan latihannya: https://listyantidewi1.github.io/animasi-informatika/
+Latihan interaktif (kuis dengan petunjuk, bisa dipakai di HP): https://belajar-informatika.vercel.app/e7
+Semua episode dan latihannya: https://belajar-informatika.vercel.app/
 Prasyarat: episode D9.1 Pseudocode Lengkap, E.5 Struktur Data Standar, dan E.6 Pencarian dan Pengurutan.
 
 Seri Animasi Informatika untuk SMP–SMA mengikuti CP 2025 (Keputusan Kepala BSKAP 046/H/KR/2025), unit E.7 (6 JP). Tokoh: robot Kiko, Dito, dan Sinta. Semua gambar dibuat dengan kode; tanpa musik latar. Narasi: Kak Ceria (ElevenLabs).
@@ -94,8 +94,8 @@ Bab:
 1:51 Tipe data dan deklarasi
 3:12 Operator, BACA, TULIS
 
-Latihan interaktif (kuis dengan petunjuk, bisa dipakai di HP): https://listyantidewi1.github.io/animasi-informatika/episodes/E.7/episode-e7.html
-Semua episode dan latihannya: https://listyantidewi1.github.io/animasi-informatika/
+Latihan interaktif (kuis dengan petunjuk, bisa dipakai di HP): https://belajar-informatika.vercel.app/e7
+Semua episode dan latihannya: https://belajar-informatika.vercel.app/
 Prasyarat: episode D9.1 Pseudocode Lengkap, E.5 Struktur Data Standar, dan E.6 Pencarian dan Pengurutan.
 
 Seri Animasi Informatika untuk SMP–SMA mengikuti CP 2025 (Keputusan Kepala BSKAP 046/H/KR/2025), unit E.7 (6 JP). Tokoh: robot Kiko, Dito, dan Sinta. Semua gambar dibuat dengan kode; tanpa musik latar.
@@ -129,8 +129,8 @@ Bab:
 2:47 Program utuh dan menuju kode
 3:32 Giliranmu
 
-Latihan interaktif (kuis dengan petunjuk, bisa dipakai di HP): https://listyantidewi1.github.io/animasi-informatika/episodes/E.7/episode-e7.html
-Semua episode dan latihannya: https://listyantidewi1.github.io/animasi-informatika/
+Latihan interaktif (kuis dengan petunjuk, bisa dipakai di HP): https://belajar-informatika.vercel.app/e7
+Semua episode dan latihannya: https://belajar-informatika.vercel.app/
 Prasyarat: episode D9.1 Pseudocode Lengkap, E.5 Struktur Data Standar, dan E.6 Pencarian dan Pengurutan.
 
 Seri Animasi Informatika untuk SMP–SMA mengikuti CP 2025 (Keputusan Kepala BSKAP 046/H/KR/2025), unit E.7 (6 JP). Tokoh: robot Kiko, Dito, dan Sinta. Semua gambar dibuat dengan kode; tanpa musik latar.
@@ -144,7 +144,7 @@ Seri Animasi Informatika untuk SMP–SMA mengikuti CP 2025 (Keputusan Kepala BSK
 📌 Pseudocode Dekat Bahasa Komputer (1/2): Tipe Data, Variabel, Ekspresi — materi Informatika kelas 10 (unit E.7).
 Setelah menonton, kamu bisa menulis pseudocode dengan deklarasi tipe data, array berindeks nol, dan fungsi berparameter, lalu melacaknya baris demi baris.
 Kata kunci materi ini: pseudocode tipe data variabel kelas 10; fungsi dan prosedur pseudocode penjelasan; array indeks mulai dari 0; informatika sma pseudocode menuju python.
-Latihan interaktif (bisa dipakai di HP): https://listyantidewi1.github.io/animasi-informatika/episodes/E.7/episode-e7.html Tonton dulu episode D9.1 Pseudocode Lengkap, E.5 Struktur Data Standar, dan E.6 Pencarian dan Pengurutan bila belum.
+Latihan interaktif (bisa dipakai di HP): https://belajar-informatika.vercel.app/e7 Tonton dulu episode D9.1 Pseudocode Lengkap, E.5 Struktur Data Standar, dan E.6 Pencarian dan Pengurutan bila belum.
 Ada yang belum jelas? Tulis di komentar, pertanyaanmu membantu teman lain juga.
 ```
 
@@ -154,6 +154,6 @@ Ada yang belum jelas? Tulis di komentar, pertanyaanmu membantu teman lain juga.
 📌 Pseudocode Dekat Bahasa Komputer (2/2): Array dan Fungsi — materi Informatika kelas 10 (unit E.7).
 Setelah menonton, kamu bisa menulis pseudocode dengan deklarasi tipe data, array berindeks nol, dan fungsi berparameter, lalu melacaknya baris demi baris.
 Kata kunci materi ini: pseudocode tipe data variabel kelas 10; fungsi dan prosedur pseudocode penjelasan; array indeks mulai dari 0; informatika sma pseudocode menuju python.
-Latihan interaktif (bisa dipakai di HP): https://listyantidewi1.github.io/animasi-informatika/episodes/E.7/episode-e7.html Tonton dulu episode D9.1 Pseudocode Lengkap, E.5 Struktur Data Standar, dan E.6 Pencarian dan Pengurutan bila belum.
+Latihan interaktif (bisa dipakai di HP): https://belajar-informatika.vercel.app/e7 Tonton dulu episode D9.1 Pseudocode Lengkap, E.5 Struktur Data Standar, dan E.6 Pencarian dan Pengurutan bila belum.
 Ada yang belum jelas? Tulis di komentar, pertanyaanmu membantu teman lain juga.
 ```

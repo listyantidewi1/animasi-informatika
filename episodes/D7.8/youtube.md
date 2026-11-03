@@ -25,8 +25,8 @@ Bab:
 1:08 Enam langkah dan tim
 1:59 Isi panduan
 
-Latihan interaktif (kuis dengan petunjuk, bisa dipakai di HP): https://listyantidewi1.github.io/animasi-informatika/episodes/D7.8/episode-d78.html
-Semua episode dan latihannya: https://listyantidewi1.github.io/animasi-informatika/
+Latihan interaktif (kuis dengan petunjuk, bisa dipakai di HP): https://belajar-informatika.vercel.app/d78
+Semua episode dan latihannya: https://belajar-informatika.vercel.app/
 Prasyarat: episode D7.3, D7.4, dan D7.7.
 
 Seri Animasi Informatika untuk SMP–SMA mengikuti CP 2025 (Keputusan Kepala BSKAP 046/H/KR/2025), unit D7.8 (8 JP). Tokoh: robot Kiko, Dito, dan Sinta. Semua gambar dibuat dengan kode; tanpa musik latar. Narasi: Kak Ceria (ElevenLabs).
@@ -60,8 +60,8 @@ Bab:
 2:01 Tampil dan perbaiki
 2:29 Giliranmu
 
-Latihan interaktif (kuis dengan petunjuk, bisa dipakai di HP): https://listyantidewi1.github.io/animasi-informatika/episodes/D7.8/episode-d78.html
-Semua episode dan latihannya: https://listyantidewi1.github.io/animasi-informatika/
+Latihan interaktif (kuis dengan petunjuk, bisa dipakai di HP): https://belajar-informatika.vercel.app/d78
+Semua episode dan latihannya: https://belajar-informatika.vercel.app/
 Prasyarat: episode D7.3, D7.4, dan D7.7.
 
 Seri Animasi Informatika untuk SMP–SMA mengikuti CP 2025 (Keputusan Kepala BSKAP 046/H/KR/2025), unit D7.8 (8 JP). Tokoh: robot Kiko, Dito, dan Sinta. Semua gambar dibuat dengan kode; tanpa musik latar. Narasi: Kak Ceria (ElevenLabs).
@@ -94,8 +94,8 @@ Bab:
 1:26 Enam langkah dan tim
 2:25 Isi panduan
 
-Latihan interaktif (kuis dengan petunjuk, bisa dipakai di HP): https://listyantidewi1.github.io/animasi-informatika/episodes/D7.8/episode-d78.html
-Semua episode dan latihannya: https://listyantidewi1.github.io/animasi-informatika/
+Latihan interaktif (kuis dengan petunjuk, bisa dipakai di HP): https://belajar-informatika.vercel.app/d78
+Semua episode dan latihannya: https://belajar-informatika.vercel.app/
 Prasyarat: episode D7.3, D7.4, dan D7.7.
 
 Seri Animasi Informatika untuk SMP–SMA mengikuti CP 2025 (Keputusan Kepala BSKAP 046/H/KR/2025), unit D7.8 (8 JP). Tokoh: robot Kiko, Dito, dan Sinta. Semua gambar dibuat dengan kode; tanpa musik latar.
@@ -129,8 +129,8 @@ Bab:
 2:26 Tampil dan perbaiki
 3:01 Giliranmu
 
-Latihan interaktif (kuis dengan petunjuk, bisa dipakai di HP): https://listyantidewi1.github.io/animasi-informatika/episodes/D7.8/episode-d78.html
-Semua episode dan latihannya: https://listyantidewi1.github.io/animasi-informatika/
+Latihan interaktif (kuis dengan petunjuk, bisa dipakai di HP): https://belajar-informatika.vercel.app/d78
+Semua episode dan latihannya: https://belajar-informatika.vercel.app/
 Prasyarat: episode D7.3, D7.4, dan D7.7.
 
 Seri Animasi Informatika untuk SMP–SMA mengikuti CP 2025 (Keputusan Kepala BSKAP 046/H/KR/2025), unit D7.8 (8 JP). Tokoh: robot Kiko, Dito, dan Sinta. Semua gambar dibuat dengan kode; tanpa musik latar.
@@ -144,7 +144,7 @@ Seri Animasi Informatika untuk SMP–SMA mengikuti CP 2025 (Keputusan Kepala BSK
 📌 Proyek: Panduan Digital untuk Adik Kelas (1/2): Merancang Panduan — materi Informatika kelas 7 (unit D7.8).
 Setelah menonton, kamu bisa merancang proyek dari awal sampai tampil: tim, isi, dokumen, slide, dan presentasi untuk adik kelas.
 Kata kunci materi ini: proyek informatika kelas 7 panduan aman berinternet; cara membuat presentasi yang baik untuk siswa SMP; pengolah dokumen dan presentasi kelas 7; contoh proyek literasi digital SMP.
-Latihan interaktif (bisa dipakai di HP): https://listyantidewi1.github.io/animasi-informatika/episodes/D7.8/episode-d78.html Tonton dulu episode D7.3, D7.4, dan D7.7 bila belum.
+Latihan interaktif (bisa dipakai di HP): https://belajar-informatika.vercel.app/d78 Tonton dulu episode D7.3, D7.4, dan D7.7 bila belum.
 Ada yang belum jelas? Tulis di komentar, pertanyaanmu membantu teman lain juga.
 ```
 
@@ -154,6 +154,6 @@ Ada yang belum jelas? Tulis di komentar, pertanyaanmu membantu teman lain juga.
 📌 Proyek: Panduan Digital untuk Adik Kelas (2/2): Dokumen, Slide, dan Tampil — materi Informatika kelas 7 (unit D7.8).
 Setelah menonton, kamu bisa merancang proyek dari awal sampai tampil: tim, isi, dokumen, slide, dan presentasi untuk adik kelas.
 Kata kunci materi ini: proyek informatika kelas 7 panduan aman berinternet; cara membuat presentasi yang baik untuk siswa SMP; pengolah dokumen dan presentasi kelas 7; contoh proyek literasi digital SMP.
-Latihan interaktif (bisa dipakai di HP): https://listyantidewi1.github.io/animasi-informatika/episodes/D7.8/episode-d78.html Tonton dulu episode D7.3, D7.4, dan D7.7 bila belum.
+Latihan interaktif (bisa dipakai di HP): https://belajar-informatika.vercel.app/d78 Tonton dulu episode D7.3, D7.4, dan D7.7 bila belum.
 Ada yang belum jelas? Tulis di komentar, pertanyaanmu membantu teman lain juga.
 ```

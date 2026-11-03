@@ -1,4 +1,4 @@
-"""Halaman daftar latihan untuk GitHub Pages -> index.html di akar repositori.
+"""Halaman daftar latihan untuk situs Vercel -> index.html dan vercel.json (link pendek /<kode>) di akar repositori.
   python3 episodes/_alat/indeks.py
 Membaca script.json tiap episode (judul, hook, bagian, JP) dan alat_luar.json (link situs dan alat luar)."""
 import glob, html, json, os
@@ -6,6 +6,7 @@ import episode as E
 
 ALAT_DIR = os.path.dirname(os.path.abspath(__file__)); REPO = os.path.dirname(os.path.dirname(ALAT_DIR))
 AL = json.load(open(os.path.join(ALAT_DIR, "alat_luar.json"), encoding="utf-8"))
+SITUS_HOST = AL["situs"].split("//", 1)[1]
 KELAS = [("D7", "Kelas VII", "Fase D"), ("D8", "Kelas VIII", "Fase D"), ("D9", "Kelas IX", "Fase D"), ("E", "Kelas X", "Fase E"), ("F11", "Kelas XI", "Fase F"), ("F12", "Kelas XII", "Fase F")]
 def key(code):
     a, b = code.split("."); return (a, int(b))
@@ -23,7 +24,7 @@ for pre, nama, fase in KELAS:
     rows = [e for e in eps if e["code"].split(".")[0] == pre]
     if not rows: continue
     cards = "".join(f'''<li class="ep"><a class="main" href="{e_(e["page"])}"><span class="code">{e_(e["code"])}</span><span class="t">{e_(e["title"])}</span></a>
-<p class="hook">Setelah menonton, kamu bisa {e_(e["hook"])}</p><p class="meta">{e["jp"]} JP · {e["parts"]} bagian video</p>''' + (f'''<p class="tools">Alat di komputer: {" · ".join(f'<a href="{e_(u)}" rel="noopener">{e_(n)}</a>' for n, u in e["alat"])}</p>''' if e["alat"] else "") + "</li>" for e in rows)
+<p class="hook">Setelah menonton, kamu bisa {e_(e["hook"])}</p><p class="meta">{e["jp"]} JP · {e["parts"]} bagian video · link: {e_(SITUS_HOST)}/{e_(E.code_slug(e["code"]))}</p>''' + (f'''<p class="tools">Alat di komputer: {" · ".join(f'<a href="{e_(u)}" rel="noopener">{e_(n)}</a>' for n, u in e["alat"])}</p>''' if e["alat"] else "") + "</li>" for e in rows)
     sec.append(f'<section id="{pre.lower()}"><h2>{nama} <small>{fase}</small></h2><ul class="list">{cards}</ul></section>')
 nav = " ".join(f'<a href="#{p.lower()}">{n}</a>' for p, n, _ in KELAS if any(e["code"].split(".")[0] == p for e in eps))
 doc = f'''<!doctype html>
@@ -57,4 +58,8 @@ section {{ scroll-margin-top: 110px }} h2 {{ font-size: 22px; margin: 28px 0 10p
 </div></body></html>
 '''
 open(os.path.join(REPO, "index.html"), "w", encoding="utf-8").write(doc)
+# link pendek: /d70 -> /episodes/D7.0/episode-d70.html (redirect, bukan rewrite, supaya narasi.mp3 yang dipanggil relatif tetap ketemu)
+VJ = {"$schema": "https://openapi.vercel.sh/vercel.json", "cleanUrls": False, "trailingSlash": False,
+      "redirects": [{"source": "/" + E.code_slug(e["code"]), "destination": "/" + e["page"], "permanent": False} for e in eps]}
+open(os.path.join(REPO, "vercel.json"), "w", encoding="utf-8").write(json.dumps(VJ, ensure_ascii=False, indent=1) + "\n")
 print(os.path.join(REPO, "index.html"), len(eps), "episode")

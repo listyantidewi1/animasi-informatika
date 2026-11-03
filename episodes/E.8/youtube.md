@@ -25,8 +25,8 @@ Bab:
 1:26 Kumpulkan dengan formulir
 2:39 Labeli dengan panduan
 
-Latihan interaktif (kuis dengan petunjuk, bisa dipakai di HP): https://listyantidewi1.github.io/animasi-informatika/episodes/E.8/episode-e8.html
-Semua episode dan latihannya: https://listyantidewi1.github.io/animasi-informatika/
+Latihan interaktif (kuis dengan petunjuk, bisa dipakai di HP): https://belajar-informatika.vercel.app/e8
+Semua episode dan latihannya: https://belajar-informatika.vercel.app/
 Prasyarat: episode D8.6 Proyek: Cek Data, Cek Fakta dan E.5 Struktur Data Standar.
 
 Seri Animasi Informatika untuk SMP–SMA mengikuti CP 2025 (Keputusan Kepala BSKAP 046/H/KR/2025), unit E.8 (4 JP). Tokoh: robot Kiko, Dito, dan Sinta. Semua gambar dibuat dengan kode; tanpa musik latar. Narasi: Kak Ceria (ElevenLabs).
@@ -59,8 +59,8 @@ Bab:
 1:25 Peran dan etika
 2:02 Giliranmu
 
-Latihan interaktif (kuis dengan petunjuk, bisa dipakai di HP): https://listyantidewi1.github.io/animasi-informatika/episodes/E.8/episode-e8.html
-Semua episode dan latihannya: https://listyantidewi1.github.io/animasi-informatika/
+Latihan interaktif (kuis dengan petunjuk, bisa dipakai di HP): https://belajar-informatika.vercel.app/e8
+Semua episode dan latihannya: https://belajar-informatika.vercel.app/
 Prasyarat: episode D8.6 Proyek: Cek Data, Cek Fakta dan E.5 Struktur Data Standar.
 
 Seri Animasi Informatika untuk SMP–SMA mengikuti CP 2025 (Keputusan Kepala BSKAP 046/H/KR/2025), unit E.8 (4 JP). Tokoh: robot Kiko, Dito, dan Sinta. Semua gambar dibuat dengan kode; tanpa musik latar. Narasi: Kak Ceria (ElevenLabs).
@@ -93,8 +93,8 @@ Bab:
 1:45 Kumpulkan dengan formulir
 3:14 Labeli dengan panduan
 
-Latihan interaktif (kuis dengan petunjuk, bisa dipakai di HP): https://listyantidewi1.github.io/animasi-informatika/episodes/E.8/episode-e8.html
-Semua episode dan latihannya: https://listyantidewi1.github.io/animasi-informatika/
+Latihan interaktif (kuis dengan petunjuk, bisa dipakai di HP): https://belajar-informatika.vercel.app/e8
+Semua episode dan latihannya: https://belajar-informatika.vercel.app/
 Prasyarat: episode D8.6 Proyek: Cek Data, Cek Fakta dan E.5 Struktur Data Standar.
 
 Seri Animasi Informatika untuk SMP–SMA mengikuti CP 2025 (Keputusan Kepala BSKAP 046/H/KR/2025), unit E.8 (4 JP). Tokoh: robot Kiko, Dito, dan Sinta. Semua gambar dibuat dengan kode; tanpa musik latar.
@@ -127,8 +127,8 @@ Bab:
 1:41 Peran dan etika
 2:28 Giliranmu
 
-Latihan interaktif (kuis dengan petunjuk, bisa dipakai di HP): https://listyantidewi1.github.io/animasi-informatika/episodes/E.8/episode-e8.html
-Semua episode dan latihannya: https://listyantidewi1.github.io/animasi-informatika/
+Latihan interaktif (kuis dengan petunjuk, bisa dipakai di HP): https://belajar-informatika.vercel.app/e8
+Semua episode dan latihannya: https://belajar-informatika.vercel.app/
 Prasyarat: episode D8.6 Proyek: Cek Data, Cek Fakta dan E.5 Struktur Data Standar.
 
 Seri Animasi Informatika untuk SMP–SMA mengikuti CP 2025 (Keputusan Kepala BSKAP 046/H/KR/2025), unit E.8 (4 JP). Tokoh: robot Kiko, Dito, dan Sinta. Semua gambar dibuat dengan kode; tanpa musik latar.
@@ -142,7 +142,7 @@ Seri Animasi Informatika untuk SMP–SMA mengikuti CP 2025 (Keputusan Kepala BSK
 📌 Data Berkualitas dari Komputasi Manusia (1/2): Formulir dan Label — materi Informatika kelas 10 (unit E.8).
 Setelah menonton, kamu bisa merancang pengumpulan data oleh manusia yang bersih: formulir yang jelas, panduan label, dan aturan validasi.
 Kata kunci materi ini: komputasi manusia pengumpulan data kelas 10; validasi data formulir informatika sma; pelabelan data berkualitas penjelasan; data bersih garbage in garbage out.
-Latihan interaktif (bisa dipakai di HP): https://listyantidewi1.github.io/animasi-informatika/episodes/E.8/episode-e8.html Tonton dulu episode D8.6 Proyek: Cek Data, Cek Fakta dan E.5 Struktur Data Standar bila belum.
+Latihan interaktif (bisa dipakai di HP): https://belajar-informatika.vercel.app/e8 Tonton dulu episode D8.6 Proyek: Cek Data, Cek Fakta dan E.5 Struktur Data Standar bila belum.
 Ada yang belum jelas? Tulis di komentar, pertanyaanmu membantu teman lain juga.
 ```
 
@@ -152,6 +152,6 @@ Ada yang belum jelas? Tulis di komentar, pertanyaanmu membantu teman lain juga.
 📌 Data Berkualitas dari Komputasi Manusia (2/2): Validasi, Peran, dan Etika — materi Informatika kelas 10 (unit E.8).
 Setelah menonton, kamu bisa merancang pengumpulan data oleh manusia yang bersih: formulir yang jelas, panduan label, dan aturan validasi.
 Kata kunci materi ini: komputasi manusia pengumpulan data kelas 10; validasi data formulir informatika sma; pelabelan data berkualitas penjelasan; data bersih garbage in garbage out.
-Latihan interaktif (bisa dipakai di HP): https://listyantidewi1.github.io/animasi-informatika/episodes/E.8/episode-e8.html Tonton dulu episode D8.6 Proyek: Cek Data, Cek Fakta dan E.5 Struktur Data Standar bila belum.
+Latihan interaktif (bisa dipakai di HP): https://belajar-informatika.vercel.app/e8 Tonton dulu episode D8.6 Proyek: Cek Data, Cek Fakta dan E.5 Struktur Data Standar bila belum.
 Ada yang belum jelas? Tulis di komentar, pertanyaanmu membantu teman lain juga.
 ```

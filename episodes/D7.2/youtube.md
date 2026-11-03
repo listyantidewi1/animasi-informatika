@@ -25,8 +25,8 @@ Bab:
 0:55 Input (masukan)
 1:54 Proses dan output
 
-Latihan interaktif (kuis dengan petunjuk, bisa dipakai di HP): https://listyantidewi1.github.io/animasi-informatika/episodes/D7.2/episode-d72.html
-Semua episode dan latihannya: https://listyantidewi1.github.io/animasi-informatika/
+Latihan interaktif (kuis dengan petunjuk, bisa dipakai di HP): https://belajar-informatika.vercel.app/d72
+Semua episode dan latihannya: https://belajar-informatika.vercel.app/
 Prasyarat: episode D7.0 Cara Memakai Komputer dan HP.
 
 Seri Animasi Informatika untuk SMP–SMA mengikuti CP 2025 (Keputusan Kepala BSKAP 046/H/KR/2025), unit D7.2 (8 JP). Tokoh: robot Kiko, Dito, dan Sinta. Semua gambar dibuat dengan kode; tanpa musik latar. Narasi: Kak Ceria (ElevenLabs).
@@ -60,8 +60,8 @@ Bab:
 2:31 HP juga komputer
 2:57 Giliranmu
 
-Latihan interaktif (kuis dengan petunjuk, bisa dipakai di HP): https://listyantidewi1.github.io/animasi-informatika/episodes/D7.2/episode-d72.html
-Semua episode dan latihannya: https://listyantidewi1.github.io/animasi-informatika/
+Latihan interaktif (kuis dengan petunjuk, bisa dipakai di HP): https://belajar-informatika.vercel.app/d72
+Semua episode dan latihannya: https://belajar-informatika.vercel.app/
 Prasyarat: episode D7.0 Cara Memakai Komputer dan HP.
 
 Seri Animasi Informatika untuk SMP–SMA mengikuti CP 2025 (Keputusan Kepala BSKAP 046/H/KR/2025), unit D7.2 (8 JP). Tokoh: robot Kiko, Dito, dan Sinta. Semua gambar dibuat dengan kode; tanpa musik latar. Narasi: Kak Ceria (ElevenLabs).
@@ -94,8 +94,8 @@ Bab:
 1:08 Input (masukan)
 2:20 Proses dan output
 
-Latihan interaktif (kuis dengan petunjuk, bisa dipakai di HP): https://listyantidewi1.github.io/animasi-informatika/episodes/D7.2/episode-d72.html
-Semua episode dan latihannya: https://listyantidewi1.github.io/animasi-informatika/
+Latihan interaktif (kuis dengan petunjuk, bisa dipakai di HP): https://belajar-informatika.vercel.app/d72
+Semua episode dan latihannya: https://belajar-informatika.vercel.app/
 Prasyarat: episode D7.0 Cara Memakai Komputer dan HP.
 
 Seri Animasi Informatika untuk SMP–SMA mengikuti CP 2025 (Keputusan Kepala BSKAP 046/H/KR/2025), unit D7.2 (8 JP). Tokoh: robot Kiko, Dito, dan Sinta. Semua gambar dibuat dengan kode; tanpa musik latar.
@@ -129,8 +129,8 @@ Bab:
 2:57 HP juga komputer
 3:31 Giliranmu
 
-Latihan interaktif (kuis dengan petunjuk, bisa dipakai di HP): https://listyantidewi1.github.io/animasi-informatika/episodes/D7.2/episode-d72.html
-Semua episode dan latihannya: https://listyantidewi1.github.io/animasi-informatika/
+Latihan interaktif (kuis dengan petunjuk, bisa dipakai di HP): https://belajar-informatika.vercel.app/d72
+Semua episode dan latihannya: https://belajar-informatika.vercel.app/
 Prasyarat: episode D7.0 Cara Memakai Komputer dan HP.
 
 Seri Animasi Informatika untuk SMP–SMA mengikuti CP 2025 (Keputusan Kepala BSKAP 046/H/KR/2025), unit D7.2 (8 JP). Tokoh: robot Kiko, Dito, dan Sinta. Semua gambar dibuat dengan kode; tanpa musik latar.
@@ -144,7 +144,7 @@ Seri Animasi Informatika untuk SMP–SMA mengikuti CP 2025 (Keputusan Kepala BSK
 📌 Mengenal Komputer: Perjalanan Satu Ketukan (1/2): Input, Proses, Output — materi Informatika kelas 7 (unit D7.2).
 Setelah menonton, kamu bisa menjelaskan perjalanan satu ketukan: input, proses, output, penyimpanan, dan software.
 Kata kunci materi ini: hardware dan software kelas 7; input proses output komputer; materi mengenal komputer informatika SMP; fungsi CPU, RAM, dan penyimpanan.
-Latihan interaktif (bisa dipakai di HP): https://listyantidewi1.github.io/animasi-informatika/episodes/D7.2/episode-d72.html Tonton dulu episode D7.0 Cara Memakai Komputer dan HP bila belum.
+Latihan interaktif (bisa dipakai di HP): https://belajar-informatika.vercel.app/d72 Tonton dulu episode D7.0 Cara Memakai Komputer dan HP bila belum.
 Ada yang belum jelas? Tulis di komentar, pertanyaanmu membantu teman lain juga.
 ```
 
@@ -154,6 +154,6 @@ Ada yang belum jelas? Tulis di komentar, pertanyaanmu membantu teman lain juga.
 📌 Mengenal Komputer: Perjalanan Satu Ketukan (2/2): Penyimpanan dan Software — materi Informatika kelas 7 (unit D7.2).
 Setelah menonton, kamu bisa menjelaskan perjalanan satu ketukan: input, proses, output, penyimpanan, dan software.
 Kata kunci materi ini: hardware dan software kelas 7; input proses output komputer; materi mengenal komputer informatika SMP; fungsi CPU, RAM, dan penyimpanan.
-Latihan interaktif (bisa dipakai di HP): https://listyantidewi1.github.io/animasi-informatika/episodes/D7.2/episode-d72.html Tonton dulu episode D7.0 Cara Memakai Komputer dan HP bila belum.
+Latihan interaktif (bisa dipakai di HP): https://belajar-informatika.vercel.app/d72 Tonton dulu episode D7.0 Cara Memakai Komputer dan HP bila belum.
 Ada yang belum jelas? Tulis di komentar, pertanyaanmu membantu teman lain juga.
 ```

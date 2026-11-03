@@ -26,9 +26,9 @@ Bab:
 1:32 Abstract data type dan library
 2:39 Linked list
 
-Latihan interaktif (kuis dengan petunjuk, bisa dipakai di HP): https://listyantidewi1.github.io/animasi-informatika/episodes/F12.1/episode-f121.html
+Latihan interaktif (kuis dengan petunjuk, bisa dipakai di HP): https://belajar-informatika.vercel.app/f121
 Alat untuk latihan di komputer: Python (IDLE, gratis, luring) https://www.python.org/downloads/; Google Colab (Python di browser) https://colab.research.google.com/
-Semua episode dan latihannya: https://listyantidewi1.github.io/animasi-informatika/
+Semua episode dan latihannya: https://belajar-informatika.vercel.app/
 Prasyarat: episode E.5 dan F12.0.
 
 Seri Animasi Informatika untuk SMP–SMA mengikuti CP 2025 (Keputusan Kepala BSKAP 046/H/KR/2025), unit F12.1 (24 JP). Tokoh: robot Kiko, Dito, dan Sinta. Semua gambar dibuat dengan kode; tanpa musik latar. Narasi: Kak Ceria (ElevenLabs).
@@ -63,9 +63,9 @@ Bab:
 2:25 Graph dan memilih struktur
 3:03 Giliranmu
 
-Latihan interaktif (kuis dengan petunjuk, bisa dipakai di HP): https://listyantidewi1.github.io/animasi-informatika/episodes/F12.1/episode-f121.html
+Latihan interaktif (kuis dengan petunjuk, bisa dipakai di HP): https://belajar-informatika.vercel.app/f121
 Alat untuk latihan di komputer: Python (IDLE, gratis, luring) https://www.python.org/downloads/; Google Colab (Python di browser) https://colab.research.google.com/
-Semua episode dan latihannya: https://listyantidewi1.github.io/animasi-informatika/
+Semua episode dan latihannya: https://belajar-informatika.vercel.app/
 Prasyarat: episode E.5 dan F12.0.
 
 Seri Animasi Informatika untuk SMP–SMA mengikuti CP 2025 (Keputusan Kepala BSKAP 046/H/KR/2025), unit F12.1 (24 JP). Tokoh: robot Kiko, Dito, dan Sinta. Semua gambar dibuat dengan kode; tanpa musik latar. Narasi: Kak Ceria (ElevenLabs).
@@ -99,9 +99,9 @@ Bab:
 1:56 Abstract data type dan library
 3:20 Linked list
 
-Latihan interaktif (kuis dengan petunjuk, bisa dipakai di HP): https://listyantidewi1.github.io/animasi-informatika/episodes/F12.1/episode-f121.html
+Latihan interaktif (kuis dengan petunjuk, bisa dipakai di HP): https://belajar-informatika.vercel.app/f121
 Alat untuk latihan di komputer: Python (IDLE, gratis, luring) https://www.python.org/downloads/; Google Colab (Python di browser) https://colab.research.google.com/
-Semua episode dan latihannya: https://listyantidewi1.github.io/animasi-informatika/
+Semua episode dan latihannya: https://belajar-informatika.vercel.app/
 Prasyarat: episode E.5 dan F12.0.
 
 Seri Animasi Informatika untuk SMP–SMA mengikuti CP 2025 (Keputusan Kepala BSKAP 046/H/KR/2025), unit F12.1 (24 JP). Tokoh: robot Kiko, Dito, dan Sinta. Semua gambar dibuat dengan kode; tanpa musik latar.
@@ -136,9 +136,9 @@ Bab:
 3:01 Graph dan memilih struktur
 3:47 Giliranmu
 
-Latihan interaktif (kuis dengan petunjuk, bisa dipakai di HP): https://listyantidewi1.github.io/animasi-informatika/episodes/F12.1/episode-f121.html
+Latihan interaktif (kuis dengan petunjuk, bisa dipakai di HP): https://belajar-informatika.vercel.app/f121
 Alat untuk latihan di komputer: Python (IDLE, gratis, luring) https://www.python.org/downloads/; Google Colab (Python di browser) https://colab.research.google.com/
-Semua episode dan latihannya: https://listyantidewi1.github.io/animasi-informatika/
+Semua episode dan latihannya: https://belajar-informatika.vercel.app/
 Prasyarat: episode E.5 dan F12.0.
 
 Seri Animasi Informatika untuk SMP–SMA mengikuti CP 2025 (Keputusan Kepala BSKAP 046/H/KR/2025), unit F12.1 (24 JP). Tokoh: robot Kiko, Dito, dan Sinta. Semua gambar dibuat dengan kode; tanpa musik latar.
@@ -152,7 +152,7 @@ Seri Animasi Informatika untuk SMP–SMA mengikuti CP 2025 (Keputusan Kepala BSK
 📌 Struktur Data Kompleks dan Abstrak (1/2): ADT, Library, dan Linked List — materi Informatika kelas 12 (unit F12.1).
 Setelah menonton, kamu bisa memilih dan memakai stack, queue, linked list, dictionary, tree, dan graph di Python sesuai kebutuhan programmu.
 Kata kunci materi ini: struktur data python kelas 12; linked list python penjelasan pemula; binary search tree penjelasan; hash map dictionary python; graph struktur data sma.
-Latihan interaktif (bisa dipakai di HP): https://listyantidewi1.github.io/animasi-informatika/episodes/F12.1/episode-f121.html Tonton dulu episode E.5 dan F12.0 bila belum.
+Latihan interaktif (bisa dipakai di HP): https://belajar-informatika.vercel.app/f121 Tonton dulu episode E.5 dan F12.0 bila belum.
 Alat untuk latihan di komputer: Python (IDLE, gratis, luring) https://www.python.org/downloads/; Google Colab (Python di browser) https://colab.research.google.com/
 Ada yang belum jelas? Tulis di komentar, pertanyaanmu membantu teman lain juga.
 ```
@@ -163,7 +163,7 @@ Ada yang belum jelas? Tulis di komentar, pertanyaanmu membantu teman lain juga.
 📌 Struktur Data Kompleks dan Abstrak (2/2): Hash Map, Tree, dan Graph — materi Informatika kelas 12 (unit F12.1).
 Setelah menonton, kamu bisa memilih dan memakai stack, queue, linked list, dictionary, tree, dan graph di Python sesuai kebutuhan programmu.
 Kata kunci materi ini: struktur data python kelas 12; linked list python penjelasan pemula; binary search tree penjelasan; hash map dictionary python; graph struktur data sma.
-Latihan interaktif (bisa dipakai di HP): https://listyantidewi1.github.io/animasi-informatika/episodes/F12.1/episode-f121.html Tonton dulu episode E.5 dan F12.0 bila belum.
+Latihan interaktif (bisa dipakai di HP): https://belajar-informatika.vercel.app/f121 Tonton dulu episode E.5 dan F12.0 bila belum.
 Alat untuk latihan di komputer: Python (IDLE, gratis, luring) https://www.python.org/downloads/; Google Colab (Python di browser) https://colab.research.google.com/
 Ada yang belum jelas? Tulis di komentar, pertanyaanmu membantu teman lain juga.
 ```

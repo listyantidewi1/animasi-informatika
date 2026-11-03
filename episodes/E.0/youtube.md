@@ -25,8 +25,8 @@ Bab:
 1:26 Bekal 1: empat jurus
 2:34 Bekal 2: data terstruktur
 
-Latihan interaktif (kuis dengan petunjuk, bisa dipakai di HP): https://listyantidewi1.github.io/animasi-informatika/episodes/E.0/episode-e0.html
-Semua episode dan latihannya: https://listyantidewi1.github.io/animasi-informatika/
+Latihan interaktif (kuis dengan petunjuk, bisa dipakai di HP): https://belajar-informatika.vercel.app/e0
+Semua episode dan latihannya: https://belajar-informatika.vercel.app/
 Tidak ada prasyarat.
 
 Seri Animasi Informatika untuk SMP–SMA mengikuti CP 2025 (Keputusan Kepala BSKAP 046/H/KR/2025), unit E.0 (8 JP). Tokoh: robot Kiko, Dito, dan Sinta. Semua gambar dibuat dengan kode; tanpa musik latar. Narasi: Kak Ceria (ElevenLabs).
@@ -60,8 +60,8 @@ Bab:
 2:27 Peta kelas X
 3:05 Giliranmu
 
-Latihan interaktif (kuis dengan petunjuk, bisa dipakai di HP): https://listyantidewi1.github.io/animasi-informatika/episodes/E.0/episode-e0.html
-Semua episode dan latihannya: https://listyantidewi1.github.io/animasi-informatika/
+Latihan interaktif (kuis dengan petunjuk, bisa dipakai di HP): https://belajar-informatika.vercel.app/e0
+Semua episode dan latihannya: https://belajar-informatika.vercel.app/
 Tidak ada prasyarat.
 
 Seri Animasi Informatika untuk SMP–SMA mengikuti CP 2025 (Keputusan Kepala BSKAP 046/H/KR/2025), unit E.0 (8 JP). Tokoh: robot Kiko, Dito, dan Sinta. Semua gambar dibuat dengan kode; tanpa musik latar. Narasi: Kak Ceria (ElevenLabs).
@@ -94,8 +94,8 @@ Bab:
 1:44 Bekal 1: empat jurus
 2:58 Bekal 2: data terstruktur
 
-Latihan interaktif (kuis dengan petunjuk, bisa dipakai di HP): https://listyantidewi1.github.io/animasi-informatika/episodes/E.0/episode-e0.html
-Semua episode dan latihannya: https://listyantidewi1.github.io/animasi-informatika/
+Latihan interaktif (kuis dengan petunjuk, bisa dipakai di HP): https://belajar-informatika.vercel.app/e0
+Semua episode dan latihannya: https://belajar-informatika.vercel.app/
 Tidak ada prasyarat.
 
 Seri Animasi Informatika untuk SMP–SMA mengikuti CP 2025 (Keputusan Kepala BSKAP 046/H/KR/2025), unit E.0 (8 JP). Tokoh: robot Kiko, Dito, dan Sinta. Semua gambar dibuat dengan kode; tanpa musik latar.
@@ -129,8 +129,8 @@ Bab:
 2:59 Peta kelas X
 3:45 Giliranmu
 
-Latihan interaktif (kuis dengan petunjuk, bisa dipakai di HP): https://listyantidewi1.github.io/animasi-informatika/episodes/E.0/episode-e0.html
-Semua episode dan latihannya: https://listyantidewi1.github.io/animasi-informatika/
+Latihan interaktif (kuis dengan petunjuk, bisa dipakai di HP): https://belajar-informatika.vercel.app/e0
+Semua episode dan latihannya: https://belajar-informatika.vercel.app/
 Tidak ada prasyarat.
 
 Seri Animasi Informatika untuk SMP–SMA mengikuti CP 2025 (Keputusan Kepala BSKAP 046/H/KR/2025), unit E.0 (8 JP). Tokoh: robot Kiko, Dito, dan Sinta. Semua gambar dibuat dengan kode; tanpa musik latar.
@@ -144,7 +144,7 @@ Seri Animasi Informatika untuk SMP–SMA mengikuti CP 2025 (Keputusan Kepala BSK
 📌 Jembatan ke Kelas X: Empat Bekal dari SMP (1/2): Berpikir Komputasional dan Data Terstruktur — materi Informatika kelas 10 (unit E.0).
 Setelah menonton, kamu bisa mengecek sendiri empat bekal dari SMP: berpikir komputasional, data terstruktur, pseudocode, dan keamanan akun, lalu tahu mana yang perlu diulang.
 Kata kunci materi ini: informatika kelas 10 materi awal; jembatan smp ke sma informatika; empat jurus berpikir komputasional kelas 10; kuis diagnostik informatika kelas x.
-Latihan interaktif (bisa dipakai di HP): https://listyantidewi1.github.io/animasi-informatika/episodes/E.0/episode-e0.html
+Latihan interaktif (bisa dipakai di HP): https://belajar-informatika.vercel.app/e0
 Ada yang belum jelas? Tulis di komentar, pertanyaanmu membantu teman lain juga.
 ```
 
@@ -154,6 +154,6 @@ Ada yang belum jelas? Tulis di komentar, pertanyaanmu membantu teman lain juga.
 📌 Jembatan ke Kelas X: Empat Bekal dari SMP (2/2): Pseudocode, Keamanan Akun, dan Peta Kelas X — materi Informatika kelas 10 (unit E.0).
 Setelah menonton, kamu bisa mengecek sendiri empat bekal dari SMP: berpikir komputasional, data terstruktur, pseudocode, dan keamanan akun, lalu tahu mana yang perlu diulang.
 Kata kunci materi ini: informatika kelas 10 materi awal; jembatan smp ke sma informatika; empat jurus berpikir komputasional kelas 10; kuis diagnostik informatika kelas x.
-Latihan interaktif (bisa dipakai di HP): https://listyantidewi1.github.io/animasi-informatika/episodes/E.0/episode-e0.html
+Latihan interaktif (bisa dipakai di HP): https://belajar-informatika.vercel.app/e0
 Ada yang belum jelas? Tulis di komentar, pertanyaanmu membantu teman lain juga.
 ```

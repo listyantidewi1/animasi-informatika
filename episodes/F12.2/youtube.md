@@ -26,9 +26,9 @@ Bab:
 1:28 Ukuran terbaik, brute force, greedy
 2:42 Dijkstra dengan tangan
 
-Latihan interaktif (kuis dengan petunjuk, bisa dipakai di HP): https://listyantidewi1.github.io/animasi-informatika/episodes/F12.2/episode-f122.html
+Latihan interaktif (kuis dengan petunjuk, bisa dipakai di HP): https://belajar-informatika.vercel.app/f122
 Alat untuk latihan di komputer: Python (IDLE, gratis, luring) https://www.python.org/downloads/; Google Colab (Python di browser) https://colab.research.google.com/
-Semua episode dan latihannya: https://listyantidewi1.github.io/animasi-informatika/
+Semua episode dan latihannya: https://belajar-informatika.vercel.app/
 Prasyarat: episode F11.6 dan F12.1.
 
 Seri Animasi Informatika untuk SMP–SMA mengikuti CP 2025 (Keputusan Kepala BSKAP 046/H/KR/2025), unit F12.2 (14 JP). Tokoh: robot Kiko, Dito, dan Sinta. Semua gambar dibuat dengan kode; tanpa musik latar. Narasi: Kak Ceria (ElevenLabs).
@@ -63,9 +63,9 @@ Bab:
 2:18 Jadwal dan memilih solusi
 2:55 Giliranmu
 
-Latihan interaktif (kuis dengan petunjuk, bisa dipakai di HP): https://listyantidewi1.github.io/animasi-informatika/episodes/F12.2/episode-f122.html
+Latihan interaktif (kuis dengan petunjuk, bisa dipakai di HP): https://belajar-informatika.vercel.app/f122
 Alat untuk latihan di komputer: Python (IDLE, gratis, luring) https://www.python.org/downloads/; Google Colab (Python di browser) https://colab.research.google.com/
-Semua episode dan latihannya: https://listyantidewi1.github.io/animasi-informatika/
+Semua episode dan latihannya: https://belajar-informatika.vercel.app/
 Prasyarat: episode F11.6 dan F12.1.
 
 Seri Animasi Informatika untuk SMP–SMA mengikuti CP 2025 (Keputusan Kepala BSKAP 046/H/KR/2025), unit F12.2 (14 JP). Tokoh: robot Kiko, Dito, dan Sinta. Semua gambar dibuat dengan kode; tanpa musik latar. Narasi: Kak Ceria (ElevenLabs).
@@ -99,9 +99,9 @@ Bab:
 1:50 Ukuran terbaik, brute force, greedy
 3:23 Dijkstra dengan tangan
 
-Latihan interaktif (kuis dengan petunjuk, bisa dipakai di HP): https://listyantidewi1.github.io/animasi-informatika/episodes/F12.2/episode-f122.html
+Latihan interaktif (kuis dengan petunjuk, bisa dipakai di HP): https://belajar-informatika.vercel.app/f122
 Alat untuk latihan di komputer: Python (IDLE, gratis, luring) https://www.python.org/downloads/; Google Colab (Python di browser) https://colab.research.google.com/
-Semua episode dan latihannya: https://listyantidewi1.github.io/animasi-informatika/
+Semua episode dan latihannya: https://belajar-informatika.vercel.app/
 Prasyarat: episode F11.6 dan F12.1.
 
 Seri Animasi Informatika untuk SMP–SMA mengikuti CP 2025 (Keputusan Kepala BSKAP 046/H/KR/2025), unit F12.2 (14 JP). Tokoh: robot Kiko, Dito, dan Sinta. Semua gambar dibuat dengan kode; tanpa musik latar.
@@ -136,9 +136,9 @@ Bab:
 2:50 Jadwal dan memilih solusi
 3:36 Giliranmu
 
-Latihan interaktif (kuis dengan petunjuk, bisa dipakai di HP): https://listyantidewi1.github.io/animasi-informatika/episodes/F12.2/episode-f122.html
+Latihan interaktif (kuis dengan petunjuk, bisa dipakai di HP): https://belajar-informatika.vercel.app/f122
 Alat untuk latihan di komputer: Python (IDLE, gratis, luring) https://www.python.org/downloads/; Google Colab (Python di browser) https://colab.research.google.com/
-Semua episode dan latihannya: https://listyantidewi1.github.io/animasi-informatika/
+Semua episode dan latihannya: https://belajar-informatika.vercel.app/
 Prasyarat: episode F11.6 dan F12.1.
 
 Seri Animasi Informatika untuk SMP–SMA mengikuti CP 2025 (Keputusan Kepala BSKAP 046/H/KR/2025), unit F12.2 (14 JP). Tokoh: robot Kiko, Dito, dan Sinta. Semua gambar dibuat dengan kode; tanpa musik latar.
@@ -152,7 +152,7 @@ Seri Animasi Informatika untuk SMP–SMA mengikuti CP 2025 (Keputusan Kepala BSK
 📌 Memilih Solusi Optimal (1/2): Optimal, Greedy, dan Dijkstra — materi Informatika kelas 12 (unit F12.2).
 Setelah menonton, kamu bisa mencari rute terpendek dengan algoritma Dijkstra, lalu memilih solusi yang paling efisien untuk rute dan jadwal.
 Kata kunci materi ini: algoritma dijkstra penjelasan mudah; rute terpendek graph kelas 12; solusi optimal informatika sma; greedy vs brute force; heapq python priority queue.
-Latihan interaktif (bisa dipakai di HP): https://listyantidewi1.github.io/animasi-informatika/episodes/F12.2/episode-f122.html Tonton dulu episode F11.6 dan F12.1 bila belum.
+Latihan interaktif (bisa dipakai di HP): https://belajar-informatika.vercel.app/f122 Tonton dulu episode F11.6 dan F12.1 bila belum.
 Alat untuk latihan di komputer: Python (IDLE, gratis, luring) https://www.python.org/downloads/; Google Colab (Python di browser) https://colab.research.google.com/
 Ada yang belum jelas? Tulis di komentar, pertanyaanmu membantu teman lain juga.
 ```
@@ -163,7 +163,7 @@ Ada yang belum jelas? Tulis di komentar, pertanyaanmu membantu teman lain juga.
 📌 Memilih Solusi Optimal (2/2): Rute, Struktur, dan Jadwal — materi Informatika kelas 12 (unit F12.2).
 Setelah menonton, kamu bisa mencari rute terpendek dengan algoritma Dijkstra, lalu memilih solusi yang paling efisien untuk rute dan jadwal.
 Kata kunci materi ini: algoritma dijkstra penjelasan mudah; rute terpendek graph kelas 12; solusi optimal informatika sma; greedy vs brute force; heapq python priority queue.
-Latihan interaktif (bisa dipakai di HP): https://listyantidewi1.github.io/animasi-informatika/episodes/F12.2/episode-f122.html Tonton dulu episode F11.6 dan F12.1 bila belum.
+Latihan interaktif (bisa dipakai di HP): https://belajar-informatika.vercel.app/f122 Tonton dulu episode F11.6 dan F12.1 bila belum.
 Alat untuk latihan di komputer: Python (IDLE, gratis, luring) https://www.python.org/downloads/; Google Colab (Python di browser) https://colab.research.google.com/
 Ada yang belum jelas? Tulis di komentar, pertanyaanmu membantu teman lain juga.
 ```

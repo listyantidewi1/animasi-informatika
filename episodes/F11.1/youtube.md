@@ -25,9 +25,9 @@ Bab:
 1:26 Analisis kebutuhan
 2:34 Desain
 
-Latihan interaktif (kuis dengan petunjuk, bisa dipakai di HP): https://listyantidewi1.github.io/animasi-informatika/episodes/F11.1/episode-f111.html
+Latihan interaktif (kuis dengan petunjuk, bisa dipakai di HP): https://belajar-informatika.vercel.app/f111
 Alat untuk latihan di komputer: Python (IDLE, gratis, luring) https://www.python.org/downloads/; Google Colab (Python di browser) https://colab.research.google.com/
-Semua episode dan latihannya: https://listyantidewi1.github.io/animasi-informatika/
+Semua episode dan latihannya: https://belajar-informatika.vercel.app/
 Prasyarat: episode F11.0 Jembatan Menuju Pemrograman dan D9.6 Proyek Akhir Fase D.
 
 Seri Animasi Informatika untuk SMP–SMA mengikuti CP 2025 (Keputusan Kepala BSKAP 046/H/KR/2025), unit F11.1 (6 JP). Tokoh: robot Kiko, Dito, dan Sinta. Semua gambar dibuat dengan kode; tanpa musik latar. Narasi: Kak Ceria (ElevenLabs).
@@ -61,9 +61,9 @@ Bab:
 2:31 Siklus dan tim
 3:07 Giliranmu
 
-Latihan interaktif (kuis dengan petunjuk, bisa dipakai di HP): https://listyantidewi1.github.io/animasi-informatika/episodes/F11.1/episode-f111.html
+Latihan interaktif (kuis dengan petunjuk, bisa dipakai di HP): https://belajar-informatika.vercel.app/f111
 Alat untuk latihan di komputer: Python (IDLE, gratis, luring) https://www.python.org/downloads/; Google Colab (Python di browser) https://colab.research.google.com/
-Semua episode dan latihannya: https://listyantidewi1.github.io/animasi-informatika/
+Semua episode dan latihannya: https://belajar-informatika.vercel.app/
 Prasyarat: episode F11.0 Jembatan Menuju Pemrograman dan D9.6 Proyek Akhir Fase D.
 
 Seri Animasi Informatika untuk SMP–SMA mengikuti CP 2025 (Keputusan Kepala BSKAP 046/H/KR/2025), unit F11.1 (6 JP). Tokoh: robot Kiko, Dito, dan Sinta. Semua gambar dibuat dengan kode; tanpa musik latar. Narasi: Kak Ceria (ElevenLabs).
@@ -96,9 +96,9 @@ Bab:
 1:45 Analisis kebutuhan
 3:07 Desain
 
-Latihan interaktif (kuis dengan petunjuk, bisa dipakai di HP): https://listyantidewi1.github.io/animasi-informatika/episodes/F11.1/episode-f111.html
+Latihan interaktif (kuis dengan petunjuk, bisa dipakai di HP): https://belajar-informatika.vercel.app/f111
 Alat untuk latihan di komputer: Python (IDLE, gratis, luring) https://www.python.org/downloads/; Google Colab (Python di browser) https://colab.research.google.com/
-Semua episode dan latihannya: https://listyantidewi1.github.io/animasi-informatika/
+Semua episode dan latihannya: https://belajar-informatika.vercel.app/
 Prasyarat: episode F11.0 Jembatan Menuju Pemrograman dan D9.6 Proyek Akhir Fase D.
 
 Seri Animasi Informatika untuk SMP–SMA mengikuti CP 2025 (Keputusan Kepala BSKAP 046/H/KR/2025), unit F11.1 (6 JP). Tokoh: robot Kiko, Dito, dan Sinta. Semua gambar dibuat dengan kode; tanpa musik latar.
@@ -132,9 +132,9 @@ Bab:
 3:01 Siklus dan tim
 3:47 Giliranmu
 
-Latihan interaktif (kuis dengan petunjuk, bisa dipakai di HP): https://listyantidewi1.github.io/animasi-informatika/episodes/F11.1/episode-f111.html
+Latihan interaktif (kuis dengan petunjuk, bisa dipakai di HP): https://belajar-informatika.vercel.app/f111
 Alat untuk latihan di komputer: Python (IDLE, gratis, luring) https://www.python.org/downloads/; Google Colab (Python di browser) https://colab.research.google.com/
-Semua episode dan latihannya: https://listyantidewi1.github.io/animasi-informatika/
+Semua episode dan latihannya: https://belajar-informatika.vercel.app/
 Prasyarat: episode F11.0 Jembatan Menuju Pemrograman dan D9.6 Proyek Akhir Fase D.
 
 Seri Animasi Informatika untuk SMP–SMA mengikuti CP 2025 (Keputusan Kepala BSKAP 046/H/KR/2025), unit F11.1 (6 JP). Tokoh: robot Kiko, Dito, dan Sinta. Semua gambar dibuat dengan kode; tanpa musik latar.
@@ -148,7 +148,7 @@ Seri Animasi Informatika untuk SMP–SMA mengikuti CP 2025 (Keputusan Kepala BSK
 📌 Alur Pengembangan Program dan Produk Digital (1/2): Kebutuhan dan Desain — materi Informatika kelas 11 (unit F11.1).
 Setelah menonton, kamu bisa menjelaskan enam tahap pengembangan produk digital, dari kebutuhan sampai pemeliharaan.
 Kata kunci materi ini: alur pengembangan software kelas 11; tahap pengembangan aplikasi analisis desain implementasi pengujian; siklus hidup pengembangan program sma; kasus uji dan bug penjelasan pemula.
-Latihan interaktif (bisa dipakai di HP): https://listyantidewi1.github.io/animasi-informatika/episodes/F11.1/episode-f111.html Tonton dulu episode F11.0 Jembatan Menuju Pemrograman dan D9.6 Proyek Akhir Fase D bila belum.
+Latihan interaktif (bisa dipakai di HP): https://belajar-informatika.vercel.app/f111 Tonton dulu episode F11.0 Jembatan Menuju Pemrograman dan D9.6 Proyek Akhir Fase D bila belum.
 Alat untuk latihan di komputer: Python (IDLE, gratis, luring) https://www.python.org/downloads/; Google Colab (Python di browser) https://colab.research.google.com/
 Ada yang belum jelas? Tulis di komentar, pertanyaanmu membantu teman lain juga.
 ```
@@ -159,7 +159,7 @@ Ada yang belum jelas? Tulis di komentar, pertanyaanmu membantu teman lain juga.
 📌 Alur Pengembangan Program dan Produk Digital (2/2): Implementasi, Pengujian, Rilis, Pemeliharaan — materi Informatika kelas 11 (unit F11.1).
 Setelah menonton, kamu bisa menjelaskan enam tahap pengembangan produk digital, dari kebutuhan sampai pemeliharaan.
 Kata kunci materi ini: alur pengembangan software kelas 11; tahap pengembangan aplikasi analisis desain implementasi pengujian; siklus hidup pengembangan program sma; kasus uji dan bug penjelasan pemula.
-Latihan interaktif (bisa dipakai di HP): https://listyantidewi1.github.io/animasi-informatika/episodes/F11.1/episode-f111.html Tonton dulu episode F11.0 Jembatan Menuju Pemrograman dan D9.6 Proyek Akhir Fase D bila belum.
+Latihan interaktif (bisa dipakai di HP): https://belajar-informatika.vercel.app/f111 Tonton dulu episode F11.0 Jembatan Menuju Pemrograman dan D9.6 Proyek Akhir Fase D bila belum.
 Alat untuk latihan di komputer: Python (IDLE, gratis, luring) https://www.python.org/downloads/; Google Colab (Python di browser) https://colab.research.google.com/
 Ada yang belum jelas? Tulis di komentar, pertanyaanmu membantu teman lain juga.
 ```

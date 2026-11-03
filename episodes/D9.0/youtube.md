@@ -27,8 +27,8 @@ Bab:
 3:04 Menuju kelas sembilan
 4:03 Giliranmu
 
-Latihan interaktif (kuis dengan petunjuk, bisa dipakai di HP): https://listyantidewi1.github.io/animasi-informatika/episodes/D9.0/episode-d90.html
-Semua episode dan latihannya: https://listyantidewi1.github.io/animasi-informatika/
+Latihan interaktif (kuis dengan petunjuk, bisa dipakai di HP): https://belajar-informatika.vercel.app/d90
+Semua episode dan latihannya: https://belajar-informatika.vercel.app/
 Prasyarat: episode D8.2 dan D8.3 (bila kuis diagnostik menyarankan).
 
 Seri Animasi Informatika untuk SMP–SMA mengikuti CP 2025 (Keputusan Kepala BSKAP 046/H/KR/2025), unit D9.0 (4 JP). Tokoh: robot Kiko, Dito, dan Sinta. Semua gambar dibuat dengan kode; tanpa musik latar. Narasi: Kak Ceria (ElevenLabs).
@@ -63,8 +63,8 @@ Bab:
 3:46 Menuju kelas sembilan
 5:00 Giliranmu
 
-Latihan interaktif (kuis dengan petunjuk, bisa dipakai di HP): https://listyantidewi1.github.io/animasi-informatika/episodes/D9.0/episode-d90.html
-Semua episode dan latihannya: https://listyantidewi1.github.io/animasi-informatika/
+Latihan interaktif (kuis dengan petunjuk, bisa dipakai di HP): https://belajar-informatika.vercel.app/d90
+Semua episode dan latihannya: https://belajar-informatika.vercel.app/
 Prasyarat: episode D8.2 dan D8.3 (bila kuis diagnostik menyarankan).
 
 Seri Animasi Informatika untuk SMP–SMA mengikuti CP 2025 (Keputusan Kepala BSKAP 046/H/KR/2025), unit D9.0 (4 JP). Tokoh: robot Kiko, Dito, dan Sinta. Semua gambar dibuat dengan kode; tanpa musik latar.
@@ -78,6 +78,6 @@ Seri Animasi Informatika untuk SMP–SMA mengikuti CP 2025 (Keputusan Kepala BSK
 📌 Jembatan Kelas IX: Flowchart, Pseudocode, dan Tabel — materi Informatika kelas 9 (unit D9.0).
 Setelah menonton, kamu bisa mengingat flowchart, pseudocode bercabang, dan tabel, lalu tahu bagian yang perlu diulang.
 Kata kunci materi ini: informatika kelas 9 semester 1; flowchart dan pseudocode kelas 9; mengulang percabangan dan tabel data kelas 8; materi awal informatika kelas 9 kurikulum merdeka.
-Latihan interaktif (bisa dipakai di HP): https://listyantidewi1.github.io/animasi-informatika/episodes/D9.0/episode-d90.html Tonton dulu episode D8.2 dan D8.3 (bila kuis diagnostik menyarankan) bila belum.
+Latihan interaktif (bisa dipakai di HP): https://belajar-informatika.vercel.app/d90 Tonton dulu episode D8.2 dan D8.3 (bila kuis diagnostik menyarankan) bila belum.
 Ada yang belum jelas? Tulis di komentar, pertanyaanmu membantu teman lain juga.
 ```

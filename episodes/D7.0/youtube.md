@@ -25,8 +25,8 @@ Bab:
 1:13 Mouse
 2:47 Keyboard
 
-Latihan interaktif (kuis dengan petunjuk, bisa dipakai di HP): https://listyantidewi1.github.io/animasi-informatika/episodes/D7.0/episode-d70.html
-Semua episode dan latihannya: https://listyantidewi1.github.io/animasi-informatika/
+Latihan interaktif (kuis dengan petunjuk, bisa dipakai di HP): https://belajar-informatika.vercel.app/d70
+Semua episode dan latihannya: https://belajar-informatika.vercel.app/
 Tidak ada prasyarat.
 
 Seri Animasi Informatika untuk SMP–SMA mengikuti CP 2025 (Keputusan Kepala BSKAP 046/H/KR/2025), unit D7.0 (6 JP). Tokoh: robot Kiko, Dito, dan Sinta. Semua gambar dibuat dengan kode; tanpa musik latar. Narasi: Kak Ceria (ElevenLabs).
@@ -61,8 +61,8 @@ Bab:
 2:59 Save dan cari
 4:01 Giliranmu
 
-Latihan interaktif (kuis dengan petunjuk, bisa dipakai di HP): https://listyantidewi1.github.io/animasi-informatika/episodes/D7.0/episode-d70.html
-Semua episode dan latihannya: https://listyantidewi1.github.io/animasi-informatika/
+Latihan interaktif (kuis dengan petunjuk, bisa dipakai di HP): https://belajar-informatika.vercel.app/d70
+Semua episode dan latihannya: https://belajar-informatika.vercel.app/
 Tidak ada prasyarat.
 
 Seri Animasi Informatika untuk SMP–SMA mengikuti CP 2025 (Keputusan Kepala BSKAP 046/H/KR/2025), unit D7.0 (6 JP). Tokoh: robot Kiko, Dito, dan Sinta. Semua gambar dibuat dengan kode; tanpa musik latar. Narasi: Kak Ceria (ElevenLabs).
@@ -95,8 +95,8 @@ Bab:
 1:31 Mouse
 3:29 Keyboard
 
-Latihan interaktif (kuis dengan petunjuk, bisa dipakai di HP): https://listyantidewi1.github.io/animasi-informatika/episodes/D7.0/episode-d70.html
-Semua episode dan latihannya: https://listyantidewi1.github.io/animasi-informatika/
+Latihan interaktif (kuis dengan petunjuk, bisa dipakai di HP): https://belajar-informatika.vercel.app/d70
+Semua episode dan latihannya: https://belajar-informatika.vercel.app/
 Tidak ada prasyarat.
 
 Seri Animasi Informatika untuk SMP–SMA mengikuti CP 2025 (Keputusan Kepala BSKAP 046/H/KR/2025), unit D7.0 (6 JP). Tokoh: robot Kiko, Dito, dan Sinta. Semua gambar dibuat dengan kode; tanpa musik latar.
@@ -131,8 +131,8 @@ Bab:
 3:41 Save dan cari
 4:57 Giliranmu
 
-Latihan interaktif (kuis dengan petunjuk, bisa dipakai di HP): https://listyantidewi1.github.io/animasi-informatika/episodes/D7.0/episode-d70.html
-Semua episode dan latihannya: https://listyantidewi1.github.io/animasi-informatika/
+Latihan interaktif (kuis dengan petunjuk, bisa dipakai di HP): https://belajar-informatika.vercel.app/d70
+Semua episode dan latihannya: https://belajar-informatika.vercel.app/
 Tidak ada prasyarat.
 
 Seri Animasi Informatika untuk SMP–SMA mengikuti CP 2025 (Keputusan Kepala BSKAP 046/H/KR/2025), unit D7.0 (6 JP). Tokoh: robot Kiko, Dito, dan Sinta. Semua gambar dibuat dengan kode; tanpa musik latar.
@@ -146,7 +146,7 @@ Seri Animasi Informatika untuk SMP–SMA mengikuti CP 2025 (Keputusan Kepala BSK
 📌 Cara Memakai Komputer dan HP (1/2): Mouse dan Keyboard — materi Informatika kelas 7 (unit D7.0).
 Setelah menonton, kamu bisa memakai mouse, keyboard, dan layar sentuh, serta menyimpan file di folder dengan rapi.
 Kata kunci materi ini: cara menggunakan mouse dan keyboard kelas 7; materi informatika kelas 7 perangkat komputer; cara menyimpan file di folder; fungsi mouse, keyboard, dan layar sentuh.
-Latihan interaktif (bisa dipakai di HP): https://listyantidewi1.github.io/animasi-informatika/episodes/D7.0/episode-d70.html
+Latihan interaktif (bisa dipakai di HP): https://belajar-informatika.vercel.app/d70
 Ada yang belum jelas? Tulis di komentar, pertanyaanmu membantu teman lain juga.
 ```
 
@@ -156,6 +156,6 @@ Ada yang belum jelas? Tulis di komentar, pertanyaanmu membantu teman lain juga.
 📌 Cara Memakai Komputer dan HP (2/2): Touch Screen, File, dan Folder — materi Informatika kelas 7 (unit D7.0).
 Setelah menonton, kamu bisa memakai mouse, keyboard, dan layar sentuh, serta menyimpan file di folder dengan rapi.
 Kata kunci materi ini: cara menggunakan mouse dan keyboard kelas 7; materi informatika kelas 7 perangkat komputer; cara menyimpan file di folder; fungsi mouse, keyboard, dan layar sentuh.
-Latihan interaktif (bisa dipakai di HP): https://listyantidewi1.github.io/animasi-informatika/episodes/D7.0/episode-d70.html
+Latihan interaktif (bisa dipakai di HP): https://belajar-informatika.vercel.app/d70
 Ada yang belum jelas? Tulis di komentar, pertanyaanmu membantu teman lain juga.
 ```

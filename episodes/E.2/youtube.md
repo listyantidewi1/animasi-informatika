@@ -25,8 +25,8 @@ Bab:
 1:24 Proses dan giliran prosesor
 2:33 Memori
 
-Latihan interaktif (kuis dengan petunjuk, bisa dipakai di HP): https://listyantidewi1.github.io/animasi-informatika/episodes/E.2/episode-e2.html
-Semua episode dan latihannya: https://listyantidewi1.github.io/animasi-informatika/
+Latihan interaktif (kuis dengan petunjuk, bisa dipakai di HP): https://belajar-informatika.vercel.app/e2
+Semua episode dan latihannya: https://belajar-informatika.vercel.app/
 Prasyarat: episode E.1 Komputer Von Neumann.
 
 Seri Animasi Informatika untuk SMP–SMA mengikuti CP 2025 (Keputusan Kepala BSKAP 046/H/KR/2025), unit E.2 (4 JP). Tokoh: robot Kiko, Dito, dan Sinta. Semua gambar dibuat dengan kode; tanpa musik latar. Narasi: Kak Ceria (ElevenLabs).
@@ -59,8 +59,8 @@ Bab:
 0:41 Perangkat dan driver
 1:43 Giliranmu
 
-Latihan interaktif (kuis dengan petunjuk, bisa dipakai di HP): https://listyantidewi1.github.io/animasi-informatika/episodes/E.2/episode-e2.html
-Semua episode dan latihannya: https://listyantidewi1.github.io/animasi-informatika/
+Latihan interaktif (kuis dengan petunjuk, bisa dipakai di HP): https://belajar-informatika.vercel.app/e2
+Semua episode dan latihannya: https://belajar-informatika.vercel.app/
 Prasyarat: episode E.1 Komputer Von Neumann.
 
 Seri Animasi Informatika untuk SMP–SMA mengikuti CP 2025 (Keputusan Kepala BSKAP 046/H/KR/2025), unit E.2 (4 JP). Tokoh: robot Kiko, Dito, dan Sinta. Semua gambar dibuat dengan kode; tanpa musik latar. Narasi: Kak Ceria (ElevenLabs).
@@ -93,8 +93,8 @@ Bab:
 1:44 Proses dan giliran prosesor
 3:06 Memori
 
-Latihan interaktif (kuis dengan petunjuk, bisa dipakai di HP): https://listyantidewi1.github.io/animasi-informatika/episodes/E.2/episode-e2.html
-Semua episode dan latihannya: https://listyantidewi1.github.io/animasi-informatika/
+Latihan interaktif (kuis dengan petunjuk, bisa dipakai di HP): https://belajar-informatika.vercel.app/e2
+Semua episode dan latihannya: https://belajar-informatika.vercel.app/
 Prasyarat: episode E.1 Komputer Von Neumann.
 
 Seri Animasi Informatika untuk SMP–SMA mengikuti CP 2025 (Keputusan Kepala BSKAP 046/H/KR/2025), unit E.2 (4 JP). Tokoh: robot Kiko, Dito, dan Sinta. Semua gambar dibuat dengan kode; tanpa musik latar.
@@ -127,8 +127,8 @@ Bab:
 0:51 Perangkat dan driver
 2:04 Giliranmu
 
-Latihan interaktif (kuis dengan petunjuk, bisa dipakai di HP): https://listyantidewi1.github.io/animasi-informatika/episodes/E.2/episode-e2.html
-Semua episode dan latihannya: https://listyantidewi1.github.io/animasi-informatika/
+Latihan interaktif (kuis dengan petunjuk, bisa dipakai di HP): https://belajar-informatika.vercel.app/e2
+Semua episode dan latihannya: https://belajar-informatika.vercel.app/
 Prasyarat: episode E.1 Komputer Von Neumann.
 
 Seri Animasi Informatika untuk SMP–SMA mengikuti CP 2025 (Keputusan Kepala BSKAP 046/H/KR/2025), unit E.2 (4 JP). Tokoh: robot Kiko, Dito, dan Sinta. Semua gambar dibuat dengan kode; tanpa musik latar.
@@ -142,7 +142,7 @@ Seri Animasi Informatika untuk SMP–SMA mengikuti CP 2025 (Keputusan Kepala BSK
 📌 Peran Sistem Operasi (1/2): Proses dan Memori — materi Informatika kelas 10 (unit E.2).
 Setelah menonton, kamu bisa menjelaskan empat tugas sistem operasi dan membaca pengelola tugas (task manager) di laptop atau HP-mu.
 Kata kunci materi ini: peran sistem operasi kelas 10; fungsi sistem operasi mengelola proses memori file perangkat; penjadwalan cpu round robin penjelasan sederhana; informatika sma sistem operasi.
-Latihan interaktif (bisa dipakai di HP): https://listyantidewi1.github.io/animasi-informatika/episodes/E.2/episode-e2.html Tonton dulu episode E.1 Komputer Von Neumann bila belum.
+Latihan interaktif (bisa dipakai di HP): https://belajar-informatika.vercel.app/e2 Tonton dulu episode E.1 Komputer Von Neumann bila belum.
 Ada yang belum jelas? Tulis di komentar, pertanyaanmu membantu teman lain juga.
 ```
 
@@ -152,6 +152,6 @@ Ada yang belum jelas? Tulis di komentar, pertanyaanmu membantu teman lain juga.
 📌 Peran Sistem Operasi (2/2): File dan Perangkat — materi Informatika kelas 10 (unit E.2).
 Setelah menonton, kamu bisa menjelaskan empat tugas sistem operasi dan membaca pengelola tugas (task manager) di laptop atau HP-mu.
 Kata kunci materi ini: peran sistem operasi kelas 10; fungsi sistem operasi mengelola proses memori file perangkat; penjadwalan cpu round robin penjelasan sederhana; informatika sma sistem operasi.
-Latihan interaktif (bisa dipakai di HP): https://listyantidewi1.github.io/animasi-informatika/episodes/E.2/episode-e2.html Tonton dulu episode E.1 Komputer Von Neumann bila belum.
+Latihan interaktif (bisa dipakai di HP): https://belajar-informatika.vercel.app/e2 Tonton dulu episode E.1 Komputer Von Neumann bila belum.
 Ada yang belum jelas? Tulis di komentar, pertanyaanmu membantu teman lain juga.
 ```

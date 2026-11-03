@@ -25,8 +25,8 @@ Bab:
 0:55 Jurus 1: Dekomposisi
 2:12 Jurus 2: Pola
 
-Latihan interaktif (kuis dengan petunjuk, bisa dipakai di HP): https://listyantidewi1.github.io/animasi-informatika/episodes/D7.1/episode-d71.html
-Semua episode dan latihannya: https://listyantidewi1.github.io/animasi-informatika/
+Latihan interaktif (kuis dengan petunjuk, bisa dipakai di HP): https://belajar-informatika.vercel.app/d71
+Semua episode dan latihannya: https://belajar-informatika.vercel.app/
 Prasyarat: episode D7.0 Cara Memakai Komputer dan HP (hanya bila belum pernah memakai komputer).
 
 Seri Animasi Informatika untuk SMP–SMA mengikuti CP 2025 (Keputusan Kepala BSKAP 046/H/KR/2025), unit D7.1 (10 JP). Tokoh: robot Kiko, Dito, dan Sinta. Semua gambar dibuat dengan kode; tanpa musik latar. Narasi: Kak Ceria (ElevenLabs).
@@ -60,8 +60,8 @@ Bab:
 2:32 Empat jurus bersama
 4:10 Giliranmu
 
-Latihan interaktif (kuis dengan petunjuk, bisa dipakai di HP): https://listyantidewi1.github.io/animasi-informatika/episodes/D7.1/episode-d71.html
-Semua episode dan latihannya: https://listyantidewi1.github.io/animasi-informatika/
+Latihan interaktif (kuis dengan petunjuk, bisa dipakai di HP): https://belajar-informatika.vercel.app/d71
+Semua episode dan latihannya: https://belajar-informatika.vercel.app/
 Prasyarat: episode D7.0 Cara Memakai Komputer dan HP (hanya bila belum pernah memakai komputer).
 
 Seri Animasi Informatika untuk SMP–SMA mengikuti CP 2025 (Keputusan Kepala BSKAP 046/H/KR/2025), unit D7.1 (10 JP). Tokoh: robot Kiko, Dito, dan Sinta. Semua gambar dibuat dengan kode; tanpa musik latar. Narasi: Kak Ceria (ElevenLabs).
@@ -94,8 +94,8 @@ Bab:
 1:07 Jurus 1: Dekomposisi
 2:42 Jurus 2: Pola
 
-Latihan interaktif (kuis dengan petunjuk, bisa dipakai di HP): https://listyantidewi1.github.io/animasi-informatika/episodes/D7.1/episode-d71.html
-Semua episode dan latihannya: https://listyantidewi1.github.io/animasi-informatika/
+Latihan interaktif (kuis dengan petunjuk, bisa dipakai di HP): https://belajar-informatika.vercel.app/d71
+Semua episode dan latihannya: https://belajar-informatika.vercel.app/
 Prasyarat: episode D7.0 Cara Memakai Komputer dan HP (hanya bila belum pernah memakai komputer).
 
 Seri Animasi Informatika untuk SMP–SMA mengikuti CP 2025 (Keputusan Kepala BSKAP 046/H/KR/2025), unit D7.1 (10 JP). Tokoh: robot Kiko, Dito, dan Sinta. Semua gambar dibuat dengan kode; tanpa musik latar.
@@ -129,8 +129,8 @@ Bab:
 3:05 Empat jurus bersama
 5:00 Giliranmu
 
-Latihan interaktif (kuis dengan petunjuk, bisa dipakai di HP): https://listyantidewi1.github.io/animasi-informatika/episodes/D7.1/episode-d71.html
-Semua episode dan latihannya: https://listyantidewi1.github.io/animasi-informatika/
+Latihan interaktif (kuis dengan petunjuk, bisa dipakai di HP): https://belajar-informatika.vercel.app/d71
+Semua episode dan latihannya: https://belajar-informatika.vercel.app/
 Prasyarat: episode D7.0 Cara Memakai Komputer dan HP (hanya bila belum pernah memakai komputer).
 
 Seri Animasi Informatika untuk SMP–SMA mengikuti CP 2025 (Keputusan Kepala BSKAP 046/H/KR/2025), unit D7.1 (10 JP). Tokoh: robot Kiko, Dito, dan Sinta. Semua gambar dibuat dengan kode; tanpa musik latar.
@@ -144,7 +144,7 @@ Seri Animasi Informatika untuk SMP–SMA mengikuti CP 2025 (Keputusan Kepala BSK
 📌 Empat Jurus Berpikir Komputasional (1/2): Memecah Masalah dan Mencari Pola — materi Informatika kelas 7 (unit D7.1).
 Setelah menonton, kamu bisa memecah masalah besar, menemukan pola, dan menyusun langkah seperti pemecah soal Bebras.
 Kata kunci materi ini: berpikir komputasional kelas 7; contoh dekomposisi, pola, abstraksi, algoritma; soal Bebras SMP; materi informatika kelas 7 berpikir komputasional.
-Latihan interaktif (bisa dipakai di HP): https://listyantidewi1.github.io/animasi-informatika/episodes/D7.1/episode-d71.html Tonton dulu episode D7.0 Cara Memakai Komputer dan HP (hanya bila belum pernah memakai komputer) bila belum.
+Latihan interaktif (bisa dipakai di HP): https://belajar-informatika.vercel.app/d71 Tonton dulu episode D7.0 Cara Memakai Komputer dan HP (hanya bila belum pernah memakai komputer) bila belum.
 Ada yang belum jelas? Tulis di komentar, pertanyaanmu membantu teman lain juga.
 ```
 
@@ -154,6 +154,6 @@ Ada yang belum jelas? Tulis di komentar, pertanyaanmu membantu teman lain juga.
 📌 Empat Jurus Berpikir Komputasional (2/2): Abstraksi dan Algoritma — materi Informatika kelas 7 (unit D7.1).
 Setelah menonton, kamu bisa memecah masalah besar, menemukan pola, dan menyusun langkah seperti pemecah soal Bebras.
 Kata kunci materi ini: berpikir komputasional kelas 7; contoh dekomposisi, pola, abstraksi, algoritma; soal Bebras SMP; materi informatika kelas 7 berpikir komputasional.
-Latihan interaktif (bisa dipakai di HP): https://listyantidewi1.github.io/animasi-informatika/episodes/D7.1/episode-d71.html Tonton dulu episode D7.0 Cara Memakai Komputer dan HP (hanya bila belum pernah memakai komputer) bila belum.
+Latihan interaktif (bisa dipakai di HP): https://belajar-informatika.vercel.app/d71 Tonton dulu episode D7.0 Cara Memakai Komputer dan HP (hanya bila belum pernah memakai komputer) bila belum.
 Ada yang belum jelas? Tulis di komentar, pertanyaanmu membantu teman lain juga.
 ```

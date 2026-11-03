@@ -25,9 +25,9 @@ Bab:
 1:31 Bekal: perulangan
 2:42 Bekal: list
 
-Latihan interaktif (kuis dengan petunjuk, bisa dipakai di HP): https://listyantidewi1.github.io/animasi-informatika/episodes/F12.0/episode-f120.html
+Latihan interaktif (kuis dengan petunjuk, bisa dipakai di HP): https://belajar-informatika.vercel.app/f120
 Alat untuk latihan di komputer: Python (IDLE, gratis, luring) https://www.python.org/downloads/; Google Colab (Python di browser) https://colab.research.google.com/
-Semua episode dan latihannya: https://listyantidewi1.github.io/animasi-informatika/
+Semua episode dan latihannya: https://belajar-informatika.vercel.app/
 Prasyarat: episode F11.2 dan F11.3 (bila kuis diagnostik menyarankan).
 
 Seri Animasi Informatika untuk SMP–SMA mengikuti CP 2025 (Keputusan Kepala BSKAP 046/H/KR/2025), unit F12.0 (4 JP). Tokoh: robot Kiko, Dito, dan Sinta. Semua gambar dibuat dengan kode; tanpa musik latar. Narasi: Kak Ceria (ElevenLabs).
@@ -60,9 +60,9 @@ Bab:
 1:11 Dictionary dan peta kelas XII
 2:21 Giliranmu
 
-Latihan interaktif (kuis dengan petunjuk, bisa dipakai di HP): https://listyantidewi1.github.io/animasi-informatika/episodes/F12.0/episode-f120.html
+Latihan interaktif (kuis dengan petunjuk, bisa dipakai di HP): https://belajar-informatika.vercel.app/f120
 Alat untuk latihan di komputer: Python (IDLE, gratis, luring) https://www.python.org/downloads/; Google Colab (Python di browser) https://colab.research.google.com/
-Semua episode dan latihannya: https://listyantidewi1.github.io/animasi-informatika/
+Semua episode dan latihannya: https://belajar-informatika.vercel.app/
 Prasyarat: episode F11.2 dan F11.3 (bila kuis diagnostik menyarankan).
 
 Seri Animasi Informatika untuk SMP–SMA mengikuti CP 2025 (Keputusan Kepala BSKAP 046/H/KR/2025), unit F12.0 (4 JP). Tokoh: robot Kiko, Dito, dan Sinta. Semua gambar dibuat dengan kode; tanpa musik latar. Narasi: Kak Ceria (ElevenLabs).
@@ -95,9 +95,9 @@ Bab:
 1:54 Bekal: perulangan
 3:21 Bekal: list
 
-Latihan interaktif (kuis dengan petunjuk, bisa dipakai di HP): https://listyantidewi1.github.io/animasi-informatika/episodes/F12.0/episode-f120.html
+Latihan interaktif (kuis dengan petunjuk, bisa dipakai di HP): https://belajar-informatika.vercel.app/f120
 Alat untuk latihan di komputer: Python (IDLE, gratis, luring) https://www.python.org/downloads/; Google Colab (Python di browser) https://colab.research.google.com/
-Semua episode dan latihannya: https://listyantidewi1.github.io/animasi-informatika/
+Semua episode dan latihannya: https://belajar-informatika.vercel.app/
 Prasyarat: episode F11.2 dan F11.3 (bila kuis diagnostik menyarankan).
 
 Seri Animasi Informatika untuk SMP–SMA mengikuti CP 2025 (Keputusan Kepala BSKAP 046/H/KR/2025), unit F12.0 (4 JP). Tokoh: robot Kiko, Dito, dan Sinta. Semua gambar dibuat dengan kode; tanpa musik latar.
@@ -130,9 +130,9 @@ Bab:
 1:25 Dictionary dan peta kelas XII
 2:51 Giliranmu
 
-Latihan interaktif (kuis dengan petunjuk, bisa dipakai di HP): https://listyantidewi1.github.io/animasi-informatika/episodes/F12.0/episode-f120.html
+Latihan interaktif (kuis dengan petunjuk, bisa dipakai di HP): https://belajar-informatika.vercel.app/f120
 Alat untuk latihan di komputer: Python (IDLE, gratis, luring) https://www.python.org/downloads/; Google Colab (Python di browser) https://colab.research.google.com/
-Semua episode dan latihannya: https://listyantidewi1.github.io/animasi-informatika/
+Semua episode dan latihannya: https://belajar-informatika.vercel.app/
 Prasyarat: episode F11.2 dan F11.3 (bila kuis diagnostik menyarankan).
 
 Seri Animasi Informatika untuk SMP–SMA mengikuti CP 2025 (Keputusan Kepala BSKAP 046/H/KR/2025), unit F12.0 (4 JP). Tokoh: robot Kiko, Dito, dan Sinta. Semua gambar dibuat dengan kode; tanpa musik latar.
@@ -146,7 +146,7 @@ Seri Animasi Informatika untuk SMP–SMA mengikuti CP 2025 (Keputusan Kepala BSK
 📌 Jembatan Kelas XII: Perulangan, List, dan Fungsi (1/2): Perulangan dan List — materi Informatika kelas 12 (unit F12.0).
 Setelah menonton, kamu bisa mengecek bekal perulangan, list, dan fungsi Python-mu, lalu tahu bagian mana yang perlu diulang sebelum masuk struktur data kompleks.
 Kata kunci materi ini: informatika kelas 12 semester 1; perulangan list fungsi python kelas 12; beda return dan print python; indeks list python mulai dari nol; materi awal informatika kelas 12 kurikulum merdeka.
-Latihan interaktif (bisa dipakai di HP): https://listyantidewi1.github.io/animasi-informatika/episodes/F12.0/episode-f120.html Tonton dulu episode F11.2 dan F11.3 (bila kuis diagnostik menyarankan) bila belum.
+Latihan interaktif (bisa dipakai di HP): https://belajar-informatika.vercel.app/f120 Tonton dulu episode F11.2 dan F11.3 (bila kuis diagnostik menyarankan) bila belum.
 Alat untuk latihan di komputer: Python (IDLE, gratis, luring) https://www.python.org/downloads/; Google Colab (Python di browser) https://colab.research.google.com/
 Ada yang belum jelas? Tulis di komentar, pertanyaanmu membantu teman lain juga.
 ```
@@ -157,7 +157,7 @@ Ada yang belum jelas? Tulis di komentar, pertanyaanmu membantu teman lain juga.
 📌 Jembatan Kelas XII: Perulangan, List, dan Fungsi (2/2): Fungsi dan Peta Kelas XII — materi Informatika kelas 12 (unit F12.0).
 Setelah menonton, kamu bisa mengecek bekal perulangan, list, dan fungsi Python-mu, lalu tahu bagian mana yang perlu diulang sebelum masuk struktur data kompleks.
 Kata kunci materi ini: informatika kelas 12 semester 1; perulangan list fungsi python kelas 12; beda return dan print python; indeks list python mulai dari nol; materi awal informatika kelas 12 kurikulum merdeka.
-Latihan interaktif (bisa dipakai di HP): https://listyantidewi1.github.io/animasi-informatika/episodes/F12.0/episode-f120.html Tonton dulu episode F11.2 dan F11.3 (bila kuis diagnostik menyarankan) bila belum.
+Latihan interaktif (bisa dipakai di HP): https://belajar-informatika.vercel.app/f120 Tonton dulu episode F11.2 dan F11.3 (bila kuis diagnostik menyarankan) bila belum.
 Alat untuk latihan di komputer: Python (IDLE, gratis, luring) https://www.python.org/downloads/; Google Colab (Python di browser) https://colab.research.google.com/
 Ada yang belum jelas? Tulis di komentar, pertanyaanmu membantu teman lain juga.
 ```

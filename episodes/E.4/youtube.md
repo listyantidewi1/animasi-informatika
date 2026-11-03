@@ -25,8 +25,8 @@ Bab:
 1:29 Mencari lebih tajam
 2:35 Vertikal dan lateral
 
-Latihan interaktif (kuis dengan petunjuk, bisa dipakai di HP): https://listyantidewi1.github.io/animasi-informatika/episodes/E.4/episode-e4.html
-Semua episode dan latihannya: https://listyantidewi1.github.io/animasi-informatika/
+Latihan interaktif (kuis dengan petunjuk, bisa dipakai di HP): https://belajar-informatika.vercel.app/e4
+Semua episode dan latihannya: https://belajar-informatika.vercel.app/
 Prasyarat: episode D7.4 Mesin Pencari serta D8.4 dan D8.5 tentang menilai informasi dan hoaks.
 
 Seri Animasi Informatika untuk SMP–SMA mengikuti CP 2025 (Keputusan Kepala BSKAP 046/H/KR/2025), unit E.4 (6 JP). Tokoh: robot Kiko, Dito, dan Sinta. Semua gambar dibuat dengan kode; tanpa musik latar. Narasi: Kak Ceria (ElevenLabs).
@@ -60,8 +60,8 @@ Bab:
 2:23 Konten negatif
 2:59 Giliranmu
 
-Latihan interaktif (kuis dengan petunjuk, bisa dipakai di HP): https://listyantidewi1.github.io/animasi-informatika/episodes/E.4/episode-e4.html
-Semua episode dan latihannya: https://listyantidewi1.github.io/animasi-informatika/
+Latihan interaktif (kuis dengan petunjuk, bisa dipakai di HP): https://belajar-informatika.vercel.app/e4
+Semua episode dan latihannya: https://belajar-informatika.vercel.app/
 Prasyarat: episode D7.4 Mesin Pencari serta D8.4 dan D8.5 tentang menilai informasi dan hoaks.
 
 Seri Animasi Informatika untuk SMP–SMA mengikuti CP 2025 (Keputusan Kepala BSKAP 046/H/KR/2025), unit E.4 (6 JP). Tokoh: robot Kiko, Dito, dan Sinta. Semua gambar dibuat dengan kode; tanpa musik latar. Narasi: Kak Ceria (ElevenLabs).
@@ -94,8 +94,8 @@ Bab:
 1:52 Mencari lebih tajam
 3:14 Vertikal dan lateral
 
-Latihan interaktif (kuis dengan petunjuk, bisa dipakai di HP): https://listyantidewi1.github.io/animasi-informatika/episodes/E.4/episode-e4.html
-Semua episode dan latihannya: https://listyantidewi1.github.io/animasi-informatika/
+Latihan interaktif (kuis dengan petunjuk, bisa dipakai di HP): https://belajar-informatika.vercel.app/e4
+Semua episode dan latihannya: https://belajar-informatika.vercel.app/
 Prasyarat: episode D7.4 Mesin Pencari serta D8.4 dan D8.5 tentang menilai informasi dan hoaks.
 
 Seri Animasi Informatika untuk SMP–SMA mengikuti CP 2025 (Keputusan Kepala BSKAP 046/H/KR/2025), unit E.4 (6 JP). Tokoh: robot Kiko, Dito, dan Sinta. Semua gambar dibuat dengan kode; tanpa musik latar.
@@ -129,8 +129,8 @@ Bab:
 2:55 Konten negatif
 3:37 Giliranmu
 
-Latihan interaktif (kuis dengan petunjuk, bisa dipakai di HP): https://listyantidewi1.github.io/animasi-informatika/episodes/E.4/episode-e4.html
-Semua episode dan latihannya: https://listyantidewi1.github.io/animasi-informatika/
+Latihan interaktif (kuis dengan petunjuk, bisa dipakai di HP): https://belajar-informatika.vercel.app/e4
+Semua episode dan latihannya: https://belajar-informatika.vercel.app/
 Prasyarat: episode D7.4 Mesin Pencari serta D8.4 dan D8.5 tentang menilai informasi dan hoaks.
 
 Seri Animasi Informatika untuk SMP–SMA mengikuti CP 2025 (Keputusan Kepala BSKAP 046/H/KR/2025), unit E.4 (6 JP). Tokoh: robot Kiko, Dito, dan Sinta. Semua gambar dibuat dengan kode; tanpa musik latar.
@@ -144,7 +144,7 @@ Seri Animasi Informatika untuk SMP–SMA mengikuti CP 2025 (Keputusan Kepala BSK
 📌 Mencari, Memeriksa, Membaca Lateral (1/2): Mencari Lebih Tajam — materi Informatika kelas 10 (unit E.4).
 Setelah menonton, kamu bisa mencari dengan operator pencarian, membaca lateral untuk mengecek siapa di balik sebuah situs, dan memakai situs periksa fakta.
 Kata kunci materi ini: membaca lateral literasi digital; operator pencarian google untuk pelajar; cara cek fakta berita viral; informatika kelas 10 literasi digital.
-Latihan interaktif (bisa dipakai di HP): https://listyantidewi1.github.io/animasi-informatika/episodes/E.4/episode-e4.html Tonton dulu episode D7.4 Mesin Pencari serta D8.4 dan D8.5 tentang menilai informasi dan hoaks bila belum.
+Latihan interaktif (bisa dipakai di HP): https://belajar-informatika.vercel.app/e4 Tonton dulu episode D7.4 Mesin Pencari serta D8.4 dan D8.5 tentang menilai informasi dan hoaks bila belum.
 Ada yang belum jelas? Tulis di komentar, pertanyaanmu membantu teman lain juga.
 ```
 
@@ -154,6 +154,6 @@ Ada yang belum jelas? Tulis di komentar, pertanyaanmu membantu teman lain juga.
 📌 Mencari, Memeriksa, Membaca Lateral (2/2): Membaca Lateral dan Periksa Fakta — materi Informatika kelas 10 (unit E.4).
 Setelah menonton, kamu bisa mencari dengan operator pencarian, membaca lateral untuk mengecek siapa di balik sebuah situs, dan memakai situs periksa fakta.
 Kata kunci materi ini: membaca lateral literasi digital; operator pencarian google untuk pelajar; cara cek fakta berita viral; informatika kelas 10 literasi digital.
-Latihan interaktif (bisa dipakai di HP): https://listyantidewi1.github.io/animasi-informatika/episodes/E.4/episode-e4.html Tonton dulu episode D7.4 Mesin Pencari serta D8.4 dan D8.5 tentang menilai informasi dan hoaks bila belum.
+Latihan interaktif (bisa dipakai di HP): https://belajar-informatika.vercel.app/e4 Tonton dulu episode D7.4 Mesin Pencari serta D8.4 dan D8.5 tentang menilai informasi dan hoaks bila belum.
 Ada yang belum jelas? Tulis di komentar, pertanyaanmu membantu teman lain juga.
 ```

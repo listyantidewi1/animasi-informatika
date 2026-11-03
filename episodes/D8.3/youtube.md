@@ -25,8 +25,8 @@ Bab:
 1:11 Lima bentuk flowchart
 2:06 Pseudocode
 
-Latihan interaktif (kuis dengan petunjuk, bisa dipakai di HP): https://listyantidewi1.github.io/animasi-informatika/episodes/D8.3/episode-d83.html
-Semua episode dan latihannya: https://listyantidewi1.github.io/animasi-informatika/
+Latihan interaktif (kuis dengan petunjuk, bisa dipakai di HP): https://belajar-informatika.vercel.app/d83
+Semua episode dan latihannya: https://belajar-informatika.vercel.app/
 Prasyarat: episode D8.0 Jembatan Kelas VIII (instruksi untuk mesin).
 
 Seri Animasi Informatika untuk SMP–SMA mengikuti CP 2025 (Keputusan Kepala BSKAP 046/H/KR/2025), unit D8.3 (12 JP). Tokoh: robot Kiko, Dito, dan Sinta. Semua gambar dibuat dengan kode; tanpa musik latar. Narasi: Kak Ceria (ElevenLabs).
@@ -60,8 +60,8 @@ Bab:
 2:17 Lebih dari dua jalan
 2:51 Giliranmu
 
-Latihan interaktif (kuis dengan petunjuk, bisa dipakai di HP): https://listyantidewi1.github.io/animasi-informatika/episodes/D8.3/episode-d83.html
-Semua episode dan latihannya: https://listyantidewi1.github.io/animasi-informatika/
+Latihan interaktif (kuis dengan petunjuk, bisa dipakai di HP): https://belajar-informatika.vercel.app/d83
+Semua episode dan latihannya: https://belajar-informatika.vercel.app/
 Prasyarat: episode D8.0 Jembatan Kelas VIII (instruksi untuk mesin).
 
 Seri Animasi Informatika untuk SMP–SMA mengikuti CP 2025 (Keputusan Kepala BSKAP 046/H/KR/2025), unit D8.3 (12 JP). Tokoh: robot Kiko, Dito, dan Sinta. Semua gambar dibuat dengan kode; tanpa musik latar. Narasi: Kak Ceria (ElevenLabs).
@@ -94,8 +94,8 @@ Bab:
 1:29 Lima bentuk flowchart
 2:37 Pseudocode
 
-Latihan interaktif (kuis dengan petunjuk, bisa dipakai di HP): https://listyantidewi1.github.io/animasi-informatika/episodes/D8.3/episode-d83.html
-Semua episode dan latihannya: https://listyantidewi1.github.io/animasi-informatika/
+Latihan interaktif (kuis dengan petunjuk, bisa dipakai di HP): https://belajar-informatika.vercel.app/d83
+Semua episode dan latihannya: https://belajar-informatika.vercel.app/
 Prasyarat: episode D8.0 Jembatan Kelas VIII (instruksi untuk mesin).
 
 Seri Animasi Informatika untuk SMP–SMA mengikuti CP 2025 (Keputusan Kepala BSKAP 046/H/KR/2025), unit D8.3 (12 JP). Tokoh: robot Kiko, Dito, dan Sinta. Semua gambar dibuat dengan kode; tanpa musik latar.
@@ -129,8 +129,8 @@ Bab:
 2:50 Lebih dari dua jalan
 3:32 Giliranmu
 
-Latihan interaktif (kuis dengan petunjuk, bisa dipakai di HP): https://listyantidewi1.github.io/animasi-informatika/episodes/D8.3/episode-d83.html
-Semua episode dan latihannya: https://listyantidewi1.github.io/animasi-informatika/
+Latihan interaktif (kuis dengan petunjuk, bisa dipakai di HP): https://belajar-informatika.vercel.app/d83
+Semua episode dan latihannya: https://belajar-informatika.vercel.app/
 Prasyarat: episode D8.0 Jembatan Kelas VIII (instruksi untuk mesin).
 
 Seri Animasi Informatika untuk SMP–SMA mengikuti CP 2025 (Keputusan Kepala BSKAP 046/H/KR/2025), unit D8.3 (12 JP). Tokoh: robot Kiko, Dito, dan Sinta. Semua gambar dibuat dengan kode; tanpa musik latar.
@@ -144,7 +144,7 @@ Seri Animasi Informatika untuk SMP–SMA mengikuti CP 2025 (Keputusan Kepala BSK
 📌 Flowchart dan Pseudocode Dasar (1/2): Lima Bentuk dan Urutan — materi Informatika kelas 8 (unit D8.3).
 Setelah menonton, kamu bisa membaca dan menggambar flowchart, menulis JIKA–MAKA–LAINNYA, dan menelusurinya dengan token.
 Kata kunci materi ini: flowchart dan pseudocode kelas 8; simbol flowchart dan contohnya; percabangan jika maka informatika SMP; cara membuat flowchart sederhana.
-Latihan interaktif (bisa dipakai di HP): https://listyantidewi1.github.io/animasi-informatika/episodes/D8.3/episode-d83.html Tonton dulu episode D8.0 Jembatan Kelas VIII (instruksi untuk mesin) bila belum.
+Latihan interaktif (bisa dipakai di HP): https://belajar-informatika.vercel.app/d83 Tonton dulu episode D8.0 Jembatan Kelas VIII (instruksi untuk mesin) bila belum.
 Ada yang belum jelas? Tulis di komentar, pertanyaanmu membantu teman lain juga.
 ```
 
@@ -154,6 +154,6 @@ Ada yang belum jelas? Tulis di komentar, pertanyaanmu membantu teman lain juga.
 📌 Flowchart dan Pseudocode Dasar (2/2): Percabangan dan Menelusuri — materi Informatika kelas 8 (unit D8.3).
 Setelah menonton, kamu bisa membaca dan menggambar flowchart, menulis JIKA–MAKA–LAINNYA, dan menelusurinya dengan token.
 Kata kunci materi ini: flowchart dan pseudocode kelas 8; simbol flowchart dan contohnya; percabangan jika maka informatika SMP; cara membuat flowchart sederhana.
-Latihan interaktif (bisa dipakai di HP): https://listyantidewi1.github.io/animasi-informatika/episodes/D8.3/episode-d83.html Tonton dulu episode D8.0 Jembatan Kelas VIII (instruksi untuk mesin) bila belum.
+Latihan interaktif (bisa dipakai di HP): https://belajar-informatika.vercel.app/d83 Tonton dulu episode D8.0 Jembatan Kelas VIII (instruksi untuk mesin) bila belum.
 Ada yang belum jelas? Tulis di komentar, pertanyaanmu membantu teman lain juga.
 ```

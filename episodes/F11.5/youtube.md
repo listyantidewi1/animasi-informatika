@@ -25,9 +25,9 @@ Bab:
 1:26 Pertanyaan dan sumber data terbuka
 2:41 Bersihkan data
 
-Latihan interaktif (kuis dengan petunjuk, bisa dipakai di HP): https://listyantidewi1.github.io/animasi-informatika/episodes/F11.5/episode-f115.html
+Latihan interaktif (kuis dengan petunjuk, bisa dipakai di HP): https://belajar-informatika.vercel.app/f115
 Alat untuk latihan di komputer: Google Sheets (daring) https://sheets.google.com/; LibreOffice Calc (gratis, luring) https://www.libreoffice.org/download/download-libreoffice/; Python (IDLE, gratis, luring) https://www.python.org/downloads/; Google Colab (Python di browser) https://colab.research.google.com/; Portal Satu Data Indonesia (data terbuka) https://data.go.id/
-Semua episode dan latihannya: https://listyantidewi1.github.io/animasi-informatika/
+Semua episode dan latihannya: https://belajar-informatika.vercel.app/
 Prasyarat: episode E.8 Data Berkualitas dari Manusia dan D8.1 Lembar Kerja.
 
 Seri Animasi Informatika untuk SMP–SMA mengikuti CP 2025 (Keputusan Kepala BSKAP 046/H/KR/2025), unit F11.5 (16 JP). Tokoh: robot Kiko, Dito, dan Sinta. Semua gambar dibuat dengan kode; tanpa musik latar. Narasi: Kak Ceria (ElevenLabs).
@@ -61,9 +61,9 @@ Bab:
 2:34 Etika dan batas data
 3:13 Giliranmu
 
-Latihan interaktif (kuis dengan petunjuk, bisa dipakai di HP): https://listyantidewi1.github.io/animasi-informatika/episodes/F11.5/episode-f115.html
+Latihan interaktif (kuis dengan petunjuk, bisa dipakai di HP): https://belajar-informatika.vercel.app/f115
 Alat untuk latihan di komputer: Google Sheets (daring) https://sheets.google.com/; LibreOffice Calc (gratis, luring) https://www.libreoffice.org/download/download-libreoffice/; Python (IDLE, gratis, luring) https://www.python.org/downloads/; Google Colab (Python di browser) https://colab.research.google.com/; Portal Satu Data Indonesia (data terbuka) https://data.go.id/
-Semua episode dan latihannya: https://listyantidewi1.github.io/animasi-informatika/
+Semua episode dan latihannya: https://belajar-informatika.vercel.app/
 Prasyarat: episode E.8 Data Berkualitas dari Manusia dan D8.1 Lembar Kerja.
 
 Seri Animasi Informatika untuk SMP–SMA mengikuti CP 2025 (Keputusan Kepala BSKAP 046/H/KR/2025), unit F11.5 (16 JP). Tokoh: robot Kiko, Dito, dan Sinta. Semua gambar dibuat dengan kode; tanpa musik latar. Narasi: Kak Ceria (ElevenLabs).
@@ -96,9 +96,9 @@ Bab:
 1:45 Pertanyaan dan sumber data terbuka
 3:17 Bersihkan data
 
-Latihan interaktif (kuis dengan petunjuk, bisa dipakai di HP): https://listyantidewi1.github.io/animasi-informatika/episodes/F11.5/episode-f115.html
+Latihan interaktif (kuis dengan petunjuk, bisa dipakai di HP): https://belajar-informatika.vercel.app/f115
 Alat untuk latihan di komputer: Google Sheets (daring) https://sheets.google.com/; LibreOffice Calc (gratis, luring) https://www.libreoffice.org/download/download-libreoffice/; Python (IDLE, gratis, luring) https://www.python.org/downloads/; Google Colab (Python di browser) https://colab.research.google.com/; Portal Satu Data Indonesia (data terbuka) https://data.go.id/
-Semua episode dan latihannya: https://listyantidewi1.github.io/animasi-informatika/
+Semua episode dan latihannya: https://belajar-informatika.vercel.app/
 Prasyarat: episode E.8 Data Berkualitas dari Manusia dan D8.1 Lembar Kerja.
 
 Seri Animasi Informatika untuk SMP–SMA mengikuti CP 2025 (Keputusan Kepala BSKAP 046/H/KR/2025), unit F11.5 (16 JP). Tokoh: robot Kiko, Dito, dan Sinta. Semua gambar dibuat dengan kode; tanpa musik latar.
@@ -132,9 +132,9 @@ Bab:
 3:07 Etika dan batas data
 3:56 Giliranmu
 
-Latihan interaktif (kuis dengan petunjuk, bisa dipakai di HP): https://listyantidewi1.github.io/animasi-informatika/episodes/F11.5/episode-f115.html
+Latihan interaktif (kuis dengan petunjuk, bisa dipakai di HP): https://belajar-informatika.vercel.app/f115
 Alat untuk latihan di komputer: Google Sheets (daring) https://sheets.google.com/; LibreOffice Calc (gratis, luring) https://www.libreoffice.org/download/download-libreoffice/; Python (IDLE, gratis, luring) https://www.python.org/downloads/; Google Colab (Python di browser) https://colab.research.google.com/; Portal Satu Data Indonesia (data terbuka) https://data.go.id/
-Semua episode dan latihannya: https://listyantidewi1.github.io/animasi-informatika/
+Semua episode dan latihannya: https://belajar-informatika.vercel.app/
 Prasyarat: episode E.8 Data Berkualitas dari Manusia dan D8.1 Lembar Kerja.
 
 Seri Animasi Informatika untuk SMP–SMA mengikuti CP 2025 (Keputusan Kepala BSKAP 046/H/KR/2025), unit F11.5 (16 JP). Tokoh: robot Kiko, Dito, dan Sinta. Semua gambar dibuat dengan kode; tanpa musik latar.
@@ -148,7 +148,7 @@ Seri Animasi Informatika untuk SMP–SMA mengikuti CP 2025 (Keputusan Kepala BSK
 📌 Data Terbuka untuk Keputusan (1/2): Pertanyaan, Sumber Data Terbuka, Pembersihan — materi Informatika kelas 11 (unit F11.5).
 Setelah menonton, kamu bisa mengambil keputusan dari data terbuka: mencari, membersihkan, mengolah, dan menggambarkannya.
 Kata kunci materi ini: analisis data terbuka kelas 11 informatika; cara membersihkan data csv pemula; memilih grafik yang tepat sumbu dari nol; pengambilan keputusan berbasis data sma.
-Latihan interaktif (bisa dipakai di HP): https://listyantidewi1.github.io/animasi-informatika/episodes/F11.5/episode-f115.html Tonton dulu episode E.8 Data Berkualitas dari Manusia dan D8.1 Lembar Kerja bila belum.
+Latihan interaktif (bisa dipakai di HP): https://belajar-informatika.vercel.app/f115 Tonton dulu episode E.8 Data Berkualitas dari Manusia dan D8.1 Lembar Kerja bila belum.
 Alat untuk latihan di komputer: Google Sheets (daring) https://sheets.google.com/; LibreOffice Calc (gratis, luring) https://www.libreoffice.org/download/download-libreoffice/; Python (IDLE, gratis, luring) https://www.python.org/downloads/; Google Colab (Python di browser) https://colab.research.google.com/; Portal Satu Data Indonesia (data terbuka) https://data.go.id/
 Ada yang belum jelas? Tulis di komentar, pertanyaanmu membantu teman lain juga.
 ```
@@ -159,7 +159,7 @@ Ada yang belum jelas? Tulis di komentar, pertanyaanmu membantu teman lain juga.
 📌 Data Terbuka untuk Keputusan (2/2): Olah, Gambarkan, Putuskan — materi Informatika kelas 11 (unit F11.5).
 Setelah menonton, kamu bisa mengambil keputusan dari data terbuka: mencari, membersihkan, mengolah, dan menggambarkannya.
 Kata kunci materi ini: analisis data terbuka kelas 11 informatika; cara membersihkan data csv pemula; memilih grafik yang tepat sumbu dari nol; pengambilan keputusan berbasis data sma.
-Latihan interaktif (bisa dipakai di HP): https://listyantidewi1.github.io/animasi-informatika/episodes/F11.5/episode-f115.html Tonton dulu episode E.8 Data Berkualitas dari Manusia dan D8.1 Lembar Kerja bila belum.
+Latihan interaktif (bisa dipakai di HP): https://belajar-informatika.vercel.app/f115 Tonton dulu episode E.8 Data Berkualitas dari Manusia dan D8.1 Lembar Kerja bila belum.
 Alat untuk latihan di komputer: Google Sheets (daring) https://sheets.google.com/; LibreOffice Calc (gratis, luring) https://www.libreoffice.org/download/download-libreoffice/; Python (IDLE, gratis, luring) https://www.python.org/downloads/; Google Colab (Python di browser) https://colab.research.google.com/; Portal Satu Data Indonesia (data terbuka) https://data.go.id/
 Ada yang belum jelas? Tulis di komentar, pertanyaanmu membantu teman lain juga.
 ```

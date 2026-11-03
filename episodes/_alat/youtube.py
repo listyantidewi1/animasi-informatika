@@ -1,5 +1,5 @@
 """Judul dan deskripsi YouTube untuk tiap bagian/versi video -> <episode>/youtube.md
-(memuat link halaman latihan di GitHub Pages dan alat luar dari alat_luar.json)
+(memuat link halaman latihan di Vercel dan alat luar dari alat_luar.json)
   python3 episodes/_alat/youtube.py D7.0
 Mengambil ringkasan dari kunci "youtube" di script.json ({"ringkas": ..., "belajar": [...], "bagian": {"D7.0a": "Mouse dan Keyboard", ...}})
 dan penanda waktu bab dari timeline tiap versi (suara: timeline.json, teks: timeline-teks.json)."""
@@ -8,9 +8,9 @@ import episode as E
 
 ROOT, _ = E.find_root(sys.argv[1:])
 S = E.load_script(ROOT); Y = S.get("youtube", {})
-# link halaman latihan (GitHub Pages) dan alat luar yang dipakai latihan di komputer: episodes/_alat/alat_luar.json
+# link halaman latihan (Vercel) dan alat luar yang dipakai latihan di komputer: episodes/_alat/alat_luar.json
 AL = json.load(open(os.path.join(os.path.dirname(os.path.abspath(__file__)), "alat_luar.json"), encoding="utf-8"))
-LINK = f"{AL['situs']}/episodes/{S['episode']}/episode-{E.code_slug(S['episode'])}.html"
+LINK = f"{AL['situs']}/{E.code_slug(S['episode'])}"   # link pendek; redirect di vercel.json (dibuat indeks.py)
 ALAT = [x for k in AL["episode"].get(S["episode"], []) for x in AL["alat"][k]]
 KELAS = {"D7": "Kelas 7", "D8": "Kelas 8", "D9": "Kelas 9", "E": "Kelas 10", "F11": "Kelas 11", "F12": "Kelas 12"}.get(S["episode"].split(".")[0], "")
 def mmss(t): t = int(round(t)); return f"{t // 60}:{t % 60:02d}"

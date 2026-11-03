@@ -25,8 +25,8 @@ Bab:
 1:27 Lima bagian
 2:35 Siklus mesin
 
-Latihan interaktif (kuis dengan petunjuk, bisa dipakai di HP): https://listyantidewi1.github.io/animasi-informatika/episodes/E.1/episode-e1.html
-Semua episode dan latihannya: https://listyantidewi1.github.io/animasi-informatika/
+Latihan interaktif (kuis dengan petunjuk, bisa dipakai di HP): https://belajar-informatika.vercel.app/e1
+Semua episode dan latihannya: https://belajar-informatika.vercel.app/
 Prasyarat: episode D7.2 Mengenal Komputer dan E.0 Jembatan ke Kelas X.
 
 Seri Animasi Informatika untuk SMP–SMA mengikuti CP 2025 (Keputusan Kepala BSKAP 046/H/KR/2025), unit E.1 (10 JP). Tokoh: robot Kiko, Dito, dan Sinta. Semua gambar dibuat dengan kode; tanpa musik latar. Narasi: Kak Ceria (ElevenLabs).
@@ -60,8 +60,8 @@ Bab:
 2:19 Bus, detak, perangkat nyata
 2:59 Giliranmu
 
-Latihan interaktif (kuis dengan petunjuk, bisa dipakai di HP): https://listyantidewi1.github.io/animasi-informatika/episodes/E.1/episode-e1.html
-Semua episode dan latihannya: https://listyantidewi1.github.io/animasi-informatika/
+Latihan interaktif (kuis dengan petunjuk, bisa dipakai di HP): https://belajar-informatika.vercel.app/e1
+Semua episode dan latihannya: https://belajar-informatika.vercel.app/
 Prasyarat: episode D7.2 Mengenal Komputer dan E.0 Jembatan ke Kelas X.
 
 Seri Animasi Informatika untuk SMP–SMA mengikuti CP 2025 (Keputusan Kepala BSKAP 046/H/KR/2025), unit E.1 (10 JP). Tokoh: robot Kiko, Dito, dan Sinta. Semua gambar dibuat dengan kode; tanpa musik latar. Narasi: Kak Ceria (ElevenLabs).
@@ -94,8 +94,8 @@ Bab:
 1:47 Lima bagian
 3:06 Siklus mesin
 
-Latihan interaktif (kuis dengan petunjuk, bisa dipakai di HP): https://listyantidewi1.github.io/animasi-informatika/episodes/E.1/episode-e1.html
-Semua episode dan latihannya: https://listyantidewi1.github.io/animasi-informatika/
+Latihan interaktif (kuis dengan petunjuk, bisa dipakai di HP): https://belajar-informatika.vercel.app/e1
+Semua episode dan latihannya: https://belajar-informatika.vercel.app/
 Prasyarat: episode D7.2 Mengenal Komputer dan E.0 Jembatan ke Kelas X.
 
 Seri Animasi Informatika untuk SMP–SMA mengikuti CP 2025 (Keputusan Kepala BSKAP 046/H/KR/2025), unit E.1 (10 JP). Tokoh: robot Kiko, Dito, dan Sinta. Semua gambar dibuat dengan kode; tanpa musik latar.
@@ -129,8 +129,8 @@ Bab:
 2:42 Bus, detak, perangkat nyata
 3:32 Giliranmu
 
-Latihan interaktif (kuis dengan petunjuk, bisa dipakai di HP): https://listyantidewi1.github.io/animasi-informatika/episodes/E.1/episode-e1.html
-Semua episode dan latihannya: https://listyantidewi1.github.io/animasi-informatika/
+Latihan interaktif (kuis dengan petunjuk, bisa dipakai di HP): https://belajar-informatika.vercel.app/e1
+Semua episode dan latihannya: https://belajar-informatika.vercel.app/
 Prasyarat: episode D7.2 Mengenal Komputer dan E.0 Jembatan ke Kelas X.
 
 Seri Animasi Informatika untuk SMP–SMA mengikuti CP 2025 (Keputusan Kepala BSKAP 046/H/KR/2025), unit E.1 (10 JP). Tokoh: robot Kiko, Dito, dan Sinta. Semua gambar dibuat dengan kode; tanpa musik latar.
@@ -144,7 +144,7 @@ Seri Animasi Informatika untuk SMP–SMA mengikuti CP 2025 (Keputusan Kepala BSK
 📌 Komputer Von Neumann (1/2): Lima Bagian dan Siklus Mesin — materi Informatika kelas 10 (unit E.1).
 Setelah menonton, kamu bisa menjalankan komputer mini lima instruksi langkah demi langkah dan menjelaskan siklus ambil, terjemahkan, jalankan.
 Kata kunci materi ini: arsitektur von neumann kelas 10; siklus fetch decode execute penjelasan sederhana; cara kerja cpu memori informatika sma; simulasi komputer mini informatika kelas x.
-Latihan interaktif (bisa dipakai di HP): https://listyantidewi1.github.io/animasi-informatika/episodes/E.1/episode-e1.html Tonton dulu episode D7.2 Mengenal Komputer dan E.0 Jembatan ke Kelas X bila belum.
+Latihan interaktif (bisa dipakai di HP): https://belajar-informatika.vercel.app/e1 Tonton dulu episode D7.2 Mengenal Komputer dan E.0 Jembatan ke Kelas X bila belum.
 Ada yang belum jelas? Tulis di komentar, pertanyaanmu membantu teman lain juga.
 ```
 
@@ -154,6 +154,6 @@ Ada yang belum jelas? Tulis di komentar, pertanyaanmu membantu teman lain juga.
 📌 Komputer Von Neumann (2/2): Program Lima Instruksi — materi Informatika kelas 10 (unit E.1).
 Setelah menonton, kamu bisa menjalankan komputer mini lima instruksi langkah demi langkah dan menjelaskan siklus ambil, terjemahkan, jalankan.
 Kata kunci materi ini: arsitektur von neumann kelas 10; siklus fetch decode execute penjelasan sederhana; cara kerja cpu memori informatika sma; simulasi komputer mini informatika kelas x.
-Latihan interaktif (bisa dipakai di HP): https://listyantidewi1.github.io/animasi-informatika/episodes/E.1/episode-e1.html Tonton dulu episode D7.2 Mengenal Komputer dan E.0 Jembatan ke Kelas X bila belum.
+Latihan interaktif (bisa dipakai di HP): https://belajar-informatika.vercel.app/e1 Tonton dulu episode D7.2 Mengenal Komputer dan E.0 Jembatan ke Kelas X bila belum.
 Ada yang belum jelas? Tulis di komentar, pertanyaanmu membantu teman lain juga.
 ```

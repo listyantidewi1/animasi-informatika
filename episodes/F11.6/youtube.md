@@ -25,9 +25,9 @@ Bab:
 1:30 Brute force
 2:38 Greedy
 
-Latihan interaktif (kuis dengan petunjuk, bisa dipakai di HP): https://listyantidewi1.github.io/animasi-informatika/episodes/F11.6/episode-f116.html
+Latihan interaktif (kuis dengan petunjuk, bisa dipakai di HP): https://belajar-informatika.vercel.app/f116
 Alat untuk latihan di komputer: Python (IDLE, gratis, luring) https://www.python.org/downloads/; Google Colab (Python di browser) https://colab.research.google.com/
-Semua episode dan latihannya: https://listyantidewi1.github.io/animasi-informatika/
+Semua episode dan latihannya: https://belajar-informatika.vercel.app/
 Prasyarat: episode F11.3 Algoritma Standar dalam Kode dan F11.2 Dari Pseudocode ke Kode.
 
 Seri Animasi Informatika untuk SMP–SMA mengikuti CP 2025 (Keputusan Kepala BSKAP 046/H/KR/2025), unit F11.6 (26 JP). Tokoh: robot Kiko, Dito, dan Sinta. Semua gambar dibuat dengan kode; tanpa musik latar. Narasi: Kak Ceria (ElevenLabs).
@@ -61,9 +61,9 @@ Bab:
 2:33 Justifikasi dan alternatif
 3:13 Giliranmu
 
-Latihan interaktif (kuis dengan petunjuk, bisa dipakai di HP): https://listyantidewi1.github.io/animasi-informatika/episodes/F11.6/episode-f116.html
+Latihan interaktif (kuis dengan petunjuk, bisa dipakai di HP): https://belajar-informatika.vercel.app/f116
 Alat untuk latihan di komputer: Python (IDLE, gratis, luring) https://www.python.org/downloads/; Google Colab (Python di browser) https://colab.research.google.com/
-Semua episode dan latihannya: https://listyantidewi1.github.io/animasi-informatika/
+Semua episode dan latihannya: https://belajar-informatika.vercel.app/
 Prasyarat: episode F11.3 Algoritma Standar dalam Kode dan F11.2 Dari Pseudocode ke Kode.
 
 Seri Animasi Informatika untuk SMP–SMA mengikuti CP 2025 (Keputusan Kepala BSKAP 046/H/KR/2025), unit F11.6 (26 JP). Tokoh: robot Kiko, Dito, dan Sinta. Semua gambar dibuat dengan kode; tanpa musik latar. Narasi: Kak Ceria (ElevenLabs).
@@ -96,9 +96,9 @@ Bab:
 1:52 Brute force
 3:15 Greedy
 
-Latihan interaktif (kuis dengan petunjuk, bisa dipakai di HP): https://listyantidewi1.github.io/animasi-informatika/episodes/F11.6/episode-f116.html
+Latihan interaktif (kuis dengan petunjuk, bisa dipakai di HP): https://belajar-informatika.vercel.app/f116
 Alat untuk latihan di komputer: Python (IDLE, gratis, luring) https://www.python.org/downloads/; Google Colab (Python di browser) https://colab.research.google.com/
-Semua episode dan latihannya: https://listyantidewi1.github.io/animasi-informatika/
+Semua episode dan latihannya: https://belajar-informatika.vercel.app/
 Prasyarat: episode F11.3 Algoritma Standar dalam Kode dan F11.2 Dari Pseudocode ke Kode.
 
 Seri Animasi Informatika untuk SMP–SMA mengikuti CP 2025 (Keputusan Kepala BSKAP 046/H/KR/2025), unit F11.6 (26 JP). Tokoh: robot Kiko, Dito, dan Sinta. Semua gambar dibuat dengan kode; tanpa musik latar.
@@ -132,9 +132,9 @@ Bab:
 3:07 Justifikasi dan alternatif
 3:53 Giliranmu
 
-Latihan interaktif (kuis dengan petunjuk, bisa dipakai di HP): https://listyantidewi1.github.io/animasi-informatika/episodes/F11.6/episode-f116.html
+Latihan interaktif (kuis dengan petunjuk, bisa dipakai di HP): https://belajar-informatika.vercel.app/f116
 Alat untuk latihan di komputer: Python (IDLE, gratis, luring) https://www.python.org/downloads/; Google Colab (Python di browser) https://colab.research.google.com/
-Semua episode dan latihannya: https://listyantidewi1.github.io/animasi-informatika/
+Semua episode dan latihannya: https://belajar-informatika.vercel.app/
 Prasyarat: episode F11.3 Algoritma Standar dalam Kode dan F11.2 Dari Pseudocode ke Kode.
 
 Seri Animasi Informatika untuk SMP–SMA mengikuti CP 2025 (Keputusan Kepala BSKAP 046/H/KR/2025), unit F11.6 (26 JP). Tokoh: robot Kiko, Dito, dan Sinta. Semua gambar dibuat dengan kode; tanpa musik latar.
@@ -148,7 +148,7 @@ Seri Animasi Informatika untuk SMP–SMA mengikuti CP 2025 (Keputusan Kepala BSK
 📌 Strategi Algoritmik dan Alternatif Solusi (1/2): Brute Force dan Greedy — materi Informatika kelas 11 (unit F11.6).
 Setelah menonton, kamu bisa memilih strategi algoritmik yang tepat dan membela pilihanmu dengan alasan.
 Kata kunci materi ini: greedy vs brute force uang kembalian kelas 11; divide and conquer penjelasan sederhana; rekursi python base case pemula; strategi algoritmik informatika sma.
-Latihan interaktif (bisa dipakai di HP): https://listyantidewi1.github.io/animasi-informatika/episodes/F11.6/episode-f116.html Tonton dulu episode F11.3 Algoritma Standar dalam Kode dan F11.2 Dari Pseudocode ke Kode bila belum.
+Latihan interaktif (bisa dipakai di HP): https://belajar-informatika.vercel.app/f116 Tonton dulu episode F11.3 Algoritma Standar dalam Kode dan F11.2 Dari Pseudocode ke Kode bila belum.
 Alat untuk latihan di komputer: Python (IDLE, gratis, luring) https://www.python.org/downloads/; Google Colab (Python di browser) https://colab.research.google.com/
 Ada yang belum jelas? Tulis di komentar, pertanyaanmu membantu teman lain juga.
 ```
@@ -159,7 +159,7 @@ Ada yang belum jelas? Tulis di komentar, pertanyaanmu membantu teman lain juga.
 📌 Strategi Algoritmik dan Alternatif Solusi (2/2): Divide and Conquer, Rekursi, Justifikasi — materi Informatika kelas 11 (unit F11.6).
 Setelah menonton, kamu bisa memilih strategi algoritmik yang tepat dan membela pilihanmu dengan alasan.
 Kata kunci materi ini: greedy vs brute force uang kembalian kelas 11; divide and conquer penjelasan sederhana; rekursi python base case pemula; strategi algoritmik informatika sma.
-Latihan interaktif (bisa dipakai di HP): https://listyantidewi1.github.io/animasi-informatika/episodes/F11.6/episode-f116.html Tonton dulu episode F11.3 Algoritma Standar dalam Kode dan F11.2 Dari Pseudocode ke Kode bila belum.
+Latihan interaktif (bisa dipakai di HP): https://belajar-informatika.vercel.app/f116 Tonton dulu episode F11.3 Algoritma Standar dalam Kode dan F11.2 Dari Pseudocode ke Kode bila belum.
 Alat untuk latihan di komputer: Python (IDLE, gratis, luring) https://www.python.org/downloads/; Google Colab (Python di browser) https://colab.research.google.com/
 Ada yang belum jelas? Tulis di komentar, pertanyaanmu membantu teman lain juga.
 ```

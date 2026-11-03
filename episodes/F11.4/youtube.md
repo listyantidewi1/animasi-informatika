@@ -25,8 +25,8 @@ Bab:
 1:27 Riset dengan mesin pencari
 2:41 Membaca lateral tingkat lanjut
 
-Latihan interaktif (kuis dengan petunjuk, bisa dipakai di HP): https://listyantidewi1.github.io/animasi-informatika/episodes/F11.4/episode-f114.html
-Semua episode dan latihannya: https://listyantidewi1.github.io/animasi-informatika/
+Latihan interaktif (kuis dengan petunjuk, bisa dipakai di HP): https://belajar-informatika.vercel.app/f114
+Semua episode dan latihannya: https://belajar-informatika.vercel.app/
 Prasyarat: episode E.4 Mencari, Memeriksa, Membaca Lateral dan D8.5 Fakta, Opini, dan Hoaks.
 
 Seri Animasi Informatika untuk SMP–SMA mengikuti CP 2025 (Keputusan Kepala BSKAP 046/H/KR/2025), unit F11.4 (10 JP). Tokoh: robot Kiko, Dito, dan Sinta. Semua gambar dibuat dengan kode; tanpa musik latar. Narasi: Kak Ceria (ElevenLabs).
@@ -60,8 +60,8 @@ Bab:
 2:30 Alur riset dan etika
 3:08 Giliranmu
 
-Latihan interaktif (kuis dengan petunjuk, bisa dipakai di HP): https://listyantidewi1.github.io/animasi-informatika/episodes/F11.4/episode-f114.html
-Semua episode dan latihannya: https://listyantidewi1.github.io/animasi-informatika/
+Latihan interaktif (kuis dengan petunjuk, bisa dipakai di HP): https://belajar-informatika.vercel.app/f114
+Semua episode dan latihannya: https://belajar-informatika.vercel.app/
 Prasyarat: episode E.4 Mencari, Memeriksa, Membaca Lateral dan D8.5 Fakta, Opini, dan Hoaks.
 
 Seri Animasi Informatika untuk SMP–SMA mengikuti CP 2025 (Keputusan Kepala BSKAP 046/H/KR/2025), unit F11.4 (10 JP). Tokoh: robot Kiko, Dito, dan Sinta. Semua gambar dibuat dengan kode; tanpa musik latar. Narasi: Kak Ceria (ElevenLabs).
@@ -94,8 +94,8 @@ Bab:
 1:49 Riset dengan mesin pencari
 3:19 Membaca lateral tingkat lanjut
 
-Latihan interaktif (kuis dengan petunjuk, bisa dipakai di HP): https://listyantidewi1.github.io/animasi-informatika/episodes/F11.4/episode-f114.html
-Semua episode dan latihannya: https://listyantidewi1.github.io/animasi-informatika/
+Latihan interaktif (kuis dengan petunjuk, bisa dipakai di HP): https://belajar-informatika.vercel.app/f114
+Semua episode dan latihannya: https://belajar-informatika.vercel.app/
 Prasyarat: episode E.4 Mencari, Memeriksa, Membaca Lateral dan D8.5 Fakta, Opini, dan Hoaks.
 
 Seri Animasi Informatika untuk SMP–SMA mengikuti CP 2025 (Keputusan Kepala BSKAP 046/H/KR/2025), unit F11.4 (10 JP). Tokoh: robot Kiko, Dito, dan Sinta. Semua gambar dibuat dengan kode; tanpa musik latar.
@@ -129,8 +129,8 @@ Bab:
 3:00 Alur riset dan etika
 3:46 Giliranmu
 
-Latihan interaktif (kuis dengan petunjuk, bisa dipakai di HP): https://listyantidewi1.github.io/animasi-informatika/episodes/F11.4/episode-f114.html
-Semua episode dan latihannya: https://listyantidewi1.github.io/animasi-informatika/
+Latihan interaktif (kuis dengan petunjuk, bisa dipakai di HP): https://belajar-informatika.vercel.app/f114
+Semua episode dan latihannya: https://belajar-informatika.vercel.app/
 Prasyarat: episode E.4 Mencari, Memeriksa, Membaca Lateral dan D8.5 Fakta, Opini, dan Hoaks.
 
 Seri Animasi Informatika untuk SMP–SMA mengikuti CP 2025 (Keputusan Kepala BSKAP 046/H/KR/2025), unit F11.4 (10 JP). Tokoh: robot Kiko, Dito, dan Sinta. Semua gambar dibuat dengan kode; tanpa musik latar.
@@ -144,7 +144,7 @@ Seri Animasi Informatika untuk SMP–SMA mengikuti CP 2025 (Keputusan Kepala BSK
 📌 Riset Digital dan Verifikasi Konten (1/2): Riset dengan Mesin Pencari dan Membaca Lateral — materi Informatika kelas 11 (unit F11.4).
 Setelah menonton, kamu bisa meriset satu pertanyaan dan memverifikasi teks, foto, serta video sebelum memercayainya.
 Kata kunci materi ini: cara verifikasi foto hoaks pencarian gambar terbalik; riset dengan mesin pencari operator site filetype kelas 11; membaca lateral cek fakta sma; cara cek video asli atau editan.
-Latihan interaktif (bisa dipakai di HP): https://listyantidewi1.github.io/animasi-informatika/episodes/F11.4/episode-f114.html Tonton dulu episode E.4 Mencari, Memeriksa, Membaca Lateral dan D8.5 Fakta, Opini, dan Hoaks bila belum.
+Latihan interaktif (bisa dipakai di HP): https://belajar-informatika.vercel.app/f114 Tonton dulu episode E.4 Mencari, Memeriksa, Membaca Lateral dan D8.5 Fakta, Opini, dan Hoaks bila belum.
 Ada yang belum jelas? Tulis di komentar, pertanyaanmu membantu teman lain juga.
 ```
 
@@ -154,6 +154,6 @@ Ada yang belum jelas? Tulis di komentar, pertanyaanmu membantu teman lain juga.
 📌 Riset Digital dan Verifikasi Konten (2/2): Verifikasi Teks, Foto, dan Video — materi Informatika kelas 11 (unit F11.4).
 Setelah menonton, kamu bisa meriset satu pertanyaan dan memverifikasi teks, foto, serta video sebelum memercayainya.
 Kata kunci materi ini: cara verifikasi foto hoaks pencarian gambar terbalik; riset dengan mesin pencari operator site filetype kelas 11; membaca lateral cek fakta sma; cara cek video asli atau editan.
-Latihan interaktif (bisa dipakai di HP): https://listyantidewi1.github.io/animasi-informatika/episodes/F11.4/episode-f114.html Tonton dulu episode E.4 Mencari, Memeriksa, Membaca Lateral dan D8.5 Fakta, Opini, dan Hoaks bila belum.
+Latihan interaktif (bisa dipakai di HP): https://belajar-informatika.vercel.app/f114 Tonton dulu episode E.4 Mencari, Memeriksa, Membaca Lateral dan D8.5 Fakta, Opini, dan Hoaks bila belum.
 Ada yang belum jelas? Tulis di komentar, pertanyaanmu membantu teman lain juga.
 ```

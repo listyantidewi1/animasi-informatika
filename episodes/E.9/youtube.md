@@ -25,8 +25,8 @@ Bab:
 1:30 Riset, izin, perangkat
 2:42 Metadata dan label
 
-Latihan interaktif (kuis dengan petunjuk, bisa dipakai di HP): https://listyantidewi1.github.io/animasi-informatika/episodes/E.9/episode-e9.html
-Semua episode dan latihannya: https://listyantidewi1.github.io/animasi-informatika/
+Latihan interaktif (kuis dengan petunjuk, bisa dipakai di HP): https://belajar-informatika.vercel.app/e9
+Semua episode dan latihannya: https://belajar-informatika.vercel.app/
 Prasyarat: episode D9.5 Produksi dan Diseminasi Konten Digital, E.4 Membaca Lateral, dan E.8 Data Berkualitas.
 
 Seri Animasi Informatika untuk SMP–SMA mengikuti CP 2025 (Keputusan Kepala BSKAP 046/H/KR/2025), unit E.9 (8 JP). Tokoh: robot Kiko, Dito, dan Sinta. Semua gambar dibuat dengan kode; tanpa musik latar. Narasi: Kak Ceria (ElevenLabs).
@@ -60,8 +60,8 @@ Bab:
 2:39 Profesi dan rencana
 3:18 Giliranmu
 
-Latihan interaktif (kuis dengan petunjuk, bisa dipakai di HP): https://listyantidewi1.github.io/animasi-informatika/episodes/E.9/episode-e9.html
-Semua episode dan latihannya: https://listyantidewi1.github.io/animasi-informatika/
+Latihan interaktif (kuis dengan petunjuk, bisa dipakai di HP): https://belajar-informatika.vercel.app/e9
+Semua episode dan latihannya: https://belajar-informatika.vercel.app/
 Prasyarat: episode D9.5 Produksi dan Diseminasi Konten Digital, E.4 Membaca Lateral, dan E.8 Data Berkualitas.
 
 Seri Animasi Informatika untuk SMP–SMA mengikuti CP 2025 (Keputusan Kepala BSKAP 046/H/KR/2025), unit E.9 (8 JP). Tokoh: robot Kiko, Dito, dan Sinta. Semua gambar dibuat dengan kode; tanpa musik latar. Narasi: Kak Ceria (ElevenLabs).
@@ -94,8 +94,8 @@ Bab:
 1:52 Riset, izin, perangkat
 3:22 Metadata dan label
 
-Latihan interaktif (kuis dengan petunjuk, bisa dipakai di HP): https://listyantidewi1.github.io/animasi-informatika/episodes/E.9/episode-e9.html
-Semua episode dan latihannya: https://listyantidewi1.github.io/animasi-informatika/
+Latihan interaktif (kuis dengan petunjuk, bisa dipakai di HP): https://belajar-informatika.vercel.app/e9
+Semua episode dan latihannya: https://belajar-informatika.vercel.app/
 Prasyarat: episode D9.5 Produksi dan Diseminasi Konten Digital, E.4 Membaca Lateral, dan E.8 Data Berkualitas.
 
 Seri Animasi Informatika untuk SMP–SMA mengikuti CP 2025 (Keputusan Kepala BSKAP 046/H/KR/2025), unit E.9 (8 JP). Tokoh: robot Kiko, Dito, dan Sinta. Semua gambar dibuat dengan kode; tanpa musik latar.
@@ -129,8 +129,8 @@ Bab:
 3:02 Profesi dan rencana
 3:49 Giliranmu
 
-Latihan interaktif (kuis dengan petunjuk, bisa dipakai di HP): https://listyantidewi1.github.io/animasi-informatika/episodes/E.9/episode-e9.html
-Semua episode dan latihannya: https://listyantidewi1.github.io/animasi-informatika/
+Latihan interaktif (kuis dengan petunjuk, bisa dipakai di HP): https://belajar-informatika.vercel.app/e9
+Semua episode dan latihannya: https://belajar-informatika.vercel.app/
 Prasyarat: episode D9.5 Produksi dan Diseminasi Konten Digital, E.4 Membaca Lateral, dan E.8 Data Berkualitas.
 
 Seri Animasi Informatika untuk SMP–SMA mengikuti CP 2025 (Keputusan Kepala BSKAP 046/H/KR/2025), unit E.9 (8 JP). Tokoh: robot Kiko, Dito, dan Sinta. Semua gambar dibuat dengan kode; tanpa musik latar.
@@ -144,7 +144,7 @@ Seri Animasi Informatika untuk SMP–SMA mengikuti CP 2025 (Keputusan Kepala BSK
 📌 Proyek: Digitalisasi Budaya Lokal (1/2): Merekam Budaya Lokal — materi Informatika kelas 10 (unit E.9).
 Setelah menonton, kamu bisa merekam satu warisan budaya di sekitarmu menjadi konten digital berlisensi jelas, dengan atribusi yang benar.
 Kata kunci materi ini: proyek digitalisasi budaya lokal informatika kelas 10; lisensi creative commons penjelasan pelajar; cara menulis atribusi karya; profesi bidang informatika.
-Latihan interaktif (bisa dipakai di HP): https://listyantidewi1.github.io/animasi-informatika/episodes/E.9/episode-e9.html Tonton dulu episode D9.5 Produksi dan Diseminasi Konten Digital, E.4 Membaca Lateral, dan E.8 Data Berkualitas bila belum.
+Latihan interaktif (bisa dipakai di HP): https://belajar-informatika.vercel.app/e9 Tonton dulu episode D9.5 Produksi dan Diseminasi Konten Digital, E.4 Membaca Lateral, dan E.8 Data Berkualitas bila belum.
 Ada yang belum jelas? Tulis di komentar, pertanyaanmu membantu teman lain juga.
 ```
 
@@ -154,6 +154,6 @@ Ada yang belum jelas? Tulis di komentar, pertanyaanmu membantu teman lain juga.
 📌 Proyek: Digitalisasi Budaya Lokal (2/2): Lisensi, Atribusi, dan Profesi — materi Informatika kelas 10 (unit E.9).
 Setelah menonton, kamu bisa merekam satu warisan budaya di sekitarmu menjadi konten digital berlisensi jelas, dengan atribusi yang benar.
 Kata kunci materi ini: proyek digitalisasi budaya lokal informatika kelas 10; lisensi creative commons penjelasan pelajar; cara menulis atribusi karya; profesi bidang informatika.
-Latihan interaktif (bisa dipakai di HP): https://listyantidewi1.github.io/animasi-informatika/episodes/E.9/episode-e9.html Tonton dulu episode D9.5 Produksi dan Diseminasi Konten Digital, E.4 Membaca Lateral, dan E.8 Data Berkualitas bila belum.
+Latihan interaktif (bisa dipakai di HP): https://belajar-informatika.vercel.app/e9 Tonton dulu episode D9.5 Produksi dan Diseminasi Konten Digital, E.4 Membaca Lateral, dan E.8 Data Berkualitas bila belum.
 Ada yang belum jelas? Tulis di komentar, pertanyaanmu membantu teman lain juga.
 ```

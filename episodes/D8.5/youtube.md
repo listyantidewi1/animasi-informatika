@@ -25,8 +25,8 @@ Bab:
 1:13 Fakta, opini, hoaks
 2:14 Lima ciri hoaks
 
-Latihan interaktif (kuis dengan petunjuk, bisa dipakai di HP): https://listyantidewi1.github.io/animasi-informatika/episodes/D8.5/episode-d85.html
-Semua episode dan latihannya: https://listyantidewi1.github.io/animasi-informatika/
+Latihan interaktif (kuis dengan petunjuk, bisa dipakai di HP): https://belajar-informatika.vercel.app/d85
+Semua episode dan latihannya: https://belajar-informatika.vercel.app/
 Prasyarat: episode D8.4 Menilai Informasi dan Ekosistem Pers Digital.
 
 Seri Animasi Informatika untuk SMP–SMA mengikuti CP 2025 (Keputusan Kepala BSKAP 046/H/KR/2025), unit D8.5 (10 JP). Tokoh: robot Kiko, Dito, dan Sinta. Semua gambar dibuat dengan kode; tanpa musik latar. Narasi: Kak Ceria (ElevenLabs).
@@ -60,8 +60,8 @@ Bab:
 2:11 Cara memeriksa
 2:46 Giliranmu
 
-Latihan interaktif (kuis dengan petunjuk, bisa dipakai di HP): https://listyantidewi1.github.io/animasi-informatika/episodes/D8.5/episode-d85.html
-Semua episode dan latihannya: https://listyantidewi1.github.io/animasi-informatika/
+Latihan interaktif (kuis dengan petunjuk, bisa dipakai di HP): https://belajar-informatika.vercel.app/d85
+Semua episode dan latihannya: https://belajar-informatika.vercel.app/
 Prasyarat: episode D8.4 Menilai Informasi dan Ekosistem Pers Digital.
 
 Seri Animasi Informatika untuk SMP–SMA mengikuti CP 2025 (Keputusan Kepala BSKAP 046/H/KR/2025), unit D8.5 (10 JP). Tokoh: robot Kiko, Dito, dan Sinta. Semua gambar dibuat dengan kode; tanpa musik latar. Narasi: Kak Ceria (ElevenLabs).
@@ -94,8 +94,8 @@ Bab:
 1:33 Fakta, opini, hoaks
 2:46 Lima ciri hoaks
 
-Latihan interaktif (kuis dengan petunjuk, bisa dipakai di HP): https://listyantidewi1.github.io/animasi-informatika/episodes/D8.5/episode-d85.html
-Semua episode dan latihannya: https://listyantidewi1.github.io/animasi-informatika/
+Latihan interaktif (kuis dengan petunjuk, bisa dipakai di HP): https://belajar-informatika.vercel.app/d85
+Semua episode dan latihannya: https://belajar-informatika.vercel.app/
 Prasyarat: episode D8.4 Menilai Informasi dan Ekosistem Pers Digital.
 
 Seri Animasi Informatika untuk SMP–SMA mengikuti CP 2025 (Keputusan Kepala BSKAP 046/H/KR/2025), unit D8.5 (10 JP). Tokoh: robot Kiko, Dito, dan Sinta. Semua gambar dibuat dengan kode; tanpa musik latar.
@@ -129,8 +129,8 @@ Bab:
 2:43 Cara memeriksa
 3:27 Giliranmu
 
-Latihan interaktif (kuis dengan petunjuk, bisa dipakai di HP): https://listyantidewi1.github.io/animasi-informatika/episodes/D8.5/episode-d85.html
-Semua episode dan latihannya: https://listyantidewi1.github.io/animasi-informatika/
+Latihan interaktif (kuis dengan petunjuk, bisa dipakai di HP): https://belajar-informatika.vercel.app/d85
+Semua episode dan latihannya: https://belajar-informatika.vercel.app/
 Prasyarat: episode D8.4 Menilai Informasi dan Ekosistem Pers Digital.
 
 Seri Animasi Informatika untuk SMP–SMA mengikuti CP 2025 (Keputusan Kepala BSKAP 046/H/KR/2025), unit D8.5 (10 JP). Tokoh: robot Kiko, Dito, dan Sinta. Semua gambar dibuat dengan kode; tanpa musik latar.
@@ -144,7 +144,7 @@ Seri Animasi Informatika untuk SMP–SMA mengikuti CP 2025 (Keputusan Kepala BSK
 📌 Fakta, Opini, dan Hoaks (1/2): Fakta, Opini, atau Hoaks? — materi Informatika kelas 8 (unit D8.5).
 Setelah menonton, kamu bisa membedakan fakta, opini, dan hoaks, lalu menghentikan penyebaran hoaks dengan satu kebiasaan: periksa dulu.
 Kata kunci materi ini: fakta opini hoaks kelas 8; ciri-ciri hoaks dan cara mengeceknya; penyebaran hoaks informatika SMP; literasi digital hoaks kurikulum merdeka.
-Latihan interaktif (bisa dipakai di HP): https://listyantidewi1.github.io/animasi-informatika/episodes/D8.5/episode-d85.html Tonton dulu episode D8.4 Menilai Informasi dan Ekosistem Pers Digital bila belum.
+Latihan interaktif (bisa dipakai di HP): https://belajar-informatika.vercel.app/d85 Tonton dulu episode D8.4 Menilai Informasi dan Ekosistem Pers Digital bila belum.
 Ada yang belum jelas? Tulis di komentar, pertanyaanmu membantu teman lain juga.
 ```
 
@@ -154,6 +154,6 @@ Ada yang belum jelas? Tulis di komentar, pertanyaanmu membantu teman lain juga.
 📌 Fakta, Opini, dan Hoaks (2/2): Bagaimana Hoaks Menyebar — materi Informatika kelas 8 (unit D8.5).
 Setelah menonton, kamu bisa membedakan fakta, opini, dan hoaks, lalu menghentikan penyebaran hoaks dengan satu kebiasaan: periksa dulu.
 Kata kunci materi ini: fakta opini hoaks kelas 8; ciri-ciri hoaks dan cara mengeceknya; penyebaran hoaks informatika SMP; literasi digital hoaks kurikulum merdeka.
-Latihan interaktif (bisa dipakai di HP): https://listyantidewi1.github.io/animasi-informatika/episodes/D8.5/episode-d85.html Tonton dulu episode D8.4 Menilai Informasi dan Ekosistem Pers Digital bila belum.
+Latihan interaktif (bisa dipakai di HP): https://belajar-informatika.vercel.app/d85 Tonton dulu episode D8.4 Menilai Informasi dan Ekosistem Pers Digital bila belum.
 Ada yang belum jelas? Tulis di komentar, pertanyaanmu membantu teman lain juga.
 ```

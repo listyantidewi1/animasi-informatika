@@ -25,8 +25,8 @@ Bab:
 1:25 Rantai koneksi dan diagnosis bertahap
 2:46 Uji yang membelah dua dan alat detektif
 
-Latihan interaktif (kuis dengan petunjuk, bisa dipakai di HP): https://listyantidewi1.github.io/animasi-informatika/episodes/F11.8/episode-f118.html
-Semua episode dan latihannya: https://listyantidewi1.github.io/animasi-informatika/
+Latihan interaktif (kuis dengan petunjuk, bisa dipakai di HP): https://belajar-informatika.vercel.app/f118
+Semua episode dan latihannya: https://belajar-informatika.vercel.app/
 Prasyarat: episode F11.7 Model Jaringan dan Pengiriman Data dan E.3 Keamanan Akun dan Jaringan Dasar.
 
 Seri Animasi Informatika untuk SMP–SMA mengikuti CP 2025 (Keputusan Kepala BSKAP 046/H/KR/2025), unit F11.8 (16 JP). Tokoh: robot Kiko, Dito, dan Sinta. Semua gambar dibuat dengan kode; tanpa musik latar. Narasi: Kak Ceria (ElevenLabs).
@@ -60,8 +60,8 @@ Bab:
 2:40 Daftar periksa dan log
 3:21 Giliranmu
 
-Latihan interaktif (kuis dengan petunjuk, bisa dipakai di HP): https://listyantidewi1.github.io/animasi-informatika/episodes/F11.8/episode-f118.html
-Semua episode dan latihannya: https://listyantidewi1.github.io/animasi-informatika/
+Latihan interaktif (kuis dengan petunjuk, bisa dipakai di HP): https://belajar-informatika.vercel.app/f118
+Semua episode dan latihannya: https://belajar-informatika.vercel.app/
 Prasyarat: episode F11.7 Model Jaringan dan Pengiriman Data dan E.3 Keamanan Akun dan Jaringan Dasar.
 
 Seri Animasi Informatika untuk SMP–SMA mengikuti CP 2025 (Keputusan Kepala BSKAP 046/H/KR/2025), unit F11.8 (16 JP). Tokoh: robot Kiko, Dito, dan Sinta. Semua gambar dibuat dengan kode; tanpa musik latar. Narasi: Kak Ceria (ElevenLabs).
@@ -94,8 +94,8 @@ Bab:
 1:44 Rantai koneksi dan diagnosis bertahap
 3:13 Uji yang membelah dua dan alat detektif
 
-Latihan interaktif (kuis dengan petunjuk, bisa dipakai di HP): https://listyantidewi1.github.io/animasi-informatika/episodes/F11.8/episode-f118.html
-Semua episode dan latihannya: https://listyantidewi1.github.io/animasi-informatika/
+Latihan interaktif (kuis dengan petunjuk, bisa dipakai di HP): https://belajar-informatika.vercel.app/f118
+Semua episode dan latihannya: https://belajar-informatika.vercel.app/
 Prasyarat: episode F11.7 Model Jaringan dan Pengiriman Data dan E.3 Keamanan Akun dan Jaringan Dasar.
 
 Seri Animasi Informatika untuk SMP–SMA mengikuti CP 2025 (Keputusan Kepala BSKAP 046/H/KR/2025), unit F11.8 (16 JP). Tokoh: robot Kiko, Dito, dan Sinta. Semua gambar dibuat dengan kode; tanpa musik latar.
@@ -129,8 +129,8 @@ Bab:
 3:14 Daftar periksa dan log
 4:04 Giliranmu
 
-Latihan interaktif (kuis dengan petunjuk, bisa dipakai di HP): https://listyantidewi1.github.io/animasi-informatika/episodes/F11.8/episode-f118.html
-Semua episode dan latihannya: https://listyantidewi1.github.io/animasi-informatika/
+Latihan interaktif (kuis dengan petunjuk, bisa dipakai di HP): https://belajar-informatika.vercel.app/f118
+Semua episode dan latihannya: https://belajar-informatika.vercel.app/
 Prasyarat: episode F11.7 Model Jaringan dan Pengiriman Data dan E.3 Keamanan Akun dan Jaringan Dasar.
 
 Seri Animasi Informatika untuk SMP–SMA mengikuti CP 2025 (Keputusan Kepala BSKAP 046/H/KR/2025), unit F11.8 (16 JP). Tokoh: robot Kiko, Dito, dan Sinta. Semua gambar dibuat dengan kode; tanpa musik latar.
@@ -144,7 +144,7 @@ Seri Animasi Informatika untuk SMP–SMA mengikuti CP 2025 (Keputusan Kepala BSK
 📌 Troubleshooting dan Keamanan Lanjut Jaringan (1/2): Detektif Jaringan: Diagnosis Bertahap — materi Informatika kelas 11 (unit F11.8).
 Setelah menonton, kamu bisa mendiagnosis gangguan jaringan selangkah demi selangkah dan mengatur firewall, enkripsi, serta VPN.
 Kata kunci materi ini: cara troubleshooting jaringan internet mati langkah demi langkah; ping ipconfig traceroute nslookup penjelasan kelas 11; firewall enkripsi vpn dijelaskan sederhana; keamanan jaringan sekolah sma.
-Latihan interaktif (bisa dipakai di HP): https://listyantidewi1.github.io/animasi-informatika/episodes/F11.8/episode-f118.html Tonton dulu episode F11.7 Model Jaringan dan Pengiriman Data dan E.3 Keamanan Akun dan Jaringan Dasar bila belum.
+Latihan interaktif (bisa dipakai di HP): https://belajar-informatika.vercel.app/f118 Tonton dulu episode F11.7 Model Jaringan dan Pengiriman Data dan E.3 Keamanan Akun dan Jaringan Dasar bila belum.
 Ada yang belum jelas? Tulis di komentar, pertanyaanmu membantu teman lain juga.
 ```
 
@@ -154,6 +154,6 @@ Ada yang belum jelas? Tulis di komentar, pertanyaanmu membantu teman lain juga.
 📌 Troubleshooting dan Keamanan Lanjut Jaringan (2/2): Keamanan Lanjut: Firewall, Enkripsi, VPN — materi Informatika kelas 11 (unit F11.8).
 Setelah menonton, kamu bisa mendiagnosis gangguan jaringan selangkah demi selangkah dan mengatur firewall, enkripsi, serta VPN.
 Kata kunci materi ini: cara troubleshooting jaringan internet mati langkah demi langkah; ping ipconfig traceroute nslookup penjelasan kelas 11; firewall enkripsi vpn dijelaskan sederhana; keamanan jaringan sekolah sma.
-Latihan interaktif (bisa dipakai di HP): https://listyantidewi1.github.io/animasi-informatika/episodes/F11.8/episode-f118.html Tonton dulu episode F11.7 Model Jaringan dan Pengiriman Data dan E.3 Keamanan Akun dan Jaringan Dasar bila belum.
+Latihan interaktif (bisa dipakai di HP): https://belajar-informatika.vercel.app/f118 Tonton dulu episode F11.7 Model Jaringan dan Pengiriman Data dan E.3 Keamanan Akun dan Jaringan Dasar bila belum.
 Ada yang belum jelas? Tulis di komentar, pertanyaanmu membantu teman lain juga.
 ```

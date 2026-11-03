@@ -25,8 +25,8 @@ Bab:
 1:09 Variabel dan papan memori
 2:04 ULANGI n kali
 
-Latihan interaktif (kuis dengan petunjuk, bisa dipakai di HP): https://listyantidewi1.github.io/animasi-informatika/episodes/D9.1/episode-d91.html
-Semua episode dan latihannya: https://listyantidewi1.github.io/animasi-informatika/
+Latihan interaktif (kuis dengan petunjuk, bisa dipakai di HP): https://belajar-informatika.vercel.app/d91
+Semua episode dan latihannya: https://belajar-informatika.vercel.app/
 Prasyarat: episode D9.0 Jembatan Kelas IX (flowchart dan percabangan).
 
 Seri Animasi Informatika untuk SMP–SMA mengikuti CP 2025 (Keputusan Kepala BSKAP 046/H/KR/2025), unit D9.1 (14 JP). Tokoh: robot Kiko, Dito, dan Sinta. Semua gambar dibuat dengan kode; tanpa musik latar. Narasi: Kak Ceria (ElevenLabs).
@@ -60,8 +60,8 @@ Bab:
 2:26 Tiga pola
 3:14 Giliranmu
 
-Latihan interaktif (kuis dengan petunjuk, bisa dipakai di HP): https://listyantidewi1.github.io/animasi-informatika/episodes/D9.1/episode-d91.html
-Semua episode dan latihannya: https://listyantidewi1.github.io/animasi-informatika/
+Latihan interaktif (kuis dengan petunjuk, bisa dipakai di HP): https://belajar-informatika.vercel.app/d91
+Semua episode dan latihannya: https://belajar-informatika.vercel.app/
 Prasyarat: episode D9.0 Jembatan Kelas IX (flowchart dan percabangan).
 
 Seri Animasi Informatika untuk SMP–SMA mengikuti CP 2025 (Keputusan Kepala BSKAP 046/H/KR/2025), unit D9.1 (14 JP). Tokoh: robot Kiko, Dito, dan Sinta. Semua gambar dibuat dengan kode; tanpa musik latar. Narasi: Kak Ceria (ElevenLabs).
@@ -94,8 +94,8 @@ Bab:
 1:28 Variabel dan papan memori
 2:36 ULANGI n kali
 
-Latihan interaktif (kuis dengan petunjuk, bisa dipakai di HP): https://listyantidewi1.github.io/animasi-informatika/episodes/D9.1/episode-d91.html
-Semua episode dan latihannya: https://listyantidewi1.github.io/animasi-informatika/
+Latihan interaktif (kuis dengan petunjuk, bisa dipakai di HP): https://belajar-informatika.vercel.app/d91
+Semua episode dan latihannya: https://belajar-informatika.vercel.app/
 Prasyarat: episode D9.0 Jembatan Kelas IX (flowchart dan percabangan).
 
 Seri Animasi Informatika untuk SMP–SMA mengikuti CP 2025 (Keputusan Kepala BSKAP 046/H/KR/2025), unit D9.1 (14 JP). Tokoh: robot Kiko, Dito, dan Sinta. Semua gambar dibuat dengan kode; tanpa musik latar.
@@ -129,8 +129,8 @@ Bab:
 2:59 Tiga pola
 3:59 Giliranmu
 
-Latihan interaktif (kuis dengan petunjuk, bisa dipakai di HP): https://listyantidewi1.github.io/animasi-informatika/episodes/D9.1/episode-d91.html
-Semua episode dan latihannya: https://listyantidewi1.github.io/animasi-informatika/
+Latihan interaktif (kuis dengan petunjuk, bisa dipakai di HP): https://belajar-informatika.vercel.app/d91
+Semua episode dan latihannya: https://belajar-informatika.vercel.app/
 Prasyarat: episode D9.0 Jembatan Kelas IX (flowchart dan percabangan).
 
 Seri Animasi Informatika untuk SMP–SMA mengikuti CP 2025 (Keputusan Kepala BSKAP 046/H/KR/2025), unit D9.1 (14 JP). Tokoh: robot Kiko, Dito, dan Sinta. Semua gambar dibuat dengan kode; tanpa musik latar.
@@ -144,7 +144,7 @@ Seri Animasi Informatika untuk SMP–SMA mengikuti CP 2025 (Keputusan Kepala BSK
 📌 Pseudocode Lengkap: Perulangan dan Data (1/2): Variabel dan ULANGI — materi Informatika kelas 9 (unit D9.1).
 Setelah menonton, kamu bisa menulis pseudocode dengan variabel, perulangan ULANGI dan SELAMA, dan menelusurinya di papan memori.
 Kata kunci materi ini: pseudocode perulangan kelas 9; variabel dan perulangan informatika SMP; cara menelusuri pseudocode; materi informatika kelas 9 algoritma perulangan.
-Latihan interaktif (bisa dipakai di HP): https://listyantidewi1.github.io/animasi-informatika/episodes/D9.1/episode-d91.html Tonton dulu episode D9.0 Jembatan Kelas IX (flowchart dan percabangan) bila belum.
+Latihan interaktif (bisa dipakai di HP): https://belajar-informatika.vercel.app/d91 Tonton dulu episode D9.0 Jembatan Kelas IX (flowchart dan percabangan) bila belum.
 Ada yang belum jelas? Tulis di komentar, pertanyaanmu membantu teman lain juga.
 ```
 
@@ -154,6 +154,6 @@ Ada yang belum jelas? Tulis di komentar, pertanyaanmu membantu teman lain juga.
 📌 Pseudocode Lengkap: Perulangan dan Data (2/2): Perulangan dengan Data dan Kondisi — materi Informatika kelas 9 (unit D9.1).
 Setelah menonton, kamu bisa menulis pseudocode dengan variabel, perulangan ULANGI dan SELAMA, dan menelusurinya di papan memori.
 Kata kunci materi ini: pseudocode perulangan kelas 9; variabel dan perulangan informatika SMP; cara menelusuri pseudocode; materi informatika kelas 9 algoritma perulangan.
-Latihan interaktif (bisa dipakai di HP): https://listyantidewi1.github.io/animasi-informatika/episodes/D9.1/episode-d91.html Tonton dulu episode D9.0 Jembatan Kelas IX (flowchart dan percabangan) bila belum.
+Latihan interaktif (bisa dipakai di HP): https://belajar-informatika.vercel.app/d91 Tonton dulu episode D9.0 Jembatan Kelas IX (flowchart dan percabangan) bila belum.
 Ada yang belum jelas? Tulis di komentar, pertanyaanmu membantu teman lain juga.
 ```
