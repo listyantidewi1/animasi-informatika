@@ -20,7 +20,7 @@
     ctx.fillStyle = GREEN_PCB; rr(ctx, x, y, w, h, 10); ctx.fill();
     ctx.fillStyle = GOLD; for (let i = 0; i < 12; i++) ctx.fillRect(x + 14 + i * (w - 28) / 12, y + h - 10, (w - 28) / 12 - 6, 10);
     const n = 6, cw = (w - 40) / n;
-    for (let i = 0; i < n; i++) { const c = (opt.cells || [])[i]; ctx.fillStyle = c ? "#FFF3D6" : DARK; rr(ctx, x + 20 + i * cw, y + 14, cw - 8, h - 40, 6); ctx.fill(); if (c) text(ctx, c, x + 20 + i * cw + (cw - 8) / 2, y + 14 + (h - 40) / 2 + 12, Math.min(34, h * 0.45), { align: "center", weight: 900, color: C.ink }); }
+    for (let i = 0; i < n; i++) { const c = (opt.cells || [])[i]; ctx.fillStyle = c ? "#FFF3D6" : DARK; rr(ctx, x + 20 + i * cw, y + 14, cw - 8, h - 40, 6); ctx.fill(); if (c) text(ctx, c, x + 20 + i * cw + (cw - 8) / 2, y + 14 + (h - 40) / 2 + 12, Math.min(34, h * 0.45, (cw - 8) * 0.85), { align: "center", weight: 900, color: C.ink }); }
     if (opt.label !== false) text(ctx, opt.label || "RAM", x + w / 2, y - 14, 28, { align: "center", weight: 900, color: C.ink2 });
   };
   // hard disk / SSD (kotak dengan piringan)

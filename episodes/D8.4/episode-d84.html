@@ -294,8 +294,8 @@ ul.plain { padding-left: 20px; margin: 0 0 10px } ul.plain li { margin-bottom: 6
       card(ctx, 160, 160, 1600, 700, { fill: C.panel });
       kiko(ctx, 420, 520, 260, 0, { wave: l, mood: "happy" });
       text(ctx, "Informatika · Fase " + (TL.episode || "D")[0] + " · Episode " + TL.episode, 720, 330, 34, { color: C.ink2, weight: 700 });
-      const ts = TL.title.length > 34 ? 74 : 92; const th = para(ctx, TL.title, 720, 440, ts, 1000, { weight: 900, lh: 1.1 }); const hy = Math.max(640, 440 + th - ts * 0.35 + 30);
-      if (TL.hook) { text(ctx, "SETELAH MENONTON, KAMU BISA:", 720, hy, 26, { color: C.accentDark, weight: 800 }); para(ctx, TL.hook, 720, hy + 50, 34, 1000, { weight: 800, lh: 1.3 }); if (hy <= 660) text(ctx, "Dengarkan, atau baca teksnya pelan-pelan.", 720, 800, 26, { color: C.ink2, weight: 600 }); }
+      const ts = TL.title.length > 34 ? 74 : 92; const th = para(ctx, TL.title, 720, 440, ts, 1000, { weight: 900, lh: 1.1 }); const hookLines = TL.hook ? wrap(ctx, TL.hook, 34, 800, 1000).length : 0; const hy = Math.max(hookLines >= 3 ? 600 : 640, 440 + th - ts * 0.35 + 30);
+      if (TL.hook) { text(ctx, "SETELAH MENONTON, KAMU BISA:", 720, hy, 26, { color: C.accentDark, weight: 800 }); para(ctx, TL.hook, 720, hy + 50, 34, 1000, { weight: 800, lh: 1.3 }); const ny = hy + 50 + wrap(ctx, TL.hook, 34, 800, 1000).length * 34 * 1.3 + 12; if (ny <= 830) text(ctx, "Dengarkan, atau baca teksnya pelan-pelan.", 720, Math.max(800, ny), 26, { color: C.ink2, weight: 600 }); }
       else text(ctx, "Dengarkan, atau baca teksnya pelan-pelan.", 720, 700, 36, { color: C.ink2, weight: 600 });
       arrowIcon(ctx, "up", 1560, 250, 70, C.kikoLight); arrowIcon(ctx, "right", 1660, 250, 70, C.kikoLight);
     },
@@ -303,18 +303,25 @@ ul.plain { padding-left: 20px; margin: 0 0 10px } ul.plain li { margin-bottom: 6
       const q = TL.quizzes[b.quiz]; card(ctx, 200, 150, 1520, 740, { stroke: C.accent, lw: 6 });
       text(ctx, "CEK PEMAHAMAN", 960, 230, 32, { align: "center", color: C.accentDark, weight: 800 });
       para(ctx, q.q, 960, 320, 44, 1360, { weight: 800, align: "center", lh: 1.3 });
+      // tata letak pilihan: mulai di bawah pertanyaan dan selesai di atas kartu narasi (narasi panjang = jarak dirapatkan)
+      const qLines = wrap(ctx, q.q, 44, 800, 1360).length, subTop = 1056 - (wrap(ctx, b.text, 44, 700, 1660).length * 44 * 1.3 + 44);
+      let oy = qLines <= 1 ? 420 : 470, gap = 120, oh = 96; const n = q.options.length;
+      if (oy + (n - 1) * gap + oh > subTop - 12) { gap = Math.max(104, Math.floor((subTop - 12 - oh - oy) / Math.max(1, n - 1))); }
+      if (oy + (n - 1) * gap + oh > subTop - 12) { oh = 86; gap = 100; oy = Math.max(320 + (qLines - 1) * 57 + 40, subTop - 12 - oh - (n - 1) * gap); }
       q.options.forEach((o, i) => {
-        const y = 470 + i * 120; const right = answered && i === q.answer;
-        card(ctx, 320, y, 1280, 96, { fill: right ? C.goodBg : answered ? "#F4F6F5" : C.bg2, stroke: right ? C.good : "#CFDCD5", lw: right ? 6 : 3 });
-        ctx.fillStyle = right ? C.good : C.kiko; ctx.beginPath(); ctx.arc(380, y + 48, 30, 0, Math.PI * 2); ctx.fill();
-        text(ctx, "ABC"[i], 380, y + 61, 34, { align: "center", color: "#fff", weight: 900 });
-        text(ctx, o, 440, y + 62, 38, { weight: 700, color: answered && !right ? C.muted : C.ink });
-        if (right) text(ctx, "✓", 1540, y + 66, 54, { align: "center", color: C.good, weight: 900 });
+        const y = oy + i * gap; const right = answered && i === q.answer;
+        card(ctx, 320, y, 1280, oh, { fill: right ? C.goodBg : answered ? "#F4F6F5" : C.bg2, stroke: right ? C.good : "#CFDCD5", lw: right ? 6 : 3 });
+        ctx.fillStyle = right ? C.good : C.kiko; ctx.beginPath(); ctx.arc(380, y + oh / 2, 30, 0, Math.PI * 2); ctx.fill();
+        text(ctx, "ABC"[i], 380, y + oh / 2 + 13, 34, { align: "center", color: "#fff", weight: 900 });
+        text(ctx, o, 440, y + oh / 2 + 14, 38, { weight: 700, color: answered && !right ? C.muted : C.ink });
+        if (right) text(ctx, "✓", 1540, y + oh / 2 + 18, 54, { align: "center", color: C.good, weight: 900 });
       });
       if (!answered) { // thinking timer
         const frac = clamp(l / b.dur, 0, 1); ctx.strokeStyle = "#D7E2DC"; ctx.lineWidth = 14; ctx.beginPath(); ctx.arc(1640, 230, 40, 0, Math.PI * 2); ctx.stroke();
         ctx.strokeStyle = C.accent; ctx.beginPath(); ctx.arc(1640, 230, 40, -Math.PI / 2, -Math.PI / 2 + frac * Math.PI * 2); ctx.stroke();
-        text(ctx, "Pikirkan dulu, jangan buru-buru.", 960, 860, 32, { align: "center", color: C.ink2, weight: 600 });
+        // catatan hanya digambar bila tidak tertutup kartu narasi (narasi tiga baris atau lebih menutupinya)
+        const subTop = 1056 - (wrap(ctx, b.text, 44, 700, 1660).length * 44 * 1.3 + 44);
+        if (subTop > 880) text(ctx, "Pikirkan dulu, jangan buru-buru.", 960, 860, 32, { align: "center", color: C.ink2, weight: 600 });
       }
     },
     quiz_answer(ctx, b, l, t, TL) { SCENES.quiz(ctx, b, l, t, TL, true); },
@@ -541,7 +548,7 @@ ul.plain { padding-left: 20px; margin: 0 0 10px } ul.plain li { margin-bottom: 6
     if (opt.title) { const lines = wrap(ctx, opt.title, size, 900, w - 32); lines.forEach(ln => { text(ctx, ln, x + 16, cy, size, { weight: 900 }); cy += size * 1.25; }); cy += 6; }
     if (opt.by != null) { text(ctx, opt.by, x + 16, cy, 20, { weight: 700, color: opt.by ? C.ink2 : C.bad }); cy += 28; }
     if (opt.time != null) { text(ctx, opt.time, x + 16, cy, 20, { weight: 700, color: opt.time ? C.ink2 : C.bad }); cy += 28; }
-    if (opt.photo) { ctx.fillStyle = "#DCEBF2"; rr(ctx, x + 16, cy + 4, w - 32, 110, 8); ctx.fill(); ctx.fillStyle = "#C9D4DB"; ctx.fillRect(x + 16, cy + 90, w - 32, 24); Q.tree(ctx, x + w / 2 - 50, cy + 92, 70, { fallen: true }); if (opt.photoNote) { ctx.fillStyle = C.bad; rr(ctx, x + w - 150, cy + 10, 128, 26, 6); ctx.fill(); text(ctx, opt.photoNote, x + w - 86, cy + 29, 16, { align: "center", weight: 900, color: "#fff" }); } cy += 128; }
+    if (opt.photo) { ctx.fillStyle = "#DCEBF2"; rr(ctx, x + 16, cy + 4, w - 32, 110, 8); ctx.fill(); ctx.fillStyle = "#C9D4DB"; ctx.fillRect(x + 16, cy + 90, w - 32, 24); ctx.save(); rr(ctx, x + 16, cy + 4, w - 32, 110, 8); ctx.clip(); Q.tree(ctx, x + w / 2 - 50, cy + 92, 70, { fallen: true }); ctx.restore(); if (opt.photoNote) { ctx.fillStyle = C.bad; rr(ctx, x + w - 150, cy + 10, 128, 26, 6); ctx.fill(); text(ctx, opt.photoNote, x + w - 86, cy + 29, 16, { align: "center", weight: 900, color: "#fff" }); } cy += 142; }
     if (opt.body) { const lines = wrap(ctx, opt.body, 20, 700, w - 32); lines.forEach(ln => { text(ctx, ln, x + 16, cy, 20, { weight: 700, color: C.ink2 }); cy += 26; }); }
     if (opt.badge) Q.badge(ctx, x + w - 30, y + 22, opt.badge);
     return cy;
@@ -579,7 +586,7 @@ ul.plain { padding-left: 20px; margin: 0 0 10px } ul.plain li { margin-bottom: 6
   const reveal = (l, t0, step, n) => clamp(Math.floor((l - t0) / step) + 1, 0, n);
   const banner = (ctx, s, y = 745, w = 1000, opt = {}) => { card(ctx, 960 - w / 2, y, w, 80, { fill: opt.fill || "#FFF3D6", stroke: opt.stroke || C.accent, lw: 4 }); text(ctx, s, 960, y + 52, opt.size || 34, { align: "center", weight: 900, color: opt.color || C.ink }); };
   const label = (ctx, s, x, y, opt = {}) => text(ctx, s, x, y, opt.size || 28, { align: "center", weight: 900, color: opt.color || C.accentDark });
-  const PERS = { title: "Pohon tumbang di depan SMP 7, jalan ditutup 2 jam", by: "oleh Ratna S. · Kabar Kota", time: "Senin, 07.10 WIB", photo: true, body: "\"Tidak ada korban,\" kata petugas Damkar, Pak Hendra." };
+  const PERS = { title: "Pohon tumbang di depan SMP 7, jalan ditutup 2 jam", by: "oleh Ratna S. · Kabar Kota", time: "Senin, 07.00 WIB", photo: true, body: "\"Tidak ada korban,\" kata petugas Damkar, Pak Hendra." };
   const AKUN = { title: "GAWAT!!! Pohon raksasa roboh, banyak yang terluka?!", by: "", time: "", photo: true, photoNote: "foto kota lain", body: "katanya sih banyak korban… share ya!" };
   const GRUP = { title: "Fwd: Fwd: pohon tumbang di sekolah, besok libur!!", by: "", time: "", body: "diteruskan 12 kali · tidak ada yang tahu siapa penulis pertamanya · tanpa foto, tanpa jam" };
   const JOURNEY = ["Peristiwa", "Wartawan", "Redaksi", "Layar"];
@@ -654,7 +661,7 @@ ul.plain { padding-left: 20px; margin: 0 0 10px } ul.plain li { margin-bottom: 6
       card(ctx, 200, 240, 740, 460, { fill: C.goodBg, stroke: C.good, lw: 4 }); text(ctx, "MEDIA PERS", 570, 300, 30, { align: "center", weight: 900, color: C.good });
       const n = reveal(l, 0.8, 1.2, 3);
       ["punya redaksi dan nama penulis", "kalau salah: pembaca mengadu ke Dewan Pers", "wajib memuat koreksi"].forEach((s, i) => { if (i < n) text(ctx, "✓ " + s, 240, 370 + i * 60, 26, { weight: 800 }); });
-      if (n >= 3) { card(ctx, 240, 570, 660, 90, { fill: "#fff", stroke: C.good, lw: 3, r: 12 }); text(ctx, "RALAT: jalan ditutup 1 jam, bukan 2 jam.", 570, 625, 22, { align: "center", weight: 800, color: C.ink2 }); }
+      if (n >= 3) { card(ctx, 240, 570, 660, 90, { fill: "#fff", stroke: C.good, lw: 3, r: 12 }); text(ctx, "RALAT: nama petugas Pak Hendra, bukan Pak Hendri.", 570, 625, 22, { align: "center", weight: 800, color: C.ink2 }); }
       if (l > 4.5) { card(ctx, 980, 240, 740, 460, { fill: C.badBg, stroke: C.bad, lw: 4 }); text(ctx, "AKUN PERORANGAN", 1350, 300, 30, { align: "center", weight: 900, color: C.bad }); ["tanpa redaksi, sering tanpa nama", "tidak ada yang wajib memeriksa", "salah pun tidak wajib mengoreksi"].forEach((s, i) => text(ctx, "✕ " + s, 1020, 370 + i * 60, 26, { weight: 800 })); }
       if (l > 7.5) banner(ctx, "bedanya: tanggung jawab", 745, 700);
     },
@@ -686,7 +693,7 @@ ul.plain { padding-left: 20px; margin: 0 0 10px } ul.plain li { margin-bottom: 6
     q_when(ctx, b, l) {
       card(ctx, 120, 150, 1680, 740);
       Q.fourQ(ctx, 180, 240, 560, [], { hl: 2 });
-      Q.news(ctx, 820, 220, 420, 300, "pers", { title: "Pohon tumbang di depan SMP 7", by: "Kabar Kota", time: "Senin, 07.10 WIB", size: 22, badge: l > 1.5 ? "ok" : null });
+      Q.news(ctx, 820, 220, 420, 300, "pers", { title: "Pohon tumbang di depan SMP 7", by: "Kabar Kota", time: "Senin, 07.00 WIB", size: 22, badge: l > 1.5 ? "ok" : null });
       if (l > 3) { Q.news(ctx, 1280, 220, 420, 300, "akun", { title: "Pohon tumbang di depan SMP 7!!", by: "", time: "(tanpa tanggal)", size: 22, badge: "bad" }); text(ctx, "ternyata kejadian tahun lalu,", 1490, 560, 22, { align: "center", weight: 800, color: C.bad }); text(ctx, "dibagikan ulang seolah baru", 1490, 590, 22, { align: "center", weight: 800, color: C.bad }); }
       if (l > 6) banner(ctx, "lihat tanggal dan jamnya", 745, 800);
     },
@@ -703,7 +710,7 @@ ul.plain { padding-left: 20px; margin: 0 0 10px } ul.plain li { margin-bottom: 6
       card(ctx, 120, 150, 1680, 740);
       Q.news(ctx, 180, 220, 520, 540, "pers", { ...PERS, size: 24 });
       const n = reveal(l, 0.8, 1.4, 4);
-      Q.fourQ(ctx, 760, 240, 940, ["ok", "ok", "ok", "ok"].slice(0, n), { hl: n - 1, notes: ["Ratna S. · Kabar Kota", "kutipan petugas, foto lokasi", "Senin 07.10", "2 media serupa"].slice(0, n) });
+      Q.fourQ(ctx, 760, 240, 940, ["ok", "ok", "ok", "ok"].slice(0, n), { hl: n - 1, notes: ["Ratna S. · Kabar Kota", "kutipan petugas, foto lokasi", "Senin 07.00", "2 media serupa"].slice(0, n) });
       if (n >= 4) banner(ctx, "empat centang: LOLOS, boleh dipercaya dan dibagikan", 1230, 1000, { fill: C.goodBg, stroke: C.good, color: C.good, size: 28 });
     },
     apply_bad(ctx, b, l) {
@@ -719,8 +726,8 @@ ul.plain { padding-left: 20px; margin: 0 0 10px } ul.plain li { margin-bottom: 6
       const items = [["Urutkan perjalanan berita", "peristiwa, wartawan, redaksi, layar", (x, y) => Q.journey(ctx, x - 230, y - 80, 460, ["1", "2", "3", "4"], {})],
         ["Nilai empat kabar", "dengan empat pertanyaan", (x, y) => { ctx.save(); ctx.translate(x - 150, y - 120); ctx.scale(0.62, 0.62); Q.fourQ(ctx, 0, 0, 480, ["ok", "bad", "ok", "ok"], {}); ctx.restore(); }],
         ["Pers atau bukan?", "nama, redaksi, koreksi", (x, y) => { Q.news(ctx, x - 200, y - 100, 190, 200, "pers", { title: "ada nama & redaksi", size: 18, badge: "ok" }); Q.news(ctx, x + 10, y - 100, 190, 200, "akun", { title: "tanpa nama", size: 18, badge: "bad" }); }]];
-      items.forEach(([t1, t2, draw], i) => { const x = 400 + i * 560; card(ctx, x - 250, 290, 500, 440, { fill: C.bg2 }); ctx.fillStyle = C.kiko; ctx.beginPath(); ctx.arc(x - 200, 340, 28, 0, Math.PI * 2); ctx.fill(); text(ctx, String(i + 1), x - 200, 352, 30, { align: "center", color: "#fff", weight: 900 }); draw(x, 470); text(ctx, t1, x, 630, 26, { align: "center", weight: 900 }); text(ctx, t2, x, 668, 22, { align: "center", weight: 700, color: C.ink2 }); });
-      text(ctx, "di halaman latihan episode ini — lalu nilai satu berita yang sedang ramai", 960, 820, 28, { align: "center", color: C.ink2, weight: 700 });
+      items.forEach(([t1, t2, draw], i) => { const x = 440 + i * 520; card(ctx, x - 240, 290, 480, 410, { fill: C.bg2 }); ctx.fillStyle = C.kiko; ctx.beginPath(); ctx.arc(x - 200, 340, 28, 0, Math.PI * 2); ctx.fill(); text(ctx, String(i + 1), x - 200, 352, 30, { align: "center", color: "#fff", weight: 900 }); draw(x, 470); text(ctx, t1, x, 630, 26, { align: "center", weight: 900 }); text(ctx, t2, x, 668, 22, { align: "center", weight: 700, color: C.ink2 }); });
+      text(ctx, "di halaman latihan episode ini — lalu nilai satu berita yang sedang ramai", 960, 745, 28, { align: "center", color: C.ink2, weight: 700 });
     }
   });
 })(typeof window !== "undefined" ? window : globalThis);

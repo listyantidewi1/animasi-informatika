@@ -70,8 +70,8 @@
       if (k >= 1) { open.add(3); hl[3] = C.accent; } if (k >= 2) { dim.push(0, 1, 2, 3); open.add(5); hl[5] = C.good; }
       Q.row(ctx, 300, 330, SORTED, { open, index: true, dim, hl });
       Q.counter(ctx, 1380, 330, Math.min(k, 2), "langkah", { stroke: C.good, color: C.good, fill: C.goodBg });
-      const notes = ["buka tengah (ke-4): 72 < 85", "buang kiri, buka tengah sisanya: 85 ✓"]; notes.forEach((s, i) => { if (k >= i + 1) text(ctx, (i + 1) + ". " + s, 1380, 500 + i * 44, 24, { weight: 800, color: i ? C.good : C.ink }); });
-      if (k >= 3) banner(ctx, "belah dua, buang setengah: 8 kartu ≤ 3 langkah", 745, 1000, { fill: C.goodBg, stroke: C.good, color: C.good, size: 30 });
+      const notes = ["buka tengah (ke-4): 72 < 85", "buang kiri, buka tengah: 85 ✓"]; notes.forEach((s, i) => { if (k >= i + 1) text(ctx, (i + 1) + ". " + s, 1380, 500 + i * 44, 24, { weight: 800, color: i ? C.good : C.ink }); });
+      if (k >= 3) banner(ctx, "belah dua, buang setengah: 8 kartu ≤ 4 langkah", 745, 1000, { fill: C.goodBg, stroke: C.good, color: C.good, size: 30 });
     },
 
     sort_intro(ctx, b, l) {

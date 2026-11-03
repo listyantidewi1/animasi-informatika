@@ -14,7 +14,7 @@
     if (opt.title) { const lines = wrap(ctx, opt.title, size, 900, w - 32); lines.forEach(ln => { text(ctx, ln, x + 16, cy, size, { weight: 900 }); cy += size * 1.25; }); cy += 6; }
     if (opt.by != null) { text(ctx, opt.by, x + 16, cy, 20, { weight: 700, color: opt.by ? C.ink2 : C.bad }); cy += 28; }
     if (opt.time != null) { text(ctx, opt.time, x + 16, cy, 20, { weight: 700, color: opt.time ? C.ink2 : C.bad }); cy += 28; }
-    if (opt.photo) { ctx.fillStyle = "#DCEBF2"; rr(ctx, x + 16, cy + 4, w - 32, 110, 8); ctx.fill(); ctx.fillStyle = "#C9D4DB"; ctx.fillRect(x + 16, cy + 90, w - 32, 24); Q.tree(ctx, x + w / 2 - 50, cy + 92, 70, { fallen: true }); if (opt.photoNote) { ctx.fillStyle = C.bad; rr(ctx, x + w - 150, cy + 10, 128, 26, 6); ctx.fill(); text(ctx, opt.photoNote, x + w - 86, cy + 29, 16, { align: "center", weight: 900, color: "#fff" }); } cy += 128; }
+    if (opt.photo) { ctx.fillStyle = "#DCEBF2"; rr(ctx, x + 16, cy + 4, w - 32, 110, 8); ctx.fill(); ctx.fillStyle = "#C9D4DB"; ctx.fillRect(x + 16, cy + 90, w - 32, 24); ctx.save(); rr(ctx, x + 16, cy + 4, w - 32, 110, 8); ctx.clip(); Q.tree(ctx, x + w / 2 - 50, cy + 92, 70, { fallen: true }); ctx.restore(); if (opt.photoNote) { ctx.fillStyle = C.bad; rr(ctx, x + w - 150, cy + 10, 128, 26, 6); ctx.fill(); text(ctx, opt.photoNote, x + w - 86, cy + 29, 16, { align: "center", weight: 900, color: "#fff" }); } cy += 142; }
     if (opt.body) { const lines = wrap(ctx, opt.body, 20, 700, w - 32); lines.forEach(ln => { text(ctx, ln, x + 16, cy, 20, { weight: 700, color: C.ink2 }); cy += 26; }); }
     if (opt.badge) Q.badge(ctx, x + w - 30, y + 22, opt.badge);
     return cy;

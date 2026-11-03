@@ -147,7 +147,7 @@
       Q.choice(ctx, 840, 220, 860, 100, 3, "\"sudah, ini salah kirim saja\"", { good: true });
       const n = reveal(l, 2.0, 1.6, 3);
       ["Sinta ikut menimpali, Bayu berhenti", "pesan pribadi ke Rani", "Rani: \"makasih ya\""].forEach((s, i) => { if (i < n) text(ctx, "✓ " + s, 860, 400 + i * 70, 28, { weight: 800, color: C.good }); });
-      if (n >= 2) { const ph = D.phone(ctx, 1620, 500, 240, 300); text(ctx, "Rani", ph.x + 14, ph.y + 44, 18, { weight: 900, color: C.ink2 }); card(ctx, ph.x + 14, ph.y + 60, 200, 56, { fill: "#DCEBF2", r: 10 }); text(ctx, "kamu nggak bodoh kok", ph.x + 22, ph.y + 95, 16, { weight: 700 }); if (n >= 3) { card(ctx, ph.x + 60, ph.y + 130, 160, 50, { fill: C.goodBg, r: 10 }); text(ctx, "makasih ya 🙂", ph.x + 70, ph.y + 162, 18, { weight: 800, color: C.good }); } }
+      if (n >= 2) { const ph = D.phone(ctx, 1620, 500, 240, 300); text(ctx, "Rani", ph.x + 14, ph.y + 44, 18, { weight: 900, color: C.ink2 }); card(ctx, ph.x + 26, ph.y + 60, 200, 56, { fill: C.goodBg, r: 10 }); text(ctx, "kamu nggak bodoh kok", ph.x + 34, ph.y + 95, 16, { weight: 700 }); if (n >= 3) { card(ctx, ph.x + 14, ph.y + 130, 160, 50, { fill: "#DCEBF2", r: 10 }); text(ctx, "makasih ya 🙂", ph.x + 24, ph.y + 162, 18, { weight: 800, color: C.kikoDark }); } }
       if (n >= 3) { Q.mood(ctx, 880, 720, 520, 0.85, ""); label(ctx, "satu kalimat mengubah malam Rani", 1160, 805, { size: 28, color: C.good }); }
     },
 

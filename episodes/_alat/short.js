@@ -77,7 +77,7 @@
     else {
       octx.save(); octx.setTransform(1, 0, 0, 1, 0, 0); octx.fillStyle = "#fff"; octx.fillRect(0, 0, K.W, K.H);
       const sl = l * (b.src_dur ? b.src_dur / b.dur : 1) + (b.at || 0);
-      const fn = K.SCENES[b.scene]; if (fn) fn(octx, { ...b, id: b.src || b.id }, sl, t, TL);
+      const fn = K.SCENES[b.scene]; if (fn) fn(octx, { ...b, id: b.src || b.id, audio: b.src_audio || b.audio, dur: b.src_dur || b.dur }, sl, t, TL);  // adegan yang memakai b.audio/b.dur untuk tempo melihat durasi beat asalnya
       octx.restore();
       crops(ctx, off, b.crops || [[120, 150, 1680, 740]], top, b.note ? bot - 60 : bot);
       if (b.note) text(ctx, b.note, SW / 2, bot - 8, 30, { align: "center", weight: 800, color: C.bad });

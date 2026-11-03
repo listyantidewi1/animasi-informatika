@@ -40,11 +40,11 @@
     },
     unplugged_change(ctx, b, l) {
       card(ctx, 120, 150, 1680, 740);
-      const changed = l > 1.5; const rows = ROWS.map(r => r.slice()); rows[1][1] = changed ? 20 : 12; rows.forEach(r => r.push(sum(r.slice(1)))); rows.push(["Jumlah", sum(rows.slice(0, 3).map(r => r[1])), 29, 63, sum(rows.slice(0, 3).map(r => r[4]))]);
+      const changed = l > 1.5; const rows = ROWS.map(r => r.slice()); rows.forEach(r => r.push(sum(r.slice(1)))); rows.push(["Jumlah", sum(rows.slice(0, 3).map(r => r[1])), 29, 63, sum(rows.slice(0, 3).map(r => r[4]))]); rows[1][1] = changed ? 20 : 12;  // jumlah tetap nilai lama (dihitung dengan 12): itulah yang harus dicoret dan dihitung ulang
       const erase = l > 3 ? [[1, 4], [3, 1], [3, 4]] : [];
       Q.paper(ctx, 400, 240, [...HEAD, "Jumlah"], rows, { cw: 170, rh: 56, erase });
-      if (changed) { ctx.strokeStyle = C.accent; ctx.lineWidth = 5; ctx.strokeRect(400 + 170, 240 + 56 * 2, 170, 56); bubble(ctx, 1300, 400, 340, "B Selasa: 12 → 20", 26, { tailX: 1310, tailDir: -170, fill: "#FFF3D6", stroke: C.accent }); }
-      if (l > 3) { text(ctx, "3 sel harus dihapus dan dihitung ulang", 1480, 540, 26, { align: "center", weight: 900, color: C.bad }); text(ctx, "hanya karena satu angka", 1480, 580, 24, { align: "center", weight: 700, color: C.ink2 }); }
+      if (changed) { ctx.strokeStyle = C.accent; ctx.lineWidth = 5; ctx.strokeRect(400 + 170, 240 + 56 * 2, 170, 56); bubble(ctx, 1300, 378, 340, "B Selasa: 12 → 20", 26, { tailX: 1310, tailDir: -50, fill: "#FFF3D6", stroke: C.accent }); }
+      if (l > 3) { text(ctx, "3 sel harus dihapus dan dihitung ulang", 1535, 540, 26, { align: "center", weight: 900, color: C.bad }); text(ctx, "hanya karena satu angka", 1535, 580, 24, { align: "center", weight: 700, color: C.ink2 }); }
       if (l > 7) banner(ctx, "ingat rasa capek ini", 745, 700, { fill: C.badBg, stroke: C.bad, color: C.bad });
     },
 
@@ -84,7 +84,7 @@
       const changed = l > 2.5; const data = sheetData(changed ? 20 : 12);
       const sh = Q.sheet(ctx, 300, 260, data, { cw: 220, rh: 70, active: "B3", changed: changed ? ["B3", "B5"] : [] });
       Q.formulaBar(ctx, 300, 190, 936, "B3", changed ? "20" : "12", { color: C.ink });
-      if (changed) { Q.depArrow(ctx, sh.cell("B3"), sh.cell("B5"), C.good); bubble(ctx, 1320, 330, 380, "B5 ikut berubah: 45 → 53", 26, { tailX: 1330, tailDir: -160, fill: C.goodBg, stroke: C.good, color: C.good }); }
+      if (changed) { Q.depArrow(ctx, sh.cell("B3"), sh.cell("B5"), C.good); bubble(ctx, 1290, 640, 400, "B5 ikut berubah: 45 → 53", 26, { tailX: 1300, tailDir: -60, fill: C.goodBg, stroke: C.good, color: C.good }); }
       if (l > 5) { text(ctx, "tidak ada yang dihapus,", 1500, 480, 26, { align: "center", weight: 800, color: C.ink2 }); text(ctx, "tidak ada yang dihitung ulang", 1500, 520, 26, { align: "center", weight: 800, color: C.ink2 }); }
       if (l > 7) banner(ctx, "RUMUS YANG HIDUP", 745, 700, { fill: C.goodBg, stroke: C.good, color: C.good });
     },
@@ -101,8 +101,8 @@
       card(ctx, 120, 150, 1680, 740);
       const long = l < 2.5;
       const data = [["Hari", "Bakso"], ...WEEK.map(([d, v]) => [d, v]), ["…", "…"], ["Jumlah", l > 5 ? 420 : ""]];
-      const sh = Q.sheet(ctx, 160, 250, data, { cw: 160, rh: 42, size: 20, active: "B10", changed: l > 5 ? ["B10"] : [] });
-      Q.formulaBar(ctx, 620, 250, 1060, "B10", long ? "=B2+B3+B4+B5+B6+B7+B8+B9+…" : "=SUM(B2:B31)", { color: long ? C.bad : C.kiko });
+      const sh = Q.sheet(ctx, 160, 250, data, { cw: 160, rh: 42, size: 20, active: "B32", changed: l > 5 ? ["B32"] : [], rowLabels: [...data.slice(0, -2).map((_, i) => i + 1), "…", 32] });
+      Q.formulaBar(ctx, 620, 250, 1060, "B32", long ? "=B2+B3+B4+B5+B6+B7+B8+B9+…" : "=SUM(B2:B31)", { color: long ? C.bad : C.kiko });
       if (long) text(ctx, "✕ panjang dan mudah salah ketik", 1150, 350, 26, { align: "center", weight: 900, color: C.bad });
       else { text(ctx, "✓ satu fungsi untuk banyak sel", 1150, 350, 26, { align: "center", weight: 900, color: C.good }); card(ctx, 700, 400, 900, 220, { fill: C.bg2 }); text(ctx, "=SUM(B2:B31)", 1150, 470, 44, { align: "center", weight: 900, color: C.kiko }); text(ctx, "SUM = jumlah   ·   B2:B31 = rentang dari B2 sampai B31", 1150, 530, 24, { align: "center", weight: 700, color: C.ink2 }); text(ctx, "titik dua dibaca: sampai", 1150, 575, 22, { align: "center", weight: 700, color: C.ink2 }); }
       if (l > 7) banner(ctx, "nama fungsi, lalu rentang sel di dalam kurung", 745, 1000, { size: 30 });

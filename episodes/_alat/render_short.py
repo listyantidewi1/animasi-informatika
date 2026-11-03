@@ -35,7 +35,7 @@ def timeline(variant):
     TL = E.load_timeline(ROOT, variant)
     src = {b["id"]: b for b in E.load_timeline(EP, variant)["beats"]}
     for b in TL["beats"]:
-        if b.get("src") in src: b["src_dur"] = src[b["src"]]["dur"]
+        if b.get("src") in src: b["src_dur"] = src[b["src"]]["dur"]; b["src_audio"] = src[b["src"]]["audio"]
     TL.update(episode=code, label=f"Informatika {kelas}", full_title=FULL, link=LINK)
     return TL
 

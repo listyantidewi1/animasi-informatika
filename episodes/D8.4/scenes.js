@@ -5,7 +5,7 @@
   const reveal = (l, t0, step, n) => clamp(Math.floor((l - t0) / step) + 1, 0, n);
   const banner = (ctx, s, y = 745, w = 1000, opt = {}) => { card(ctx, 960 - w / 2, y, w, 80, { fill: opt.fill || "#FFF3D6", stroke: opt.stroke || C.accent, lw: 4 }); text(ctx, s, 960, y + 52, opt.size || 34, { align: "center", weight: 900, color: opt.color || C.ink }); };
   const label = (ctx, s, x, y, opt = {}) => text(ctx, s, x, y, opt.size || 28, { align: "center", weight: 900, color: opt.color || C.accentDark });
-  const PERS = { title: "Pohon tumbang di depan SMP 7, jalan ditutup 2 jam", by: "oleh Ratna S. · Kabar Kota", time: "Senin, 07.10 WIB", photo: true, body: "\"Tidak ada korban,\" kata petugas Damkar, Pak Hendra." };
+  const PERS = { title: "Pohon tumbang di depan SMP 7, jalan ditutup 2 jam", by: "oleh Ratna S. · Kabar Kota", time: "Senin, 07.00 WIB", photo: true, body: "\"Tidak ada korban,\" kata petugas Damkar, Pak Hendra." };
   const AKUN = { title: "GAWAT!!! Pohon raksasa roboh, banyak yang terluka?!", by: "", time: "", photo: true, photoNote: "foto kota lain", body: "katanya sih banyak korban… share ya!" };
   const GRUP = { title: "Fwd: Fwd: pohon tumbang di sekolah, besok libur!!", by: "", time: "", body: "diteruskan 12 kali · tidak ada yang tahu siapa penulis pertamanya · tanpa foto, tanpa jam" };
   const JOURNEY = ["Peristiwa", "Wartawan", "Redaksi", "Layar"];
@@ -80,7 +80,7 @@
       card(ctx, 200, 240, 740, 460, { fill: C.goodBg, stroke: C.good, lw: 4 }); text(ctx, "MEDIA PERS", 570, 300, 30, { align: "center", weight: 900, color: C.good });
       const n = reveal(l, 0.8, 1.2, 3);
       ["punya redaksi dan nama penulis", "kalau salah: pembaca mengadu ke Dewan Pers", "wajib memuat koreksi"].forEach((s, i) => { if (i < n) text(ctx, "✓ " + s, 240, 370 + i * 60, 26, { weight: 800 }); });
-      if (n >= 3) { card(ctx, 240, 570, 660, 90, { fill: "#fff", stroke: C.good, lw: 3, r: 12 }); text(ctx, "RALAT: jalan ditutup 1 jam, bukan 2 jam.", 570, 625, 22, { align: "center", weight: 800, color: C.ink2 }); }
+      if (n >= 3) { card(ctx, 240, 570, 660, 90, { fill: "#fff", stroke: C.good, lw: 3, r: 12 }); text(ctx, "RALAT: nama petugas Pak Hendra, bukan Pak Hendri.", 570, 625, 22, { align: "center", weight: 800, color: C.ink2 }); }
       if (l > 4.5) { card(ctx, 980, 240, 740, 460, { fill: C.badBg, stroke: C.bad, lw: 4 }); text(ctx, "AKUN PERORANGAN", 1350, 300, 30, { align: "center", weight: 900, color: C.bad }); ["tanpa redaksi, sering tanpa nama", "tidak ada yang wajib memeriksa", "salah pun tidak wajib mengoreksi"].forEach((s, i) => text(ctx, "✕ " + s, 1020, 370 + i * 60, 26, { weight: 800 })); }
       if (l > 7.5) banner(ctx, "bedanya: tanggung jawab", 745, 700);
     },
@@ -112,7 +112,7 @@
     q_when(ctx, b, l) {
       card(ctx, 120, 150, 1680, 740);
       Q.fourQ(ctx, 180, 240, 560, [], { hl: 2 });
-      Q.news(ctx, 820, 220, 420, 300, "pers", { title: "Pohon tumbang di depan SMP 7", by: "Kabar Kota", time: "Senin, 07.10 WIB", size: 22, badge: l > 1.5 ? "ok" : null });
+      Q.news(ctx, 820, 220, 420, 300, "pers", { title: "Pohon tumbang di depan SMP 7", by: "Kabar Kota", time: "Senin, 07.00 WIB", size: 22, badge: l > 1.5 ? "ok" : null });
       if (l > 3) { Q.news(ctx, 1280, 220, 420, 300, "akun", { title: "Pohon tumbang di depan SMP 7!!", by: "", time: "(tanpa tanggal)", size: 22, badge: "bad" }); text(ctx, "ternyata kejadian tahun lalu,", 1490, 560, 22, { align: "center", weight: 800, color: C.bad }); text(ctx, "dibagikan ulang seolah baru", 1490, 590, 22, { align: "center", weight: 800, color: C.bad }); }
       if (l > 6) banner(ctx, "lihat tanggal dan jamnya", 745, 800);
     },
@@ -129,7 +129,7 @@
       card(ctx, 120, 150, 1680, 740);
       Q.news(ctx, 180, 220, 520, 540, "pers", { ...PERS, size: 24 });
       const n = reveal(l, 0.8, 1.4, 4);
-      Q.fourQ(ctx, 760, 240, 940, ["ok", "ok", "ok", "ok"].slice(0, n), { hl: n - 1, notes: ["Ratna S. · Kabar Kota", "kutipan petugas, foto lokasi", "Senin 07.10", "2 media serupa"].slice(0, n) });
+      Q.fourQ(ctx, 760, 240, 940, ["ok", "ok", "ok", "ok"].slice(0, n), { hl: n - 1, notes: ["Ratna S. · Kabar Kota", "kutipan petugas, foto lokasi", "Senin 07.00", "2 media serupa"].slice(0, n) });
       if (n >= 4) banner(ctx, "empat centang: LOLOS, boleh dipercaya dan dibagikan", 1230, 1000, { fill: C.goodBg, stroke: C.good, color: C.good, size: 28 });
     },
     apply_bad(ctx, b, l) {

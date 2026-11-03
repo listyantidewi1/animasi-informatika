@@ -12,9 +12,10 @@
     card(ctx, x, y, W, Hh, { fill: "#FFFFFF", stroke: "#B7C4CC", lw: 3, r: 10 });
     ctx.fillStyle = "#E6EDF2"; rr(ctx, x, y, W, rh, 10); ctx.fill(); ctx.fillRect(x, y + rh / 2, W, rh / 2); ctx.fillRect(x, y, hw, Hh);
     for (let c = 0; c < cols; c++) text(ctx, COLS[c], x + hw + c * cw + cw / 2, y + rh / 2 + 9, 24, { align: "center", weight: 900, color: C.ink2 });
-    for (let r = 0; r < data.length; r++) text(ctx, String(r + 1), x + hw / 2, y + rh * (r + 1) + rh / 2 + 9, 24, { align: "center", weight: 900, color: C.ink2 });
+    const RL = r => opt.rowLabels ? opt.rowLabels[r] : r + 1;  // opt.rowLabels: nomor baris khusus, mis. [1..8, "…", 32]
+    for (let r = 0; r < data.length; r++) text(ctx, String(RL(r)), x + hw / 2, y + rh * (r + 1) + rh / 2 + 9, 24, { align: "center", weight: 900, color: C.ink2 });
     data.forEach((row, r) => row.forEach((v, c) => {
-      const addr = COLS[c] + (r + 1); const cx = x + hw + c * cw, cy = y + rh * (r + 1);
+      const addr = COLS[c] + RL(r); const cx = x + hw + c * cw, cy = y + rh * (r + 1);
       const hl = opt.hl && opt.hl[addr]; const changed = (opt.changed || []).includes(addr); const active = opt.active === addr;
       if (hl || changed) { ctx.fillStyle = hl || C.goodBg; ctx.fillRect(cx + 1, cy + 1, cw - 2, rh - 2); }
       if (v != null && v !== "") { const isNum = typeof v === "number"; text(ctx, isNum ? v.toLocaleString("id-ID") : String(v), isNum ? cx + cw - 14 : cx + 12, cy + rh / 2 + 9, opt.size || 24, { align: isNum ? "right" : "left", weight: r === 0 || c === 0 ? 800 : 700, color: changed ? C.good : C.ink }); }
@@ -35,6 +36,7 @@
   };
   // panah ketergantungan antar sel
   Q.depArrow = function (ctx, from, to, color = C.accent) {
+    if (Math.abs(from.cy - to.cy) < 2) { from = { ...from, cy: from.cy + 21 }; to = { ...to, cy: to.cy + 21 }; }  // panah mendatar lewat di bawah angka, tidak mencoretnya
     ctx.strokeStyle = color; ctx.fillStyle = color; ctx.lineWidth = 4; ctx.beginPath(); ctx.moveTo(from.cx, from.cy); ctx.lineTo(to.cx, to.cy); ctx.stroke();
     const a = Math.atan2(to.cy - from.cy, to.cx - from.cx); ctx.beginPath(); ctx.moveTo(to.cx, to.cy); ctx.lineTo(to.cx - 14 * Math.cos(a - 0.4), to.cy - 14 * Math.sin(a - 0.4)); ctx.lineTo(to.cx - 14 * Math.cos(a + 0.4), to.cy - 14 * Math.sin(a + 0.4)); ctx.closePath(); ctx.fill();
   };
