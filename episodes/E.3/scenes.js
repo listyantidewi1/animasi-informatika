@@ -106,7 +106,7 @@
       card(ctx, 120, 150, 1680, 740);
       heading(ctx, "SESI AKTIF: SIAPA SAJA YANG SEDANG MASUK?", 215);
       const n = reveal(l, 1.0, 1.4, 4);
-      A.sessions(ctx, 240, 260, 760, [["📱 HP Android (ini)", "Bandung", "sekarang", false], ["💻 Laptop keluarga", "Bandung", "2 jam lalu", false], ["🖥️ Windows · peramban", "warnet, Bandung", "7 hari lalu", n >= 4], ["🖥️ Windows · peramban", "kota lain", "kemarin 23.10", n >= 4]].slice(0, n), { kick: l > 8 });
+      A.sessions(ctx, 240, 260, 760, [["📱 HP Android (ini)", "Bandung", "sekarang", false], ["💻 Laptop keluarga", "Bandung", "2 jam lalu", false], ["🖥️ Windows · browser", "warnet, Bandung", "7 hari lalu", n >= 4], ["🖥️ Windows · browser", "kota lain", "kemarin 23.10", n >= 4]].slice(0, n), { kick: l > 8 });
       if (l > 8) { card(ctx, 1080, 300, 620, 160, { fill: C.badBg, stroke: C.bad, lw: 3, r: 14 }); text(ctx, "tidak dikenal → Keluarkan", 1390, 350, 26, { align: "center", weight: 900, color: C.bad }); text(ctx, "lalu ganti sandi, cek dua langkah", 1390, 400, 22, { align: "center", weight: 800, color: C.ink2 }); }
       if (l > 12) { card(ctx, 1080, 500, 620, 160, { fill: C.goodBg, stroke: C.good, lw: 3, r: 14 }); text(ctx, "🔔 pemberitahuan perangkat baru: NYALA", 1390, 560, 24, { align: "center", weight: 900, color: C.good }); text(ctx, "kamu tahu lebih dulu daripada pencurinya", 1390, 605, 20, { align: "center", weight: 800, color: C.ink2 }); }
     },
