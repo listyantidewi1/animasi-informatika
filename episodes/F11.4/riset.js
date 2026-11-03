@@ -51,7 +51,10 @@
   R.VERDICTS = [["benar", C.good, C.goodBg], ["salah", C.bad, C.badBg], ["salah konteks", "#B57A12", "#FFF3D6"], ["belum pasti", "#5A6B75", "#E6EDF2"]];
   // empat stempel putusan; pick = indeks yang dipilih
   R.verdicts = function (ctx, x, y, w, pick, opt = {}) {
-    const bw = (w - 60) / 4; R.VERDICTS.forEach(([t, col, bg], i) => { const cx = x + i * (bw + 20); const on = pick === i; ctx.save(); if (pick != null && !on) ctx.globalAlpha = 0.3; card(ctx, cx, y, bw, 90, { fill: bg, stroke: col, lw: on ? 7 : 3, r: 14 }); text(ctx, t.toUpperCase(), cx + bw / 2, y + 55, (opt.size || 22) + (on ? 4 : 0), { align: "center", weight: 900, color: col }); ctx.restore(); });
+    // opt.cols = 2 -> kisi 2×2; ukuran huruf menyesuaikan lebar kotak agar label panjang tidak meluber
+    const cols = opt.cols || 4, rows = Math.ceil(4 / cols), h = opt.h || 90, gap = 20, bw = (w - (cols - 1) * gap) / cols;
+    R.VERDICTS.forEach(([t, col, bg], i) => { const cx = x + (i % cols) * (bw + gap), cy = y + Math.floor(i / cols) * (h + gap); const on = pick === i; ctx.save(); if (pick != null && !on) ctx.globalAlpha = 0.3; card(ctx, cx, cy, bw, h, { fill: bg, stroke: col, lw: on ? 7 : 3, r: 14 }); const T = t.toUpperCase(); text(ctx, T, cx + bw / 2, cy + h / 2 + 9, Math.min((opt.size || 22) + (on ? 4 : 0), (bw - 24) / (T.length * 0.72)), { align: "center", weight: 900, color: col }); ctx.restore(); });
+    return rows * h + (rows - 1) * gap;
   };
   // deretan bingkai video
   R.frames = function (ctx, x, y, n, opt = {}) {

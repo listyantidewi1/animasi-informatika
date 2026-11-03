@@ -120,11 +120,11 @@
     make_show(ctx, b, l) {
       card(ctx, 160, 150, 1600, 740);
       text(ctx, "GILIRANMU", 960, 240, 34, { align: "center", color: C.accentDark, weight: 900 });
-      const items = [["Penyusun query", "pilih operator untuk tiap kebutuhan", (x, y) => { L.query(ctx, x - 230, y - 110, 460, [["banjir sekolah", "kw"], [" site:go.id", "op"]]); card(ctx, x - 230, y - 20, 460, 60, { fill: "#fff", stroke: "#B7C4CC", lw: 2, r: 10 }); text(ctx, "filetype:pdf · “…” · -kata · 2023..2026", x, y + 18, 20, { align: "center", weight: 900, color: C.accentDark }); }],
-        ["Jejak foto", "pilih langkah, baca temuannya", (x, y) => { R.photo(ctx, x - 230, y - 120, 220, 140, { caption: "kemarin?" }); R.timeline(ctx, x + 20, y - 50, 180, [["2023", "", C.good], ["2026", "", C.bad]], 2); }],
-        ["Putusan klaim", "benar, salah, salah konteks, belum pasti", (x, y) => R.verdicts(ctx, x - 230, y - 90, 460, 2, { size: 13 })]];
-      items.forEach(([t1, t2, draw], i) => { const x = 400 + i * 560; card(ctx, x - 250, 290, 500, 440, { fill: C.bg2 }); ctx.fillStyle = C.kiko; ctx.beginPath(); ctx.arc(x - 200, 340, 28, 0, Math.PI * 2); ctx.fill(); text(ctx, String(i + 1), x - 200, 352, 30, { align: "center", color: "#fff", weight: 900 }); text(ctx, t1, x - 160, 352, 26, { weight: 900 }); para(ctx, t2, x - 160, 386, 20, 400, { weight: 700, color: C.ink2 }); draw(x, 560); });
-      text(ctx, "di halaman latihan episode ini — lalu riset sungguhan tentang daerahmu", 960, 820, 26, { align: "center", color: C.ink2, weight: 700 });
+      const items = [["Penyusun query", "pilih operator untuk tiap kebutuhan", (x, y) => { L.query(ctx, x - 220, y - 110, 440, [["banjir sekolah", "kw"], [" site:go.id", "op"]]); card(ctx, x - 220, y - 20, 440, 60, { fill: "#fff", stroke: "#B7C4CC", lw: 2, r: 10 }); text(ctx, "filetype:pdf · “…” · -kata · 2023..2026", x, y + 18, 20, { align: "center", weight: 900, color: C.accentDark }); }],
+        ["Jejak foto", "pilih langkah, baca temuannya", (x, y) => { R.photo(ctx, x - 220, y - 120, 220, 140, { caption: "kemarin?" }); R.timeline(ctx, x + 50, y - 50, 150, [["2023", "", C.good], ["2026", "", C.bad]], 2); }],
+        ["Putusan klaim", "benar, salah, salah konteks, belum pasti", (x, y) => R.verdicts(ctx, x - 220, y - 105, 440, 2, { cols: 2, h: 80, size: 24 })]];
+      items.forEach(([t1, t2, draw], i) => { const x = 440 + i * 520; card(ctx, x - 240, 290, 480, 410, { fill: C.bg2 }); ctx.fillStyle = C.kiko; ctx.beginPath(); ctx.arc(x - 200, 340, 28, 0, Math.PI * 2); ctx.fill(); text(ctx, String(i + 1), x - 200, 352, 30, { align: "center", color: "#fff", weight: 900 }); text(ctx, t1, x - 160, 352, 26, { weight: 900 }); para(ctx, t2, x - 160, 386, 20, 380, { weight: 700, color: C.ink2 }); draw(x, 560); });
+      text(ctx, "di halaman latihan episode ini — lalu riset sungguhan tentang daerahmu", 960, 745, 26, { align: "center", color: C.ink2, weight: 700 });
     }
   });
 })(typeof window !== "undefined" ? window : globalThis);
