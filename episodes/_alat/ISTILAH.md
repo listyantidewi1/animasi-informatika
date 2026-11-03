@@ -24,6 +24,7 @@ Aturan: pakai istilah asli dunia informatika (umumnya bahasa Inggris). Pada peny
 | test case, edge case | — | boleh berdampingan dengan "kasus uji", "kasus batas" |
 | trace table | — | boleh berdampingan dengan "tabel pelacakan" |
 | cloud | penyimpanan awan | |
+| linked list, tree, graph, node, hash map | senarai berantai, simpul (sebagai istilah utama) | "tree (pohon)", "graph (graf)" boleh pada penyebutan pertama; ditambahkan untuk kelas XII |
 
 Tetap Indonesia (bentuk resmi CP atau sudah umum): kata sandi, lembar kerja, pengolah kata, percabangan, perulangan, fungsi, variabel, penyimpanan, penyedia internet, klien, daring, folder, aplikasi, ikon, klik.
 
