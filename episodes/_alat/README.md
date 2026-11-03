@@ -36,5 +36,11 @@ Dari dalam folder episode, kodenya boleh dihilangkan (`python3 ../_alat/render.p
 4. `build.py` → halaman; `render.py` → video dua versi. Satu render penuh per permintaan.
 5. Perbarui tabel status di `README.md` akar, commit dengan pesan Bahasa Indonesia.
 
+## YouTube Shorts (vertikal 1080×1920)
+Satu Short per episode di `<kode>/short/`: satu gagasan, 45–60 detik, pertanyaan kait yang terus tampil di atas, potongan adegan episode di tengah, teks narasi besar di bawah (di luar kolom tombol kanan dan keterangan bawah Shorts), lalu ajakan menonton episode lengkap + link latihan.
+- `short/script.json`: `episode` (`<kode>-short`), `title`, `hook`, `judul_short`, `ringkas`, `youtube.tagar`, `segments`, `beats`. Kunci beat: `src` (beat asal di episode; animasinya dimampatkan ke durasi beat Short), `scene`, `crops` ([[x, y, w, h], ...] di kanvas 1920×1080, ditumpuk), `note` (catatan merah di bawah gambar, opsional), `text`, `hold` (0,3). Beat penutup memakai adegan `short_cta`.
+- Alur: `timing.py <kode>/short` → `render_short.py <kode> --frame h1=5 ...` (pratinjau di `short/preview/`) → `suara_elevenlabs.py <kode>/short` (±250 kredit) → `voice.py <kode>/short` → `render_short.py <kode>` → `video/Short_<kode>_*_{suara,teks}.mp4`, `.srt`, dan `short/youtube.md` (judul, deskripsi, video terkait).
+- `short.js` — penyusun frame vertikal (`Kiko.drawShort`), dimuat setelah mesin gambar episode induk.
+
 ## Kebutuhan
 Python 3 dengan `playwright` (Chromium), `numpy`; `ffmpeg` dengan filter `rubberband`; font Inter terpasang (dipakai di video). Di laptop untuk suara: `edge-tts`.

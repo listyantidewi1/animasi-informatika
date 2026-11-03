@@ -1,0 +1,81 @@
+/* Kiko Short: penyusun frame vertikal 1080x1920 untuk YouTube Shorts.
+   Adegan episode tetap digambar di kanvas 1920x1080 (tak terlihat), lalu bagian pentingnya (beat.crops: [[x, y, w, h], ...])
+   ditumpuk di tengah layar vertikal. Atas: pertanyaan kait (TL.hook) yang terus tampil; bawah: teks narasi besar + garis baca.
+   Waktu adegan dimampatkan: beat.src_dur (durasi beat asal di episode) dibagi durasi beat Short, supaya animasinya selesai.
+   Zona aman Shorts: kolom tombol di kanan (x > ~950, y 900–1500) dan keterangan di bawah (y > ~1580) dibiarkan kosong dari teks. */
+(function (global) {
+  const K = global.Kiko, C = K.C, { rr, text, wrap, para, kiko, card, clamp, ease } = K.helpers;
+  const SW = 1080, SH = 1920;
+  const IMG_TOP = 420, IMG_BOT = 1230, IMG_W = 1000;
+
+  function hookBand(ctx, TL, t) {
+    text(ctx, (TL.label || "Informatika") + " · " + TL.episode, 60, 96, 30, { color: C.ink2, weight: 700 });
+    ctx.fillStyle = C.bg2; ctx.fillRect(0, 120, SW, 8); ctx.fillStyle = C.accent; ctx.fillRect(0, 120, SW * clamp(t / TL.total, 0, 1), 8);
+    const size = 70, lines = wrap(ctx, TL.hook, size, 900, 940);
+    const y0 = 170 + (lines.length < 3 ? 40 : 0);
+    lines.slice(0, 3).forEach((ln, i) => text(ctx, ln, SW / 2, y0 + size + i * size * 1.18, size, { align: "center", weight: 900, color: C.ink }));
+  }
+
+  // tumpukan potongan adegan: tiap potongan dilebarkan ke IMG_W, lalu semua diperkecil bersama bila terlalu tinggi
+  function crops(ctx, off, list, top, bot) {
+    const gap = 56, hs = list.map(([, , w, h]) => h * IMG_W / w);
+    const total = hs.reduce((a, b) => a + b, 0) + gap * (list.length - 1);
+    const s = Math.min(1, (bot - top - gap * (list.length - 1)) / (total - gap * (list.length - 1)));
+    const used = (total - gap * (list.length - 1)) * s + gap * (list.length - 1); let y = top + ((bot - top) - used) / 2;
+    list.forEach(([x, cy, w, h], i) => {
+      const dw = IMG_W * s, dh = hs[i] * s, dx = (SW - dw) / 2;
+      ctx.save(); ctx.shadowColor = "rgba(31,42,51,0.12)"; ctx.shadowBlur = 24; ctx.shadowOffsetY = 6;
+      ctx.fillStyle = "#fff"; rr(ctx, dx - 16, y - 16, dw + 32, dh + 32, 26); ctx.fill(); ctx.restore();
+      ctx.save(); rr(ctx, dx - 16, y - 16, dw + 32, dh + 32, 26); ctx.clip();
+      ctx.drawImage(off, x, cy, w, h, dx, y, dw, dh); ctx.restore();
+      y += dh + gap;
+    });
+  }
+
+  function narration(ctx, b, l) {
+    let size = 50, lines = wrap(ctx, b.text, size, 700, 860);
+    if (lines.length > 4) { size = 44; lines = wrap(ctx, b.text, size, 700, 860); }
+    const h = lines.length * size * 1.3 + 48, y0 = 1268;
+    ctx.fillStyle = "rgba(31,42,51,0.94)"; rr(ctx, 50, y0, 900, h, 24); ctx.fill();
+    const frac = clamp(l / b.audio, 0, 1); ctx.fillStyle = C.accent; rr(ctx, 50, y0 + h - 9, 900 * frac, 9, 4); ctx.fill();
+    lines.forEach((ln, i) => text(ctx, ln, 500, y0 + 24 + size + i * size * 1.3, size, { align: "center", color: C.subText, weight: 700 }));
+  }
+
+  // adegan khusus Short (digambar langsung di kanvas vertikal, di area gambar)
+  const VSCENES = {
+    short_cta(ctx, b, l, TL) {
+      const u = ease(l / 0.6);
+      ctx.save(); ctx.globalAlpha = u;
+      card(ctx, 70, IMG_TOP + 10, 940, 800, { fill: "#fff", r: 30 });
+      text(ctx, "TONTON EPISODE LENGKAPNYA", SW / 2, IMG_TOP + 100, 34, { align: "center", weight: 900, color: C.accentDark });
+      para(ctx, TL.full_title, SW / 2, IMG_TOP + 180, 50, 820, { align: "center", weight: 900, lh: 1.2 });
+      card(ctx, 130, IMG_TOP + 400, 820, 150, { fill: C.bg2, r: 22 });
+      text(ctx, "latihan interaktif:", SW / 2, IMG_TOP + 458, 30, { align: "center", weight: 700, color: C.ink2 });
+      text(ctx, TL.link, SW / 2, IMG_TOP + 515, 40, { align: "center", weight: 900, color: C.kikoDark });
+      ctx.restore();
+      kiko(ctx, SW / 2, IMG_TOP + 650, 120, 0, { wave: l });
+    }
+  };
+
+  function drawShort(ctx, off, t, TL) {
+    const b = K.beatAt(TL, t), l = t - b.start;
+    const octx = off.getContext("2d");
+    ctx.save(); ctx.setTransform(1, 0, 0, 1, 0, 0);
+    ctx.fillStyle = C.bg; ctx.fillRect(0, 0, SW, SH);
+    hookBand(ctx, TL, t);
+    if (VSCENES[b.scene]) VSCENES[b.scene](ctx, b, l, TL);
+    else {
+      octx.save(); octx.setTransform(1, 0, 0, 1, 0, 0); octx.fillStyle = "#fff"; octx.fillRect(0, 0, K.W, K.H);
+      const sl = l * (b.src_dur ? b.src_dur / b.dur : 1) + (b.at || 0);
+      const fn = K.SCENES[b.scene]; if (fn) fn(octx, { ...b, id: b.src || b.id }, sl, t, TL);
+      octx.restore();
+      crops(ctx, off, b.crops || [[120, 150, 1680, 740]], IMG_TOP, b.note ? IMG_BOT - 60 : IMG_BOT);
+      if (b.note) text(ctx, b.note, SW / 2, IMG_BOT - 8, 30, { align: "center", weight: 800, color: C.bad });
+    }
+    narration(ctx, b, l);
+    ctx.restore();
+    return b;
+  }
+
+  K.drawShort = drawShort; K.SW = SW; K.SH = SH;
+})(typeof window !== "undefined" ? window : globalThis);
