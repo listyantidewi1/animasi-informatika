@@ -56,8 +56,8 @@ Video ini cocok untuk yang mencari: ruang publik virtual kelas 7; perundungan di
 Bab:
 0:00 Pembuka bagian
 0:04 Grup kelas memanas
-1:16 Perundungan digital
-1:58 Lima langkah
+1:17 Perundungan digital
+1:59 Lima langkah
 2:49 Giliranmu
 
 Latihan interaktif (kuis dengan petunjuk, bisa dipakai di HP): https://belajar-informatika.vercel.app/d77
@@ -126,8 +126,8 @@ Bab:
 0:00 Pembuka bagian
 0:04 Grup kelas memanas
 1:33 Perundungan digital
-2:25 Lima langkah
-3:27 Giliranmu
+2:26 Lima langkah
+3:28 Giliranmu
 
 Latihan interaktif (kuis dengan petunjuk, bisa dipakai di HP): https://belajar-informatika.vercel.app/d77
 Semua episode dan latihannya: https://belajar-informatika.vercel.app/
