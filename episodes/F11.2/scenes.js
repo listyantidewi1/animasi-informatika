@@ -89,7 +89,7 @@
     while_lacak(ctx, b, l) {
       card(ctx, 120, 150, 1680, 740); heading(ctx, "while: BERULANG SELAMA KONDISINYA BENAR", 215);
       const n = reveal(l, 1.5, 1.6, 7);
-      T.side(ctx, 220, 260, [{ t: "SELAMA jawaban ≠ \"selesai\":" }, { t: "BACA transaksi", ind: 1 }, { t: "BACA jawaban", ind: 1 }], [{ t: 'while jawaban != "selesai":' }, { t: "    transaksi = int(input())" }, { t: "    jawaban = input()" }], { pairs: [[0, 0], [1, 1], [2, 2]], hl: n >= 1 && n <= 3 ? n - 1 : null, rh: 50, size: 22, wl: 600, wr: 580, gap: 30 });
+      T.side(ctx, 220, 260, [{ t: "jawaban ← \"\"" }, { t: "SELAMA jawaban ≠ \"selesai\":" }, { t: "BACA transaksi", ind: 1 }, { t: "BACA jawaban", ind: 1 }], [{ t: 'jawaban = ""' }, { t: 'while jawaban != "selesai":' }, { t: "    transaksi = int(input())" }, { t: "    jawaban = input()" }], { pairs: [[0, 0], [1, 1], [2, 2], [3, 3]], hl: n >= 1 && n <= 3 ? n : null, rh: 46, size: 22, wl: 600, wr: 580, gap: 30 });
       if (n >= 4) Py.console(ctx, 1440, 270, 260, [["20000", "in"], ["lanjut", "in"], ["15000", "in"], ["selesai", "in"]].slice(0, n >= 5 ? 4 : 2));
       if (n >= 5) Mm.rounds(ctx, 1440, 520, 3, 3, { label: "putaran" });
       if (n >= 6) { card(ctx, 220, 520, 1000, 130, { fill: C.badBg, stroke: C.bad, lw: 3, r: 14 }); text(ctx, "⚠ jawaban tidak pernah diubah di dalam blok", 720, 570, 26, { align: "center", weight: 900, color: C.bad }); text(ctx, "kondisi selalu benar → perulangan tak pernah berhenti", 720, 615, 22, { align: "center", weight: 800 }); }

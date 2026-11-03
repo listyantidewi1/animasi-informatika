@@ -43,9 +43,9 @@
       if (checked && ok != null) text(ctx, ok ? "✓ benar, jalankan" : "✕ salah, lewati", x + w - 20, ry + 44, 22, { align: "right", weight: 900, color: ok ? C.good : C.bad });
       ctx.restore(); });
   };
-  T.PRIMM = [["P", "Predict · Tebak", "tulis dugaan output"], ["R", "Run · Jalankan", "bandingkan dengan dugaan"], ["I", "Investigate · Selidiki", "ubah satu angka, lihat"], ["M", "Modify · Ubah", "tambah satu fitur kecil"], ["M", "Make · Buat", "program versimu sendiri"]];
+  T.PRIMM = [["P", "Predict · Tebak", "tulis dugaan output"], ["R", "Run · Jalankan", "bandingkan dengan dugaan"], ["I", "Investigate · Selidiki", "ubah satu angka, lihat bedanya"], ["M", "Modify · Ubah", "tambah satu fitur kecil"], ["M", "Make · Buat", "program versimu sendiri"]];
   T.primm = function (ctx, x, y, n, opt = {}) {
-    const w = opt.w || 300; T.PRIMM.forEach(([ltr, t, s], i) => { ctx.save(); if (i >= n) ctx.globalAlpha = 0.2; const cx = x + i * (w + 20); card(ctx, cx, y, w, 190, { fill: i === n - 1 ? "#FFF3D6" : C.bg2, stroke: i === n - 1 ? C.accent : undefined, lw: 4, r: 16 }); ctx.fillStyle = C.kiko; ctx.beginPath(); ctx.arc(cx + 44, y + 44, 28, 0, Math.PI * 2); ctx.fill(); text(ctx, ltr, cx + 44, y + 55, 30, { align: "center", weight: 900, color: "#fff" }); text(ctx, t, cx + 86, y + 54, 22, { weight: 900 }); para(ctx, s, cx + 20, y + 110, 22, w - 40, { weight: 700, color: C.ink2 }); ctx.restore(); });
+    const w = opt.w || 300; T.PRIMM.forEach(([ltr, t, s], i) => { ctx.save(); if (i >= n) ctx.globalAlpha = 0.2; const cx = x + i * (w + 20); const [en, id] = t.split(" · "); card(ctx, cx, y, w, 200, { fill: i === n - 1 ? "#FFF3D6" : C.bg2, stroke: i === n - 1 ? C.accent : undefined, lw: 4, r: 16 }); ctx.fillStyle = C.kiko; ctx.beginPath(); ctx.arc(cx + 44, y + 50, 28, 0, Math.PI * 2); ctx.fill(); text(ctx, ltr, cx + 44, y + 61, 30, { align: "center", weight: 900, color: "#fff" }); text(ctx, en, cx + 86, y + 44, 22, { weight: 900 }); text(ctx, id || "", cx + 86, y + 74, 20, { weight: 800, color: C.kiko }); para(ctx, s, cx + 20, y + 125, 22, w - 40, { weight: 700, color: C.ink2 }); ctx.restore(); });
   };
   K.terjemah = T;
 })(typeof window !== "undefined" ? window : globalThis);
