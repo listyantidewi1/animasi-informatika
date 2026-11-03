@@ -23,7 +23,7 @@ Bab:
 0:00 Pembuka
 0:38 Main dulu tanpa komputer
 1:09 Mencari
-2:04 Mengurutkan
+2:06 Mengurutkan
 
 Latihan interaktif (kuis dengan petunjuk, bisa dipakai di HP): https://belajar-informatika.vercel.app/d82
 Alat untuk latihan di komputer: Google Sheets (daring) https://sheets.google.com/; LibreOffice Calc (gratis, luring) https://www.libreoffice.org/download/download-libreoffice/
@@ -94,7 +94,7 @@ Bab:
 0:00 Pembuka
 0:49 Main dulu tanpa komputer
 1:28 Mencari
-2:36 Mengurutkan
+2:39 Mengurutkan
 
 Latihan interaktif (kuis dengan petunjuk, bisa dipakai di HP): https://belajar-informatika.vercel.app/d82
 Alat untuk latihan di komputer: Google Sheets (daring) https://sheets.google.com/; LibreOffice Calc (gratis, luring) https://www.libreoffice.org/download/download-libreoffice/
