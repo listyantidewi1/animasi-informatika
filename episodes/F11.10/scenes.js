@@ -67,7 +67,7 @@
       const n = reveal(l, 1.5, 2.0, 6);
       ctx.save(); if (n < 1) ctx.globalAlpha = 0.2; text(ctx, "satu baris = list", 240, 320, 24, { weight: 900, color: C.kiko }); Py.code(ctx, 240, 335, 640, [{ t: "[\"2025-08-02\", \"12\"]" }, { t: "[\"2025-08-03\", \"\"]" }], { rh: 42, size: 20, title: "LIST BARIS" }); ctx.restore();
       ctx.save(); if (n < 3) ctx.globalAlpha = 0.2; text(ctx, "ringkasan = dictionary", 1000, 320, 24, { weight: 900, color: C.kiko }); Pd.dict(ctx, 1000, 335, 600, [["Jul", 5], ["Agu", 3], ["Sep", 6]], { hl: n >= 4 ? "Agu" : null }); ctx.restore();
-      if (n >= 4) text(ctx, "hari_hujan[\"Agu\"] → 3", 1300, 580, 24, { align: "center", weight: 900, color: C.good });
+      if (n >= 4) text(ctx, "hari_hujan[\"Agu\"] → 3", 1300, 600, 24, { align: "center", weight: 900, color: C.good });
       if (n >= 5) Py.code(ctx, 240, 500, 640, [{ t: "FUNGSI rangkum(bersih) → dictionary" }, { t: "  UNTUK tiap (tgl, mm) dalam bersih:" }, { t: "    JIKA mm > 0 MAKA tambah 1 ke bulannya" }], { rh: 40, size: 18, title: "PSEUDOCODE" });
     },
     kode_baca(ctx, b, l) {

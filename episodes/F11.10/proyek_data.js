@@ -19,9 +19,9 @@
   };
   // dictionary: pairs [[kunci, nilai]], hl kunci
   Pd.dict = function (ctx, x, y, w, pairs, opt = {}) {
-    const rh = 40, h = 56 + pairs.length * rh; card(ctx, x, y, w, h, { fill: "#1F2A33", r: 12 }); text(ctx, opt.title || "hari_hujan = {", x + 16, y + 32, 18, { weight: 900, color: "#8FD0E6" });
-    pairs.forEach(([k, v], i) => { const ry = y + 50 + i * rh; if (opt.hl === k) { ctx.fillStyle = "rgba(242,177,52,0.35)"; rr(ctx, x + 8, ry, w - 16, rh - 4, 8); ctx.fill(); } text(ctx, "\"" + k + "\":", x + 36, ry + 26, 19, { weight: 800, color: "#A5D6A7" }); text(ctx, String(v) + ",", x + w * 0.55, ry + 26, 19, { weight: 900, color: "#8FD0E6" }); });
-    text(ctx, "}", x + 16, y + h - 6, 18, { weight: 900, color: "#8FD0E6" }); return h;
+    const rh = 40, h = 54 + (pairs.length + 1) * rh; card(ctx, x, y, w, h, { fill: "#1F2A33", r: 12 }); text(ctx, opt.title || "hari_hujan = {", x + 16, y + 32, 18, { weight: 900, color: "#8FD0E6" });
+    pairs.forEach(([k, v], i) => { const ry = y + 50 + i * rh; if (opt.hl === k) { ctx.fillStyle = "rgba(242,177,52,0.35)"; rr(ctx, x + 8, ry, w - 16, rh - 4, 8); ctx.fill(); } const ks = "\"" + k + "\":"; text(ctx, ks, x + 36, ry + 26, 19, { weight: 800, color: "#A5D6A7" }); ctx.font = `800 19px ${K.FONT}`; text(ctx, String(v) + ",", x + 36 + ctx.measureText(ks).width + 12, ry + 26, 19, { weight: 900, color: "#8FD0E6" }); });
+    text(ctx, "}", x + 16, y + 50 + pairs.length * rh + 26, 18, { weight: 900, color: "#8FD0E6" }); return h;
   };
   // kartu README
   Pd.readme = function (ctx, x, y, w, lines, opt = {}) {

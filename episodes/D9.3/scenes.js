@@ -64,11 +64,11 @@
     trojan(ctx, b, l) {
       card(ctx, 120, 150, 1680, 740);
       text(ctx, "TROJAN: MENYAMAR JADI YANG KAMU INGINKAN", 960, 230, 34, { align: "center", color: Mw.color("trojan"), weight: 800 });
-      const ph = D.phone(ctx, 420, 540, 320, 520); card(ctx, ph.x + 20, ph.y + 60, ph.w - 40, 140, { fill: "#FFF9E0", stroke: "#E0B04B", lw: 3, r: 14 }); text(ctx, "Kuota GRATIS 50GB!", ph.x + ph.w / 2, ph.y + 110, 22, { align: "center", weight: 900, color: C.accentDark }); card(ctx, ph.x + 60, ph.y + 140, ph.w - 120, 44, { fill: C.good, r: 10 }); text(ctx, "PASANG", ph.x + ph.w / 2, ph.y + 170, 20, { align: "center", weight: 900, color: "#fff" });
+      const ph = D.phone(ctx, 420, 490, 320, 420); card(ctx, ph.x + 20, ph.y + 60, ph.w - 40, 140, { fill: "#FFF9E0", stroke: "#E0B04B", lw: 3, r: 14 }); text(ctx, "Kuota GRATIS 50GB!", ph.x + ph.w / 2, ph.y + 110, 22, { align: "center", weight: 900, color: C.accentDark }); card(ctx, ph.x + 60, ph.y + 140, ph.w - 120, 44, { fill: C.good, r: 10 }); text(ctx, "PASANG", ph.x + ph.w / 2, ph.y + 170, 20, { align: "center", weight: 900, color: "#fff" });
       if (l > 1.5) D.finger(ctx, ph.x + ph.w / 2 + 10, ph.y + 190, {});
       const rev = l > 3.5; Mw.bug(ctx, 960, 480, 220, "trojan", { reveal: rev });
       if (rev) { text(ctx, "di dalamnya: program jahat", 960, 640, 26, { align: "center", weight: 900, color: C.bad }); }
-      if (l > 5.5) { card(ctx, 1240, 330, 460, 260, { fill: C.badBg, stroke: C.bad, lw: 4 }); ["kamu sendiri yang memasangnya", "sering dari luar toko resmi", "contoh: game bajakan, penambah kuota"].forEach((s, i) => text(ctx, "• " + s, 1270, 390 + i * 60, 22, { weight: 800 })); }
+      if (l > 5.5) { card(ctx, 1180, 330, 540, 260, { fill: C.badBg, stroke: C.bad, lw: 4 }); ["kamu sendiri yang memasangnya", "sering dari luar toko resmi", "contoh: game bajakan, penambah kuota"].forEach((s, i) => text(ctx, "• " + s, 1210, 400 + i * 70, 22, { weight: 800 })); }
       if (l > 8) banner(ctx, "hadiah yang terlalu bagus biasanya jebakan", 745, 900);
     },
     ransom_spy(ctx, b, l) {
@@ -93,7 +93,7 @@
       Mw.habit(ctx, 200, 240, 740, 1, HABITS[0][0], HABITS[0][1], { on: n === 1, dim: n < 1 });
       Mw.habit(ctx, 980, 240, 740, 2, HABITS[1][0], HABITS[1][1], { on: n === 2, dim: n < 2 });
       if (n >= 1) { D.phone(ctx, 420, 600, 220, 300); card(ctx, 330, 520, 180, 60, { fill: C.goodBg, stroke: C.good, lw: 3, r: 10 }); text(ctx, "Perbarui sekarang", 420, 558, 18, { align: "center", weight: 900, color: C.good }); text(ctx, "menambal lubang yang dipakai worm", 760, 600, 22, { align: "center", weight: 800, color: C.ink2 }); }
-      if (n >= 2) { card(ctx, 1060, 420, 260, 200, { fill: C.goodBg, stroke: C.good, lw: 4, r: 14 }); text(ctx, "toko resmi", 1190, 470, 24, { align: "center", weight: 900, color: C.good }); text(ctx, "★★★★☆ 12 rb ulasan", 1190, 520, 20, { align: "center", weight: 800 }); card(ctx, 1380, 420, 300, 200, { fill: C.badBg, stroke: C.bad, lw: 4, r: 14 }); text(ctx, "download dari link grup", 1530, 470, 22, { align: "center", weight: 900, color: C.bad }); text(ctx, "tanpa ulasan, tanpa nama pembuat", 1530, 520, 18, { align: "center", weight: 800 }); text(ctx, "trojan paling sering dari sini", 1370, 680, 22, { align: "center", weight: 800, color: C.bad }); }
+      if (n >= 2) { card(ctx, 1060, 420, 260, 200, { fill: C.goodBg, stroke: C.good, lw: 4, r: 14 }); text(ctx, "toko resmi", 1190, 470, 24, { align: "center", weight: 900, color: C.good }); text(ctx, "★★★★☆ 12 rb ulasan", 1190, 520, 20, { align: "center", weight: 800 }); card(ctx, 1380, 420, 300, 200, { fill: C.badBg, stroke: C.bad, lw: 4, r: 14 }); text(ctx, "download dari link grup", 1530, 470, 22, { align: "center", weight: 900, color: C.bad }); text(ctx, "tanpa ulasan,", 1530, 518, 20, { align: "center", weight: 800 }); text(ctx, "tanpa nama pembuat", 1530, 548, 20, { align: "center", weight: 800 }); text(ctx, "trojan paling sering dari sini", 1370, 680, 22, { align: "center", weight: 800, color: C.bad }); }
     },
 
     habit_click(ctx, b, l) {
