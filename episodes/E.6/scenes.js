@@ -74,7 +74,7 @@
       card(ctx, 120, 150, 1680, 740);
       heading(ctx, "MAKIN BESAR DATANYA, MAKIN JAUH BEDANYA", 215);
       const n = reveal(l, 1.5, 2.2, 4);
-      U.table(ctx, 360, 280, [360, 420, 420], ["banyak data", "linear (terburuk)", "biner (terburuk)"], [["8", "8", "3"], ["1.000", "1.000", "10"], ["1.000.000", "1.000.000", "20"], ["1 miliar", "1 miliar", "30"]], { n, rh: 70, hlRow: n - 1 });
+      U.table(ctx, 360, 280, [360, 420, 420], ["banyak data", "linear (terburuk)", "biner (terburuk)"], [["8", "8", "4"], ["1.000", "1.000", "10"], ["1.000.000", "1.000.000", "20"], ["1 miliar", "1 miliar", "30"]], { n, rh: 70, hlRow: n - 1 });
       if (n >= 4) label(ctx, "biner: tiap langkah membuang setengah", 960, 700);
     },
     pseudo_cari(ctx, b, l) {

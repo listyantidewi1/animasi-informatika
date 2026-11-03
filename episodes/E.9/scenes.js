@@ -6,8 +6,8 @@
   const banner = (ctx, s, y = 745, w = 1000, opt = {}) => { card(ctx, 960 - w / 2, y, w, 80, { fill: opt.fill || "#FFF3D6", stroke: opt.stroke || C.accent, lw: 4 }); text(ctx, s, 960, y + 52, opt.size || 34, { align: "center", weight: 900, color: opt.color || C.accentDark }); };
   const label = (ctx, s, x, y, opt = {}) => text(ctx, s, x, y, opt.size || 28, { align: "center", weight: 900, color: opt.color || C.accentDark });
   const heading = (ctx, s, y = 230) => text(ctx, s, 960, y, 34, { align: "center", color: C.accentDark, weight: 800 });
-  const NOTES = [[160, 110, "🎶", "lagu dolanan · Nek Sumi"], [420, 190, "🍲", "resep sayur lodeh · Bu Ani"], [700, 100, "🧵", "motif tenun · Pak Darto"], [250, 320, "🪀", "gasing · Kang Udin"], [560, 330, "📖", "cerita Si Kancil · Mbah Karto"]];
-  const META = [["Judul", "jenis", "narasumber", "lokasi", "tanggal", "perekam", "lisensi", "kata kunci"], ["Cublak-cublak Suweng", "lagu", "Nek Sumi", "Ds. Mekar", "2026-11-03", "Tim 10A", "CC BY-SA", "dolanan, lagu"], ["Gasing bambu", "video", "Kang Udin", "Ds. Mekar", "2026-11-05", "Tim 10B", "CC BY-SA", "permainan"]];
+  const NOTES = [[160, 110, "🎶", "lagu dolanan · Nenek Sumi"], [420, 190, "🍲", "resep sayur lodeh · Bu Ani"], [700, 100, "🧵", "motif tenun · Pak Darto"], [250, 320, "🪀", "gasing · Kang Udin"], [560, 330, "📖", "cerita Si Kancil · Mbah Karto"]];
+  const META = [["Judul", "jenis", "narasumber", "lokasi", "tanggal", "perekam", "lisensi", "kata kunci"], ["Cublak-cublak Suweng", "lagu", "Nenek Sumi", "Ds. Mekar", "2026-11-03", "Tim 10A", "CC BY-SA", "dolanan, lagu"], ["Gasing bambu", "video", "Kang Udin", "Ds. Mekar", "2026-11-05", "Tim 10B", "CC BY-SA", "permainan"]];
 
   Object.assign(SCENES, {
     title_q(ctx, b, l) {
@@ -37,7 +37,7 @@
       heading(ctx, "PILIH SATU: TIGA SYARAT", 215);
       const n = reveal(l, 1.5, 2.2, 3);
       [["🧓", "ada narasumber yang bisa ditemui", "bukan hanya cerita dari internet"], ["📅", "bisa direkam dalam dua minggu", "jarak, waktu, perangkat tersedia"], ["🔍", "belum banyak terdokumentasi", "cek dengan membaca lateral: apa yang sudah ada?"]].forEach(([ic, t, s], i) => { ctx.save(); if (i >= n) ctx.globalAlpha = 0.2; card(ctx, 230, 270 + i * 130, 1000, 112, { fill: i === n - 1 ? "#FFF3D6" : C.bg2, stroke: i === n - 1 ? C.accent : undefined, lw: 4, r: 14 }); text(ctx, ic, 290, 340 + i * 130, 44, { align: "center" }); text(ctx, (i + 1) + ". " + t, 350, 320 + i * 130, 26, { weight: 900 }); text(ctx, s, 350, 356 + i * 130, 19, { weight: 700, color: C.ink2 }); ctx.restore(); });
-      if (n >= 3) { card(ctx, 1280, 280, 440, 370, { fill: "#FFF59D", r: 10 }); text(ctx, "🎶 lagu dolanan", 1500, 340, 28, { align: "center", weight: 900 }); ["✓ Nek Sumi bersedia", "✓ 2 kali kunjungan", "✓ belum ada rekamannya"].forEach((s, i) => text(ctx, s, 1320, 410 + i * 50, 24, { weight: 800, color: C.good })); text(ctx, "pilihan Tim 10A", 1500, 610, 20, { align: "center", weight: 800, color: C.ink2 }); }
+      if (n >= 3) { card(ctx, 1280, 280, 440, 370, { fill: "#FFF59D", r: 10 }); text(ctx, "🎶 lagu dolanan", 1500, 340, 28, { align: "center", weight: 900 }); ["✓ Nenek Sumi bersedia", "✓ 2 kali kunjungan", "✓ belum ada rekamannya"].forEach((s, i) => text(ctx, s, 1320, 410 + i * 50, 24, { weight: 800, color: C.good })); text(ctx, "pilihan Tim 10A", 1500, 610, 20, { align: "center", weight: 800, color: C.ink2 }); }
     },
 
     riset_izin(ctx, b, l) {
@@ -45,7 +45,7 @@
       heading(ctx, "LANGKAH 1 · RISET DAN IZIN", 215);
       const n = reveal(l, 1.5, 1.6, 3);
       [["🔍", "baca lateral", "apa yang sudah ditulis, siapa ahlinya"], ["🤝", "temui narasumber", "jelaskan tujuan, minta izin rekam dan sebar"], ["📝", "izin ditulis", "nama yang ingin dicantumkan, boleh untuk apa"]].forEach(([ic, t, s], i) => { ctx.save(); if (i >= n) ctx.globalAlpha = 0.2; card(ctx, 230, 270 + i * 120, 760, 104, { fill: i === n - 1 ? "#FFF3D6" : C.bg2, stroke: i === n - 1 ? C.accent : undefined, lw: 4, r: 14 }); text(ctx, ic, 290, 335 + i * 120, 40, { align: "center" }); text(ctx, t, 350, 315 + i * 120, 24, { weight: 900 }); text(ctx, s, 350, 350 + i * 120, 18, { weight: 700, color: C.ink2 }); ctx.restore(); });
-      if (n >= 3) B.consent(ctx, 1060, 270, 640, [["Narasumber", "Nek Sumi (nama panggilan)"], ["Karya", "lagu dolanan, rekaman suara"], ["Boleh direkam", "ya"], ["Boleh disebarkan", "ya, dengan atribusi"], ["Lisensi disepakati", "CC BY-SA"]], { signed: l > 9 });
+      if (n >= 3) B.consent(ctx, 1060, 270, 640, [["Narasumber", "Nenek Sumi (nama panggilan)"], ["Karya", "lagu dolanan, rekaman suara"], ["Boleh direkam", "ya"], ["Boleh disebarkan", "ya, dengan atribusi"], ["Lisensi disepakati", "CC BY-SA"]], { signed: l > 9 });
       if (l > 9) label(ctx, "izin ditulis, bukan diingat", 1380, 700, { size: 24 });
     },
     perangkat(ctx, b, l) {
@@ -93,8 +93,8 @@
       card(ctx, 120, 150, 1680, 740);
       heading(ctx, "ATRIBUSI: EMPAT HAL", 215);
       const n = reveal(l, 1.5, 2.0, 4);
-      B.attribution(ctx, 230, 270, 760, [["judul karya", "Lagu Cublak-cublak Suweng"], ["pembuat", "dibawakan Nek Sumi, direkam Tim 10A"], ["sumber", "arsip-budaya.sekolah.example"], ["lisensi", "CC BY-SA 4.0"]], { n });
-      if (n >= 4) { card(ctx, 1060, 270, 640, 220, { fill: "#1F2A33", r: 14 }); text(ctx, "DESKRIPSI VIDEO", 1080, 305, 16, { weight: 900, color: "#8FD0E6" }); para(ctx, "\"Lagu Cublak-cublak Suweng\" dibawakan Nek Sumi, direkam Tim 10A SMA Nusa Bangsa (arsip-budaya.sekolah.example), CC BY-SA 4.0", 1380, 350, 18, 600, { align: "center", weight: 800, color: "#fff" }); }
+      B.attribution(ctx, 230, 270, 760, [["judul karya", "Lagu Cublak-cublak Suweng"], ["pembuat", "dibawakan Nenek Sumi, direkam Tim 10A"], ["sumber", "arsip-budaya.sekolah.example"], ["lisensi", "CC BY-SA 4.0"]], { n });
+      if (n >= 4) { card(ctx, 1060, 270, 640, 220, { fill: "#1F2A33", r: 14 }); text(ctx, "DESKRIPSI VIDEO", 1080, 305, 16, { weight: 900, color: "#8FD0E6" }); para(ctx, "\"Lagu Cublak-cublak Suweng\" dibawakan Nenek Sumi, direkam Tim 10A SMA Nusa Bangsa (arsip-budaya.sekolah.example), CC BY-SA 4.0", 1380, 350, 18, 600, { align: "center", weight: 800, color: "#fff" }); }
       if (l > 10) label(ctx, "ditulis di deskripsi, bukan disembunyikan", 1380, 580, { size: 24 });
     },
     pakai_aset(ctx, b, l) {
@@ -124,7 +124,7 @@
       text(ctx, "GILIRANMU", 960, 240, 34, { align: "center", color: C.accentDark, weight: 900 });
       const items = [["Pemilih lisensi", "empat pertanyaan → kode", (x, y) => { ["boleh diubah? ya", "boleh komersial? tidak", "turunan serupa? ya"].forEach((s, i) => { card(ctx, x - 190, y - 100 + i * 52, 380, 44, { fill: "#fff", stroke: "#B7C4CC", lw: 2, r: 10 }); text(ctx, s, x - 175, y - 72 + i * 52, 20, { weight: 800 }); }); B.badge(ctx, x - 80, y + 70, "CC BY-NC-SA"); }],
         ["Penyusun atribusi", "tiga karya fiktif", (x, y) => { ctx.save(); ctx.translate(x - 210, y - 110); ctx.scale(0.62, 0.62); B.attribution(ctx, 0, 0, 660, [["judul", "Gasing Bambu"], ["pembuat", "Kang Udin · Tim 10B"], ["sumber", "arsip…"], ["lisensi", "CC BY-SA"]], {}); ctx.restore(); }],
-        ["Metadata arsipmu", "rancang kolomnya", (x, y) => { ctx.save(); ctx.translate(x - 210, y - 100); ctx.scale(0.6, 0.6); Dq.table(ctx, 0, 0, [220, 110, 180, 170], ["Judul", "jenis", "narasumber", "lisensi"], [["Cublak-cublak", "lagu", "Nek Sumi", "CC BY-SA"], ["Gasing bambu", "video", "Kang Udin", "CC BY-SA"]], {}, { rh: 50 }); ctx.restore(); }]];
+        ["Metadata arsipmu", "rancang kolomnya", (x, y) => { ctx.save(); ctx.translate(x - 210, y - 100); ctx.scale(0.6, 0.6); Dq.table(ctx, 0, 0, [220, 110, 180, 170], ["Judul", "jenis", "narasumber", "lisensi"], [["Cublak-cublak", "lagu", "Nenek Sumi", "CC BY-SA"], ["Gasing bambu", "video", "Kang Udin", "CC BY-SA"]], {}, { rh: 50 }); ctx.restore(); }]];
       items.forEach(([t1, t2, draw], i) => { const x = 440 + i * 520; card(ctx, x - 240, 290, 480, 410, { fill: C.bg2 }); ctx.fillStyle = C.kiko; ctx.beginPath(); ctx.arc(x - 200, 340, 28, 0, Math.PI * 2); ctx.fill(); text(ctx, String(i + 1), x - 200, 352, 30, { align: "center", color: "#fff", weight: 900 }); text(ctx, t1, x - 160, 352, 28, { weight: 900 }); text(ctx, t2, x - 160, 386, 20, { weight: 700, color: C.ink2 }); draw(x, 560); });
       text(ctx, "di halaman latihan episode ini — lalu temui narasumber minggu ini", 960, 745, 28, { align: "center", color: C.ink2, weight: 700 });
     }

@@ -17,8 +17,10 @@
     if (opt.label !== false) text(ctx, opt.label || "server", cx, cy + h / 2 + 30, 24, { align: "center", weight: 800, color: C.ink2 });
   };
   Q.cloud = function (ctx, cx, cy, s, label, opt = {}) {
-    ctx.fillStyle = opt.fill || "#DCEBF2"; ctx.strokeStyle = opt.stroke || C.kiko; ctx.lineWidth = 4; ctx.beginPath();
-    ctx.arc(cx - s * 0.5, cy + s * 0.1, s * 0.35, 0, Math.PI * 2); ctx.arc(cx - s * 0.1, cy - s * 0.2, s * 0.45, 0, Math.PI * 2); ctx.arc(cx + s * 0.4, cy, s * 0.4, 0, Math.PI * 2); ctx.arc(cx, cy + s * 0.25, s * 0.4, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
+    const circ = [[-0.5, 0.1, 0.35], [-0.1, -0.2, 0.45], [0.4, 0, 0.4], [0, 0.25, 0.4]];
+    const path = () => { ctx.beginPath(); circ.forEach(([dx, dy, r]) => { ctx.moveTo(cx + dx * s + r * s, cy + dy * s); ctx.arc(cx + dx * s, cy + dy * s, r * s, 0, Math.PI * 2); }); };
+    ctx.strokeStyle = opt.stroke || C.kiko; ctx.lineWidth = 8; path(); ctx.stroke();
+    ctx.fillStyle = opt.fill || "#DCEBF2"; path(); ctx.fill();
     if (label) { const lines = wrap(ctx, label, opt.size || 26, 900, s * 1.6); lines.forEach((ln, i) => text(ctx, ln, cx, cy + 8 + (i - (lines.length - 1) / 2) * 30, opt.size || 26, { align: "center", weight: 900, color: opt.color || C.kiko })); }
   };
   Q.cable = function (ctx, pts, opt = {}) { ctx.strokeStyle = opt.color || "#7B8B95"; ctx.lineWidth = opt.lw || 6; ctx.lineJoin = "round"; ctx.setLineDash(opt.dash ? [12, 10] : []); ctx.beginPath(); pts.forEach((p, i) => i ? ctx.lineTo(p[0], p[1]) : ctx.moveTo(p[0], p[1])); ctx.stroke(); ctx.setLineDash([]); };

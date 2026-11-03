@@ -108,7 +108,7 @@
       card(ctx, 120, 150, 1680, 740);
       heading(ctx, "TANDA BAHAYA LAIN", 215);
       const n = reveal(l, 1.5, 2.2, 4);
-      const items = [["🔗", "alamat meniru media besar", "kompas-news.example vs kornpas-news.example"], ["📅", "tanggal tidak ada", "kapan ditulis? tidak tahu"], ["👤", "penulis tanpa nama", "\"Tim Redaksi\" tanpa orang"], ["🚨", "desakan membagikan sekarang", "BAGIKAN SEBELUM DIHAPUS!"]];
+      const items = [["🔗", "alamat meniru media besar", "harianku-news.example vs harlanku-news.example"], ["📅", "tanggal tidak ada", "kapan ditulis? tidak tahu"], ["👤", "penulis tanpa nama", "\"Tim Redaksi\" tanpa orang"], ["🚨", "desakan membagikan sekarang", "BAGIKAN SEBELUM DIHAPUS!"]];
       items.forEach(([ic, t, s], i) => { ctx.save(); if (i >= n) ctx.globalAlpha = 0.2; const x = 230 + (i % 2) * 740, y = 270 + Math.floor(i / 2) * 180; card(ctx, x, y, 700, 160, { fill: C.badBg, stroke: C.bad, lw: 3, r: 14 }); text(ctx, ic, x + 55, y + 90, 48, { align: "center" }); text(ctx, t, x + 110, y + 70, 26, { weight: 900 }); text(ctx, s, x + 110, y + 110, 19, { weight: 700, color: C.ink2 }); ctx.restore(); });
       if (n >= 4) label(ctx, "satu tanda saja cukup untuk membuka tab baru", 960, 700);
     },

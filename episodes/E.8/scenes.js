@@ -7,9 +7,9 @@
   const label = (ctx, s, x, y, opt = {}) => text(ctx, s, x, y, opt.size || 28, { align: "center", weight: 900, color: opt.color || C.accentDark });
   const heading = (ctx, s, y = 230) => text(ctx, s, 960, y, 34, { align: "center", color: C.accentDark, weight: 800 });
   const KINDS = ["apel", "tomat", "wortel", "jagung", "pisang", "bayam"];
-  const RAW = [["Rani", "10A", "Bdg", "12/04/2011"], ["Dito", "X-A", "Bandung", "2011-04-15"], ["Bayu", "sepuluh a", "bdg", "17-4-2011"]];
+  const RAW = [["Rani", "10A", "Bdg", "12/04/2011"], ["Dito", "X-A", "Bandung", "2011-04-15"], ["Bayu", "sepuluh a", "bdg", "17/04/2011"]];
   const CLEAN = [["Rani", "X-A", "Bandung", "2011-04-12"], ["Dito", "X-A", "Bandung", "2011-04-15"], ["Bayu", "X-A", "Bandung", "2011-04-17"]];
-  const DIRTY = [["10231", "Rani", "16", "2011-04-12"], ["10232", "Dito", "150", "2011-04-15"], ["10233", "Bayu", "16", "2011-02-31"], ["10234", "Sinta", "15", "2011-03-02"], ["10235", "", "16", "2011-05-20"], ["10234", "Agus", "17", "2010-12-01"]];
+  const DIRTY = [["10231", "Rani", "15", "2011-04-12"], ["10232", "Dito", "150", "2011-04-15"], ["10233", "Bayu", "15", "2011-02-31"], ["10234", "Sinta", "15", "2011-03-02"], ["10235", "", "15", "2011-05-20"], ["10234", "Agus", "15", "2010-12-01"]];
 
   Object.assign(SCENES, {
     title_q(ctx, b, l) {
@@ -76,7 +76,7 @@
       const n = reveal(l, 1.5, 2.6, 3);
       ctx.save(); if (n < 1) ctx.globalAlpha = 0.2; text(ctx, "kenyataan: 100 foto kucing", 480, 290, 22, { align: "center", weight: 900, color: C.ink2 }); for (let i = 0; i < 20; i++) { const bad = i >= 14; text(ctx, "🐱", 260 + (i % 10) * 46, 340 + Math.floor(i / 10) * 50, 34, { align: "center" }); if (bad && n >= 1) text(ctx, "✕", 260 + (i % 10) * 46, 340 + Math.floor(i / 10) * 50, 34, { align: "center", weight: 900, color: C.bad }); } text(ctx, "30 dilabeli \"anjing\"", 480, 430, 22, { align: "center", weight: 900, color: C.bad }); ctx.restore();
       ctx.save(); if (n < 2) ctx.globalAlpha = 0.2; Ck.bars(ctx, 760, 270, 460, 300, [["kucing", 70, C.kiko], ["anjing", 30, C.bad]], { title: "data berlabel", max: 100 }); ctx.restore();
-      ctx.save(); if (n < 3) ctx.globalAlpha = 0.2; card(ctx, 1280, 270, 440, 300, { fill: C.badBg, stroke: C.bad, lw: 4, r: 16 }); text(ctx, "kesimpulan keliru", 1500, 320, 24, { align: "center", weight: 900, color: C.bad }); para(ctx, "\"anjing hampir sebanyak kucing\"", 1500, 380, 22, 400, { align: "center", weight: 800 }); para(ctx, "program yang belajar dari data ini salah mengenali kucing", 1500, 460, 20, 400, { align: "center", weight: 700, color: C.ink2 }); ctx.restore();
+      ctx.save(); if (n < 3) ctx.globalAlpha = 0.2; card(ctx, 1280, 270, 440, 300, { fill: C.badBg, stroke: C.bad, lw: 4, r: 16 }); text(ctx, "kesimpulan keliru", 1500, 320, 24, { align: "center", weight: 900, color: C.bad }); para(ctx, "\"ada 30 anjing\", padahal semuanya kucing", 1500, 380, 22, 400, { align: "center", weight: 800 }); para(ctx, "program yang belajar dari data ini salah mengenali kucing", 1500, 460, 20, 400, { align: "center", weight: 700, color: C.ink2 }); ctx.restore();
       if (n >= 3) label(ctx, "kesalahan kecil di awal, kesimpulan besar di akhir", 960, 680);
     },
     aturan_validasi(ctx, b, l) {
