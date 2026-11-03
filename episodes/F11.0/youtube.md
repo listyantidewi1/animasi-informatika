@@ -9,7 +9,7 @@ Informatika Kelas 11 | Jembatan Menuju Pemrograman (1/2): Bekal: Pseudocode dan 
 ```
 Jembatan Menuju Pemrograman — bagian 1 dari 2: Bekal: Pseudocode dan Logika. Narasi suara plus teks besar di layar; ada versi tanpa suara di video terpisah.
 
-Selamat datang di kelas XI Informatika, mapel pilihan: tahun ini kita pindah dari pseudocode ke kode sumber. Episode jembatan ini memetakan bekal yang kamu bawa: pseudocode dengan variabel, JIKA, dan ULANGI; logika benar-salah dengan DAN, ATAU, TIDAK, serta tabel kebenaran kecil; lalu program Python pertama: print, variabel, input, if, dan for, dijalankan baris demi baris di papan memori, diubah, dan dibaca pesan galatnya. Kuis diagnostik di halaman latihan menghasilkan peta belajar pribadi. Gaya diagram Fase F. Empat cek pemahaman; pelacak Python mini di halaman latihan.
+Selamat datang di kelas XI Informatika, mapel pilihan: tahun ini kita pindah dari pseudocode ke kode sumber. Episode jembatan ini memetakan bekal yang kamu bawa: pseudocode dengan variabel, JIKA, dan ULANGI; logika benar-salah dengan DAN, ATAU, TIDAK, serta tabel kebenaran kecil; lalu program Python pertama: print, variabel, input, if, dan for, dijalankan baris demi baris di papan memori, diubah, dan dibaca pesan error-nya. Kuis diagnostik di halaman latihan menghasilkan peta belajar pribadi. Gaya diagram Fase F. Empat cek pemahaman; pelacak Python mini di halaman latihan.
 
 Setelah menonton, murid bisa:
 • menelusuri pseudocode dengan variabel, percabangan, dan perulangan memakai tabel pelacakan
@@ -41,7 +41,7 @@ Informatika Kelas 11 | Jembatan Menuju Pemrograman (2/2): Program Python Pertama
 ```
 Jembatan Menuju Pemrograman — bagian 2 dari 2: Program Python Pertama. Narasi suara plus teks besar di layar; ada versi tanpa suara di video terpisah.
 
-Selamat datang di kelas XI Informatika, mapel pilihan: tahun ini kita pindah dari pseudocode ke kode sumber. Episode jembatan ini memetakan bekal yang kamu bawa: pseudocode dengan variabel, JIKA, dan ULANGI; logika benar-salah dengan DAN, ATAU, TIDAK, serta tabel kebenaran kecil; lalu program Python pertama: print, variabel, input, if, dan for, dijalankan baris demi baris di papan memori, diubah, dan dibaca pesan galatnya. Kuis diagnostik di halaman latihan menghasilkan peta belajar pribadi. Gaya diagram Fase F. Empat cek pemahaman; pelacak Python mini di halaman latihan.
+Selamat datang di kelas XI Informatika, mapel pilihan: tahun ini kita pindah dari pseudocode ke kode sumber. Episode jembatan ini memetakan bekal yang kamu bawa: pseudocode dengan variabel, JIKA, dan ULANGI; logika benar-salah dengan DAN, ATAU, TIDAK, serta tabel kebenaran kecil; lalu program Python pertama: print, variabel, input, if, dan for, dijalankan baris demi baris di papan memori, diubah, dan dibaca pesan error-nya. Kuis diagnostik di halaman latihan menghasilkan peta belajar pribadi. Gaya diagram Fase F. Empat cek pemahaman; pelacak Python mini di halaman latihan.
 
 Setelah menonton, murid bisa:
 • menelusuri pseudocode dengan variabel, percabangan, dan perulangan memakai tabel pelacakan
@@ -74,7 +74,7 @@ Informatika Kelas 11 | Jembatan Menuju Pemrograman (1/2): Bekal: Pseudocode dan 
 ```
 Jembatan Menuju Pemrograman — bagian 1 dari 2: Bekal: Pseudocode dan Logika. Versi tanpa narasi suara: teks narasi tampil besar di layar dengan garis kemajuan baca, cocok untuk ditonton tanpa speaker atau untuk murid yang lebih suka membaca.
 
-Selamat datang di kelas XI Informatika, mapel pilihan: tahun ini kita pindah dari pseudocode ke kode sumber. Episode jembatan ini memetakan bekal yang kamu bawa: pseudocode dengan variabel, JIKA, dan ULANGI; logika benar-salah dengan DAN, ATAU, TIDAK, serta tabel kebenaran kecil; lalu program Python pertama: print, variabel, input, if, dan for, dijalankan baris demi baris di papan memori, diubah, dan dibaca pesan galatnya. Kuis diagnostik di halaman latihan menghasilkan peta belajar pribadi. Gaya diagram Fase F. Empat cek pemahaman; pelacak Python mini di halaman latihan.
+Selamat datang di kelas XI Informatika, mapel pilihan: tahun ini kita pindah dari pseudocode ke kode sumber. Episode jembatan ini memetakan bekal yang kamu bawa: pseudocode dengan variabel, JIKA, dan ULANGI; logika benar-salah dengan DAN, ATAU, TIDAK, serta tabel kebenaran kecil; lalu program Python pertama: print, variabel, input, if, dan for, dijalankan baris demi baris di papan memori, diubah, dan dibaca pesan error-nya. Kuis diagnostik di halaman latihan menghasilkan peta belajar pribadi. Gaya diagram Fase F. Empat cek pemahaman; pelacak Python mini di halaman latihan.
 
 Setelah menonton, murid bisa:
 • menelusuri pseudocode dengan variabel, percabangan, dan perulangan memakai tabel pelacakan
@@ -106,7 +106,7 @@ Informatika Kelas 11 | Jembatan Menuju Pemrograman (2/2): Program Python Pertama
 ```
 Jembatan Menuju Pemrograman — bagian 2 dari 2: Program Python Pertama. Versi tanpa narasi suara: teks narasi tampil besar di layar dengan garis kemajuan baca, cocok untuk ditonton tanpa speaker atau untuk murid yang lebih suka membaca.
 
-Selamat datang di kelas XI Informatika, mapel pilihan: tahun ini kita pindah dari pseudocode ke kode sumber. Episode jembatan ini memetakan bekal yang kamu bawa: pseudocode dengan variabel, JIKA, dan ULANGI; logika benar-salah dengan DAN, ATAU, TIDAK, serta tabel kebenaran kecil; lalu program Python pertama: print, variabel, input, if, dan for, dijalankan baris demi baris di papan memori, diubah, dan dibaca pesan galatnya. Kuis diagnostik di halaman latihan menghasilkan peta belajar pribadi. Gaya diagram Fase F. Empat cek pemahaman; pelacak Python mini di halaman latihan.
+Selamat datang di kelas XI Informatika, mapel pilihan: tahun ini kita pindah dari pseudocode ke kode sumber. Episode jembatan ini memetakan bekal yang kamu bawa: pseudocode dengan variabel, JIKA, dan ULANGI; logika benar-salah dengan DAN, ATAU, TIDAK, serta tabel kebenaran kecil; lalu program Python pertama: print, variabel, input, if, dan for, dijalankan baris demi baris di papan memori, diubah, dan dibaca pesan error-nya. Kuis diagnostik di halaman latihan menghasilkan peta belajar pribadi. Gaya diagram Fase F. Empat cek pemahaman; pelacak Python mini di halaman latihan.
 
 Setelah menonton, murid bisa:
 • menelusuri pseudocode dengan variabel, percabangan, dan perulangan memakai tabel pelacakan
