@@ -7,7 +7,7 @@
   const label = (ctx, s, x, y, opt = {}) => text(ctx, s, x, y, opt.size || 28, { align: "center", weight: 900, color: opt.color || C.accentDark });
   const heading = (ctx, s, y = 215) => text(ctx, s, 960, y, 34, { align: "center", color: C.accentDark, weight: 800 });
   const dim = (ctx, on, fn) => { ctx.save(); if (!on) ctx.globalAlpha = 0.2; fn(); ctx.restore(); };
-  const fiktif = (ctx, x = 1780, y = 870) => text(ctx, "contoh fiktif", x, y, 16, { align: "right", weight: 800, color: "#9AA7AF" });
+  const fiktif = (ctx, x = 1780, y = 186) => text(ctx, "contoh fiktif", x, y, 16, { align: "right", weight: 800, color: "#9AA7AF" });
   const items = (ctx, x, y, w, rows, n, opt = {}) => rows.forEach(([ic, t, s], i) => dim(ctx, n > i, () => { const gap = opt.gap || 120; card(ctx, x, y + i * gap, w, gap - 16, { fill: i === n - 1 && opt.hl ? "#FFF3D6" : C.bg2, stroke: i === n - 1 && opt.hl ? C.accent : undefined, lw: 3, r: 14 }); text(ctx, ic, x + 50, y + i * gap + (gap - 16) / 2 + 14, 38, { align: "center" }); text(ctx, t, x + 100, y + i * gap + (s ? 42 : (gap - 16) / 2 + 10), 26, { weight: 900 }); if (s) text(ctx, s, x + 100, y + i * gap + 78, 20, { weight: 800, color: C.ink2 }); }));
 
   Object.assign(SCENES, {

@@ -46,9 +46,9 @@
   Q.editor = function (ctx, x, y, w, h, clips, opt = {}) {
     card(ctx, x, y, w, h, { fill: "#1F2A33", r: 16 });
     // pratinjau
-    ctx.fillStyle = "#CFE3D8"; rr(ctx, x + 20, y + 20, w * 0.5, h - 130, 10); ctx.fill();
-    Q.bins(ctx, x + 20 + w * 0.25, y + (h - 130) / 2 + 10, 34, { label: false });
-    if (opt.text) { ctx.fillStyle = "rgba(31,42,51,0.85)"; rr(ctx, x + 40, y + h - 170, w * 0.5 - 40, 44, 8); ctx.fill(); text(ctx, opt.text, x + 20 + w * 0.25, y + h - 140, 22, { align: "center", weight: 900, color: "#fff" }); }
+    ctx.fillStyle = "#CFE3D8"; rr(ctx, x + 20, y + 20, w * 0.5, h - 150, 10); ctx.fill();
+    Q.bins(ctx, x + 20 + w * 0.25, y + (h - 150) / 2 + 10, 34, { label: false });
+    if (opt.text) { ctx.fillStyle = "rgba(31,42,51,0.85)"; rr(ctx, x + 40, y + h - 190, w * 0.5 - 40, 44, 8); ctx.fill(); text(ctx, opt.text, x + 20 + w * 0.25, y + h - 160, 22, { align: "center", weight: 900, color: "#fff" }); }
     // lintasan
     let cx = x + 20; const ty = y + h - 90;
     text(ctx, "VIDEO", x + 20, ty - 12, 14, { weight: 900, color: "#9AAFA6" });
@@ -56,7 +56,7 @@
     text(ctx, "MUSIK", x + 20, ty + 60, 14, { weight: 900, color: "#9AAFA6" });
     ctx.fillStyle = opt.musicBad ? C.bad : C.good; rr(ctx, x + 20, ty + 68, w * 0.55, 18, 6); ctx.fill(); text(ctx, opt.music || "musik bebas lisensi", x + 30, ty + 82, 13, { weight: 800, color: "#fff" });
     // panel aset
-    const px = x + w * 0.5 + 40; card(ctx, px, y + 20, w - w * 0.5 - 60, h - 130, { fill: "#2B3A46", r: 10 }); text(ctx, "ASET", px + 14, y + 46, 16, { weight: 900, color: "#9AAFA6" });
+    const px = x + w * 0.5 + 40; card(ctx, px, y + 20, w - w * 0.5 - 60, h - 150, { fill: "#2B3A46", r: 10 }); text(ctx, "ASET", px + 14, y + 46, 16, { weight: 900, color: "#9AAFA6" });
     (opt.assets || []).forEach(([t, ok], i) => { ctx.fillStyle = ok ? C.good : C.bad; rr(ctx, px + 14, y + 60 + i * 44, 28, 28, 6); ctx.fill(); text(ctx, ok ? "✓" : "✕", px + 28, y + 81 + i * 44, 20, { align: "center", weight: 900, color: "#fff" }); text(ctx, t, px + 52, y + 80 + i * 44, 17, { weight: 800, color: "#fff" }); });
   };
   // daftar periksa: items [[teks, status]] status true/false/null; opt.n tampil

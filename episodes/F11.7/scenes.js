@@ -77,7 +77,7 @@
       card(ctx, 120, 150, 1680, 740); heading(ctx, "EMPAT LAPISAN TCP/IP", 215);
       const n = reveal(l, 1.5, 2.2, 5);
       Lp.stack(ctx, 240, 270, 700, Math.min(4, n), { active: Math.min(3, n - 1) });
-      const ex = [["HTTP: GET /foto.jpg", "pesan dan aturannya"], ["segmen no. 1, 2, 3… → port 8080", "pecah, beri nomor, tandai aplikasi"], ["dari 10.0.3.5 ke 10.0.3.12", "alamat dan jalur"], ["sinyal Wi-Fi / listrik di kabel", "bit menjadi gelombang"]];
+      const ex = [["HTTP: POST /unggah (foto.jpg)", "pesan dan aturannya"], ["segmen no. 1, 2, 3… → port 8080", "pecah, beri nomor, tandai aplikasi"], ["dari 10.0.3.5 ke 10.0.3.12", "alamat dan jalur"], ["sinyal Wi-Fi / listrik di kabel", "bit menjadi gelombang"]];
       ex.forEach(([t, s], i) => { ctx.save(); if (i >= n) ctx.globalAlpha = 0.2; card(ctx, 1000, 270 + i * 90, 680, 80, { fill: i === n - 1 ? "#FFF3D6" : C.bg2, stroke: i === n - 1 ? C.accent : undefined, lw: 3, r: 12 }); text(ctx, t, 1024, 305 + i * 90, 22, { weight: 900, color: Lp.LAYERS[i][2] }); text(ctx, s, 1024, 334 + i * 90, 17, { weight: 700, color: C.ink2 }); ctx.restore(); });
       if (n >= 5) label(ctx, "tiap lapisan hanya mengurus urusannya", 960, 690, { size: 26 });
     },
@@ -110,7 +110,7 @@
     praktik_kirim(ctx, b, l) {
       card(ctx, 120, 150, 1680, 740); heading(ctx, "KIRIM DATA SUNGGUHAN: DUA LAPTOP, SATU WI-FI", 215);
       const n = reveal(l, 1.5, 2.0, 6);
-      J.laptop(ctx, 400, 460, 180); J.ipTag(ctx, 400, 580, "10.0.3.5", { w: 160 }); J.laptop(ctx, 1520, 460, 180); J.ipTag(ctx, 1520, 580, "10.0.3.12", { w: 160 }); J.router(ctx, 960, 300, 70, { label: "titik akses Wi-Fi" }); J.waves(ctx, 960, 300, 40, 3, { alpha: 0.4 });
+      J.laptop(ctx, 400, 460, 180); J.ipTag(ctx, 400, 580, "10.0.3.5", { w: 160 }); J.laptop(ctx, 1520, 460, 180); J.ipTag(ctx, 1520, 580, "10.0.3.12", { w: 160 }); J.router(ctx, 960, 325, 70, { label: "titik akses Wi-Fi" }); J.waves(ctx, 960, 305, 24, 3, { alpha: 0.4 });
       [["1. lihat alamat IP", "ipconfig / ifconfig"], ["2. ping 10.0.3.12", "balasan: 4 ms, 0% hilang"], ["3. jalankan server kecil", "python -m http.server 8000"], ["4. teman membuka di browser", "http://10.0.3.5:8000"]].forEach(([t, s], i) => { ctx.save(); if (n < i + 2) ctx.globalAlpha = 0.2; card(ctx, 620, 380 + i * 80, 680, 68, { fill: n === i + 2 ? "#FFF3D6" : "#1F2A33", stroke: n === i + 2 ? C.accent : undefined, lw: 3, r: 10 }); text(ctx, t, 644, 408 + i * 80, 20, { weight: 900, color: n === i + 2 ? C.ink : "#8FD0E6" }); text(ctx, s, 644, 434 + i * 80, 17, { weight: 800, color: n === i + 2 ? C.ink2 : "#fff" }); ctx.restore(); });
       if (n >= 6) label(ctx, "klien–server buatanmu sendiri", 960, 740, { size: 26 });
     },

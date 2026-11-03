@@ -67,9 +67,9 @@
     produksi_alat(ctx, b, l) {
       card(ctx, 120, 150, 1680, 740);
       heading(ctx, "TAHAP 2 · PRODUKSI: HP SUDAH CUKUP");
-      Kt.recPhone(ctx, 420, 530, 280, 440, { rec: l > 1, time: "00:" + String(Math.floor(l) % 60).padStart(2, "0"), subject: (ctx, sc) => { Kt.bins(ctx, sc.x + sc.w / 2, sc.y + sc.h / 2 - 20, 30, { label: false }); } });
-      Kt.stand(ctx, 420, 770, 50);
-      const tips = [["cahaya dari depan", (x, y) => { Kt.light(ctx, x, y, 60, { t: l }); kid(ctx, x + 130, y + 10, 70); }, "bukan dari belakang: wajah jadi gelap"], ["suara jelas", (x, y) => Kt.mic(ctx, x + 60, y, 60, { waves: true }), "tempat sepi, dekat dengan sumber suara"], ["gambar stabil", (x, y) => { D.phone(ctx, x + 60, y, 60, 100); Kt.stand(ctx, x + 60, y + 60, 26); }, "sandarkan HP atau pakai tumpuan"]];
+      Kt.recPhone(ctx, 420, 485, 270, 400, { rec: l > 1, time: "00:" + String(Math.floor(l) % 60).padStart(2, "0"), subject: (ctx, sc) => { Kt.bins(ctx, sc.x + sc.w / 2, sc.y + sc.h / 2 - 20, 30, { label: false }); } });
+      Kt.stand(ctx, 420, 707, 36);
+      const tips = [["cahaya dari depan", (x, y) => { Kt.light(ctx, x, y, 60, { t: l }); kid(ctx, x + 130, y - 2, 58); }, "bukan dari belakang: wajah jadi gelap"], ["suara jelas", (x, y) => Kt.mic(ctx, x + 60, y, 60, { waves: true }), "tempat sepi, dekat dengan sumber suara"], ["gambar stabil", (x, y) => { ctx.fillStyle = "#2F3B45"; rr(ctx, x + 38, y - 50, 44, 76, 9); ctx.fill(); ctx.fillStyle = "#DCEBF2"; rr(ctx, x + 43, y - 43, 34, 62, 5); ctx.fill(); Kt.stand(ctx, x + 60, y + 26, 30); }, "sandarkan HP atau pakai tumpuan"]];
       const n = reveal(l, 3.0, 2.0, 3);
       tips.forEach(([t, d, s], i) => { ctx.save(); if (i >= n) ctx.globalAlpha = 0.2; const y = 290 + i * 150; card(ctx, 700, y, 1000, 130, { fill: i === n - 1 ? "#FFF3D6" : C.bg2, stroke: i === n - 1 ? C.accent : undefined, lw: 5, r: 16 }); d(760, y + 65); text(ctx, (i + 1) + ". " + t, 960, y + 58, 30, { weight: 900 }); text(ctx, s, 960, y + 96, 22, { weight: 700, color: C.ink2 }); ctx.restore(); });
     },
@@ -78,7 +78,7 @@
       heading(ctx, "SUNTING: POTONG, TAMBAH TEKS, PAKAI ASET YANG BOLEH", 215);
       const n = reveal(l, 1.5, 2.2, 4);
       Kt.editor(ctx, 260, 250, 1400, 460, [{ w: 150, label: "kait" }, { w: 110, label: "salah ucap", cut: n >= 1 }, { w: 170, label: "masalah" }, { w: 220, label: "tiga langkah" }, { w: 130, label: "ajakan" }], { text: n >= 2 ? "PILAH JADI TIGA" : null, music: n >= 3 ? "musik bebas lisensi (sumber dicantumkan)" : "lagu populer dari internet", musicBad: n < 3, assets: n >= 3 ? [["musik buatan sendiri", true], ["gambar berlisensi bebas", true], ["foto hasil pencarian tanpa izin", false], ["lagu populer tanpa izin", false]] : [] });
-      if (n >= 4) label(ctx, "karya orang lain ada pemiliknya: minta izin atau pakai yang bebas", 960, 755, { size: 26 });
+      if (n >= 4) label(ctx, "karya orang lain ada pemiliknya: minta izin atau pakai yang bebas", 960, 745, { size: 26 });
     },
 
     cek_tayang(ctx, b, l) {

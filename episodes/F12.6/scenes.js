@@ -7,7 +7,7 @@
   const label = (ctx, s, x, y, opt = {}) => text(ctx, s, x, y, opt.size || 28, { align: "center", weight: 900, color: opt.color || C.accentDark });
   const heading = (ctx, s, y = 215) => text(ctx, s, 960, y, 34, { align: "center", color: C.accentDark, weight: 800 });
   const dim = (ctx, on, fn) => { ctx.save(); if (!on) ctx.globalAlpha = 0.2; fn(); ctx.restore(); };
-  const fiktif = (ctx, x = 1780, y = 870) => text(ctx, "contoh fiktif", x, y, 16, { align: "right", weight: 800, color: "#9AA7AF" });
+  const fiktif = (ctx, x = 1780, y = 186) => text(ctx, "contoh fiktif", x, y, 16, { align: "right", weight: 800, color: "#9AA7AF" });
   const PESAN = "setor sampah plastikmu lewat Setor Sampah, kumpulkan poin, dan bantu sekolah lebih bersih";
 
   Object.assign(SCENES, {

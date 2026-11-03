@@ -86,12 +86,12 @@
     alur_solusi(ctx, b, l) {
       card(ctx, 120, 150, 1680, 740);
       heading(ctx, "SOLUSI SEBAGAI ALGORITMA: SISTEM NOMOR PESAN", 215);
-      const steps = [["term", "Mulai"], ["proc", "ambil kartu nomor"], ["io", "tulis pesanan"], ["proc", "bayar di kasir"], ["proc", "tunggu nomor dipanggil"], ["proc", "ambil makanan"], ["term", "Selesai"]];
+      const steps = [["term", "Mulai"], ["proc", "ambil kartu nomor"], ["io", "tulis pesanan"], ["proc", "bayar di kasir"], ["proc", "tunggu nomor"], ["proc", "ambil makanan"], ["term", "Selesai"]];
       const n = reveal(l, 1.0, 1.1, 7);
       steps.forEach(([k, t], i) => { const cx = 300 + i * 220; Al.node(ctx, k, cx, 380, 190, 76, t, { dim: i >= n, hl: i === n - 1 }); if (i < steps.length - 1) Al.arrow(ctx, [[cx + 95, 380], [cx + 125, 380]], { on: i < n - 1 }); });
       Ak.ticket(ctx, 520, 600, 110, 17, { order: "mi ayam" }); arrowIcon(ctx, "east", 640, 600, 36, C.ink2); Ak.stall(ctx, 860, 640, 220, "KASIR", { color: C.kiko }); arrowIcon(ctx, "east", 1020, 600, 36, C.ink2);
       text(ctx, "📣 nomor 17!", 1220, 610, 34, { align: "center", weight: 900, color: C.accentDark }); kid(ctx, 1450, 620, 110, { hair: "long" });
-      if (n >= 7) label(ctx, "satu antrean kasir, bukan tiga kerumunan", 960, 760, { size: 26 });
+      if (n >= 7) label(ctx, "satu antrean kasir, bukan tiga kerumunan", 960, 745, { size: 26 });
     },
     pseudo_solusi(ctx, b, l) {
       card(ctx, 120, 150, 1680, 740);

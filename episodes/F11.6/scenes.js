@@ -47,7 +47,7 @@
       const n = reveal(l, 1.5, 1.6, 7);
       St.combos(ctx, 240, 270, 640, COMBOS6, clamp(n - 1, 0, 4), { best: n >= 6 ? 3 : null, rh: 64 });
       Py.code(ctx, 940, 270, 740, [{ t: "terbaik = None" }, { t: "for a in range(7):        # koin 1" }, { t: "    for b in range(3):    # koin 3" }, { t: "        for c in range(2):# koin 4" }, { t: "            if a + 3*b + 4*c == 6:" }, { t: "                simpan jika lebih sedikit" }], { rh: 40, size: 18 });
-      if (n >= 6) { card(ctx, 940, 540, 740, 90, { fill: C.goodBg, stroke: C.good, lw: 3, r: 12 }); text(ctx, "✓ pasti menemukan yang terbaik: tidak ada yang terlewat", 1310, 594, 22, { align: "center", weight: 900, color: C.good }); }
+      if (n >= 6) { card(ctx, 940, 580, 740, 80, { fill: C.goodBg, stroke: C.good, lw: 3, r: 12 }); text(ctx, "✓ pasti menemukan yang terbaik: tidak ada yang terlewat", 1310, 628, 22, { align: "center", weight: 900, color: C.good }); }
       if (n >= 7) label(ctx, "semua jalan dicoba, lalu dipilih", 560, 600, { size: 26 });
     },
     ledakan(ctx, b, l) {
@@ -79,7 +79,7 @@
       card(ctx, 120, 150, 1680, 740); heading(ctx, "STRATEGI 3 · DIVIDE AND CONQUER: PECAH DAN SELESAIKAN", 215);
       const n = reveal(l, 1.5, 1.5, 9);
       const k = clamp(n - 1, 0, GUESS.length); const g = k > 0 ? GUESS[k - 1] : [1, 100, null];
-      St.range(ctx, 300, 330, 1300, 100, g[0], g[1], g[2], { secret: 67 }); Kt.counter(ctx, 1640, 280, k, "tebakan");
+      St.range(ctx, 300, 330, 1180, 100, g[0], g[1], g[2], { secret: 67 }); Kt.counter(ctx, 1540, 280, k, "tebakan", { w: 220 });
       if (k > 0) text(ctx, "sisa kemungkinan: " + (g[1] - g[0] + 1) + " angka" + (k < 7 ? (67 > g[2] ? " → lebih besar" : " → lebih kecil") : " → ketemu!"), 960, 440, 26, { align: "center", weight: 900, color: k >= 7 ? C.good : C.accentDark });
       [["100", "50", "25", "13", "7", "4", "2", "1"]].forEach(seq => seq.forEach((s, i) => { ctx.save(); if (i > k) ctx.globalAlpha = 0.2; card(ctx, 300 + i * 165, 500, 150, 70, { fill: i === k ? "#FFF3D6" : C.bg2, stroke: i === k ? C.accent : undefined, lw: 3, r: 10 }); text(ctx, s, 375 + i * 165, 546, 28, { align: "center", weight: 900 }); ctx.restore(); }));
       text(ctx, "banyak kemungkinan tiap langkah", 300, 600, 20, { weight: 800, color: C.ink2 });

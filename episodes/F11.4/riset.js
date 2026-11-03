@@ -22,8 +22,8 @@
     ctx.restore();
     ctx.strokeStyle = opt.stroke || "#C9D4DB"; ctx.lineWidth = 3; rr(ctx, x, y, w, h, 12); ctx.stroke();
     if (opt.caption) { ctx.fillStyle = "rgba(20,30,36,0.82)"; rr(ctx, x, y + h - 40, w, 40, 0); ctx.fill(); ctx.fillRect(x, y + h - 40, w, 28); text(ctx, opt.caption, x + 12, y + h - 13, Math.max(12, w * 0.032), { weight: 800, color: "#fff" }); }
-    const marks = { sign: [sx, sy + h * 0.04, "papan nama"], shadow: [sx - w * 0.1, y + h * 0.78, "bayangan: sore"], cloth: [px, py - h * 0.08, "jas hujan"] };
-    (opt.hl || []).forEach(k => { const [mx, my, lab] = marks[k]; ctx.strokeStyle = C.accent; ctx.lineWidth = 4; ctx.beginPath(); ctx.arc(mx, my, w * 0.07, 0, Math.PI * 2); ctx.stroke(); ctx.fillStyle = C.accent; rr(ctx, mx - 60, my + w * 0.07 + 6, 120, 26, 6); ctx.fill(); text(ctx, lab, mx, my + w * 0.07 + 25, 15, { align: "center", weight: 900, color: "#fff" }); });
+    const marks = { sign: [sx, sy - 6 + h * 0.045, "papan nama", Math.hypot(w * 0.11, h * 0.045) + 8], shadow: [sx - w * 0.1, y + h * 0.78, "bayangan: sore", w * 0.07], cloth: [px, py - h * 0.08, "jas hujan", w * 0.07] };
+    (opt.hl || []).forEach(k => { const [mx, my, lab, mr] = marks[k]; ctx.strokeStyle = C.accent; ctx.lineWidth = 4; ctx.beginPath(); ctx.arc(mx, my, mr, 0, Math.PI * 2); ctx.stroke(); ctx.fillStyle = C.accent; rr(ctx, mx - 60, my + mr + 6, 120, 26, 6); ctx.fill(); text(ctx, lab, mx, my + mr + 25, 15, { align: "center", weight: 900, color: "#fff" }); });
   };
   // kartu metadata: rows [[kunci, nilai, hilang?]]
   R.exif = function (ctx, x, y, w, rows, opt = {}) {
