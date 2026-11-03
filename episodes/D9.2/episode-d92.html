@@ -554,8 +554,10 @@ ul.plain { padding-left: 20px; margin: 0 0 10px } ul.plain li { margin-bottom: 6
     if (opt.label !== false) text(ctx, opt.label || "server", cx, cy + h / 2 + 30, 24, { align: "center", weight: 800, color: C.ink2 });
   };
   Q.cloud = function (ctx, cx, cy, s, label, opt = {}) {
-    ctx.fillStyle = opt.fill || "#DCEBF2"; ctx.strokeStyle = opt.stroke || C.kiko; ctx.lineWidth = 4; ctx.beginPath();
-    ctx.arc(cx - s * 0.5, cy + s * 0.1, s * 0.35, 0, Math.PI * 2); ctx.arc(cx - s * 0.1, cy - s * 0.2, s * 0.45, 0, Math.PI * 2); ctx.arc(cx + s * 0.4, cy, s * 0.4, 0, Math.PI * 2); ctx.arc(cx, cy + s * 0.25, s * 0.4, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
+    const circ = [[-0.5, 0.1, 0.35], [-0.1, -0.2, 0.45], [0.4, 0, 0.4], [0, 0.25, 0.4]];
+    const path = () => { ctx.beginPath(); circ.forEach(([dx, dy, r]) => { ctx.moveTo(cx + dx * s + r * s, cy + dy * s); ctx.arc(cx + dx * s, cy + dy * s, r * s, 0, Math.PI * 2); }); };
+    ctx.strokeStyle = opt.stroke || C.kiko; ctx.lineWidth = 8; path(); ctx.stroke();
+    ctx.fillStyle = opt.fill || "#DCEBF2"; path(); ctx.fill();
     if (label) { const lines = wrap(ctx, label, opt.size || 26, 900, s * 1.6); lines.forEach((ln, i) => text(ctx, ln, cx, cy + 8 + (i - (lines.length - 1) / 2) * 30, opt.size || 26, { align: "center", weight: 900, color: opt.color || C.kiko })); }
   };
   Q.cable = function (ctx, pts, opt = {}) { ctx.strokeStyle = opt.color || "#7B8B95"; ctx.lineWidth = opt.lw || 6; ctx.lineJoin = "round"; ctx.setLineDash(opt.dash ? [12, 10] : []); ctx.beginPath(); pts.forEach((p, i) => i ? ctx.lineTo(p[0], p[1]) : ctx.moveTo(p[0], p[1])); ctx.stroke(); ctx.setLineDash([]); };
@@ -578,7 +580,7 @@ ul.plain { padding-left: 20px; margin: 0 0 10px } ul.plain li { margin-bottom: 6
   const banner = (ctx, s, y = 745, w = 1000, opt = {}) => { card(ctx, 960 - w / 2, y, w, 80, { fill: opt.fill || "#FFF3D6", stroke: opt.stroke || C.accent, lw: 4 }); text(ctx, s, 960, y + 52, opt.size || 34, { align: "center", weight: 900, color: opt.color || C.ink }); };
   const label = (ctx, s, x, y, opt = {}) => text(ctx, s, x, y, opt.size || 28, { align: "center", weight: 900, color: opt.color || C.accentDark });
   // peta perjalanan lengkap (dipakai beberapa adegan): posisi simpul
-  const NODES = { hp1: [260, 560], wifi: [520, 400], router: [780, 560], isp: [1100, 400], server: [1500, 560], hp2: [260, 700] };
+  const NODES = { hp1: [260, 470], wifi: [520, 400], router: [780, 560], isp: [1100, 400], server: [1500, 560], hp2: [260, 650] };
   const PATH_GO = [NODES.hp1, NODES.wifi, NODES.router, NODES.isp, NODES.server];
   const PATH_BACK = [NODES.server, NODES.isp, NODES.router, NODES.wifi, NODES.hp2];
   function journey(ctx, opt = {}) {
@@ -599,7 +601,7 @@ ul.plain { padding-left: 20px; margin: 0 0 10px } ul.plain li { margin-bottom: 6
       card(ctx, 120, 150, 1680, 740);
       journey(ctx, { n: 5, tick: Math.floor(l) });
       const u = clamp(l / 7, 0, 1); const p = u < 0.5 ? J.along(PATH_GO, u * 2) : J.along(PATH_BACK, (u - 0.5) * 2); J.packet(ctx, p[0], p[1], null, { color: u < 0.5 ? C.accent : C.good });
-      if (l > 7.5) banner(ctx, "pulang pergi ratusan kilometer, kurang dari sedetik", 760, 1000, { size: 30 });
+      if (l > 7.5) banner(ctx, "pulang pergi ratusan kilometer, kurang dari sedetik", 745, 1000, { size: 30 });
     },
     prereq(ctx, b, l) {
       card(ctx, 260, 200, 1400, 600);
@@ -658,11 +660,12 @@ ul.plain { padding-left: 20px; margin: 0 0 10px } ul.plain li { margin-bottom: 6
     },
     router_intro(ctx, b, l) {
       card(ctx, 120, 150, 1680, 740);
+      [[400, 380, "HP"], [400, 660, "laptop"], [1100, 380, "printer"]].forEach(([x, y]) => J.cable(ctx, [[x, y], [760, 520]], { color: "#B7C4CC", dash: true }));
       J.router(ctx, 760, 520, 160, { label: "router" });
-      [[400, 380, "HP"], [400, 660, "laptop"], [1100, 380, "printer"]].forEach(([x, y, lab]) => { J.cable(ctx, [[x, y], [760, 520]], { color: "#B7C4CC", dash: true }); if (lab === "laptop") J.laptop(ctx, x, y, 100); else if (lab === "printer") J.printer(ctx, x, y, 100); else J.phoneSmall(ctx, x, y, 90); });
+      [[400, 380, "HP"], [400, 660, "laptop"], [1100, 380, "printer"]].forEach(([x, y, lab]) => { if (lab === "laptop") J.laptop(ctx, x, y, 100); else if (lab === "printer") J.printer(ctx, x, y, 100); else J.phoneSmall(ctx, x, y, 90); });
       const n = reveal(l, 1.0, 1.6, 3);
       ["membagi alamat IP", "mengatur lalu lintas data", "pintu keluar ke internet"].forEach((s, i) => { if (i < n) { card(ctx, 1220, 300 + i * 120, 480, 96, { fill: i === n - 1 ? "#FFF3D6" : C.bg2, stroke: i === n - 1 ? C.accent : undefined, lw: 4, r: 14 }); text(ctx, (i + 1) + ". " + s, 1250, 358 + i * 120, 26, { weight: 900 }); } });
-      if (n >= 3) { J.cable(ctx, [[760, 560], [760, 760], [1140, 760]], { color: C.kiko, lw: 8 }); arrowIcon(ctx, "east", 1180, 760, 40, C.kiko); text(ctx, "ke luar rumah", 1300, 770, 26, { weight: 900, color: C.kiko }); }
+      if (n >= 3) { J.cable(ctx, [[856, 530], [960, 530], [960, 700], [1140, 700]], { color: C.kiko, lw: 8 }); arrowIcon(ctx, "east", 1180, 700, 40, C.kiko); text(ctx, "ke luar rumah", 1220, 710, 26, { weight: 900, color: C.kiko }); }
     },
 
     isp_intro(ctx, b, l) {
@@ -671,7 +674,7 @@ ul.plain { padding-left: 20px; margin: 0 0 10px } ul.plain li { margin-bottom: 6
       const n = reveal(l, 1.0, 1.6, 3);
       if (n >= 1) { J.cable(ctx, [[450, 540], [700, 540]], { color: C.kiko, lw: 8 }); J.tower(ctx, 700, 600, 160); text(ctx, "kabel / sinyal seluler", 560, 500, 22, { align: "center", weight: 800, color: C.ink2 }); }
       if (n >= 2) { J.cloud(ctx, 1000, 500, 110, "ISP", { size: 34 }); text(ctx, "penyedia internet", 1000, 640, 24, { align: "center", weight: 800, color: C.ink2 }); J.cable(ctx, [[720, 540], [880, 520]], { color: C.kiko, lw: 8 }); }
-      if (n >= 3) { J.cable(ctx, [[1120, 520], [1400, 520]], { color: C.kiko, lw: 8 }); J.house(ctx, 1500, 600, 200, 150, "kota lain"); ctx.strokeStyle = "#5FA8D3"; ctx.lineWidth = 6; ctx.setLineDash([10, 8]); ctx.beginPath(); ctx.moveTo(1000, 620); ctx.quadraticCurveTo(1250, 760, 1500, 640); ctx.stroke(); ctx.setLineDash([]); text(ctx, "kabel bawah laut ke pulau lain", 1250, 760, 22, { align: "center", weight: 800, color: "#2E7E9A" }); }
+      if (n >= 3) { J.cable(ctx, [[1120, 520], [1400, 520]], { color: C.kiko, lw: 8 }); J.house(ctx, 1500, 600, 200, 150, "kota lain"); ctx.strokeStyle = "#5FA8D3"; ctx.lineWidth = 6; ctx.setLineDash([10, 8]); ctx.beginPath(); ctx.moveTo(1075, 565); ctx.quadraticCurveTo(1290, 720, 1500, 660); ctx.stroke(); ctx.setLineDash([]); text(ctx, "kabel bawah laut ke pulau lain", 1290, 715, 22, { align: "center", weight: 800, color: "#2E7E9A" }); }
       if (l > 6.5) banner(ctx, "ISP: jaringan besar yang menyambungkan kota demi kota", 745, 1000, { size: 30 });
     },
     internet_map(ctx, b, l) {
@@ -681,9 +684,9 @@ ul.plain { padding-left: 20px; margin: 0 0 10px } ul.plain li { margin-bottom: 6
       const E = [[0, 2], [1, 2], [2, 3], [2, 4], [3, 4], [3, 5], [4, 5], [0, 3]];
       const busy = l > 4 ? 2 : -1;
       E.forEach(([a, b2], i) => J.cable(ctx, [N[a].slice(0, 2), N[b2].slice(0, 2)], { color: i === busy ? C.bad : "#B7C4CC", lw: i === busy ? 10 : 6 }));
-      N.forEach(([x, y, lab]) => J.cloud(ctx, x, y, 80, lab, { size: 20 }));
+      N.forEach(([x, y, lab]) => J.cloud(ctx, x, y, 90, lab, { size: 20 }));
       if (l > 1.5) label(ctx, "tidak ada satu pusat", 960, 300, { size: 28 });
-      if (l > 4) { const u = ((l - 4) % 3) / 3; const path = [N[0], N[3], N[4]].map(p => p.slice(0, 2)); const p = J.along(path, u); J.packet(ctx, p[0], p[1], null, {}); text(ctx, "jalan padat → paket lewat jalan lain", 960, 790, 26, { align: "center", weight: 900, color: C.good }); }
+      if (l > 4) { const u = ((l - 4) % 3) / 3; const path = [N[0], N[3], N[4]].map(p => p.slice(0, 2)); const p = J.along(path, u); J.packet(ctx, p[0], p[1], null, {}); text(ctx, "jalan padat → paket lewat jalan lain", 775, 745, 26, { align: "center", weight: 900, color: C.good }); }
     },
 
     server_intro(ctx, b, l) {

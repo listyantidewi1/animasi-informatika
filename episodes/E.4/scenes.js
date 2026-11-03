@@ -70,8 +70,8 @@
     lateral(ctx, b, l) {
       card(ctx, 120, 150, 1680, 740);
       const n = reveal(l, 1.0, 3.0, 3);
-      const tabs = [{ title: "Vaksin X Terbukti…", active: n < 1 }, { title: "siapa pemilik " + SITE.split(".")[0], active: n === 1 || n === 2, hl: n === 1 }, { title: "vaksin X lembaga kesehatan", active: n >= 3, hl: n === 3 }].slice(0, n >= 3 ? 3 : n >= 1 ? 2 : 1);
-      const a = Lt.browser(ctx, 200, 230, 1000, 640, tabs, n >= 3 ? "cari.example/?q=vaksin+X+lembaga+kesehatan" : n >= 1 ? "cari.example/?q=siapa+pemilik+" + SITE.split(".")[0] : SITE, { plus: true });
+      const tabs = [{ title: "Vaksin X Terbukti…", active: n < 1 }, { title: "siapa pemilik " + SITE.split(".")[0], active: n === 1 || n === 2, hl: n === 1 }, { title: "vaksin X site:go.id", active: n >= 3, hl: n === 3 }].slice(0, n >= 3 ? 3 : n >= 1 ? 2 : 1);
+      const a = Lt.browser(ctx, 200, 230, 1000, 640, tabs, n >= 3 ? "cari.example/?q=vaksin+X+site:go.id" : n >= 1 ? "cari.example/?q=siapa+pemilik+" + SITE.split(".")[0] : SITE, { plus: true });
       if (n < 1) Lt.site(ctx, a, { paras: 7, quote: "Dewan pakar kami menemukan…" });
       else if (n < 3) { Lt.query(ctx, a.x + 10, a.y + 6, a.w - 20, [["siapa pemilik", "kw"], [SITE.split(".")[0], "op"]]); Pc.results(ctx, a.x + 10, a.y + 96, a.w - 20, [{ title: "Situs sehatnusantara-info dimiliki PT Suplemen Jaya", url: "cekmedia.example", date: "" }, { title: "Daftar situs kesehatan yang menjual produk sendiri", url: "pemeriksafakta.example", date: "" }, { title: "Dewan pakar yang tidak pernah ada", url: "jurnalisme.example", date: "" }], { hl: n === 2 ? 0 : -1 }); }
       else { Lt.query(ctx, a.x + 10, a.y + 6, a.w - 20, [["vaksin X", "kw"], ["site:go.id", "op"]]); Pc.results(ctx, a.x + 10, a.y + 96, a.w - 20, [{ title: "Lembaga kesehatan: vaksin X aman, telah diuji", url: "kesehatan.go.id (fiktif)", date: "" }, { title: "Tanya jawab resmi tentang vaksin X", url: "kesehatan.go.id (fiktif)", date: "" }], { hl: 0 }); }
@@ -97,9 +97,9 @@
     telusuri_klaim(ctx, b, l) {
       card(ctx, 120, 150, 1680, 740);
       heading(ctx, "TELUSURI KLAIM KE SUMBER ASLINYA", 215);
-      card(ctx, 220, 280, 620, 190, { fill: "#fff", stroke: "#B7C4CC", lw: 3, r: 14 }); text(ctx, "artikel:", 240, 312, 18, { weight: 800, color: C.ink2 }); para(ctx, "\"Menurut penelitian Universitas X, vaksin ini berbahaya.\"", 530, 350, 22, 580, { align: "center", weight: 900 });
+      card(ctx, 220, 280, 580, 190, { fill: "#fff", stroke: "#B7C4CC", lw: 3, r: 14 }); text(ctx, "artikel:", 240, 312, 18, { weight: 800, color: C.ink2 }); para(ctx, "\"Menurut penelitian Universitas X, vaksin ini berbahaya.\"", 510, 350, 22, 540, { align: "center", weight: 900 });
       if (l > 2) { Lt.flag(ctx, 250, 418, "tanpa link"); Lt.flag(ctx, 430, 418, "tanpa nama peneliti"); }
-      arrowIcon(ctx, "east", 900, 355, 40, C.ink2); text(ctx, "cari penelitiannya", 900, 410, 18, { align: "center", weight: 800, color: C.ink2 });
+      arrowIcon(ctx, "east", 890, 355, 40, C.ink2); text(ctx, "cari", 890, 405, 18, { align: "center", weight: 800, color: C.ink2 }); text(ctx, "penelitiannya", 890, 428, 18, { align: "center", weight: 800, color: C.ink2 });
       const n = reveal(l, 4, 2.2, 3);
       [["🐭", "ternyata tentang hal lain", "penelitian itu soal dosis pada 10 tikus"], ["🔍", "sampelnya terlalu kecil", "tidak bisa disimpulkan untuk manusia"], ["👻", "tidak pernah ada", "nama universitas dipinjam"]].forEach(([ic, t, s], i) => { ctx.save(); if (i >= n) ctx.globalAlpha = 0.2; card(ctx, 980, 280 + i * 130, 720, 112, { fill: C.badBg, stroke: C.bad, lw: 3, r: 14 }); text(ctx, ic, 1030, 350 + i * 130, 40, { align: "center" }); text(ctx, t, 1080, 325 + i * 130, 24, { weight: 900 }); text(ctx, s, 1080, 360 + i * 130, 19, { weight: 700, color: C.ink2 }); ctx.restore(); });
       if (n >= 3) label(ctx, "kutipan tanpa link adalah tanda bahaya", 960, 720, { color: C.bad });

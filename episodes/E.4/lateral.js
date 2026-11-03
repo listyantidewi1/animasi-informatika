@@ -8,7 +8,7 @@
   L.browser = function (ctx, x, y, w, h, tabs, url, opt = {}) {
     card(ctx, x, y, w, h, { fill: "#fff", stroke: "#C9D4DB", lw: 3, r: 14 });
     ctx.fillStyle = "#E6EDF2"; rr(ctx, x, y, w, 50, 14); ctx.fill(); ctx.fillRect(x, y + 25, w, 25);
-    let tx = x + 12; tabs.forEach(t => { const tw = Math.min(260, t.title.length * 11 + 40); ctx.fillStyle = t.active ? "#fff" : "#D5DEE4"; rr(ctx, tx, y + 10, tw, 40, 8); ctx.fill(); if (t.hl) { ctx.strokeStyle = C.accent; ctx.lineWidth = 4; rr(ctx, tx, y + 10, tw, 40, 8); ctx.stroke(); } text(ctx, t.title, tx + 12, y + 36, 17, { weight: t.active ? 900 : 700, color: t.active ? C.ink : C.ink2 }); tx += tw + 6; });
+    let tx = x + 12; tabs.forEach(t => { const tw = Math.min(260, t.title.length * 11 + 40); ctx.fillStyle = t.active ? "#fff" : "#D5DEE4"; rr(ctx, tx, y + 10, tw, 40, 8); ctx.fill(); if (t.hl) { ctx.strokeStyle = C.accent; ctx.lineWidth = 4; rr(ctx, tx, y + 10, tw, 40, 8); ctx.stroke(); } ctx.font = `${t.active ? 900 : 700} 17px ${K.FONT}`; let tt = t.title; if (ctx.measureText(tt).width > tw - 22) { while (tt.length > 1 && ctx.measureText(tt + "…").width > tw - 22) tt = tt.slice(0, -1); tt = tt.trimEnd() + "…"; } text(ctx, tt, tx + 12, y + 36, 17, { weight: t.active ? 900 : 700, color: t.active ? C.ink : C.ink2 }); tx += tw + 6; });
     if (opt.plus) { ctx.fillStyle = "#D5DEE4"; rr(ctx, tx, y + 10, 40, 40, 8); ctx.fill(); text(ctx, "+", tx + 20, y + 38, 26, { align: "center", weight: 900, color: C.ink2 }); }
     ctx.fillStyle = "#F4F8FB"; rr(ctx, x + 12, y + 60, w - 24, 36, 10); ctx.fill(); text(ctx, (opt.https !== false ? "🔒 " : "⚠ ") + url, x + 26, y + 85, 17, { weight: 700, color: opt.https === false ? C.bad : C.ink2 });
     return { x: x + 12, y: y + 108, w: w - 24, h: h - 120 };
