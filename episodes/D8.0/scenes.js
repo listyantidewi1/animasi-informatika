@@ -51,10 +51,10 @@
     jurus1(ctx, b, l) {
       card(ctx, 120, 150, 1680, 740);
       JURUS.forEach((j, i) => jurusCard(ctx, 180, 220 + i * 150, 420, 130, i, { on: i === 0 }));
-      text(ctx, "Lomba 17 Agustus", 1250, 260, 34, { align: "center", weight: 900 });
+      text(ctx, "Lomba 17 Agustus", 1190, 260, 34, { align: "center", weight: 900 });
       const n = reveal(l, 1.0, 1.0, 4);
-      ["Tempat", "Alat", "Peserta", "Hadiah"].forEach((t, i) => { if (i < n) { ctx.strokeStyle = "#B7C4CC"; ctx.lineWidth = 4; ctx.beginPath(); ctx.moveTo(1250, 280); ctx.lineTo(760 + i * 330, 380); ctx.stroke(); card(ctx, 660 + i * 330, 380, 200, 90, { fill: C.goodBg, stroke: C.good, lw: 3, r: 12 }); text(ctx, t, 760 + i * 330, 435, 28, { align: "center", weight: 900, color: C.good }); } });
-      if (n >= 4) { for (let i = 0; i < 4; i++) for (let k = 0; k < 3; k++) kid(ctx, 700 + i * 330 + k * 50, 580, 50, { hair: k % 2 ? "long" : undefined }); label(ctx, "masalah besar → bagian kecil yang bisa dibagi", 1250, 740, { size: 28 }); }
+      ["Tempat", "Alat", "Peserta", "Hadiah"].forEach((t, i) => { if (i < n) { ctx.strokeStyle = "#B7C4CC"; ctx.lineWidth = 4; ctx.beginPath(); ctx.moveTo(1190, 280); ctx.lineTo(740 + i * 300, 380); ctx.stroke(); card(ctx, 640 + i * 300, 380, 200, 90, { fill: C.goodBg, stroke: C.good, lw: 3, r: 12 }); text(ctx, t, 740 + i * 300, 435, 28, { align: "center", weight: 900, color: C.good }); } });
+      if (n >= 4) { for (let i = 0; i < 4; i++) for (let k = 0; k < 3; k++) kid(ctx, 690 + i * 300 + k * 50, 580, 50, { hair: k % 2 ? "long" : undefined }); label(ctx, "masalah besar → bagian kecil yang bisa dibagi", 1190, 740, { size: 28 }); }
     },
     jurus2(ctx, b, l) {
       card(ctx, 120, 150, 1680, 740);
@@ -62,7 +62,7 @@
       ["Balap karung", "Makan kerupuk", "Tarik tambang"].forEach((t, i) => { card(ctx, 680 + i * 360, 230, 330, 420, { fill: C.bg2 }); text(ctx, t, 845 + i * 360, 285, 26, { align: "center", weight: 900 }); text(ctx, ["🏃", "🍘", "🪢"][i], 845 + i * 360, 360, 50, { align: "center" }); });
       const n = reveal(l, 1.2, 1.1, 3);
       ["garis start", "wasit", "daftar peserta"].forEach((s, k) => { if (k < n) for (let i = 0; i < 3; i++) { card(ctx, 700 + i * 360, 400 + k * 72, 290, 56, { fill: C.goodBg, stroke: C.good, lw: 3, r: 10 }); text(ctx, "✓ " + s, 845 + i * 360, 437 + k * 72, 24, { align: "center", weight: 900, color: C.good }); } });
-      if (n >= 3) banner(ctx, "berulang tiga kali → satu rencana dipakai tiga kali", 700, 1000, { size: 30 });
+      if (n >= 3) banner(ctx, "berulang tiga kali → satu rencana dipakai tiga kali", 745, 1000, { size: 30 });
     },
     jurus3(ctx, b, l) {
       card(ctx, 120, 150, 1680, 740);
@@ -71,14 +71,14 @@
       const cols = [["Nama", true], ["Kelas", true], ["Warna baju", false], ["Makanan kesukaan", false]];
       const n = reveal(l, 1.5, 1.0, 2);
       cols.forEach(([c, keep], i) => { const gone = !keep && n > (i - 2); const x = 700 + i * 270; ctx.save(); ctx.globalAlpha = gone ? 0.25 : 1; card(ctx, x, 300, 250, 300, { fill: keep ? C.goodBg : C.badBg, stroke: keep ? C.good : C.bad, lw: 4, r: 12 }); text(ctx, c, x + 125, 350, 24, { align: "center", weight: 900, color: keep ? C.good : C.bad }); ["Dito", "Sinta", "Rani"].forEach((nm, k) => text(ctx, [nm, "7B", ["merah", "biru", "hijau"][k], ["bakso", "mie", "soto"][k]][i], x + 125, 410 + k * 50, 22, { align: "center", weight: 700 })); ctx.restore(); if (gone) { ctx.strokeStyle = C.bad; ctx.lineWidth = 8; ctx.beginPath(); ctx.moveTo(x + 30, 320); ctx.lineTo(x + 220, 580); ctx.stroke(); } });
-      if (n >= 2) banner(ctx, "simpan yang penting, buang yang tidak perlu", 700, 1000, { size: 30 });
+      if (n >= 2) banner(ctx, "simpan yang penting, buang yang tidak perlu", 745, 1000, { size: 30 });
     },
     jurus4(ctx, b, l) {
       card(ctx, 120, 150, 1680, 740);
       JURUS.forEach((j, i) => jurusCard(ctx, 180, 220 + i * 150, 420, 130, i, { on: i === 3 }));
       const steps = ["Pasang garis start", "Panggil peserta", "Beri aba-aba", "Catat pemenang"]; const n = reveal(l, 0.8, 1.0, 4);
       steps.forEach((s, i) => { if (i < n) { card(ctx, 760, 240 + i * 115, 760, 90, { fill: C.panel, stroke: "#CFDCD5", lw: 3, r: 14 }); ctx.fillStyle = C.kiko; ctx.beginPath(); ctx.arc(800, 285 + i * 115, 24, 0, Math.PI * 2); ctx.fill(); text(ctx, String(i + 1), 800, 294 + i * 115, 24, { align: "center", color: "#fff", weight: 900 }); text(ctx, s, 850, 296 + i * 115, 30, { weight: 800 }); if (i) arrowIcon(ctx, "down", 1600, 240 + i * 115 - 12, 28, C.ink2); } });
-      if (n >= 4) banner(ctx, "urutannya tidak boleh tertukar", 720, 900, { fill: C.badBg, stroke: C.bad, color: C.bad });
+      if (n >= 4) banner(ctx, "urutannya tidak boleh tertukar", 745, 620, { fill: C.badBg, stroke: C.bad, color: C.bad });
     },
 
     robot_recall(ctx, b, l) {

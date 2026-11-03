@@ -38,7 +38,7 @@
       const items = [["kata sederhana", "\"kata sandi\" bukan \"kredensial\""], ["banyak gambar", "satu gambar tiap aturan"], ["contoh yang dekat", "grup kelas, game, HP ibu"]];
       const n = reveal(l, 1.0, 1.6, 3);
       items.forEach(([t, s], i) => { if (i < n) { card(ctx, 640, 260 + i * 170, 1040, 140, { fill: C.goodBg, stroke: C.good, lw: 4, r: 16 }); text(ctx, "✓ " + t, 680, 318 + i * 170, 32, { weight: 900, color: C.good }); text(ctx, s, 680, 362 + i * 170, 24, { weight: 700, color: C.ink2 }); } });
-      if (l > 7) banner(ctx, "jawaban mereka menentukan isi panduanmu", 775, 900, { size: 30 });
+      if (l > 7) banner(ctx, "jawaban mereka menentukan isi panduanmu", 745, 900, { size: 30 });
     },
 
     steps_six(ctx, b, l) {
