@@ -90,7 +90,7 @@
       const n = reveal(l, 1.5, 2.2, 3);
       ctx.save(); if (n < 1) ctx.globalAlpha = 0.2; A.version(ctx, 240, 310, 600, "1.0", ["catat pemasukan dan pengeluaran", "lihat saldo", "simpan ke file kas.csv"], { title: "fitur" }); ctx.restore();
       ctx.save(); if (n < 2) ctx.globalAlpha = 0.2; card(ctx, 880, 310, 400, 190, { fill: "#FFF9E0", stroke: "#E0B04B", lw: 3, r: 14 }); text(ctx, "PANDUAN SINGKAT", 1080, 350, 20, { align: "center", weight: 900, color: C.accentDark }); ["1. tekan Tambah, isi, Simpan", "2. saldo tampil di atas", "3. file: kas.csv"].forEach((s, i) => text(ctx, s, 900, 395 + i * 34, 19, { weight: 800 })); ctx.restore();
-      ctx.save(); if (n < 3) ctx.globalAlpha = 0.2; kid(ctx, 1500, 500, 130, { hair: "long" }); bubble(ctx, 1320, 330, 360, "Kupakai seminggu, lalu kuberi masukan.", 20, { tailX: 1480 }); ctx.restore();
+      ctx.save(); if (n < 3) ctx.globalAlpha = 0.2; kid(ctx, 1500, 560, 120, { hair: "long" }); bubble(ctx, 1320, 420, 360, "Kupakai seminggu, lalu kuberi masukan.", 20, { tailX: 1480 }); ctx.restore();
       if (n >= 3) label(ctx, "umpan balik dari pemakaian sungguhan", 960, 680, { size: 24 });
     },
     pemeliharaan(ctx, b, l) {
