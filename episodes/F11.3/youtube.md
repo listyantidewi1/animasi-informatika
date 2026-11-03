@@ -25,7 +25,10 @@ Bab:
 1:25 Pencarian dalam kode
 2:41 Pengurutan dalam kode
 
-Latihan interaktif (kuis dengan petunjuk, bisa dipakai luring di HP): berkas episode-f113.html di repositori proyek. Prasyarat: episode E.6 Pencarian dan Pengurutan dan F11.2 Dari Pseudocode ke Kode.
+Latihan interaktif (kuis dengan petunjuk, bisa dipakai di HP): https://listyantidewi1.github.io/animasi-informatika/episodes/F11.3/episode-f113.html
+Alat untuk latihan di komputer: Python (IDLE, gratis, luring) https://www.python.org/downloads/; Google Colab (Python di browser) https://colab.research.google.com/
+Semua episode dan latihannya: https://listyantidewi1.github.io/animasi-informatika/
+Prasyarat: episode E.6 Pencarian dan Pengurutan dan F11.2 Dari Pseudocode ke Kode.
 
 Seri Animasi Informatika untuk SMP–SMA mengikuti CP 2025 (Keputusan Kepala BSKAP 046/H/KR/2025), unit F11.3 (16 JP). Tokoh: robot Kiko, Dito, dan Sinta. Semua gambar dibuat dengan kode; tanpa musik latar. Narasi: Kak Ceria (ElevenLabs).
 
@@ -58,7 +61,10 @@ Bab:
 2:26 Efisiensi
 3:04 Giliranmu
 
-Latihan interaktif (kuis dengan petunjuk, bisa dipakai luring di HP): berkas episode-f113.html di repositori proyek. Prasyarat: episode E.6 Pencarian dan Pengurutan dan F11.2 Dari Pseudocode ke Kode.
+Latihan interaktif (kuis dengan petunjuk, bisa dipakai di HP): https://listyantidewi1.github.io/animasi-informatika/episodes/F11.3/episode-f113.html
+Alat untuk latihan di komputer: Python (IDLE, gratis, luring) https://www.python.org/downloads/; Google Colab (Python di browser) https://colab.research.google.com/
+Semua episode dan latihannya: https://listyantidewi1.github.io/animasi-informatika/
+Prasyarat: episode E.6 Pencarian dan Pengurutan dan F11.2 Dari Pseudocode ke Kode.
 
 Seri Animasi Informatika untuk SMP–SMA mengikuti CP 2025 (Keputusan Kepala BSKAP 046/H/KR/2025), unit F11.3 (16 JP). Tokoh: robot Kiko, Dito, dan Sinta. Semua gambar dibuat dengan kode; tanpa musik latar. Narasi: Kak Ceria (ElevenLabs).
 
@@ -90,7 +96,10 @@ Bab:
 1:47 Pencarian dalam kode
 3:22 Pengurutan dalam kode
 
-Latihan interaktif (kuis dengan petunjuk, bisa dipakai luring di HP): berkas episode-f113.html di repositori proyek. Prasyarat: episode E.6 Pencarian dan Pengurutan dan F11.2 Dari Pseudocode ke Kode.
+Latihan interaktif (kuis dengan petunjuk, bisa dipakai di HP): https://listyantidewi1.github.io/animasi-informatika/episodes/F11.3/episode-f113.html
+Alat untuk latihan di komputer: Python (IDLE, gratis, luring) https://www.python.org/downloads/; Google Colab (Python di browser) https://colab.research.google.com/
+Semua episode dan latihannya: https://listyantidewi1.github.io/animasi-informatika/
+Prasyarat: episode E.6 Pencarian dan Pengurutan dan F11.2 Dari Pseudocode ke Kode.
 
 Seri Animasi Informatika untuk SMP–SMA mengikuti CP 2025 (Keputusan Kepala BSKAP 046/H/KR/2025), unit F11.3 (16 JP). Tokoh: robot Kiko, Dito, dan Sinta. Semua gambar dibuat dengan kode; tanpa musik latar.
 
@@ -123,7 +132,10 @@ Bab:
 2:59 Efisiensi
 3:46 Giliranmu
 
-Latihan interaktif (kuis dengan petunjuk, bisa dipakai luring di HP): berkas episode-f113.html di repositori proyek. Prasyarat: episode E.6 Pencarian dan Pengurutan dan F11.2 Dari Pseudocode ke Kode.
+Latihan interaktif (kuis dengan petunjuk, bisa dipakai di HP): https://listyantidewi1.github.io/animasi-informatika/episodes/F11.3/episode-f113.html
+Alat untuk latihan di komputer: Python (IDLE, gratis, luring) https://www.python.org/downloads/; Google Colab (Python di browser) https://colab.research.google.com/
+Semua episode dan latihannya: https://listyantidewi1.github.io/animasi-informatika/
+Prasyarat: episode E.6 Pencarian dan Pengurutan dan F11.2 Dari Pseudocode ke Kode.
 
 Seri Animasi Informatika untuk SMP–SMA mengikuti CP 2025 (Keputusan Kepala BSKAP 046/H/KR/2025), unit F11.3 (16 JP). Tokoh: robot Kiko, Dito, dan Sinta. Semua gambar dibuat dengan kode; tanpa musik latar.
 
@@ -136,7 +148,8 @@ Seri Animasi Informatika untuk SMP–SMA mengikuti CP 2025 (Keputusan Kepala BSK
 📌 Algoritma Standar dalam Kode dan Kualitas Program (1/2): Pencarian dan Pengurutan dalam Python — materi Informatika kelas 11 (unit F11.3).
 Setelah menonton, kamu bisa menulis dan menguji pencarian serta pengurutan dalam Python, lalu membandingkan efisiensinya.
 Kata kunci materi ini: binary search python kelas 11; bubble sort python penjelasan langkah demi langkah; cara membaca traceback error python pemula; efisiensi algoritma menghitung operasi n log n n kuadrat.
-Latihan interaktif (bisa luring di HP): berkas episode-f113.html. Tonton dulu episode E.6 Pencarian dan Pengurutan dan F11.2 Dari Pseudocode ke Kode bila belum.
+Latihan interaktif (bisa dipakai di HP): https://listyantidewi1.github.io/animasi-informatika/episodes/F11.3/episode-f113.html Tonton dulu episode E.6 Pencarian dan Pengurutan dan F11.2 Dari Pseudocode ke Kode bila belum.
+Alat untuk latihan di komputer: Python (IDLE, gratis, luring) https://www.python.org/downloads/; Google Colab (Python di browser) https://colab.research.google.com/
 Ada yang belum jelas? Tulis di komentar, pertanyaanmu membantu teman lain juga.
 ```
 
@@ -146,6 +159,7 @@ Ada yang belum jelas? Tulis di komentar, pertanyaanmu membantu teman lain juga.
 📌 Algoritma Standar dalam Kode dan Kualitas Program (2/2): Uji, Debug, Keterbacaan, Efisiensi — materi Informatika kelas 11 (unit F11.3).
 Setelah menonton, kamu bisa menulis dan menguji pencarian serta pengurutan dalam Python, lalu membandingkan efisiensinya.
 Kata kunci materi ini: binary search python kelas 11; bubble sort python penjelasan langkah demi langkah; cara membaca traceback error python pemula; efisiensi algoritma menghitung operasi n log n n kuadrat.
-Latihan interaktif (bisa luring di HP): berkas episode-f113.html. Tonton dulu episode E.6 Pencarian dan Pengurutan dan F11.2 Dari Pseudocode ke Kode bila belum.
+Latihan interaktif (bisa dipakai di HP): https://listyantidewi1.github.io/animasi-informatika/episodes/F11.3/episode-f113.html Tonton dulu episode E.6 Pencarian dan Pengurutan dan F11.2 Dari Pseudocode ke Kode bila belum.
+Alat untuk latihan di komputer: Python (IDLE, gratis, luring) https://www.python.org/downloads/; Google Colab (Python di browser) https://colab.research.google.com/
 Ada yang belum jelas? Tulis di komentar, pertanyaanmu membantu teman lain juga.
 ```

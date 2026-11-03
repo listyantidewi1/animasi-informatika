@@ -25,7 +25,10 @@ Bab:
 1:23 Variabel dan tipe data
 2:32 Percabangan
 
-Latihan interaktif (kuis dengan petunjuk, bisa dipakai luring di HP): berkas episode-f112.html di repositori proyek. Prasyarat: episode F11.0 Jembatan Menuju Pemrograman dan F11.1 Alur Pengembangan Program dan Produk Digital.
+Latihan interaktif (kuis dengan petunjuk, bisa dipakai di HP): https://listyantidewi1.github.io/animasi-informatika/episodes/F11.2/episode-f112.html
+Alat untuk latihan di komputer: Python (IDLE, gratis, luring) https://www.python.org/downloads/; Google Colab (Python di browser) https://colab.research.google.com/
+Semua episode dan latihannya: https://listyantidewi1.github.io/animasi-informatika/
+Prasyarat: episode F11.0 Jembatan Menuju Pemrograman dan F11.1 Alur Pengembangan Program dan Produk Digital.
 
 Seri Animasi Informatika untuk SMP–SMA mengikuti CP 2025 (Keputusan Kepala BSKAP 046/H/KR/2025), unit F11.2 (28 JP). Tokoh: robot Kiko, Dito, dan Sinta. Semua gambar dibuat dengan kode; tanpa musik latar. Narasi: Kak Ceria (ElevenLabs).
 
@@ -58,7 +61,10 @@ Bab:
 2:38 Program utuh dan PRIMM
 3:14 Giliranmu
 
-Latihan interaktif (kuis dengan petunjuk, bisa dipakai luring di HP): berkas episode-f112.html di repositori proyek. Prasyarat: episode F11.0 Jembatan Menuju Pemrograman dan F11.1 Alur Pengembangan Program dan Produk Digital.
+Latihan interaktif (kuis dengan petunjuk, bisa dipakai di HP): https://listyantidewi1.github.io/animasi-informatika/episodes/F11.2/episode-f112.html
+Alat untuk latihan di komputer: Python (IDLE, gratis, luring) https://www.python.org/downloads/; Google Colab (Python di browser) https://colab.research.google.com/
+Semua episode dan latihannya: https://listyantidewi1.github.io/animasi-informatika/
+Prasyarat: episode F11.0 Jembatan Menuju Pemrograman dan F11.1 Alur Pengembangan Program dan Produk Digital.
 
 Seri Animasi Informatika untuk SMP–SMA mengikuti CP 2025 (Keputusan Kepala BSKAP 046/H/KR/2025), unit F11.2 (28 JP). Tokoh: robot Kiko, Dito, dan Sinta. Semua gambar dibuat dengan kode; tanpa musik latar. Narasi: Kak Ceria (ElevenLabs).
 
@@ -90,7 +96,10 @@ Bab:
 1:44 Variabel dan tipe data
 3:10 Percabangan
 
-Latihan interaktif (kuis dengan petunjuk, bisa dipakai luring di HP): berkas episode-f112.html di repositori proyek. Prasyarat: episode F11.0 Jembatan Menuju Pemrograman dan F11.1 Alur Pengembangan Program dan Produk Digital.
+Latihan interaktif (kuis dengan petunjuk, bisa dipakai di HP): https://listyantidewi1.github.io/animasi-informatika/episodes/F11.2/episode-f112.html
+Alat untuk latihan di komputer: Python (IDLE, gratis, luring) https://www.python.org/downloads/; Google Colab (Python di browser) https://colab.research.google.com/
+Semua episode dan latihannya: https://listyantidewi1.github.io/animasi-informatika/
+Prasyarat: episode F11.0 Jembatan Menuju Pemrograman dan F11.1 Alur Pengembangan Program dan Produk Digital.
 
 Seri Animasi Informatika untuk SMP–SMA mengikuti CP 2025 (Keputusan Kepala BSKAP 046/H/KR/2025), unit F11.2 (28 JP). Tokoh: robot Kiko, Dito, dan Sinta. Semua gambar dibuat dengan kode; tanpa musik latar.
 
@@ -123,7 +132,10 @@ Bab:
 3:12 Program utuh dan PRIMM
 3:57 Giliranmu
 
-Latihan interaktif (kuis dengan petunjuk, bisa dipakai luring di HP): berkas episode-f112.html di repositori proyek. Prasyarat: episode F11.0 Jembatan Menuju Pemrograman dan F11.1 Alur Pengembangan Program dan Produk Digital.
+Latihan interaktif (kuis dengan petunjuk, bisa dipakai di HP): https://listyantidewi1.github.io/animasi-informatika/episodes/F11.2/episode-f112.html
+Alat untuk latihan di komputer: Python (IDLE, gratis, luring) https://www.python.org/downloads/; Google Colab (Python di browser) https://colab.research.google.com/
+Semua episode dan latihannya: https://listyantidewi1.github.io/animasi-informatika/
+Prasyarat: episode F11.0 Jembatan Menuju Pemrograman dan F11.1 Alur Pengembangan Program dan Produk Digital.
 
 Seri Animasi Informatika untuk SMP–SMA mengikuti CP 2025 (Keputusan Kepala BSKAP 046/H/KR/2025), unit F11.2 (28 JP). Tokoh: robot Kiko, Dito, dan Sinta. Semua gambar dibuat dengan kode; tanpa musik latar.
 
@@ -136,7 +148,8 @@ Seri Animasi Informatika untuk SMP–SMA mengikuti CP 2025 (Keputusan Kepala BSK
 📌 Dari Pseudocode ke Kode (1/2): Variabel, Tipe Data, Percabangan — materi Informatika kelas 11 (unit F11.2).
 Setelah menonton, kamu bisa menerjemahkan pseudocode menjadi program Python yang jalan: variabel, percabangan, perulangan, dan fungsi.
 Kata kunci materi ini: pseudocode ke python kelas 11; variabel tipe data percabangan python pemula; perulangan for while python dijelaskan langkah demi langkah; fungsi python parameter return contoh sederhana.
-Latihan interaktif (bisa luring di HP): berkas episode-f112.html. Tonton dulu episode F11.0 Jembatan Menuju Pemrograman dan F11.1 Alur Pengembangan Program dan Produk Digital bila belum.
+Latihan interaktif (bisa dipakai di HP): https://listyantidewi1.github.io/animasi-informatika/episodes/F11.2/episode-f112.html Tonton dulu episode F11.0 Jembatan Menuju Pemrograman dan F11.1 Alur Pengembangan Program dan Produk Digital bila belum.
+Alat untuk latihan di komputer: Python (IDLE, gratis, luring) https://www.python.org/downloads/; Google Colab (Python di browser) https://colab.research.google.com/
 Ada yang belum jelas? Tulis di komentar, pertanyaanmu membantu teman lain juga.
 ```
 
@@ -146,6 +159,7 @@ Ada yang belum jelas? Tulis di komentar, pertanyaanmu membantu teman lain juga.
 📌 Dari Pseudocode ke Kode (2/2): Perulangan dan Fungsi — materi Informatika kelas 11 (unit F11.2).
 Setelah menonton, kamu bisa menerjemahkan pseudocode menjadi program Python yang jalan: variabel, percabangan, perulangan, dan fungsi.
 Kata kunci materi ini: pseudocode ke python kelas 11; variabel tipe data percabangan python pemula; perulangan for while python dijelaskan langkah demi langkah; fungsi python parameter return contoh sederhana.
-Latihan interaktif (bisa luring di HP): berkas episode-f112.html. Tonton dulu episode F11.0 Jembatan Menuju Pemrograman dan F11.1 Alur Pengembangan Program dan Produk Digital bila belum.
+Latihan interaktif (bisa dipakai di HP): https://listyantidewi1.github.io/animasi-informatika/episodes/F11.2/episode-f112.html Tonton dulu episode F11.0 Jembatan Menuju Pemrograman dan F11.1 Alur Pengembangan Program dan Produk Digital bila belum.
+Alat untuk latihan di komputer: Python (IDLE, gratis, luring) https://www.python.org/downloads/; Google Colab (Python di browser) https://colab.research.google.com/
 Ada yang belum jelas? Tulis di komentar, pertanyaanmu membantu teman lain juga.
 ```

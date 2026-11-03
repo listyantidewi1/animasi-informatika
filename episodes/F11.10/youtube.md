@@ -25,7 +25,10 @@ Bab:
 1:29 Kebutuhan dan lingkup
 2:42 Desain alur data
 
-Latihan interaktif (kuis dengan petunjuk, bisa dipakai luring di HP): berkas episode-f1110.html di repositori proyek. Prasyarat: episode F11.1 Alur Pengembangan Program dan Produk Digital dan F11.5 Data Terbuka untuk Keputusan.
+Latihan interaktif (kuis dengan petunjuk, bisa dipakai di HP): https://listyantidewi1.github.io/animasi-informatika/episodes/F11.10/episode-f1110.html
+Alat untuk latihan di komputer: Python (IDLE, gratis, luring) https://www.python.org/downloads/; Google Colab (Python di browser) https://colab.research.google.com/; Google Sheets (daring) https://sheets.google.com/; LibreOffice Calc (gratis, luring) https://www.libreoffice.org/download/download-libreoffice/; Portal Satu Data Indonesia (data terbuka) https://data.go.id/
+Semua episode dan latihannya: https://listyantidewi1.github.io/animasi-informatika/
+Prasyarat: episode F11.1 Alur Pengembangan Program dan Produk Digital dan F11.5 Data Terbuka untuk Keputusan.
 
 Seri Animasi Informatika untuk SMP–SMA mengikuti CP 2025 (Keputusan Kepala BSKAP 046/H/KR/2025), unit F11.10 (20 JP). Tokoh: robot Kiko, Dito, dan Sinta. Semua gambar dibuat dengan kode; tanpa musik latar. Narasi: Kak Ceria (ElevenLabs).
 
@@ -58,7 +61,10 @@ Bab:
 2:30 Proyek kelompok
 3:05 Giliranmu
 
-Latihan interaktif (kuis dengan petunjuk, bisa dipakai luring di HP): berkas episode-f1110.html di repositori proyek. Prasyarat: episode F11.1 Alur Pengembangan Program dan Produk Digital dan F11.5 Data Terbuka untuk Keputusan.
+Latihan interaktif (kuis dengan petunjuk, bisa dipakai di HP): https://listyantidewi1.github.io/animasi-informatika/episodes/F11.10/episode-f1110.html
+Alat untuk latihan di komputer: Python (IDLE, gratis, luring) https://www.python.org/downloads/; Google Colab (Python di browser) https://colab.research.google.com/; Google Sheets (daring) https://sheets.google.com/; LibreOffice Calc (gratis, luring) https://www.libreoffice.org/download/download-libreoffice/; Portal Satu Data Indonesia (data terbuka) https://data.go.id/
+Semua episode dan latihannya: https://listyantidewi1.github.io/animasi-informatika/
+Prasyarat: episode F11.1 Alur Pengembangan Program dan Produk Digital dan F11.5 Data Terbuka untuk Keputusan.
 
 Seri Animasi Informatika untuk SMP–SMA mengikuti CP 2025 (Keputusan Kepala BSKAP 046/H/KR/2025), unit F11.10 (20 JP). Tokoh: robot Kiko, Dito, dan Sinta. Semua gambar dibuat dengan kode; tanpa musik latar. Narasi: Kak Ceria (ElevenLabs).
 
@@ -90,7 +96,10 @@ Bab:
 1:50 Kebutuhan dan lingkup
 3:21 Desain alur data
 
-Latihan interaktif (kuis dengan petunjuk, bisa dipakai luring di HP): berkas episode-f1110.html di repositori proyek. Prasyarat: episode F11.1 Alur Pengembangan Program dan Produk Digital dan F11.5 Data Terbuka untuk Keputusan.
+Latihan interaktif (kuis dengan petunjuk, bisa dipakai di HP): https://listyantidewi1.github.io/animasi-informatika/episodes/F11.10/episode-f1110.html
+Alat untuk latihan di komputer: Python (IDLE, gratis, luring) https://www.python.org/downloads/; Google Colab (Python di browser) https://colab.research.google.com/; Google Sheets (daring) https://sheets.google.com/; LibreOffice Calc (gratis, luring) https://www.libreoffice.org/download/download-libreoffice/; Portal Satu Data Indonesia (data terbuka) https://data.go.id/
+Semua episode dan latihannya: https://listyantidewi1.github.io/animasi-informatika/
+Prasyarat: episode F11.1 Alur Pengembangan Program dan Produk Digital dan F11.5 Data Terbuka untuk Keputusan.
 
 Seri Animasi Informatika untuk SMP–SMA mengikuti CP 2025 (Keputusan Kepala BSKAP 046/H/KR/2025), unit F11.10 (20 JP). Tokoh: robot Kiko, Dito, dan Sinta. Semua gambar dibuat dengan kode; tanpa musik latar.
 
@@ -123,7 +132,10 @@ Bab:
 2:58 Proyek kelompok
 3:39 Giliranmu
 
-Latihan interaktif (kuis dengan petunjuk, bisa dipakai luring di HP): berkas episode-f1110.html di repositori proyek. Prasyarat: episode F11.1 Alur Pengembangan Program dan Produk Digital dan F11.5 Data Terbuka untuk Keputusan.
+Latihan interaktif (kuis dengan petunjuk, bisa dipakai di HP): https://listyantidewi1.github.io/animasi-informatika/episodes/F11.10/episode-f1110.html
+Alat untuk latihan di komputer: Python (IDLE, gratis, luring) https://www.python.org/downloads/; Google Colab (Python di browser) https://colab.research.google.com/; Google Sheets (daring) https://sheets.google.com/; LibreOffice Calc (gratis, luring) https://www.libreoffice.org/download/download-libreoffice/; Portal Satu Data Indonesia (data terbuka) https://data.go.id/
+Semua episode dan latihannya: https://listyantidewi1.github.io/animasi-informatika/
+Prasyarat: episode F11.1 Alur Pengembangan Program dan Produk Digital dan F11.5 Data Terbuka untuk Keputusan.
 
 Seri Animasi Informatika untuk SMP–SMA mengikuti CP 2025 (Keputusan Kepala BSKAP 046/H/KR/2025), unit F11.10 (20 JP). Tokoh: robot Kiko, Dito, dan Sinta. Semua gambar dibuat dengan kode; tanpa musik latar.
 
@@ -136,7 +148,8 @@ Seri Animasi Informatika untuk SMP–SMA mengikuti CP 2025 (Keputusan Kepala BSK
 📌 Proyek: Aplikasi Berbasis Data Terbuka (1/2): Kebutuhan dan Desain Alur Data — materi Informatika kelas 11 (unit F11.10).
 Setelah menonton, kamu bisa membuat program Python kecil yang membaca file data terbuka, membersihkannya, dan memberi rekomendasi.
 Kata kunci materi ini: proyek python data csv kelas 11; membaca file csv dengan python pemula; proyek informatika data terbuka sma; contoh program python list dictionary sederhana.
-Latihan interaktif (bisa luring di HP): berkas episode-f1110.html. Tonton dulu episode F11.1 Alur Pengembangan Program dan Produk Digital dan F11.5 Data Terbuka untuk Keputusan bila belum.
+Latihan interaktif (bisa dipakai di HP): https://listyantidewi1.github.io/animasi-informatika/episodes/F11.10/episode-f1110.html Tonton dulu episode F11.1 Alur Pengembangan Program dan Produk Digital dan F11.5 Data Terbuka untuk Keputusan bila belum.
+Alat untuk latihan di komputer: Python (IDLE, gratis, luring) https://www.python.org/downloads/; Google Colab (Python di browser) https://colab.research.google.com/; Google Sheets (daring) https://sheets.google.com/; LibreOffice Calc (gratis, luring) https://www.libreoffice.org/download/download-libreoffice/; Portal Satu Data Indonesia (data terbuka) https://data.go.id/
 Ada yang belum jelas? Tulis di komentar, pertanyaanmu membantu teman lain juga.
 ```
 
@@ -146,6 +159,7 @@ Ada yang belum jelas? Tulis di komentar, pertanyaanmu membantu teman lain juga.
 📌 Proyek: Aplikasi Berbasis Data Terbuka (2/2): Kode, Uji, Rilis — materi Informatika kelas 11 (unit F11.10).
 Setelah menonton, kamu bisa membuat program Python kecil yang membaca file data terbuka, membersihkannya, dan memberi rekomendasi.
 Kata kunci materi ini: proyek python data csv kelas 11; membaca file csv dengan python pemula; proyek informatika data terbuka sma; contoh program python list dictionary sederhana.
-Latihan interaktif (bisa luring di HP): berkas episode-f1110.html. Tonton dulu episode F11.1 Alur Pengembangan Program dan Produk Digital dan F11.5 Data Terbuka untuk Keputusan bila belum.
+Latihan interaktif (bisa dipakai di HP): https://listyantidewi1.github.io/animasi-informatika/episodes/F11.10/episode-f1110.html Tonton dulu episode F11.1 Alur Pengembangan Program dan Produk Digital dan F11.5 Data Terbuka untuk Keputusan bila belum.
+Alat untuk latihan di komputer: Python (IDLE, gratis, luring) https://www.python.org/downloads/; Google Colab (Python di browser) https://colab.research.google.com/; Google Sheets (daring) https://sheets.google.com/; LibreOffice Calc (gratis, luring) https://www.libreoffice.org/download/download-libreoffice/; Portal Satu Data Indonesia (data terbuka) https://data.go.id/
 Ada yang belum jelas? Tulis di komentar, pertanyaanmu membantu teman lain juga.
 ```

@@ -25,7 +25,9 @@ Bab:
 1:26 Satu sandi, banyak pintu
 2:42 Verifikasi dua langkah
 
-Latihan interaktif (kuis dengan petunjuk, bisa dipakai luring di HP): berkas episode-e3.html di repositori proyek. Prasyarat: episode D7.3 Kata Sandi Aman dan Rekam Jejak Digital serta D9.2 Jaringan Lokal dan Internet.
+Latihan interaktif (kuis dengan petunjuk, bisa dipakai di HP): https://listyantidewi1.github.io/animasi-informatika/episodes/E.3/episode-e3.html
+Semua episode dan latihannya: https://listyantidewi1.github.io/animasi-informatika/
+Prasyarat: episode D7.3 Kata Sandi Aman dan Rekam Jejak Digital serta D9.2 Jaringan Lokal dan Internet.
 
 Seri Animasi Informatika untuk SMP–SMA mengikuti CP 2025 (Keputusan Kepala BSKAP 046/H/KR/2025), unit E.3 (6 JP). Tokoh: robot Kiko, Dito, dan Sinta. Semua gambar dibuat dengan kode; tanpa musik latar. Narasi: Kak Ceria (ElevenLabs).
 
@@ -58,7 +60,9 @@ Bab:
 2:26 Wi-Fi publik dan daftar periksa
 3:05 Giliranmu
 
-Latihan interaktif (kuis dengan petunjuk, bisa dipakai luring di HP): berkas episode-e3.html di repositori proyek. Prasyarat: episode D7.3 Kata Sandi Aman dan Rekam Jejak Digital serta D9.2 Jaringan Lokal dan Internet.
+Latihan interaktif (kuis dengan petunjuk, bisa dipakai di HP): https://listyantidewi1.github.io/animasi-informatika/episodes/E.3/episode-e3.html
+Semua episode dan latihannya: https://listyantidewi1.github.io/animasi-informatika/
+Prasyarat: episode D7.3 Kata Sandi Aman dan Rekam Jejak Digital serta D9.2 Jaringan Lokal dan Internet.
 
 Seri Animasi Informatika untuk SMP–SMA mengikuti CP 2025 (Keputusan Kepala BSKAP 046/H/KR/2025), unit E.3 (6 JP). Tokoh: robot Kiko, Dito, dan Sinta. Semua gambar dibuat dengan kode; tanpa musik latar. Narasi: Kak Ceria (ElevenLabs).
 
@@ -90,7 +94,9 @@ Bab:
 1:49 Satu sandi, banyak pintu
 3:25 Verifikasi dua langkah
 
-Latihan interaktif (kuis dengan petunjuk, bisa dipakai luring di HP): berkas episode-e3.html di repositori proyek. Prasyarat: episode D7.3 Kata Sandi Aman dan Rekam Jejak Digital serta D9.2 Jaringan Lokal dan Internet.
+Latihan interaktif (kuis dengan petunjuk, bisa dipakai di HP): https://listyantidewi1.github.io/animasi-informatika/episodes/E.3/episode-e3.html
+Semua episode dan latihannya: https://listyantidewi1.github.io/animasi-informatika/
+Prasyarat: episode D7.3 Kata Sandi Aman dan Rekam Jejak Digital serta D9.2 Jaringan Lokal dan Internet.
 
 Seri Animasi Informatika untuk SMP–SMA mengikuti CP 2025 (Keputusan Kepala BSKAP 046/H/KR/2025), unit E.3 (6 JP). Tokoh: robot Kiko, Dito, dan Sinta. Semua gambar dibuat dengan kode; tanpa musik latar.
 
@@ -123,7 +129,9 @@ Bab:
 3:01 Wi-Fi publik dan daftar periksa
 3:50 Giliranmu
 
-Latihan interaktif (kuis dengan petunjuk, bisa dipakai luring di HP): berkas episode-e3.html di repositori proyek. Prasyarat: episode D7.3 Kata Sandi Aman dan Rekam Jejak Digital serta D9.2 Jaringan Lokal dan Internet.
+Latihan interaktif (kuis dengan petunjuk, bisa dipakai di HP): https://listyantidewi1.github.io/animasi-informatika/episodes/E.3/episode-e3.html
+Semua episode dan latihannya: https://listyantidewi1.github.io/animasi-informatika/
+Prasyarat: episode D7.3 Kata Sandi Aman dan Rekam Jejak Digital serta D9.2 Jaringan Lokal dan Internet.
 
 Seri Animasi Informatika untuk SMP–SMA mengikuti CP 2025 (Keputusan Kepala BSKAP 046/H/KR/2025), unit E.3 (6 JP). Tokoh: robot Kiko, Dito, dan Sinta. Semua gambar dibuat dengan kode; tanpa musik latar.
 
@@ -136,7 +144,7 @@ Seri Animasi Informatika untuk SMP–SMA mengikuti CP 2025 (Keputusan Kepala BSK
 📌 Keamanan Akun dan Jaringan Dasar (1/2): Password Manager dan Verifikasi Dua Langkah — materi Informatika kelas 10 (unit E.3).
 Setelah menonton, kamu bisa memakai password manager, verifikasi dua langkah, memeriksa sesi akun, dan mengamankan Wi-Fi rumah.
 Kata kunci materi ini: verifikasi dua langkah cara kerja; password manager untuk pelajar; cara mengamankan wifi rumah ganti sandi router; keamanan akun informatika kelas 10.
-Latihan interaktif (bisa luring di HP): berkas episode-e3.html. Tonton dulu episode D7.3 Kata Sandi Aman dan Rekam Jejak Digital serta D9.2 Jaringan Lokal dan Internet bila belum.
+Latihan interaktif (bisa dipakai di HP): https://listyantidewi1.github.io/animasi-informatika/episodes/E.3/episode-e3.html Tonton dulu episode D7.3 Kata Sandi Aman dan Rekam Jejak Digital serta D9.2 Jaringan Lokal dan Internet bila belum.
 Ada yang belum jelas? Tulis di komentar, pertanyaanmu membantu teman lain juga.
 ```
 
@@ -146,6 +154,6 @@ Ada yang belum jelas? Tulis di komentar, pertanyaanmu membantu teman lain juga.
 📌 Keamanan Akun dan Jaringan Dasar (2/2): Privasi Akun dan Jaringan Rumah — materi Informatika kelas 10 (unit E.3).
 Setelah menonton, kamu bisa memakai password manager, verifikasi dua langkah, memeriksa sesi akun, dan mengamankan Wi-Fi rumah.
 Kata kunci materi ini: verifikasi dua langkah cara kerja; password manager untuk pelajar; cara mengamankan wifi rumah ganti sandi router; keamanan akun informatika kelas 10.
-Latihan interaktif (bisa luring di HP): berkas episode-e3.html. Tonton dulu episode D7.3 Kata Sandi Aman dan Rekam Jejak Digital serta D9.2 Jaringan Lokal dan Internet bila belum.
+Latihan interaktif (bisa dipakai di HP): https://listyantidewi1.github.io/animasi-informatika/episodes/E.3/episode-e3.html Tonton dulu episode D7.3 Kata Sandi Aman dan Rekam Jejak Digital serta D9.2 Jaringan Lokal dan Internet bila belum.
 Ada yang belum jelas? Tulis di komentar, pertanyaanmu membantu teman lain juga.
 ```

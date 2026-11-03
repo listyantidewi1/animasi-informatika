@@ -25,7 +25,10 @@ Bab:
 1:23 Topologi
 2:34 Klien–server dan peer-to-peer
 
-Latihan interaktif (kuis dengan petunjuk, bisa dipakai luring di HP): berkas episode-f117.html di repositori proyek. Prasyarat: episode D9.2 Jaringan Lokal dan Internet dan E.3 Keamanan Akun dan Jaringan Dasar.
+Latihan interaktif (kuis dengan petunjuk, bisa dipakai di HP): https://listyantidewi1.github.io/animasi-informatika/episodes/F11.7/episode-f117.html
+Alat untuk latihan di komputer: Python (IDLE, gratis, luring) https://www.python.org/downloads/; Google Colab (Python di browser) https://colab.research.google.com/
+Semua episode dan latihannya: https://listyantidewi1.github.io/animasi-informatika/
+Prasyarat: episode D9.2 Jaringan Lokal dan Internet dan E.3 Keamanan Akun dan Jaringan Dasar.
 
 Seri Animasi Informatika untuk SMP–SMA mengikuti CP 2025 (Keputusan Kepala BSKAP 046/H/KR/2025), unit F11.7 (16 JP). Tokoh: robot Kiko, Dito, dan Sinta. Semua gambar dibuat dengan kode; tanpa musik latar. Narasi: Kak Ceria (ElevenLabs).
 
@@ -58,7 +61,10 @@ Bab:
 2:18 Mengirim data sungguhan
 2:56 Giliranmu
 
-Latihan interaktif (kuis dengan petunjuk, bisa dipakai luring di HP): berkas episode-f117.html di repositori proyek. Prasyarat: episode D9.2 Jaringan Lokal dan Internet dan E.3 Keamanan Akun dan Jaringan Dasar.
+Latihan interaktif (kuis dengan petunjuk, bisa dipakai di HP): https://listyantidewi1.github.io/animasi-informatika/episodes/F11.7/episode-f117.html
+Alat untuk latihan di komputer: Python (IDLE, gratis, luring) https://www.python.org/downloads/; Google Colab (Python di browser) https://colab.research.google.com/
+Semua episode dan latihannya: https://listyantidewi1.github.io/animasi-informatika/
+Prasyarat: episode D9.2 Jaringan Lokal dan Internet dan E.3 Keamanan Akun dan Jaringan Dasar.
 
 Seri Animasi Informatika untuk SMP–SMA mengikuti CP 2025 (Keputusan Kepala BSKAP 046/H/KR/2025), unit F11.7 (16 JP). Tokoh: robot Kiko, Dito, dan Sinta. Semua gambar dibuat dengan kode; tanpa musik latar. Narasi: Kak Ceria (ElevenLabs).
 
@@ -90,7 +96,10 @@ Bab:
 1:43 Topologi
 3:08 Klien–server dan peer-to-peer
 
-Latihan interaktif (kuis dengan petunjuk, bisa dipakai luring di HP): berkas episode-f117.html di repositori proyek. Prasyarat: episode D9.2 Jaringan Lokal dan Internet dan E.3 Keamanan Akun dan Jaringan Dasar.
+Latihan interaktif (kuis dengan petunjuk, bisa dipakai di HP): https://listyantidewi1.github.io/animasi-informatika/episodes/F11.7/episode-f117.html
+Alat untuk latihan di komputer: Python (IDLE, gratis, luring) https://www.python.org/downloads/; Google Colab (Python di browser) https://colab.research.google.com/
+Semua episode dan latihannya: https://listyantidewi1.github.io/animasi-informatika/
+Prasyarat: episode D9.2 Jaringan Lokal dan Internet dan E.3 Keamanan Akun dan Jaringan Dasar.
 
 Seri Animasi Informatika untuk SMP–SMA mengikuti CP 2025 (Keputusan Kepala BSKAP 046/H/KR/2025), unit F11.7 (16 JP). Tokoh: robot Kiko, Dito, dan Sinta. Semua gambar dibuat dengan kode; tanpa musik latar.
 
@@ -123,7 +132,10 @@ Bab:
 2:47 Mengirim data sungguhan
 3:35 Giliranmu
 
-Latihan interaktif (kuis dengan petunjuk, bisa dipakai luring di HP): berkas episode-f117.html di repositori proyek. Prasyarat: episode D9.2 Jaringan Lokal dan Internet dan E.3 Keamanan Akun dan Jaringan Dasar.
+Latihan interaktif (kuis dengan petunjuk, bisa dipakai di HP): https://listyantidewi1.github.io/animasi-informatika/episodes/F11.7/episode-f117.html
+Alat untuk latihan di komputer: Python (IDLE, gratis, luring) https://www.python.org/downloads/; Google Colab (Python di browser) https://colab.research.google.com/
+Semua episode dan latihannya: https://listyantidewi1.github.io/animasi-informatika/
+Prasyarat: episode D9.2 Jaringan Lokal dan Internet dan E.3 Keamanan Akun dan Jaringan Dasar.
 
 Seri Animasi Informatika untuk SMP–SMA mengikuti CP 2025 (Keputusan Kepala BSKAP 046/H/KR/2025), unit F11.7 (16 JP). Tokoh: robot Kiko, Dito, dan Sinta. Semua gambar dibuat dengan kode; tanpa musik latar.
 
@@ -136,7 +148,8 @@ Seri Animasi Informatika untuk SMP–SMA mengikuti CP 2025 (Keputusan Kepala BSK
 📌 Model Jaringan dan Pengiriman Data (1/2): Topologi dan Model Jaringan — materi Informatika kelas 11 (unit F11.7).
 Setelah menonton, kamu bisa menjelaskan topologi, klien–server, dan lapisan TCP/IP, lalu mengirim data antarperangkat.
 Kata kunci materi ini: lapisan tcp ip dijelaskan sederhana kelas 11; topologi jaringan bintang mesh bus pohon; klien server vs peer to peer contoh; cara paket data dikirim di jaringan.
-Latihan interaktif (bisa luring di HP): berkas episode-f117.html. Tonton dulu episode D9.2 Jaringan Lokal dan Internet dan E.3 Keamanan Akun dan Jaringan Dasar bila belum.
+Latihan interaktif (bisa dipakai di HP): https://listyantidewi1.github.io/animasi-informatika/episodes/F11.7/episode-f117.html Tonton dulu episode D9.2 Jaringan Lokal dan Internet dan E.3 Keamanan Akun dan Jaringan Dasar bila belum.
+Alat untuk latihan di komputer: Python (IDLE, gratis, luring) https://www.python.org/downloads/; Google Colab (Python di browser) https://colab.research.google.com/
 Ada yang belum jelas? Tulis di komentar, pertanyaanmu membantu teman lain juga.
 ```
 
@@ -146,6 +159,7 @@ Ada yang belum jelas? Tulis di komentar, pertanyaanmu membantu teman lain juga.
 📌 Model Jaringan dan Pengiriman Data (2/2): Lapisan TCP/IP dan Perjalanan Paket — materi Informatika kelas 11 (unit F11.7).
 Setelah menonton, kamu bisa menjelaskan topologi, klien–server, dan lapisan TCP/IP, lalu mengirim data antarperangkat.
 Kata kunci materi ini: lapisan tcp ip dijelaskan sederhana kelas 11; topologi jaringan bintang mesh bus pohon; klien server vs peer to peer contoh; cara paket data dikirim di jaringan.
-Latihan interaktif (bisa luring di HP): berkas episode-f117.html. Tonton dulu episode D9.2 Jaringan Lokal dan Internet dan E.3 Keamanan Akun dan Jaringan Dasar bila belum.
+Latihan interaktif (bisa dipakai di HP): https://listyantidewi1.github.io/animasi-informatika/episodes/F11.7/episode-f117.html Tonton dulu episode D9.2 Jaringan Lokal dan Internet dan E.3 Keamanan Akun dan Jaringan Dasar bila belum.
+Alat untuk latihan di komputer: Python (IDLE, gratis, luring) https://www.python.org/downloads/; Google Colab (Python di browser) https://colab.research.google.com/
 Ada yang belum jelas? Tulis di komentar, pertanyaanmu membantu teman lain juga.
 ```

@@ -1,12 +1,17 @@
 """Judul dan deskripsi YouTube untuk tiap bagian/versi video -> <episode>/youtube.md
+(memuat link halaman latihan di GitHub Pages dan alat luar dari alat_luar.json)
   python3 episodes/_alat/youtube.py D7.0
 Mengambil ringkasan dari kunci "youtube" di script.json ({"ringkas": ..., "belajar": [...], "bagian": {"D7.0a": "Mouse dan Keyboard", ...}})
 dan penanda waktu bab dari timeline tiap versi (suara: timeline.json, teks: timeline-teks.json)."""
-import os, sys
+import json, os, sys
 import episode as E
 
 ROOT, _ = E.find_root(sys.argv[1:])
 S = E.load_script(ROOT); Y = S.get("youtube", {})
+# link halaman latihan (GitHub Pages) dan alat luar yang dipakai latihan di komputer: episodes/_alat/alat_luar.json
+AL = json.load(open(os.path.join(os.path.dirname(os.path.abspath(__file__)), "alat_luar.json"), encoding="utf-8"))
+LINK = f"{AL['situs']}/episodes/{S['episode']}/episode-{E.code_slug(S['episode'])}.html"
+ALAT = [x for k in AL["episode"].get(S["episode"], []) for x in AL["alat"][k]]
 KELAS = {"D7": "Kelas 7", "D8": "Kelas 8", "D9": "Kelas 9", "E": "Kelas 10", "F11": "Kelas 11", "F12": "Kelas 12"}.get(S["episode"].split(".")[0], "")
 def mmss(t): t = int(round(t)); return f"{t // 60}:{t % 60:02d}"
 out = [f"# Judul dan deskripsi YouTube — {S['episode']} {S['title']}\n"]
@@ -28,7 +33,8 @@ for variant, label in (("suara", ""), ("teks", " (versi teks, tanpa suara)")):
         if Y.get("belajar"): lines += ["Setelah menonton, murid bisa:"] + [f"• {x}" for x in Y["belajar"]] + [""]
         if Y.get("cari"): lines += ["Video ini cocok untuk yang mencari: " + "; ".join(Y["cari"]) + ".", ""]
         lines += ["Bab:"] + chapters + ["",
-                  f"Latihan interaktif (kuis dengan petunjuk, bisa dipakai luring di HP): berkas episode-{E.code_slug(S['episode'])}.html di repositori proyek." + (f" Prasyarat: {Y['prasyarat']}." if Y.get("prasyarat") else " Tidak ada prasyarat."),
+                  f"Latihan interaktif (kuis dengan petunjuk, bisa dipakai di HP): {LINK}"] + ([f"Alat untuk latihan di komputer: " + "; ".join(f"{n} {u}" for n, u in ALAT)] if ALAT else []) + [
+                  f"Semua episode dan latihannya: {AL['situs']}/", (f"Prasyarat: {Y['prasyarat']}." if Y.get("prasyarat") else "Tidak ada prasyarat."),
                   "", f"Seri Animasi Informatika untuk SMP–SMA mengikuti CP 2025 (Keputusan Kepala BSKAP 046/H/KR/2025), unit {S['episode']} ({Y.get('jp', '?')} JP). Tokoh: robot Kiko, Dito, dan Sinta. Semua gambar dibuat dengan kode; tanpa musik latar. Narasi: Kak Ceria (ElevenLabs)." if variant == "suara" else
                   f"Seri Animasi Informatika untuk SMP–SMA mengikuti CP 2025 (Keputusan Kepala BSKAP 046/H/KR/2025), unit {S['episode']} ({Y.get('jp', '?')} JP). Tokoh: robot Kiko, Dito, dan Sinta. Semua gambar dibuat dengan kode; tanpa musik latar.",
                   "", "#Informatika #KurikulumMerdeka #" + S["episode"].replace(".", "") + " " + " ".join(Y.get("tagar", [])), "```", ""]
@@ -39,7 +45,8 @@ for pi, (name, p) in enumerate(parts, 1):
     pin = [f"📌 {S['title']}" + (f" ({pi}/{len(parts)}): {sub}" if len(parts) > 1 else "") + " — materi Informatika " + KELAS.lower() + " (unit " + S["episode"] + ")."]
     if S.get("hook"): pin.append("Setelah menonton, kamu bisa " + S["hook"])
     if Y.get("cari"): pin.append("Kata kunci materi ini: " + "; ".join(Y["cari"]) + ".")
-    pin.append(f"Latihan interaktif (bisa luring di HP): berkas episode-{E.code_slug(S['episode'])}.html." + (f" Tonton dulu {Y['prasyarat']} bila belum." if Y.get("prasyarat") else ""))
+    pin.append(f"Latihan interaktif (bisa dipakai di HP): {LINK}" + (f" Tonton dulu {Y['prasyarat']} bila belum." if Y.get("prasyarat") else ""))
+    if ALAT: pin.append("Alat untuk latihan di komputer: " + "; ".join(f"{n} {u}" for n, u in ALAT))
     pin.append("Ada yang belum jelas? Tulis di komentar, pertanyaanmu membantu teman lain juga.")
     out += [f"## Komentar tersemat (pin) — {name}", "", "```", "\n".join(pin), "```", ""]
 open(os.path.join(ROOT, "youtube.md"), "w", encoding="utf-8").write("\n".join(out))

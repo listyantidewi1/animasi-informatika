@@ -25,7 +25,9 @@ Bab:
 1:17 Rencana: tiga pertanyaan dan storyboard
 2:30 Produksi dengan HP
 
-Latihan interaktif (kuis dengan petunjuk, bisa dipakai luring di HP): berkas episode-d95.html di repositori proyek. Prasyarat: episode D7.8 Proyek Panduan Digital dan D9.4 Data Pribadi, Identitas Digital, dan Kesadaran Penuh.
+Latihan interaktif (kuis dengan petunjuk, bisa dipakai di HP): https://listyantidewi1.github.io/animasi-informatika/episodes/D9.5/episode-d95.html
+Semua episode dan latihannya: https://listyantidewi1.github.io/animasi-informatika/
+Prasyarat: episode D7.8 Proyek Panduan Digital dan D9.4 Data Pribadi, Identitas Digital, dan Kesadaran Penuh.
 
 Seri Animasi Informatika untuk SMP–SMA mengikuti CP 2025 (Keputusan Kepala BSKAP 046/H/KR/2025), unit D9.5 (6 JP). Tokoh: robot Kiko, Dito, dan Sinta. Semua gambar dibuat dengan kode; tanpa musik latar. Narasi: Kak Ceria (ElevenLabs).
 
@@ -58,7 +60,9 @@ Bab:
 2:18 Tanggung jawab penyebar
 2:56 Giliranmu
 
-Latihan interaktif (kuis dengan petunjuk, bisa dipakai luring di HP): berkas episode-d95.html di repositori proyek. Prasyarat: episode D7.8 Proyek Panduan Digital dan D9.4 Data Pribadi, Identitas Digital, dan Kesadaran Penuh.
+Latihan interaktif (kuis dengan petunjuk, bisa dipakai di HP): https://listyantidewi1.github.io/animasi-informatika/episodes/D9.5/episode-d95.html
+Semua episode dan latihannya: https://listyantidewi1.github.io/animasi-informatika/
+Prasyarat: episode D7.8 Proyek Panduan Digital dan D9.4 Data Pribadi, Identitas Digital, dan Kesadaran Penuh.
 
 Seri Animasi Informatika untuk SMP–SMA mengikuti CP 2025 (Keputusan Kepala BSKAP 046/H/KR/2025), unit D9.5 (6 JP). Tokoh: robot Kiko, Dito, dan Sinta. Semua gambar dibuat dengan kode; tanpa musik latar. Narasi: Kak Ceria (ElevenLabs).
 
@@ -90,7 +94,9 @@ Bab:
 1:34 Rencana: tiga pertanyaan dan storyboard
 3:00 Produksi dengan HP
 
-Latihan interaktif (kuis dengan petunjuk, bisa dipakai luring di HP): berkas episode-d95.html di repositori proyek. Prasyarat: episode D7.8 Proyek Panduan Digital dan D9.4 Data Pribadi, Identitas Digital, dan Kesadaran Penuh.
+Latihan interaktif (kuis dengan petunjuk, bisa dipakai di HP): https://listyantidewi1.github.io/animasi-informatika/episodes/D9.5/episode-d95.html
+Semua episode dan latihannya: https://listyantidewi1.github.io/animasi-informatika/
+Prasyarat: episode D7.8 Proyek Panduan Digital dan D9.4 Data Pribadi, Identitas Digital, dan Kesadaran Penuh.
 
 Seri Animasi Informatika untuk SMP–SMA mengikuti CP 2025 (Keputusan Kepala BSKAP 046/H/KR/2025), unit D9.5 (6 JP). Tokoh: robot Kiko, Dito, dan Sinta. Semua gambar dibuat dengan kode; tanpa musik latar.
 
@@ -123,7 +129,9 @@ Bab:
 2:52 Tanggung jawab penyebar
 3:40 Giliranmu
 
-Latihan interaktif (kuis dengan petunjuk, bisa dipakai luring di HP): berkas episode-d95.html di repositori proyek. Prasyarat: episode D7.8 Proyek Panduan Digital dan D9.4 Data Pribadi, Identitas Digital, dan Kesadaran Penuh.
+Latihan interaktif (kuis dengan petunjuk, bisa dipakai di HP): https://listyantidewi1.github.io/animasi-informatika/episodes/D9.5/episode-d95.html
+Semua episode dan latihannya: https://listyantidewi1.github.io/animasi-informatika/
+Prasyarat: episode D7.8 Proyek Panduan Digital dan D9.4 Data Pribadi, Identitas Digital, dan Kesadaran Penuh.
 
 Seri Animasi Informatika untuk SMP–SMA mengikuti CP 2025 (Keputusan Kepala BSKAP 046/H/KR/2025), unit D9.5 (6 JP). Tokoh: robot Kiko, Dito, dan Sinta. Semua gambar dibuat dengan kode; tanpa musik latar.
 
@@ -133,19 +141,19 @@ Seri Animasi Informatika untuk SMP–SMA mengikuti CP 2025 (Keputusan Kepala BSK
 ## Komentar tersemat (pin) — D9.5a
 
 ```
-📌 Produksi dan Diseminasi Konten Digital (1/2): Dari Ide ke Rencana dan Produksi — materi Informatika kelas 7 (unit D9.5).
+📌 Produksi dan Diseminasi Konten Digital (1/2): Dari Ide ke Rencana dan Produksi — materi Informatika kelas 9 (unit D9.5).
 Setelah menonton, kamu bisa merencanakan konten dengan tiga pertanyaan, menyusun storyboard, dan menyebarkannya dengan jujur dan aman.
 Kata kunci materi ini: cara membuat konten digital untuk pelajar; storyboard video kelas 9; produksi dan diseminasi konten digital informatika; cara membuat video edukasi dengan hp.
-Latihan interaktif (bisa luring di HP): berkas episode-d95.html. Tonton dulu episode D7.8 Proyek Panduan Digital dan D9.4 Data Pribadi, Identitas Digital, dan Kesadaran Penuh bila belum.
+Latihan interaktif (bisa dipakai di HP): https://listyantidewi1.github.io/animasi-informatika/episodes/D9.5/episode-d95.html Tonton dulu episode D7.8 Proyek Panduan Digital dan D9.4 Data Pribadi, Identitas Digital, dan Kesadaran Penuh bila belum.
 Ada yang belum jelas? Tulis di komentar, pertanyaanmu membantu teman lain juga.
 ```
 
 ## Komentar tersemat (pin) — D9.5b
 
 ```
-📌 Produksi dan Diseminasi Konten Digital (2/2): Sebarkan dengan Bertanggung Jawab — materi Informatika kelas 7 (unit D9.5).
+📌 Produksi dan Diseminasi Konten Digital (2/2): Sebarkan dengan Bertanggung Jawab — materi Informatika kelas 9 (unit D9.5).
 Setelah menonton, kamu bisa merencanakan konten dengan tiga pertanyaan, menyusun storyboard, dan menyebarkannya dengan jujur dan aman.
 Kata kunci materi ini: cara membuat konten digital untuk pelajar; storyboard video kelas 9; produksi dan diseminasi konten digital informatika; cara membuat video edukasi dengan hp.
-Latihan interaktif (bisa luring di HP): berkas episode-d95.html. Tonton dulu episode D7.8 Proyek Panduan Digital dan D9.4 Data Pribadi, Identitas Digital, dan Kesadaran Penuh bila belum.
+Latihan interaktif (bisa dipakai di HP): https://listyantidewi1.github.io/animasi-informatika/episodes/D9.5/episode-d95.html Tonton dulu episode D7.8 Proyek Panduan Digital dan D9.4 Data Pribadi, Identitas Digital, dan Kesadaran Penuh bila belum.
 Ada yang belum jelas? Tulis di komentar, pertanyaanmu membantu teman lain juga.
 ```

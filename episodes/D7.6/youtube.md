@@ -25,7 +25,10 @@ Bab:
 1:06 Daftar
 2:00 Tabel
 
-Latihan interaktif (kuis dengan petunjuk, bisa dipakai luring di HP): berkas episode-d76.html di repositori proyek. Prasyarat: episode D7.1 Berpikir Komputasional di Sekitar Kita.
+Latihan interaktif (kuis dengan petunjuk, bisa dipakai di HP): https://listyantidewi1.github.io/animasi-informatika/episodes/D7.6/episode-d76.html
+Alat untuk latihan di komputer: Google Sheets (daring) https://sheets.google.com/; LibreOffice Calc (gratis, luring) https://www.libreoffice.org/download/download-libreoffice/
+Semua episode dan latihannya: https://listyantidewi1.github.io/animasi-informatika/
+Prasyarat: episode D7.1 Berpikir Komputasional di Sekitar Kita.
 
 Seri Animasi Informatika untuk SMP–SMA mengikuti CP 2025 (Keputusan Kepala BSKAP 046/H/KR/2025), unit D7.6 (8 JP). Tokoh: robot Kiko, Dito, dan Sinta. Semua gambar dibuat dengan kode; tanpa musik latar. Narasi: Kak Ceria (ElevenLabs).
 
@@ -58,7 +61,10 @@ Bab:
 1:42 Hierarki
 2:50 Giliranmu
 
-Latihan interaktif (kuis dengan petunjuk, bisa dipakai luring di HP): berkas episode-d76.html di repositori proyek. Prasyarat: episode D7.1 Berpikir Komputasional di Sekitar Kita.
+Latihan interaktif (kuis dengan petunjuk, bisa dipakai di HP): https://listyantidewi1.github.io/animasi-informatika/episodes/D7.6/episode-d76.html
+Alat untuk latihan di komputer: Google Sheets (daring) https://sheets.google.com/; LibreOffice Calc (gratis, luring) https://www.libreoffice.org/download/download-libreoffice/
+Semua episode dan latihannya: https://listyantidewi1.github.io/animasi-informatika/
+Prasyarat: episode D7.1 Berpikir Komputasional di Sekitar Kita.
 
 Seri Animasi Informatika untuk SMP–SMA mengikuti CP 2025 (Keputusan Kepala BSKAP 046/H/KR/2025), unit D7.6 (8 JP). Tokoh: robot Kiko, Dito, dan Sinta. Semua gambar dibuat dengan kode; tanpa musik latar. Narasi: Kak Ceria (ElevenLabs).
 
@@ -90,7 +96,10 @@ Bab:
 1:22 Daftar
 2:26 Tabel
 
-Latihan interaktif (kuis dengan petunjuk, bisa dipakai luring di HP): berkas episode-d76.html di repositori proyek. Prasyarat: episode D7.1 Berpikir Komputasional di Sekitar Kita.
+Latihan interaktif (kuis dengan petunjuk, bisa dipakai di HP): https://listyantidewi1.github.io/animasi-informatika/episodes/D7.6/episode-d76.html
+Alat untuk latihan di komputer: Google Sheets (daring) https://sheets.google.com/; LibreOffice Calc (gratis, luring) https://www.libreoffice.org/download/download-libreoffice/
+Semua episode dan latihannya: https://listyantidewi1.github.io/animasi-informatika/
+Prasyarat: episode D7.1 Berpikir Komputasional di Sekitar Kita.
 
 Seri Animasi Informatika untuk SMP–SMA mengikuti CP 2025 (Keputusan Kepala BSKAP 046/H/KR/2025), unit D7.6 (8 JP). Tokoh: robot Kiko, Dito, dan Sinta. Semua gambar dibuat dengan kode; tanpa musik latar.
 
@@ -123,7 +132,10 @@ Bab:
 2:06 Hierarki
 3:31 Giliranmu
 
-Latihan interaktif (kuis dengan petunjuk, bisa dipakai luring di HP): berkas episode-d76.html di repositori proyek. Prasyarat: episode D7.1 Berpikir Komputasional di Sekitar Kita.
+Latihan interaktif (kuis dengan petunjuk, bisa dipakai di HP): https://listyantidewi1.github.io/animasi-informatika/episodes/D7.6/episode-d76.html
+Alat untuk latihan di komputer: Google Sheets (daring) https://sheets.google.com/; LibreOffice Calc (gratis, luring) https://www.libreoffice.org/download/download-libreoffice/
+Semua episode dan latihannya: https://listyantidewi1.github.io/animasi-informatika/
+Prasyarat: episode D7.1 Berpikir Komputasional di Sekitar Kita.
 
 Seri Animasi Informatika untuk SMP–SMA mengikuti CP 2025 (Keputusan Kepala BSKAP 046/H/KR/2025), unit D7.6 (8 JP). Tokoh: robot Kiko, Dito, dan Sinta. Semua gambar dibuat dengan kode; tanpa musik latar.
 
@@ -136,7 +148,8 @@ Seri Animasi Informatika untuk SMP–SMA mengikuti CP 2025 (Keputusan Kepala BSK
 📌 Data Terstruktur di Sekitar Kita (1/2): Daftar dan Tabel — materi Informatika kelas 7 (unit D7.6).
 Setelah menonton, kamu bisa membedakan antrean dan tumpukan, membaca tabel, dan mengenali hierarki folder.
 Kata kunci materi ini: data terstruktur kelas 7; antrean dan tumpukan informatika SMP; contoh daftar, tabel, antrean, tumpukan, hierarki; struktur data dalam kehidupan sehari-hari.
-Latihan interaktif (bisa luring di HP): berkas episode-d76.html. Tonton dulu episode D7.1 Berpikir Komputasional di Sekitar Kita bila belum.
+Latihan interaktif (bisa dipakai di HP): https://listyantidewi1.github.io/animasi-informatika/episodes/D7.6/episode-d76.html Tonton dulu episode D7.1 Berpikir Komputasional di Sekitar Kita bila belum.
+Alat untuk latihan di komputer: Google Sheets (daring) https://sheets.google.com/; LibreOffice Calc (gratis, luring) https://www.libreoffice.org/download/download-libreoffice/
 Ada yang belum jelas? Tulis di komentar, pertanyaanmu membantu teman lain juga.
 ```
 
@@ -146,6 +159,7 @@ Ada yang belum jelas? Tulis di komentar, pertanyaanmu membantu teman lain juga.
 📌 Data Terstruktur di Sekitar Kita (2/2): Antrean, Tumpukan, dan Hierarki — materi Informatika kelas 7 (unit D7.6).
 Setelah menonton, kamu bisa membedakan antrean dan tumpukan, membaca tabel, dan mengenali hierarki folder.
 Kata kunci materi ini: data terstruktur kelas 7; antrean dan tumpukan informatika SMP; contoh daftar, tabel, antrean, tumpukan, hierarki; struktur data dalam kehidupan sehari-hari.
-Latihan interaktif (bisa luring di HP): berkas episode-d76.html. Tonton dulu episode D7.1 Berpikir Komputasional di Sekitar Kita bila belum.
+Latihan interaktif (bisa dipakai di HP): https://listyantidewi1.github.io/animasi-informatika/episodes/D7.6/episode-d76.html Tonton dulu episode D7.1 Berpikir Komputasional di Sekitar Kita bila belum.
+Alat untuk latihan di komputer: Google Sheets (daring) https://sheets.google.com/; LibreOffice Calc (gratis, luring) https://www.libreoffice.org/download/download-libreoffice/
 Ada yang belum jelas? Tulis di komentar, pertanyaanmu membantu teman lain juga.
 ```

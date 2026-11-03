@@ -25,7 +25,9 @@ Bab:
 1:24 Profil pengguna dan beban kerja
 2:33 Komponen dan membaca spesifikasi
 
-Latihan interaktif (kuis dengan petunjuk, bisa dipakai luring di HP): berkas episode-f119.html di repositori proyek. Prasyarat: episode D7.2 Mengenal Komputer dan E.2 Sistem Operasi.
+Latihan interaktif (kuis dengan petunjuk, bisa dipakai di HP): https://listyantidewi1.github.io/animasi-informatika/episodes/F11.9/episode-f119.html
+Semua episode dan latihannya: https://listyantidewi1.github.io/animasi-informatika/
+Prasyarat: episode D7.2 Mengenal Komputer dan E.2 Sistem Operasi.
 
 Seri Animasi Informatika untuk SMP–SMA mengikuti CP 2025 (Keputusan Kepala BSKAP 046/H/KR/2025), unit F11.9 (8 JP). Tokoh: robot Kiko, Dito, dan Sinta. Semua gambar dibuat dengan kode; tanpa musik latar. Narasi: Kak Ceria (ElevenLabs).
 
@@ -58,7 +60,9 @@ Bab:
 2:34 Rekomendasi dan jebakan
 3:12 Giliranmu
 
-Latihan interaktif (kuis dengan petunjuk, bisa dipakai luring di HP): berkas episode-f119.html di repositori proyek. Prasyarat: episode D7.2 Mengenal Komputer dan E.2 Sistem Operasi.
+Latihan interaktif (kuis dengan petunjuk, bisa dipakai di HP): https://listyantidewi1.github.io/animasi-informatika/episodes/F11.9/episode-f119.html
+Semua episode dan latihannya: https://listyantidewi1.github.io/animasi-informatika/
+Prasyarat: episode D7.2 Mengenal Komputer dan E.2 Sistem Operasi.
 
 Seri Animasi Informatika untuk SMP–SMA mengikuti CP 2025 (Keputusan Kepala BSKAP 046/H/KR/2025), unit F11.9 (8 JP). Tokoh: robot Kiko, Dito, dan Sinta. Semua gambar dibuat dengan kode; tanpa musik latar. Narasi: Kak Ceria (ElevenLabs).
 
@@ -90,7 +94,9 @@ Bab:
 1:43 Profil pengguna dan beban kerja
 3:09 Komponen dan membaca spesifikasi
 
-Latihan interaktif (kuis dengan petunjuk, bisa dipakai luring di HP): berkas episode-f119.html di repositori proyek. Prasyarat: episode D7.2 Mengenal Komputer dan E.2 Sistem Operasi.
+Latihan interaktif (kuis dengan petunjuk, bisa dipakai di HP): https://listyantidewi1.github.io/animasi-informatika/episodes/F11.9/episode-f119.html
+Semua episode dan latihannya: https://listyantidewi1.github.io/animasi-informatika/
+Prasyarat: episode D7.2 Mengenal Komputer dan E.2 Sistem Operasi.
 
 Seri Animasi Informatika untuk SMP–SMA mengikuti CP 2025 (Keputusan Kepala BSKAP 046/H/KR/2025), unit F11.9 (8 JP). Tokoh: robot Kiko, Dito, dan Sinta. Semua gambar dibuat dengan kode; tanpa musik latar.
 
@@ -123,7 +129,9 @@ Bab:
 3:06 Rekomendasi dan jebakan
 3:49 Giliranmu
 
-Latihan interaktif (kuis dengan petunjuk, bisa dipakai luring di HP): berkas episode-f119.html di repositori proyek. Prasyarat: episode D7.2 Mengenal Komputer dan E.2 Sistem Operasi.
+Latihan interaktif (kuis dengan petunjuk, bisa dipakai di HP): https://listyantidewi1.github.io/animasi-informatika/episodes/F11.9/episode-f119.html
+Semua episode dan latihannya: https://listyantidewi1.github.io/animasi-informatika/
+Prasyarat: episode D7.2 Mengenal Komputer dan E.2 Sistem Operasi.
 
 Seri Animasi Informatika untuk SMP–SMA mengikuti CP 2025 (Keputusan Kepala BSKAP 046/H/KR/2025), unit F11.9 (8 JP). Tokoh: robot Kiko, Dito, dan Sinta. Semua gambar dibuat dengan kode; tanpa musik latar.
 
@@ -136,7 +144,7 @@ Seri Animasi Informatika untuk SMP–SMA mengikuti CP 2025 (Keputusan Kepala BSK
 📌 Merancang Kebutuhan Sistem Komputer (1/2): Dari Pengguna ke Kebutuhan — materi Informatika kelas 11 (unit F11.9).
 Setelah menonton, kamu bisa menyusun spesifikasi komputer yang sesuai kebutuhan pengguna dan anggaran, bukan sekadar yang termahal.
 Kata kunci materi ini: cara memilih spesifikasi komputer sesuai kebutuhan; ram ssd prosesor penjelasan untuk pemula kelas 11; menyusun anggaran komputer sekolah; spesifikasi minimum vs rekomendasi.
-Latihan interaktif (bisa luring di HP): berkas episode-f119.html. Tonton dulu episode D7.2 Mengenal Komputer dan E.2 Sistem Operasi bila belum.
+Latihan interaktif (bisa dipakai di HP): https://listyantidewi1.github.io/animasi-informatika/episodes/F11.9/episode-f119.html Tonton dulu episode D7.2 Mengenal Komputer dan E.2 Sistem Operasi bila belum.
 Ada yang belum jelas? Tulis di komentar, pertanyaanmu membantu teman lain juga.
 ```
 
@@ -146,6 +154,6 @@ Ada yang belum jelas? Tulis di komentar, pertanyaanmu membantu teman lain juga.
 📌 Merancang Kebutuhan Sistem Komputer (2/2): Komponen, Anggaran, Rekomendasi — materi Informatika kelas 11 (unit F11.9).
 Setelah menonton, kamu bisa menyusun spesifikasi komputer yang sesuai kebutuhan pengguna dan anggaran, bukan sekadar yang termahal.
 Kata kunci materi ini: cara memilih spesifikasi komputer sesuai kebutuhan; ram ssd prosesor penjelasan untuk pemula kelas 11; menyusun anggaran komputer sekolah; spesifikasi minimum vs rekomendasi.
-Latihan interaktif (bisa luring di HP): berkas episode-f119.html. Tonton dulu episode D7.2 Mengenal Komputer dan E.2 Sistem Operasi bila belum.
+Latihan interaktif (bisa dipakai di HP): https://listyantidewi1.github.io/animasi-informatika/episodes/F11.9/episode-f119.html Tonton dulu episode D7.2 Mengenal Komputer dan E.2 Sistem Operasi bila belum.
 Ada yang belum jelas? Tulis di komentar, pertanyaanmu membantu teman lain juga.
 ```

@@ -25,7 +25,9 @@ Bab:
 1:18 Jaringan lokal
 2:17 Alamat IP dan router
 
-Latihan interaktif (kuis dengan petunjuk, bisa dipakai luring di HP): berkas episode-d92.html di repositori proyek. Prasyarat: episode D7.2 Mengenal Komputer.
+Latihan interaktif (kuis dengan petunjuk, bisa dipakai di HP): https://listyantidewi1.github.io/animasi-informatika/episodes/D9.2/episode-d92.html
+Semua episode dan latihannya: https://listyantidewi1.github.io/animasi-informatika/
+Prasyarat: episode D7.2 Mengenal Komputer.
 
 Seri Animasi Informatika untuk SMP–SMA mengikuti CP 2025 (Keputusan Kepala BSKAP 046/H/KR/2025), unit D9.2 (10 JP). Tokoh: robot Kiko, Dito, dan Sinta. Semua gambar dibuat dengan kode; tanpa musik latar. Narasi: Kak Ceria (ElevenLabs).
 
@@ -58,7 +60,9 @@ Bab:
 2:04 Paket dan gangguan
 2:41 Giliranmu
 
-Latihan interaktif (kuis dengan petunjuk, bisa dipakai luring di HP): berkas episode-d92.html di repositori proyek. Prasyarat: episode D7.2 Mengenal Komputer.
+Latihan interaktif (kuis dengan petunjuk, bisa dipakai di HP): https://listyantidewi1.github.io/animasi-informatika/episodes/D9.2/episode-d92.html
+Semua episode dan latihannya: https://listyantidewi1.github.io/animasi-informatika/
+Prasyarat: episode D7.2 Mengenal Komputer.
 
 Seri Animasi Informatika untuk SMP–SMA mengikuti CP 2025 (Keputusan Kepala BSKAP 046/H/KR/2025), unit D9.2 (10 JP). Tokoh: robot Kiko, Dito, dan Sinta. Semua gambar dibuat dengan kode; tanpa musik latar. Narasi: Kak Ceria (ElevenLabs).
 
@@ -90,7 +94,9 @@ Bab:
 1:38 Jaringan lokal
 2:52 Alamat IP dan router
 
-Latihan interaktif (kuis dengan petunjuk, bisa dipakai luring di HP): berkas episode-d92.html di repositori proyek. Prasyarat: episode D7.2 Mengenal Komputer.
+Latihan interaktif (kuis dengan petunjuk, bisa dipakai di HP): https://listyantidewi1.github.io/animasi-informatika/episodes/D9.2/episode-d92.html
+Semua episode dan latihannya: https://listyantidewi1.github.io/animasi-informatika/
+Prasyarat: episode D7.2 Mengenal Komputer.
 
 Seri Animasi Informatika untuk SMP–SMA mengikuti CP 2025 (Keputusan Kepala BSKAP 046/H/KR/2025), unit D9.2 (10 JP). Tokoh: robot Kiko, Dito, dan Sinta. Semua gambar dibuat dengan kode; tanpa musik latar.
 
@@ -123,7 +129,9 @@ Bab:
 2:26 Paket dan gangguan
 3:13 Giliranmu
 
-Latihan interaktif (kuis dengan petunjuk, bisa dipakai luring di HP): berkas episode-d92.html di repositori proyek. Prasyarat: episode D7.2 Mengenal Komputer.
+Latihan interaktif (kuis dengan petunjuk, bisa dipakai di HP): https://listyantidewi1.github.io/animasi-informatika/episodes/D9.2/episode-d92.html
+Semua episode dan latihannya: https://listyantidewi1.github.io/animasi-informatika/
+Prasyarat: episode D7.2 Mengenal Komputer.
 
 Seri Animasi Informatika untuk SMP–SMA mengikuti CP 2025 (Keputusan Kepala BSKAP 046/H/KR/2025), unit D9.2 (10 JP). Tokoh: robot Kiko, Dito, dan Sinta. Semua gambar dibuat dengan kode; tanpa musik latar.
 
@@ -133,19 +141,19 @@ Seri Animasi Informatika untuk SMP–SMA mengikuti CP 2025 (Keputusan Kepala BSK
 ## Komentar tersemat (pin) — D9.2a
 
 ```
-📌 Jaringan Lokal dan Internet (1/2): Jaringan Lokal: Kabel dan Nirkabel — materi Informatika kelas 7 (unit D9.2).
+📌 Jaringan Lokal dan Internet (1/2): Jaringan Lokal: Kabel dan Nirkabel — materi Informatika kelas 9 (unit D9.2).
 Setelah menonton, kamu bisa menjelaskan perjalanan pesan dari HP lewat Wi-Fi, router, dan penyedia internet ke server, lalu kembali.
 Kata kunci materi ini: jaringan lokal dan internet kelas 9; cara kerja wifi dan router untuk pemula; perjalanan data di internet informatika SMP; materi informatika kelas 9 jaringan komputer.
-Latihan interaktif (bisa luring di HP): berkas episode-d92.html. Tonton dulu episode D7.2 Mengenal Komputer bila belum.
+Latihan interaktif (bisa dipakai di HP): https://listyantidewi1.github.io/animasi-informatika/episodes/D9.2/episode-d92.html Tonton dulu episode D7.2 Mengenal Komputer bila belum.
 Ada yang belum jelas? Tulis di komentar, pertanyaanmu membantu teman lain juga.
 ```
 
 ## Komentar tersemat (pin) — D9.2b
 
 ```
-📌 Jaringan Lokal dan Internet (2/2): Dari Rumah ke Server dan Kembali — materi Informatika kelas 7 (unit D9.2).
+📌 Jaringan Lokal dan Internet (2/2): Dari Rumah ke Server dan Kembali — materi Informatika kelas 9 (unit D9.2).
 Setelah menonton, kamu bisa menjelaskan perjalanan pesan dari HP lewat Wi-Fi, router, dan penyedia internet ke server, lalu kembali.
 Kata kunci materi ini: jaringan lokal dan internet kelas 9; cara kerja wifi dan router untuk pemula; perjalanan data di internet informatika SMP; materi informatika kelas 9 jaringan komputer.
-Latihan interaktif (bisa luring di HP): berkas episode-d92.html. Tonton dulu episode D7.2 Mengenal Komputer bila belum.
+Latihan interaktif (bisa dipakai di HP): https://listyantidewi1.github.io/animasi-informatika/episodes/D9.2/episode-d92.html Tonton dulu episode D7.2 Mengenal Komputer bila belum.
 Ada yang belum jelas? Tulis di komentar, pertanyaanmu membantu teman lain juga.
 ```

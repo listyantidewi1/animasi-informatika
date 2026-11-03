@@ -25,7 +25,9 @@ Bab:
 1:18 Data pribadi
 2:29 Apa yang boleh kubagikan?
 
-Latihan interaktif (kuis dengan petunjuk, bisa dipakai luring di HP): berkas episode-d94.html di repositori proyek. Prasyarat: episode D7.3 Kata Sandi Aman dan Rekam Jejak Digital serta D7.7 Ruang Publik Virtual dan Empati.
+Latihan interaktif (kuis dengan petunjuk, bisa dipakai di HP): https://listyantidewi1.github.io/animasi-informatika/episodes/D9.4/episode-d94.html
+Semua episode dan latihannya: https://listyantidewi1.github.io/animasi-informatika/
+Prasyarat: episode D7.3 Kata Sandi Aman dan Rekam Jejak Digital serta D7.7 Ruang Publik Virtual dan Empati.
 
 Seri Animasi Informatika untuk SMP–SMA mengikuti CP 2025 (Keputusan Kepala BSKAP 046/H/KR/2025), unit D9.4 (8 JP). Tokoh: robot Kiko, Dito, dan Sinta. Semua gambar dibuat dengan kode; tanpa musik latar. Narasi: Kak Ceria (ElevenLabs).
 
@@ -58,7 +60,9 @@ Bab:
 2:24 Kalau telanjur, dan data teman
 3:01 Giliranmu
 
-Latihan interaktif (kuis dengan petunjuk, bisa dipakai luring di HP): berkas episode-d94.html di repositori proyek. Prasyarat: episode D7.3 Kata Sandi Aman dan Rekam Jejak Digital serta D7.7 Ruang Publik Virtual dan Empati.
+Latihan interaktif (kuis dengan petunjuk, bisa dipakai di HP): https://listyantidewi1.github.io/animasi-informatika/episodes/D9.4/episode-d94.html
+Semua episode dan latihannya: https://listyantidewi1.github.io/animasi-informatika/
+Prasyarat: episode D7.3 Kata Sandi Aman dan Rekam Jejak Digital serta D7.7 Ruang Publik Virtual dan Empati.
 
 Seri Animasi Informatika untuk SMP–SMA mengikuti CP 2025 (Keputusan Kepala BSKAP 046/H/KR/2025), unit D9.4 (8 JP). Tokoh: robot Kiko, Dito, dan Sinta. Semua gambar dibuat dengan kode; tanpa musik latar. Narasi: Kak Ceria (ElevenLabs).
 
@@ -90,7 +94,9 @@ Bab:
 1:37 Data pribadi
 3:07 Apa yang boleh kubagikan?
 
-Latihan interaktif (kuis dengan petunjuk, bisa dipakai luring di HP): berkas episode-d94.html di repositori proyek. Prasyarat: episode D7.3 Kata Sandi Aman dan Rekam Jejak Digital serta D7.7 Ruang Publik Virtual dan Empati.
+Latihan interaktif (kuis dengan petunjuk, bisa dipakai di HP): https://listyantidewi1.github.io/animasi-informatika/episodes/D9.4/episode-d94.html
+Semua episode dan latihannya: https://listyantidewi1.github.io/animasi-informatika/
+Prasyarat: episode D7.3 Kata Sandi Aman dan Rekam Jejak Digital serta D7.7 Ruang Publik Virtual dan Empati.
 
 Seri Animasi Informatika untuk SMP–SMA mengikuti CP 2025 (Keputusan Kepala BSKAP 046/H/KR/2025), unit D9.4 (8 JP). Tokoh: robot Kiko, Dito, dan Sinta. Semua gambar dibuat dengan kode; tanpa musik latar.
 
@@ -123,7 +129,9 @@ Bab:
 2:59 Kalau telanjur, dan data teman
 3:46 Giliranmu
 
-Latihan interaktif (kuis dengan petunjuk, bisa dipakai luring di HP): berkas episode-d94.html di repositori proyek. Prasyarat: episode D7.3 Kata Sandi Aman dan Rekam Jejak Digital serta D7.7 Ruang Publik Virtual dan Empati.
+Latihan interaktif (kuis dengan petunjuk, bisa dipakai di HP): https://listyantidewi1.github.io/animasi-informatika/episodes/D9.4/episode-d94.html
+Semua episode dan latihannya: https://listyantidewi1.github.io/animasi-informatika/
+Prasyarat: episode D7.3 Kata Sandi Aman dan Rekam Jejak Digital serta D7.7 Ruang Publik Virtual dan Empati.
 
 Seri Animasi Informatika untuk SMP–SMA mengikuti CP 2025 (Keputusan Kepala BSKAP 046/H/KR/2025), unit D9.4 (8 JP). Tokoh: robot Kiko, Dito, dan Sinta. Semua gambar dibuat dengan kode; tanpa musik latar.
 
@@ -136,7 +144,7 @@ Seri Animasi Informatika untuk SMP–SMA mengikuti CP 2025 (Keputusan Kepala BSK
 📌 Data Pribadi, Identitas Digital, dan Kesadaran Penuh (1/2): Privat atau Publik? — materi Informatika kelas 9 (unit D9.4).
 Setelah menonton, kamu bisa memilah data privat dan publik, memeriksa unggahan sebelum tayang, dan merapikan identitas digitalmu.
 Kata kunci materi ini: data pribadi kelas 9; apa yang boleh dibagikan di media sosial untuk pelajar; identitas digital informatika smp; cara mengatur akun media sosial agar aman.
-Latihan interaktif (bisa luring di HP): berkas episode-d94.html. Tonton dulu episode D7.3 Kata Sandi Aman dan Rekam Jejak Digital serta D7.7 Ruang Publik Virtual dan Empati bila belum.
+Latihan interaktif (bisa dipakai di HP): https://listyantidewi1.github.io/animasi-informatika/episodes/D9.4/episode-d94.html Tonton dulu episode D7.3 Kata Sandi Aman dan Rekam Jejak Digital serta D7.7 Ruang Publik Virtual dan Empati bila belum.
 Ada yang belum jelas? Tulis di komentar, pertanyaanmu membantu teman lain juga.
 ```
 
@@ -146,6 +154,6 @@ Ada yang belum jelas? Tulis di komentar, pertanyaanmu membantu teman lain juga.
 📌 Data Pribadi, Identitas Digital, dan Kesadaran Penuh (2/2): Identitas Digital dan Jeda Sadar — materi Informatika kelas 9 (unit D9.4).
 Setelah menonton, kamu bisa memilah data privat dan publik, memeriksa unggahan sebelum tayang, dan merapikan identitas digitalmu.
 Kata kunci materi ini: data pribadi kelas 9; apa yang boleh dibagikan di media sosial untuk pelajar; identitas digital informatika smp; cara mengatur akun media sosial agar aman.
-Latihan interaktif (bisa luring di HP): berkas episode-d94.html. Tonton dulu episode D7.3 Kata Sandi Aman dan Rekam Jejak Digital serta D7.7 Ruang Publik Virtual dan Empati bila belum.
+Latihan interaktif (bisa dipakai di HP): https://listyantidewi1.github.io/animasi-informatika/episodes/D9.4/episode-d94.html Tonton dulu episode D7.3 Kata Sandi Aman dan Rekam Jejak Digital serta D7.7 Ruang Publik Virtual dan Empati bila belum.
 Ada yang belum jelas? Tulis di komentar, pertanyaanmu membantu teman lain juga.
 ```

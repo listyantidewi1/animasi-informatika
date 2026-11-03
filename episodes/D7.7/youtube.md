@@ -25,7 +25,9 @@ Bab:
 0:59 Ruang publik virtual
 1:48 Nada yang tak terdengar
 
-Latihan interaktif (kuis dengan petunjuk, bisa dipakai luring di HP): berkas episode-d77.html di repositori proyek. Prasyarat: episode D7.3 Kata Sandi Aman dan Rekam Jejak Digital.
+Latihan interaktif (kuis dengan petunjuk, bisa dipakai di HP): https://listyantidewi1.github.io/animasi-informatika/episodes/D7.7/episode-d77.html
+Semua episode dan latihannya: https://listyantidewi1.github.io/animasi-informatika/
+Prasyarat: episode D7.3 Kata Sandi Aman dan Rekam Jejak Digital.
 
 Seri Animasi Informatika untuk SMP–SMA mengikuti CP 2025 (Keputusan Kepala BSKAP 046/H/KR/2025), unit D7.7 (6 JP). Tokoh: robot Kiko, Dito, dan Sinta. Semua gambar dibuat dengan kode; tanpa musik latar. Narasi: Kak Ceria (ElevenLabs).
 
@@ -58,7 +60,9 @@ Bab:
 1:58 Lima langkah
 2:49 Giliranmu
 
-Latihan interaktif (kuis dengan petunjuk, bisa dipakai luring di HP): berkas episode-d77.html di repositori proyek. Prasyarat: episode D7.3 Kata Sandi Aman dan Rekam Jejak Digital.
+Latihan interaktif (kuis dengan petunjuk, bisa dipakai di HP): https://listyantidewi1.github.io/animasi-informatika/episodes/D7.7/episode-d77.html
+Semua episode dan latihannya: https://listyantidewi1.github.io/animasi-informatika/
+Prasyarat: episode D7.3 Kata Sandi Aman dan Rekam Jejak Digital.
 
 Seri Animasi Informatika untuk SMP–SMA mengikuti CP 2025 (Keputusan Kepala BSKAP 046/H/KR/2025), unit D7.7 (6 JP). Tokoh: robot Kiko, Dito, dan Sinta. Semua gambar dibuat dengan kode; tanpa musik latar. Narasi: Kak Ceria (ElevenLabs).
 
@@ -90,7 +94,9 @@ Bab:
 1:15 Ruang publik virtual
 2:17 Nada yang tak terdengar
 
-Latihan interaktif (kuis dengan petunjuk, bisa dipakai luring di HP): berkas episode-d77.html di repositori proyek. Prasyarat: episode D7.3 Kata Sandi Aman dan Rekam Jejak Digital.
+Latihan interaktif (kuis dengan petunjuk, bisa dipakai di HP): https://listyantidewi1.github.io/animasi-informatika/episodes/D7.7/episode-d77.html
+Semua episode dan latihannya: https://listyantidewi1.github.io/animasi-informatika/
+Prasyarat: episode D7.3 Kata Sandi Aman dan Rekam Jejak Digital.
 
 Seri Animasi Informatika untuk SMP–SMA mengikuti CP 2025 (Keputusan Kepala BSKAP 046/H/KR/2025), unit D7.7 (6 JP). Tokoh: robot Kiko, Dito, dan Sinta. Semua gambar dibuat dengan kode; tanpa musik latar.
 
@@ -123,7 +129,9 @@ Bab:
 2:25 Lima langkah
 3:27 Giliranmu
 
-Latihan interaktif (kuis dengan petunjuk, bisa dipakai luring di HP): berkas episode-d77.html di repositori proyek. Prasyarat: episode D7.3 Kata Sandi Aman dan Rekam Jejak Digital.
+Latihan interaktif (kuis dengan petunjuk, bisa dipakai di HP): https://listyantidewi1.github.io/animasi-informatika/episodes/D7.7/episode-d77.html
+Semua episode dan latihannya: https://listyantidewi1.github.io/animasi-informatika/
+Prasyarat: episode D7.3 Kata Sandi Aman dan Rekam Jejak Digital.
 
 Seri Animasi Informatika untuk SMP–SMA mengikuti CP 2025 (Keputusan Kepala BSKAP 046/H/KR/2025), unit D7.7 (6 JP). Tokoh: robot Kiko, Dito, dan Sinta. Semua gambar dibuat dengan kode; tanpa musik latar.
 
@@ -136,7 +144,7 @@ Seri Animasi Informatika untuk SMP–SMA mengikuti CP 2025 (Keputusan Kepala BSK
 📌 Ruang Publik Virtual dan Empati (1/2): Ruang Publik Virtual — materi Informatika kelas 7 (unit D7.7).
 Setelah menonton, kamu bisa mengenali ruang publik di internet, menahan diri saat grup memanas, dan menolong teman yang dirundung.
 Kata kunci materi ini: ruang publik virtual kelas 7; perundungan digital cyberbullying informatika SMP; etika di grup kelas dan media sosial; cara menghadapi bullying online.
-Latihan interaktif (bisa luring di HP): berkas episode-d77.html. Tonton dulu episode D7.3 Kata Sandi Aman dan Rekam Jejak Digital bila belum.
+Latihan interaktif (bisa dipakai di HP): https://listyantidewi1.github.io/animasi-informatika/episodes/D7.7/episode-d77.html Tonton dulu episode D7.3 Kata Sandi Aman dan Rekam Jejak Digital bila belum.
 Ada yang belum jelas? Tulis di komentar, pertanyaanmu membantu teman lain juga.
 ```
 
@@ -146,6 +154,6 @@ Ada yang belum jelas? Tulis di komentar, pertanyaanmu membantu teman lain juga.
 📌 Ruang Publik Virtual dan Empati (2/2): Saat Grup Kelas Memanas — materi Informatika kelas 7 (unit D7.7).
 Setelah menonton, kamu bisa mengenali ruang publik di internet, menahan diri saat grup memanas, dan menolong teman yang dirundung.
 Kata kunci materi ini: ruang publik virtual kelas 7; perundungan digital cyberbullying informatika SMP; etika di grup kelas dan media sosial; cara menghadapi bullying online.
-Latihan interaktif (bisa luring di HP): berkas episode-d77.html. Tonton dulu episode D7.3 Kata Sandi Aman dan Rekam Jejak Digital bila belum.
+Latihan interaktif (bisa dipakai di HP): https://listyantidewi1.github.io/animasi-informatika/episodes/D7.7/episode-d77.html Tonton dulu episode D7.3 Kata Sandi Aman dan Rekam Jejak Digital bila belum.
 Ada yang belum jelas? Tulis di komentar, pertanyaanmu membantu teman lain juga.
 ```

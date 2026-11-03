@@ -25,7 +25,9 @@ Bab:
 0:42 Mesin tidak bisa menebak
 2:19 Urutan itu penting
 
-Latihan interaktif (kuis dengan petunjuk, bisa dipakai luring di HP): berkas episode-d75.html di repositori proyek. Prasyarat: episode D7.1 Berpikir Komputasional di Sekitar Kita.
+Latihan interaktif (kuis dengan petunjuk, bisa dipakai di HP): https://listyantidewi1.github.io/animasi-informatika/episodes/D7.5/episode-d75.html
+Semua episode dan latihannya: https://listyantidewi1.github.io/animasi-informatika/
+Prasyarat: episode D7.1 Berpikir Komputasional di Sekitar Kita.
 
 Seri Animasi Informatika untuk SMP–SMA mengikuti CP 2025 (Keputusan Kepala BSKAP 046/H/KR/2025), unit D7.5 (12 JP). Tokoh: robot Kiko, Dito, dan Sinta. Semua gambar dibuat dengan kode; tanpa musik latar. Narasi: Kak Ceria (ElevenLabs).
 
@@ -58,7 +60,9 @@ Bab:
 2:30 Dari simbol ke kata
 3:36 Giliranmu
 
-Latihan interaktif (kuis dengan petunjuk, bisa dipakai luring di HP): berkas episode-d75.html di repositori proyek. Prasyarat: episode D7.1 Berpikir Komputasional di Sekitar Kita.
+Latihan interaktif (kuis dengan petunjuk, bisa dipakai di HP): https://listyantidewi1.github.io/animasi-informatika/episodes/D7.5/episode-d75.html
+Semua episode dan latihannya: https://listyantidewi1.github.io/animasi-informatika/
+Prasyarat: episode D7.1 Berpikir Komputasional di Sekitar Kita.
 
 Seri Animasi Informatika untuk SMP–SMA mengikuti CP 2025 (Keputusan Kepala BSKAP 046/H/KR/2025), unit D7.5 (12 JP). Tokoh: robot Kiko, Dito, dan Sinta. Semua gambar dibuat dengan kode; tanpa musik latar. Narasi: Kak Ceria (ElevenLabs).
 
@@ -90,7 +94,9 @@ Bab:
 0:54 Mesin tidak bisa menebak
 2:58 Urutan itu penting
 
-Latihan interaktif (kuis dengan petunjuk, bisa dipakai luring di HP): berkas episode-d75.html di repositori proyek. Prasyarat: episode D7.1 Berpikir Komputasional di Sekitar Kita.
+Latihan interaktif (kuis dengan petunjuk, bisa dipakai di HP): https://listyantidewi1.github.io/animasi-informatika/episodes/D7.5/episode-d75.html
+Semua episode dan latihannya: https://listyantidewi1.github.io/animasi-informatika/
+Prasyarat: episode D7.1 Berpikir Komputasional di Sekitar Kita.
 
 Seri Animasi Informatika untuk SMP–SMA mengikuti CP 2025 (Keputusan Kepala BSKAP 046/H/KR/2025), unit D7.5 (12 JP). Tokoh: robot Kiko, Dito, dan Sinta. Semua gambar dibuat dengan kode; tanpa musik latar.
 
@@ -123,7 +129,9 @@ Bab:
 2:59 Dari simbol ke kata
 4:21 Giliranmu
 
-Latihan interaktif (kuis dengan petunjuk, bisa dipakai luring di HP): berkas episode-d75.html di repositori proyek. Prasyarat: episode D7.1 Berpikir Komputasional di Sekitar Kita.
+Latihan interaktif (kuis dengan petunjuk, bisa dipakai di HP): https://listyantidewi1.github.io/animasi-informatika/episodes/D7.5/episode-d75.html
+Semua episode dan latihannya: https://listyantidewi1.github.io/animasi-informatika/
+Prasyarat: episode D7.1 Berpikir Komputasional di Sekitar Kita.
 
 Seri Animasi Informatika untuk SMP–SMA mengikuti CP 2025 (Keputusan Kepala BSKAP 046/H/KR/2025), unit D7.5 (12 JP). Tokoh: robot Kiko, Dito, dan Sinta. Semua gambar dibuat dengan kode; tanpa musik latar.
 
@@ -136,7 +144,7 @@ Seri Animasi Informatika untuk SMP–SMA mengikuti CP 2025 (Keputusan Kepala BSK
 📌 Instruksi untuk Manusia dan Mesin (1/2): Mesin Tidak Bisa Menebak — materi Informatika kelas 7 (unit D7.5).
 Setelah menonton, kamu bisa menulis instruksi yang bisa dijalankan robot, lalu menemukan dan memperbaiki kesalahannya.
 Kata kunci materi ini: algoritma dan pemrograman kelas 7; contoh instruksi untuk robot; pseudocode informatika SMP; apa itu debugging.
-Latihan interaktif (bisa luring di HP): berkas episode-d75.html. Tonton dulu episode D7.1 Berpikir Komputasional di Sekitar Kita bila belum.
+Latihan interaktif (bisa dipakai di HP): https://listyantidewi1.github.io/animasi-informatika/episodes/D7.5/episode-d75.html Tonton dulu episode D7.1 Berpikir Komputasional di Sekitar Kita bila belum.
 Ada yang belum jelas? Tulis di komentar, pertanyaanmu membantu teman lain juga.
 ```
 
@@ -146,6 +154,6 @@ Ada yang belum jelas? Tulis di komentar, pertanyaanmu membantu teman lain juga.
 📌 Instruksi untuk Manusia dan Mesin (2/2): Tebak, Jalankan, Perbaiki — materi Informatika kelas 7 (unit D7.5).
 Setelah menonton, kamu bisa menulis instruksi yang bisa dijalankan robot, lalu menemukan dan memperbaiki kesalahannya.
 Kata kunci materi ini: algoritma dan pemrograman kelas 7; contoh instruksi untuk robot; pseudocode informatika SMP; apa itu debugging.
-Latihan interaktif (bisa luring di HP): berkas episode-d75.html. Tonton dulu episode D7.1 Berpikir Komputasional di Sekitar Kita bila belum.
+Latihan interaktif (bisa dipakai di HP): https://listyantidewi1.github.io/animasi-informatika/episodes/D7.5/episode-d75.html Tonton dulu episode D7.1 Berpikir Komputasional di Sekitar Kita bila belum.
 Ada yang belum jelas? Tulis di komentar, pertanyaanmu membantu teman lain juga.
 ```

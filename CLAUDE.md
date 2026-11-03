@@ -32,4 +32,5 @@ Bahasa kerja: Bahasa Indonesia. Pemilik: Bu Dewi (guru Informatika, penulis buku
 - Perubahan trek suara atau subtitel tidak perlu render ulang; perubahan gambar perlu.
 - Halaman latihan memuat kedua timeline; kunci localStorage lama (`d75-progress`) harus tetap dipakai agar kemajuan murid tidak hilang.
 - Jangan unduh musik atau gambar dari internet (risiko lisensi); semua aset digambar dengan kode.
+- Link latihan: halaman disajikan GitHub Pages (`https://listyantidewi1.github.io/animasi-informatika/`). Setelah episode baru selesai, jalankan `python3 episodes/_alat/indeks.py` (daftar isi `index.html`) dan `youtube.py <kode>` (link di deskripsi); alat luar per episode di `episodes/_alat/alat_luar.json`.
 - Lingkungan cloud: `pip install playwright==1.63.0 edge-tts` (Chromium bawaan di `/opt/pw-browsers`); ffmpeg+rubberband dan font Inter sudah ada.

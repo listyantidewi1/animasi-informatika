@@ -25,7 +25,9 @@ Bab:
 1:06 Kata sandi yang kuat
 2:56 Tiga aturan menjaganya
 
-Latihan interaktif (kuis dengan petunjuk, bisa dipakai luring di HP): berkas episode-d73.html di repositori proyek. Prasyarat: episode D7.0 Cara Memakai Komputer dan HP.
+Latihan interaktif (kuis dengan petunjuk, bisa dipakai di HP): https://listyantidewi1.github.io/animasi-informatika/episodes/D7.3/episode-d73.html
+Semua episode dan latihannya: https://listyantidewi1.github.io/animasi-informatika/
+Prasyarat: episode D7.0 Cara Memakai Komputer dan HP.
 
 Seri Animasi Informatika untuk SMP–SMA mengikuti CP 2025 (Keputusan Kepala BSKAP 046/H/KR/2025), unit D7.3 (6 JP). Tokoh: robot Kiko, Dito, dan Sinta. Semua gambar dibuat dengan kode; tanpa musik latar. Narasi: Kak Ceria (ElevenLabs).
 
@@ -57,7 +59,9 @@ Bab:
 1:21 Berpikir sebelum unggah
 2:32 Giliranmu
 
-Latihan interaktif (kuis dengan petunjuk, bisa dipakai luring di HP): berkas episode-d73.html di repositori proyek. Prasyarat: episode D7.0 Cara Memakai Komputer dan HP.
+Latihan interaktif (kuis dengan petunjuk, bisa dipakai di HP): https://listyantidewi1.github.io/animasi-informatika/episodes/D7.3/episode-d73.html
+Semua episode dan latihannya: https://listyantidewi1.github.io/animasi-informatika/
+Prasyarat: episode D7.0 Cara Memakai Komputer dan HP.
 
 Seri Animasi Informatika untuk SMP–SMA mengikuti CP 2025 (Keputusan Kepala BSKAP 046/H/KR/2025), unit D7.3 (6 JP). Tokoh: robot Kiko, Dito, dan Sinta. Semua gambar dibuat dengan kode; tanpa musik latar. Narasi: Kak Ceria (ElevenLabs).
 
@@ -89,7 +93,9 @@ Bab:
 1:24 Kata sandi yang kuat
 3:27 Tiga aturan menjaganya
 
-Latihan interaktif (kuis dengan petunjuk, bisa dipakai luring di HP): berkas episode-d73.html di repositori proyek. Prasyarat: episode D7.0 Cara Memakai Komputer dan HP.
+Latihan interaktif (kuis dengan petunjuk, bisa dipakai di HP): https://listyantidewi1.github.io/animasi-informatika/episodes/D7.3/episode-d73.html
+Semua episode dan latihannya: https://listyantidewi1.github.io/animasi-informatika/
+Prasyarat: episode D7.0 Cara Memakai Komputer dan HP.
 
 Seri Animasi Informatika untuk SMP–SMA mengikuti CP 2025 (Keputusan Kepala BSKAP 046/H/KR/2025), unit D7.3 (6 JP). Tokoh: robot Kiko, Dito, dan Sinta. Semua gambar dibuat dengan kode; tanpa musik latar.
 
@@ -121,7 +127,9 @@ Bab:
 1:39 Berpikir sebelum unggah
 3:09 Giliranmu
 
-Latihan interaktif (kuis dengan petunjuk, bisa dipakai luring di HP): berkas episode-d73.html di repositori proyek. Prasyarat: episode D7.0 Cara Memakai Komputer dan HP.
+Latihan interaktif (kuis dengan petunjuk, bisa dipakai di HP): https://listyantidewi1.github.io/animasi-informatika/episodes/D7.3/episode-d73.html
+Semua episode dan latihannya: https://listyantidewi1.github.io/animasi-informatika/
+Prasyarat: episode D7.0 Cara Memakai Komputer dan HP.
 
 Seri Animasi Informatika untuk SMP–SMA mengikuti CP 2025 (Keputusan Kepala BSKAP 046/H/KR/2025), unit D7.3 (6 JP). Tokoh: robot Kiko, Dito, dan Sinta. Semua gambar dibuat dengan kode; tanpa musik latar.
 
@@ -134,7 +142,7 @@ Seri Animasi Informatika untuk SMP–SMA mengikuti CP 2025 (Keputusan Kepala BSK
 📌 Kata Sandi Aman dan Rekam Jejak Digital (1/2): Kata Sandi Aman — materi Informatika kelas 7 (unit D7.3).
 Setelah menonton, kamu bisa membuat kata sandi yang kuat dan memutuskan apa yang aman diunggah.
 Kata kunci materi ini: cara membuat kata sandi yang kuat; jejak digital kelas 7; keamanan akun informatika SMP; contoh password yang aman.
-Latihan interaktif (bisa luring di HP): berkas episode-d73.html. Tonton dulu episode D7.0 Cara Memakai Komputer dan HP bila belum.
+Latihan interaktif (bisa dipakai di HP): https://listyantidewi1.github.io/animasi-informatika/episodes/D7.3/episode-d73.html Tonton dulu episode D7.0 Cara Memakai Komputer dan HP bila belum.
 Ada yang belum jelas? Tulis di komentar, pertanyaanmu membantu teman lain juga.
 ```
 
@@ -144,6 +152,6 @@ Ada yang belum jelas? Tulis di komentar, pertanyaanmu membantu teman lain juga.
 📌 Kata Sandi Aman dan Rekam Jejak Digital (2/2): Rekam Jejak Digital — materi Informatika kelas 7 (unit D7.3).
 Setelah menonton, kamu bisa membuat kata sandi yang kuat dan memutuskan apa yang aman diunggah.
 Kata kunci materi ini: cara membuat kata sandi yang kuat; jejak digital kelas 7; keamanan akun informatika SMP; contoh password yang aman.
-Latihan interaktif (bisa luring di HP): berkas episode-d73.html. Tonton dulu episode D7.0 Cara Memakai Komputer dan HP bila belum.
+Latihan interaktif (bisa dipakai di HP): https://listyantidewi1.github.io/animasi-informatika/episodes/D7.3/episode-d73.html Tonton dulu episode D7.0 Cara Memakai Komputer dan HP bila belum.
 Ada yang belum jelas? Tulis di komentar, pertanyaanmu membantu teman lain juga.
 ```

@@ -4,6 +4,11 @@ Seri bahan ajar animasi untuk mata pelajaran Informatika SMP–SMA mengikuti CP 
 
 Peta kurikulum, alur belajar, dan daftar 52 episode ada di dokumen "Kurikulum Seri Animasi Informatika (Fase D–F)".
 
+## Latihan interaktif (link untuk murid)
+Daftar semua halaman latihan: **https://listyantidewi1.github.io/animasi-informatika/** (dibuat `episodes/_alat/indeks.py` sebagai `index.html`). Link tiap episode berbentuk `https://listyantidewi1.github.io/animasi-informatika/episodes/<kode>/episode-<kode-tanpa-titik>.html`, misalnya `.../episodes/D7.0/episode-d70.html`. Link yang sama, beserta alat luar untuk latihan di komputer (Python/Google Colab, Google Sheets/LibreOffice Calc, Portal Satu Data Indonesia; daftar di `episodes/_alat/alat_luar.json`), tercantum di deskripsi dan komentar tersemat `youtube.md` tiap episode.
+
+GitHub Pages perlu diaktifkan sekali oleh pemilik repositori: **Settings → Pages → Build and deployment → Source: Deploy from a branch → Branch: `main`, folder `/ (root)` → Save**. Beberapa menit kemudian link di atas aktif. Berkas `.nojekyll` membuat Pages menyajikan berkas apa adanya.
+
 ## Struktur
 - `episodes/_alat/` — mesin gambar bersama (`kiko-core.js`, `kiko-grid.js`), inti halaman (`page-core.*`), dan alat produksi (`timing.py`, `voice.py`, `preview.py`, `render.py`, `build.py`, `naskah_tts.py`). Alur produksi lengkap ada di `episodes/_alat/README.md`.
 - `episodes/<kode>/` — satu folder per episode: naskah (`script.json`), adegan (`scenes.js`), halaman (`page.html`), paket suara (`tts-kit/`), narasi (`suara_in/`, `narasi.mp3`), timeline, dan halaman jadi `episode-<kode>.html`.

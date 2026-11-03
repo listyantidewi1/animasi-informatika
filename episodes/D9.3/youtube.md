@@ -25,7 +25,9 @@ Bab:
 1:05 Virus dan worm
 2:07 Trojan, ransomware, spyware
 
-Latihan interaktif (kuis dengan petunjuk, bisa dipakai luring di HP): berkas episode-d93.html di repositori proyek. Prasyarat: episode D9.2 Jaringan Lokal dan Internet.
+Latihan interaktif (kuis dengan petunjuk, bisa dipakai di HP): https://listyantidewi1.github.io/animasi-informatika/episodes/D9.3/episode-d93.html
+Semua episode dan latihannya: https://listyantidewi1.github.io/animasi-informatika/
+Prasyarat: episode D9.2 Jaringan Lokal dan Internet.
 
 Seri Animasi Informatika untuk SMP–SMA mengikuti CP 2025 (Keputusan Kepala BSKAP 046/H/KR/2025), unit D9.3 (6 JP). Tokoh: robot Kiko, Dito, dan Sinta. Semua gambar dibuat dengan kode; tanpa musik latar. Narasi: Kak Ceria (ElevenLabs).
 
@@ -58,7 +60,9 @@ Bab:
 1:55 Izin aplikasi
 2:29 Giliranmu
 
-Latihan interaktif (kuis dengan petunjuk, bisa dipakai luring di HP): berkas episode-d93.html di repositori proyek. Prasyarat: episode D9.2 Jaringan Lokal dan Internet.
+Latihan interaktif (kuis dengan petunjuk, bisa dipakai di HP): https://listyantidewi1.github.io/animasi-informatika/episodes/D9.3/episode-d93.html
+Semua episode dan latihannya: https://listyantidewi1.github.io/animasi-informatika/
+Prasyarat: episode D9.2 Jaringan Lokal dan Internet.
 
 Seri Animasi Informatika untuk SMP–SMA mengikuti CP 2025 (Keputusan Kepala BSKAP 046/H/KR/2025), unit D9.3 (6 JP). Tokoh: robot Kiko, Dito, dan Sinta. Semua gambar dibuat dengan kode; tanpa musik latar. Narasi: Kak Ceria (ElevenLabs).
 
@@ -90,7 +94,9 @@ Bab:
 1:23 Virus dan worm
 2:37 Trojan, ransomware, spyware
 
-Latihan interaktif (kuis dengan petunjuk, bisa dipakai luring di HP): berkas episode-d93.html di repositori proyek. Prasyarat: episode D9.2 Jaringan Lokal dan Internet.
+Latihan interaktif (kuis dengan petunjuk, bisa dipakai di HP): https://listyantidewi1.github.io/animasi-informatika/episodes/D9.3/episode-d93.html
+Semua episode dan latihannya: https://listyantidewi1.github.io/animasi-informatika/
+Prasyarat: episode D9.2 Jaringan Lokal dan Internet.
 
 Seri Animasi Informatika untuk SMP–SMA mengikuti CP 2025 (Keputusan Kepala BSKAP 046/H/KR/2025), unit D9.3 (6 JP). Tokoh: robot Kiko, Dito, dan Sinta. Semua gambar dibuat dengan kode; tanpa musik latar.
 
@@ -123,7 +129,9 @@ Bab:
 2:20 Izin aplikasi
 2:59 Giliranmu
 
-Latihan interaktif (kuis dengan petunjuk, bisa dipakai luring di HP): berkas episode-d93.html di repositori proyek. Prasyarat: episode D9.2 Jaringan Lokal dan Internet.
+Latihan interaktif (kuis dengan petunjuk, bisa dipakai di HP): https://listyantidewi1.github.io/animasi-informatika/episodes/D9.3/episode-d93.html
+Semua episode dan latihannya: https://listyantidewi1.github.io/animasi-informatika/
+Prasyarat: episode D9.2 Jaringan Lokal dan Internet.
 
 Seri Animasi Informatika untuk SMP–SMA mengikuti CP 2025 (Keputusan Kepala BSKAP 046/H/KR/2025), unit D9.3 (6 JP). Tokoh: robot Kiko, Dito, dan Sinta. Semua gambar dibuat dengan kode; tanpa musik latar.
 
@@ -136,7 +144,7 @@ Seri Animasi Informatika untuk SMP–SMA mengikuti CP 2025 (Keputusan Kepala BSK
 📌 Melindungi Perangkat dari Malware (1/2): Lima Jenis Malware — materi Informatika kelas 9 (unit D9.3).
 Setelah menonton, kamu bisa membedakan virus, worm, trojan, ransomware, dan spyware dari cara masuknya, lalu menutup pintunya.
 Kata kunci materi ini: jenis malware kelas 9; perbedaan virus worm trojan untuk pelajar; cara melindungi hp dan laptop dari virus; materi informatika kelas 9 keamanan perangkat.
-Latihan interaktif (bisa luring di HP): berkas episode-d93.html. Tonton dulu episode D9.2 Jaringan Lokal dan Internet bila belum.
+Latihan interaktif (bisa dipakai di HP): https://listyantidewi1.github.io/animasi-informatika/episodes/D9.3/episode-d93.html Tonton dulu episode D9.2 Jaringan Lokal dan Internet bila belum.
 Ada yang belum jelas? Tulis di komentar, pertanyaanmu membantu teman lain juga.
 ```
 
@@ -146,6 +154,6 @@ Ada yang belum jelas? Tulis di komentar, pertanyaanmu membantu teman lain juga.
 📌 Melindungi Perangkat dari Malware (2/2): Menutup Pintu Masuk — materi Informatika kelas 9 (unit D9.3).
 Setelah menonton, kamu bisa membedakan virus, worm, trojan, ransomware, dan spyware dari cara masuknya, lalu menutup pintunya.
 Kata kunci materi ini: jenis malware kelas 9; perbedaan virus worm trojan untuk pelajar; cara melindungi hp dan laptop dari virus; materi informatika kelas 9 keamanan perangkat.
-Latihan interaktif (bisa luring di HP): berkas episode-d93.html. Tonton dulu episode D9.2 Jaringan Lokal dan Internet bila belum.
+Latihan interaktif (bisa dipakai di HP): https://listyantidewi1.github.io/animasi-informatika/episodes/D9.3/episode-d93.html Tonton dulu episode D9.2 Jaringan Lokal dan Internet bila belum.
 Ada yang belum jelas? Tulis di komentar, pertanyaanmu membantu teman lain juga.
 ```

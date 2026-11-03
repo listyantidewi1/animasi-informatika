@@ -29,7 +29,9 @@ Bab:
 4:01 Menilai hasil
 5:02 Giliranmu
 
-Latihan interaktif (kuis dengan petunjuk, bisa dipakai luring di HP): berkas episode-d74.html di repositori proyek. Prasyarat: episode D7.0 Cara Memakai Komputer dan HP.
+Latihan interaktif (kuis dengan petunjuk, bisa dipakai di HP): https://listyantidewi1.github.io/animasi-informatika/episodes/D7.4/episode-d74.html
+Semua episode dan latihannya: https://listyantidewi1.github.io/animasi-informatika/
+Prasyarat: episode D7.0 Cara Memakai Komputer dan HP.
 
 Seri Animasi Informatika untuk SMP–SMA mengikuti CP 2025 (Keputusan Kepala BSKAP 046/H/KR/2025), unit D7.4 (4 JP). Tokoh: robot Kiko, Dito, dan Sinta. Semua gambar dibuat dengan kode; tanpa musik latar. Narasi: Kak Ceria (ElevenLabs).
 
@@ -65,7 +67,9 @@ Bab:
 5:01 Menilai hasil
 6:17 Giliranmu
 
-Latihan interaktif (kuis dengan petunjuk, bisa dipakai luring di HP): berkas episode-d74.html di repositori proyek. Prasyarat: episode D7.0 Cara Memakai Komputer dan HP.
+Latihan interaktif (kuis dengan petunjuk, bisa dipakai di HP): https://listyantidewi1.github.io/animasi-informatika/episodes/D7.4/episode-d74.html
+Semua episode dan latihannya: https://listyantidewi1.github.io/animasi-informatika/
+Prasyarat: episode D7.0 Cara Memakai Komputer dan HP.
 
 Seri Animasi Informatika untuk SMP–SMA mengikuti CP 2025 (Keputusan Kepala BSKAP 046/H/KR/2025), unit D7.4 (4 JP). Tokoh: robot Kiko, Dito, dan Sinta. Semua gambar dibuat dengan kode; tanpa musik latar.
 
@@ -78,6 +82,6 @@ Seri Animasi Informatika untuk SMP–SMA mengikuti CP 2025 (Keputusan Kepala BSK
 📌 Mesin Pencari: Cara Kerja dan Strategi — materi Informatika kelas 7 (unit D7.4).
 Setelah menonton, kamu bisa mencari di internet dengan kata kunci jitu dan memilih hasil yang tepercaya.
 Kata kunci materi ini: cara kerja mesin pencari kelas 7; cara mencari informasi di internet dengan kata kunci; search engine informatika SMP; tips memilih hasil pencarian yang tepercaya.
-Latihan interaktif (bisa luring di HP): berkas episode-d74.html. Tonton dulu episode D7.0 Cara Memakai Komputer dan HP bila belum.
+Latihan interaktif (bisa dipakai di HP): https://listyantidewi1.github.io/animasi-informatika/episodes/D7.4/episode-d74.html Tonton dulu episode D7.0 Cara Memakai Komputer dan HP bila belum.
 Ada yang belum jelas? Tulis di komentar, pertanyaanmu membantu teman lain juga.
 ```

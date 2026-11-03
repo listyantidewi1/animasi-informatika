@@ -25,7 +25,9 @@ Bab:
 1:25 Array
 2:35 Record
 
-Latihan interaktif (kuis dengan petunjuk, bisa dipakai luring di HP): berkas episode-e5.html di repositori proyek. Prasyarat: episode D7.6 Data Terstruktur di Sekitar Kita dan D9.1 Pseudocode Lengkap.
+Latihan interaktif (kuis dengan petunjuk, bisa dipakai di HP): https://listyantidewi1.github.io/animasi-informatika/episodes/E.5/episode-e5.html
+Semua episode dan latihannya: https://listyantidewi1.github.io/animasi-informatika/
+Prasyarat: episode D7.6 Data Terstruktur di Sekitar Kita dan D9.1 Pseudocode Lengkap.
 
 Seri Animasi Informatika untuk SMP–SMA mengikuti CP 2025 (Keputusan Kepala BSKAP 046/H/KR/2025), unit E.5 (8 JP). Tokoh: robot Kiko, Dito, dan Sinta. Semua gambar dibuat dengan kode; tanpa musik latar. Narasi: Kak Ceria (ElevenLabs).
 
@@ -58,7 +60,9 @@ Bab:
 2:22 Memilih struktur data
 2:59 Giliranmu
 
-Latihan interaktif (kuis dengan petunjuk, bisa dipakai luring di HP): berkas episode-e5.html di repositori proyek. Prasyarat: episode D7.6 Data Terstruktur di Sekitar Kita dan D9.1 Pseudocode Lengkap.
+Latihan interaktif (kuis dengan petunjuk, bisa dipakai di HP): https://listyantidewi1.github.io/animasi-informatika/episodes/E.5/episode-e5.html
+Semua episode dan latihannya: https://listyantidewi1.github.io/animasi-informatika/
+Prasyarat: episode D7.6 Data Terstruktur di Sekitar Kita dan D9.1 Pseudocode Lengkap.
 
 Seri Animasi Informatika untuk SMP–SMA mengikuti CP 2025 (Keputusan Kepala BSKAP 046/H/KR/2025), unit E.5 (8 JP). Tokoh: robot Kiko, Dito, dan Sinta. Semua gambar dibuat dengan kode; tanpa musik latar. Narasi: Kak Ceria (ElevenLabs).
 
@@ -90,7 +94,9 @@ Bab:
 1:46 Array
 3:13 Record
 
-Latihan interaktif (kuis dengan petunjuk, bisa dipakai luring di HP): berkas episode-e5.html di repositori proyek. Prasyarat: episode D7.6 Data Terstruktur di Sekitar Kita dan D9.1 Pseudocode Lengkap.
+Latihan interaktif (kuis dengan petunjuk, bisa dipakai di HP): https://listyantidewi1.github.io/animasi-informatika/episodes/E.5/episode-e5.html
+Semua episode dan latihannya: https://listyantidewi1.github.io/animasi-informatika/
+Prasyarat: episode D7.6 Data Terstruktur di Sekitar Kita dan D9.1 Pseudocode Lengkap.
 
 Seri Animasi Informatika untuk SMP–SMA mengikuti CP 2025 (Keputusan Kepala BSKAP 046/H/KR/2025), unit E.5 (8 JP). Tokoh: robot Kiko, Dito, dan Sinta. Semua gambar dibuat dengan kode; tanpa musik latar.
 
@@ -123,7 +129,9 @@ Bab:
 2:49 Memilih struktur data
 3:34 Giliranmu
 
-Latihan interaktif (kuis dengan petunjuk, bisa dipakai luring di HP): berkas episode-e5.html di repositori proyek. Prasyarat: episode D7.6 Data Terstruktur di Sekitar Kita dan D9.1 Pseudocode Lengkap.
+Latihan interaktif (kuis dengan petunjuk, bisa dipakai di HP): https://listyantidewi1.github.io/animasi-informatika/episodes/E.5/episode-e5.html
+Semua episode dan latihannya: https://listyantidewi1.github.io/animasi-informatika/
+Prasyarat: episode D7.6 Data Terstruktur di Sekitar Kita dan D9.1 Pseudocode Lengkap.
 
 Seri Animasi Informatika untuk SMP–SMA mengikuti CP 2025 (Keputusan Kepala BSKAP 046/H/KR/2025), unit E.5 (8 JP). Tokoh: robot Kiko, Dito, dan Sinta. Semua gambar dibuat dengan kode; tanpa musik latar.
 
@@ -136,7 +144,7 @@ Seri Animasi Informatika untuk SMP–SMA mengikuti CP 2025 (Keputusan Kepala BSK
 📌 Struktur Data Standar (1/2): Array dan Record — materi Informatika kelas 10 (unit E.5).
 Setelah menonton, kamu bisa memilih array, record, stack, atau queue untuk sebuah persoalan dan menjalankan operasinya langkah demi langkah.
 Kata kunci materi ini: struktur data array record stack queue kelas 10; stack dan queue penjelasan sederhana; array dan record informatika sma; push pop enqueue dequeue simulasi.
-Latihan interaktif (bisa luring di HP): berkas episode-e5.html. Tonton dulu episode D7.6 Data Terstruktur di Sekitar Kita dan D9.1 Pseudocode Lengkap bila belum.
+Latihan interaktif (bisa dipakai di HP): https://listyantidewi1.github.io/animasi-informatika/episodes/E.5/episode-e5.html Tonton dulu episode D7.6 Data Terstruktur di Sekitar Kita dan D9.1 Pseudocode Lengkap bila belum.
 Ada yang belum jelas? Tulis di komentar, pertanyaanmu membantu teman lain juga.
 ```
 
@@ -146,6 +154,6 @@ Ada yang belum jelas? Tulis di komentar, pertanyaanmu membantu teman lain juga.
 📌 Struktur Data Standar (2/2): Stack dan Queue — materi Informatika kelas 10 (unit E.5).
 Setelah menonton, kamu bisa memilih array, record, stack, atau queue untuk sebuah persoalan dan menjalankan operasinya langkah demi langkah.
 Kata kunci materi ini: struktur data array record stack queue kelas 10; stack dan queue penjelasan sederhana; array dan record informatika sma; push pop enqueue dequeue simulasi.
-Latihan interaktif (bisa luring di HP): berkas episode-e5.html. Tonton dulu episode D7.6 Data Terstruktur di Sekitar Kita dan D9.1 Pseudocode Lengkap bila belum.
+Latihan interaktif (bisa dipakai di HP): https://listyantidewi1.github.io/animasi-informatika/episodes/E.5/episode-e5.html Tonton dulu episode D7.6 Data Terstruktur di Sekitar Kita dan D9.1 Pseudocode Lengkap bila belum.
 Ada yang belum jelas? Tulis di komentar, pertanyaanmu membantu teman lain juga.
 ```

@@ -25,7 +25,10 @@ Bab:
 1:35 Bekal: pseudocode
 2:47 Bekal: logika
 
-Latihan interaktif (kuis dengan petunjuk, bisa dipakai luring di HP): berkas episode-f110.html di repositori proyek. Tidak ada prasyarat.
+Latihan interaktif (kuis dengan petunjuk, bisa dipakai di HP): https://listyantidewi1.github.io/animasi-informatika/episodes/F11.0/episode-f110.html
+Alat untuk latihan di komputer: Python (IDLE, gratis, luring) https://www.python.org/downloads/; Google Colab (Python di browser) https://colab.research.google.com/
+Semua episode dan latihannya: https://listyantidewi1.github.io/animasi-informatika/
+Tidak ada prasyarat.
 
 Seri Animasi Informatika untuk SMP–SMA mengikuti CP 2025 (Keputusan Kepala BSKAP 046/H/KR/2025), unit F11.0 (10 JP). Tokoh: robot Kiko, Dito, dan Sinta. Semua gambar dibuat dengan kode; tanpa musik latar. Narasi: Kak Ceria (ElevenLabs).
 
@@ -58,7 +61,10 @@ Bab:
 2:31 Ubah program, peta kelas XI
 3:10 Giliranmu
 
-Latihan interaktif (kuis dengan petunjuk, bisa dipakai luring di HP): berkas episode-f110.html di repositori proyek. Tidak ada prasyarat.
+Latihan interaktif (kuis dengan petunjuk, bisa dipakai di HP): https://listyantidewi1.github.io/animasi-informatika/episodes/F11.0/episode-f110.html
+Alat untuk latihan di komputer: Python (IDLE, gratis, luring) https://www.python.org/downloads/; Google Colab (Python di browser) https://colab.research.google.com/
+Semua episode dan latihannya: https://listyantidewi1.github.io/animasi-informatika/
+Tidak ada prasyarat.
 
 Seri Animasi Informatika untuk SMP–SMA mengikuti CP 2025 (Keputusan Kepala BSKAP 046/H/KR/2025), unit F11.0 (10 JP). Tokoh: robot Kiko, Dito, dan Sinta. Semua gambar dibuat dengan kode; tanpa musik latar. Narasi: Kak Ceria (ElevenLabs).
 
@@ -90,7 +96,10 @@ Bab:
 2:00 Bekal: pseudocode
 3:29 Bekal: logika
 
-Latihan interaktif (kuis dengan petunjuk, bisa dipakai luring di HP): berkas episode-f110.html di repositori proyek. Tidak ada prasyarat.
+Latihan interaktif (kuis dengan petunjuk, bisa dipakai di HP): https://listyantidewi1.github.io/animasi-informatika/episodes/F11.0/episode-f110.html
+Alat untuk latihan di komputer: Python (IDLE, gratis, luring) https://www.python.org/downloads/; Google Colab (Python di browser) https://colab.research.google.com/
+Semua episode dan latihannya: https://listyantidewi1.github.io/animasi-informatika/
+Tidak ada prasyarat.
 
 Seri Animasi Informatika untuk SMP–SMA mengikuti CP 2025 (Keputusan Kepala BSKAP 046/H/KR/2025), unit F11.0 (10 JP). Tokoh: robot Kiko, Dito, dan Sinta. Semua gambar dibuat dengan kode; tanpa musik latar.
 
@@ -123,7 +132,10 @@ Bab:
 3:03 Ubah program, peta kelas XI
 3:50 Giliranmu
 
-Latihan interaktif (kuis dengan petunjuk, bisa dipakai luring di HP): berkas episode-f110.html di repositori proyek. Tidak ada prasyarat.
+Latihan interaktif (kuis dengan petunjuk, bisa dipakai di HP): https://listyantidewi1.github.io/animasi-informatika/episodes/F11.0/episode-f110.html
+Alat untuk latihan di komputer: Python (IDLE, gratis, luring) https://www.python.org/downloads/; Google Colab (Python di browser) https://colab.research.google.com/
+Semua episode dan latihannya: https://listyantidewi1.github.io/animasi-informatika/
+Tidak ada prasyarat.
 
 Seri Animasi Informatika untuk SMP–SMA mengikuti CP 2025 (Keputusan Kepala BSKAP 046/H/KR/2025), unit F11.0 (10 JP). Tokoh: robot Kiko, Dito, dan Sinta. Semua gambar dibuat dengan kode; tanpa musik latar.
 
@@ -136,7 +148,8 @@ Seri Animasi Informatika untuk SMP–SMA mengikuti CP 2025 (Keputusan Kepala BSK
 📌 Jembatan Menuju Pemrograman (1/2): Bekal: Pseudocode dan Logika — materi Informatika kelas 11 (unit F11.0).
 Setelah menonton, kamu bisa mengecek bekal pseudocode dan logika benar-salahmu, lalu menjalankan dan mengubah program Python pertamamu.
 Kata kunci materi ini: informatika kelas 11 python pertama; dari pseudocode ke python pemula; logika and or not tabel kebenaran kelas 11; program python pertama print input if.
-Latihan interaktif (bisa luring di HP): berkas episode-f110.html.
+Latihan interaktif (bisa dipakai di HP): https://listyantidewi1.github.io/animasi-informatika/episodes/F11.0/episode-f110.html
+Alat untuk latihan di komputer: Python (IDLE, gratis, luring) https://www.python.org/downloads/; Google Colab (Python di browser) https://colab.research.google.com/
 Ada yang belum jelas? Tulis di komentar, pertanyaanmu membantu teman lain juga.
 ```
 
@@ -146,6 +159,7 @@ Ada yang belum jelas? Tulis di komentar, pertanyaanmu membantu teman lain juga.
 📌 Jembatan Menuju Pemrograman (2/2): Program Python Pertama — materi Informatika kelas 11 (unit F11.0).
 Setelah menonton, kamu bisa mengecek bekal pseudocode dan logika benar-salahmu, lalu menjalankan dan mengubah program Python pertamamu.
 Kata kunci materi ini: informatika kelas 11 python pertama; dari pseudocode ke python pemula; logika and or not tabel kebenaran kelas 11; program python pertama print input if.
-Latihan interaktif (bisa luring di HP): berkas episode-f110.html.
+Latihan interaktif (bisa dipakai di HP): https://listyantidewi1.github.io/animasi-informatika/episodes/F11.0/episode-f110.html
+Alat untuk latihan di komputer: Python (IDLE, gratis, luring) https://www.python.org/downloads/; Google Colab (Python di browser) https://colab.research.google.com/
 Ada yang belum jelas? Tulis di komentar, pertanyaanmu membantu teman lain juga.
 ```
