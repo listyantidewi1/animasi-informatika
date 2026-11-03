@@ -59,7 +59,7 @@ Bab:
 1:08 File
 1:51 Folder
 2:59 Save dan cari
-4:01 Giliranmu
+4:02 Giliranmu
 
 Latihan interaktif (kuis dengan petunjuk, bisa dipakai di HP): https://belajar-informatika.vercel.app/d70
 Semua episode dan latihannya: https://belajar-informatika.vercel.app/
@@ -129,7 +129,7 @@ Bab:
 1:24 File
 2:16 Folder
 3:41 Save dan cari
-4:57 Giliranmu
+4:58 Giliranmu
 
 Latihan interaktif (kuis dengan petunjuk, bisa dipakai di HP): https://belajar-informatika.vercel.app/d70
 Semua episode dan latihannya: https://belajar-informatika.vercel.app/
