@@ -113,7 +113,7 @@
       card(ctx, 160, 150, 1600, 740);
       text(ctx, "GILIRANMU", 960, 240, 34, { align: "center", color: C.accentDark, weight: 900 });
       const items = [["Perakit program", "susun fungsi dan urutannya", (x, y) => { ctx.save(); ctx.translate(x - 220, y - 100); ctx.scale(0.3, 0.3); Pd.pipe(ctx, 0, 0, 1440, 4, {}); ctx.restore(); Py.code(ctx, x - 210, y - 20, 420, [{ t: "hasil = rekomendasi(rangkum(" }, { t: "  bersihkan(baca_data(f))))" }], { rh: 30, size: 15, title: "" }); }],
-        ["Penguji fungsi", "tebak hasil test case", (x, y) => A.tests(ctx, x - 230, y - 110, [["rangkum", "2 hujan Agu", "Agu: 2", "ok"], ["bersihkan", "999", "dilewati", "ok"]], {})],
+        ["Penguji fungsi", "tebak hasil test case", (x, y) => A.tests(ctx, x - 228, y - 110, [["rangkum", "2 hujan Agu", "Agu: 2", "ok"], ["bersihkan", "999", "dilewati", "ok"]], { cw: [116, 138, 120, 82] })],
         ["Pemeriksa README", "lengkapi yang hilang", (x, y) => Pd.readme(ctx, x - 210, y - 120, 420, ["# Cek Bulan Kemah", "Cara pakai: …", "Sumber data: ?"], {})]];
       items.forEach(([t1, t2, draw], i) => { const x = 440 + i * 520; card(ctx, x - 240, 290, 480, 410, { fill: C.bg2 }); ctx.fillStyle = C.kiko; ctx.beginPath(); ctx.arc(x - 200, 340, 28, 0, Math.PI * 2); ctx.fill(); text(ctx, String(i + 1), x - 200, 352, 30, { align: "center", color: "#fff", weight: 900 }); text(ctx, t1, x - 160, 352, 26, { weight: 900 }); para(ctx, t2, x - 160, 386, 20, 380, { weight: 700, color: C.ink2 }); draw(x, 560); });
       text(ctx, "di halaman latihan episode ini — lalu ketik program Cek Bulan Kemah di komputer", 960, 745, 24, { align: "center", color: C.ink2, weight: 700 });

@@ -23,7 +23,7 @@
   };
   // tabel kasus uji: rows [[kasus, masukan, harapan, hasil]] hasil "ok"|"bug"|""
   A.tests = function (ctx, x, y, rows, opt = {}) {
-    const cw = [150, 240, 320, 110], rh = 50, W = cw.reduce((a, b) => a + b, 0); card(ctx, x, y, W, rh * (rows.length + 1), { fill: "#fff", stroke: "#B7C4CC", lw: 3, r: 10 }); ctx.fillStyle = C.bg2; rr(ctx, x, y, W, rh, 10); ctx.fill(); ctx.fillRect(x, y + rh / 2, W, rh / 2);
+    const cw = opt.cw || [150, 240, 320, 110], rh = 50, W = cw.reduce((a, b) => a + b, 0); card(ctx, x, y, W, rh * (rows.length + 1), { fill: "#fff", stroke: "#B7C4CC", lw: 3, r: 10 }); ctx.fillStyle = C.bg2; rr(ctx, x, y, W, rh, 10); ctx.fill(); ctx.fillRect(x, y + rh / 2, W, rh / 2);
     let cx = x; ["kasus", "input", "harapan", "hasil"].forEach((h, c) => { text(ctx, h, cx + 12, y + rh / 2 + 7, 18, { weight: 900, color: C.ink2 }); cx += cw[c]; });
     rows.forEach((r, i) => { if (opt.n != null && i >= opt.n) return; const ry = y + rh * (i + 1); let cx = x; r.forEach((v, c) => { if (c === 3) { if (v) { ctx.fillStyle = v === "ok" ? C.goodBg : C.badBg; ctx.fillRect(cx + 1, ry + 1, cw[c] - 2, rh - 2); text(ctx, v === "ok" ? "✓ lolos" : "✕ bug", cx + cw[c] / 2, ry + rh / 2 + 7, 18, { align: "center", weight: 900, color: v === "ok" ? C.good : C.bad }); } } else text(ctx, v, cx + 12, ry + rh / 2 + 7, 18, { weight: c === 0 ? 900 : 700 }); cx += cw[c]; }); });
   };
