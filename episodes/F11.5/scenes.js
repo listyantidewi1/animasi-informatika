@@ -85,7 +85,7 @@
       const n = reveal(l, 1.5, 1.8, 6);
       Tb.flow(ctx, 240, 255, 1440, Tb.STEPS, 6, { h: 110, active: 3 });
       const rows = Tb.BULAN.map((m, i) => [m, String(Tb.HARI_HUJAN[i])]); const shown = Math.min(12, Math.max(0, (n - 1) * 3));
-      Dq.table(ctx, 240, 390, [160, 200], ["bulan", "hari hujan (rata-rata 3 thn)"], rows.slice(0, shown).concat(Array(12 - shown).fill(["", ""])), shown >= 12 ? { "7,0": "fix", "7,1": "fix" } : {}, { rh: 28 });
+      Dq.table(ctx, 240, 390, [130, 262], ["bulan", "hari hujan (rata-rata 3 thn)"], rows.slice(0, shown).concat(Array(12 - shown).fill(["", ""])), shown >= 12 ? { "7,0": "fix", "7,1": "fix" } : {}, { rh: 28 });
       if (n >= 2) { card(ctx, 660, 400, 1020, 110, { fill: "#fff", stroke: "#B7C4CC", lw: 3, r: 12 }); text(ctx, "LEMBAR KERJA", 684, 432, 16, { weight: 900, color: C.ink2 }); text(ctx, '=COUNTIFS(hujan; ">0"; bulan; "Agu")', 684, 476, 24, { weight: 900, color: C.kiko }); }
       if (n >= 4) { card(ctx, 660, 530, 1020, 130, { fill: "#1F2A33", r: 12 }); text(ctx, "PYTHON", 684, 562, 16, { weight: 900, color: "#8FD0E6" }); text(ctx, "hari_hujan = data[data.mm > 0]", 684, 600, 22, { weight: 800, color: "#fff" }); text(ctx, "hari_hujan.groupby(\"bulan\").size()", 684, 636, 22, { weight: 800, color: "#fff" }); }
       if (n >= 6) label(ctx, "tabel kecil yang bisa dibaca sekali lihat", 1170, 715, { size: 24 });
@@ -103,8 +103,8 @@
       const n = reveal(l, 1.5, 1.8, 6);
       Lb.barChart(ctx, 240, 260, 900, 400, Tb.BULAN.map((m, i) => [m, Tb.HARI_HUJAN[i]]), { hl: 7, title: "hari hujan per bulan (rata-rata 2023–2025)", values: false });
       text(ctx, "sumber: Portal Data Terbuka Kota Sukamaju (fiktif), curah hujan harian 2023–2025", 240, 690, 16, { weight: 700, color: C.ink2 });
-      if (n >= 2) Lb.lineChart(ctx, 1180, 260, 500, 220, [["2023", 4], ["2024", 2], ["2025", 3]], { title: "hari hujan Agustus per tahun", n: Math.min(3, n - 1) });
-      if (n >= 4) Tb.cutBars(ctx, 1180, 500, 500, 190, [["Jul", 45], ["Agu", 42]], 40, { title: "✕ sumbu mulai dari 40: menyesatkan", bad: true });
+      if (n >= 2) Lb.lineChart(ctx, 1180, 260, 500, 220, [["2023", 4], ["2024", 2], ["2025", 3]], { title: "hari hujan Agustus per tahun", unit: "hari", n: Math.min(3, n - 1) });
+      if (n >= 4) Tb.cutBars(ctx, 1180, 500, 500, 190, [["Jul", 5], ["Agu", 3]], 2, { title: "✕ sumbu mulai dari 2: menyesatkan", bad: true });
       if (n >= 6) { ["sumbu dari nol", "label + satuan", "sumber ditulis"].forEach((s, i) => { card(ctx, 240 + i * 300, 710, 280, 50, { fill: C.goodBg, stroke: C.good, lw: 2, r: 10 }); text(ctx, "✓ " + s, 380 + i * 300, 743, 20, { align: "center", weight: 900, color: C.good }); }); }
     },
     keputusan(ctx, b, l) {

@@ -4,8 +4,11 @@
   const { text, para, card, kiko, kid, rr, ease, clamp, lerp } = H;
   const between = (u, a, b) => u >= a && u < b;
   const POEM = ["Ibu, pagi-pagi kau sudah bangun,", "menyiapkan bekal, menyapu halaman.", "Kasihmu hangat seperti matahari."];
-  const MESSY = Array.from({ length: 40 }, (_, i) => ["foto", "tulisan", "lagu", "video"][(i * 7 + 3) % 4]);
+  const MESSY = Array.from({ length: 40 }, (_, i) => ["foto", "tulisan", "lagu"][(i * 7 + 3) % 3]);
+  // folder_sort menerbangkan 12 file contoh; angka di folder diskalakan ke jumlah sebenarnya dari 40 file di MESSY
+  const MESSY_N = ["tulisan", "foto", "lagu"].map(k => MESSY.filter(x => x === k).length);
   const SORT = Array.from({ length: 12 }, (_, i) => ["tulisan", "foto", "lagu"][(i * 5 + 1) % 3]);
+  const SORT_N = ["tulisan", "foto", "lagu"].map(k => SORT.filter(x => x === k).length);
 
   // ---------- file ----------
   Object.assign(SCENES, {
@@ -82,7 +85,7 @@
         if (u >= 1) { counts[fi]++; return; }
         const kk = ease(u); D.fileIcon(ctx, lerp(fx, tx, kk), lerp(fy, ty, kk) - Math.sin(kk * Math.PI) * 60, 64, k, {});
       });
-      folders.forEach(([n, , x], i) => { D.fileIcon(ctx, x, win.y + 110, 130, "folder", { name: n, size: 30 }); if (counts[i]) { ctx.fillStyle = C.good; ctx.beginPath(); ctx.arc(x + 60, win.y + 50, 28, 0, Math.PI * 2); ctx.fill(); text(ctx, String(counts[i]), x + 60, win.y + 61, 28, { align: "center", color: "#fff", weight: 900 }); } });
+      folders.forEach(([n, , x], i) => { D.fileIcon(ctx, x, win.y + 110, 130, "folder", { name: n, size: 30 }); if (counts[i]) { ctx.fillStyle = C.good; ctx.beginPath(); ctx.arc(x + 60, win.y + 50, 28, 0, Math.PI * 2); ctx.fill(); text(ctx, String(Math.round(counts[i] / SORT_N[i] * MESSY_N[i])), x + 60, win.y + 61, 28, { align: "center", color: "#fff", weight: 900 }); } });
       kid(ctx, 1560, 540, 190, { point: true });
       D.note(ctx, 1320, 820, 480, counts[0] + counts[1] + counts[2] >= 12 ? "rapi! ✓" : "drag ke foldernya…", { size: 32, h: 70, fill: counts[0] + counts[1] + counts[2] >= 12 ? C.goodBg : "#FFF3D6", stroke: counts[0] + counts[1] + counts[2] >= 12 ? C.good : C.accent });
     },
@@ -124,16 +127,16 @@
       const dx = sc.x + 160, dy = sc.y + 90, dw = 680, dh = 400; ctx.fillStyle = "rgba(31,42,51,0.25)"; rr(ctx, sc.x, sc.y, sc.w, sc.h, 10); ctx.fill();
       card(ctx, dx, dy, dw, dh, { stroke: C.kiko, lw: 4 }); text(ctx, "Simpan (save)", dx + dw / 2, dy + 50, 32, { align: "center", weight: 900 });
       text(ctx, "Nama:", dx + 40, dy + 120, 28, { weight: 800, color: C.ink2 });
-      const n = clamp(Math.floor((l - 1.2) / 0.16), 0, 9); D.textBox(ctx, dx + 170, dy + 85, 460, 56, ["Puisi Ibu".slice(0, n)], l, { size: 30, cursor: n < 9 });
+      const n = clamp(Math.floor((l - 1.0) / 0.15), 0, 14); D.textBox(ctx, dx + 170, dy + 85, 460, 56, ["Puisi Ibu Dito".slice(0, n)], l, { size: 30, cursor: n < 14 });
       text(ctx, "Folder:", dx + 40, dy + 210, 28, { weight: 800, color: C.ink2 });
       ["Tugas", "Foto", "Lagu"].forEach((f, i) => { const on = i === 0 && l > 3.4; card(ctx, dx + 170 + i * 155, dy + 175, 140, 56, { fill: on ? "#FFF3D6" : C.bg2, stroke: on ? C.accent : "#D7E2DC", lw: on ? 4 : 2 }); D.fileIcon(ctx, dx + 200 + i * 155, dy + 203, 30, "folder", {}); text(ctx, f, dx + 225 + i * 155, dy + 212, 26, { weight: 800 }); });
       const pressed = l > 5.0; card(ctx, dx + dw - 220, dy + dh - 90, 180, 60, { fill: pressed ? C.good : C.kiko }); text(ctx, pressed ? "✓ tersimpan" : "Simpan", dx + dw - 130, dy + dh - 50, 26, { align: "center", color: "#fff", weight: 900 });
       kid(ctx, 1500, 540, 200, { point: true });
-      D.note(ctx, 1300, 780, 500, l > 5.0 ? "Puisi Ibu → folder Tugas" : l > 3.4 ? "di folder mana?" : "namanya apa?", { size: 30, h: 70 });
+      D.note(ctx, 1300, 780, 500, l > 5.0 ? "Puisi Ibu Dito → folder Tugas" : l > 3.4 ? "di folder mana?" : "namanya apa?", { size: 30, h: 70 });
     },
     save_often(ctx, b, l) {
       const sc = D.monitor(ctx, 240, 170, 1000, 560);
-      const a = editor(ctx, sc.x + 40, sc.y + 30, sc.w - 80, sc.h - 60, "Puisi Ibu", POEM.concat(["Terima kasih, Ibu."]), l);
+      const a = editor(ctx, sc.x + 40, sc.y + 30, sc.w - 80, sc.h - 60, "Puisi Ibu Dito", POEM.concat(["Terima kasih, Ibu."]), l);
       const pulse = (l % 2.0) < 0.5; card(ctx, a.x + a.w - 250, a.y + 10, 230, 50, { fill: pulse ? C.goodBg : C.panel, stroke: C.good, lw: 3 }); text(ctx, "tersimpan ✓", a.x + a.w - 135, a.y + 44, 26, { align: "center", color: C.good, weight: 900 });
       // lampu
       const dark = l > 3.6; ctx.fillStyle = dark ? "#9AAFA6" : "#FFE27A"; ctx.beginPath(); ctx.arc(1500, 400, 90, 0, Math.PI * 2); ctx.fill(); ctx.fillStyle = "#7B8B95"; rr(ctx, 1460, 480, 80, 60, 10); ctx.fill();

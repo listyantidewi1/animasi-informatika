@@ -72,7 +72,7 @@
       heading(ctx, "GARIS TREN: y = a + b·x");
       const n = reveal(l, 1.5, 3.2, 5);
       const g = Tr.plot(ctx, 300, 290, 820, 370, { line: n >= 1 ? COBA : null, errs: n >= 4 ? "label" : false });
-      if (n >= 2) { const x1 = 2, x2 = 3; const A = [g.px(x1), g.py(15 + 3.5 * x1)], B2 = [g.px(x2), g.py(15 + 3.5 * x1)], Cc = [g.px(x2), g.py(15 + 3.5 * x2)]; ctx.strokeStyle = C.accentDark; ctx.lineWidth = 3; ctx.beginPath(); ctx.moveTo(...A); ctx.lineTo(...B2); ctx.lineTo(...Cc); ctx.stroke(); text(ctx, "b = 3,5", B2[0] + 14, (B2[1] + Cc[1]) / 2 + 7, 20, { weight: 900, color: C.accentDark }); }
+      if (n >= 2) { const x1 = 6.5, x2 = 7.5; const A = [g.px(x1), g.py(15 + 3.5 * x1)], B2 = [g.px(x2), g.py(15 + 3.5 * x1)], Cc = [g.px(x2), g.py(15 + 3.5 * x2)]; ctx.strokeStyle = C.accentDark; ctx.lineWidth = 3; ctx.beginPath(); ctx.moveTo(...A); ctx.lineTo(...B2); ctx.lineTo(...Cc); ctx.stroke(); text(ctx, "b = 3,5", B2[0] + 14, (B2[1] + Cc[1]) / 2 + 7, 20, { weight: 900, color: C.accentDark }); }
       if (n >= 3) { ctx.beginPath(); ctx.arc(g.px(0), g.py(15), 11, 0, Math.PI * 2); ctx.fillStyle = C.accent; ctx.fill(); text(ctx, "a = 15", g.px(0) + 18, g.py(15) + 30, 20, { weight: 900, color: C.accentDark }); }
       [["y = 15 + 3,5x", "contoh garis coba-coba", C.accent], ["b: kemiringan", "kenaikan tiap bulan", C.accentDark], ["a: titik awal", "nilai saat x = 0", C.accentDark], ["error = asli − garis", "hijau positif, merah negatif", C.ink]].forEach(([t, s, col], i) => dim(ctx, n >= i + 1, () => { card(ctx, 1260, 280 + i * 110, 450, 94, { fill: C.bg2, r: 14 }); text(ctx, t, 1290, 320 + i * 110, 26, { weight: 900, color: col }); text(ctx, s, 1290, 354 + i * 110, 19, { weight: 800, color: C.ink2 }); }));
     },

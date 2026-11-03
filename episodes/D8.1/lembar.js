@@ -54,7 +54,7 @@
     const n = opt.n == null ? items.length : clamp(opt.n, 1, items.length);
     ctx.strokeStyle = opt.color || C.kiko; ctx.lineWidth = 6; ctx.lineJoin = "round"; ctx.beginPath();
     items.slice(0, n).forEach(([lab, v], i) => { const px = x + 60 + i * step, py = base - (base - top) * v / max; if (i) ctx.lineTo(px, py); else ctx.moveTo(px, py); }); ctx.stroke();
-    items.forEach(([lab, v], i) => { const px = x + 60 + i * step, py = base - (base - top) * v / max; if (i < n) { ctx.fillStyle = opt.color || C.kiko; ctx.beginPath(); ctx.arc(px, py, 8, 0, Math.PI * 2); ctx.fill(); } text(ctx, lab, px, base + 28, 20, { align: "center", weight: 800, color: C.ink2 }); });
+    items.forEach(([lab, v], i) => { const px = x + 60 + i * step, py = base - (base - top) * v / max; if (i < n) { ctx.fillStyle = opt.color || C.kiko; ctx.beginPath(); ctx.arc(px, py, 8, 0, Math.PI * 2); ctx.fill(); if (opt.unit != null) text(ctx, v + (opt.unit ? " " + opt.unit : ""), px, py - 16, 18, { align: "center", weight: 900, color: opt.color || C.kikoDark }); } text(ctx, lab, px, base + 28, 20, { align: "center", weight: 800, color: C.ink2 }); });
     if (opt.title) text(ctx, opt.title, x + w / 2, y + 26, 22, { align: "center", weight: 900, color: C.ink2 });
   };
   // tabel kertas (ditulis tangan): header + rows; opt.erase [ [r,c] ] dicoret
