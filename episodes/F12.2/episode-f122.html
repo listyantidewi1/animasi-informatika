@@ -1,0 +1,1012 @@
+<title>Kiko: Solusi Optimal</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<style>
+/* Inti gaya halaman latihan: satu kolom, pemutar di atas, latihan di bawah; palet kantin sama dengan video. */
+:root {
+  --bg: #EAF2EE; --surface: #FFFFFF; --surface2: #DCE9E2; --ink: #1F2A33; --ink2: #4A5A66; --line: #C9D8D0;
+  --accent: #2E7E9A; --accent-ink: #FFFFFF; --warm: #F2B134; --warm-ink: #5E3E05; --good: #2E9E5B; --good-bg: #DDF3E4; --bad: #D9443B; --bad-bg: #FBE1DF;
+  --font: Inter, "Segoe UI", Roboto, Arial, sans-serif;
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) { --bg: #141C1A; --surface: #1E2926; --surface2: #273532; --ink: #EAF2EE; --ink2: #A9BBB3; --line: #3A4A45; --accent: #5FB3CE; --accent-ink: #0F1D22; --warm: #F2B134; --warm-ink: #2B1C02; --good: #5FCB8A; --good-bg: #1F3A2B; --bad: #F07A72; --bad-bg: #442523; color-scheme: dark } }
+:root[data-theme="dark"] { --bg: #141C1A; --surface: #1E2926; --surface2: #273532; --ink: #EAF2EE; --ink2: #A9BBB3; --line: #3A4A45; --accent: #5FB3CE; --accent-ink: #0F1D22; --warm: #F2B134; --warm-ink: #2B1C02; --good: #5FCB8A; --good-bg: #1F3A2B; --bad: #F07A72; --bad-bg: #442523; color-scheme: dark }
+* { box-sizing: border-box }
+body { background: var(--bg); color: var(--ink); font-family: var(--font); font-size: 17px; line-height: 1.5; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); padding-block: 16px 48px }
+.wrap { max-width: 980px; margin: 0 auto; display: grid; gap: 28px }
+h1 { font-size: clamp(26px, 5vw, 38px); line-height: 1.15; margin: 0; text-wrap: balance; font-weight: 900 }
+h2 { font-size: 22px; margin: 0 0 12px; font-weight: 800 }
+h3 { font-size: 18px; margin: 0 0 8px; font-weight: 800 }
+p { margin: 0 0 10px; max-width: 65ch }
+.eyebrow { font-size: 13px; letter-spacing: .08em; text-transform: uppercase; color: var(--ink2); font-weight: 800; margin-bottom: 6px }
+.card { background: var(--surface); border-radius: 18px; padding: 18px; border: 1px solid var(--line) }
+button { font: inherit; font-weight: 800; border: 0; border-radius: 12px; padding: 12px 16px; cursor: pointer; background: var(--surface2); color: var(--ink); min-height: 48px; touch-action: manipulation }
+button:focus-visible, [tabindex]:focus-visible { outline: 3px solid var(--warm); outline-offset: 2px }
+button.primary { background: var(--accent); color: var(--accent-ink) }
+button.warm { background: var(--warm); color: var(--warm-ink) }
+button[aria-pressed="true"] { box-shadow: inset 0 0 0 3px var(--accent) }
+button:disabled { opacity: .45; cursor: default }
+.row { display: flex; flex-wrap: wrap; gap: 10px; align-items: center }
+/* player */
+.player { display: grid; gap: 12px }
+.stage { position: relative; width: 100%; aspect-ratio: 16 / 9; max-width: 100%; background: #EAF2EE; border-radius: 14px; overflow: hidden; border: 1px solid var(--line) }
+.stage canvas { width: 100%; height: 100%; display: block }
+.bigplay { position: absolute; inset: 0; display: grid; place-items: center; background: rgba(31,42,51,.25); border: 0; border-radius: 0; color: #fff; font-size: 20px; min-height: 0 }
+.bigplay span { background: var(--accent); color: var(--accent-ink); padding: 14px 26px; border-radius: 999px; font-weight: 900 }
+.bar { height: 10px; background: var(--surface2); border-radius: 999px; overflow: hidden; cursor: pointer }
+.bar > i { display: block; height: 100%; width: 0; background: var(--warm) }
+.chapters { display: flex; flex-wrap: wrap; gap: 8px }
+.chapters button { font-size: 14px; padding: 8px 12px; min-height: 40px }
+.chapters button.now { background: var(--warm); color: var(--warm-ink) }
+.hint { color: var(--ink2); font-size: 15px }
+/* exercises (generic parts) */
+.levels { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 12px }
+.levels button { font-size: 14px; padding: 8px 12px; min-height: 40px }
+.levels button.done::after { content: " ✓"; color: var(--good) }
+.task { background: var(--surface2); border-radius: 12px; padding: 12px 14px; margin-bottom: 12px; font-weight: 700 }
+.result { border-radius: 12px; padding: 12px 14px; font-weight: 800; margin-top: 10px }
+.result.good { background: var(--good-bg); color: var(--good) }
+.result.bad { background: var(--bad-bg); color: var(--bad) }
+.result.info { background: var(--surface2); color: var(--ink) }
+/* quiz */
+.quiz { display: grid; gap: 16px }
+.q { border-top: 1px solid var(--line); padding-top: 14px }
+.q:first-child { border-top: 0; padding-top: 0 }
+.opts { display: grid; gap: 8px; margin-top: 8px }
+.opts button { text-align: left; font-weight: 700; background: var(--surface2); display: flex; gap: 10px; align-items: center }
+.opts button b { width: 30px; height: 30px; border-radius: 50%; background: var(--accent); color: var(--accent-ink); display: grid; place-items: center; flex: none }
+.opts button.right { background: var(--good-bg); box-shadow: inset 0 0 0 3px var(--good) }
+.opts button.wrong { background: var(--bad-bg) }
+.fb { margin-top: 8px; font-weight: 700 }
+.fb.good { color: var(--good) } .fb.bad { color: var(--bad) }
+details summary { cursor: pointer; font-weight: 800; font-size: 18px }
+details[open] summary { margin-bottom: 10px }
+ul.plain { padding-left: 20px; margin: 0 0 10px } ul.plain li { margin-bottom: 6px; max-width: 65ch }
+.progress { display: flex; gap: 8px; flex-wrap: wrap } .progress span { background: var(--surface2); border-radius: 999px; padding: 6px 12px; font-size: 14px; font-weight: 700 }
+.progress span.ok { background: var(--good-bg); color: var(--good) }
+@media (prefers-reduced-motion: reduce) { * { transition: none !important } }
+
+/* latihan F12.2 */
+.qnum { font-weight: 800; color: var(--ink2); font-size: 14px; margin-bottom: 4px }
+.qtext { font-weight: 800; font-size: 18px; margin-bottom: 8px }
+.pic { background: var(--surface2); border-radius: 12px; padding: 12px; margin: 8px 0; font-size: 15px; font-weight: 700; display: grid; gap: 6px }
+.pic .big { font-size: 34px; letter-spacing: 6px }
+.pic .row2 { display: flex; flex-wrap: wrap; gap: 6px } .pic .chip { background: var(--surface); border: 2px solid var(--line); border-radius: 8px; padding: 4px 8px }
+.grid5 { border-collapse: collapse; margin: 6px auto } .grid5 td, .grid5 th { width: 44px; height: 44px; text-align: center; border: 1px solid var(--line); font-size: 14px; font-weight: 800; padding: 0 }
+.grid5 th { background: var(--surface2) } .grid5 td button { width: 100%; height: 100%; border: 0; border-radius: 0; background: transparent; font-size: 18px; min-height: 44px; padding: 0 }
+.grid5 td button.right { background: var(--good-bg) } .grid5 td button.wrong { background: var(--bad-bg) } .grid5 td.start { background: #FFF3D6 }
+.opts { display: grid; gap: 8px; margin: 8px 0 }
+.opts button { text-align: left; font-size: 15px; min-height: 44px; padding: 10px 12px; background: var(--surface); border: 2px solid var(--line) }
+.opts button.right { border-color: var(--good); background: var(--good-bg) } .opts button.wrong { border-color: var(--bad); background: var(--bad-bg) } .opts button.picked { border-color: var(--accent); background: color-mix(in srgb, var(--accent) 14%, var(--surface)) }
+.peta { display: grid; gap: 10px; margin: 8px 0 }
+.peta .ep { border-radius: 12px; padding: 12px 14px; display: grid; gap: 4px; font-weight: 700 } .peta .ep.ok { background: var(--good-bg) } .peta .ep.redo { background: color-mix(in srgb, var(--accent) 18%, var(--surface)) }
+.peta .ep b { font-size: 16px } .peta .ep small { color: var(--ink2) }
+.rev { display: grid; gap: 6px; margin-top: 8px } .rev div { font-size: 14px; padding: 8px 10px; border-radius: 10px; background: var(--surface2) } .rev div.bad { background: var(--bad-bg) }
+.tr { border-collapse: collapse; width: 100%; font-size: 15px; margin: 8px 0 } .tr th, .tr td { border: 1px solid var(--line); padding: 6px 8px; text-align: center } .tr th { background: var(--surface2) } .tr td.blank { background: #FFF3D6; font-weight: 900 } .tr td.ok { background: var(--good-bg); font-weight: 900 }
+.code { background: #1F2A33; color: #fff; border-radius: 12px; padding: 10px 12px; font-family: ui-monospace, monospace; font-size: 14px; white-space: pre; margin: 8px 0; line-height: 1.6 }
+.mem { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; margin: 8px 0 } .mem div { background: var(--surface); border: 2px solid var(--line); border-radius: 10px; padding: 6px; text-align: center } .mem div b { display: block; font-size: 12px; color: var(--ink2) } .mem div span { font-size: 18px; font-weight: 900 } .mem div.chg { border-color: var(--accent); background: #FFF3D6 }
+.py { background: #1F2A33; color: #fff; border-radius: 12px; padding: 10px 12px; font-family: ui-monospace, monospace; font-size: 13px; white-space: pre-wrap; margin: 8px 0; line-height: 1.7 } .py .hl { background: #B57A12; border-radius: 4px; padding: 0 4px }
+.scr { background: #0E1418; color: #fff; border-radius: 10px; padding: 8px 12px; font-family: ui-monospace, monospace; font-size: 14px; min-height: 20px; margin: 6px 0 }
+.tree svg { width: 100%; height: auto; display: block; background: var(--surface2); border-radius: 12px; margin: 8px 0 }
+.tree circle { fill: var(--surface); stroke: #2E7E9A; stroke-width: 2.5 } .tree circle.cur { fill: #FFF3D6; stroke: #E09A1A; stroke-width: 4 } .tree circle.path { fill: #FFF3D6; stroke: #E09A1A } .tree circle.fresh { fill: var(--good-bg); stroke: var(--good) }
+.tree line { stroke: #B7C4CC; stroke-width: 2.5 } .tree line.path { stroke: #E09A1A; stroke-width: 4 } .tree text { font: 800 12px Inter, sans-serif; text-anchor: middle; fill: #1F2A33 }
+.dir { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; margin: 8px 0 } .dir button { min-height: 48px; font-size: 16px; font-weight: 800 }
+.todo { display: flex; flex-wrap: wrap; gap: 6px; margin: 6px 0 } .todo span { border: 2px solid var(--line); border-radius: 8px; padding: 2px 8px; font-weight: 800 } .todo span.now { border-color: #E09A1A; background: #FFF3D6 } .todo span.ok { background: var(--good-bg); border-color: var(--good) }
+.dt { border-collapse: collapse; width: 100%; font-size: 14px; margin: 6px 0 } .dt th, .dt td { border: 1px solid var(--line); padding: 5px 6px; text-align: center } .dt th { background: var(--surface2) } .dt tr.cur td { background: #FFF3D6 } .dt tr.fin td { background: var(--good-bg) }
+.acts { display: grid; gap: 6px; margin: 8px 0 } .acts button { text-align: left; min-height: 48px; font-size: 15px; display: grid; gap: 2px } .acts button small { color: var(--ink2); font-weight: 700 } .acts button.on { border-color: var(--good); background: var(--good-bg) }
+.bar13 { position: relative; height: 10px; background: var(--surface2); border-radius: 5px; margin-top: 4px } .bar13 i { position: absolute; top: 0; bottom: 0; background: #2E7E9A; border-radius: 5px }
+pre.ref { background: #1F2A33; color: #fff; border-radius: 10px; padding: 10px; font-size: 12px; overflow-x: auto }
+</style>
+
+<div class="wrap">
+  <header>
+    <div class="eyebrow">Informatika · Fase F · Kelas XII · Episode F12.2</div>
+    <h1>Memilih Solusi Optimal</h1>
+    <p class="hint">Tonton videonya (dua bagian), lalu kerjakan tiga latihan: Dijkstra langkah demi langkah, penjadwal lab, dan pembanding solusi. Semua kota, jarak, dan kegiatan fiktif. Suara bisa dimatikan; teks selalu tampil di layar.</p>
+  </header>
+  <section class="card player" aria-label="Pemutar episode">
+    <div class="stage">
+      <canvas id="screen" width="1920" height="1080" aria-label="Animasi episode"></canvas>
+      <audio id="nar" preload="auto" src="narasi.mp3"></audio>
+      <button class="bigplay" id="bigplay" aria-label="Putar"><span>▶ Putar episode</span></button>
+    </div>
+    <div class="bar" id="bar" role="slider" aria-label="Posisi episode" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" tabindex="0"><i id="barfill"></i></div>
+    <div class="row">
+      <button class="primary" id="playbtn">▶ Putar</button>
+      <button id="replay">↺ Ulangi bagian ini</button>
+      <button id="voice" aria-pressed="true">🔊 Suara: nyala</button>
+      <button id="slow" aria-pressed="false">🐢 Mode lambat</button>
+      <span class="hint" id="timelabel">0:00 / 0:00</span>
+    </div>
+    <div>
+      <div class="eyebrow">Bagian</div>
+      <div class="chapters" id="chapters"></div>
+    </div>
+  </section>
+
+  <section class="card" aria-label="Cek pemahaman">
+    <h2>Cek pemahaman</h2>
+    <p class="hint">Pilih satu jawaban. Kalau salah, kamu dapat petunjuk, lalu coba lagi.</p>
+    <div class="quiz" id="quiz"></div>
+  </section>
+
+  <section class="card" aria-label="Latihan">
+    <h2>Dijkstra, penjadwal lab, pembanding solusi</h2>
+    <p class="hint">Tiga latihan. Jawaban salah memberi petunjuk. Kemajuan tersimpan di perangkat ini.</p>
+    <div class="levels" id="levels"></div>
+    <div class="task" id="task"></div>
+    <div id="exarea"></div>
+    <div id="result"></div>
+    <div class="row" style="margin-top:10px"><button id="redo">↺ Ulangi bagian ini</button></div>
+  </section>
+
+  <section class="card" aria-label="Kemajuan">
+    <h2>Kemajuanmu</h2>
+    <div class="progress" id="progress"></div>
+    <p class="hint" style="margin-top:8px">Kemajuan tersimpan di perangkat ini saja.</p>
+  </section>
+
+  <section class="card">
+    <details>
+      <summary>Untuk guru: cara memakai episode ini (14 JP)</summary>
+      <p><b>Tujuan (F12.2, elemen BK dan AP, Fase F):</b> murid memilih dan menerapkan solusi terbaik dan paling efisien dengan struktur data yang tepat, misalnya rute terpendek atau penjadwalan. Target minimum: menelusuri Dijkstra dengan tangan pada graph kecil, lalu memakai program atau fungsi library yang tersedia. Target lanjutan: mengimplementasikan Dijkstra sendiri.</p>
+      <ul class="plain">
+        <li><b>Pertemuan 1 (2 JP):</b> peta kota dari tali di lantai (lima kertas kota, tali berlabel km). Tonton Bagian 1 sampai segmen brute force dan greedy; diskusi "terbaik menurut apa".</li>
+        <li><b>Pertemuan 2–3 (4 JP), Dijkstra dengan tangan:</b> kartu jarak sementara di peta tali, trace table di kertas, Latihan 1. Ulangi pada graph buatan kelompok lain.</li>
+        <li><b>Pertemuan 4 (2 JP), Python:</b> tonton Bagian 2. Jalankan program contoh di bawah, ubah satu bobot (jalan macet), bandingkan rutenya.</li>
+        <li><b>Pertemuan 5 (2 JP), penjadwalan:</b> Latihan 2. Uji aturan greedy lain (paling singkat dulu, mulai paling awal dulu) dan cari contoh yang membuatnya gagal.</li>
+        <li><b>Pertemuan 6–7 (4 JP), proyek mini:</b> rute dari sekolah ke beberapa tempat di sekitarnya (jarak diukur sendiri atau fiktif), pilih solusi, tulis laporan perbandingan. Latihan 3. Lanjutan: menulis Dijkstra sendiri tanpa melihat contoh.</li>
+      </ul>
+      <p><b>Program contoh</b> (Python standar, tanpa instalasi tambahan):</p>
+      <pre class="ref">import heapq
+
+def dijkstra(graf, asal):
+    jarak = {k: float("inf") for k in graf}
+    dari = {}
+    jarak[asal] = 0
+    antre = [(0, asal)]
+    while antre:
+        d, kota = heapq.heappop(antre)
+        if d &gt; jarak[kota]:
+            continue
+        for tetangga, w in graf[kota].items():
+            baru = d + w
+            if baru &lt; jarak[tetangga]:
+                jarak[tetangga] = baru
+                dari[tetangga] = kota
+                heapq.heappush(antre, (baru, tetangga))
+    return jarak, dari
+
+graf = {"A": {"B": 2, "C": 5}, "B": {"A": 2, "C": 2, "D": 6},
+        "C": {"A": 5, "B": 2, "D": 2, "E": 7},
+        "D": {"B": 6, "C": 2, "E": 3}, "E": {"C": 7, "D": 3}}
+print(dijkstra(graf, "A"))   # E = 9, rute A-B-C-D-E</pre>
+      <p><b>Catatan:</b> Dijkstra hanya benar untuk bobot yang tidak negatif. Aturan greedy "selesai paling awal" terbukti memberi jumlah kegiatan terbanyak; aturan greedy lain belum tentu.</p>
+    </details>
+  </section>
+</div>
+
+<script>/* Kiko core: mesin gambar bersama untuk semua episode Fase D.
+   Kiko.draw(ctx, t, TL) menggambar frame pada detik t di kanvas 1920x1080 secara deterministik.
+   Berisi palet, pembantu gambar, tokoh (Kiko, murid), dan adegan umum (judul, kuis, ringkasan, penutup).
+   Setiap episode menambahkan adegannya sendiri di scenes.js: Object.assign(Kiko.SCENES, {...}). */
+(function (global) {
+  const W = 1920, H = 1080;
+  const FONT = "Inter, 'Segoe UI', Roboto, Arial, sans-serif";
+  const C = {
+    bg: "#EAF2EE", bg2: "#DCE9E2", ink: "#1F2A33", ink2: "#4A5A66", panel: "#FFFFFF",
+    tile: "#F7FAF8", tileLine: "#C9D8D0", table: "#A4653A", tableTop: "#C98A57",
+    kiko: "#2E7E9A", kikoDark: "#1F5A6E", kikoLight: "#8FD0E6", eye: "#FFFFFF", pupil: "#1F2A33",
+    accent: "#F2B134", accentDark: "#B57A12", good: "#2E9E5B", bad: "#D9443B", goodBg: "#DDF3E4", badBg: "#FBE1DF",
+    sub: "#1F2A33", subText: "#FFFFFF", star: "#F2B134", skin: "#F1C9A5", skin2: "#C98A57", hair: "#2B2118",
+    uniform: "#FFFFFF", pants: "#2F4E7D", bubble: "#FFFFFF", muted: "#9AAFA6"
+  };
+  const ease = u => u < 0 ? 0 : u > 1 ? 1 : u * u * (3 - 2 * u);
+  const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
+  const lerp = (a, b, u) => a + (b - a) * u;
+
+  // ---------- drawing helpers ----------
+  function rr(ctx, x, y, w, h, r) {
+    ctx.beginPath(); ctx.moveTo(x + r, y); ctx.arcTo(x + w, y, x + w, y + h, r); ctx.arcTo(x + w, y + h, x, y + h, r);
+    ctx.arcTo(x, y + h, x, y, r); ctx.arcTo(x, y, x + w, y, r); ctx.closePath();
+  }
+  function text(ctx, s, x, y, size, opt = {}) {
+    ctx.font = `${opt.weight || 600} ${size}px ${FONT}`; ctx.fillStyle = opt.color || C.ink;
+    ctx.textAlign = opt.align || "left"; ctx.textBaseline = opt.base || "alphabetic"; ctx.fillText(s, x, y);
+  }
+  function wrap(ctx, s, size, weight, maxW) {
+    ctx.font = `${weight} ${size}px ${FONT}`;
+    const words = s.split(" "), lines = []; let cur = "";
+    for (const w of words) {
+      const test = cur ? cur + " " + w : w;
+      if (ctx.measureText(test).width > maxW && cur) { lines.push(cur); cur = w; } else cur = test;
+    }
+    if (cur) lines.push(cur);
+    return lines;
+  }
+  function para(ctx, s, x, y, size, maxW, opt = {}) {
+    const lines = wrap(ctx, s, size, opt.weight || 500, maxW); const lh = size * (opt.lh || 1.35);
+    lines.forEach((l, i) => text(ctx, l, x, y + i * lh, size, opt));
+    return lines.length * lh;
+  }
+  function arrowIcon(ctx, kind, cx, cy, s, color) {
+    ctx.save(); ctx.translate(cx, cy); ctx.strokeStyle = color; ctx.fillStyle = color; ctx.lineWidth = s * 0.16; ctx.lineCap = "round"; ctx.lineJoin = "round";
+    if (kind === "up") {
+      ctx.beginPath(); ctx.moveTo(0, s * 0.45); ctx.lineTo(0, -s * 0.3); ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(-s * 0.32, -s * 0.05); ctx.lineTo(0, -s * 0.45); ctx.lineTo(s * 0.32, -s * 0.05); ctx.stroke();
+    } else if (kind === "left" || kind === "right") {
+      const k = kind === "left" ? -1 : 1;
+      ctx.beginPath(); ctx.moveTo(0, s * 0.45); ctx.lineTo(0, -s * 0.05); ctx.quadraticCurveTo(0, -s * 0.32, k * s * 0.28, -s * 0.32); ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(k * s * 0.12, -s * 0.5); ctx.lineTo(k * s * 0.4, -s * 0.32); ctx.lineTo(k * s * 0.12, -s * 0.14); ctx.stroke();
+    } else if (kind === "east") {
+      ctx.beginPath(); ctx.moveTo(-s * 0.4, 0); ctx.lineTo(s * 0.3, 0); ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(s * 0.05, -s * 0.28); ctx.lineTo(s * 0.4, 0); ctx.lineTo(s * 0.05, s * 0.28); ctx.stroke();
+    } else if (kind === "grab") {
+      ctx.beginPath(); ctx.arc(0, s * 0.12, s * 0.22, 0, Math.PI * 2); ctx.fill();
+      ctx.beginPath(); ctx.moveTo(-s * 0.4, -s * 0.42); ctx.lineTo(-s * 0.4, -s * 0.12); ctx.moveTo(s * 0.4, -s * 0.42); ctx.lineTo(s * 0.4, -s * 0.12);
+      ctx.moveTo(-s * 0.4, -s * 0.42); ctx.lineTo(s * 0.4, -s * 0.42); ctx.stroke();
+    }
+    ctx.restore();
+  }
+  function bakso(ctx, cx, cy, s, opt = {}) {
+    // a bowl of bakso: the goal
+    ctx.save(); ctx.translate(cx, cy);
+    if (opt.glow) { ctx.beginPath(); ctx.arc(0, 0, s * 0.62, 0, Math.PI * 2); ctx.fillStyle = "rgba(242,177,52,0.22)"; ctx.fill(); }
+    ctx.fillStyle = "#E4EEF5"; ctx.beginPath(); ctx.moveTo(-s * 0.46, -s * 0.05); ctx.quadraticCurveTo(-s * 0.4, s * 0.45, 0, s * 0.45); ctx.quadraticCurveTo(s * 0.4, s * 0.45, s * 0.46, -s * 0.05); ctx.closePath(); ctx.fill();
+    ctx.strokeStyle = "#8FA9BD"; ctx.lineWidth = s * 0.05; ctx.stroke();
+    ctx.fillStyle = "#C8B49A"; ctx.beginPath(); ctx.ellipse(0, -s * 0.05, s * 0.44, s * 0.14, 0, 0, Math.PI * 2); ctx.fill();
+    for (const [dx, dy, r] of [[-0.16, -0.1, 0.13], [0.14, -0.12, 0.13], [0, -0.22, 0.12]]) {
+      ctx.fillStyle = "#9A7B5B"; ctx.beginPath(); ctx.arc(dx * s, dy * s, r * s, 0, Math.PI * 2); ctx.fill();
+      ctx.fillStyle = "#B8977A"; ctx.beginPath(); ctx.arc(dx * s - r * s * 0.3, dy * s - r * s * 0.3, r * s * 0.4, 0, Math.PI * 2); ctx.fill();
+    }
+    ctx.fillStyle = "#4CA64C"; for (const dx of [-0.26, 0.1, 0.26]) { ctx.beginPath(); ctx.arc(dx * s, -s * 0.07, s * 0.045, 0, Math.PI * 2); ctx.fill(); }
+    ctx.restore();
+  }
+  function table(ctx, x, y, w, h) {
+    ctx.fillStyle = C.table; rr(ctx, x + w * 0.1, y + h * 0.3, w * 0.8, h * 0.55, 10); ctx.fill();
+    ctx.fillStyle = C.tableTop; rr(ctx, x + w * 0.06, y + h * 0.18, w * 0.88, h * 0.3, 10); ctx.fill();
+    ctx.fillStyle = "rgba(0,0,0,0.12)"; ctx.fillRect(x + w * 0.16, y + h * 0.5, w * 0.08, h * 0.35); ctx.fillRect(x + w * 0.76, y + h * 0.5, w * 0.08, h * 0.35);
+  }
+  function kiko(ctx, cx, cy, s, ang, opt = {}) {
+    ctx.save(); ctx.translate(cx, cy);
+    // shadow
+    ctx.fillStyle = "rgba(0,0,0,0.12)"; ctx.beginPath(); ctx.ellipse(0, s * 0.42, s * 0.42, s * 0.12, 0, 0, Math.PI * 2); ctx.fill();
+    ctx.rotate(ang);
+    // wheels
+    ctx.fillStyle = C.kikoDark; rr(ctx, -s * 0.46, -s * 0.2, s * 0.12, s * 0.5, 5); ctx.fill(); rr(ctx, s * 0.34, -s * 0.2, s * 0.12, s * 0.5, 5); ctx.fill();
+    // body
+    ctx.fillStyle = opt.flash ? `rgba(217,68,59,${0.5 + 0.5 * opt.flash})` : C.kiko; rr(ctx, -s * 0.38, -s * 0.36, s * 0.76, s * 0.72, s * 0.16); ctx.fill();
+    // visor (front, facing up)
+    ctx.fillStyle = C.kikoLight; rr(ctx, -s * 0.26, -s * 0.33, s * 0.52, s * 0.3, s * 0.1); ctx.fill();
+    // eyes
+    const mood = opt.mood || "happy";
+    ctx.fillStyle = C.pupil;
+    if (mood === "sad") { ctx.beginPath(); ctx.arc(-s * 0.12, -s * 0.18, s * 0.05, 0, Math.PI * 2); ctx.arc(s * 0.12, -s * 0.18, s * 0.05, 0, Math.PI * 2); ctx.fill(); ctx.strokeStyle = C.pupil; ctx.lineWidth = s * 0.03; ctx.beginPath(); ctx.arc(0, -s * 0.03, s * 0.08, Math.PI * 1.15, Math.PI * 1.85); ctx.stroke(); }
+    else if (mood === "confused") { ctx.beginPath(); ctx.arc(-s * 0.12, -s * 0.18, s * 0.05, 0, Math.PI * 2); ctx.arc(s * 0.12, -s * 0.18, s * 0.035, 0, Math.PI * 2); ctx.fill(); ctx.strokeStyle = C.pupil; ctx.lineWidth = s * 0.03; ctx.beginPath(); ctx.moveTo(-s * 0.08, -s * 0.06); ctx.lineTo(s * 0.08, -s * 0.09); ctx.stroke(); }
+    else { ctx.beginPath(); ctx.arc(-s * 0.12, -s * 0.18, s * 0.055, 0, Math.PI * 2); ctx.arc(s * 0.12, -s * 0.18, s * 0.055, 0, Math.PI * 2); ctx.fill(); ctx.strokeStyle = C.pupil; ctx.lineWidth = s * 0.03; ctx.beginPath(); ctx.arc(0, -s * 0.1, s * 0.08, Math.PI * 0.15, Math.PI * 0.85); ctx.stroke(); }
+    // front pointer
+    ctx.fillStyle = C.accent; ctx.beginPath(); ctx.moveTo(-s * 0.1, -s * 0.38); ctx.lineTo(s * 0.1, -s * 0.38); ctx.lineTo(0, -s * 0.5); ctx.closePath(); ctx.fill();
+    // antenna
+    ctx.strokeStyle = C.kikoDark; ctx.lineWidth = s * 0.04; ctx.beginPath(); ctx.moveTo(0, s * 0.36); ctx.lineTo(0, s * 0.5); ctx.stroke();
+    ctx.fillStyle = C.accent; ctx.beginPath(); ctx.arc(0, s * 0.52, s * 0.07, 0, Math.PI * 2); ctx.fill();
+    // tray with bakso when grabbed
+    if (opt.grabbed) bakso(ctx, 0, s * 0.05, s * 0.45);
+    ctx.restore();
+    if (opt.wave !== undefined) { // arm waving (title scene)
+      ctx.save(); ctx.translate(cx + s * 0.42, cy - s * 0.1); ctx.rotate(-0.6 + Math.sin(opt.wave * 6) * 0.4);
+      ctx.strokeStyle = C.kikoDark; ctx.lineWidth = s * 0.08; ctx.lineCap = "round"; ctx.beginPath(); ctx.moveTo(0, 0); ctx.lineTo(s * 0.3, -s * 0.3); ctx.stroke();
+      ctx.fillStyle = C.kikoLight; ctx.beginPath(); ctx.arc(s * 0.32, -s * 0.33, s * 0.09, 0, Math.PI * 2); ctx.fill(); ctx.restore();
+    }
+  }
+  function kid(ctx, cx, cy, s, opt = {}) {
+    // simple student figure, standing, facing viewer
+    ctx.save(); ctx.translate(cx, cy);
+    ctx.fillStyle = "rgba(0,0,0,0.12)"; ctx.beginPath(); ctx.ellipse(0, s * 1.02, s * 0.5, s * 0.1, 0, 0, Math.PI * 2); ctx.fill();
+    ctx.fillStyle = C.pants; rr(ctx, -s * 0.3, s * 0.35, s * 0.6, s * 0.5, s * 0.1); ctx.fill();
+    ctx.fillStyle = C.skin; ctx.fillRect(-s * 0.24, s * 0.8, s * 0.16, s * 0.2); ctx.fillRect(s * 0.08, s * 0.8, s * 0.16, s * 0.2);
+    ctx.fillStyle = C.uniform; rr(ctx, -s * 0.36, -s * 0.12, s * 0.72, s * 0.56, s * 0.12); ctx.fill();
+    ctx.strokeStyle = "#D5DDE2"; ctx.lineWidth = s * 0.025; rr(ctx, -s * 0.36, -s * 0.12, s * 0.72, s * 0.56, s * 0.12); ctx.stroke();
+    ctx.fillStyle = C.skin; ctx.beginPath(); ctx.arc(0, -s * 0.42, s * 0.32, 0, Math.PI * 2); ctx.fill();
+    ctx.fillStyle = opt.hairColor || C.hair; ctx.beginPath(); ctx.arc(0, -s * 0.5, s * 0.33, Math.PI, 0); ctx.fill();
+    if (opt.hair === "long") { ctx.fillRect(-s * 0.33, -s * 0.5, s * 0.12, s * 0.45); ctx.fillRect(s * 0.21, -s * 0.5, s * 0.12, s * 0.45); }
+    ctx.fillStyle = C.pupil; ctx.beginPath(); ctx.arc(-s * 0.11, -s * 0.4, s * 0.035, 0, Math.PI * 2); ctx.arc(s * 0.11, -s * 0.4, s * 0.035, 0, Math.PI * 2); ctx.fill();
+    ctx.strokeStyle = C.pupil; ctx.lineWidth = s * 0.025; ctx.beginPath(); ctx.arc(0, -s * 0.33, s * 0.08, Math.PI * 0.15, Math.PI * 0.85); ctx.stroke();
+    // arms
+    ctx.strokeStyle = C.skin; ctx.lineWidth = s * 0.11; ctx.lineCap = "round"; ctx.beginPath();
+    if (opt.point) { ctx.moveTo(s * 0.32, s * 0.02); ctx.lineTo(s * 0.75, -s * 0.2); } else { ctx.moveTo(s * 0.34, s * 0.02); ctx.lineTo(s * 0.42, s * 0.38); }
+    ctx.moveTo(-s * 0.34, s * 0.02); ctx.lineTo(-s * 0.42, s * 0.38); ctx.stroke();
+    ctx.restore();
+  }
+  function bubble(ctx, x, y, w, s, size, opt = {}) {
+    const lines = wrap(ctx, s, size, 600, w - 48); const h = lines.length * size * 1.3 + 40;
+    ctx.fillStyle = opt.fill || C.bubble; ctx.strokeStyle = opt.stroke || "#B7C7BF"; ctx.lineWidth = 3;
+    rr(ctx, x, y - h, w, h, 22); ctx.fill(); ctx.stroke();
+    const tx = opt.tailX !== undefined ? opt.tailX : x + 60;
+    ctx.beginPath(); ctx.moveTo(tx - 16, y); ctx.lineTo(tx + 16, y); ctx.lineTo(tx + (opt.tailDir || 0), y + 28); ctx.closePath(); ctx.fillStyle = opt.fill || C.bubble; ctx.fill();
+    ctx.strokeStyle = opt.stroke || "#B7C7BF"; ctx.beginPath(); ctx.moveTo(tx - 16, y); ctx.lineTo(tx + (opt.tailDir || 0), y + 28); ctx.lineTo(tx + 16, y); ctx.stroke();
+    lines.forEach((l, i) => text(ctx, l, x + 24, y - h + 24 + size + i * size * 1.3, size, { color: opt.color || C.ink, weight: 600 }));
+    return h;
+  }
+  function card(ctx, x, y, w, h, opt = {}) { ctx.fillStyle = opt.fill || C.panel; rr(ctx, x, y, w, h, opt.r || 26); ctx.fill(); if (opt.stroke) { ctx.strokeStyle = opt.stroke; ctx.lineWidth = opt.lw || 4; ctx.stroke(); } }
+
+  // ---------- adegan umum (semua episode) ----------
+  const SCENES = {
+    title(ctx, b, l, t, TL) {
+      card(ctx, 160, 160, 1600, 700, { fill: C.panel });
+      kiko(ctx, 420, 520, 260, 0, { wave: l, mood: "happy" });
+      text(ctx, "Informatika · Fase " + (TL.episode || "D")[0] + " · Episode " + TL.episode, 720, 330, 34, { color: C.ink2, weight: 700 });
+      const ts = TL.title.length > 34 ? 74 : 92; const th = para(ctx, TL.title, 720, 440, ts, 1000, { weight: 900, lh: 1.1 }); const hy = Math.max(640, 440 + th - ts * 0.35 + 30);
+      if (TL.hook) { text(ctx, "SETELAH MENONTON, KAMU BISA:", 720, hy, 26, { color: C.accentDark, weight: 800 }); para(ctx, TL.hook, 720, hy + 50, 34, 1000, { weight: 800, lh: 1.3 }); if (hy <= 660) text(ctx, "Dengarkan, atau baca teksnya pelan-pelan.", 720, 800, 26, { color: C.ink2, weight: 600 }); }
+      else text(ctx, "Dengarkan, atau baca teksnya pelan-pelan.", 720, 700, 36, { color: C.ink2, weight: 600 });
+      arrowIcon(ctx, "up", 1560, 250, 70, C.kikoLight); arrowIcon(ctx, "right", 1660, 250, 70, C.kikoLight);
+    },
+    quiz(ctx, b, l, t, TL, answered) {
+      const q = TL.quizzes[b.quiz]; card(ctx, 200, 150, 1520, 740, { stroke: C.accent, lw: 6 });
+      text(ctx, "CEK PEMAHAMAN", 960, 230, 32, { align: "center", color: C.accentDark, weight: 800 });
+      para(ctx, q.q, 960, 320, 44, 1360, { weight: 800, align: "center", lh: 1.3 });
+      q.options.forEach((o, i) => {
+        const y = 470 + i * 120; const right = answered && i === q.answer;
+        card(ctx, 320, y, 1280, 96, { fill: right ? C.goodBg : answered ? "#F4F6F5" : C.bg2, stroke: right ? C.good : "#CFDCD5", lw: right ? 6 : 3 });
+        ctx.fillStyle = right ? C.good : C.kiko; ctx.beginPath(); ctx.arc(380, y + 48, 30, 0, Math.PI * 2); ctx.fill();
+        text(ctx, "ABC"[i], 380, y + 61, 34, { align: "center", color: "#fff", weight: 900 });
+        text(ctx, o, 440, y + 62, 38, { weight: 700, color: answered && !right ? C.muted : C.ink });
+        if (right) text(ctx, "✓", 1540, y + 66, 54, { align: "center", color: C.good, weight: 900 });
+      });
+      if (!answered) { // thinking timer
+        const frac = clamp(l / b.dur, 0, 1); ctx.strokeStyle = "#D7E2DC"; ctx.lineWidth = 14; ctx.beginPath(); ctx.arc(1640, 230, 40, 0, Math.PI * 2); ctx.stroke();
+        ctx.strokeStyle = C.accent; ctx.beginPath(); ctx.arc(1640, 230, 40, -Math.PI / 2, -Math.PI / 2 + frac * Math.PI * 2); ctx.stroke();
+        // catatan hanya digambar bila tidak tertutup kartu narasi (narasi tiga baris atau lebih menutupinya)
+        const subTop = 1056 - (wrap(ctx, b.text, 44, 700, 1660).length * 44 * 1.3 + 44);
+        if (subTop > 880) text(ctx, "Pikirkan dulu, jangan buru-buru.", 960, 860, 32, { align: "center", color: C.ink2, weight: 600 });
+      }
+    },
+    quiz_answer(ctx, b, l, t, TL) { SCENES.quiz(ctx, b, l, t, TL, true); },
+    recap(ctx, b, l, t, TL) {
+      // TL.recap: tiga kalimat pendek dari script.json
+      card(ctx, 160, 140, 1600, 760);
+      text(ctx, "TIGA HAL UNTUK DIINGAT", 960, 230, 34, { align: "center", color: C.accentDark, weight: 900 });
+      const items = TL.recap || [];
+      const show = clamp(Math.floor((l - 0.6) / 2.2) + 1, 1, Math.max(1, items.length));
+      items.forEach((s, i) => { if (i >= show) return; card(ctx, 300, 290 + i * 180, 1320, 140, { fill: C.bg2 }); ctx.fillStyle = C.kiko; ctx.beginPath(); ctx.arc(380, 360 + i * 180, 40, 0, Math.PI * 2); ctx.fill(); text(ctx, String(i + 1), 380, 376 + i * 180, 40, { align: "center", color: "#fff", weight: 900 }); text(ctx, s, 450, 375 + i * 180, 42, { weight: 800 }); });
+      kiko(ctx, 1620, 820, 130, 0);
+    },
+    outro(ctx, b, l, t, TL) {
+      // TL.next: {code, title, note} episode berikutnya, dari script.json
+      const n = TL.next || {};
+      card(ctx, 260, 200, 1400, 600);
+      text(ctx, "EPISODE BERIKUTNYA", 960, 320, 34, { align: "center", color: C.accentDark, weight: 900 });
+      text(ctx, n.code || "", 960, 440, 60, { align: "center", weight: 900 });
+      text(ctx, n.title || "", 960, 530, 54, { align: "center", weight: 800, color: C.ink2 });
+      text(ctx, n.note || "", 960, 680, 34, { align: "center", color: C.ink2, weight: 600 });
+      kiko(ctx, 960, 760 + 20, 140, 0, { wave: l });
+    }
+  };
+
+  function beatAt(TL, t) {
+    let b = TL.beats[0];
+    for (const x of TL.beats) { if (t >= x.start) b = x; else break; }
+    return b;
+  }
+  function draw(ctx, t, TL, opt = {}) {
+    const b = beatAt(TL, t); const l = t - b.start;
+    ctx.save(); ctx.setTransform(1, 0, 0, 1, 0, 0);
+    ctx.fillStyle = C.bg; ctx.fillRect(0, 0, W, H);
+    // header
+    text(ctx, TL.episode + " · " + TL.title, 60, 78, 30, { color: C.ink2, weight: 700 });
+    text(ctx, TL.segments[b.seg], 1860, 78, 30, { color: C.accentDark, weight: 800, align: "right" });
+    ctx.fillStyle = C.bg2; ctx.fillRect(0, 100, W, 6); ctx.fillStyle = C.accent; ctx.fillRect(0, 100, W * clamp(t / TL.total, 0, 1), 6);
+    const fn = SCENES[b.scene]; if (fn) fn(ctx, b, l, t, TL);
+    // narration card (burned-in text the student reads)
+    if (opt.subtitles !== false) {
+      const size = 44; const lines = wrap(ctx, b.text, size, 700, 1660);
+      const h = lines.length * size * 1.3 + 44; const y0 = 1056 - h;
+      ctx.fillStyle = "rgba(31,42,51,0.92)"; rr(ctx, 100, y0, 1720, h, 20); ctx.fill();
+      // reading progress (how far along the text the reader should be)
+      const frac = clamp(l / b.audio, 0, 1); ctx.fillStyle = C.accent; rr(ctx, 100, y0 + h - 8, 1720 * frac, 8, 4); ctx.fill();
+      lines.forEach((ln, i) => text(ctx, ln, 960, y0 + 22 + size + i * size * 1.3, size, { align: "center", color: C.subText, weight: 700 }));
+    }
+    ctx.restore();
+    return b;
+  }
+
+  global.Kiko = { draw, beatAt, W, H, C, FONT, SCENES,
+    helpers: { rr, text, wrap, para, arrowIcon, bakso, table, kiko, kid, bubble, card, ease, clamp, lerp } };
+})(typeof window !== "undefined" ? window : globalThis);
+
+/* Pembantu gambar perangkat (dipakai D7.0, D7.2, …): monitor, mouse, pointer, keyboard, HP, jari, ikon file/folder, jendela.
+   Semua digambar dengan kode (tanpa aset unduhan). Muat setelah ../_alat/kiko-core.js; dipakai scenes.js. */
+(function (global) {
+  const K = global.Kiko, H = K.helpers, C = K.C;
+  const { rr, text, wrap, card, ease, clamp, lerp } = H;
+  const D = {};
+  const SCREEN_BG = "#F4F8FB", BEZEL = "#2B3A46", BEZEL2 = "#1A262F", SEL = "rgba(46,126,154,0.22)";
+
+  // ---------- komputer ----------
+  // monitor di atas meja; mengembalikan kotak layar {x,y,w,h}
+  D.monitor = function (ctx, x, y, w, h) {
+    ctx.fillStyle = BEZEL; rr(ctx, x - 18, y - 18, w + 36, h + 36, 22); ctx.fill();
+    ctx.fillStyle = SCREEN_BG; rr(ctx, x, y, w, h, 10); ctx.fill();
+    // kaki dan meja
+    ctx.fillStyle = BEZEL2; rr(ctx, x + w / 2 - 40, y + h + 18, 80, 36, 8); ctx.fill(); rr(ctx, x + w / 2 - 140, y + h + 50, 280, 16, 8); ctx.fill();
+    ctx.fillStyle = C.tableTop; rr(ctx, x - 80, y + h + 66, w + 160, 22, 8); ctx.fill();
+    return { x, y, w, h };
+  };
+  // panah pointer
+  D.pointer = function (ctx, x, y, s = 34, color = C.ink) {
+    ctx.save(); ctx.translate(x, y); ctx.fillStyle = color; ctx.strokeStyle = "#fff"; ctx.lineWidth = s * 0.08; ctx.lineJoin = "round";
+    ctx.beginPath(); ctx.moveTo(0, 0); ctx.lineTo(0, s); ctx.lineTo(s * 0.27, s * 0.78); ctx.lineTo(s * 0.45, s * 1.15); ctx.lineTo(s * 0.62, s * 1.07); ctx.lineTo(s * 0.45, s * 0.7); ctx.lineTo(s * 0.75, s * 0.7); ctx.closePath();
+    ctx.fill(); ctx.stroke(); ctx.restore();
+  };
+  // mouse tampak atas; opt.left / opt.right = tombol ditekan; opt.label = tulis "kiri/kanan"
+  D.mouse = function (ctx, cx, cy, s, opt = {}) {
+    ctx.save(); ctx.translate(cx, cy);
+    ctx.fillStyle = "rgba(0,0,0,0.12)"; ctx.beginPath(); ctx.ellipse(0, s * 0.62, s * 0.5, s * 0.1, 0, 0, Math.PI * 2); ctx.fill();
+    // kabel
+    ctx.strokeStyle = "#7B8B95"; ctx.lineWidth = s * 0.05; ctx.beginPath(); ctx.moveTo(0, -s * 0.6); ctx.quadraticCurveTo(0, -s * 1.0, s * 0.5, -s * 1.1); ctx.stroke();
+    // badan
+    ctx.fillStyle = "#E8EEF2"; rr(ctx, -s * 0.42, -s * 0.62, s * 0.84, s * 1.24, s * 0.4); ctx.fill(); ctx.strokeStyle = "#A9B7C0"; ctx.lineWidth = s * 0.04; ctx.stroke();
+    // dua tombol
+    const btn = (side, on) => { ctx.fillStyle = on ? C.accent : "#F7FAFC"; ctx.beginPath(); const sx = side === "left" ? -1 : 1;
+      ctx.moveTo(sx * s * 0.03, -s * 0.6); ctx.lineTo(sx * s * 0.03, -s * 0.1); ctx.lineTo(sx * s * 0.4, -s * 0.1); ctx.lineTo(sx * s * 0.4, -s * 0.28); ctx.quadraticCurveTo(sx * s * 0.4, -s * 0.6, sx * s * 0.1, -s * 0.6); ctx.closePath(); ctx.fill(); ctx.strokeStyle = "#A9B7C0"; ctx.lineWidth = s * 0.03; ctx.stroke(); };
+    btn("left", opt.left); btn("right", opt.right);
+    ctx.fillStyle = "#A9B7C0"; rr(ctx, -s * 0.04, -s * 0.5, s * 0.08, s * 0.26, s * 0.04); ctx.fill(); // roda
+    ctx.restore();
+    if (opt.label) { text(ctx, "kiri", cx - s * 0.22, cy - s * 0.72, 26, { align: "center", color: opt.left ? C.accentDark : C.ink2, weight: 800 }); text(ctx, "kanan", cx + s * 0.22, cy - s * 0.72, 26, { align: "center", color: opt.right ? C.accentDark : C.ink2, weight: 800 }); }
+  };
+  // riak "klik" di sekitar titik
+  D.ripple = function (ctx, x, y, u, color = C.accent) { if (u <= 0 || u >= 1) return; ctx.strokeStyle = color; ctx.globalAlpha = 1 - u; ctx.lineWidth = 6; ctx.beginPath(); ctx.arc(x, y, 12 + u * 60, 0, Math.PI * 2); ctx.stroke(); ctx.globalAlpha = 1; };
+
+  // ---------- ikon file & folder ----------
+  const KIND = { folder: "#F2B134", foto: "#5FA8D3", tulisan: "#7B8B95", lagu: "#8E6BBF", video: "#D9443B" };
+  D.fileIcon = function (ctx, cx, cy, s, kind, opt = {}) {
+    ctx.save(); ctx.translate(cx, cy);
+    if (opt.selected) { ctx.fillStyle = SEL; rr(ctx, -s * 0.62, -s * 0.62, s * 1.24, s * 1.24 + (opt.name ? s * 0.5 : 0), s * 0.14); ctx.fill(); }
+    if (kind === "folder") {
+      ctx.fillStyle = "#D99A1B"; rr(ctx, -s * 0.5, -s * 0.32, s * 0.45, s * 0.2, s * 0.06); ctx.fill();
+      ctx.fillStyle = opt.open ? "#F7C860" : KIND.folder; rr(ctx, -s * 0.5, -s * 0.22, s, s * 0.7, s * 0.08); ctx.fill();
+      if (opt.open) { ctx.fillStyle = "#D99A1B"; rr(ctx, -s * 0.46, -s * 0.02, s * 0.92, s * 0.5, s * 0.08); ctx.fill(); }
+    } else {
+      ctx.fillStyle = "#FFFFFF"; ctx.strokeStyle = "#B7C4CC"; ctx.lineWidth = s * 0.05;
+      ctx.beginPath(); ctx.moveTo(-s * 0.36, -s * 0.5); ctx.lineTo(s * 0.12, -s * 0.5); ctx.lineTo(s * 0.36, -s * 0.26); ctx.lineTo(s * 0.36, s * 0.5); ctx.lineTo(-s * 0.36, s * 0.5); ctx.closePath(); ctx.fill(); ctx.stroke();
+      ctx.fillStyle = KIND[kind] || KIND.tulisan;
+      if (kind === "foto") { rr(ctx, -s * 0.26, -s * 0.2, s * 0.52, s * 0.44, s * 0.04); ctx.fill(); ctx.fillStyle = "#fff"; ctx.beginPath(); ctx.arc(-s * 0.12, -s * 0.08, s * 0.06, 0, Math.PI * 2); ctx.fill(); ctx.beginPath(); ctx.moveTo(-s * 0.26, s * 0.24); ctx.lineTo(-s * 0.06, s * 0.02); ctx.lineTo(s * 0.06, s * 0.14); ctx.lineTo(s * 0.14, s * 0.06); ctx.lineTo(s * 0.26, s * 0.24); ctx.closePath(); ctx.fill(); }
+      else if (kind === "lagu") { ctx.beginPath(); ctx.arc(-s * 0.1, s * 0.22, s * 0.1, 0, Math.PI * 2); ctx.arc(s * 0.16, s * 0.16, s * 0.1, 0, Math.PI * 2); ctx.fill(); ctx.lineWidth = s * 0.06; ctx.strokeStyle = KIND.lagu; ctx.beginPath(); ctx.moveTo(0, s * 0.2); ctx.lineTo(0, -s * 0.2); ctx.lineTo(s * 0.26, -s * 0.26); ctx.lineTo(s * 0.26, s * 0.14); ctx.stroke(); }
+      else if (kind === "video") { rr(ctx, -s * 0.26, -s * 0.16, s * 0.52, s * 0.4, s * 0.04); ctx.fill(); ctx.fillStyle = "#fff"; ctx.beginPath(); ctx.moveTo(-s * 0.06, -s * 0.04); ctx.lineTo(s * 0.12, s * 0.04); ctx.lineTo(-s * 0.06, s * 0.12); ctx.closePath(); ctx.fill(); }
+      else { for (let i = 0; i < 4; i++) { rr(ctx, -s * 0.22, -s * 0.14 + i * s * 0.14, s * (i === 3 ? 0.26 : 0.44), s * 0.06, s * 0.03); ctx.fill(); } }
+    }
+    ctx.restore();
+    if (opt.name) { const lines = wrap(ctx, opt.name, opt.size || 24, 700, s * 1.6); lines.slice(0, 2).forEach((ln, i) => text(ctx, ln, cx, cy + s * 0.78 + i * (opt.size || 24) * 1.15, opt.size || 24, { align: "center", weight: 700, color: opt.color || C.ink })); }
+  };
+  D.KIND = KIND;
+
+  // jendela aplikasi (file manager / editor) di dalam layar; mengembalikan area isi
+  D.windowFrame = function (ctx, x, y, w, h, title, opt = {}) {
+    ctx.fillStyle = "#FFFFFF"; rr(ctx, x, y, w, h, 14); ctx.fill(); ctx.strokeStyle = "#C9D4DB"; ctx.lineWidth = 3; ctx.stroke();
+    ctx.fillStyle = "#E6EDF2"; rr(ctx, x, y, w, 54, 14); ctx.fill(); ctx.fillRect(x, y + 30, w, 24);
+    ["#E0655C", "#F2B134", "#2E9E5B"].forEach((c, i) => { ctx.fillStyle = c; ctx.beginPath(); ctx.arc(x + 26 + i * 26, y + 27, 8, 0, Math.PI * 2); ctx.fill(); });
+    if (title) text(ctx, title, x + w / 2, y + 36, 24, { align: "center", color: C.ink2, weight: 800 });
+    if (opt.path) { ctx.fillStyle = "#F4F8FB"; rr(ctx, x + 16, y + 66, w - 32, 44, 10); ctx.fill(); text(ctx, opt.path, x + 32, y + 96, 24, { color: C.ink2, weight: 700 }); }
+    return { x: x + 16, y: y + (opt.path ? 124 : 70), w: w - 32, h: h - (opt.path ? 140 : 86) };
+  };
+  // kotak teks dengan kursor berkedip; opt.cursor = posisi karakter (bawaan akhir)
+  D.textBox = function (ctx, x, y, w, h, lines, tt, opt = {}) {
+    ctx.fillStyle = "#FFFFFF"; rr(ctx, x, y, w, h, 14); ctx.fill(); ctx.strokeStyle = opt.stroke || "#C9D4DB"; ctx.lineWidth = 3; ctx.stroke();
+    const size = opt.size || 48, lh = size * 1.4;
+    lines.forEach((ln, i) => text(ctx, ln, x + 28, y + 24 + size + i * lh, size, { weight: 700, color: opt.color || C.ink }));
+    if (opt.cursor !== false) {
+      const li = lines.length - 1, s = lines[li] || ""; ctx.font = `700 ${size}px ${K.FONT}`; const cw = ctx.measureText(s).width;
+      if (Math.floor(tt * 2.5) % 2 === 0 || opt.cursorOn) { ctx.fillStyle = C.kiko; ctx.fillRect(x + 30 + cw, y + 22 + li * lh, 5, size * 1.15); }
+      return [x + 32 + cw, y + 22 + li * lh + size * 0.6];
+    }
+  };
+
+  // ---------- keyboard ----------
+  const ROWS = [["Q", "W", "E", "R", "T", "Y", "U", "I", "O", "P"], ["A", "S", "D", "F", "G", "H", "J", "K", "L"], ["Z", "X", "C", "V", "B", "N", "M"]];
+  // keyboard sederhana: 3 baris huruf + Shift, Spasi, Backspace, Enter. opt.pressed = [tombol], opt.glow = [tombol] disorot lembut
+  D.keyboard = function (ctx, x, y, w, opt = {}) {
+    const key = w / 11.6, gap = key * 0.12, k = key - gap, h = k * 4 + gap * 5;
+    ctx.fillStyle = BEZEL; rr(ctx, x - 16, y - 16, w + 32, h + 32, 22); ctx.fill();
+    const pressed = opt.pressed || [], glow = opt.glow || [];
+    const draw = (kx, ky, kw, label, small) => {
+      const on = pressed.includes(label), soft = glow.includes(label);
+      ctx.fillStyle = on ? C.accent : soft ? "#FFF3D6" : "#F7FAFC"; rr(ctx, kx, ky + (on ? 4 : 0), kw, k - (on ? 4 : 0), 10); ctx.fill();
+      ctx.strokeStyle = on ? C.accentDark : soft ? C.accent : "#B7C4CC"; ctx.lineWidth = on || soft ? 4 : 2; ctx.stroke();
+      // ukuran huruf mengikuti ukuran tombol; pada keyboard mini (tombol < 40 px) label tombol khusus tidak digambar
+      const fs = small ? Math.min(24, k * 0.45) : Math.min(32, k * 0.6);
+      if (small ? k >= 40 : k >= 18) text(ctx, label, kx + kw / 2, ky + k / 2 + fs * 0.38, fs, { align: "center", weight: 800, color: on ? "#fff" : C.ink });
+    };
+    ROWS.forEach((row, r) => { const off = r === 0 ? 0 : r === 1 ? key * 0.35 : key * 0.85; row.forEach((lab, i) => draw(x + gap + off + i * key, y + gap + r * key, k, lab)); });
+    draw(x + gap + key * 0.85 + 7 * key + gap, y + gap + 2 * key, key * 2.4 - gap, "Backspace", true);
+    draw(x + gap, y + gap + 3 * key, key * 1.9 - gap, "Shift", true);
+    draw(x + gap + key * 1.9, y + gap + 3 * key, key * 6.2 - gap, "Spasi", true);
+    draw(x + gap + key * 8.1, y + gap + 3 * key, key * 2.3 - gap, "Enter", true);
+    draw(x + gap + key * 0.35 + 9 * key, y + gap + 1 * key, key * 1.9 - gap, "Enter", true);
+    return { x, y, w, h };
+  };
+
+  // ---------- HP & jari ----------
+  // HP tegak; mengembalikan kotak layar
+  D.phone = function (ctx, cx, cy, w, h) {
+    ctx.fillStyle = BEZEL; rr(ctx, cx - w / 2 - 14, cy - h / 2 - 22, w + 28, h + 44, 40); ctx.fill();
+    ctx.fillStyle = SCREEN_BG; rr(ctx, cx - w / 2, cy - h / 2, w, h, 26); ctx.fill();
+    ctx.fillStyle = BEZEL2; rr(ctx, cx - 40, cy - h / 2 + 8, 80, 12, 6); ctx.fill();
+    return { x: cx - w / 2, y: cy - h / 2, w, h };
+  };
+  // kisi ikon aplikasi generik di layar HP; mengembalikan posisi tiap ikon
+  const APPS = [["Kamera", "#2E7E9A"], ["Galeri", "#5FA8D3"], ["Pesan", "#2E9E5B"], ["Musik", "#8E6BBF"], ["Kalkulator", "#7B8B95"], ["Peta", "#F2B134"], ["Catatan", "#E0A23B"], ["Jam", "#D9443B"], ["Cuaca", "#4C9BE0"]];
+  D.appGrid = function (ctx, sc, opt = {}) {
+    const cols = 3, cell = sc.w / cols, out = [];
+    APPS.forEach(([name, col], i) => {
+      const r = Math.floor(i / cols), c = i % cols; const ax = sc.x + cell * c + cell / 2, ay = sc.y + 90 + r * (cell + 26);
+      const on = opt.active === name; const sz = cell * 0.56 * (on && opt.scale ? opt.scale : 1);
+      ctx.fillStyle = col; rr(ctx, ax - sz / 2, ay - sz / 2, sz, sz, sz * 0.24); ctx.fill();
+      if (on) { ctx.strokeStyle = C.accent; ctx.lineWidth = 6; ctx.stroke(); }
+      text(ctx, name, ax, ay + sz / 2 + 26, 20, { align: "center", weight: 700, color: C.ink2 });
+      out.push({ name, x: ax, y: ay });
+    });
+    return out;
+  };
+  // ujung jari yang menyentuh layar di (x,y); opt.press = sedang menekan (riak); opt.second = jari kedua
+  D.finger = function (ctx, x, y, opt = {}) {
+    const s = opt.s || 46;
+    ctx.save(); ctx.translate(x, y); ctx.rotate(opt.angle !== undefined ? opt.angle : 0.5);
+    ctx.fillStyle = "rgba(0,0,0,0.10)"; ctx.beginPath(); ctx.ellipse(0, s * 0.25, s * 0.7, s * 0.4, 0, 0, Math.PI * 2); ctx.fill();
+    ctx.fillStyle = C.skin; rr(ctx, -s * 0.5, -s * 0.3, s, s * 3.2, s * 0.5); ctx.fill();
+    ctx.fillStyle = "#F7D9BE"; ctx.beginPath(); ctx.ellipse(0, s * 0.1, s * 0.3, s * 0.42, 0, 0, Math.PI * 2); ctx.fill();
+    ctx.restore();
+    if (opt.press) { ctx.fillStyle = "rgba(46,126,154,0.25)"; ctx.beginPath(); ctx.arc(x, y, s * 0.8, 0, Math.PI * 2); ctx.fill(); }
+  };
+  // menu konteks (klik kanan / tekan lama)
+  D.menu = function (ctx, x, y, items, opt = {}) {
+    const w = opt.w || 300, rowH = 52; ctx.fillStyle = "#FFFFFF"; rr(ctx, x, y, w, rowH * items.length + 16, 12); ctx.fill(); ctx.strokeStyle = "#B7C4CC"; ctx.lineWidth = 3; ctx.stroke();
+    ctx.fillStyle = "rgba(0,0,0,0.08)";
+    items.forEach((it, i) => { if (opt.active === i) { ctx.fillStyle = "#FFF3D6"; rr(ctx, x + 8, y + 8 + i * rowH, w - 16, rowH, 8); ctx.fill(); } text(ctx, it, x + 24, y + 8 + i * rowH + 36, 28, { weight: 700 }); });
+  };
+  // kartu keterangan kecil di kanan/bawah adegan
+  D.note = function (ctx, x, y, w, s, opt = {}) { card(ctx, x, y, w, opt.h || 96, { fill: opt.fill || "#FFF3D6", stroke: opt.stroke || C.accent, lw: 4 }); text(ctx, s, x + w / 2, y + (opt.h || 96) / 2 + 14, opt.size || 36, { align: "center", weight: 900, color: opt.color || C.ink }); };
+
+  K.devices = D;
+})(typeof window !== "undefined" ? window : globalThis);
+
+/* Pembantu gambar F11.0: blok kode Python dengan pewarnaan kata kunci, konsol keluaran, kotak galat, tabel kebenaran,
+   kartu berdiri/duduk. Gaya diagram Fase F. Muat setelah kiko-core.js dan kiko-devices.js. */
+(function (global) {
+  const K = global.Kiko, H = K.helpers, C = K.C;
+  const { rr, text, wrap, card, clamp } = H;
+  const Py = {};
+  const KW = /^(if|else|elif|for|in|while|def|return|print|input|int|str|and|or|not|True|False|range|len)$/;
+  // blok kode python: lines [{t, hl, bad}] ; opt.title, rh, size
+  Py.code = function (ctx, x, y, w, lines, opt = {}) {
+    const rh = opt.rh || 44, size = opt.size || 22; card(ctx, x, y, w, 50 + rh * lines.length, { fill: "#1F2A33", r: 14 });
+    text(ctx, opt.title || "PYTHON", x + 18, y + 32, 16, { weight: 900, color: "#8FD0E6" });
+    lines.forEach((ln, i) => { const ly = y + 50 + i * rh; if (ln.hl) { ctx.fillStyle = "rgba(242,177,52,0.35)"; rr(ctx, x + 8, ly + 2, w - 16, rh - 4, 8); ctx.fill(); } if (ln.bad) { ctx.fillStyle = "rgba(217,68,59,0.45)"; rr(ctx, x + 8, ly + 2, w - 16, rh - 4, 8); ctx.fill(); }
+      text(ctx, String(i + 1), x + 30, ly + rh / 2 + 7, 15, { align: "center", weight: 800, color: "#7B8B95" });
+      const t = ln.t || ""; const lead = t.match(/^ */)[0].length; let cx = x + 56 + lead * 11; const body = t.slice(lead);
+      body.split(/(\s+|\(|\)|:|,|\[|\]|"[^"]*"|'[^']*')/).forEach(tok => { if (!tok) return; const kw = KW.test(tok); const str = /^["'].*["']$/.test(tok); const num = /^\d+$/.test(tok); const col = kw ? "#F2B134" : str ? "#A5D6A7" : num ? "#8FD0E6" : "#FFFFFF"; text(ctx, tok, cx, ly + rh / 2 + 7, size, { weight: kw ? 900 : 700, color: col }); ctx.font = `${kw ? 900 : 700} ${size}px Inter, sans-serif`; cx += ctx.measureText(tok).width; }); });
+    return 50 + rh * lines.length;
+  };
+  Py.console = function (ctx, x, y, w, lines, opt = {}) { const h = 40 + lines.length * 36 + 16; card(ctx, x, y, w, h, { fill: "#0E1418", stroke: "#4A5A66", lw: 3, r: 12 }); text(ctx, "LAYAR", x + 14, y + 26, 14, { weight: 900, color: "#8FD0E6" }); lines.forEach(([t, kind], i) => text(ctx, t, x + 16, y + 60 + i * 36, 20, { weight: 800, color: kind === "in" ? C.accent : kind === "err" ? "#FF8A80" : "#fff" })); return h; };
+  Py.error = function (ctx, x, y, w, title, lines) { card(ctx, x, y, w, 60 + lines.length * 30, { fill: C.badBg, stroke: C.bad, lw: 4, r: 12 }); text(ctx, "⚠ " + title, x + 16, y + 36, 22, { weight: 900, color: C.bad }); lines.forEach((s, i) => text(ctx, s, x + 16, y + 70 + i * 30, 18, { weight: 800, color: C.ink })); };
+  // tabel kebenaran: op "DAN"|"ATAU"; opt.hlRow
+  Py.truth = function (ctx, x, y, op, opt = {}) {
+    const rows = [[true, true], [true, false], [false, true], [false, false]]; const f = (a, b) => op === "DAN" ? a && b : a || b; const cw = 120, rh = 46;
+    card(ctx, x, y, cw * 3, rh * 5, { fill: "#fff", stroke: "#B7C4CC", lw: 3, r: 10 }); ctx.fillStyle = C.bg2; rr(ctx, x, y, cw * 3, rh, 10); ctx.fill(); ctx.fillRect(x, y + rh / 2, cw * 3, rh / 2);
+    ["A", "B", "A " + op + " B"].forEach((h, c) => text(ctx, h, x + c * cw + cw / 2, y + rh / 2 + 7, 18, { align: "center", weight: 900, color: C.ink2 }));
+    rows.forEach((r, i) => { const ry = y + rh * (i + 1); if (opt.hlRow === i) { ctx.fillStyle = "#FFF3D6"; ctx.fillRect(x + 2, ry, cw * 3 - 4, rh); } [r[0], r[1], f(r[0], r[1])].forEach((v, c) => text(ctx, v ? "benar" : "salah", x + c * cw + cw / 2, ry + rh / 2 + 7, 18, { align: "center", weight: c === 2 ? 900 : 700, color: v ? C.good : C.bad })); });
+  };
+  K.py = Py;
+})(typeof window !== "undefined" ? window : globalThis);
+
+/* Pembantu gambar F12.1 (dipakai ulang F12.2): node linked list dan rantainya, stack tegak, queue mendatar, laci hash map,
+   binary search tree (tata letak otomatis, jalur pencarian), graph berbobot. Gaya diagram Fase F.
+   Muat setelah kiko-core.js. */
+(function (global) {
+  const K = global.Kiko, H = K.helpers, C = K.C;
+  const { rr, text, card } = H;
+  const Sk = {};
+  const arrow = Sk.arrow = (ctx, x1, y1, x2, y2, col = C.kiko, lw = 5) => { ctx.strokeStyle = col; ctx.fillStyle = col; ctx.lineWidth = lw; ctx.beginPath(); ctx.moveTo(x1, y1); ctx.lineTo(x2, y2); ctx.stroke(); const a = Math.atan2(y2 - y1, x2 - x1); ctx.beginPath(); ctx.moveTo(x2, y2); ctx.lineTo(x2 - 18 * Math.cos(a - 0.45), y2 - 18 * Math.sin(a - 0.45)); ctx.lineTo(x2 - 18 * Math.cos(a + 0.45), y2 - 18 * Math.sin(a + 0.45)); ctx.closePath(); ctx.fill(); };
+  // node linked list: kotak data + kotak penunjuk; opt {hl, fresh, dim, w}
+  Sk.NW = 190; Sk.NH = 76;
+  Sk.node = function (ctx, x, y, data, opt = {}) {
+    const w = opt.w || Sk.NW, h = Sk.NH, pw = 50; ctx.save(); if (opt.dim) ctx.globalAlpha = 0.25;
+    const st = opt.hl ? C.accent : opt.fresh ? C.good : C.kiko;
+    card(ctx, x, y, w, h, { fill: opt.hl ? "#FFF3D6" : opt.fresh ? C.goodBg : "#fff", stroke: st, lw: opt.hl || opt.fresh ? 5 : 3, r: 12 });
+    ctx.strokeStyle = st; ctx.lineWidth = 3; ctx.beginPath(); ctx.moveTo(x + w - pw, y + 6); ctx.lineTo(x + w - pw, y + h - 6); ctx.stroke();
+    text(ctx, data, x + (w - pw) / 2, y + h / 2 + 9, 26, { align: "center", weight: 900 });
+    ctx.fillStyle = st; ctx.beginPath(); ctx.arc(x + w - pw / 2, y + h / 2, 8, 0, Math.PI * 2); ctx.fill(); ctx.restore();
+    return { x, y, w, h, px: x + w - pw / 2, py: y + h / 2 };
+  };
+  // rantai mendatar: items [teks], opt {gap, hl, head, none, dimFrom}
+  Sk.chain = function (ctx, x, y, items, opt = {}) {
+    const gap = opt.gap || 70, out = [];
+    items.forEach((d, i) => { out.push(Sk.node(ctx, x + i * (Sk.NW + gap), y, d, { hl: opt.hl === i, dim: opt.dimFrom != null && i >= opt.dimFrom })); });
+    out.forEach((n, i) => { if (i < out.length - 1) arrow(ctx, n.px, n.py, out[i + 1].x - 4, n.py); });
+    if (opt.none !== false && out.length) { const n = out[out.length - 1]; arrow(ctx, n.px, n.py, n.px + 70, n.py, "#7B8B95"); text(ctx, "None", n.px + 80, n.py + 8, 22, { weight: 900, color: "#7B8B95" }); }
+    if (opt.head !== false && out.length) { text(ctx, "head", out[0].x + 70, y - 40, 22, { align: "center", weight: 900, color: C.accentDark }); arrow(ctx, out[0].x + 70, y - 32, out[0].x + 70, y - 4, C.accentDark, 4); }
+    return out;
+  };
+  // stack tegak dari bawah: items [teks]; opt {w, hl (indeks), label}
+  Sk.stack = function (ctx, x, yb, items, opt = {}) {
+    const w = opt.w || 200, h = 60; ctx.strokeStyle = "#7B8B95"; ctx.lineWidth = 4; ctx.beginPath(); ctx.moveTo(x - 10, yb - (opt.cap || 5) * (h + 6) - 10); ctx.lineTo(x - 10, yb + 8); ctx.lineTo(x + w + 10, yb + 8); ctx.lineTo(x + w + 10, yb - (opt.cap || 5) * (h + 6) - 10); ctx.stroke();
+    items.forEach((d, i) => { const y = yb - (i + 1) * (h + 6); const top = i === items.length - 1; card(ctx, x, y, w, h, { fill: top ? "#FFF3D6" : "#fff", stroke: top ? C.accent : "#B7C4CC", lw: 3, r: 10 }); text(ctx, String(d), x + w / 2, y + 40, 26, { align: "center", weight: 900 }); });
+    if (items.length) text(ctx, "← atas", x + w + 24, yb - items.length * (h + 6) + 38, 20, { weight: 900, color: C.accentDark });
+    if (opt.label) text(ctx, opt.label, x + w / 2, yb + 44, 22, { align: "center", weight: 900, color: C.ink2 });
+  };
+  // queue mendatar: items [teks]; opt {w, label}
+  Sk.queue = function (ctx, x, y, items, opt = {}) {
+    const w = opt.w || 140, h = 64, cap = opt.cap || 5; ctx.strokeStyle = "#7B8B95"; ctx.lineWidth = 4; ctx.beginPath(); ctx.moveTo(x - 10, y - 10); ctx.lineTo(x + cap * (w + 8) + 2, y - 10); ctx.moveTo(x - 10, y + h + 10); ctx.lineTo(x + cap * (w + 8) + 2, y + h + 10); ctx.stroke();
+    items.forEach((d, i) => { const cx = x + i * (w + 8); card(ctx, cx, y, w, h, { fill: i === 0 ? "#FFF3D6" : "#fff", stroke: i === 0 ? C.accent : "#B7C4CC", lw: 3, r: 10 }); text(ctx, String(d), cx + w / 2, y + 42, 24, { align: "center", weight: 900 }); });
+    text(ctx, "depan", x + w / 2, y + h + 44, 20, { align: "center", weight: 900, color: C.accentDark }); text(ctx, "belakang", x + cap * (w + 8) - w / 2, y + h + 44, 20, { align: "center", weight: 900, color: C.ink2 });
+    if (opt.label) text(ctx, opt.label, x, y - 24, 22, { weight: 900, color: C.ink2 });
+  };
+  // laci hash map: n laci tegak; isi = {indeks: [[kunci, nilai, hl]]}; opt {hl indeks, w}
+  Sk.buckets = function (ctx, x, y, n, isi, opt = {}) {
+    const w = opt.w || 520, h = opt.h || 76;
+    for (let i = 0; i < n; i++) { const by = y + i * (h + 10); const on = opt.hl === i; card(ctx, x, by, w, h, { fill: on ? "#FFF3D6" : "#F4F8FB", stroke: on ? C.accent : "#B7C4CC", lw: on ? 5 : 3, r: 12 });
+      ctx.fillStyle = on ? C.accent : C.kiko; rr(ctx, x + 10, by + 10, 56, h - 20, 10); ctx.fill(); text(ctx, String(i), x + 38, by + h / 2 + 10, 26, { align: "center", weight: 900, color: "#fff" });
+      (isi[i] || []).forEach(([k, v, hl], j) => { const cx = x + 86 + j * 210; card(ctx, cx, by + 12, 196, h - 24, { fill: hl === "bad" ? C.badBg : hl ? C.goodBg : "#fff", stroke: hl === "bad" ? C.bad : hl ? C.good : "#B7C4CC", lw: 3, r: 10 }); text(ctx, k + ": " + v, cx + 98, by + h / 2 + 8, 22, { align: "center", weight: 900 }); }); }
+    text(ctx, "laci", x + 38, y - 14, 18, { align: "center", weight: 900, color: C.ink2 });
+  };
+  // binary search tree: sisipkan berurutan; kembalikan node dengan posisi
+  Sk.bstBuild = function (values) {
+    let root = null; const all = [];
+    values.forEach(v => { const nd = { v, l: null, r: null, d: 0, parent: null }; all.push(nd); if (!root) { root = nd; return; } let c = root; while (true) { if (v < c.v) { if (c.l) c = c.l; else { c.l = nd; break; } } else { if (c.r) c = c.r; else { c.r = nd; break; } } } nd.parent = c; nd.d = c.d + 1; });
+    return { root, all };
+  };
+  Sk.bstPath = function (values, target) { const { root } = Sk.bstBuild(values); const path = []; let c = root; while (c) { path.push(c.v); if (target === c.v) return { path, found: true }; c = target < c.v ? c.l : c.r; } return { path, found: false }; };
+  // gambar BST: values (urutan sisip), cx pusat, y0 atas; opt {n tampil, path [v], ghost {v, parent, side}, spread, dy, r}
+  Sk.bst = function (ctx, cx, y0, values, opt = {}) {
+    const vs = values.slice(0, opt.n == null ? values.length : opt.n); const { root, all } = Sk.bstBuild(vs); const spread = opt.spread || 380, dy = opt.dy || 120, r = opt.r || 40;
+    const place = (nd, x, y, s) => { if (!nd) return; nd.x = x; nd.y = y; place(nd.l, x - s, y + dy, s / 2); place(nd.r, x + s, y + dy, s / 2); };
+    place(root, cx, y0, spread);
+    const onPath = v => opt.path && opt.path.includes(v);
+    all.forEach(nd => { if (nd.parent) { const on = onPath(nd.v) && onPath(nd.parent.v); ctx.strokeStyle = on ? C.accent : "#B7C4CC"; ctx.lineWidth = on ? 7 : 4; ctx.beginPath(); ctx.moveTo(nd.parent.x, nd.parent.y); ctx.lineTo(nd.x, nd.y); ctx.stroke(); } });
+    if (opt.ghost) { const p = all.find(n => n.v === opt.ghost.parent); if (p) { const s = spread / Math.pow(2, p.d + 1); const gx = p.x + (opt.ghost.side === "l" ? -s : s), gy = p.y + dy; ctx.save(); ctx.setLineDash([10, 8]); ctx.strokeStyle = C.good; ctx.lineWidth = 5; ctx.beginPath(); ctx.moveTo(p.x, p.y); ctx.lineTo(gx, gy); ctx.stroke(); ctx.beginPath(); ctx.arc(gx, gy, r, 0, Math.PI * 2); ctx.fillStyle = C.goodBg; ctx.fill(); ctx.stroke(); ctx.restore(); text(ctx, String(opt.ghost.v), gx, gy + 10, 28, { align: "center", weight: 900, color: C.good }); } }
+    all.forEach(nd => { const on = onPath(nd.v), last = opt.path && opt.path[opt.path.length - 1] === nd.v; ctx.beginPath(); ctx.arc(nd.x, nd.y, r, 0, Math.PI * 2); ctx.fillStyle = last ? C.accent : on ? "#FFF3D6" : nd === all[all.length - 1] && opt.fresh ? C.goodBg : "#fff"; ctx.fill(); ctx.strokeStyle = on ? C.accent : C.kiko; ctx.lineWidth = on ? 6 : 4; ctx.stroke(); text(ctx, String(nd.v), nd.x, nd.y + 10, 28, { align: "center", weight: 900, color: last ? "#fff" : C.ink }); });
+    return { root, all };
+  };
+  // graph: nodes {id: [x, y]}, edges [[a, b, w]]; opt {hlNodes, hlEdges [[a,b]], weights, r, done}
+  Sk.graph = function (ctx, nodes, edges, opt = {}) {
+    const r = opt.r || 54; const hasE = (a, b) => (opt.hlEdges || []).some(([p, q]) => (p === a && q === b) || (p === b && q === a));
+    edges.forEach(([a, b, w]) => { const [x1, y1] = nodes[a], [x2, y2] = nodes[b]; const on = hasE(a, b); ctx.strokeStyle = on ? C.accent : "#B7C4CC"; ctx.lineWidth = on ? 8 : 5; ctx.beginPath(); ctx.moveTo(x1, y1); ctx.lineTo(x2, y2); ctx.stroke();
+      if (opt.weights && w != null) { const mx = (x1 + x2) / 2, my = (y1 + y2) / 2; ctx.fillStyle = "#fff"; rr(ctx, mx - 30, my - 20, 60, 40, 10); ctx.fill(); ctx.strokeStyle = on ? C.accent : "#B7C4CC"; ctx.lineWidth = 2; rr(ctx, mx - 30, my - 20, 60, 40, 10); ctx.stroke(); text(ctx, String(w), mx, my + 8, 22, { align: "center", weight: 900, color: on ? C.accentDark : C.ink2 }); } });
+    Object.entries(nodes).forEach(([id, [x, y]]) => { const on = (opt.hlNodes || []).includes(id), dn = (opt.done || []).includes(id); ctx.beginPath(); ctx.arc(x, y, r, 0, Math.PI * 2); ctx.fillStyle = on ? "#FFF3D6" : dn ? C.goodBg : "#fff"; ctx.fill(); ctx.strokeStyle = on ? C.accent : dn ? C.good : C.kiko; ctx.lineWidth = on ? 6 : 4; ctx.stroke(); text(ctx, id, x, y + 7, opt.size || 19, { align: "center", weight: 900 }); if (opt.tags && opt.tags[id] != null) { ctx.fillStyle = C.kiko; rr(ctx, x - 34, y - r - 34, 68, 30, 8); ctx.fill(); text(ctx, String(opt.tags[id]), x, y - r - 12, 18, { align: "center", weight: 900, color: "#fff" }); } });
+  };
+  K.struktur = Sk;
+})(typeof window !== "undefined" ? window : globalThis);
+
+/* Adegan episode F12.2: Memilih Solusi Optimal. Gaya diagram Fase F.
+   Muat setelah kiko-core.js, kiko-devices.js, py.js (F11.0), struktur.js (F12.1). */
+(function (global) {
+  const K = global.Kiko, H = K.helpers, C = K.C, Py = K.py, Sk = K.struktur, SCENES = K.SCENES;
+  const { text, para, card, kiko, kid, bubble, rr, clamp } = H;
+  const reveal = (l, t0, step, n) => clamp(Math.floor((l - t0) / step) + 1, 0, n);
+  const banner = (ctx, s, y = 665, w = 1100, opt = {}) => { card(ctx, 960 - w / 2, y, w, 80, { fill: opt.fill || "#FFF3D6", stroke: opt.stroke || C.accent, lw: 4 }); text(ctx, s, 960, y + 52, opt.size || 30, { align: "center", weight: 900, color: opt.color || C.accentDark }); };
+  const label = (ctx, s, x, y, opt = {}) => text(ctx, s, x, y, opt.size || 28, { align: "center", weight: 900, color: opt.color || C.accentDark });
+  const heading = (ctx, s, y = 215) => text(ctx, s, 960, y, 34, { align: "center", color: C.accentDark, weight: 800 });
+  const dim = (ctx, on, fn) => { ctx.save(); if (!on) ctx.globalAlpha = 0.2; fn(); ctx.restore(); };
+  const KOTA = { A: [300, 480], B: [540, 320], C: [580, 640], D: [860, 470], E: [1090, 610] };
+  const JALAN = [["A", "B", 2], ["A", "C", 5], ["B", "C", 2], ["B", "D", 6], ["C", "D", 2], ["C", "E", 7], ["D", "E", 3]];
+  const INF = "∞";
+  // langkah Dijkstra dari A
+  const ST = [
+    { done: [], d: { A: 0, B: INF, C: INF, D: INF, E: INF }, via: {}, cur: null },
+    { done: ["A"], d: { A: 0, B: 2, C: 5, D: INF, E: INF }, via: { B: "A", C: "A" }, cur: "A" },
+    { done: ["A", "B"], d: { A: 0, B: 2, C: 4, D: 8, E: INF }, via: { B: "A", C: "B", D: "B" }, cur: "B", upd: ["C", "D"] },
+    { done: ["A", "B", "C"], d: { A: 0, B: 2, C: 4, D: 6, E: 11 }, via: { B: "A", C: "B", D: "C", E: "C" }, cur: "C", upd: ["D", "E"] },
+    { done: ["A", "B", "C", "D"], d: { A: 0, B: 2, C: 4, D: 6, E: 9 }, via: { B: "A", C: "B", D: "C", E: "D" }, cur: "D", upd: ["E"] },
+    { done: ["A", "B", "C", "D", "E"], d: { A: 0, B: 2, C: 4, D: 6, E: 9 }, via: { B: "A", C: "B", D: "C", E: "D" }, cur: "E" }];
+  const viaEdges = st => Object.entries(st.via).filter(([k]) => st.done.includes(k)).map(([k, v]) => [k, v]);
+  const drawState = (ctx, st, opt = {}) => Sk.graph(ctx, KOTA, JALAN, { weights: true, tags: st.d, done: st.done.filter(x => x !== st.cur), hlNodes: st.cur ? [st.cur] : [], hlEdges: opt.route || viaEdges(st), r: 46, size: 26 });
+  const table = (ctx, x, y, st) => {
+    const rh = 58, cw = [90, 140, 140, 150]; const W = cw.reduce((a, b) => a + b); card(ctx, x, y, W, rh * 6, { fill: "#fff", stroke: "#B7C4CC", lw: 3, r: 12 }); ctx.fillStyle = C.bg2; rr(ctx, x, y, W, rh, 12); ctx.fill(); ctx.fillRect(x, y + rh / 2, W, rh / 2);
+    ["kota", "jarak", "dari", "status"].forEach((h, i) => text(ctx, h, x + cw.slice(0, i).reduce((a, b) => a + b, 0) + cw[i] / 2, y + 38, 20, { align: "center", weight: 900, color: C.ink2 }));
+    "ABCDE".split("").forEach((k, r) => { const ry = y + rh * (r + 1); const up = (st.upd || []).includes(k), dn = st.done.includes(k); if (k === st.cur) { ctx.fillStyle = "#FFF3D6"; ctx.fillRect(x + 2, ry, W - 4, rh); } else if (up) { ctx.fillStyle = "#E5F1F6"; ctx.fillRect(x + 2, ry, W - 4, rh); }
+      const vals = [k, String(st.d[k]), st.via[k] || "–", dn ? "pasti ✓" : "sementara"]; vals.forEach((v, i) => text(ctx, v, x + cw.slice(0, i).reduce((a, b) => a + b, 0) + cw[i] / 2, ry + 38, i === 3 ? 18 : 24, { align: "center", weight: 900, color: i === 3 ? (dn ? C.good : C.ink2) : C.ink })); });
+  };
+
+  Object.assign(SCENES, {
+    title_q(ctx, b, l) {
+      card(ctx, 120, 150, 1680, 740);
+      kiko(ctx, 290, 560, 170, 0, { mood: "happy" });
+      const n = reveal(l, 1.5, 2.2, 4);
+      dim(ctx, n >= 1, () => { card(ctx, 520, 250, 1160, 80, { fill: "#FFF3D6", stroke: C.accent, lw: 4, r: 16 }); text(ctx, "optimal = terbaik menurut satu ukuran: jarak, waktu, atau biaya", 1100, 302, 26, { align: "center", weight: 900, color: C.accentDark }); });
+      [["🔁", "brute force", "coba semua kemungkinan"], ["👉", "greedy", "yang terdekat dulu"], ["🧭", "Dijkstra", "pastikan yang terdekat, perbarui"]].forEach(([ic, t, s], i) => dim(ctx, n >= i + 2, () => { const x = 520 + i * 395; card(ctx, x, 370, 370, 260, { fill: C.bg2, r: 18 }); text(ctx, ic, x + 185, 460, 56, { align: "center" }); text(ctx, t, x + 185, 530, 30, { align: "center", weight: 900 }); text(ctx, s, x + 185, 575, 20, { align: "center", weight: 800, color: C.ink2 }); }));
+      if (n >= 4) label(ctx, "lalu ide yang sama untuk jadwal", 1100, 700, { size: 26 });
+    },
+    prereq(ctx, b, l) {
+      card(ctx, 260, 200, 1400, 600);
+      text(ctx, "EPISODE SEBELUMNYA", 960, 290, 34, { align: "center", color: C.accentDark, weight: 800 });
+      [["F11.6", "Strategi Algoritmik: brute force dan greedy"], ["F12.1", "Struktur Data Kompleks: graph dan dictionary"]].forEach(([c, t], i) => { const x = 360 + i * 640; card(ctx, x, 340, 580, 280, { fill: C.bg2 }); text(ctx, "Episode " + c, x + 290, 430, 50, { align: "center", weight: 900 }); para(ctx, t, x + 290, 500, 28, 520, { align: "center", weight: 700, color: C.ink2 }); });
+      kiko(ctx, 1600, 760, 150, 0);
+    },
+    unplugged_peta(ctx, b, l) {
+      card(ctx, 120, 150, 1680, 740);
+      heading(ctx, "MAIN DULU: PETA KOTA DARI TALI");
+      const n = reveal(l, 2.0, 3.0, 4);
+      ctx.save(); ctx.translate(-20, 0); Sk.graph(ctx, KOTA, JALAN.slice(0, n >= 2 ? 7 : 0), { weights: n >= 2, r: 46, size: 26 }); ctx.restore();
+      text(ctx, "kertas = kota · tali = jalan · label = km", 640, 270, 22, { align: "center", weight: 900, color: C.ink2 });
+      if (n >= 3) { kid(ctx, 1330, 540, 100, {}); kid(ctx, 1600, 540, 100, { hair: "long" }); bubble(ctx, 1200, 290, 250, "lewat C saja!", 22); bubble(ctx, 1480, 290, 260, "lewat B lebih dekat!", 22); }
+      if (n >= 4) label(ctx, "cari rute terpendek dari A ke E", 1460, 720, { size: 26 });
+    },
+    unplugged_kartu(ctx, b, l) {
+      card(ctx, 120, 150, 1680, 740);
+      heading(ctx, "CARA RAPI: KARTU JARAK SEMENTARA");
+      const n = reveal(l, 2.0, 3.0, 4);
+      const st = n >= 3 ? ST[1] : { done: [], d: { A: 0, B: "?", C: "?", D: "?", E: "?" }, via: {}, cur: null };
+      ctx.save(); ctx.translate(-20, 0); Sk.graph(ctx, KOTA, JALAN, { weights: true, tags: n >= 1 ? st.d : null, done: n >= 3 ? ["A"] : [], r: 46, size: 26 }); ctx.restore();
+      [["kartu angka", "jarak sementara dari A", "#FFF9E0"], ["kartu dibalik (hijau)", "jaraknya sudah pasti", C.goodBg], ["semua kelompok", "mendapat jawaban sama", C.bg2]].forEach(([t, s, bg], i) => dim(ctx, n >= i + 2, () => { card(ctx, 1250, 290 + i * 135, 460, 115, { fill: bg, r: 14 }); text(ctx, t, 1280, 338 + i * 135, 26, { weight: 900 }); text(ctx, s, 1280, 375 + i * 135, 20, { weight: 800, color: C.ink2 }); }));
+    },
+    bobot(ctx, b, l) {
+      card(ctx, 120, 150, 1680, 740);
+      heading(ctx, "GRAPH BERBOBOT: TERBAIK MENURUT APA?");
+      const n = reveal(l, 1.5, 3.0, 4);
+      [["jarak", "km", "📏"], ["waktu", "menit", "⏱️"], ["ongkos", "rupiah", "💰"]].forEach(([t, u, ic], i) => dim(ctx, n >= 1, () => { card(ctx, 230 + i * 300, 270, 270, 120, { fill: C.bg2, r: 14 }); text(ctx, ic + " " + t, 365 + i * 300, 320, 28, { align: "center", weight: 900 }); text(ctx, "bobot dalam " + u, 365 + i * 300, 360, 20, { align: "center", weight: 800, color: C.ink2 }); }));
+      dim(ctx, n >= 2, () => { [["rute lewat pasar", "8 km", "35 menit (macet)", C.badBg, C.bad], ["rute lewat lingkar", "12 km", "18 menit", C.goodBg, C.good]].forEach(([t, km, mn, bg, col], i) => { card(ctx, 230, 430 + i * 130, 870, 110, { fill: bg, stroke: col, lw: 3, r: 14 }); text(ctx, t, 260, 478 + i * 130, 26, { weight: 900 }); text(ctx, km + " · " + mn, 260, 518 + i * 130, 22, { weight: 800, color: col }); }); });
+      dim(ctx, n >= 3, () => { card(ctx, 1170, 430, 530, 240, { fill: "#FFF3D6", stroke: C.accent, lw: 4, r: 16 }); para(ctx, "terpendek: lewat pasar", 1435, 495, 26, 480, { align: "center", weight: 900 }); para(ctx, "tercepat: lewat lingkar", 1435, 545, 26, 480, { align: "center", weight: 900 }); para(ctx, "tentukan ukurannya dulu", 1435, 620, 26, 480, { align: "center", weight: 900, color: C.accentDark }); });
+    },
+    greedy_gagal(ctx, b, l) {
+      card(ctx, 120, 150, 1680, 740);
+      heading(ctx, "BRUTE FORCE MELEDAK, GREEDY BISA TERSESAT");
+      const n = reveal(l, 1.5, 3.4, 4);
+      dim(ctx, n >= 1, () => { card(ctx, 220, 270, 640, 420, { fill: C.bg2, r: 18 }); text(ctx, "brute force: coba semua rute", 540, 320, 26, { align: "center", weight: 900 });
+        text(ctx, "graph lengkap 5 kota", 540, 400, 22, { align: "center", weight: 800, color: C.ink2 }); text(ctx, "16 rute dari A ke E", 540, 445, 32, { align: "center", weight: 900, color: C.good });
+        dim(ctx, n >= 2, () => { text(ctx, "graph lengkap 20 kota", 540, 530, 22, { align: "center", weight: 800, color: C.ink2 }); text(ctx, "> 10.000.000.000.000.000", 540, 580, 32, { align: "center", weight: 900, color: C.bad }); text(ctx, "rute dari kota pertama ke terakhir", 540, 620, 18, { align: "center", weight: 800, color: C.ink2 }); }); });
+      dim(ctx, n >= 3, () => { const G = { A: [1000, 480], B: [1250, 345], C: [1250, 640], E: [1560, 480] };
+        Sk.graph(ctx, G, [["A", "B", 1], ["B", "E", 9], ["A", "C", 3], ["C", "E", 3]], { weights: true, hlEdges: n >= 4 ? [["A", "B"]] : [], hlNodes: n >= 4 ? ["B"] : ["A"], r: 44, size: 26 });
+        text(ctx, "greedy: pilih jalan terdekat dulu", 1280, 270, 22, { align: "center", weight: 900, color: C.kiko }); if (n >= 4) text(ctx, "A → B: hanya 1 km… lalu?", 1280, 735, 22, { align: "center", weight: 900, color: C.accentDark }); });
+    },
+    dijkstra_aturan(ctx, b, l) {
+      card(ctx, 120, 150, 1680, 740);
+      heading(ctx, "ALGORITMA DIJKSTRA: TIGA ATURAN");
+      const n = reveal(l, 1.5, 3.4, 4);
+      drawState(ctx, ST[0]);
+      [["1", "jarak awal: 0 di asal, ∞ di kota lain"], ["2", "ambil kota belum pasti dengan jarak terkecil, tandai pasti"], ["3", "perbarui tetangganya bila lewat kota itu lebih dekat"]].forEach(([k, s], i) => dim(ctx, n >= i + 1, () => { card(ctx, 1220, 280 + i * 140, 500, 120, { fill: i === n - 1 ? "#FFF3D6" : C.bg2, stroke: i === n - 1 ? C.accent : undefined, lw: 4, r: 14 }); ctx.fillStyle = C.kiko; ctx.beginPath(); ctx.arc(1265, 340 + i * 140, 24, 0, Math.PI * 2); ctx.fill(); text(ctx, k, 1265, 349 + i * 140, 26, { align: "center", weight: 900, color: "#fff" }); para(ctx, s, 1305, 330 + i * 140, 22, 390, { weight: 900 }); }));
+    },
+    dijkstra_langkah(ctx, b, l) {
+      card(ctx, 120, 150, 1680, 740);
+      heading(ctx, "DIJKSTRA DENGAN TANGAN: DARI A");
+      const st = l < 8 ? ST[1] : ST[2];
+      ctx.save(); ctx.translate(-60, 0); drawState(ctx, st); ctx.restore();
+      table(ctx, 1150, 270, st);
+      if (l < 8) label(ctx, "A pasti: B = 0 + 2 = 2, C = 0 + 5 = 5", 640, 745, { size: 24 });
+      else label(ctx, "lewat B: C = 2 + 2 = 4 < 5, diperbarui · D = 2 + 6 = 8", 640, 745, { size: 24 });
+    },
+    dijkstra_tuntas(ctx, b, l) {
+      card(ctx, 120, 150, 1680, 740);
+      heading(ctx, "DIJKSTRA SAMPAI SELESAI");
+      const k = reveal(l, 1.5, 5.0, 3); const st = ST[2 + Math.max(1, k)];
+      ctx.save(); ctx.translate(-60, 0); drawState(ctx, st); ctx.restore();
+      table(ctx, 1150, 270, st);
+      if (k <= 1) label(ctx, "lewat C: D = 4 + 2 = 6 < 8 · E = 4 + 7 = 11", 640, 745, { size: 24 });
+      if (k === 2) label(ctx, "lewat D: E = 6 + 3 = 9 < 11, diperbarui", 640, 745, { size: 24 });
+      if (k >= 3) label(ctx, "E pasti: 9 km", 640, 745, { size: 26, color: C.good });
+    },
+    telusur(ctx, b, l) {
+      card(ctx, 120, 150, 1680, 740);
+      heading(ctx, "TELUSURI RUTENYA: DATANG DARI MANA?");
+      const n = reveal(l, 1.5, 1.6, 5); const route = [["D", "E"], ["C", "D"], ["B", "C"], ["A", "B"]].slice(0, Math.min(n, 4));
+      ctx.save(); ctx.translate(-60, 0); Sk.graph(ctx, KOTA, JALAN, { weights: true, tags: ST[5].d, done: ["A", "B", "C", "D", "E"], hlEdges: route, r: 46, size: 26 }); ctx.restore();
+      const rows = [["E", "D"], ["D", "C"], ["C", "B"], ["B", "A"]];
+      rows.forEach(([a, c], i) => dim(ctx, n >= i + 1, () => { card(ctx, 1150, 280 + i * 78, 260, 64, { fill: C.bg2, r: 12 }); text(ctx, a + " datang dari " + c, 1280, 322 + i * 78, 24, { align: "center", weight: 900 }); }));
+      if (n >= 5) { card(ctx, 1440, 280, 290, 300, { fill: "#FFF3D6", stroke: C.accent, lw: 4, r: 16 }); text(ctx, "baca terbalik", 1585, 330, 22, { align: "center", weight: 900, color: C.ink2 }); text(ctx, "A → B → C", 1585, 400, 30, { align: "center", weight: 900 }); text(ctx, "→ D → E", 1585, 445, 30, { align: "center", weight: 900 }); text(ctx, "9 km", 1585, 520, 40, { align: "center", weight: 900, color: C.good }); }
+      if (n >= 5) label(ctx, "trace table menyimpan semua langkah: bisa diperiksa ulang", 1440, 650, { size: 22, color: C.ink2 });
+    },
+    struktur_rute(ctx, b, l) {
+      card(ctx, 120, 150, 1680, 740);
+      heading(ctx, "GRAPH BERBOBOT: DICTIONARY BERISI DICTIONARY");
+      const n = reveal(l, 1.5, 3.0, 4);
+      Py.code(ctx, 220, 260, 880, [{ t: "graf = {" }, { t: '  "A": {"B": 2, "C": 5},', hl: n >= 2 && n < 4 }, { t: '  "B": {"A": 2, "C": 2, "D": 6},' }, { t: '  "C": {"A": 5, "B": 2, "D": 2, "E": 7},' }, { t: '  "D": {"B": 6, "C": 2, "E": 3},' }, { t: '  "E": {"C": 7, "D": 3}' }, { t: "}" }, { t: 'graf["A"]["C"]   # 5', hl: n >= 3 && n < 4 }], { rh: 44, size: 21 });
+      dim(ctx, n >= 2, () => { card(ctx, 1180, 270, 520, 200, { fill: C.bg2, r: 16 }); text(ctx, "dari A:", 1210, 320, 24, { weight: 900, color: C.kiko }); text(ctx, "ke B: 2 km", 1210, 370, 26, { weight: 900 }); text(ctx, "ke C: 5 km", 1210, 420, 26, { weight: 900 }); });
+      dim(ctx, n >= 4, () => { card(ctx, 1180, 500, 520, 200, { fill: "#FFF3D6", stroke: C.accent, lw: 4, r: 16 }); para(ctx, "langkah utama Dijkstra:", 1440, 555, 22, 470, { align: "center", weight: 900, color: C.ink2 }); para(ctx, "ambil kota dengan jarak terkecil, berulang-ulang", 1440, 605, 26, 470, { align: "center", weight: 900, color: C.accentDark }); });
+    },
+    heapq(ctx, b, l) {
+      card(ctx, 120, 150, 1680, 740);
+      heading(ctx, "PRIORITY QUEUE: YANG TERKECIL KELUAR DULU");
+      const n = reveal(l, 1.5, 2.6, 6);
+      Py.code(ctx, 220, 260, 780, [{ t: "import heapq" }, { t: "antre = []" }, { t: 'heapq.heappush(antre, (5, "C"))', hl: n === 2 }, { t: 'heapq.heappush(antre, (2, "B"))', hl: n === 2 }, { t: 'heapq.heappush(antre, (8, "D"))', hl: n === 2 }, { t: 'heapq.heappop(antre)   # (2, "B")', hl: n === 3 || n === 4 }], { rh: 46, size: 22 });
+      const items = n >= 3 ? [[5, "C"], [8, "D"]] : n >= 2 ? [[2, "B"], [5, "C"], [8, "D"]] : [];
+      text(ctx, "priority queue", 1080, 290, 24, { weight: 900, color: C.kiko });
+      items.forEach(([d, k], i) => { card(ctx, 1080 + i * 200, 310, 180, 90, { fill: i === 0 ? "#FFF3D6" : "#fff", stroke: i === 0 ? C.accent : "#B7C4CC", lw: 3, r: 12 }); text(ctx, "(" + d + ", " + k + ")", 1170 + i * 200, 365, 28, { align: "center", weight: 900 }); });
+      if (n >= 3) { card(ctx, 1080, 430, 300, 80, { fill: C.goodBg, stroke: C.good, lw: 3, r: 12 }); text(ctx, "keluar: (2, B)", 1230, 480, 26, { align: "center", weight: 900, color: C.good }); text(ctx, "terkecil, bukan yang pertama masuk", 1400, 545, 20, { weight: 800, color: C.ink2 }); }
+      dim(ctx, n >= 5, () => { card(ctx, 220, 600, 1480, 110, { fill: C.bg2, r: 14 }); text(ctx, "library graph:", 250, 645, 22, { weight: 900, color: C.ink2 }); text(ctx, 'networkx.shortest_path(G, "A", "E", weight="weight")', 250, 688, 24, { weight: 900, color: C.kiko }); });
+    },
+    jadwal(ctx, b, l) {
+      card(ctx, 120, 150, 1680, 740);
+      heading(ctx, "JADWAL LAB: SELESAI PALING AWAL DULU");
+      const A = [["Rapat OSIS", 13, 14], ["Robotik", 13, 15], ["Remedial", 14, 15.5], ["Desain poster", 15, 16], ["Klub coding", 15.5, 17]];
+      const pick = { 0: "ok", 1: "x", 2: "ok", 3: "x", 4: "ok" };
+      const k = reveal(l, 3.0, 2.2, 5); const x0 = 560, pw = 260;
+      for (let h = 13; h <= 17; h++) { const x = x0 + (h - 13) * pw; ctx.strokeStyle = "#DCE6EC"; ctx.lineWidth = 2; ctx.beginPath(); ctx.moveTo(x, 260); ctx.lineTo(x, 690); ctx.stroke(); text(ctx, h + ".00", x, 255, 18, { align: "center", weight: 800, color: C.ink2 }); }
+      A.forEach(([nm, s, e], i) => { const y = 290 + i * 82; const st = i < k ? pick[i] : null; text(ctx, nm, 230, y + 42, 24, { weight: 900, color: st === "x" ? "#9AA7AF" : C.ink }); card(ctx, x0 + (s - 13) * pw, y + 8, (e - s) * pw, 54, { fill: st === "ok" ? C.goodBg : st === "x" ? "#F1F3F4" : "#E5F1F6", stroke: st === "ok" ? C.good : st === "x" ? "#C9D1D6" : C.kiko, lw: 3, r: 10 }); if (st) text(ctx, st === "ok" ? "✓ dipilih" : "✕ bentrok", x0 + (s - 13) * pw + 16, y + 44, 20, { weight: 900, color: st === "ok" ? C.good : C.bad }); });
+      text(ctx, "urut berdasarkan jam selesai", 230, 275, 18, { weight: 800, color: C.ink2 });
+      if (k >= 5) label(ctx, "3 kegiatan: jumlah terbanyak yang mungkin", 960, 735, { size: 26, color: C.good });
+    },
+    bandingkan(ctx, b, l) {
+      card(ctx, 120, 150, 1680, 740);
+      heading(ctx, "MEMILIH SOLUSI");
+      const n = reveal(l, 1.5, 2.6, 6);
+      [["📏", "tentukan ukurannya"], ["🔢", "hitung langkahnya"], ["📦", "pikirkan besar datanya"]].forEach(([ic, t], i) => dim(ctx, n >= i + 1, () => { card(ctx, 230 + i * 500, 260, 460, 90, { fill: C.bg2, r: 14 }); text(ctx, ic + "  " + t, 460 + i * 500, 316, 26, { align: "center", weight: 900 }); }));
+      [["brute force", "data kecil; pasti benar", "16 rute: oke · 10¹⁶ rute: tidak"], ["Dijkstra", "rute dengan bobot positif", "pastikan terdekat, perbarui tetangga"], ["greedy", "hanya bila terbukti benar", "jadwal: selesai paling awal ✓ · rute: ✕"]].forEach(([t, s, ex], i) => dim(ctx, n >= i + 4, () => { card(ctx, 230, 390 + i * 110, 1460, 96, { fill: i === n - 4 ? "#FFF3D6" : "#fff", stroke: i === n - 4 ? C.accent : "#B7C4CC", lw: 3, r: 14 }); text(ctx, t, 260, 448 + i * 110, 30, { weight: 900, color: C.kiko }); text(ctx, s, 560, 438 + i * 110, 24, { weight: 900 }); text(ctx, ex, 560, 470 + i * 110, 20, { weight: 800, color: C.ink2 }); }));
+    },
+    make_show(ctx, b, l) {
+      card(ctx, 160, 150, 1600, 740);
+      text(ctx, "GILIRANMU", 960, 230, 34, { align: "center", color: C.accentDark, weight: 900 });
+      const items = [["Dijkstra langkah demi langkah", "pilih kota, perbarui jarak", (x, y) => { ctx.save(); ctx.translate(x - 190, y - 170); ctx.scale(0.36, 0.36); Sk.graph(ctx, KOTA, JALAN, { weights: true, tags: ST[2].d, done: ["A"], hlNodes: ["B"], r: 46, size: 26 }); ctx.restore(); }],
+        ["Penjadwal lab", "lima kegiatan, tanpa bentrok", (x, y) => [["Rapat OSIS", "✓"], ["Robotik", "✕"], ["Remedial", "✓"]].forEach(([a, s], i) => { card(ctx, x - 200, y - 100 + i * 66, 400, 56, { fill: s === "✓" ? C.goodBg : "#fff", stroke: "#B7C4CC", lw: 2, r: 10 }); text(ctx, a, x - 180, y - 64 + i * 66, 22, { weight: 800 }); text(ctx, s, x + 180, y - 64 + i * 66, 24, { align: "right", weight: 900, color: s === "✓" ? C.good : C.bad }); })],
+        ["Pembanding solusi", "empat kasus, pilih caranya", (x, y) => [["rute kurir", "Dijkstra"], ["5 kota", "brute force"], ["jadwal", "greedy"]].forEach(([a, s], i) => { card(ctx, x - 200, y - 100 + i * 66, 400, 56, { fill: "#fff", stroke: "#B7C4CC", lw: 2, r: 10 }); text(ctx, a, x - 180, y - 64 + i * 66, 22, { weight: 800 }); text(ctx, s, x + 180, y - 64 + i * 66, 22, { align: "right", weight: 900, color: C.kiko }); })]];
+      items.forEach(([t1, t2, draw], i) => { const x = 400 + i * 560; card(ctx, x - 250, 270, 500, 400, { fill: C.bg2 }); ctx.fillStyle = C.kiko; ctx.beginPath(); ctx.arc(x - 200, 320, 28, 0, Math.PI * 2); ctx.fill(); text(ctx, String(i + 1), x - 200, 332, 30, { align: "center", color: "#fff", weight: 900 }); text(ctx, t1, x - 160, 332, 22, { weight: 900 }); text(ctx, t2, x - 160, 366, 19, { weight: 700, color: C.ink2 }); draw(x, 530); });
+      text(ctx, "lalu di komputer: Dijkstra dengan heapq, ubah satu bobot, tambahkan kota F", 960, 725, 24, { align: "center", color: C.ink2, weight: 800 });
+    }
+  });
+})(typeof window !== "undefined" ? window : globalThis);
+</script>
+<script>/* Inti halaman latihan: pemutar (kanvas + narasi), tombol suara nyala/mati (berpindah antara timeline suara dan teks),
+   kuis dengan petunjuk, dan kemajuan di localStorage (perangkat ini saja).
+   Pakai:  const P = PageCore({ suara: TIMELINE_SUARA_atau_null, teks: TIMELINE_TEKS });
+   Episode menambahkan latihannya sendiri lewat P.$, P.K, P.H, P.progress, P.save(), P.speed(), P.onProgress(fn). */
+function PageCore(TLS, opt = {}) {
+  const $ = id => document.getElementById(id);
+  const K = Kiko, H = K.helpers;
+  let voice = !!TLS.suara; let TL = voice ? TLS.suara : TLS.teks;
+  // ---------- progress storage (per device only) ----------
+  const KEY = opt.key || TL.episode.replace(/\./g, "").toLowerCase() + "-progress";   // D7.5 -> "d75-progress"
+  let progress = { quiz: {} };
+  try { const s = localStorage.getItem(KEY); if (s) progress = { quiz: {}, ...JSON.parse(s) }; } catch (e) {}
+  const extras = [];
+  function renderProgress() {
+    const el = $("progress"); if (!el) return; el.innerHTML = "";
+    Object.keys(TL.quizzes).forEach((id, i) => { const s = document.createElement("span"); s.textContent = "Cek " + (i + 1); s.className = progress.quiz[id] ? "ok" : ""; el.appendChild(s); });
+    extras.forEach(f => f(el));
+  }
+  function save() { try { localStorage.setItem(KEY, JSON.stringify(progress)); } catch (e) {} renderProgress(); }
+
+  // ---------- player ----------
+  const cv = $("screen"), ctx = cv.getContext("2d");
+  let t = 0, playing = false, last = 0, speed = 1, hasAudio = false;
+  const nar = $("nar"); nar.addEventListener("canplay", () => { hasAudio = true; }); nar.addEventListener("error", () => { hasAudio = false; });
+  function fmt(s) { s = Math.max(0, Math.floor(s)); return Math.floor(s / 60) + ":" + String(s % 60).padStart(2, "0"); }
+  function segStart(i) { return TL.beats.find(b => b.seg === i).start; }
+  function syncAudio() { if (voice && hasAudio) { try { nar.currentTime = t; } catch (e) {} } }
+  function drawNow() {
+    const b = K.draw(ctx, Math.min(t, TL.total - 0.01), TL);
+    $("barfill").style.width = (t / TL.total * 100) + "%"; $("bar").setAttribute("aria-valuenow", Math.round(t / TL.total * 100));
+    $("timelabel").textContent = fmt(t) + " / " + fmt(TL.total);
+    [...$("chapters").children].forEach((c, i) => c.classList.toggle("now", i === b.seg));
+    return b;
+  }
+  function loop(now) {
+    if (!playing) return;
+    const dt = Math.min(0.1, (now - last) / 1000); last = now; if (voice && hasAudio && !nar.paused) t = nar.currentTime; else t += dt * speed;
+    if (t >= TL.total) { t = TL.total - 0.01; setPlaying(false); }
+    drawNow(); requestAnimationFrame(loop);
+  }
+  function setPlaying(p) {
+    playing = p; $("bigplay").hidden = p; $("playbtn").textContent = p ? "❚❚ Jeda" : "▶ Putar";
+    if (p) { last = performance.now(); if (voice && hasAudio) { try { nar.currentTime = t; nar.playbackRate = speed; nar.play().catch(() => {}); } catch (e) {} } requestAnimationFrame(loop); } else nar.pause();
+  }
+  $("bigplay").addEventListener("click", () => setPlaying(true));
+  $("playbtn").addEventListener("click", () => setPlaying(!playing));
+  $("replay").addEventListener("click", () => { const b = K.beatAt(TL, t); t = segStart(b.seg); syncAudio(); drawNow(); setPlaying(true); });
+  $("slow").addEventListener("click", e => { speed = speed === 1 ? 0.8 : 1; nar.playbackRate = speed; e.currentTarget.setAttribute("aria-pressed", speed !== 1); });
+  function seekFromBar(ev) { const r = $("bar").getBoundingClientRect(); const x = (ev.touches ? ev.touches[0].clientX : ev.clientX) - r.left; t = Math.max(0, Math.min(TL.total - 0.01, x / r.width * TL.total)); syncAudio(); drawNow(); }
+  $("bar").addEventListener("click", seekFromBar);
+  $("bar").addEventListener("keydown", e => { if (e.key === "ArrowRight") { t = Math.min(TL.total - 0.01, t + 5); syncAudio(); drawNow(); } if (e.key === "ArrowLeft") { t = Math.max(0, t - 5); syncAudio(); drawNow(); } });
+  TL.segments.forEach((name, i) => { const b = document.createElement("button"); b.textContent = (i + 1) + ". " + name; b.addEventListener("click", () => { t = segStart(i); syncAudio(); drawNow(); setPlaying(true); }); $("chapters").appendChild(b); });
+  // voice on/off: switches between the narrated timeline and the reading-paced one, staying on the same beat
+  const vb = $("voice");
+  function setVoice(on) {
+    const cur = K.beatAt(TL, t);
+    voice = on && !!TLS.suara; TL = voice ? TLS.suara : TLS.teks;
+    const nb = TL.beats.find(b => b.id === cur.id) || TL.beats[0]; t = nb.start;
+    if (vb) { vb.setAttribute("aria-pressed", voice); vb.textContent = voice ? "🔊 Suara: nyala" : "🔇 Suara: mati"; }
+    if (playing) { if (voice && hasAudio) { try { nar.currentTime = t; nar.playbackRate = speed; nar.play().catch(() => {}); } catch (e) {} } else nar.pause(); }
+    drawNow();
+  }
+  if (vb) { if (!TLS.suara || !TLS.teks) vb.hidden = true; else { vb.addEventListener("click", () => setVoice(!voice)); vb.setAttribute("aria-pressed", voice); vb.textContent = voice ? "🔊 Suara: nyala" : "🔇 Suara: mati"; } }
+  drawNow();
+
+  // ---------- quiz ----------
+  const quizEl = $("quiz");
+  if (quizEl) Object.entries(TL.quizzes).forEach(([id, q], qi) => {
+    const box = document.createElement("div"); box.className = "q";
+    box.innerHTML = `<h3>${qi + 1}. ${q.q}</h3><div class="opts"></div><div class="fb"></div>`;
+    const opts = box.querySelector(".opts"), fb = box.querySelector(".fb");
+    q.options.forEach((o, i) => {
+      const b = document.createElement("button"); b.innerHTML = `<b>${"ABC"[i]}</b><span>${o}</span>`;
+      b.addEventListener("click", () => {
+        [...opts.children].forEach(c => c.classList.remove("wrong"));
+        if (i === q.answer) { b.classList.add("right"); fb.className = "fb good"; fb.textContent = "Benar! " + (q.explain || ""); progress.quiz[id] = true; save(); [...opts.children].forEach(c => c.disabled = true); }
+        else { b.classList.add("wrong"); fb.className = "fb bad"; fb.textContent = "Belum tepat. Petunjuk: " + q.hint; }
+      });
+      opts.appendChild(b);
+    });
+    if (progress.quiz[id]) { opts.children[q.answer].classList.add("right"); [...opts.children].forEach(c => c.disabled = true); fb.className = "fb good"; fb.textContent = "Sudah dijawab benar."; }
+    quizEl.appendChild(box);
+  });
+  renderProgress();
+
+  return { $, K, H, progress, save, renderProgress, speed: () => speed, timeline: () => TL,
+           onProgress(fn) { extras.push(fn); renderProgress(); } };
+}
+</script>
+<script>
+(function () {
+  const P = PageCore({ suara: {"episode": "F12.2", "title": "Memilih Solusi Optimal", "hook": "mencari rute terpendek dengan algoritma Dijkstra, lalu memilih solusi yang paling efisien untuk rute dan jadwal.", "engine": ["../_alat/kiko-core.js", "../_alat/kiko-devices.js", "../F11.0/py.js", "../F12.1/struktur.js", "scenes.js"], "parts": {"F12.2a": {"segs": [0, 1, 2, 3], "post": "Lanjut ke Bagian 2: Rute, Struktur, dan Jadwal"}, "F12.2b": {"segs": [4, 5, 6, 7], "pre": "Bagian 2: Rute, Struktur, dan Jadwal"}}, "youtube": {"ringkas": "Memilih solusi optimal untuk kelas XII. Kiko mulai dari pertanyaan: terbaik menurut ukuran apa? Jarak, waktu, atau biaya disimpan sebagai bobot di graph. Brute force mencoba semua rute dan cepat meledak; greedy memilih yang terdekat dulu dan bisa gagal. Lalu algoritma Dijkstra dikerjakan dengan tangan pada graph lima kota fiktif: jarak sementara, kota yang sudah pasti, dan catatan datang dari mana untuk menelusuri rutenya. Di Python, graph disimpan sebagai dictionary berisi dictionary dan heapq menjadi priority queue. Ditutup penjadwalan lab dengan greedy yang terbukti optimal dan cara membandingkan solusi. Gaya diagram Fase F. Empat cek pemahaman; Dijkstra langkah demi langkah di halaman latihan.", "belajar": ["menjelaskan arti solusi optimal berdasarkan ukuran yang dipilih", "menunjukkan kapan greedy gagal dan kapan brute force terlalu lambat", "menelusuri algoritma Dijkstra dengan tangan pada graph kecil", "memakai dictionary dan heapq untuk rute terpendek di Python", "menyusun jadwal dengan aturan selesai paling awal"], "bagian": {"F12.2a": "Optimal, Greedy, dan Dijkstra", "F12.2b": "Rute, Struktur, dan Jadwal"}, "cari": ["algoritma dijkstra penjelasan mudah", "rute terpendek graph kelas 12", "solusi optimal informatika sma", "greedy vs brute force", "heapq python priority queue"], "prasyarat": "episode F11.6 dan F12.1", "jp": 14, "tagar": ["#Kelas12", "#Dijkstra", "#RuteTerpendek", "#Algoritma", "#Python", "#SMA"]}, "recap": ["Optimal: terbaik menurut ukuran yang dipilih.", "Dijkstra: pastikan yang terdekat, perbarui tetangga.", "Pilih struktur yang membuat langkah utamanya cepat."], "next": {"code": "F12.3", "title": "Analisis Data untuk Prediksi", "note": "Dijkstra langkah demi langkah dan penjadwal lab ada di halaman episode ini."}, "segments": ["Pembuka", "Main dulu tanpa komputer", "Ukuran terbaik, brute force, greedy", "Dijkstra dengan tangan", "Rute dan trace table", "Struktur data yang tepat", "Jadwal dan memilih solusi", "Giliranmu"], "quizzes": {"q1": {"q": "A–B 1, B–E 9, A–C 3, C–E 3. Greedy lewat B. Apakah rute greedy terpendek?", "options": ["Ya, panjangnya 10", "Tidak, yang terpendek 6", "Ya, panjangnya 6"], "answer": 1, "hint": "Hitung panjang A–B–E, lalu bandingkan dengan A–C–E."}, "q2": {"q": "A dan B sudah pasti. Jarak sementara: C 4, D 8, E belum tahu. Kota mana dipastikan berikutnya?", "options": ["C", "D", "E"], "answer": 0, "hint": "Dijkstra memastikan kota belum pasti dengan jarak paling kecil."}, "q3": {"q": "Jalan C–D ditutup. Berapa jarak terpendek A ke E sekarang?", "options": ["9", "11", "12"], "answer": 1, "hint": "Rute 9 km memakai jalan C–D. Coba rute lain lewat B."}, "q4": {"q": "Berkali-kali mengambil kota dengan jarak sementara terkecil. Struktur paling cocok?", "options": ["Stack", "Queue biasa", "Priority queue"], "answer": 2, "hint": "Yang dikeluarkan bukan yang terakhir atau pertama masuk, melainkan yang nilainya terkecil."}}, "beats": [{"id": "intro1", "seg": 0, "scene": "title", "text": "Halo, kelas dua belas! Aku Kiko. Aplikasi peta selalu menawarkan rute tercepat, padahal jalannya ribuan. Setelah menonton, kamu bisa mencari rute terpendek dengan algoritma Dijkstra dan memilih solusi yang paling efisien.", "hold": 1.0, "start": 0.0, "speech": 0.4, "audio": 14.917, "dur": 17.54}, {"id": "intro2", "seg": 0, "scene": "title_q", "text": "Optimal artinya terbaik menurut satu ukuran: jarak, waktu, atau biaya. Kita bandingkan tiga cara: mencoba semua kemungkinan, memilih yang terdekat dulu, dan Dijkstra. Lalu kita pakai ide yang sama untuk jadwal.", "hold": 0.8, "start": 17.54, "speech": 17.94, "audio": 15.387, "dur": 17.34}, {"id": "intro3", "seg": 0, "scene": "prereq", "text": "Episode ini melanjutkan F11.6 tentang brute force dan greedy, dan F12.1 tentang graph. Kalau dictionary berisi list untuk jalur angkot terasa asing, tonton lagi F12.1, ya.", "hold": 0.8, "start": 34.88, "speech": 35.28, "audio": 13.6, "dur": 15.1}, {"id": "play1", "seg": 1, "scene": "unplugged_peta", "text": "Main dulu. Di lantai kelas, lima kertas bertuliskan kota A sampai E dihubungkan tali. Tiap tali diberi label jarak dalam kilometer. Tugas kelompok: cari rute terpendek dari A ke E. Biasanya kelompok mencoba-coba dan saling berdebat.", "hold": 1.0, "start": 49.98, "speech": 50.38, "audio": 16.92, "dur": 20.04}, {"id": "play2", "seg": 1, "scene": "unplugged_kartu", "text": "Lalu cara yang rapi. Tiap kota diberi kartu jarak sementara: A nol, yang lain belum tahu. Kota yang jaraknya sudah pasti, kartunya dibalik. Tanpa berdebat, semua kelompok mendapat jawaban yang sama.", "hold": 1.0, "start": 70.02, "speech": 70.42, "audio": 13.996, "dur": 17.54}, {"id": "s1a", "seg": 2, "scene": "bobot", "text": "Di graph berbobot, tiap edge punya angka: jarak, waktu, atau ongkos. Rute terpendek belum tentu tercepat; jalan pendek bisa macet. Jadi tentukan dulu ukurannya, baru cari yang terbaik menurut ukuran itu.", "hold": 0.8, "start": 87.56, "speech": 87.96, "audio": 14.634, "dur": 17.34}, {"id": "s1b", "seg": 2, "scene": "greedy_gagal", "text": "Brute force mencoba semua rute: untuk lima kota masih mudah, untuk dua puluh kota jumlah rutenya sudah tak terbayangkan. Greedy memilih jalan terdekat dulu: cepat, tetapi bisa tersesat. Dari A, greedy ke B karena hanya satu kilometer.", "hold": 0.8, "start": 104.9, "speech": 105.3, "audio": 16.591, "dur": 20.34}, {"id": "q1", "seg": 2, "scene": "quiz", "quiz": "q1", "text": "Cek pemahaman. A ke B satu, B ke E sembilan, A ke C tiga, C ke E tiga. Greedy lewat B. Apakah rute greedy terpendek? Pilih: ya, sepuluh; tidak, yang terpendek enam; atau ya, enam. Pikirkan dulu.", "hold": 4.0, "start": 125.24, "speech": 125.64, "audio": 19.027, "dur": 23.727}, {"id": "q1a", "seg": 2, "scene": "quiz_answer", "quiz": "q1", "text": "Jawabannya: tidak. Rute greedy A, B, E panjangnya sepuluh, sedangkan A, C, E hanya enam. Langkah pertama yang murah bisa menjebak.", "hold": 1.0, "start": 148.967, "speech": 149.367, "audio": 10.795, "dur": 12.54}, {"id": "s2a", "seg": 3, "scene": "dijkstra_aturan", "text": "Algoritma Dijkstra punya tiga aturan. Jarak awal: nol di kota asal, tak hingga di kota lain. Ambil kota belum pasti yang jaraknya paling kecil, lalu tandai pasti. Perbarui tetangganya bila lewat kota itu lebih dekat.", "hold": 0.8, "start": 161.507, "speech": 161.907, "audio": 14.333, "dur": 19.34}, {"id": "s2b", "seg": 3, "scene": "dijkstra_langkah", "text": "Mulai dari A. A pasti, nol. Tetangganya: B dua, C lima. Kota terkecil berikutnya B, tandai pasti. Lewat B, C menjadi dua tambah dua, empat, lebih kecil dari lima, jadi diperbarui. D menjadi dua tambah enam, delapan.", "hold": 0.8, "start": 180.847, "speech": 181.247, "audio": 19.76, "dur": 21.26}, {"id": "q2", "seg": 3, "scene": "quiz", "quiz": "q2", "text": "Cek pemahaman. A dan B sudah pasti. Jarak sementara: C empat, D delapan, E belum tahu. Kota mana yang dipastikan berikutnya: C, D, atau E? Pikirkan dulu.", "hold": 4.0, "start": 202.107, "speech": 202.507, "audio": 13.691, "dur": 18.54}, {"id": "q2a", "seg": 3, "scene": "quiz_answer", "quiz": "q2", "text": "Jawabannya: C. Dijkstra selalu memastikan kota belum pasti dengan jarak paling kecil. Empat lebih kecil dari delapan.", "hold": 1.0, "start": 220.647, "speech": 221.047, "audio": 8.358, "dur": 10.54}, {"id": "s3a", "seg": 4, "scene": "dijkstra_tuntas", "text": "Bagian dua. C pasti, empat. Lewat C, D menjadi enam dan E sebelas. D terkecil, pasti enam. Lewat D, E menjadi sembilan, lebih kecil dari sebelas. Terakhir E pasti: sembilan kilometer.", "hold": 0.8, "start": 231.187, "speech": 231.587, "audio": 16.666, "dur": 18.166}, {"id": "s3b", "seg": 4, "scene": "telusur", "text": "Rutenya dari mana? Tiap kali jarak diperbarui, catat datang dari mana. E dari D, D dari C, C dari B, B dari A. Baca terbalik: A, B, C, D, E. Trace table merekam semua langkah, jadi hasilnya bisa diperiksa ulang.", "hold": 0.8, "start": 249.353, "speech": 249.753, "audio": 18.06, "dur": 21.84}, {"id": "q3", "seg": 4, "scene": "quiz", "quiz": "q3", "text": "Cek pemahaman. Jalan C ke D ditutup karena perbaikan. Berapa jarak terpendek dari A ke E sekarang: sembilan, sebelas, atau dua belas? Pikirkan dulu.", "hold": 4.0, "start": 271.193, "speech": 271.593, "audio": 11.509, "dur": 17.04}, {"id": "q3a", "seg": 4, "scene": "quiz_answer", "quiz": "q3", "text": "Jawabannya: sebelas. Tanpa jalan C ke D, pilihan terbaik adalah A, B, D, E atau A, B, C, E. Keduanya sebelas kilometer.", "hold": 1.0, "start": 288.233, "speech": 288.633, "audio": 12.36, "dur": 14.06}, {"id": "s4a", "seg": 5, "scene": "struktur_rute", "text": "Struktur data yang tepat membuat Dijkstra cepat. Graph berbobot disimpan sebagai dictionary berisi dictionary: dari A, B dua, C lima. Langkah utamanya mengambil kota dengan jarak terkecil, berulang-ulang.", "hold": 0.8, "start": 302.293, "speech": 302.693, "audio": 14.287, "dur": 15.84}, {"id": "s4b", "seg": 5, "scene": "heapq", "text": "Untuk itu ada priority queue: antrean yang selalu mengeluarkan nilai terkecil dulu. Di Python namanya heapq: heappush memasukkan, heappop mengambil yang terkecil. Library graph seperti NetworkX bahkan punya fungsi rute terpendek siap pakai.", "hold": 0.8, "start": 318.133, "speech": 318.533, "audio": 16.468, "dur": 18.34}, {"id": "q4", "seg": 5, "scene": "quiz", "quiz": "q4", "text": "Cek pemahaman. Program perlu berkali-kali mengambil kota dengan jarak sementara terkecil. Struktur mana yang paling cocok: stack, queue biasa, atau priority queue? Pikirkan dulu.", "hold": 4.0, "start": 336.473, "speech": 336.873, "audio": 12.642, "dur": 17.342}, {"id": "q4a", "seg": 5, "scene": "quiz_answer", "quiz": "q4", "text": "Jawabannya: priority queue. Stack mengeluarkan yang terakhir masuk, queue yang pertama masuk. Hanya priority queue yang mengeluarkan yang terkecil.", "hold": 1.0, "start": 353.815, "speech": 354.215, "audio": 9.6, "dur": 11.54}, {"id": "s5a", "seg": 6, "scene": "jadwal", "text": "Solusi optimal juga dicari untuk jadwal. Lab komputer diminta lima kegiatan yang sebagian bentrok. Aturan greedy yang terbukti optimal di sini: pilih yang selesai paling awal, lalu yang berikutnya tidak bentrok. Hasilnya tiga kegiatan.", "hold": 0.8, "start": 365.355, "speech": 365.755, "audio": 15.728, "dur": 18.84}, {"id": "s5b", "seg": 6, "scene": "bandingkan", "text": "Cara memilih solusi: tentukan ukurannya, hitung langkahnya, dan pikirkan besar datanya. Brute force cocok untuk data kecil. Dijkstra untuk rute dengan bobot positif. Greedy hanya bila sudah terbukti benar untuk masalah itu.", "hold": 1.0, "start": 384.195, "speech": 384.595, "audio": 15.92, "dur": 18.04}, {"id": "s6a", "seg": 7, "scene": "make_show", "text": "Sekarang giliranmu. Di halaman latihan: Dijkstra langkah demi langkah, pilih kota berikutnya dan perbarui jaraknya; penjadwal lab untuk lima kegiatan; dan pembanding solusi untuk empat kasus.", "hold": 1.0, "start": 402.235, "speech": 402.635, "audio": 13.485, "dur": 15.185}, {"id": "s6b", "seg": 7, "scene": "make_show", "text": "Lalu di komputer: jalankan program Dijkstra dengan heapq untuk graph lima kota, ubah satu bobot karena jalan macet, dan bandingkan rutenya. Tantangan: tambahkan kota F dan jalannya sendiri.", "hold": 1.0, "start": 417.42, "speech": 417.82, "audio": 13.513, "dur": 16.04}, {"id": "recap", "seg": 7, "scene": "recap", "text": "Tiga hal untuk diingat. Satu: optimal berarti terbaik menurut ukuran yang dipilih. Dua: Dijkstra memastikan kota terdekat lebih dulu, lalu memperbarui tetangganya. Tiga: pilih struktur data yang membuat langkah utamanya cepat.", "hold": 1.5, "start": 433.46, "speech": 433.86, "audio": 16.48, "dur": 18.68}, {"id": "outro", "seg": 7, "scene": "outro", "text": "Sampai jumpa di episode berikutnya: analisis data untuk prediksi. Kita tarik garis tren dari data terbuka dan menebak masa depan dengan hati-hati. Sampai jumpa!", "hold": 1.0, "start": 452.14, "speech": 452.54, "audio": 10.974, "dur": 14.04}], "total": 466.18}, teks: {"episode": "F12.2", "title": "Memilih Solusi Optimal", "hook": "mencari rute terpendek dengan algoritma Dijkstra, lalu memilih solusi yang paling efisien untuk rute dan jadwal.", "engine": ["../_alat/kiko-core.js", "../_alat/kiko-devices.js", "../F11.0/py.js", "../F12.1/struktur.js", "scenes.js"], "parts": {"F12.2a": {"segs": [0, 1, 2, 3], "post": "Lanjut ke Bagian 2: Rute, Struktur, dan Jadwal"}, "F12.2b": {"segs": [4, 5, 6, 7], "pre": "Bagian 2: Rute, Struktur, dan Jadwal"}}, "youtube": {"ringkas": "Memilih solusi optimal untuk kelas XII. Kiko mulai dari pertanyaan: terbaik menurut ukuran apa? Jarak, waktu, atau biaya disimpan sebagai bobot di graph. Brute force mencoba semua rute dan cepat meledak; greedy memilih yang terdekat dulu dan bisa gagal. Lalu algoritma Dijkstra dikerjakan dengan tangan pada graph lima kota fiktif: jarak sementara, kota yang sudah pasti, dan catatan datang dari mana untuk menelusuri rutenya. Di Python, graph disimpan sebagai dictionary berisi dictionary dan heapq menjadi priority queue. Ditutup penjadwalan lab dengan greedy yang terbukti optimal dan cara membandingkan solusi. Gaya diagram Fase F. Empat cek pemahaman; Dijkstra langkah demi langkah di halaman latihan.", "belajar": ["menjelaskan arti solusi optimal berdasarkan ukuran yang dipilih", "menunjukkan kapan greedy gagal dan kapan brute force terlalu lambat", "menelusuri algoritma Dijkstra dengan tangan pada graph kecil", "memakai dictionary dan heapq untuk rute terpendek di Python", "menyusun jadwal dengan aturan selesai paling awal"], "bagian": {"F12.2a": "Optimal, Greedy, dan Dijkstra", "F12.2b": "Rute, Struktur, dan Jadwal"}, "cari": ["algoritma dijkstra penjelasan mudah", "rute terpendek graph kelas 12", "solusi optimal informatika sma", "greedy vs brute force", "heapq python priority queue"], "prasyarat": "episode F11.6 dan F12.1", "jp": 14, "tagar": ["#Kelas12", "#Dijkstra", "#RuteTerpendek", "#Algoritma", "#Python", "#SMA"]}, "recap": ["Optimal: terbaik menurut ukuran yang dipilih.", "Dijkstra: pastikan yang terdekat, perbarui tetangga.", "Pilih struktur yang membuat langkah utamanya cepat."], "next": {"code": "F12.3", "title": "Analisis Data untuk Prediksi", "note": "Dijkstra langkah demi langkah dan penjadwal lab ada di halaman episode ini."}, "segments": ["Pembuka", "Main dulu tanpa komputer", "Ukuran terbaik, brute force, greedy", "Dijkstra dengan tangan", "Rute dan trace table", "Struktur data yang tepat", "Jadwal dan memilih solusi", "Giliranmu"], "quizzes": {"q1": {"q": "A–B 1, B–E 9, A–C 3, C–E 3. Greedy lewat B. Apakah rute greedy terpendek?", "options": ["Ya, panjangnya 10", "Tidak, yang terpendek 6", "Ya, panjangnya 6"], "answer": 1, "hint": "Hitung panjang A–B–E, lalu bandingkan dengan A–C–E."}, "q2": {"q": "A dan B sudah pasti. Jarak sementara: C 4, D 8, E belum tahu. Kota mana dipastikan berikutnya?", "options": ["C", "D", "E"], "answer": 0, "hint": "Dijkstra memastikan kota belum pasti dengan jarak paling kecil."}, "q3": {"q": "Jalan C–D ditutup. Berapa jarak terpendek A ke E sekarang?", "options": ["9", "11", "12"], "answer": 1, "hint": "Rute 9 km memakai jalan C–D. Coba rute lain lewat B."}, "q4": {"q": "Berkali-kali mengambil kota dengan jarak sementara terkecil. Struktur paling cocok?", "options": ["Stack", "Queue biasa", "Priority queue"], "answer": 2, "hint": "Yang dikeluarkan bukan yang terakhir atau pertama masuk, melainkan yang nilainya terkecil."}}, "beats": [{"id": "intro1", "seg": 0, "scene": "title", "text": "Halo, kelas dua belas! Aku Kiko. Aplikasi peta selalu menawarkan rute tercepat, padahal jalannya ribuan. Setelah menonton, kamu bisa mencari rute terpendek dengan algoritma Dijkstra dan memilih solusi yang paling efisien.", "hold": 1.0, "start": 0.0, "speech": 0.0, "audio": 20.175, "dur": 22.175}, {"id": "intro2", "seg": 0, "scene": "title_q", "text": "Optimal artinya terbaik menurut satu ukuran: jarak, waktu, atau biaya. Kita bandingkan tiga cara: mencoba semua kemungkinan, memilih yang terdekat dulu, dan Dijkstra. Lalu kita pakai ide yang sama untuk jadwal.", "hold": 0.8, "start": 22.175, "speech": 22.175, "audio": 20.175, "dur": 21.975}, {"id": "intro3", "seg": 0, "scene": "prereq", "text": "Episode ini melanjutkan F11.6 tentang brute force dan greedy, dan F12.1 tentang graph. Kalau dictionary berisi list untuk jalur angkot terasa asing, tonton lagi F12.1, ya.", "hold": 0.8, "start": 44.15, "speech": 44.15, "audio": 17.05, "dur": 18.85}, {"id": "play1", "seg": 1, "scene": "unplugged_peta", "text": "Main dulu. Di lantai kelas, lima kertas bertuliskan kota A sampai E dihubungkan tali. Tiap tali diberi label jarak dalam kilometer. Tugas kelompok: cari rute terpendek dari A ke E. Biasanya kelompok mencoba-coba dan saling berdebat.", "hold": 1.0, "start": 63.0, "speech": 63.0, "audio": 23.3, "dur": 25.3}, {"id": "play2", "seg": 1, "scene": "unplugged_kartu", "text": "Lalu cara yang rapi. Tiap kota diberi kartu jarak sementara: A nol, yang lain belum tahu. Kota yang jaraknya sudah pasti, kartunya dibalik. Tanpa berdebat, semua kelompok mendapat jawaban yang sama.", "hold": 1.0, "start": 88.3, "speech": 88.3, "audio": 20.175, "dur": 22.175}, {"id": "s1a", "seg": 2, "scene": "bobot", "text": "Di graph berbobot, tiap edge punya angka: jarak, waktu, atau ongkos. Rute terpendek belum tentu tercepat; jalan pendek bisa macet. Jadi tentukan dulu ukurannya, baru cari yang terbaik menurut ukuran itu.", "hold": 0.8, "start": 110.475, "speech": 110.475, "audio": 20.175, "dur": 21.975}, {"id": "s1b", "seg": 2, "scene": "greedy_gagal", "text": "Brute force mencoba semua rute: untuk lima kota masih mudah, untuk dua puluh kota jumlah rutenya sudah tak terbayangkan. Greedy memilih jalan terdekat dulu: cepat, tetapi bisa tersesat. Dari A, greedy ke B karena hanya satu kilometer.", "hold": 0.8, "start": 132.45, "speech": 132.45, "audio": 23.925, "dur": 25.725}, {"id": "q1", "seg": 2, "scene": "quiz", "quiz": "q1", "text": "Cek pemahaman. A ke B satu, B ke E sembilan, A ke C tiga, C ke E tiga. Greedy lewat B. Apakah rute greedy terpendek? Pilih: ya, sepuluh; tidak, yang terpendek enam; atau ya, enam. Pikirkan dulu.", "hold": 4.0, "start": 158.175, "speech": 158.175, "audio": 23.925, "dur": 28.925}, {"id": "q1a", "seg": 2, "scene": "quiz_answer", "quiz": "q1", "text": "Jawabannya: tidak. Rute greedy A, B, E panjangnya sepuluh, sedangkan A, C, E hanya enam. Langkah pertama yang murah bisa menjebak.", "hold": 1.0, "start": 187.1, "speech": 187.1, "audio": 13.925, "dur": 15.925}, {"id": "s2a", "seg": 3, "scene": "dijkstra_aturan", "text": "Algoritma Dijkstra punya tiga aturan. Jarak awal: nol di kota asal, tak hingga di kota lain. Ambil kota belum pasti yang jaraknya paling kecil, lalu tandai pasti. Perbarui tetangganya bila lewat kota itu lebih dekat.", "hold": 0.8, "start": 203.025, "speech": 203.025, "audio": 22.675, "dur": 24.475}, {"id": "s2b", "seg": 3, "scene": "dijkstra_langkah", "text": "Mulai dari A. A pasti, nol. Tetangganya: B dua, C lima. Kota terkecil berikutnya B, tandai pasti. Lewat B, C menjadi dua tambah dua, empat, lebih kecil dari lima, jadi diperbarui. D menjadi dua tambah enam, delapan.", "hold": 0.8, "start": 227.5, "speech": 227.5, "audio": 23.925, "dur": 25.725}, {"id": "q2", "seg": 3, "scene": "quiz", "quiz": "q2", "text": "Cek pemahaman. A dan B sudah pasti. Jarak sementara: C empat, D delapan, E belum tahu. Kota mana yang dipastikan berikutnya: C, D, atau E? Pikirkan dulu.", "hold": 4.0, "start": 253.225, "speech": 253.225, "audio": 17.675, "dur": 22.675}, {"id": "q2a", "seg": 3, "scene": "quiz_answer", "quiz": "q2", "text": "Jawabannya: C. Dijkstra selalu memastikan kota belum pasti dengan jarak paling kecil. Empat lebih kecil dari delapan.", "hold": 1.0, "start": 275.9, "speech": 275.9, "audio": 11.425, "dur": 13.425}, {"id": "s3a", "seg": 4, "scene": "dijkstra_tuntas", "text": "Bagian dua. C pasti, empat. Lewat C, D menjadi enam dan E sebelas. D terkecil, pasti enam. Lewat D, E menjadi sembilan, lebih kecil dari sebelas. Terakhir E pasti: sembilan kilometer.", "hold": 0.8, "start": 289.325, "speech": 289.325, "audio": 20.175, "dur": 21.975}, {"id": "s3b", "seg": 4, "scene": "telusur", "text": "Rutenya dari mana? Tiap kali jarak diperbarui, catat datang dari mana. E dari D, D dari C, C dari B, B dari A. Baca terbalik: A, B, C, D, E. Trace table merekam semua langkah, jadi hasilnya bisa diperiksa ulang.", "hold": 0.8, "start": 311.3, "speech": 311.3, "audio": 25.8, "dur": 27.6}, {"id": "q3", "seg": 4, "scene": "quiz", "quiz": "q3", "text": "Cek pemahaman. Jalan C ke D ditutup karena perbaikan. Berapa jarak terpendek dari A ke E sekarang: sembilan, sebelas, atau dua belas? Pikirkan dulu.", "hold": 4.0, "start": 338.9, "speech": 338.9, "audio": 15.8, "dur": 20.8}, {"id": "q3a", "seg": 4, "scene": "quiz_answer", "quiz": "q3", "text": "Jawabannya: sebelas. Tanpa jalan C ke D, pilihan terbaik adalah A, B, D, E atau A, B, C, E. Keduanya sebelas kilometer.", "hold": 1.0, "start": 359.7, "speech": 359.7, "audio": 14.55, "dur": 16.55}, {"id": "s4a", "seg": 5, "scene": "struktur_rute", "text": "Struktur data yang tepat membuat Dijkstra cepat. Graph berbobot disimpan sebagai dictionary berisi dictionary: dari A, B dua, C lima. Langkah utamanya mengambil kota dengan jarak terkecil, berulang-ulang.", "hold": 0.8, "start": 376.25, "speech": 376.25, "audio": 18.3, "dur": 20.1}, {"id": "s4b", "seg": 5, "scene": "heapq", "text": "Untuk itu ada priority queue: antrean yang selalu mengeluarkan nilai terkecil dulu. Di Python namanya heapq: heappush memasukkan, heappop mengambil yang terkecil. Library graph seperti NetworkX bahkan punya fungsi rute terpendek siap pakai.", "hold": 0.8, "start": 396.35, "speech": 396.35, "audio": 21.425, "dur": 23.225}, {"id": "q4", "seg": 5, "scene": "quiz", "quiz": "q4", "text": "Cek pemahaman. Program perlu berkali-kali mengambil kota dengan jarak sementara terkecil. Struktur mana yang paling cocok: stack, queue biasa, atau priority queue? Pikirkan dulu.", "hold": 4.0, "start": 419.575, "speech": 419.575, "audio": 15.8, "dur": 20.8}, {"id": "q4a", "seg": 5, "scene": "quiz_answer", "quiz": "q4", "text": "Jawabannya: priority queue. Stack mengeluarkan yang terakhir masuk, queue yang pertama masuk. Hanya priority queue yang mengeluarkan yang terkecil.", "hold": 1.0, "start": 440.375, "speech": 440.375, "audio": 12.675, "dur": 14.675}, {"id": "s5a", "seg": 6, "scene": "jadwal", "text": "Solusi optimal juga dicari untuk jadwal. Lab komputer diminta lima kegiatan yang sebagian bentrok. Aturan greedy yang terbukti optimal di sini: pilih yang selesai paling awal, lalu yang berikutnya tidak bentrok. Hasilnya tiga kegiatan.", "hold": 0.8, "start": 455.05, "speech": 455.05, "audio": 22.05, "dur": 23.85}, {"id": "s5b", "seg": 6, "scene": "bandingkan", "text": "Cara memilih solusi: tentukan ukurannya, hitung langkahnya, dan pikirkan besar datanya. Brute force cocok untuk data kecil. Dijkstra untuk rute dengan bobot positif. Greedy hanya bila sudah terbukti benar untuk masalah itu.", "hold": 1.0, "start": 478.9, "speech": 478.9, "audio": 20.8, "dur": 22.8}, {"id": "s6a", "seg": 7, "scene": "make_show", "text": "Sekarang giliranmu. Di halaman latihan: Dijkstra langkah demi langkah, pilih kota berikutnya dan perbarui jaraknya; penjadwal lab untuk lima kegiatan; dan pembanding solusi untuk empat kasus.", "hold": 1.0, "start": 501.7, "speech": 501.7, "audio": 17.05, "dur": 19.05}, {"id": "s6b", "seg": 7, "scene": "make_show", "text": "Lalu di komputer: jalankan program Dijkstra dengan heapq untuk graph lima kota, ubah satu bobot karena jalan macet, dan bandingkan rutenya. Tantangan: tambahkan kota F dan jalannya sendiri.", "hold": 1.0, "start": 520.75, "speech": 520.75, "audio": 18.3, "dur": 20.3}, {"id": "recap", "seg": 7, "scene": "recap", "text": "Tiga hal untuk diingat. Satu: optimal berarti terbaik menurut ukuran yang dipilih. Dua: Dijkstra memastikan kota terdekat lebih dulu, lalu memperbarui tetangganya. Tiga: pilih struktur data yang membuat langkah utamanya cepat.", "hold": 1.5, "start": 541.05, "speech": 541.05, "audio": 20.175, "dur": 22.675}, {"id": "outro", "seg": 7, "scene": "outro", "text": "Sampai jumpa di episode berikutnya: analisis data untuk prediksi. Kita tarik garis tren dari data terbuka dan menebak masa depan dengan hati-hati. Sampai jumpa!", "hold": 1.0, "start": 563.725, "speech": 563.725, "audio": 15.8, "dur": 17.8}], "total": 581.525} });
+  const { $, progress, save } = P; progress.levels = progress.levels || {};
+  const esc = s => String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;");
+  const shuffle = a => a.map(x => [Math.random(), x]).sort((p, q) => p[0] - q[0]).map(x => x[1]);
+  // ---- Dijkstra
+  const POS = { A: [40, 110], B: [130, 40], C: [140, 180], D: [240, 105], E: [320, 170] };
+  const G = { A: { B: 2, C: 5 }, B: { A: 2, C: 2, D: 6 }, C: { A: 5, B: 2, D: 2, E: 7 }, D: { B: 6, C: 2, E: 3 }, E: { C: 7, D: 3 } };
+  const KOTA = Object.keys(G);
+  let dist, via, fin, phase, chosen, queue;
+  function resetDijk() { dist = { A: 0, B: Infinity, C: Infinity, D: Infinity, E: Infinity }; via = {}; fin = []; phase = "pick"; chosen = null; queue = []; }
+  const show = v => v === Infinity ? "∞" : v;
+  function svg() {
+    const edges = []; KOTA.forEach(a => Object.entries(G[a]).forEach(([b, w]) => { if (a < b) edges.push([a, b, w]); }));
+    const onRoute = (a, b) => (via[b] === a && fin.includes(b)) || (via[a] === b && fin.includes(a));
+    return `<div class="tree"><svg viewBox="0 0 360 215" role="img" aria-label="graph lima kota">${edges.map(([a, b, w]) => { const [x1, y1] = POS[a], [x2, y2] = POS[b]; return `<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" class="${onRoute(a, b) ? "path" : ""}"/><rect x="${(x1 + x2) / 2 - 9}" y="${(y1 + y2) / 2 - 9}" width="18" height="16" rx="4" fill="#fff" stroke="#B7C4CC"/><text x="${(x1 + x2) / 2}" y="${(y1 + y2) / 2 + 3}">${w}</text>`; }).join("")}${KOTA.map(k => { const [x, y] = POS[k]; return `<circle cx="${x}" cy="${y}" r="16" class="${k === chosen ? "cur" : fin.includes(k) ? "fresh" : ""}"/><text x="${x}" y="${y + 4}">${k}</text><text x="${x}" y="${y - 22}" style="fill:#2E7E9A">${show(dist[k])}</text>`; }).join("")}</svg></div>`;
+  }
+  function tbl() { return `<table class="dt"><tr><th>kota</th><th>jarak</th><th>dari</th><th>status</th></tr>${KOTA.map(k => `<tr class="${k === chosen ? "cur" : fin.includes(k) ? "fin" : ""}"><td>${k}</td><td>${show(dist[k])}</td><td>${via[k] || "–"}</td><td>${fin.includes(k) ? "pasti ✓" : "sementara"}</td></tr>`).join("")}</table>`; }
+  function renderDijk() {
+    const area = $("exarea");
+    if (phase === "pick" && fin.length === KOTA.length) phase = "route";
+    if (phase === "done") { area.innerHTML = svg() + tbl(); finish("Rute A, B, C, D, E: 9 km. Itu jawaban yang sama dengan video, kali ini hasil hitunganmu sendiri."); return; }
+    let h = svg() + tbl();
+    if (phase === "pick") { const cand = KOTA.filter(k => !fin.includes(k)); h += `<div class="ex">Kota belum pasti mana yang dipastikan sekarang?</div><div class="dir" style="grid-template-columns:repeat(${cand.length},1fr)">${cand.map(k => `<button data-k="${k}">${k} (${show(dist[k])})</button>`).join("")}</div>`; }
+    if (phase === "upd") { const [t, w] = queue[0]; const lewat = dist[chosen] + w; const opts = shuffle([...new Set([Math.min(dist[t], lewat), dist[t], lewat, lewat + 1])].slice(0, 3)); if (!opts.includes(Math.min(dist[t], lewat))) opts[0] = Math.min(dist[t], lewat);
+      h += `<div class="ex">Lewat <b>${chosen}</b> ke <b>${t}</b>: ${dist[chosen]} + ${w} = ${lewat}. Jarak ${t} sekarang ${show(dist[t])}. Jarak ${t} menjadi berapa?</div><div class="dir">${shuffle(opts).map(v => `<button data-v="${v}">${show(v)}</button>`).join("")}</div>`; }
+    if (phase === "route") h += `<div class="ex">Semua kota sudah pasti. Ikuti kolom "dari" mundur dari E. Rutenya?</div><div class="opts" id="opts">${shuffle(["A → B → C → D → E", "A → C → D → E", "A → B → D → E"]).map(r => `<button data-r="${r}">${r}</button>`).join("")}</div>`;
+    area.innerHTML = h;
+    area.querySelectorAll("button[data-k]").forEach(b => b.addEventListener("click", () => { const k = b.dataset.k; const cand = KOTA.filter(x => !fin.includes(x)); const min = Math.min(...cand.map(x => dist[x]));
+      if (dist[k] !== min) { setResult("bad", "Belum tepat. Petunjuk: Dijkstra memastikan kota belum pasti dengan jarak paling kecil. Bandingkan angka jarak di tabel."); return; }
+      chosen = k; fin.push(k); queue = Object.entries(G[k]).filter(([t]) => !fin.includes(t)); phase = queue.length ? "upd" : "pick"; setResult("good", `Tepat. ${k} pasti dengan jarak ${dist[k]}.` + (queue.length ? " Sekarang periksa tetangganya." : "")); if (!queue.length) chosen = null; renderDijk(); }));
+    area.querySelectorAll("button[data-v]").forEach(b => b.addEventListener("click", () => { const [t, w] = queue[0]; const lewat = dist[chosen] + w; const want = Math.min(dist[t], lewat); const v = Number(b.dataset.v === "Infinity" ? Infinity : b.dataset.v);
+      if (v !== want) { setResult("bad", `Belum tepat. Petunjuk: jarak hanya diganti bila jalan lewat ${chosen} lebih kecil dari jarak ${t} sekarang. Kalau tidak lebih kecil, jaraknya tetap.`); return; }
+      const changed = lewat < dist[t]; if (changed) { dist[t] = lewat; via[t] = chosen; } setResult("good", changed ? `Tepat. ${t} diperbarui menjadi ${lewat}, datang dari ${chosen}.` : `Tepat. ${lewat} tidak lebih kecil, jadi ${t} tetap ${show(dist[t])}.`); queue.shift(); if (!queue.length) { phase = "pick"; chosen = null; } renderDijk(); }));
+    area.querySelectorAll("button[data-r]").forEach(b => b.addEventListener("click", () => { if (b.dataset.r === "A → B → C → D → E") { phase = "done"; renderDijk(); } else { b.classList.add("wrong"); setResult("bad", "Belum tepat. Petunjuk: E datang dari D; lihat D datang dari mana, lalu terus mundur sampai A."); } }));
+  }
+  // ---- penjadwal
+  const ROUNDS = [
+    [["Rapat OSIS", 13, 14], ["Robotik", 13, 15], ["Remedial", 14, 15.5], ["Desain poster", 15, 16], ["Klub coding", 15.5, 17]],
+    [["Pramuka", 13, 14.5], ["Basket", 13.5, 14], ["Jurnal sekolah", 14, 15], ["Rapat kelas", 14.5, 15.5], ["Klub coding", 15, 16], ["Paduan suara", 15.5, 16.5]]];
+  let ri = 0, sel = [];
+  const jam = h => `${Math.floor(h)}.${h % 1 ? "30" : "00"}`;
+  const clash = (a, b) => a[1] < b[2] && b[1] < a[2];
+  const maxSet = acts => { let best = 0; for (let m = 0; m < 1 << acts.length; m++) { const s = acts.filter((_, i) => m >> i & 1); if (s.every((a, i) => s.every((b, j) => i >= j || !clash(a, b)))) best = Math.max(best, s.length); } return best; };
+  function renderJadwal() {
+    const area = $("exarea"); if (ri >= ROUNDS.length) { finish("Dua jadwal tersusun tanpa bentrok dengan jumlah kegiatan terbanyak. Aturannya: selesai paling awal dulu."); return; }
+    const acts = ROUNDS[ri];
+    area.innerHTML = `<div class="qnum">Jadwal ${ri + 1} dari ${ROUNDS.length} · lab komputer, 13.00–17.00</div><div class="acts">${acts.map((a, i) => `<button data-i="${i}" class="${sel.includes(i) ? "on" : ""}"><span><b>${a[0]}</b> ${sel.includes(i) ? "✓" : ""}</span><small>${jam(a[1])}–${jam(a[2])}</small><span class="bar13"><i style="left:${(a[1] - 13) / 4 * 100}%;width:${(a[2] - a[1]) / 4 * 100}%"></i></span></button>`).join("")}</div><div class="row"><button class="warm" id="cek">Periksa jadwal</button></div>`;
+    area.querySelectorAll("button[data-i]").forEach(b => b.addEventListener("click", () => { const i = +b.dataset.i; sel = sel.includes(i) ? sel.filter(x => x !== i) : [...sel, i]; setResult(); renderJadwal(); }));
+    $("cek").addEventListener("click", () => { const s = sel.map(i => acts[i]); const bad = s.find((a, i) => s.some((b, j) => i !== j && clash(a, b)));
+      if (bad) { setResult("bad", `Belum tepat. Petunjuk: ${bad[0]} bentrok dengan kegiatan lain yang kamu pilih. Dua kegiatan bentrok bila yang satu belum selesai saat yang lain mulai.`); return; }
+      if (s.length < maxSet(acts)) { setResult("bad", "Belum tepat. Petunjuk: jadwalmu tanpa bentrok, tetapi masih bisa memuat lebih banyak kegiatan. Coba aturan: pilih yang selesai paling awal, lalu yang berikutnya tidak bentrok."); return; }
+      setResult("good", `Tepat: ${s.length} kegiatan, jumlah terbanyak yang mungkin.`); ri++; sel = []; setTimeout(() => { setResult(); renderJadwal(); }, 1600); });
+  }
+  // ---- pembanding solusi
+  const OPS = ["brute force", "greedy (selesai paling awal)", "Dijkstra"];
+  const CASES = [["Kurir mencari rute terpendek antargudang di peta 200 persimpangan, tiap jalan diberi jarak.", 2, "Graph berbobot positif dan besar: tugas Dijkstra. Brute force akan terlalu lama."],
+    ["Memilih 3 dari 5 menu kantin dengan total kalori paling dekat ke 800. Hanya ada 10 kemungkinan.", 0, "Kemungkinannya sedikit: coba semua, pasti ketemu yang terbaik."],
+    ["Memasukkan sebanyak mungkin kegiatan ke satu aula tanpa bentrok.", 1, "Untuk masalah ini, aturan selesai paling awal sudah terbukti optimal."],
+    ["Kembalian 6 dengan koin fiktif bernilai 1, 3, dan 4, sesedikit mungkin koin. Kombinasinya sedikit.", 0, "Greedy memberi 4 + 1 + 1 (tiga koin), padahal 3 + 3 cukup dua koin. Kombinasinya sedikit, jadi coba semua."]];
+  const HINT = ["Berapa banyak kemungkinannya? Kalau sedikit, mencoba semua itu aman dan pasti benar.", "Apakah aturan greedy-nya sudah terbukti benar untuk masalah ini?", "Apakah ini soal rute di graph dengan jarak positif?"];
+  let ci = 0;
+  function renderPilih() {
+    const area = $("exarea"); if (ci >= CASES.length) { finish("Empat kasus, tiga cara. Pilih cara dari ukuran dan besar masalahnya."); return; }
+    const [q, a, why] = CASES[ci]; area.innerHTML = `<div class="qnum">Kasus ${ci + 1} dari ${CASES.length}</div><div class="qtext">${esc(q)}</div><div class="opts" id="opts"></div>`;
+    OPS.forEach((o, i) => { const b = document.createElement("button"); b.textContent = o; b.addEventListener("click", () => { if (i === a) { b.classList.add("right"); [...$("opts").children].forEach(x => x.disabled = true); setResult("good", "Tepat. " + why); ci++; setTimeout(() => { setResult(); renderPilih(); }, 1800); } else { b.classList.add("wrong"); setResult("bad", "Belum tepat. Petunjuk: " + HINT[a]); } }); $("opts").appendChild(b); });
+  }
+  const LEVELS = [
+    { id: "dijk", name: "1 Dijkstra langkah demi langkah", kind: "dijk", task: "Rute terpendek dari A. Pilih kota yang dipastikan, lalu perbarui jarak tetangganya satu per satu. Di akhir, telusuri rutenya ke E." },
+    { id: "jadwal", name: "2 Penjadwal lab", kind: "jadwal", task: "Ketuk kegiatan untuk memilihnya. Susun jadwal tanpa bentrok dengan kegiatan sebanyak mungkin, lalu periksa." },
+    { id: "pilih", name: "3 Pembanding solusi", kind: "pilih", task: "Empat kasus. Pilih cara yang paling tepat: brute force, greedy, atau Dijkstra." }];
+  let L = 0; const level = () => LEVELS[L];
+  function setResult(kind, msg) { $("result").innerHTML = msg ? `<div class="result ${kind}">${msg}</div>` : ""; }
+  function finish(extra) { progress.levels[level().id] = true; save(); renderLevels(); setResult("good", `${level().name} selesai! ` + extra); }
+  function loadLevel(i) { L = i; resetDijk(); ri = 0; sel = []; ci = 0; $("task").textContent = level().task; setResult(); renderLevels(); ({ dijk: renderDijk, jadwal: renderJadwal, pilih: renderPilih })[level().kind](); }
+  function renderLevels() { const el = $("levels"); el.innerHTML = ""; LEVELS.forEach((lv, i) => { const b = document.createElement("button"); b.textContent = lv.name; b.className = progress.levels[lv.id] ? "done" : ""; b.setAttribute("aria-pressed", i === L); b.addEventListener("click", () => loadLevel(i)); el.appendChild(b); }); }
+  $("redo").addEventListener("click", () => { progress.levels[level().id] = false; save(); loadLevel(L); });
+  P.onProgress(el => LEVELS.forEach(lv => { const s = document.createElement("span"); s.textContent = lv.name.slice(2); s.className = progress.levels[lv.id] ? "ok" : ""; el.appendChild(s); }));
+  loadLevel(0);
+})();
+</script>
