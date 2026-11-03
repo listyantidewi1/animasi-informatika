@@ -60,13 +60,13 @@
       Dt.chain(ctx, 300, 340, 1320, status, { broken: 5, reveal: n >= 4 });
       if (n >= 1) { card(ctx, 300, 460, 640, 90, { fill: C.goodBg, stroke: C.good, lw: 3, r: 12 }); text(ctx, "ping 203.0.113.1 → berhasil", 620, 500, 24, { align: "center", weight: 900, color: C.good }); text(ctx, "situs tetap tidak terbuka", 620, 532, 18, { align: "center", weight: 800, color: C.ink2 }); }
       if (n >= 3) { card(ctx, 980, 460, 640, 90, { fill: "#FFF3D6", stroke: C.accent, lw: 3, r: 12 }); text(ctx, "empat tersangka dihapus sekaligus", 1300, 500, 24, { align: "center", weight: 900, color: C.accentDark }); text(ctx, "tersisa: DNS atau aplikasi", 1300, 532, 18, { align: "center", weight: 800, color: C.ink2 }); }
-      if (n >= 5) Dt.terminal(ctx, 300, 580, 640, [["nslookup sekolahku.sch.id", "cmd"], ["server tidak menjawab", "err"]], {});
+      if (n >= 5) Dt.terminal(ctx, 300, 580, 640, [["nslookup sekolahku.example", "cmd"], ["server tidak menjawab", "err"]], {});
       if (n >= 6) label(ctx, "satu uji, empat tersangka gugur", 1300, 650, { size: 28 });
     },
     alat(ctx, b, l) {
       card(ctx, 120, 150, 1680, 740); heading(ctx, "EMPAT ALAT DETEKTIF", 215);
       const n = reveal(l, 1.5, 2.6, 4);
-      [["ping", [["ping 10.0.3.1", "cmd"], ["balasan 2 ms, 0% hilang", "ok"]], "tujuan menjawab? berapa ms? berapa % hilang?"], ["ipconfig / ifconfig", [["ipconfig", "cmd"], ["IPv4 10.0.3.5 · gateway 10.0.3.1 · DNS 10.0.3.1", "out"]], "alamat IP, gateway, DNS"], ["traceroute", [["traceroute 203.0.113.1", "cmd"], ["1 10.0.3.1 · 2 * * * (berhenti)", "err"]], "di router mana paket berhenti"], ["nslookup", [["nslookup sekolahku.sch.id", "cmd"], ["alamat: 203.0.113.40", "ok"]], "nama bisa diterjemahkan?"]].forEach(([t, lines, s], i) => { ctx.save(); if (i >= n) ctx.globalAlpha = 0.2; const x = 240 + (i % 2) * 740, y = 270 + Math.floor(i / 2) * 230; text(ctx, t, x, y, 24, { weight: 900, color: i === n - 1 ? C.accentDark : C.kiko }); Dt.terminal(ctx, x, y + 12, 700, lines, { title: t.toUpperCase() }); text(ctx, s, x, y + 150, 18, { weight: 800, color: C.ink2 }); ctx.restore(); });
+      [["ping", [["ping 10.0.3.1", "cmd"], ["balasan 2 ms, 0% hilang", "ok"]], "tujuan menjawab? berapa ms? berapa % hilang?"], ["ipconfig / ifconfig", [["ipconfig", "cmd"], ["IPv4 10.0.3.5 · gateway 10.0.3.1 · DNS 10.0.3.1", "out"]], "alamat IP, gateway, DNS"], ["traceroute", [["traceroute 203.0.113.1", "cmd"], ["1 10.0.3.1 · 2 * * * (berhenti)", "err"]], "di router mana paket berhenti"], ["nslookup", [["nslookup sekolahku.example", "cmd"], ["alamat: 203.0.113.40", "ok"]], "nama bisa diterjemahkan?"]].forEach(([t, lines, s], i) => { ctx.save(); if (i >= n) ctx.globalAlpha = 0.2; const x = 240 + (i % 2) * 740, y = 270 + Math.floor(i / 2) * 230; text(ctx, t, x, y, 24, { weight: 900, color: i === n - 1 ? C.accentDark : C.kiko }); Dt.terminal(ctx, x, y + 12, 700, lines, { title: t.toUpperCase() }); text(ctx, s, x, y + 150, 18, { weight: 800, color: C.ink2 }); ctx.restore(); });
     },
     firewall(ctx, b, l) {
       card(ctx, 120, 150, 1680, 740); heading(ctx, "FIREWALL: SATPAM DI PINTU JARINGAN", 215);
