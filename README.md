@@ -20,6 +20,8 @@ Situs latihan: **https://belajar-informatika.vercel.app/** (Vercel, terhubung ke
 - Istilah yang akrab bagi murid dalam bahasa Inggris (mouse, keyboard, file, …) ditulis dalam bahasa aslinya, terjemahan Indonesia dalam kurung pada penyebutan pertama.
 
 ## Status
+Semua 52 episode sudah final setelah revisi istilah dan tata letak (render ulang selesai 4 Nov 2026), dan 52 YouTube Short (`<kode>/short/`, vertikal, versi suara + teks) selesai 3 Nov 2026.
+
 | Episode | Naskah | Suara | Video | Halaman |
 | --- | --- | --- | --- | --- |
 | D7.0 Jembatan: Cara Memakai Komputer dan HP | ✓ | ✓ Kak Ceria | ✓ (2 bagian × 2 versi) | ✓ |
