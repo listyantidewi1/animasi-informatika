@@ -57,7 +57,7 @@ Bab:
 0:00 Pembuka bagian
 0:04 Pesan menyebar
 0:58 Bagikan atau periksa dulu
-2:11 Cara memeriksa
+2:12 Cara memeriksa
 2:46 Giliranmu
 
 Latihan interaktif (kuis dengan petunjuk, bisa dipakai di HP): https://belajar-informatika.vercel.app/d85
@@ -126,7 +126,7 @@ Bab:
 0:00 Pembuka bagian
 0:04 Pesan menyebar
 1:12 Bagikan atau periksa dulu
-2:43 Cara memeriksa
+2:44 Cara memeriksa
 3:27 Giliranmu
 
 Latihan interaktif (kuis dengan petunjuk, bisa dipakai di HP): https://belajar-informatika.vercel.app/d85
