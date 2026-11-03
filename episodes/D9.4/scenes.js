@@ -94,10 +94,10 @@
         const x = 180 + i * 820; text(ctx, "PILIHAN " + k + ": " + t, x + 330, 265, 26, { align: "center", weight: 900, color: tone === "bad" ? C.bad : C.good });
         Pv.post(ctx, x, 285, 440, p, { tone: on ? tone : null, imgH: 150 });
         Pv.gap(ctx, x + 470, 420, 190, on ? v : 0, { label: v > 0.5 ? "terbuka" : "tertutup" });
-        if (i === 0 && on) text(ctx, "semua tahu rumah kosong", x + 565, 520, 20, { align: "center", weight: 900, color: C.bad });
+        if (i === 0 && on) { text(ctx, "semua tahu", x + 565, 515, 20, { align: "center", weight: 900, color: C.bad }); text(ctx, "rumah kosong", x + 565, 541, 20, { align: "center", weight: 900, color: C.bad }); }
         ctx.restore();
       });
-      if (l > 9) label(ctx, "pikirkan dulu, unggah nanti", 960, 790, { size: 26 });
+      if (l > 9) label(ctx, "pikirkan dulu, unggah nanti", 960, 740, { size: 26 });
     },
 
     identitas(ctx, b, l) {

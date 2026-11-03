@@ -8,12 +8,15 @@
   const SW = 1080, SH = 1920;
   const IMG_TOP = 420, IMG_BOT = 1230, IMG_W = 1000;
 
+  // pertanyaan kait: 70 px (2 baris) atau 58 px bila perlu 3 baris; mengembalikan batas bawahnya
   function hookBand(ctx, TL, t) {
     text(ctx, (TL.label || "Informatika") + " · " + TL.episode, 60, 96, 30, { color: C.ink2, weight: 700 });
     ctx.fillStyle = C.bg2; ctx.fillRect(0, 120, SW, 8); ctx.fillStyle = C.accent; ctx.fillRect(0, 120, SW * clamp(t / TL.total, 0, 1), 8);
-    const size = 70, lines = wrap(ctx, TL.hook, size, 900, 940);
+    let size = 70, lines = wrap(ctx, TL.hook, size, 900, 940);
+    if (lines.length > 2) { size = 58; lines = wrap(ctx, TL.hook, size, 900, 960); }
     const y0 = 170 + (lines.length < 3 ? 40 : 0);
     lines.slice(0, 3).forEach((ln, i) => text(ctx, ln, SW / 2, y0 + size + i * size * 1.18, size, { align: "center", weight: 900, color: C.ink }));
+    return y0 + size + (lines.length - 1) * size * 1.18 + 20;
   }
 
   // tumpukan potongan adegan: tiap potongan dilebarkan ke IMG_W, lalu semua diperkecil bersama bila terlalu tinggi
@@ -68,7 +71,7 @@
     const octx = off.getContext("2d");
     ctx.save(); ctx.setTransform(1, 0, 0, 1, 0, 0);
     ctx.fillStyle = C.bg; ctx.fillRect(0, 0, SW, SH);
-    hookBand(ctx, TL, t);
+    const top = Math.max(IMG_TOP, hookBand(ctx, TL, t) + 40);
     const nb = narrationBox(ctx, b), bot = Math.min(IMG_BOT, nb.y0 - 38);
     if (VSCENES[b.scene]) VSCENES[b.scene](ctx, b, l, TL);
     else {
@@ -76,7 +79,7 @@
       const sl = l * (b.src_dur ? b.src_dur / b.dur : 1) + (b.at || 0);
       const fn = K.SCENES[b.scene]; if (fn) fn(octx, { ...b, id: b.src || b.id }, sl, t, TL);
       octx.restore();
-      crops(ctx, off, b.crops || [[120, 150, 1680, 740]], IMG_TOP, b.note ? bot - 60 : bot);
+      crops(ctx, off, b.crops || [[120, 150, 1680, 740]], top, b.note ? bot - 60 : bot);
       if (b.note) text(ctx, b.note, SW / 2, bot - 8, 30, { align: "center", weight: 800, color: C.bad });
     }
     narration(ctx, b, l, nb);
