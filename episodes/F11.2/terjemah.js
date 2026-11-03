@@ -23,7 +23,7 @@
     if (pair) { const y1 = y + 50 + pair[0] * rh + rh / 2, y2 = y + 50 + pair[1] * rh + rh / 2; ctx.strokeStyle = C.accent; ctx.lineWidth = 5; ctx.beginPath(); ctx.moveTo(x + wl + 4, y1); ctx.lineTo(x + wl + gap - 4, y2); ctx.stroke(); ctx.fillStyle = C.accent; ctx.beginPath(); ctx.arc(x + wl + gap - 4, y2, 7, 0, Math.PI * 2); ctx.fill(); }
     return 50 + rh * Math.max(ps.length, py.length);
   };
-  T.TYPES = [["int", "integer (bulat)", "17, -3", "#2E7E9A"], ["float", "pecahan", "3.5", "#8E6BBF"], ["str", "string (teks)", "\"Sinta\"", "#2E9E5B"], ["bool", "benar-salah", "True, False", "#B57A12"]];
+  T.TYPES = [["int", "integer: bilangan bulat", "17, -3", "#2E7E9A"], ["float", "float: bilangan pecahan", "3.5", "#8E6BBF"], ["str", "string: teks", "\"Sinta\"", "#2E9E5B"], ["bool", "boolean: benar-salah", "True, False", "#B57A12"]];
   T.typeCards = function (ctx, x, y, w, n, opt = {}) {
     const cw = (w - 3 * 20) / 4; T.TYPES.forEach(([nm, id, ex, col], i) => { ctx.save(); if (i >= n) ctx.globalAlpha = 0.2; const cx = x + i * (cw + 20); card(ctx, cx, y, cw, 130, { fill: "#fff", stroke: col, lw: opt.on === i ? 6 : 3, r: 14 }); ctx.fillStyle = col; rr(ctx, cx, y, cw, 42, 14); ctx.fill(); ctx.fillRect(cx, y + 21, cw, 21); text(ctx, nm, cx + cw / 2, y + 30, 24, { align: "center", weight: 900, color: "#fff" }); text(ctx, id, cx + cw / 2, y + 76, 20, { align: "center", weight: 800, color: C.ink2 }); text(ctx, ex, cx + cw / 2, y + 110, 22, { align: "center", weight: 900 }); ctx.restore(); });
   };
