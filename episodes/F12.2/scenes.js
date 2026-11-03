@@ -49,7 +49,7 @@
       const n = reveal(l, 2.0, 3.0, 4);
       ctx.save(); ctx.translate(-20, 0); Sk.graph(ctx, KOTA, JALAN.slice(0, n >= 2 ? 7 : 0), { weights: n >= 2, r: 46, size: 26 }); ctx.restore();
       text(ctx, "kertas = kota · tali = jalan · label = km", 640, 270, 22, { align: "center", weight: 900, color: C.ink2 });
-      if (n >= 3) { kid(ctx, 1330, 540, 100, {}); kid(ctx, 1600, 540, 100, { hair: "long" }); bubble(ctx, 1200, 290, 250, "lewat C saja!", 22); bubble(ctx, 1480, 290, 260, "lewat B lebih dekat!", 22); }
+      if (n >= 3) { kid(ctx, 1330, 540, 100, {}); kid(ctx, 1600, 540, 100, { hair: "long" }); bubble(ctx, 1200, 360, 250, "lewat C saja!", 22); bubble(ctx, 1480, 360, 260, "lewat B lebih dekat!", 22); }
       if (n >= 4) label(ctx, "cari rute terpendek dari A ke E", 1460, 720, { size: 26 });
     },
     unplugged_kartu(ctx, b, l) {
