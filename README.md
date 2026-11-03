@@ -68,4 +68,5 @@ Situs latihan: **https://belajar-informatika.vercel.app/** (Vercel, terhubung ke
 | F12.0 Jembatan Kelas XII: Perulangan, List, dan Fungsi | ✓ | ✓ Kak Ceria | ✓ (2 bagian × 2 versi) | ✓ |
 | F12.1 Struktur Data Kompleks dan Abstrak | ✓ | ✓ Kak Ceria | ✓ (2 bagian × 2 versi) | ✓ |
 | F12.2 Memilih Solusi Optimal | ✓ | ✓ Kak Ceria | ✓ (2 bagian × 2 versi) | ✓ |
+| F12.3 Analisis Data untuk Prediksi | ✓ | ✓ Kak Ceria | ✓ (2 bagian × 2 versi) | ✓ |
 | D7.5 Instruksi untuk Manusia dan Mesin | ✓ | ✓ Kak Ceria | ✓ (2 bagian × 2 versi) | ✓ |
