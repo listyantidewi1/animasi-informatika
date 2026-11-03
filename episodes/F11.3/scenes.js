@@ -101,11 +101,11 @@
       card(ctx, 120, 150, 1680, 740); heading(ctx, "BUG SELISIH SATU, DAN CARA MEMBACA TRACEBACK", 215);
       const n = reveal(l, 1.5, 2.0, 6);
       Py.code(ctx, 200, 260, 760, [{ t: "def cari_linear(daftar, target):" }, { t: "    for i in range(len(daftar) - 1):", bad: n >= 2 }, { t: "        if daftar[i] == target:" }, { t: "            return i" }, { t: "    return -1" }], { rh: 44, size: 20 });
-      if (n >= 3) { card(ctx, 200, 500, 760, 90, { fill: "#FFF3D6", stroke: C.accent, lw: 3, r: 12 }); text(ctx, "range(3 - 1) → 0, 1 saja; indeks 2 tak pernah diperiksa", 580, 540, 22, { align: "center", weight: 900, color: C.accentDark }); text(ctx, "perbaikan: range(len(daftar))", 580, 572, 20, { align: "center", weight: 800, color: C.good }); }
+      if (n >= 3) { card(ctx, 200, 548, 760, 90, { fill: "#FFF3D6", stroke: C.accent, lw: 3, r: 12 }); text(ctx, "range(3 - 1) → 0, 1 saja; indeks 2 tak pernah diperiksa", 580, 588, 22, { align: "center", weight: 900, color: C.accentDark }); text(ctx, "perbaikan: range(len(daftar))", 580, 620, 20, { align: "center", weight: 800, color: C.good }); }
       if (n >= 4) Qk.traceback(ctx, 1000, 260, 700, [["Traceback (most recent call last):", ""], ['  File "cari.py", line 9, in <module>', n >= 5 ? "hl" : ""], ["    print(daftar[3])", ""], ["IndexError: list index out of range", n >= 6 ? "err" : ""]]);
-      if (n >= 5) text(ctx, "① baris ke-9 yang bermasalah", 1000, 470, 22, { weight: 900, color: C.accentDark });
-      if (n >= 6) text(ctx, "② jenis error: indeks di luar daftar", 1000, 510, 22, { weight: 900, color: C.bad });
-      if (n >= 6) label(ctx, "baca dari bawah ke atas", 1350, 600, { size: 26 });
+      if (n >= 5) text(ctx, "① baris ke-9 yang bermasalah", 1000, 505, 22, { weight: 900, color: C.accentDark });
+      if (n >= 6) text(ctx, "② jenis error: indeks di luar daftar", 1000, 545, 22, { weight: 900, color: C.bad });
+      if (n >= 6) label(ctx, "baca dari bawah ke atas", 1350, 625, { size: 26 });
     },
     keterbacaan(ctx, b, l) {
       card(ctx, 120, 150, 1680, 740); heading(ctx, "BENAR SAJA BELUM CUKUP: HARUS MUDAH DIBACA", 215);
