@@ -17,13 +17,14 @@
   }
 
   // tumpukan potongan adegan: tiap potongan dilebarkan ke IMG_W, lalu semua diperkecil bersama bila terlalu tinggi
+  // tumpukan potongan adegan: tiap potongan dilebarkan ke IMG_W (paling besar 1,6× agar tidak buram), lalu semua diperkecil bersama bila terlalu tinggi
   function crops(ctx, off, list, top, bot) {
-    const gap = 56, hs = list.map(([, , w, h]) => h * IMG_W / w);
-    const total = hs.reduce((a, b) => a + b, 0) + gap * (list.length - 1);
-    const s = Math.min(1, (bot - top - gap * (list.length - 1)) / (total - gap * (list.length - 1)));
-    const used = (total - gap * (list.length - 1)) * s + gap * (list.length - 1); let y = top + ((bot - top) - used) / 2;
+    const gap = 56, ws = list.map(([, , w]) => Math.min(IMG_W, w * 1.6)), hs = list.map(([, , w, h], i) => h * ws[i] / w);
+    const gaps = gap * (list.length - 1), sum = hs.reduce((a, b) => a + b, 0);
+    const s = Math.min(1, (bot - top - gaps) / sum);
+    let y = top + ((bot - top) - (sum * s + gaps)) / 2;
     list.forEach(([x, cy, w, h], i) => {
-      const dw = IMG_W * s, dh = hs[i] * s, dx = (SW - dw) / 2;
+      const dw = ws[i] * s, dh = hs[i] * s, dx = (SW - dw) / 2;
       ctx.save(); ctx.shadowColor = "rgba(31,42,51,0.12)"; ctx.shadowBlur = 24; ctx.shadowOffsetY = 6;
       ctx.fillStyle = "#fff"; rr(ctx, dx - 16, y - 16, dw + 32, dh + 32, 26); ctx.fill(); ctx.restore();
       ctx.save(); rr(ctx, dx - 16, y - 16, dw + 32, dh + 32, 26); ctx.clip();

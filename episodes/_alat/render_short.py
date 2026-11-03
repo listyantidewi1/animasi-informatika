@@ -60,7 +60,7 @@ def render(pg, variant):
     out = os.path.join(OUT, name + ".mp4")
     audio = ["-i", os.path.join(ROOT, "audio", "narration.wav")] if variant == "suara" else ["-f", "lavfi", "-i", "anullsrc=r=48000:cl=mono"]
     subprocess.run(["ffmpeg", "-v", "error", "-y", "-i", tmp, *audio, "-map", "0:v", "-map", "1:a", "-c:v", "copy", "-c:a", "aac",
-                    "-b:a", "96k" if variant == "suara" else "48k", "-af", "apad", "-shortest", "-movflags", "+faststart", out], check=True)
+                    "-b:a", "96k" if variant == "suara" else "48k", "-ar", "48000", "-af", "apad", "-shortest", "-movflags", "+faststart", out], check=True)
     os.remove(tmp)
     srt = [f"{i + 1}\n{srt_time(b['start'])} --> {srt_time(b['start'] + min(b['audio'] + 1.0, b['dur'] - 0.05))}\n{b['text']}\n"
            for i, b in enumerate(TL["beats"])]
