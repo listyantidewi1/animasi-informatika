@@ -1,0 +1,1433 @@
+<title>Kiko: Melacak Program Python Baris demi Baris</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<style>
+/* Inti gaya halaman latihan: satu kolom, pemutar di atas, latihan di bawah; palet kantin sama dengan video. */
+:root {
+  --bg: #EAF2EE; --surface: #FFFFFF; --surface2: #DCE9E2; --ink: #1F2A33; --ink2: #4A5A66; --line: #C9D8D0;
+  --accent: #2E7E9A; --accent-ink: #FFFFFF; --warm: #F2B134; --warm-ink: #5E3E05; --good: #2E9E5B; --good-bg: #DDF3E4; --bad: #D9443B; --bad-bg: #FBE1DF;
+  --font: Inter, "Segoe UI", Roboto, Arial, sans-serif;
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) { --bg: #141C1A; --surface: #1E2926; --surface2: #273532; --ink: #EAF2EE; --ink2: #A9BBB3; --line: #3A4A45; --accent: #5FB3CE; --accent-ink: #0F1D22; --warm: #F2B134; --warm-ink: #2B1C02; --good: #5FCB8A; --good-bg: #1F3A2B; --bad: #F07A72; --bad-bg: #442523; color-scheme: dark } }
+:root[data-theme="dark"] { --bg: #141C1A; --surface: #1E2926; --surface2: #273532; --ink: #EAF2EE; --ink2: #A9BBB3; --line: #3A4A45; --accent: #5FB3CE; --accent-ink: #0F1D22; --warm: #F2B134; --warm-ink: #2B1C02; --good: #5FCB8A; --good-bg: #1F3A2B; --bad: #F07A72; --bad-bg: #442523; color-scheme: dark }
+* { box-sizing: border-box }
+body { background: var(--bg); color: var(--ink); font-family: var(--font); font-size: 17px; line-height: 1.5; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); padding-block: 16px 48px }
+.wrap { max-width: 980px; margin: 0 auto; display: grid; gap: 28px }
+h1 { font-size: clamp(26px, 5vw, 38px); line-height: 1.15; margin: 0; text-wrap: balance; font-weight: 900 }
+h2 { font-size: 22px; margin: 0 0 12px; font-weight: 800 }
+h3 { font-size: 18px; margin: 0 0 8px; font-weight: 800 }
+p { margin: 0 0 10px; max-width: 65ch }
+.eyebrow { font-size: 13px; letter-spacing: .08em; text-transform: uppercase; color: var(--ink2); font-weight: 800; margin-bottom: 6px }
+.card { background: var(--surface); border-radius: 18px; padding: 18px; border: 1px solid var(--line) }
+button { font: inherit; font-weight: 800; border: 0; border-radius: 12px; padding: 12px 16px; cursor: pointer; background: var(--surface2); color: var(--ink); min-height: 48px; touch-action: manipulation }
+button:focus-visible, [tabindex]:focus-visible { outline: 3px solid var(--warm); outline-offset: 2px }
+button.primary { background: var(--accent); color: var(--accent-ink) }
+button.warm { background: var(--warm); color: var(--warm-ink) }
+button[aria-pressed="true"] { box-shadow: inset 0 0 0 3px var(--accent) }
+button:disabled { opacity: .45; cursor: default }
+.row { display: flex; flex-wrap: wrap; gap: 10px; align-items: center }
+/* player */
+.player { display: grid; gap: 12px }
+.stage { position: relative; width: 100%; aspect-ratio: 16 / 9; max-width: 100%; background: #EAF2EE; border-radius: 14px; overflow: hidden; border: 1px solid var(--line) }
+.stage canvas { width: 100%; height: 100%; display: block }
+.bigplay { position: absolute; inset: 0; display: grid; place-items: center; background: rgba(31,42,51,.25); border: 0; border-radius: 0; color: #fff; font-size: 20px; min-height: 0 }
+.bigplay span { background: var(--accent); color: var(--accent-ink); padding: 14px 26px; border-radius: 999px; font-weight: 900 }
+.bar { height: 10px; background: var(--surface2); border-radius: 999px; overflow: hidden; cursor: pointer }
+.bar > i { display: block; height: 100%; width: 0; background: var(--warm) }
+.chapters { display: flex; flex-wrap: wrap; gap: 8px }
+.chapters button { font-size: 14px; padding: 8px 12px; min-height: 40px }
+.chapters button.now { background: var(--warm); color: var(--warm-ink) }
+.hint { color: var(--ink2); font-size: 15px }
+/* exercises (generic parts) */
+.levels { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 12px }
+.levels button { font-size: 14px; padding: 8px 12px; min-height: 40px }
+.levels button.done::after { content: " ✓"; color: var(--good) }
+.task { background: var(--surface2); border-radius: 12px; padding: 12px 14px; margin-bottom: 12px; font-weight: 700 }
+.result { border-radius: 12px; padding: 12px 14px; font-weight: 800; margin-top: 10px }
+.result.good { background: var(--good-bg); color: var(--good) }
+.result.bad { background: var(--bad-bg); color: var(--bad) }
+.result.info { background: var(--surface2); color: var(--ink) }
+/* quiz */
+.quiz { display: grid; gap: 16px }
+.q { border-top: 1px solid var(--line); padding-top: 14px }
+.q:first-child { border-top: 0; padding-top: 0 }
+.opts { display: grid; gap: 8px; margin-top: 8px }
+.opts button { text-align: left; font-weight: 700; background: var(--surface2); display: flex; gap: 10px; align-items: center }
+.opts button b { width: 30px; height: 30px; border-radius: 50%; background: var(--accent); color: var(--accent-ink); display: grid; place-items: center; flex: none }
+.opts button.right { background: var(--good-bg); box-shadow: inset 0 0 0 3px var(--good) }
+.opts button.wrong { background: var(--bad-bg) }
+.fb { margin-top: 8px; font-weight: 700 }
+.fb.good { color: var(--good) } .fb.bad { color: var(--bad) }
+details summary { cursor: pointer; font-weight: 800; font-size: 18px }
+details[open] summary { margin-bottom: 10px }
+ul.plain { padding-left: 20px; margin: 0 0 10px } ul.plain li { margin-bottom: 6px; max-width: 65ch }
+.progress { display: flex; gap: 8px; flex-wrap: wrap } .progress span { background: var(--surface2); border-radius: 999px; padding: 6px 12px; font-size: 14px; font-weight: 700 }
+.progress span.ok { background: var(--good-bg); color: var(--good) }
+@media (prefers-reduced-motion: reduce) { * { transition: none !important } }
+
+/* halaman video simulasi (dibuat build.py dari episodes/_alat/sim-page.html) */
+.links { display: grid; gap: 10px } .links a { display: block; background: var(--surface2); color: var(--ink); text-decoration: none; font-weight: 800; border-radius: 12px; padding: 12px 16px }
+.links a span { display: block; font-weight: 600; color: var(--ink2); font-size: 15px }
+ul.learn { margin: 0; padding-left: 20px } ul.learn li { margin-bottom: 4px }
+</style>
+
+<div class="wrap">
+  <header>
+    <div class="eyebrow">Informatika · Simulasi konsep · K18</div>
+    <h1>Melacak Program Python Baris demi Baris</h1>
+    <p class="hint">Setelah menonton, kamu bisa melacak program Python baris demi baris, menebak isi memori dan keluarannya, lalu menemukan bug dari jejak memori. Simulasi ini melengkapi episode F11.2. Saat muncul pertanyaan "Menurutmu …", hentikan dulu videonya dan tebak jawabannya.</p>
+  </header>
+  <section class="card player" aria-label="Pemutar simulasi">
+    <div class="stage">
+      <canvas id="screen" width="1920" height="1080" aria-label="Animasi simulasi"></canvas>
+      <audio id="nar" preload="auto" src="narasi.mp3"></audio>
+      <button class="bigplay" id="bigplay" aria-label="Putar"><span>▶ Putar simulasi</span></button>
+    </div>
+    <div class="bar" id="bar" role="slider" aria-label="Posisi simulasi" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" tabindex="0"><i id="barfill"></i></div>
+    <div class="row">
+      <button class="primary" id="playbtn">▶ Putar</button>
+      <button id="replay">↺ Ulangi bagian ini</button>
+      <button id="voice" aria-pressed="true" hidden>🔊 Suara: nyala</button>
+      <button id="slow" aria-pressed="false">🐢 Mode lambat</button>
+      <span class="hint" id="timelabel">0:00 / 0:00</span>
+    </div>
+    <div>
+      <div class="eyebrow">Bagian</div>
+      <div class="chapters" id="chapters"></div>
+    </div>
+  </section>
+
+  <section class="card" aria-label="Yang dipelajari">
+    <h2>Yang kamu pelajari</h2>
+    <ul class="learn"><li>melacak program Python baris demi baris seperti komputer menjalankannya</li><li>membaca isi memori: nama variabel, nilai, dan tipe data (int, str)</li><li>menebak cabang if atau else mana yang dijalankan untuk masukan tertentu</li><li>menemukan bug salah indentasi dari jejak memori</li></ul>
+  </section>
+
+  <section class="card" aria-label="Cek pemahaman">
+    <h2>Cek pemahaman</h2>
+    <p class="hint">Pilih satu jawaban. Kalau salah, kamu dapat petunjuk, lalu coba lagi.</p>
+    <div class="quiz" id="quiz"></div>
+  </section>
+
+  <section class="card" aria-label="Kemajuan">
+    <h2>Kemajuanmu</h2>
+    <div class="progress" id="progress"></div>
+    <p class="hint" style="margin-top:8px">Kemajuan tersimpan di perangkat ini saja.</p>
+  </section>
+
+  <section class="card" aria-label="Halaman latihan">
+    <h2>Lanjut berlatih</h2>
+    <div class="links"><a href="../../F11.2/episode-f112.html">Episode F11.2: Dari Pseudocode ke Kode<span>Tonton episodenya dan kerjakan latihannya.</span></a><a href="../../../index.html">Daftar semua episode<span>Kembali ke halaman utama.</span></a></div>
+  </section>
+</div>
+
+<script>/* Kiko core: mesin gambar bersama untuk semua episode Fase D.
+   Kiko.draw(ctx, t, TL) menggambar frame pada detik t di kanvas 1920x1080 secara deterministik.
+   Berisi palet, pembantu gambar, tokoh (Kiko, murid), dan adegan umum (judul, kuis, ringkasan, penutup).
+   Setiap episode menambahkan adegannya sendiri di scenes.js: Object.assign(Kiko.SCENES, {...}). */
+(function (global) {
+  const W = 1920, H = 1080;
+  const FONT = "Inter, 'Segoe UI', Roboto, Arial, sans-serif";
+  const C = {
+    bg: "#EAF2EE", bg2: "#DCE9E2", ink: "#1F2A33", ink2: "#4A5A66", panel: "#FFFFFF",
+    tile: "#F7FAF8", tileLine: "#C9D8D0", table: "#A4653A", tableTop: "#C98A57",
+    kiko: "#2E7E9A", kikoDark: "#1F5A6E", kikoLight: "#8FD0E6", eye: "#FFFFFF", pupil: "#1F2A33",
+    accent: "#F2B134", accentDark: "#B57A12", good: "#2E9E5B", bad: "#D9443B", goodBg: "#DDF3E4", badBg: "#FBE1DF",
+    sub: "#1F2A33", subText: "#FFFFFF", star: "#F2B134", skin: "#F1C9A5", skin2: "#C98A57", hair: "#2B2118",
+    uniform: "#FFFFFF", pants: "#2F4E7D", bubble: "#FFFFFF", muted: "#9AAFA6"
+  };
+  const ease = u => u < 0 ? 0 : u > 1 ? 1 : u * u * (3 - 2 * u);
+  const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
+  const lerp = (a, b, u) => a + (b - a) * u;
+
+  // ---------- drawing helpers ----------
+  function rr(ctx, x, y, w, h, r) {
+    ctx.beginPath(); ctx.moveTo(x + r, y); ctx.arcTo(x + w, y, x + w, y + h, r); ctx.arcTo(x + w, y + h, x, y + h, r);
+    ctx.arcTo(x, y + h, x, y, r); ctx.arcTo(x, y, x + w, y, r); ctx.closePath();
+  }
+  function text(ctx, s, x, y, size, opt = {}) {
+    ctx.font = `${opt.weight || 600} ${size}px ${FONT}`;
+    // opt.fit: lebar maksimum; huruf diperkecil hanya bila teks lebih lebar dari itu
+    while (opt.fit && size > 20 && ctx.measureText(s).width > opt.fit) { size -= 2; ctx.font = `${opt.weight || 600} ${size}px ${FONT}`; } ctx.fillStyle = opt.color || C.ink;
+    ctx.textAlign = opt.align || "left"; ctx.textBaseline = opt.base || "alphabetic"; ctx.fillText(s, x, y);
+  }
+  function wrap(ctx, s, size, weight, maxW) {
+    ctx.font = `${weight} ${size}px ${FONT}`;
+    const words = s.split(" "), lines = []; let cur = "";
+    for (const w of words) {
+      const test = cur ? cur + " " + w : w;
+      if (ctx.measureText(test).width > maxW && cur) { lines.push(cur); cur = w; } else cur = test;
+    }
+    if (cur) lines.push(cur);
+    return lines;
+  }
+  function para(ctx, s, x, y, size, maxW, opt = {}) {
+    const lines = wrap(ctx, s, size, opt.weight || 500, maxW); const lh = size * (opt.lh || 1.35);
+    lines.forEach((l, i) => text(ctx, l, x, y + i * lh, size, opt));
+    return lines.length * lh;
+  }
+  function arrowIcon(ctx, kind, cx, cy, s, color) {
+    ctx.save(); ctx.translate(cx, cy); ctx.strokeStyle = color; ctx.fillStyle = color; ctx.lineWidth = s * 0.16; ctx.lineCap = "round"; ctx.lineJoin = "round";
+    if (kind === "up") {
+      ctx.beginPath(); ctx.moveTo(0, s * 0.45); ctx.lineTo(0, -s * 0.3); ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(-s * 0.32, -s * 0.05); ctx.lineTo(0, -s * 0.45); ctx.lineTo(s * 0.32, -s * 0.05); ctx.stroke();
+    } else if (kind === "left" || kind === "right") {
+      const k = kind === "left" ? -1 : 1;
+      ctx.beginPath(); ctx.moveTo(0, s * 0.45); ctx.lineTo(0, -s * 0.05); ctx.quadraticCurveTo(0, -s * 0.32, k * s * 0.28, -s * 0.32); ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(k * s * 0.12, -s * 0.5); ctx.lineTo(k * s * 0.4, -s * 0.32); ctx.lineTo(k * s * 0.12, -s * 0.14); ctx.stroke();
+    } else if (kind === "east") {
+      ctx.beginPath(); ctx.moveTo(-s * 0.4, 0); ctx.lineTo(s * 0.3, 0); ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(s * 0.05, -s * 0.28); ctx.lineTo(s * 0.4, 0); ctx.lineTo(s * 0.05, s * 0.28); ctx.stroke();
+    } else if (kind === "west") {
+      ctx.beginPath(); ctx.moveTo(s * 0.4, 0); ctx.lineTo(-s * 0.3, 0); ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(-s * 0.05, -s * 0.28); ctx.lineTo(-s * 0.4, 0); ctx.lineTo(-s * 0.05, s * 0.28); ctx.stroke();
+    } else if (kind === "grab") {
+      ctx.beginPath(); ctx.arc(0, s * 0.12, s * 0.22, 0, Math.PI * 2); ctx.fill();
+      ctx.beginPath(); ctx.moveTo(-s * 0.4, -s * 0.42); ctx.lineTo(-s * 0.4, -s * 0.12); ctx.moveTo(s * 0.4, -s * 0.42); ctx.lineTo(s * 0.4, -s * 0.12);
+      ctx.moveTo(-s * 0.4, -s * 0.42); ctx.lineTo(s * 0.4, -s * 0.42); ctx.stroke();
+    }
+    ctx.restore();
+  }
+  function bakso(ctx, cx, cy, s, opt = {}) {
+    // a bowl of bakso: the goal
+    ctx.save(); ctx.translate(cx, cy);
+    if (opt.glow) { ctx.beginPath(); ctx.arc(0, 0, s * 0.62, 0, Math.PI * 2); ctx.fillStyle = "rgba(242,177,52,0.22)"; ctx.fill(); }
+    ctx.fillStyle = "#E4EEF5"; ctx.beginPath(); ctx.moveTo(-s * 0.46, -s * 0.05); ctx.quadraticCurveTo(-s * 0.4, s * 0.45, 0, s * 0.45); ctx.quadraticCurveTo(s * 0.4, s * 0.45, s * 0.46, -s * 0.05); ctx.closePath(); ctx.fill();
+    ctx.strokeStyle = "#8FA9BD"; ctx.lineWidth = s * 0.05; ctx.stroke();
+    ctx.fillStyle = "#C8B49A"; ctx.beginPath(); ctx.ellipse(0, -s * 0.05, s * 0.44, s * 0.14, 0, 0, Math.PI * 2); ctx.fill();
+    for (const [dx, dy, r] of [[-0.16, -0.1, 0.13], [0.14, -0.12, 0.13], [0, -0.22, 0.12]]) {
+      ctx.fillStyle = "#9A7B5B"; ctx.beginPath(); ctx.arc(dx * s, dy * s, r * s, 0, Math.PI * 2); ctx.fill();
+      ctx.fillStyle = "#B8977A"; ctx.beginPath(); ctx.arc(dx * s - r * s * 0.3, dy * s - r * s * 0.3, r * s * 0.4, 0, Math.PI * 2); ctx.fill();
+    }
+    ctx.fillStyle = "#4CA64C"; for (const dx of [-0.26, 0.1, 0.26]) { ctx.beginPath(); ctx.arc(dx * s, -s * 0.07, s * 0.045, 0, Math.PI * 2); ctx.fill(); }
+    ctx.restore();
+  }
+  function table(ctx, x, y, w, h) {
+    ctx.fillStyle = C.table; rr(ctx, x + w * 0.1, y + h * 0.3, w * 0.8, h * 0.55, 10); ctx.fill();
+    ctx.fillStyle = C.tableTop; rr(ctx, x + w * 0.06, y + h * 0.18, w * 0.88, h * 0.3, 10); ctx.fill();
+    ctx.fillStyle = "rgba(0,0,0,0.12)"; ctx.fillRect(x + w * 0.16, y + h * 0.5, w * 0.08, h * 0.35); ctx.fillRect(x + w * 0.76, y + h * 0.5, w * 0.08, h * 0.35);
+  }
+  function kiko(ctx, cx, cy, s, ang, opt = {}) {
+    ctx.save(); ctx.translate(cx, cy);
+    // shadow
+    ctx.fillStyle = "rgba(0,0,0,0.12)"; ctx.beginPath(); ctx.ellipse(0, s * 0.42, s * 0.42, s * 0.12, 0, 0, Math.PI * 2); ctx.fill();
+    ctx.rotate(ang);
+    // wheels
+    ctx.fillStyle = C.kikoDark; rr(ctx, -s * 0.46, -s * 0.2, s * 0.12, s * 0.5, 5); ctx.fill(); rr(ctx, s * 0.34, -s * 0.2, s * 0.12, s * 0.5, 5); ctx.fill();
+    // body
+    ctx.fillStyle = opt.flash ? `rgba(217,68,59,${0.5 + 0.5 * opt.flash})` : C.kiko; rr(ctx, -s * 0.38, -s * 0.36, s * 0.76, s * 0.72, s * 0.16); ctx.fill();
+    // visor (front, facing up)
+    ctx.fillStyle = C.kikoLight; rr(ctx, -s * 0.26, -s * 0.33, s * 0.52, s * 0.3, s * 0.1); ctx.fill();
+    // eyes
+    const mood = opt.mood || "happy";
+    ctx.fillStyle = C.pupil;
+    if (mood === "sad") { ctx.beginPath(); ctx.arc(-s * 0.12, -s * 0.18, s * 0.05, 0, Math.PI * 2); ctx.arc(s * 0.12, -s * 0.18, s * 0.05, 0, Math.PI * 2); ctx.fill(); ctx.strokeStyle = C.pupil; ctx.lineWidth = s * 0.03; ctx.beginPath(); ctx.arc(0, -s * 0.03, s * 0.08, Math.PI * 1.15, Math.PI * 1.85); ctx.stroke(); }
+    else if (mood === "confused") { ctx.beginPath(); ctx.arc(-s * 0.12, -s * 0.18, s * 0.05, 0, Math.PI * 2); ctx.arc(s * 0.12, -s * 0.18, s * 0.035, 0, Math.PI * 2); ctx.fill(); ctx.strokeStyle = C.pupil; ctx.lineWidth = s * 0.03; ctx.beginPath(); ctx.moveTo(-s * 0.08, -s * 0.06); ctx.lineTo(s * 0.08, -s * 0.09); ctx.stroke(); }
+    else { ctx.beginPath(); ctx.arc(-s * 0.12, -s * 0.18, s * 0.055, 0, Math.PI * 2); ctx.arc(s * 0.12, -s * 0.18, s * 0.055, 0, Math.PI * 2); ctx.fill(); ctx.strokeStyle = C.pupil; ctx.lineWidth = s * 0.03; ctx.beginPath(); ctx.arc(0, -s * 0.1, s * 0.08, Math.PI * 0.15, Math.PI * 0.85); ctx.stroke(); }
+    // front pointer
+    ctx.fillStyle = C.accent; ctx.beginPath(); ctx.moveTo(-s * 0.1, -s * 0.38); ctx.lineTo(s * 0.1, -s * 0.38); ctx.lineTo(0, -s * 0.5); ctx.closePath(); ctx.fill();
+    // antenna
+    ctx.strokeStyle = C.kikoDark; ctx.lineWidth = s * 0.04; ctx.beginPath(); ctx.moveTo(0, s * 0.36); ctx.lineTo(0, s * 0.5); ctx.stroke();
+    ctx.fillStyle = C.accent; ctx.beginPath(); ctx.arc(0, s * 0.52, s * 0.07, 0, Math.PI * 2); ctx.fill();
+    // tray with bakso when grabbed
+    if (opt.grabbed) bakso(ctx, 0, s * 0.05, s * 0.45);
+    ctx.restore();
+    if (opt.wave !== undefined) { // arm waving (title scene)
+      ctx.save(); ctx.translate(cx + s * 0.42, cy - s * 0.1); ctx.rotate(-0.6 + Math.sin(opt.wave * 6) * 0.4);
+      ctx.strokeStyle = C.kikoDark; ctx.lineWidth = s * 0.08; ctx.lineCap = "round"; ctx.beginPath(); ctx.moveTo(0, 0); ctx.lineTo(s * 0.3, -s * 0.3); ctx.stroke();
+      ctx.fillStyle = C.kikoLight; ctx.beginPath(); ctx.arc(s * 0.32, -s * 0.33, s * 0.09, 0, Math.PI * 2); ctx.fill(); ctx.restore();
+    }
+  }
+  function kid(ctx, cx, cy, s, opt = {}) {
+    // simple student figure, standing, facing viewer
+    ctx.save(); ctx.translate(cx, cy);
+    ctx.fillStyle = "rgba(0,0,0,0.12)"; ctx.beginPath(); ctx.ellipse(0, s * 1.02, s * 0.5, s * 0.1, 0, 0, Math.PI * 2); ctx.fill();
+    ctx.fillStyle = C.pants; rr(ctx, -s * 0.3, s * 0.35, s * 0.6, s * 0.5, s * 0.1); ctx.fill();
+    ctx.fillStyle = C.skin; ctx.fillRect(-s * 0.24, s * 0.8, s * 0.16, s * 0.2); ctx.fillRect(s * 0.08, s * 0.8, s * 0.16, s * 0.2);
+    ctx.fillStyle = C.uniform; rr(ctx, -s * 0.36, -s * 0.12, s * 0.72, s * 0.56, s * 0.12); ctx.fill();
+    ctx.strokeStyle = "#D5DDE2"; ctx.lineWidth = s * 0.025; rr(ctx, -s * 0.36, -s * 0.12, s * 0.72, s * 0.56, s * 0.12); ctx.stroke();
+    ctx.fillStyle = C.skin; ctx.beginPath(); ctx.arc(0, -s * 0.42, s * 0.32, 0, Math.PI * 2); ctx.fill();
+    ctx.fillStyle = opt.hairColor || C.hair; ctx.beginPath(); ctx.arc(0, -s * 0.5, s * 0.33, Math.PI, 0); ctx.fill();
+    if (opt.hair === "long") { ctx.fillRect(-s * 0.33, -s * 0.5, s * 0.12, s * 0.45); ctx.fillRect(s * 0.21, -s * 0.5, s * 0.12, s * 0.45); }
+    ctx.fillStyle = C.pupil; ctx.beginPath(); ctx.arc(-s * 0.11, -s * 0.4, s * 0.035, 0, Math.PI * 2); ctx.arc(s * 0.11, -s * 0.4, s * 0.035, 0, Math.PI * 2); ctx.fill();
+    ctx.strokeStyle = C.pupil; ctx.lineWidth = s * 0.025; ctx.beginPath(); ctx.arc(0, -s * 0.33, s * 0.08, Math.PI * 0.15, Math.PI * 0.85); ctx.stroke();
+    // arms
+    ctx.strokeStyle = C.skin; ctx.lineWidth = s * 0.11; ctx.lineCap = "round"; ctx.beginPath();
+    if (opt.point) { ctx.moveTo(s * 0.32, s * 0.02); ctx.lineTo(s * 0.75, -s * 0.2); } else { ctx.moveTo(s * 0.34, s * 0.02); ctx.lineTo(s * 0.42, s * 0.38); }
+    ctx.moveTo(-s * 0.34, s * 0.02); ctx.lineTo(-s * 0.42, s * 0.38); ctx.stroke();
+    ctx.restore();
+  }
+  function bubble(ctx, x, y, w, s, size, opt = {}) {
+    const lines = wrap(ctx, s, size, 600, w - 48); const h = lines.length * size * 1.3 + 40;
+    ctx.fillStyle = opt.fill || C.bubble; ctx.strokeStyle = opt.stroke || "#B7C7BF"; ctx.lineWidth = 3;
+    rr(ctx, x, y - h, w, h, 22); ctx.fill(); ctx.stroke();
+    const tx = opt.tailX !== undefined ? opt.tailX : x + 60;
+    ctx.beginPath(); ctx.moveTo(tx - 16, y); ctx.lineTo(tx + 16, y); ctx.lineTo(tx + (opt.tailDir || 0), y + 28); ctx.closePath(); ctx.fillStyle = opt.fill || C.bubble; ctx.fill();
+    ctx.strokeStyle = opt.stroke || "#B7C7BF"; ctx.beginPath(); ctx.moveTo(tx - 16, y); ctx.lineTo(tx + (opt.tailDir || 0), y + 28); ctx.lineTo(tx + 16, y); ctx.stroke();
+    lines.forEach((l, i) => text(ctx, l, x + 24, y - h + 24 + size + i * size * 1.3, size, { color: opt.color || C.ink, weight: 600 }));
+    return h;
+  }
+  function card(ctx, x, y, w, h, opt = {}) { ctx.fillStyle = opt.fill || C.panel; rr(ctx, x, y, w, h, opt.r || 26); ctx.fill(); if (opt.stroke) { ctx.strokeStyle = opt.stroke; ctx.lineWidth = opt.lw || 4; ctx.stroke(); } }
+
+  // ---------- adegan umum (semua episode) ----------
+  const SCENES = {
+    title(ctx, b, l, t, TL) {
+      card(ctx, 160, 160, 1600, 700, { fill: C.panel });
+      kiko(ctx, 420, 520, 260, 0, { wave: l, mood: "happy" });
+      text(ctx, TL.label || ("Informatika · Fase " + (TL.episode || "D")[0] + " · Episode " + TL.episode), 720, 330, 34, { color: C.ink2, weight: 700 });  // TL.label: label khusus, mis. video simulasi
+      const ts = TL.title.length > 34 ? 74 : 92; const th = para(ctx, TL.title, 720, 440, ts, 1000, { weight: 900, lh: 1.1 }); const hookLines = TL.hook ? wrap(ctx, TL.hook, 34, 800, 1000).length : 0; const hy = Math.max(hookLines >= 3 ? 600 : 640, 440 + th - ts * 0.35 + 30);
+      if (TL.hook) { text(ctx, "SETELAH MENONTON, KAMU BISA:", 720, hy, 26, { color: C.accentDark, weight: 800 }); para(ctx, TL.hook, 720, hy + 50, 34, 1000, { weight: 800, lh: 1.3 }); const ny = hy + 50 + wrap(ctx, TL.hook, 34, 800, 1000).length * 34 * 1.3 + 12; if (ny <= 830) text(ctx, "Dengarkan, atau baca teksnya pelan-pelan.", 720, Math.max(800, ny), 26, { color: C.ink2, weight: 600 }); }
+      else text(ctx, "Dengarkan, atau baca teksnya pelan-pelan.", 720, 700, 36, { color: C.ink2, weight: 600 });
+      if (!TL.label) { arrowIcon(ctx, "up", 1560, 250, 70, C.kikoLight); arrowIcon(ctx, "right", 1660, 250, 70, C.kikoLight); }  // ikon panah khas episode, tidak untuk simulasi
+    },
+    quiz(ctx, b, l, t, TL, answered) {
+      const q = TL.quizzes[b.quiz]; card(ctx, 200, 150, 1520, 740, { stroke: C.accent, lw: 6 });
+      text(ctx, "CEK PEMAHAMAN", 960, 230, 32, { align: "center", color: C.accentDark, weight: 800 });
+      para(ctx, q.q, 960, 320, 44, 1360, { weight: 800, align: "center", lh: 1.3 });
+      // tata letak pilihan: mulai di bawah pertanyaan dan selesai di atas kartu narasi (narasi panjang = jarak dirapatkan)
+      const qLines = wrap(ctx, q.q, 44, 800, 1360).length, subTop = 1056 - (wrap(ctx, b.text, 44, 700, 1660).length * 44 * 1.3 + 44);
+      let oy = qLines <= 1 ? 420 : 470, gap = 120, oh = 96; const n = q.options.length;
+      if (oy + (n - 1) * gap + oh > subTop - 12) { gap = Math.max(104, Math.floor((subTop - 12 - oh - oy) / Math.max(1, n - 1))); }
+      if (oy + (n - 1) * gap + oh > subTop - 12) { oh = 86; gap = 100; oy = Math.max(320 + (qLines - 1) * 57 + 40, subTop - 12 - oh - (n - 1) * gap); }
+      q.options.forEach((o, i) => {
+        const y = oy + i * gap; const right = answered && i === q.answer;
+        card(ctx, 320, y, 1280, oh, { fill: right ? C.goodBg : answered ? "#F4F6F5" : C.bg2, stroke: right ? C.good : "#CFDCD5", lw: right ? 6 : 3 });
+        ctx.fillStyle = right ? C.good : C.kiko; ctx.beginPath(); ctx.arc(380, y + oh / 2, 30, 0, Math.PI * 2); ctx.fill();
+        text(ctx, "ABC"[i], 380, y + oh / 2 + 13, 34, { align: "center", color: "#fff", weight: 900 });
+        text(ctx, o, 440, y + oh / 2 + 14, 38, { weight: 700, color: answered && !right ? C.muted : C.ink });
+        if (right) text(ctx, "✓", 1540, y + oh / 2 + 18, 54, { align: "center", color: C.good, weight: 900 });
+      });
+      if (!answered) { // thinking timer
+        const frac = clamp(l / b.dur, 0, 1); ctx.strokeStyle = "#D7E2DC"; ctx.lineWidth = 14; ctx.beginPath(); ctx.arc(1640, 230, 40, 0, Math.PI * 2); ctx.stroke();
+        ctx.strokeStyle = C.accent; ctx.beginPath(); ctx.arc(1640, 230, 40, -Math.PI / 2, -Math.PI / 2 + frac * Math.PI * 2); ctx.stroke();
+        // catatan hanya digambar bila tidak tertutup kartu narasi (narasi tiga baris atau lebih menutupinya)
+        const subTop = 1056 - (wrap(ctx, b.text, 44, 700, 1660).length * 44 * 1.3 + 44);
+        if (subTop > 880) text(ctx, "Pikirkan dulu, jangan buru-buru.", 960, 860, 32, { align: "center", color: C.ink2, weight: 600 });
+      }
+    },
+    quiz_answer(ctx, b, l, t, TL) { SCENES.quiz(ctx, b, l, t, TL, true); },
+    recap(ctx, b, l, t, TL) {
+      // TL.recap: tiga kalimat pendek dari script.json
+      card(ctx, 160, 140, 1600, 760);
+      text(ctx, "TIGA HAL UNTUK DIINGAT", 960, 230, 34, { align: "center", color: C.accentDark, weight: 900 });
+      const items = TL.recap || [];
+      const show = clamp(Math.floor((l - 0.6) / 2.2) + 1, 1, Math.max(1, items.length));
+      items.forEach((s, i) => { if (i >= show) return; card(ctx, 300, 290 + i * 180, 1320, 140, { fill: C.bg2 }); ctx.fillStyle = C.kiko; ctx.beginPath(); ctx.arc(380, 360 + i * 180, 40, 0, Math.PI * 2); ctx.fill(); text(ctx, String(i + 1), 380, 376 + i * 180, 40, { align: "center", color: "#fff", weight: 900 }); text(ctx, s, 450, 375 + i * 180, 42, { weight: 800, fit: 1130 }); });
+      kiko(ctx, 1620, 820, 130, 0);
+    },
+    outro(ctx, b, l, t, TL) {
+      // TL.next: {code, title, note} episode berikutnya, dari script.json
+      const n = TL.next || {};
+      card(ctx, 260, 200, 1400, 600);
+      text(ctx, n.heading || "EPISODE BERIKUTNYA", 960, 320, 34, { align: "center", color: C.accentDark, weight: 900 });
+      text(ctx, n.code || "", 960, 440, 60, { align: "center", weight: 900 });
+      text(ctx, n.title || "", 960, 530, 54, { align: "center", weight: 800, color: C.ink2, fit: 1320 });
+      text(ctx, n.note || "", 960, 680, 34, { align: "center", color: C.ink2, weight: 600 });
+      kiko(ctx, 960, 760 + 20, 140, 0, { wave: l });
+    }
+  };
+
+  function beatAt(TL, t) {
+    let b = TL.beats[0];
+    for (const x of TL.beats) { if (t >= x.start) b = x; else break; }
+    return b;
+  }
+  function draw(ctx, t, TL, opt = {}) {
+    const b = beatAt(TL, t); const l = t - b.start;
+    ctx.save(); ctx.setTransform(1, 0, 0, 1, 0, 0);
+    ctx.fillStyle = C.bg; ctx.fillRect(0, 0, W, H);
+    // header
+    text(ctx, TL.episode + " · " + TL.title, 60, 78, 30, { color: C.ink2, weight: 700 });
+    text(ctx, TL.segments[b.seg], 1860, 78, 30, { color: C.accentDark, weight: 800, align: "right" });
+    ctx.fillStyle = C.bg2; ctx.fillRect(0, 100, W, 6); ctx.fillStyle = C.accent; ctx.fillRect(0, 100, W * clamp(t / TL.total, 0, 1), 6);
+    const fn = SCENES[b.scene]; if (fn) fn(ctx, b, l, t, TL);
+    // narration card (burned-in text the student reads)
+    if (opt.subtitles !== false) {
+      const size = 44; const lines = wrap(ctx, b.text, size, 700, 1660);
+      const h = lines.length * size * 1.3 + 44; const y0 = 1056 - h;
+      ctx.fillStyle = "rgba(31,42,51,0.92)"; rr(ctx, 100, y0, 1720, h, 20); ctx.fill();
+      // reading progress (how far along the text the reader should be)
+      const frac = clamp(l / b.audio, 0, 1); ctx.fillStyle = C.accent; rr(ctx, 100, y0 + h - 8, 1720 * frac, 8, 4); ctx.fill();
+      lines.forEach((ln, i) => text(ctx, ln, 960, y0 + 22 + size + i * size * 1.3, size, { align: "center", color: C.subText, weight: 700 }));
+    }
+    ctx.restore();
+    return b;
+  }
+
+  global.Kiko = { draw, beatAt, W, H, C, FONT, SCENES,
+    helpers: { rr, text, wrap, para, arrowIcon, bakso, table, kiko, kid, bubble, card, ease, clamp, lerp } };
+})(typeof window !== "undefined" ? window : globalThis);
+
+/* Pembantu gambar perangkat (dipakai D7.0, D7.2, …): monitor, mouse, pointer, keyboard, HP, jari, ikon file/folder, jendela.
+   Semua digambar dengan kode (tanpa aset unduhan). Muat setelah ../_alat/kiko-core.js; dipakai scenes.js. */
+(function (global) {
+  const K = global.Kiko, H = K.helpers, C = K.C;
+  const { rr, text, wrap, card, ease, clamp, lerp } = H;
+  const D = {};
+  const SCREEN_BG = "#F4F8FB", BEZEL = "#2B3A46", BEZEL2 = "#1A262F", SEL = "rgba(46,126,154,0.22)";
+
+  // ---------- komputer ----------
+  // monitor di atas meja; mengembalikan kotak layar {x,y,w,h}
+  D.monitor = function (ctx, x, y, w, h) {
+    ctx.fillStyle = BEZEL; rr(ctx, x - 18, y - 18, w + 36, h + 36, 22); ctx.fill();
+    ctx.fillStyle = SCREEN_BG; rr(ctx, x, y, w, h, 10); ctx.fill();
+    // kaki dan meja
+    ctx.fillStyle = BEZEL2; rr(ctx, x + w / 2 - 40, y + h + 18, 80, 36, 8); ctx.fill(); rr(ctx, x + w / 2 - 140, y + h + 50, 280, 16, 8); ctx.fill();
+    ctx.fillStyle = C.tableTop; rr(ctx, x - 80, y + h + 66, w + 160, 22, 8); ctx.fill();
+    return { x, y, w, h };
+  };
+  // panah pointer
+  D.pointer = function (ctx, x, y, s = 34, color = C.ink) {
+    ctx.save(); ctx.translate(x, y); ctx.fillStyle = color; ctx.strokeStyle = "#fff"; ctx.lineWidth = s * 0.08; ctx.lineJoin = "round";
+    ctx.beginPath(); ctx.moveTo(0, 0); ctx.lineTo(0, s); ctx.lineTo(s * 0.27, s * 0.78); ctx.lineTo(s * 0.45, s * 1.15); ctx.lineTo(s * 0.62, s * 1.07); ctx.lineTo(s * 0.45, s * 0.7); ctx.lineTo(s * 0.75, s * 0.7); ctx.closePath();
+    ctx.fill(); ctx.stroke(); ctx.restore();
+  };
+  // mouse tampak atas; opt.left / opt.right = tombol ditekan; opt.label = tulis "kiri/kanan"
+  D.mouse = function (ctx, cx, cy, s, opt = {}) {
+    ctx.save(); ctx.translate(cx, cy);
+    ctx.fillStyle = "rgba(0,0,0,0.12)"; ctx.beginPath(); ctx.ellipse(0, s * 0.62, s * 0.5, s * 0.1, 0, 0, Math.PI * 2); ctx.fill();
+    // kabel
+    ctx.strokeStyle = "#7B8B95"; ctx.lineWidth = s * 0.05; ctx.beginPath(); ctx.moveTo(0, -s * 0.6); ctx.quadraticCurveTo(0, -s * 1.0, s * 0.5, -s * 1.1); ctx.stroke();
+    // badan
+    ctx.fillStyle = "#E8EEF2"; rr(ctx, -s * 0.42, -s * 0.62, s * 0.84, s * 1.24, s * 0.4); ctx.fill(); ctx.strokeStyle = "#A9B7C0"; ctx.lineWidth = s * 0.04; ctx.stroke();
+    // dua tombol
+    const btn = (side, on) => { ctx.fillStyle = on ? C.accent : "#F7FAFC"; ctx.beginPath(); const sx = side === "left" ? -1 : 1;
+      ctx.moveTo(sx * s * 0.03, -s * 0.6); ctx.lineTo(sx * s * 0.03, -s * 0.1); ctx.lineTo(sx * s * 0.4, -s * 0.1); ctx.lineTo(sx * s * 0.4, -s * 0.28); ctx.quadraticCurveTo(sx * s * 0.4, -s * 0.6, sx * s * 0.1, -s * 0.6); ctx.closePath(); ctx.fill(); ctx.strokeStyle = "#A9B7C0"; ctx.lineWidth = s * 0.03; ctx.stroke(); };
+    btn("left", opt.left); btn("right", opt.right);
+    ctx.fillStyle = "#A9B7C0"; rr(ctx, -s * 0.04, -s * 0.5, s * 0.08, s * 0.26, s * 0.04); ctx.fill(); // roda
+    ctx.restore();
+    if (opt.label) { text(ctx, "kiri", cx - s * 0.22, cy - s * 0.72, 26, { align: "center", color: opt.left ? C.accentDark : C.ink2, weight: 800 }); text(ctx, "kanan", cx + s * 0.22, cy - s * 0.72, 26, { align: "center", color: opt.right ? C.accentDark : C.ink2, weight: 800 }); }
+  };
+  // riak "klik" di sekitar titik
+  D.ripple = function (ctx, x, y, u, color = C.accent) { if (u <= 0 || u >= 1) return; ctx.strokeStyle = color; ctx.globalAlpha = 1 - u; ctx.lineWidth = 6; ctx.beginPath(); ctx.arc(x, y, 12 + u * 60, 0, Math.PI * 2); ctx.stroke(); ctx.globalAlpha = 1; };
+
+  // ---------- ikon file & folder ----------
+  const KIND = { folder: "#F2B134", foto: "#5FA8D3", tulisan: "#7B8B95", lagu: "#8E6BBF", video: "#D9443B" };
+  D.fileIcon = function (ctx, cx, cy, s, kind, opt = {}) {
+    ctx.save(); ctx.translate(cx, cy);
+    if (opt.selected) { ctx.fillStyle = SEL; rr(ctx, -s * 0.62, -s * 0.62, s * 1.24, s * 1.24 + (opt.name ? s * 0.5 : 0), s * 0.14); ctx.fill(); }
+    if (kind === "folder") {
+      ctx.fillStyle = "#D99A1B"; rr(ctx, -s * 0.5, -s * 0.32, s * 0.45, s * 0.2, s * 0.06); ctx.fill();
+      ctx.fillStyle = opt.open ? "#F7C860" : KIND.folder; rr(ctx, -s * 0.5, -s * 0.22, s, s * 0.7, s * 0.08); ctx.fill();
+      if (opt.open) { ctx.fillStyle = "#D99A1B"; rr(ctx, -s * 0.46, -s * 0.02, s * 0.92, s * 0.5, s * 0.08); ctx.fill(); }
+    } else {
+      ctx.fillStyle = "#FFFFFF"; ctx.strokeStyle = "#B7C4CC"; ctx.lineWidth = s * 0.05;
+      ctx.beginPath(); ctx.moveTo(-s * 0.36, -s * 0.5); ctx.lineTo(s * 0.12, -s * 0.5); ctx.lineTo(s * 0.36, -s * 0.26); ctx.lineTo(s * 0.36, s * 0.5); ctx.lineTo(-s * 0.36, s * 0.5); ctx.closePath(); ctx.fill(); ctx.stroke();
+      ctx.fillStyle = KIND[kind] || KIND.tulisan;
+      if (kind === "foto") { rr(ctx, -s * 0.26, -s * 0.2, s * 0.52, s * 0.44, s * 0.04); ctx.fill(); ctx.fillStyle = "#fff"; ctx.beginPath(); ctx.arc(-s * 0.12, -s * 0.08, s * 0.06, 0, Math.PI * 2); ctx.fill(); ctx.beginPath(); ctx.moveTo(-s * 0.26, s * 0.24); ctx.lineTo(-s * 0.06, s * 0.02); ctx.lineTo(s * 0.06, s * 0.14); ctx.lineTo(s * 0.14, s * 0.06); ctx.lineTo(s * 0.26, s * 0.24); ctx.closePath(); ctx.fill(); }
+      else if (kind === "lagu") { ctx.beginPath(); ctx.arc(-s * 0.1, s * 0.22, s * 0.1, 0, Math.PI * 2); ctx.arc(s * 0.16, s * 0.16, s * 0.1, 0, Math.PI * 2); ctx.fill(); ctx.lineWidth = s * 0.06; ctx.strokeStyle = KIND.lagu; ctx.beginPath(); ctx.moveTo(0, s * 0.2); ctx.lineTo(0, -s * 0.2); ctx.lineTo(s * 0.26, -s * 0.26); ctx.lineTo(s * 0.26, s * 0.14); ctx.stroke(); }
+      else if (kind === "video") { rr(ctx, -s * 0.26, -s * 0.16, s * 0.52, s * 0.4, s * 0.04); ctx.fill(); ctx.fillStyle = "#fff"; ctx.beginPath(); ctx.moveTo(-s * 0.06, -s * 0.04); ctx.lineTo(s * 0.12, s * 0.04); ctx.lineTo(-s * 0.06, s * 0.12); ctx.closePath(); ctx.fill(); }
+      else { for (let i = 0; i < 4; i++) { rr(ctx, -s * 0.22, -s * 0.14 + i * s * 0.14, s * (i === 3 ? 0.26 : 0.44), s * 0.06, s * 0.03); ctx.fill(); } }
+    }
+    ctx.restore();
+    if (opt.name) { const lines = wrap(ctx, opt.name, opt.size || 24, 700, s * 1.6); lines.slice(0, 2).forEach((ln, i) => text(ctx, ln, cx, cy + s * 0.78 + i * (opt.size || 24) * 1.15, opt.size || 24, { align: "center", weight: 700, color: opt.color || C.ink })); }
+  };
+  D.KIND = KIND;
+
+  // jendela aplikasi (file manager / editor) di dalam layar; mengembalikan area isi
+  D.windowFrame = function (ctx, x, y, w, h, title, opt = {}) {
+    ctx.fillStyle = "#FFFFFF"; rr(ctx, x, y, w, h, 14); ctx.fill(); ctx.strokeStyle = "#C9D4DB"; ctx.lineWidth = 3; ctx.stroke();
+    ctx.fillStyle = "#E6EDF2"; rr(ctx, x, y, w, 54, 14); ctx.fill(); ctx.fillRect(x, y + 30, w, 24);
+    ["#E0655C", "#F2B134", "#2E9E5B"].forEach((c, i) => { ctx.fillStyle = c; ctx.beginPath(); ctx.arc(x + 26 + i * 26, y + 27, 8, 0, Math.PI * 2); ctx.fill(); });
+    if (title) text(ctx, title, x + w / 2, y + 36, 24, { align: "center", color: C.ink2, weight: 800 });
+    if (opt.path) { ctx.fillStyle = "#F4F8FB"; rr(ctx, x + 16, y + 66, w - 32, 44, 10); ctx.fill(); text(ctx, opt.path, x + 32, y + 96, 24, { color: C.ink2, weight: 700 }); }
+    return { x: x + 16, y: y + (opt.path ? 124 : 70), w: w - 32, h: h - (opt.path ? 140 : 86) };
+  };
+  // kotak teks dengan kursor berkedip; opt.cursor = posisi karakter (bawaan akhir)
+  D.textBox = function (ctx, x, y, w, h, lines, tt, opt = {}) {
+    ctx.fillStyle = "#FFFFFF"; rr(ctx, x, y, w, h, 14); ctx.fill(); ctx.strokeStyle = opt.stroke || "#C9D4DB"; ctx.lineWidth = 3; ctx.stroke();
+    const size = opt.size || 48, lh = size * 1.4;
+    lines.forEach((ln, i) => text(ctx, ln, x + 28, y + 24 + size + i * lh, size, { weight: 700, color: opt.color || C.ink }));
+    if (opt.cursor !== false) {
+      const li = lines.length - 1, s = lines[li] || ""; ctx.font = `700 ${size}px ${K.FONT}`; const cw = ctx.measureText(s).width;
+      if (Math.floor(tt * 2.5) % 2 === 0 || opt.cursorOn) { ctx.fillStyle = C.kiko; ctx.fillRect(x + 30 + cw, y + 22 + li * lh, 5, size * 1.15); }
+      return [x + 32 + cw, y + 22 + li * lh + size * 0.6];
+    }
+  };
+
+  // ---------- keyboard ----------
+  const ROWS = [["Q", "W", "E", "R", "T", "Y", "U", "I", "O", "P"], ["A", "S", "D", "F", "G", "H", "J", "K", "L"], ["Z", "X", "C", "V", "B", "N", "M"]];
+  // keyboard sederhana: 3 baris huruf + Shift, Spasi, Backspace, Enter. opt.pressed = [tombol], opt.glow = [tombol] disorot lembut
+  D.keyboard = function (ctx, x, y, w, opt = {}) {
+    const key = w / 11.6, gap = key * 0.12, k = key - gap, h = k * 4 + gap * 5;
+    ctx.fillStyle = BEZEL; rr(ctx, x - 16, y - 16, w + 32, h + 32, 22); ctx.fill();
+    const pressed = opt.pressed || [], glow = opt.glow || [];
+    const draw = (kx, ky, kw, label, small) => {
+      const on = pressed.includes(label), soft = glow.includes(label);
+      ctx.fillStyle = on ? C.accent : soft ? "#FFF3D6" : "#F7FAFC"; rr(ctx, kx, ky + (on ? 4 : 0), kw, k - (on ? 4 : 0), 10); ctx.fill();
+      ctx.strokeStyle = on ? C.accentDark : soft ? C.accent : "#B7C4CC"; ctx.lineWidth = on || soft ? 4 : 2; ctx.stroke();
+      // ukuran huruf mengikuti ukuran tombol; pada keyboard mini (tombol < 40 px) label tombol khusus tidak digambar
+      const fs = small ? Math.min(24, k * 0.45) : Math.min(32, k * 0.6);
+      if (small ? k >= 40 : k >= 18) text(ctx, label, kx + kw / 2, ky + k / 2 + fs * 0.38, fs, { align: "center", weight: 800, color: on ? "#fff" : C.ink });
+    };
+    ROWS.forEach((row, r) => { const off = r === 0 ? 0 : r === 1 ? key * 0.35 : key * 0.85; row.forEach((lab, i) => draw(x + gap + off + i * key, y + gap + r * key, k, lab)); });
+    draw(x + gap + key * 0.85 + 7 * key + gap, y + gap + 2 * key, key * 2.4 - gap, "Backspace", true);
+    draw(x + gap, y + gap + 3 * key, key * 1.9 - gap, "Shift", true);
+    draw(x + gap + key * 1.9, y + gap + 3 * key, key * 6.2 - gap, "Spasi", true);
+    draw(x + gap + key * 8.1, y + gap + 3 * key, key * 2.3 - gap, "Enter", true);
+    draw(x + gap + key * 0.35 + 9 * key, y + gap + 1 * key, key * 1.9 - gap, "Enter", true);
+    return { x, y, w, h };
+  };
+
+  // ---------- HP & jari ----------
+  // HP tegak; mengembalikan kotak layar
+  D.phone = function (ctx, cx, cy, w, h) {
+    ctx.fillStyle = BEZEL; rr(ctx, cx - w / 2 - 14, cy - h / 2 - 22, w + 28, h + 44, 40); ctx.fill();
+    ctx.fillStyle = SCREEN_BG; rr(ctx, cx - w / 2, cy - h / 2, w, h, 26); ctx.fill();
+    ctx.fillStyle = BEZEL2; rr(ctx, cx - 40, cy - h / 2 + 8, 80, 12, 6); ctx.fill();
+    return { x: cx - w / 2, y: cy - h / 2, w, h };
+  };
+  // kisi ikon aplikasi generik di layar HP; mengembalikan posisi tiap ikon
+  const APPS = [["Kamera", "#2E7E9A"], ["Galeri", "#5FA8D3"], ["Pesan", "#2E9E5B"], ["Musik", "#8E6BBF"], ["Kalkulator", "#7B8B95"], ["Peta", "#F2B134"], ["Catatan", "#E0A23B"], ["Jam", "#D9443B"], ["Cuaca", "#4C9BE0"]];
+  D.appGrid = function (ctx, sc, opt = {}) {
+    const cols = 3, cell = sc.w / cols, out = [];
+    APPS.forEach(([name, col], i) => {
+      const r = Math.floor(i / cols), c = i % cols; const ax = sc.x + cell * c + cell / 2, ay = sc.y + 90 + r * (cell + 26);
+      const on = opt.active === name; const sz = cell * 0.56 * (on && opt.scale ? opt.scale : 1);
+      ctx.fillStyle = col; rr(ctx, ax - sz / 2, ay - sz / 2, sz, sz, sz * 0.24); ctx.fill();
+      if (on) { ctx.strokeStyle = C.accent; ctx.lineWidth = 6; ctx.stroke(); }
+      text(ctx, name, ax, ay + sz / 2 + 26, 20, { align: "center", weight: 700, color: C.ink2 });
+      out.push({ name, x: ax, y: ay });
+    });
+    return out;
+  };
+  // ujung jari yang menyentuh layar di (x,y); opt.press = sedang menekan (riak); opt.second = jari kedua
+  D.finger = function (ctx, x, y, opt = {}) {
+    const s = opt.s || 46;
+    ctx.save(); ctx.translate(x, y); ctx.rotate(opt.angle !== undefined ? opt.angle : 0.5);
+    ctx.fillStyle = "rgba(0,0,0,0.10)"; ctx.beginPath(); ctx.ellipse(0, s * 0.25, s * 0.7, s * 0.4, 0, 0, Math.PI * 2); ctx.fill();
+    ctx.fillStyle = C.skin; rr(ctx, -s * 0.5, -s * 0.3, s, s * 3.2, s * 0.5); ctx.fill();
+    ctx.fillStyle = "#F7D9BE"; ctx.beginPath(); ctx.ellipse(0, s * 0.1, s * 0.3, s * 0.42, 0, 0, Math.PI * 2); ctx.fill();
+    ctx.restore();
+    if (opt.press) { ctx.fillStyle = "rgba(46,126,154,0.25)"; ctx.beginPath(); ctx.arc(x, y, s * 0.8, 0, Math.PI * 2); ctx.fill(); }
+  };
+  // menu konteks (klik kanan / tekan lama)
+  D.menu = function (ctx, x, y, items, opt = {}) {
+    const w = opt.w || 300, rowH = 52; ctx.fillStyle = "#FFFFFF"; rr(ctx, x, y, w, rowH * items.length + 16, 12); ctx.fill(); ctx.strokeStyle = "#B7C4CC"; ctx.lineWidth = 3; ctx.stroke();
+    ctx.fillStyle = "rgba(0,0,0,0.08)";
+    items.forEach((it, i) => { if (opt.active === i) { ctx.fillStyle = "#FFF3D6"; rr(ctx, x + 8, y + 8 + i * rowH, w - 16, rowH, 8); ctx.fill(); } text(ctx, it, x + 24, y + 8 + i * rowH + 36, 28, { weight: 700 }); });
+  };
+  // kartu keterangan kecil di kanan/bawah adegan
+  D.note = function (ctx, x, y, w, s, opt = {}) { card(ctx, x, y, w, opt.h || 96, { fill: opt.fill || "#FFF3D6", stroke: opt.stroke || C.accent, lw: 4 }); text(ctx, s, x + w / 2, y + (opt.h || 96) / 2 + 14, opt.size || 36, { align: "center", weight: 900, color: opt.color || C.ink }); };
+
+  K.devices = D;
+})(typeof window !== "undefined" ? window : globalThis);
+
+/* Layar: pembantu gambar bersama untuk video simulasi (episodes/sim/...).
+   Aplikasi generik digambar dengan kode, tanpa logo atau tampilan merek: jendela aplikasi, lembar kerja (bilah rumus + kisi sel),
+   pointer mouse dengan efek klik, tombol keyboard, label penunjuk, pembesaran, dan penerjemah "aksi" (klik, ketik, tekan tombol)
+   supaya satu adegan bisa memperagakan beberapa langkah berurutan. Muat setelah kiko-core.js. */
+(function (global) {
+  const K = global.Kiko, H = K.helpers, C = K.C;
+  const { rr, text, ease, clamp, lerp } = H;
+  const L = {};
+  const UI = { frame: "#C9D4DB", bar: "#EEF2F5", menuInk: "#3D4B55", grid: "#DDE5EA", head: "#EEF2F5", headInk: "#5B6B76",
+               select: "#1A73C8", selectBg: "rgba(26,115,200,0.10)", formula: "#1F5A6E", window: "#FFFFFF" };
+  L.UI = UI;
+
+  // ---------- jendela aplikasi ----------
+  // opt: title, menus [..], tools (true = deretan ikon sederhana). Mengembalikan area isi {x, y, w, h}.
+  L.window = function (ctx, x, y, w, h, opt = {}) {
+    ctx.save(); ctx.shadowColor = "rgba(31,42,51,0.18)"; ctx.shadowBlur = 30; ctx.shadowOffsetY = 10;
+    ctx.fillStyle = UI.window; rr(ctx, x, y, w, h, 16); ctx.fill(); ctx.restore();
+    ctx.strokeStyle = UI.frame; ctx.lineWidth = 2; rr(ctx, x, y, w, h, 16); ctx.stroke();
+    ctx.save(); rr(ctx, x, y, w, h, 16); ctx.clip();
+    ctx.fillStyle = UI.bar; ctx.fillRect(x, y, w, 46);
+    ["#E5675F", "#F2B134", "#4CB46A"].forEach((c, i) => { ctx.fillStyle = c; ctx.beginPath(); ctx.arc(x + 28 + i * 26, y + 23, 8, 0, Math.PI * 2); ctx.fill(); });
+    text(ctx, opt.title || "Aplikasi", x + w / 2, y + 31, 22, { align: "center", weight: 700, color: UI.menuInk });
+    let cy = y + 46;
+    if (opt.menus) {
+      ctx.fillStyle = "#FFFFFF"; ctx.fillRect(x, cy, w, 40);
+      let mx = x + 24; opt.menus.forEach((m, i) => {
+        const on = opt.menuOn === m; ctx.font = `600 21px Inter`; const mw = ctx.measureText(m).width + 24;
+        if (on) { ctx.fillStyle = "#DCE9F7"; rr(ctx, mx - 8, cy + 5, mw, 30, 6); ctx.fill(); }
+        text(ctx, m, mx + 4, cy + 27, 21, { weight: 600, color: on ? UI.select : UI.menuInk }); mx += mw + 6;
+      });
+      cy += 40;
+    }
+    if (opt.tools) {
+      ctx.fillStyle = "#F7F9FA"; ctx.fillRect(x, cy, w, 44);
+      const icons = opt.tools === true ? ["💾", "↶", "↷", "B", "I", "Σ", "%"] : opt.tools;
+      icons.forEach((ic, i) => { const bx = x + 20 + i * 52; ctx.fillStyle = "#FFFFFF"; rr(ctx, bx, cy + 6, 40, 32, 6); ctx.fill(); ctx.strokeStyle = "#E1E7EB"; ctx.lineWidth = 1.5; rr(ctx, bx, cy + 6, 40, 32, 6); ctx.stroke();
+        text(ctx, ic, bx + 20, cy + 29, ic.length > 1 ? 18 : 20, { align: "center", weight: 800, color: UI.menuInk }); });
+      cy += 44;
+    }
+    ctx.strokeStyle = UI.grid; ctx.lineWidth = 1.5; ctx.beginPath(); ctx.moveTo(x, cy); ctx.lineTo(x + w, cy); ctx.stroke();
+    ctx.restore();
+    return { x, y: cy, w, h: y + h - cy };
+  };
+
+  // ---------- lembar kerja ----------
+  const COLS = "ABCDEFGHIJ";
+  L.col = c => COLS.indexOf(c);
+  // st: { cells: {A1: {v, f?}} | {A1: "teks"}, active: "B3", edit: {addr, text} (sedang diketik), range: ["B2","B6"] (sorotan rentang),
+  //       copy: ["D2","D6"] (bingkai putus-putus), changed: [alamat] (hijau sesaat), cols: 6, rows: 8, cw: 190 | {A: 170, ...}, rh: 50,
+  //       showFormulas: false, handleHover: false }
+  // Mengembalikan geometri: {cell(addr), handle(addr), nameBox, fx, bottom}
+  L.sheet = function (ctx, area, st = {}) {
+    const x = area.x, y = area.y, cols = st.cols || 6, rows = st.rows || 8, rh = st.rh || 50, hw = 60;
+    const cwOf = c => typeof st.cw === "object" ? (st.cw[COLS[c]] || 180) : (st.cw || 180);
+    const colX = c => { let px = x + hw; for (let i = 0; i < c; i++) px += cwOf(i); return px; };
+    const gridW = colX(cols) - x;
+    // bilah rumus
+    const fy = y + 10; const active = st.edit ? st.edit.addr : st.active;
+    const cell0 = active && L.get(st.cells, active);
+    ctx.fillStyle = "#FFFFFF"; rr(ctx, x + 12, fy, 120, 48, 8); ctx.fill(); ctx.strokeStyle = UI.frame; ctx.lineWidth = 2; rr(ctx, x + 12, fy, 120, 48, 8); ctx.stroke();
+    text(ctx, active || "", x + 72, fy + 33, 24, { align: "center", weight: 800, color: UI.menuInk });
+    const fxW = Math.max(400, gridW - 150);
+    ctx.fillStyle = "#FFFFFF"; rr(ctx, x + 144, fy, fxW, 48, 8); ctx.fill(); ctx.strokeStyle = st.fxFocus ? UI.select : UI.frame; ctx.lineWidth = st.fxFocus ? 3 : 2; rr(ctx, x + 144, fy, fxW, 48, 8); ctx.stroke();
+    text(ctx, "fx", x + 162, fy + 32, 21, { weight: 800, color: "#8A99A3" }); ctx.fillStyle = UI.grid; ctx.fillRect(x + 196, fy + 10, 2, 28);
+    const fxText = st.edit ? st.edit.text : (cell0 ? (cell0.f || L.show(cell0.v)) : "");
+    text(ctx, fxText, x + 212, fy + 33, 25, { weight: 700, color: (st.edit ? st.edit.text : cell0 && cell0.f) && String(fxText).startsWith("=") ? UI.formula : C.ink });
+    if (st.edit && st.caret) { ctx.font = "700 25px Inter"; const cw = ctx.measureText(st.edit.text).width; ctx.fillStyle = C.ink; ctx.fillRect(x + 214 + cw, fy + 11, 2.5, 27); }
+    // kisi
+    const gy = fy + 66; const H0 = rh * (rows + 1);
+    ctx.fillStyle = "#FFFFFF"; ctx.fillRect(x, gy, gridW, H0);
+    ctx.fillStyle = UI.head; ctx.fillRect(x, gy, gridW, rh); ctx.fillRect(x, gy, hw, H0);
+    const ac = active ? { c: L.col(active[0]), r: parseInt(active.slice(1)) } : null;
+    for (let c = 0; c < cols; c++) {
+      if (ac && ac.c === c) { ctx.fillStyle = "#D5E3F3"; ctx.fillRect(colX(c), gy, cwOf(c), rh); }
+      text(ctx, COLS[c], colX(c) + cwOf(c) / 2, gy + rh / 2 + 8, 22, { align: "center", weight: 700, color: ac && ac.c === c ? UI.select : UI.headInk });
+    }
+    for (let r = 1; r <= rows; r++) {
+      if (ac && ac.r === r) { ctx.fillStyle = "#D5E3F3"; ctx.fillRect(x, gy + rh * r, hw, rh); }
+      text(ctx, String(r), x + hw / 2, gy + rh * r + rh / 2 + 8, 22, { align: "center", weight: 700, color: ac && ac.r === r ? UI.select : UI.headInk });
+    }
+    const geo = {
+      cell(addr) { const c = L.col(addr[0]), r = parseInt(addr.slice(1)); const cx = colX(c), cy = gy + rh * r; return { x: cx, y: cy, w: cwOf(c), h: rh, cx: cx + cwOf(c) / 2, cy: cy + rh / 2 }; },
+      handle(addr) { const q = this.cell(addr); return { x: q.x + q.w - 1, y: q.y + q.h - 1 }; },
+      colLine(c) { return { x: colX(c), y: gy + rh / 2 }; },
+      nameBox: { x: x + 72, y: fy + 24 }, fx: { x: x + 212, y: fy + 24 }, bottom: gy + H0, right: x + gridW, top: gy
+    };
+    // sorotan rentang
+    if (st.range) { const a = geo.cell(st.range[0]), b = geo.cell(st.range[1]); ctx.fillStyle = UI.selectBg; ctx.fillRect(a.x, a.y, b.x + b.w - a.x, b.y + b.h - a.y); }
+    (st.changed || []).forEach(addr => { const q = geo.cell(addr); ctx.fillStyle = C.goodBg; ctx.fillRect(q.x + 1, q.y + 1, q.w - 2, q.h - 2); });
+    (st.marks || []).forEach(([addr, color]) => { const q = geo.cell(addr); ctx.fillStyle = color; ctx.fillRect(q.x + 1, q.y + 1, q.w - 2, q.h - 2); });
+    // garis kisi
+    ctx.strokeStyle = UI.grid; ctx.lineWidth = 1.5;
+    for (let r = 0; r <= rows + 1; r++) { ctx.beginPath(); ctx.moveTo(x, gy + rh * r); ctx.lineTo(x + gridW, gy + rh * r); ctx.stroke(); }
+    for (let c = 0; c <= cols; c++) { ctx.beginPath(); ctx.moveTo(colX(c), gy); ctx.lineTo(colX(c), gy + H0); ctx.stroke(); }
+    ctx.beginPath(); ctx.moveTo(x, gy); ctx.lineTo(x, gy + H0); ctx.stroke();
+    // isi sel
+    Object.keys(st.cells || {}).forEach(addr => {
+      const c = L.col(addr[0]), r = parseInt(addr.slice(1)); if (c < 0 || c >= cols || r < 1 || r > rows) return;
+      if (st.edit && st.edit.addr === addr) return;
+      const v = L.get(st.cells, addr); const q = geo.cell(addr);
+      const shown = st.showFormulas && v.f ? v.f : L.show(v.v);
+      const isNum = typeof v.v === "number" && !(st.showFormulas && v.f);
+      let shownFit = shown; if (isNum) { ctx.font = "600 25px Inter"; if (ctx.measureText(shown).width > q.w - 20) shownFit = "#".repeat(Math.max(2, Math.floor((q.w - 20) / 16))); }
+      ctx.save(); ctx.beginPath(); ctx.rect(q.x + 2, q.y, q.w - 4, q.h); ctx.clip();
+      text(ctx, shownFit, isNum ? q.x + q.w - 14 : q.x + 12, q.y + q.h / 2 + 9, 25, { align: isNum ? "right" : "left", weight: v.bold ? 800 : 600, color: v.color || ((st.changed || []).includes(addr) ? C.good : C.ink) });
+      ctx.restore();
+    });
+    // sel yang sedang diketik
+    if (st.edit) { const q = geo.cell(st.edit.addr); ctx.fillStyle = "#FFFFFF"; ctx.fillRect(q.x + 2, q.y + 2, q.w - 4, q.h - 4);
+      const isF = String(st.edit.text).startsWith("=");
+      text(ctx, st.edit.text, q.x + 12, q.y + q.h / 2 + 9, 25, { weight: 600, color: isF ? UI.formula : C.ink });
+      if (st.caret) { ctx.font = "600 25px Inter"; const w = ctx.measureText(st.edit.text).width; ctx.fillStyle = C.ink; ctx.fillRect(q.x + 14 + w, q.y + 11, 2.5, q.h - 22); } }
+    // rujukan rumus berwarna saat mengetik rumus
+    (st.refs || []).forEach(([addr, color]) => { const q = geo.cell(addr); ctx.strokeStyle = color; ctx.lineWidth = 3; ctx.setLineDash([]); ctx.strokeRect(q.x + 2, q.y + 2, q.w - 4, q.h - 4); });
+    // bingkai salin putus-putus
+    if (st.copy) { const a = geo.cell(st.copy[0]), b = geo.cell(st.copy[1]); ctx.strokeStyle = UI.select; ctx.lineWidth = 3; ctx.setLineDash([10, 7]); ctx.lineDashOffset = -(st.dash || 0); ctx.strokeRect(a.x + 2, a.y + 2, b.x + b.w - a.x - 4, b.y + b.h - a.y - 4); ctx.setLineDash([]); }
+    // sel aktif + gagang isi
+    if (active && !st.edit) { const q = geo.cell(active); const q2 = st.selTo ? geo.cell(st.selTo) : q;
+      ctx.strokeStyle = UI.select; ctx.lineWidth = 4; ctx.strokeRect(q.x + 1, q.y + 1, q2.x + q2.w - q.x - 2, q2.y + q2.h - q.y - 2);
+      const hx = q2.x + q2.w - 1, hy = q2.y + q2.h - 1; const s = st.handleHover ? 13 : 10;
+      ctx.fillStyle = "#FFFFFF"; ctx.fillRect(hx - s / 2 - 2, hy - s / 2 - 2, s + 4, s + 4); ctx.fillStyle = UI.select; ctx.fillRect(hx - s / 2, hy - s / 2, s, s); }
+    else if (st.edit) { const q = geo.cell(st.edit.addr); ctx.strokeStyle = UI.select; ctx.lineWidth = 4; ctx.strokeRect(q.x + 1, q.y + 1, q.w - 2, q.h - 2); }
+    return geo;
+  };
+  L.get = (cells, addr) => { const v = (cells || {})[addr]; return v == null ? { v: "" } : (typeof v === "object" ? v : { v }); };
+  L.show = v => typeof v === "number" ? (Number.isInteger(v) ? String(v) : v.toLocaleString("id-ID", { maximumFractionDigits: 2 })) : (v == null ? "" : String(v));
+
+  // ---------- pointer mouse ----------
+  // kind: "arrow" | "plus" (tanda tambah tipis gagang isi) | "text"; click: 0..1 (efek denyut), down: tombol ditahan
+  L.cursor = function (ctx, x, y, opt = {}) {
+    const kind = opt.kind || "arrow";
+    if (opt.click > 0 && opt.click < 1) { const u = opt.click; ctx.strokeStyle = `rgba(242,177,52,${1 - u})`; ctx.lineWidth = 5; ctx.beginPath(); ctx.arc(x, y, 12 + u * 34, 0, Math.PI * 2); ctx.stroke(); }
+    if (opt.down) { ctx.fillStyle = "rgba(242,177,52,0.35)"; ctx.beginPath(); ctx.arc(x, y, 18, 0, Math.PI * 2); ctx.fill(); }
+    ctx.save(); ctx.translate(x, y);
+    if (kind === "plus") {
+      ctx.strokeStyle = "#FFFFFF"; ctx.lineWidth = 7; ctx.beginPath(); ctx.moveTo(-16, 0); ctx.lineTo(16, 0); ctx.moveTo(0, -16); ctx.lineTo(0, 16); ctx.stroke();
+      ctx.strokeStyle = C.ink; ctx.lineWidth = 3; ctx.beginPath(); ctx.moveTo(-15, 0); ctx.lineTo(15, 0); ctx.moveTo(0, -15); ctx.lineTo(0, 15); ctx.stroke();
+    } else if (kind === "text") {
+      ctx.strokeStyle = "#FFFFFF"; ctx.lineWidth = 6; ctx.beginPath(); ctx.moveTo(0, -16); ctx.lineTo(0, 16); ctx.stroke();
+      ctx.strokeStyle = C.ink; ctx.lineWidth = 2.5; ctx.beginPath(); ctx.moveTo(-6, -16); ctx.lineTo(6, -16); ctx.moveTo(0, -16); ctx.lineTo(0, 16); ctx.moveTo(-6, 16); ctx.lineTo(6, 16); ctx.stroke();
+    } else {
+      const s = opt.size || 1.25; ctx.scale(s, s);
+      ctx.beginPath(); ctx.moveTo(0, 0); ctx.lineTo(0, 30); ctx.lineTo(8, 23); ctx.lineTo(13, 35); ctx.lineTo(18, 33); ctx.lineTo(13, 21); ctx.lineTo(23, 21); ctx.closePath();
+      ctx.fillStyle = "#FFFFFF"; ctx.fill(); ctx.strokeStyle = C.ink; ctx.lineWidth = 2.2; ctx.lineJoin = "round"; ctx.stroke();
+    }
+    ctx.restore();
+  };
+
+  // ---------- tombol keyboard ----------
+  // keys: ["Enter"] atau ["Ctrl", "S"]; press: 0..1 (tombol tertekan di tengahnya)
+  L.keys = function (ctx, x, y, keys, opt = {}) {
+    const size = opt.size || 30; let px = x;
+    const ws = keys.map(k => { ctx.font = `800 ${size}px Inter`; return Math.max(size * 2.1, ctx.measureText(k).width + size * 1.2); });
+    const total = ws.reduce((a, b) => a + b, 0) + (keys.length - 1) * 46;
+    if (opt.align === "center") px = x - total / 2;
+    const down = opt.press > 0.15 && opt.press < 0.75;
+    keys.forEach((k, i) => {
+      const w = ws[i], h = size * 2.1, dy = down ? 5 : 0;
+      ctx.fillStyle = "#A9B6BE"; rr(ctx, px, y + 6, w, h, 12); ctx.fill();
+      ctx.fillStyle = down ? "#FFF3D6" : "#FFFFFF"; rr(ctx, px, y + dy, w, h, 12); ctx.fill(); ctx.strokeStyle = down ? C.accent : "#9AA8B1"; ctx.lineWidth = 2.5; rr(ctx, px, y + dy, w, h, 12); ctx.stroke();
+      text(ctx, k, px + w / 2, y + dy + h / 2 + size * 0.36, size, { align: "center", weight: 800, color: C.ink });
+      px += w; if (i < keys.length - 1) { text(ctx, "+", px + 23, y + h / 2 + size * 0.36, size, { align: "center", weight: 900, color: C.ink2 }); px += 46; }
+    });
+    return total;
+  };
+
+  // ---------- label penunjuk ----------
+  // label kotak dengan garis ke titik (tx, ty)
+  L.callout = function (ctx, x, y, s, tx, ty, opt = {}) {
+    const size = opt.size || 26; ctx.font = `800 ${size}px Inter`; const lines = H.wrap(ctx, s, size, 800, opt.maxW || 420);
+    const w = Math.max(...lines.map(l => ctx.measureText(l).width)) + 36, h = lines.length * size * 1.25 + 26;
+    if (tx != null) { ctx.strokeStyle = opt.color || C.accentDark; ctx.lineWidth = 3; ctx.beginPath(); ctx.moveTo(x + w / 2, y + h / 2); ctx.lineTo(tx, ty); ctx.stroke(); ctx.fillStyle = opt.color || C.accentDark; ctx.beginPath(); ctx.arc(tx, ty, 7, 0, Math.PI * 2); ctx.fill(); }
+    ctx.fillStyle = opt.fill || "#FFF3D6"; rr(ctx, x, y, w, h, 12); ctx.fill(); ctx.strokeStyle = opt.color || C.accent; ctx.lineWidth = 3; rr(ctx, x, y, w, h, 12); ctx.stroke();
+    lines.forEach((ln, i) => text(ctx, ln, x + 18, y + 13 + size + i * size * 1.25, size, { weight: 800, color: opt.ink || C.ink }));
+    return { w, h };
+  };
+
+  // ---------- pembesaran ----------
+  // zoom(ctx, px, py, s, fn): gambar fn() dengan pembesaran s berpusat di (px, py) yang dipindah ke (qx, qy)
+  L.zoom = function (ctx, px, py, s, fn, qx = px, qy = py) {
+    ctx.save(); ctx.translate(qx, qy); ctx.scale(s, s); ctx.translate(-px, -py); fn(); ctx.restore();
+  };
+
+  // ---------- penerjemah aksi ----------
+  // steps: daftar aksi berurutan, masing-masing punya durasi relatif "d" (dibagi rata ke "span" detik):
+  //   {move: "B3"} pointer bergerak ke tengah sel · {click: "B3"} klik (memilih sel) · {type: "Bakso", to: "A1"} mengetik ke sel
+  //   {key: "Tab"|"Enter", commit: true} tombol: menyimpan ketikan, pilihan pindah · {set: {A1: ...}} ubah isi sel langsung
+  //   {drag: ["D2", "D6"]} drag gagang isi · {wait: 1}
+  // Hasil: state lembar kerja + posisi pointer + tombol yang sedang tampil, untuk waktu lokal l.
+  L.play = function (base, steps, l, span, geoFn) {
+    const st = { cells: { ...(base.cells || {}) }, active: base.active, edit: null, caret: true, copy: null, refs: [], range: null, changed: [] };
+    const total = steps.reduce((a, s) => a + (s.d || 1), 0); const unit = span / total;
+    let t0 = 0, ptr = base.pointer ? { ...base.pointer } : null, key = null, click = 0, kind = "arrow", down = false;
+    for (const s of steps) {
+      const d = (s.d || 1) * unit, u = clamp((l - t0) / d, 0, 1); if (l < t0) break;
+      const target = a => geoFn().cell(a);
+      if (s.move || s.click) { const q = target(s.move || s.click); const to = { x: q.x + q.w * 0.62, y: q.y + q.h * 0.6 }; const from = ptr || to; const m = ease(clamp(u / 0.6, 0, 1)); ptr = { x: lerp(from.x, to.x, m), y: lerp(from.y, to.y, m) }; kind = "arrow";
+        if (s.tap && u >= 0.6 && u < 1) click = clamp((u - 0.6) / 0.4, 0, 0.99);
+        if (s.click && u >= 0.6) { click = clamp((u - 0.6) / 0.4, 0, 0.99); st.active = s.click; if (st.edit) { st.cells[st.edit.addr] = s.editValue || st.edit.text; st.edit = null; } } if (u >= 1) click = 0; }
+      if (s.type != null) { const addr = s.to || st.active; const n = Math.round(s.type.length * clamp(u / 0.9, 0, 1)); st.edit = { addr, text: (s.prefix || "") + s.type.slice(0, n) }; st.active = addr; st.caret = Math.floor(l * 2.2) % 2 === 0 || u < 1;
+        if (s.refs) st.refs = s.refs.filter(r => n >= r[2]).map(r => [r[0], r[1]]); }
+      if (s.key) { key = u < 1 ? { keys: [].concat(s.key), press: u } : null; if (u >= 0.45 && s.commit && st.edit) { st.cells[st.edit.addr] = s.value != null ? s.value : st.edit.text; st.edit = null; st.refs = []; st.active = s.next || st.active; } }
+      if (s.set && u >= 0.5) { Object.assign(st.cells, s.set); if (s.flash) st.changed = Object.keys(s.set); }
+      if (s.drag) { const g = geoFn(); const a = g.handle(s.drag[0]), b = g.handle(s.drag[1]); kind = "plus";
+        const from = ptr || a; const m1 = ease(clamp(u / 0.25, 0, 1)); const m2 = ease(clamp((u - 0.3) / 0.55, 0, 1));
+        ptr = u < 0.3 ? { x: lerp(from.x, a.x, m1), y: lerp(from.y, a.y, m1) } : { x: lerp(a.x, b.x, m2), y: lerp(a.y, b.y, m2) }; down = u >= 0.25 && u < 0.88;
+        st.active = s.drag[0]; if (down) { st.dragTo = u < 0.3 ? s.drag[0] : (m2 > 0.98 ? s.drag[1] : null); st.dragFrac = m2; st.dragSpan = s.drag; }
+        if (u >= 0.88) { Object.assign(st.cells, s.fill || {}); st.selTo = s.drag[1]; st.changed = Object.keys(s.fill || {}); } }
+      if (s.hover) { const g = geoFn(); const h = g.handle(s.hover); const from = ptr || h; const m = ease(clamp(u / 0.7, 0, 1)); ptr = { x: lerp(from.x, h.x, m), y: lerp(from.y, h.y, m) }; kind = u > 0.7 ? "plus" : "arrow"; st.handleHover = u > 0.7; }
+      if (s.select) { st.active = s.select[0]; st.selTo = s.select[1]; }
+      if (s.state) Object.assign(st, s.state);
+      t0 += d;
+    }
+    if (st.selTo && st.selTo === st.active) st.selTo = null;
+    return { st, ptr, key, click, kind, down };
+  };
+
+  K.layar = L;
+})(typeof window !== "undefined" ? window : globalThis);
+
+/* Pembantu gambar D9.1: papan memori (kotak variabel bernama), daftar bernomor (larik), kotak kardus unplugged, kartu angka, gelas air,
+   penanda putaran. Muat setelah kiko-core.js, kiko-devices.js, dan alur.js (D8.3). */
+(function (global) {
+  const K = global.Kiko, H = K.helpers, C = K.C;
+  const { rr, text, wrap, card, clamp } = H;
+  const Q = {};
+  // papan memori: vars = [{name, value, changed, hl}]
+  Q.board = function (ctx, x, y, w, vars, opt = {}) {
+    const bw = opt.bw || 180, bh = opt.bh || 120, gap = 24; const h = opt.h || bh + 90;
+    card(ctx, x, y, w, h, { fill: "#1F2A33", r: 18 }); text(ctx, opt.title || "PAPAN MEMORI", x + 20, y + 36, 22, { weight: 900, color: "#8FD0E6" });
+    vars.forEach((v, i) => { const bx = x + 20 + i * (bw + gap), by = y + 56; ctx.fillStyle = v.changed ? "#FFF3D6" : "#FFFFFF"; rr(ctx, bx, by, bw, bh, 12); ctx.fill(); ctx.strokeStyle = v.changed ? C.accent : v.hl ? C.kikoLight : "#4A5A66"; ctx.lineWidth = v.changed || v.hl ? 5 : 2; rr(ctx, bx, by, bw, bh, 12); ctx.stroke(); ctx.fillStyle = C.kiko; rr(ctx, bx, by, bw, 34, 12); ctx.fill(); ctx.fillRect(bx, by + 17, bw, 17); text(ctx, v.name, bx + bw / 2, by + 24, 20, { align: "center", weight: 900, color: "#fff" }); const vs = v.value == null ? "?" : String(v.value); text(ctx, vs, bx + bw / 2, by + bh / 2 + 30, Math.min(44, bw * 0.3, (bw - 20) / (vs.length * 0.72)), { align: "center", weight: 900, color: v.changed ? C.accentDark : C.ink }); if (v.old != null && v.changed) text(ctx, "tadi " + v.old, bx + bw / 2, by + bh - 8, 16, { align: "center", weight: 700, color: C.ink2 }); });
+  };
+  // daftar bernomor (larik): values[], opt.name, hl indeks (1-based), opt.w lebar sel
+  Q.list = function (ctx, x, y, values, opt = {}) {
+    const w = opt.w || 110, h = opt.h || 64;
+    if (opt.name) text(ctx, opt.name, x, y - 14, 24, { weight: 900, color: C.kiko });
+    values.forEach((v, i) => { const cx = x + i * (w + 8); const on = opt.hl === i + 1; const done = opt.done != null && i + 1 <= opt.done; ctx.fillStyle = on ? "#FFF3D6" : done ? C.goodBg : "#FFFFFF"; rr(ctx, cx, y, w, h, 10); ctx.fill(); ctx.strokeStyle = on ? C.accent : "#B7C4CC"; ctx.lineWidth = on ? 5 : 3; rr(ctx, cx, y, w, h, 10); ctx.stroke(); text(ctx, String(v), cx + w / 2, y + h / 2 + 11, Math.min(30, (w - 16) / (String(v).length * 0.72)), { align: "center", weight: 900 }); text(ctx, "nomor " + (i + 1), cx + w / 2, y + h + 26, 18, { align: "center", weight: 800, color: on ? C.accentDark : C.ink2 }); });
+  };
+  // kotak kardus berlabel dengan kartu angka
+  Q.box = function (ctx, cx, cy, s, label, value, opt = {}) {
+    ctx.fillStyle = "#C98A57"; rr(ctx, cx - s / 2, cy - s * 0.35, s, s * 0.7, 10); ctx.fill(); ctx.fillStyle = "#A4653A"; rr(ctx, cx - s / 2 - 8, cy - s * 0.45, s + 16, s * 0.14, 6); ctx.fill();
+    ctx.fillStyle = "#fff"; rr(ctx, cx - s * 0.3, cy - s * 0.2, s * 0.6, s * 0.2, 6); ctx.fill(); text(ctx, label, cx, cy - s * 0.06, 22, { align: "center", weight: 900 });
+    if (value != null) { ctx.fillStyle = opt.changed ? "#FFF3D6" : "#FFF9E0"; ctx.strokeStyle = opt.changed ? C.accent : "#E0B04B"; ctx.lineWidth = 3; rr(ctx, cx - s * 0.2, cy + s * 0.02, s * 0.4, s * 0.28, 6); ctx.fill(); ctx.stroke(); text(ctx, String(value), cx, cy + s * 0.24, 30, { align: "center", weight: 900 }); }
+  };
+  Q.numCard = function (ctx, x, y, v, opt = {}) { ctx.fillStyle = opt.fill || "#FFF9E0"; ctx.strokeStyle = opt.stroke || "#E0B04B"; ctx.lineWidth = 3; rr(ctx, x, y, 70, 90, 8); ctx.fill(); ctx.stroke(); text(ctx, String(v), x + 35, y + 58, 30, { align: "center", weight: 900 }); };
+  // gelas air: level 0..1
+  Q.glass = function (ctx, cx, baseY, w, h, level, opt = {}) {
+    ctx.fillStyle = "#5FA8D3"; ctx.fillRect(cx - w / 2 + 6, baseY - h * clamp(level, 0, 1) + 2, w - 12, h * clamp(level, 0, 1) - 2);
+    ctx.strokeStyle = C.ink2; ctx.lineWidth = 5; ctx.beginPath(); ctx.moveTo(cx - w / 2, baseY - h); ctx.lineTo(cx - w / 2, baseY); ctx.lineTo(cx + w / 2, baseY); ctx.lineTo(cx + w / 2, baseY - h); ctx.stroke();
+    if (opt.marks) for (let i = 1; i <= opt.marks; i++) { const my = baseY - h * i / opt.marks; ctx.strokeStyle = "#B7C4CC"; ctx.lineWidth = 2; ctx.beginPath(); ctx.moveTo(cx + w / 2 - 20, my); ctx.lineTo(cx + w / 2, my); ctx.stroke(); text(ctx, String(i), cx + w / 2 + 14, my + 8, 20, { weight: 800, color: C.ink2 }); }
+  };
+  // penanda putaran: n total, k aktif (1-based), label
+  Q.rounds = function (ctx, x, y, n, k, opt = {}) {
+    text(ctx, opt.label || "putaran", x, y - 12, 20, { weight: 800, color: C.ink2 });
+    for (let i = 1; i <= n; i++) { const cx = x + (i - 1) * 54 + 20; ctx.fillStyle = i < k ? C.good : i === k ? C.accent : "#E1E8E4"; ctx.beginPath(); ctx.arc(cx, y + 22, 20, 0, Math.PI * 2); ctx.fill(); text(ctx, String(i), cx, y + 30, 20, { align: "center", weight: 900, color: i <= k ? "#fff" : C.ink2 }); }
+  };
+  K.memori = Q;
+})(typeof window !== "undefined" ? window : globalThis);
+
+/* Pembantu gambar E.7: kotak tipe data, blok deklarasi, kartu operator, panel BACA/TULIS, bingkai fungsi dengan parameter
+   dan nilai balik, kode Python berdampingan. Gaya diagram Fase E. Muat setelah kiko-core.js, kiko-devices.js, alur.js. */
+(function (global) {
+  const K = global.Kiko, H = K.helpers, C = K.C;
+  const { rr, text, wrap, card, clamp } = H;
+  const Kd = {};
+  Kd.TYPES = [["integer", "#2E7E9A", "17, −3"], ["float", "#8E6BBF", "3,5"], ["string", "#2E9E5B", "\"Sinta\", \"0812…\""], ["boolean", "#B57A12", "benar / salah"]];
+  // kotak tipe: nama + contoh + kartu yang sudah masuk
+  Kd.typeBox = function (ctx, x, y, w, h, i, items = [], opt = {}) {
+    const [name, col, ex] = Kd.TYPES[i]; ctx.save(); if (opt.dim) ctx.globalAlpha = 0.2;
+    card(ctx, x, y, w, h, { fill: "#fff", stroke: col, lw: opt.on ? 6 : 3, r: 16 }); ctx.fillStyle = col; rr(ctx, x, y, w, 46, 16); ctx.fill(); ctx.fillRect(x, y + 23, w, 23); text(ctx, name, x + w / 2, y + 31, 24, { align: "center", weight: 900, color: "#fff" });
+    text(ctx, ex, x + w / 2, y + 78, 20, { align: "center", weight: 700, color: C.ink2 });
+    items.forEach((it, k) => { ctx.fillStyle = "#FFF9E0"; ctx.strokeStyle = "#E0B04B"; ctx.lineWidth = 2; rr(ctx, x + 16, y + 96 + k * 46, w - 32, 38, 8); ctx.fill(); ctx.stroke(); text(ctx, it, x + w / 2, y + 122 + k * 46, 22, { align: "center", weight: 900 }); });
+    ctx.restore();
+  };
+  // blok kode bergaya pseudocode ketat: lines [{t, ind, hl, kind:"kw"}]; kata kunci disorot otomatis
+  Kd.code = function (ctx, x, y, w, lines, opt = {}) {
+    const rh = opt.rh || 44, size = opt.size || 22; card(ctx, x, y, w, 50 + rh * lines.length, { fill: "#fff", stroke: "#B7C4CC", lw: 3, r: 14 });
+    text(ctx, opt.title || "PSEUDOCODE", x + 18, y + 32, 18, { weight: 900, color: C.ink2 });
+    const KW = /^(PROGRAM|DEKLARASI|ALGORITMA|FUNGSI|PROSEDUR|KEMBALIKAN|BACA|TULIS|UNTUK|SELAMA|JIKA|MAKA|LAINNYA|ULANGI|SAMPAI|DIV|MOD|DAN|ATAU|TIDAK|dari|sampai)$/;
+    lines.forEach((ln, i) => { const ly = y + 50 + i * rh; if (ln.hl) { ctx.fillStyle = "#FFF3D6"; rr(ctx, x + 8, ly + 2, w - 16, rh - 4, 8); ctx.fill(); } if (ln.bad) { ctx.fillStyle = C.badBg; rr(ctx, x + 8, ly + 2, w - 16, rh - 4, 8); ctx.fill(); }
+      text(ctx, String(i + 1), x + 30, ly + rh / 2 + 8, 16, { align: "center", weight: 800, color: C.muted });
+      let cx = x + 56 + (ln.ind || 0) * 34; (ln.t || "").split(/(\s+)/).forEach(tok => { if (!tok) return; const kw = KW.test(tok); const col = kw ? C.kiko : /^(integer|float|string|boolean|array)$/.test(tok) ? "#8E6BBF" : ln.bad ? C.bad : C.ink; text(ctx, tok, cx, ly + rh / 2 + 8, size, { weight: kw ? 900 : 700, color: col }); ctx.font = `${kw ? 900 : 700} ${size}px Inter, sans-serif`; cx += ctx.measureText(tok).width; }); });
+    return 50 + rh * lines.length;
+  };
+  // kartu operator
+  Kd.opCard = function (ctx, x, y, w, sym, name, ex, opt = {}) { ctx.save(); if (opt.dim) ctx.globalAlpha = 0.2; card(ctx, x, y, w, 110, { fill: opt.on ? "#FFF3D6" : C.bg2, stroke: opt.on ? C.accent : undefined, lw: 4, r: 14 }); text(ctx, sym, x + 20, y + 50, 30, { weight: 900, color: C.kiko }); text(ctx, name, x + 20, y + 84, 18, { weight: 800, color: C.ink2 }); text(ctx, ex, x + w - 20, y + 66, 22, { align: "right", weight: 900 }); ctx.restore(); };
+  // konsol: baris masukan/keluaran
+  Kd.console = function (ctx, x, y, w, lines, opt = {}) { card(ctx, x, y, w, 40 + lines.length * 40 + 20, { fill: "#1F2A33", r: 14 }); text(ctx, "LAYAR", x + 16, y + 28, 16, { weight: 900, color: "#8FD0E6" }); lines.forEach(([t, kind], i) => text(ctx, (kind === "in" ? "> " : "") + t, x + 20, y + 68 + i * 40, 24, { weight: 900, color: kind === "in" ? C.accent : "#fff" })); };
+  // bingkai pemanggilan fungsi: nama, param [[nama, nilai]], lokal, hasil
+  Kd.frame = function (ctx, x, y, w, name, params, opt = {}) {
+    const h = 70 + params.length * 44 + (opt.ret != null ? 60 : 20); card(ctx, x, y, w, h, { fill: "#F4F0FA", stroke: "#8E6BBF", lw: 4, r: 16 }); text(ctx, "frame: " + name, x + 18, y + 36, 20, { weight: 900, color: "#8E6BBF" });
+    params.forEach(([k, v], i) => { ctx.fillStyle = "#fff"; rr(ctx, x + 16, y + 52 + i * 44, w - 32, 36, 8); ctx.fill(); text(ctx, k + " (lokal)", x + 28, y + 76 + i * 44, 18, { weight: 800, color: C.ink2 }); text(ctx, String(v), x + w - 28, y + 77 + i * 44, 22, { align: "right", weight: 900 }); });
+    if (opt.ret != null) { ctx.fillStyle = C.goodBg; rr(ctx, x + 16, y + h - 52, w - 32, 36, 8); ctx.fill(); text(ctx, "KEMBALIKAN " + opt.ret, x + w / 2, y + h - 28, 20, { align: "center", weight: 900, color: C.good }); }
+    return h;
+  };
+  K.kode = Kd;
+})(typeof window !== "undefined" ? window : globalThis);
+
+/* Pembantu gambar F11.0: blok kode Python dengan pewarnaan kata kunci, konsol keluaran, kotak galat, tabel kebenaran,
+   kartu berdiri/duduk. Gaya diagram Fase F. Muat setelah kiko-core.js dan kiko-devices.js. */
+(function (global) {
+  const K = global.Kiko, H = K.helpers, C = K.C;
+  const { rr, text, wrap, card, clamp } = H;
+  const Py = {};
+  const KW = /^(if|else|elif|for|in|while|def|return|print|input|int|str|and|or|not|True|False|range|len)$/;
+  // blok kode python: lines [{t, hl, bad}] ; opt.title, rh, size
+  Py.code = function (ctx, x, y, w, lines, opt = {}) {
+    const rh = opt.rh || 44, size = opt.size || 22; card(ctx, x, y, w, 50 + rh * lines.length, { fill: "#1F2A33", r: 14 });
+    text(ctx, opt.title || "PYTHON", x + 18, y + 32, 16, { weight: 900, color: "#8FD0E6" });
+    lines.forEach((ln, i) => { const ly = y + 50 + i * rh; if (ln.hl) { ctx.fillStyle = "rgba(242,177,52,0.35)"; rr(ctx, x + 8, ly + 2, w - 16, rh - 4, 8); ctx.fill(); } if (ln.bad) { ctx.fillStyle = "rgba(217,68,59,0.45)"; rr(ctx, x + 8, ly + 2, w - 16, rh - 4, 8); ctx.fill(); }
+      text(ctx, String(i + 1), x + 30, ly + rh / 2 + 7, 15, { align: "center", weight: 800, color: "#7B8B95" });
+      const t = ln.t || ""; const lead = t.match(/^ */)[0].length; let cx = x + 56 + lead * 11; const body = t.slice(lead);
+      body.split(/(\s+|\(|\)|:|,|\[|\]|"[^"]*"|'[^']*')/).forEach(tok => { if (!tok) return; const kw = KW.test(tok); const str = /^["'].*["']$/.test(tok); const num = /^\d+$/.test(tok); const col = kw ? "#F2B134" : str ? "#A5D6A7" : num ? "#8FD0E6" : "#FFFFFF"; text(ctx, tok, cx, ly + rh / 2 + 7, size, { weight: kw ? 900 : 700, color: col }); ctx.font = `${kw ? 900 : 700} ${size}px Inter, sans-serif`; cx += ctx.measureText(tok).width; }); });
+    return 50 + rh * lines.length;
+  };
+  Py.console = function (ctx, x, y, w, lines, opt = {}) { const h = 40 + lines.length * 36 + 16; card(ctx, x, y, w, h, { fill: "#0E1418", stroke: "#4A5A66", lw: 3, r: 12 }); text(ctx, "LAYAR", x + 14, y + 26, 14, { weight: 900, color: "#8FD0E6" }); lines.forEach(([t, kind], i) => text(ctx, t, x + 16, y + 60 + i * 36, 20, { weight: 800, color: kind === "in" ? C.accent : kind === "err" ? "#FF8A80" : "#fff" })); return h; };
+  Py.error = function (ctx, x, y, w, title, lines) { card(ctx, x, y, w, 60 + lines.length * 30, { fill: C.badBg, stroke: C.bad, lw: 4, r: 12 }); text(ctx, "⚠ " + title, x + 16, y + 36, 22, { weight: 900, color: C.bad }); lines.forEach((s, i) => text(ctx, s, x + 16, y + 70 + i * 30, 18, { weight: 800, color: C.ink })); };
+  // tabel kebenaran: op "DAN"|"ATAU"; opt.hlRow
+  Py.truth = function (ctx, x, y, op, opt = {}) {
+    const rows = [[true, true], [true, false], [false, true], [false, false]]; const f = (a, b) => op === "DAN" ? a && b : a || b; const cw = 120, rh = 46;
+    card(ctx, x, y, cw * 3, rh * 5, { fill: "#fff", stroke: "#B7C4CC", lw: 3, r: 10 }); ctx.fillStyle = C.bg2; rr(ctx, x, y, cw * 3, rh, 10); ctx.fill(); ctx.fillRect(x, y + rh / 2, cw * 3, rh / 2);
+    ["A", "B", "A " + op + " B"].forEach((h, c) => text(ctx, h, x + c * cw + cw / 2, y + rh / 2 + 7, 18, { align: "center", weight: 900, color: C.ink2 }));
+    rows.forEach((r, i) => { const ry = y + rh * (i + 1); if (opt.hlRow === i) { ctx.fillStyle = "#FFF3D6"; ctx.fillRect(x + 2, ry, cw * 3 - 4, rh); } [r[0], r[1], f(r[0], r[1])].forEach((v, c) => text(ctx, v ? "benar" : "salah", x + c * cw + cw / 2, ry + rh / 2 + 7, 18, { align: "center", weight: c === 2 ? 900 : 700, color: v ? C.good : C.bad })); });
+  };
+  K.py = Py;
+})(typeof window !== "undefined" ? window : globalThis);
+
+/* Pembantu gambar F11.2: kamus pseudocode→Python, pseudocode dan Python berdampingan dengan baris sepasang,
+   kartu tipe data, pemeriksaan cabang if/elif/else, kartu PRIMM. Gaya diagram Fase F. Muat setelah kiko-core.js, kode.js, py.js. */
+(function (global) {
+  const K = global.Kiko, H = K.helpers, C = K.C;
+  const { rr, text, para, card, clamp } = H;
+  const T = {};
+  T.DICT = [["BACA x", "x = input()"], ["TULIS x", "print(x)"], ["x ← 5", "x = 5"], ["JIKA … MAKA", "if …:"], ["LAINNYA", "else:"], ["UNTUK tiap x dalam d", "for x in d:"], ["SELAMA …", "while …:"], ["FUNGSI f(a)", "def f(a):"], ["KEMBALIKAN x", "return x"]];
+  // kamus dua kolom; n = jumlah baris yang sudah tampil, hl = baris disorot
+  T.dict = function (ctx, x, y, w, rows, opt = {}) {
+    const rh = opt.rh || 46, n = opt.n == null ? rows.length : opt.n;
+    card(ctx, x, y, w, rh * (rows.length + 1) + 10, { fill: "#FFFDF5", stroke: "#E0B04B", lw: 3, r: 12 });
+    ctx.fillStyle = "#FFF3D6"; rr(ctx, x, y, w, rh, 12); ctx.fill(); ctx.fillRect(x, y + rh / 2, w, rh / 2);
+    text(ctx, "pseudocode", x + 20, y + rh / 2 + 8, 20, { weight: 900, color: C.ink2 }); text(ctx, "Python", x + w / 2 + 20, y + rh / 2 + 8, 20, { weight: 900, color: C.ink2 });
+    ctx.strokeStyle = "#E0B04B"; ctx.lineWidth = 2; ctx.beginPath(); ctx.moveTo(x + w / 2, y + rh); ctx.lineTo(x + w / 2, y + rh * (rows.length + 1)); ctx.stroke();
+    rows.forEach(([a, b], i) => { const ry = y + rh * (i + 1); if (i >= n) return; if (opt.hl === i) { ctx.fillStyle = "#FFF3D6"; ctx.fillRect(x + 2, ry, w - 4, rh); } text(ctx, a, x + 20, ry + rh / 2 + 8, opt.size || 22, { weight: 800, color: C.kiko }); text(ctx, b, x + w / 2 + 20, ry + rh / 2 + 8, opt.size || 22, { weight: 800, color: "#1F2A33" }); ctx.strokeStyle = "#F0E2B8"; ctx.beginPath(); ctx.moveTo(x + 8, ry + rh); ctx.lineTo(x + w - 8, ry + rh); ctx.stroke(); });
+  };
+  // berdampingan: ps = baris pseudocode [{t,ind}], py = baris python [{t}], pairs = [[iPs, iPy], ...]; opt.hl = indeks pasangan disorot
+  T.side = function (ctx, x, y, ps, py, opt = {}) {
+    const rh = opt.rh || 50, size = opt.size || 22, wl = opt.wl || 740, wr = opt.wr || 720, gap = opt.gap || 40;
+    const pair = opt.pairs && opt.hl != null ? opt.pairs[opt.hl] : null;
+    K.kode.code(ctx, x, y, wl, ps.map((p, i) => ({ ...p, hl: pair && pair[0] === i })), { rh, size });
+    K.py.code(ctx, x + wl + gap, y, wr, py.map((p, i) => ({ ...p, hl: pair && pair[1] === i })), { rh, size });
+    if (pair) { const y1 = y + 50 + pair[0] * rh + rh / 2, y2 = y + 50 + pair[1] * rh + rh / 2; ctx.strokeStyle = C.accent; ctx.lineWidth = 5; ctx.beginPath(); ctx.moveTo(x + wl + 4, y1); ctx.lineTo(x + wl + gap - 4, y2); ctx.stroke(); ctx.fillStyle = C.accent; ctx.beginPath(); ctx.arc(x + wl + gap - 4, y2, 7, 0, Math.PI * 2); ctx.fill(); }
+    return 50 + rh * Math.max(ps.length, py.length);
+  };
+  T.TYPES = [["int", "integer: bilangan bulat", "17, -3", "#2E7E9A"], ["float", "float: bilangan pecahan", "3.5", "#8E6BBF"], ["str", "string: teks", "\"Sinta\"", "#2E9E5B"], ["bool", "boolean: benar-salah", "True, False", "#B57A12"]];
+  T.typeCards = function (ctx, x, y, w, n, opt = {}) {
+    const cw = (w - 3 * 20) / 4; T.TYPES.forEach(([nm, id, ex, col], i) => { ctx.save(); if (i >= n) ctx.globalAlpha = 0.2; const cx = x + i * (cw + 20); card(ctx, cx, y, cw, 130, { fill: "#fff", stroke: col, lw: opt.on === i ? 6 : 3, r: 14 }); ctx.fillStyle = col; rr(ctx, cx, y, cw, 42, 14); ctx.fill(); ctx.fillRect(cx, y + 21, cw, 21); text(ctx, nm, cx + cw / 2, y + 30, 24, { align: "center", weight: 900, color: "#fff" }); text(ctx, id, cx + cw / 2, y + 76, 20, { align: "center", weight: 800, color: C.ink2 }); text(ctx, ex, cx + cw / 2, y + 110, 22, { align: "center", weight: 900 }); ctx.restore(); });
+  };
+  // kotak nilai bertipe di memori: {name, value, type, warn}
+  T.cell = function (ctx, x, y, w, v) {
+    const col = (T.TYPES.find(t => t[0] === v.type) || [0, 0, 0, "#4A5A66"])[3];
+    card(ctx, x, y, w, 110, { fill: v.warn ? C.badBg : v.changed ? "#FFF3D6" : "#fff", stroke: v.warn ? C.bad : v.changed ? C.accent : col, lw: 4, r: 12 });
+    text(ctx, v.name, x + 14, y + 30, 20, { weight: 800, color: C.ink2 }); ctx.fillStyle = col; rr(ctx, x + w - 74, y + 10, 64, 28, 8); ctx.fill(); text(ctx, v.type, x + w - 42, y + 30, 16, { align: "center", weight: 900, color: "#fff" });
+    text(ctx, v.value == null ? "–" : String(v.value), x + w / 2, y + 84, 30, { align: "center", weight: 900, color: v.warn ? C.bad : C.ink });
+  };
+  // pemeriksaan cabang: conds = [[teks kondisi, hasil benar/salah/null]], step = berapa kondisi sudah diperiksa, taken = indeks cabang yang dijalankan
+  T.branchCheck = function (ctx, x, y, w, conds, step, taken) {
+    conds.forEach(([t, ok], i) => { const ry = y + i * 86; const checked = i < step; const run = taken === i; const skip = checked && !run && taken != null && i > taken;
+      ctx.save(); if (taken != null && i > taken) ctx.globalAlpha = 0.25;
+      card(ctx, x, ry, w, 70, { fill: run ? C.goodBg : checked ? C.bg2 : "#fff", stroke: run ? C.good : checked ? "#B7C4CC" : "#D7E2DC", lw: run ? 5 : 3, r: 12 });
+      text(ctx, t, x + 20, ry + 44, 24, { weight: 900, color: "#1F2A33" });
+      if (checked && ok != null) text(ctx, ok ? "✓ benar, jalankan" : "✕ salah, lewati", x + w - 20, ry + 44, 22, { align: "right", weight: 900, color: ok ? C.good : C.bad });
+      ctx.restore(); });
+  };
+  T.PRIMM = [["P", "Predict · Tebak", "tulis dugaan output"], ["R", "Run · Jalankan", "bandingkan dengan dugaan"], ["I", "Investigate · Selidiki", "ubah satu angka, lihat bedanya"], ["M", "Modify · Ubah", "tambah satu fitur kecil"], ["M", "Make · Buat", "program versimu sendiri"]];
+  T.primm = function (ctx, x, y, n, opt = {}) {
+    const w = opt.w || 300; T.PRIMM.forEach(([ltr, t, s], i) => { ctx.save(); if (i >= n) ctx.globalAlpha = 0.2; const cx = x + i * (w + 20); const [en, id] = t.split(" · "); card(ctx, cx, y, w, 200, { fill: i === n - 1 ? "#FFF3D6" : C.bg2, stroke: i === n - 1 ? C.accent : undefined, lw: 4, r: 16 }); ctx.fillStyle = C.kiko; ctx.beginPath(); ctx.arc(cx + 44, y + 50, 28, 0, Math.PI * 2); ctx.fill(); text(ctx, ltr, cx + 44, y + 61, 30, { align: "center", weight: 900, color: "#fff" }); text(ctx, en, cx + 86, y + 44, 22, { weight: 900 }); text(ctx, id || "", cx + 86, y + 74, 20, { weight: 800, color: C.kiko }); para(ctx, s, cx + 20, y + 125, 22, w - 40, { weight: 700, color: C.ink2 }); ctx.restore(); });
+  };
+  K.terjemah = T;
+})(typeof window !== "undefined" ? window : globalThis);
+
+/* Adegan episode F11.2: Dari Pseudocode ke Kode. Gaya diagram Fase F. Muat setelah kiko-core.js, kiko-devices.js, memori.js, kode.js, py.js, terjemah.js. */
+(function (global) {
+  const K = global.Kiko, H = K.helpers, C = K.C, Mm = K.memori, Kd = K.kode, Py = K.py, T = K.terjemah, SCENES = K.SCENES;
+  const { text, para, card, kiko, kid, bubble, rr, ease, clamp, lerp, arrowIcon } = H;
+  const reveal = (l, t0, step, n) => clamp(Math.floor((l - t0) / step) + 1, 0, n);
+  const banner = (ctx, s, y = 745, w = 1000, opt = {}) => { card(ctx, 960 - w / 2, y, w, 80, { fill: opt.fill || "#FFF3D6", stroke: opt.stroke || C.accent, lw: 4 }); text(ctx, s, 960, y + 52, opt.size || 34, { align: "center", weight: 900, color: opt.color || C.accentDark }); };
+  const label = (ctx, s, x, y, opt = {}) => text(ctx, s, x, y, opt.size || 28, { align: "center", weight: 900, color: opt.color || C.accentDark });
+  const heading = (ctx, s, y = 230) => text(ctx, s, 960, y, 34, { align: "center", color: C.accentDark, weight: 800 });
+  const DAFTAR = [20000, 15000, 10000];
+  const FOR_PS = [{ t: "total ← 0" }, { t: "UNTUK tiap t dalam daftar:" }, { t: "total ← total + t", ind: 1 }, { t: "TULIS total" }];
+  const FOR_PY = [{ t: "total = 0" }, { t: "for t in daftar:" }, { t: "    total = total + t" }, { t: "print(total)" }];
+  const PROG = ["def hitung_saldo(daftar):", "    total = 0", "    for t in daftar:", "        total = total + t", "    return total", "daftar = []", 'jawaban = ""', 'while jawaban != "selesai":', '    jumlah = int(input("jumlah: "))', "    if jumlah <= 0:", '        print("ditolak")', "    else:", "        daftar.append(jumlah)", '    jawaban = input("lanjut/selesai? ")', 'print("saldo:", hitung_saldo(daftar))'];
+
+  Object.assign(SCENES, {
+    title_q(ctx, b, l) {
+      card(ctx, 120, 150, 1680, 740);
+      kiko(ctx, 280, 560, 170, 0, { mood: "happy" });
+      const n = reveal(l, 1.5, 1.5, 4);
+      [["📦", "variabel dan tipe", "saldo = 0"], ["🔀", "percabangan", "if … elif … else"], ["🔁", "perulangan", "for · while"], ["🧩", "fungsi", "def … return"]].forEach(([ic, t, s], i) => { ctx.save(); if (i >= n) ctx.globalAlpha = 0.2; const x = 520 + i * 310; card(ctx, x, 280, 290, 300, { fill: i === n - 1 ? "#FFF3D6" : C.bg2, stroke: i === n - 1 ? C.accent : undefined, lw: 3, r: 18 }); text(ctx, ic, x + 145, 380, 60, { align: "center" }); text(ctx, t, x + 145, 450, 26, { align: "center", weight: 900 }); text(ctx, s, x + 145, 500, 22, { align: "center", weight: 800, color: C.kiko }); ctx.restore(); });
+      if (n >= 4) banner(ctx, "pseudocode | Python | isi memori, berdampingan", 640, 1100);
+    },
+    prereq(ctx, b, l) {
+      card(ctx, 260, 200, 1400, 600);
+      text(ctx, "TONTON DULU", 960, 290, 34, { align: "center", color: C.accentDark, weight: 800 });
+      [["F11.0", "Jembatan Menuju Pemrograman"], ["F11.1", "Alur Pengembangan Program dan Produk Digital"]].forEach(([c, t], i) => { const x = 360 + i * 640; card(ctx, x, 340, 580, 280, { fill: C.bg2 }); text(ctx, "Episode " + c, x + 290, 430, 50, { align: "center", weight: 900 }); para(ctx, t, x + 290, 500, 28, 520, { align: "center", weight: 700, color: C.ink2 }); });
+      kiko(ctx, 1600, 760, 150, 0);
+    },
+    unplugged_kamus(ctx, b, l) {
+      card(ctx, 120, 150, 1680, 740); heading(ctx, "MAIN DULU TANPA KOMPUTER: KAMUS DUA KOLOM", 215);
+      const n = reveal(l, 1.5, 1.4, 9);
+      T.dict(ctx, 240, 260, 900, T.DICT, { n, hl: n - 1, rh: 48, size: 22 });
+      card(ctx, 1220, 300, 460, 200, { fill: "#FFF3D6", stroke: C.accent, lw: 3, r: 14 }); para(ctx, "✏️ tiap menemukan pasangan baru, tambahkan ke kamus", 1450, 370, 26, 400, { align: "center", weight: 900, color: C.accentDark });
+      if (n >= 9) { card(ctx, 1220, 540, 460, 150, { fill: C.bg2, r: 14 }); para(ctx, "kamus ini kamu pakai sepanjang episode dan proyekmu", 1450, 600, 24, 400, { align: "center", weight: 800, color: C.ink2 }); }
+    },
+    unplugged_tebak(ctx, b, l) {
+      card(ctx, 120, 150, 1680, 740); heading(ctx, "SEBELUM MENJALANKAN: TEBAK DULU", 215);
+      const n = reveal(l, 1.5, 2.4, 4);
+      Py.code(ctx, 240, 270, 520, [{ t: "x = 5" }, { t: "x = x + 2" }, { t: "x = x * 2", hl: n >= 4 }, { t: "print(x)" }], { rh: 48, size: 24 });
+      ctx.save(); if (n < 1) ctx.globalAlpha = 0.2; card(ctx, 820, 270, 380, 150, { fill: "#FFFDF5", stroke: "#E0B04B", lw: 3, r: 14 }); text(ctx, "✏️ tebakanku", 1010, 320, 22, { align: "center", weight: 900, color: C.ink2 }); text(ctx, "12", 1010, 390, 44, { align: "center", weight: 900 }); ctx.restore();
+      if (n >= 2) { arrowIcon(ctx, "east", 1230, 345, 40, C.accent); Py.console(ctx, 1280, 270, 400, [["14", "out"]]); }
+      if (n >= 3) { card(ctx, 820, 470, 860, 110, { fill: C.badBg, stroke: C.bad, lw: 3, r: 14 }); text(ctx, "meleset: 12 ≠ 14 → di sinilah pelajarannya", 1250, 535, 28, { align: "center", weight: 900, color: C.bad }); }
+      if (n >= 4) label(ctx, "baris 3 mengalikan setelah ditambah: (5 + 2) × 2 = 14", 960, 680, { size: 26 });
+    },
+    variabel(ctx, b, l) {
+      card(ctx, 120, 150, 1680, 740); heading(ctx, "BAHAN 1 · VARIABEL: LAHIR SAAT PERTAMA DIISI", 215);
+      const n = reveal(l, 1.5, 1.8, 4);
+      T.side(ctx, 220, 260, [{ t: "DEKLARASI saldo: integer" }, { t: "DEKLARASI nama: string" }, { t: "saldo ← 0" }, { t: "nama ← \"Sinta\"" }], [{ t: "" }, { t: "" }, { t: "saldo = 0" }, { t: 'nama = "Sinta"' }], { pairs: [[0, 2], [1, 3], [2, 2], [3, 3]], hl: n >= 1 ? Math.min(n, 4) - 1 : null, rh: 46, size: 22 });
+      if (n >= 1) text(ctx, "tanpa deklarasi", 1340, 322, 20, { weight: 800, color: "#7B8B95" });
+      if (n >= 3) T.cell(ctx, 240, 560, 300, { name: "saldo", value: 0, type: "int", changed: n === 3 });
+      if (n >= 4) T.cell(ctx, 580, 560, 300, { name: "nama", value: "\"Sinta\"", type: "str", changed: true });
+      if (n >= 4) label(ctx, "tipe mengikuti isinya", 1340, 620, { size: 28 });
+    },
+    tipe_input(ctx, b, l) {
+      card(ctx, 120, 150, 1680, 740); heading(ctx, "EMPAT TIPE, DAN JEBAKAN input()", 215);
+      const n = reveal(l, 1.5, 1.7, 7);
+      T.typeCards(ctx, 240, 260, 1440, Math.min(n, 4));
+      if (n >= 5) { Py.code(ctx, 240, 430, 640, [{ t: "jumlah = input()", hl: n === 5 }, { t: "jumlah = int(input())", hl: n >= 7 }], { rh: 46, size: 24 }); }
+      if (n >= 5) T.cell(ctx, 940, 440, 320, { name: "jumlah", value: "\"50000\"", type: "str", warn: true });
+      if (n >= 6) { text(ctx, "string! tidak bisa dihitung", 1100, 585, 22, { align: "center", weight: 900, color: C.bad }); }
+      if (n >= 7) { arrowIcon(ctx, "east", 1290, 495, 40, C.good); T.cell(ctx, 1340, 440, 320, { name: "jumlah", value: 50000, type: "int", changed: true }); label(ctx, "bungkus dengan int() supaya jadi bilangan", 960, 690, { size: 26, color: C.good }); }
+    },
+    percabangan(ctx, b, l) {
+      card(ctx, 120, 150, 1680, 740); heading(ctx, "BAHAN 2 · PERCABANGAN: TITIK DUA, LALU MENJOROK", 215);
+      const n = reveal(l, 1.5, 2.0, 5);
+      T.side(ctx, 220, 260, [{ t: "JIKA jenis = \"masuk\" MAKA" }, { t: "saldo ← saldo + jumlah", ind: 1 }, { t: "LAINNYA" }, { t: "saldo ← saldo − jumlah", ind: 1 }], [{ t: 'if jenis == "masuk":' }, { t: "    saldo = saldo + jumlah" }, { t: "else:" }, { t: "    saldo = saldo - jumlah" }], { pairs: [[0, 0], [1, 1], [2, 2], [3, 3]], hl: n >= 1 && n <= 4 ? n - 1 : null, rh: 50, size: 22 });
+      if (n >= 5) { ctx.strokeStyle = C.accent; ctx.lineWidth = 6; [1, 3].forEach(i => { const y = 260 + 50 + i * 50; ctx.beginPath(); ctx.moveTo(1040, y + 6); ctx.lineTo(1040, y + 44); ctx.stroke(); }); text(ctx, "indentasi = isi cabang", 1140, 560, 24, { weight: 900, color: C.accentDark }); }
+      [["== untuk membandingkan", "= untuk menyimpan"], ["titik dua di akhir if dan else", ""], ["blok ditandai spasi di awal baris", "bukan hiasan"]].forEach(([t, s], i) => { ctx.save(); if (n < i + 2) ctx.globalAlpha = 0.2; card(ctx, 220 + i * 500, 600, 480, 90, { fill: n === i + 2 ? "#FFF3D6" : C.bg2, stroke: n === i + 2 ? C.accent : undefined, lw: 3, r: 12 }); text(ctx, t, 244 + i * 500, 640, 22, { weight: 900 }); text(ctx, s, 244 + i * 500, 670, 17, { weight: 700, color: C.ink2 }); ctx.restore(); });
+    },
+    elif(ctx, b, l) {
+      card(ctx, 120, 150, 1680, 740); heading(ctx, "TIGA CABANG: PERIKSA DARI ATAS, BERHENTI DI YANG PERTAMA BENAR", 215);
+      const n = reveal(l, 1.5, 1.8, 6);
+      const hl = n === 3 ? 0 : n === 4 ? 1 : n === 5 ? 2 : -1;
+      Py.code(ctx, 220, 260, 760, [{ t: "if jumlah < 0:", hl: hl === 0 }, { t: '    print("ditolak")' }, { t: "elif jumlah == 0:", hl: hl === 1 }, { t: '    print("peringatan: nol")' }, { t: "else:", hl: hl === 2 }, { t: "    daftar.append(jumlah)" }], { rh: 46, size: 22 });
+      if (n >= 2) T.cell(ctx, 1040, 270, 260, { name: "jumlah", value: 0, type: "int" });
+      if (n >= 3) T.branchCheck(ctx, 1040, 400, 640, [["jumlah < 0", n >= 3 ? false : null], ["jumlah == 0", n >= 4 ? true : null], ["else", null]], n >= 5 ? 3 : n - 2, n >= 4 ? 1 : null);
+      if (n >= 6) label(ctx, "urutan kondisi menentukan hasil", 500, 620, { size: 26 });
+    },
+    for_lacak(ctx, b, l) {
+      card(ctx, 120, 150, 1680, 740); heading(ctx, "BAHAN 3 · PERULANGAN for: LACAK TIAP PUTARAN", 215);
+      const k = reveal(l, 1.5, 1.3, 9); // 1: pasangan, 2: total 0, 3..8: tiga putaran (baris for, baris total), 9: print
+      const round = k >= 3 && k <= 8 ? Math.floor((k - 3) / 2) : null; const onBody = k >= 3 && k <= 8 && (k - 3) % 2 === 1;
+      let total = 0; for (let i = 0; i < 3; i++) { if (round != null && (i < round || (i === round && onBody))) total += DAFTAR[i]; if (k >= 9) total = 45000; }
+      const hl = k <= 1 ? null : k === 2 ? 0 : k <= 8 ? (onBody ? 2 : 1) : 3;
+      T.side(ctx, 220, 260, FOR_PS, FOR_PY, { pairs: [[0, 0], [1, 1], [2, 2], [3, 3]], hl, rh: 44, size: 20, wl: 560, wr: 520, gap: 30 });
+      Mm.list(ctx, 1380, 300, DAFTAR, { name: "daftar", w: 100, h: 56, hl: round != null ? round + 1 : null });
+      Mm.board(ctx, 1360, 400, 340, [{ name: "t", value: round != null ? DAFTAR[round] : k >= 9 ? 10000 : null, hl: round != null && !onBody }, { name: "total", value: k >= 2 ? total : null, changed: onBody }], { bw: 140, bh: 100 });
+      if (k >= 9) { Py.console(ctx, 1360, 610, 340, [["45000", "out"]]); label(ctx, "tiga putaran, total 45000", 700, 560, { size: 28, color: C.good }); }
+    },
+    while_lacak(ctx, b, l) {
+      card(ctx, 120, 150, 1680, 740); heading(ctx, "while: BERULANG SELAMA KONDISINYA BENAR", 215);
+      const n = reveal(l, 1.5, 1.6, 7);
+      T.side(ctx, 220, 260, [{ t: "jawaban ← \"\"" }, { t: "SELAMA jawaban ≠ \"selesai\":" }, { t: "BACA transaksi", ind: 1 }, { t: "BACA jawaban", ind: 1 }], [{ t: 'jawaban = ""' }, { t: 'while jawaban != "selesai":' }, { t: "    transaksi = int(input())" }, { t: "    jawaban = input()" }], { pairs: [[0, 0], [1, 1], [2, 2], [3, 3]], hl: n >= 1 && n <= 3 ? n : null, rh: 46, size: 22, wl: 600, wr: 580, gap: 30 });
+      if (n >= 4) Py.console(ctx, 1440, 270, 260, [["20000", "in"], ["lanjut", "in"], ["15000", "in"], ["selesai", "in"]].slice(0, n >= 5 ? 4 : 2));
+      if (n >= 5) Mm.rounds(ctx, 1440, 520, 3, 3, { label: "putaran" });
+      if (n >= 6) { card(ctx, 220, 520, 1000, 130, { fill: C.badBg, stroke: C.bad, lw: 3, r: 14 }); text(ctx, "⚠ jawaban tidak pernah diubah di dalam blok", 720, 570, 26, { align: "center", weight: 900, color: C.bad }); text(ctx, "kondisi selalu benar → perulangan tak pernah berhenti", 720, 615, 22, { align: "center", weight: 800 }); }
+      if (n >= 7) label(ctx, "baris terakhir di dalam blok mengubah jawaban", 720, 710, { size: 24, color: C.good });
+    },
+    fungsi(ctx, b, l) {
+      card(ctx, 120, 150, 1680, 740); heading(ctx, "BAHAN 4 · FUNGSI: def, PARAMETER, return", 215);
+      const n = reveal(l, 1.5, 1.8, 6);
+      T.side(ctx, 220, 260, [{ t: "FUNGSI hitung_saldo(daftar) → integer" }, { t: "total ← 0", ind: 1 }, { t: "UNTUK tiap t dalam daftar:", ind: 1 }, { t: "total ← total + t", ind: 2 }, { t: "KEMBALIKAN total", ind: 1 }, { t: "" }, { t: "saldo ← hitung_saldo(daftar)" }], [{ t: "def hitung_saldo(daftar):" }, { t: "    total = 0" }, { t: "    for t in daftar:" }, { t: "        total = total + t" }, { t: "    return total" }, { t: "" }, { t: "saldo = hitung_saldo(daftar)" }], { pairs: [[0, 0], [1, 1], [2, 2], [3, 3], [4, 4], [6, 6]], hl: n >= 1 ? Math.min(n, 6) - 1 : null, rh: 42, size: 20 });
+      [["def nama(parameter):", "kepala fungsi"], ["return nilai", "hasil dikirim ke pemanggil"], ["nama(argumen)", "memanggil fungsi"]].forEach(([t, s], i) => { ctx.save(); if (n < [1, 5, 6][i]) ctx.globalAlpha = 0.2; card(ctx, 1500, 270 + i * 110, 200, 96, { fill: C.bg2, r: 12 }); text(ctx, t, 1600, 308 + i * 110, 17, { align: "center", weight: 900, color: C.kiko }); text(ctx, s, 1600, 340 + i * 110, 15, { align: "center", weight: 700, color: C.ink2 }); ctx.restore(); });
+      if (n >= 6) label(ctx, "kode yang sama dipakai lagi tanpa ditulis ulang", 960, 690, { size: 26 });
+    },
+    fungsi_bingkai(ctx, b, l) {
+      card(ctx, 120, 150, 1680, 740); heading(ctx, "SAAT DIPANGGIL: FRAME BARU, LALU DIBUANG", 215);
+      const n = reveal(l, 1.5, 2.2, 5);
+      Py.code(ctx, 220, 260, 600, [{ t: "def hitung_saldo(daftar):", hl: n === 1 }, { t: "    total = 0", hl: n === 2 }, { t: "    for t in daftar:" }, { t: "        total = total + t", hl: n === 2 }, { t: "    return total", hl: n === 3 }, { t: "" }, { t: "saldo = hitung_saldo(daftar)", hl: n === 4 }], { rh: 42, size: 20 });
+      Mm.list(ctx, 880, 310, DAFTAR, { name: "daftar", w: 100, h: 56 }); Mm.board(ctx, 1260, 260, 420, [{ name: "saldo", value: n >= 4 ? 45000 : null, changed: n === 4 }], { bw: 380, bh: 100, title: "MEMORI UTAMA" });
+      if (n >= 1 && n <= 3) Kd.frame(ctx, 860, 470, 500, "hitung_saldo", [["daftar", "[20000, 15000, 10000]"], ["total", n >= 2 ? 45000 : 0]], { ret: n >= 3 ? 45000 : null });
+      if (n >= 4) { card(ctx, 860, 470, 500, 110, { fill: C.bg2, stroke: "#B7C4CC", lw: 3, r: 14 }); text(ctx, "frame dibuang; total tidak terlihat dari luar", 1110, 535, 22, { align: "center", weight: 900, color: C.ink2 }); }
+      if (n >= 5) label(ctx, "karena itu fungsi aman dipakai berulang", 1270, 690, { size: 26 });
+    },
+    program_utuh(ctx, b, l) {
+      card(ctx, 120, 150, 1680, 740); heading(ctx, "PROGRAM KAS KELAS UTUH: EMPAT BAHAN JADI SATU", 215);
+      const n = reveal(l, 1.5, 2.4, 4);
+      const groups = [[[0, 1, 2, 3, 4], "fungsi", "#8E6BBF"], [[7, 13], "perulangan", "#2E7E9A"], [[9, 10, 11, 12], "percabangan", "#B57A12"], [[5, 6, 8], "variabel", "#2E9E5B"]];
+      const g = n >= 1 ? groups[n - 1] : null;
+      Py.code(ctx, 220, 250, 920, PROG.map((t, i) => ({ t, hl: g && g[0].includes(i) })), { rh: 30, size: 15 });
+      groups.forEach(([ls, nm, col], i) => { ctx.save(); if (i >= n) ctx.globalAlpha = 0.2; card(ctx, 1200, 280 + i * 100, 480, 80, { fill: i === n - 1 ? "#FFF3D6" : "#fff", stroke: col, lw: 4, r: 12 }); text(ctx, nm, 1230, 315 + i * 100, 24, { weight: 900, color: col }); text(ctx, "baris " + ls.map(x => x + 1).join(", "), 1230, 345 + i * 100, 17, { weight: 800, color: C.ink2 }); ctx.restore(); });
+      if (n >= 4) label(ctx, "15 baris dari pseudocode episode lalu", 1440, 720, { size: 24 });
+    },
+    primm(ctx, b, l) {
+      card(ctx, 120, 150, 1680, 740); heading(ctx, "CARA BELAJARNYA: PRIMM", 215);
+      const n = reveal(l, 1.5, 1.8, 6);
+      T.primm(ctx, 200, 280, Math.min(n, 5), { w: 290 });
+      if (n >= 6) banner(ctx, "simpan tiap versi yang jalan sebelum mengubahnya lagi", 560, 1100, { size: 30 });
+    },
+    make_show(ctx, b, l) {
+      card(ctx, 160, 150, 1600, 740);
+      text(ctx, "GILIRANMU", 960, 240, 34, { align: "center", color: C.accentDark, weight: 900 });
+      const items = [["Penerjemah", "pasangkan baris pseudocode dan Python", (x, y) => { ctx.save(); ctx.translate(x - 220, y - 120); ctx.scale(0.62, 0.62); T.dict(ctx, 0, 0, 700, [["BACA x", "x = input()"], ["JIKA … MAKA", "if …:"], ["TULIS x", "print(x)"]], { rh: 50, size: 24 }); ctx.restore(); }],
+        ["Pelacak", "langkah demi langkah, tebak isi memori", (x, y) => { ctx.save(); ctx.translate(x - 220, y - 120); ctx.scale(0.62, 0.62); Py.code(ctx, 0, 0, 440, [{ t: "total = 0" }, { t: "for t in daftar:", hl: true }, { t: "    total = total + t" }], { rh: 44, size: 24 }); Mm.board(ctx, 460, 0, 260, [{ name: "total", value: 20000, changed: true }], { bw: 200, bh: 90 }); ctx.restore(); }],
+        ["Pemburu bug", "temukan baris yang salah ketik", (x, y) => { ctx.save(); ctx.translate(x - 220, y - 120); ctx.scale(0.62, 0.62); Py.code(ctx, 0, 0, 700, [{ t: "jumlah = input()", bad: true }, { t: "if jumlah > 0" , bad: true }, { t: "    print(jumlah)" }], { rh: 44, size: 24 }); ctx.restore(); }]];
+      items.forEach(([t1, t2, draw], i) => { const x = 440 + i * 520; card(ctx, x - 240, 290, 480, 410, { fill: C.bg2 }); ctx.fillStyle = C.kiko; ctx.beginPath(); ctx.arc(x - 200, 340, 28, 0, Math.PI * 2); ctx.fill(); text(ctx, String(i + 1), x - 200, 352, 30, { align: "center", color: "#fff", weight: 900 }); text(ctx, t1, x - 160, 352, 26, { weight: 900 }); para(ctx, t2, x - 160, 386, 20, 380, { weight: 700, color: C.ink2 }); draw(x, 560); });
+      text(ctx, "di halaman latihan episode ini — lalu ketik program kas kelas di komputer sungguhan", 960, 745, 26, { align: "center", color: C.ink2, weight: 700 });
+    }
+  });
+})(typeof window !== "undefined" ? window : globalThis);
+
+/* Dibuat oleh lacak.py dari jalannya python3 sungguhan. Jangan diubah dengan tangan. */
+(function (g) { g.Kiko.k18jejak = {"programs": {"benar": ["n = int(input(\"Berapa transaksi? \"))", "total = 0", "for i in range(n):", "    jumlah = int(input(\"Jumlah: \"))", "    if jumlah > 0:", "        total = total + jumlah", "    else:", "        print(\"Ditolak:\", jumlah)", "print(\"Total kas:\", total)"], "bug": ["n = int(input(\"Berapa transaksi? \"))", "for i in range(n):", "    total = 0", "    jumlah = int(input(\"Jumlah: \"))", "    if jumlah > 0:", "        total = total + jumlah", "    else:", "        print(\"Ditolak:\", jumlah)", "print(\"Total kas:\", total)"]}, "runs": {"v1": {"prog": "benar", "inputs": ["2", "20000", "15000"], "steps": [{"ln": 1, "before": [], "vars": [["n", "2", "int"]], "out": [[["Berapa transaksi? ", "out"], ["2", "in"]]], "note": "input() memberi \"2\" (str), lalu int() mengubahnya menjadi 2 (int)"}, {"ln": 2, "before": [["n", "2", "int"]], "vars": [["n", "2", "int"], ["total", "0", "int"]], "out": [[["Berapa transaksi? ", "out"], ["2", "in"]]], "note": "total diisi 0"}, {"ln": 3, "before": [["n", "2", "int"], ["total", "0", "int"]], "vars": [["n", "2", "int"], ["total", "0", "int"], ["i", "0", "int"]], "out": [[["Berapa transaksi? ", "out"], ["2", "in"]]], "note": "range(2) memberi i = 0: putaran 1 dari 2"}, {"ln": 4, "before": [["n", "2", "int"], ["total", "0", "int"], ["i", "0", "int"]], "vars": [["n", "2", "int"], ["total", "0", "int"], ["i", "0", "int"], ["jumlah", "20000", "int"]], "out": [[["Berapa transaksi? ", "out"], ["2", "in"]], [["Jumlah: ", "out"], ["20000", "in"]]], "note": "input() memberi \"20000\" (str), lalu int() mengubahnya menjadi 20000 (int)"}, {"ln": 5, "before": [["n", "2", "int"], ["total", "0", "int"], ["i", "0", "int"], ["jumlah", "20000", "int"]], "vars": [["n", "2", "int"], ["total", "0", "int"], ["i", "0", "int"], ["jumlah", "20000", "int"]], "out": [[["Berapa transaksi? ", "out"], ["2", "in"]], [["Jumlah: ", "out"], ["20000", "in"]]], "note": "20000 > 0 bernilai True, jadi baris berikutnya dijalankan"}, {"ln": 6, "before": [["n", "2", "int"], ["total", "0", "int"], ["i", "0", "int"], ["jumlah", "20000", "int"]], "vars": [["n", "2", "int"], ["total", "20000", "int"], ["i", "0", "int"], ["jumlah", "20000", "int"]], "out": [[["Berapa transaksi? ", "out"], ["2", "in"]], [["Jumlah: ", "out"], ["20000", "in"]]], "note": "total = 0 + 20000 = 20000"}, {"ln": 3, "before": [["n", "2", "int"], ["total", "20000", "int"], ["i", "0", "int"], ["jumlah", "20000", "int"]], "vars": [["n", "2", "int"], ["total", "20000", "int"], ["i", "1", "int"], ["jumlah", "20000", "int"]], "out": [[["Berapa transaksi? ", "out"], ["2", "in"]], [["Jumlah: ", "out"], ["20000", "in"]]], "note": "range(2) memberi i = 1: putaran 2 dari 2"}, {"ln": 4, "before": [["n", "2", "int"], ["total", "20000", "int"], ["i", "1", "int"], ["jumlah", "20000", "int"]], "vars": [["n", "2", "int"], ["total", "20000", "int"], ["i", "1", "int"], ["jumlah", "15000", "int"]], "out": [[["Berapa transaksi? ", "out"], ["2", "in"]], [["Jumlah: ", "out"], ["20000", "in"]], [["Jumlah: ", "out"], ["15000", "in"]]], "note": "input() memberi \"15000\" (str), lalu int() mengubahnya menjadi 15000 (int)"}, {"ln": 5, "before": [["n", "2", "int"], ["total", "20000", "int"], ["i", "1", "int"], ["jumlah", "15000", "int"]], "vars": [["n", "2", "int"], ["total", "20000", "int"], ["i", "1", "int"], ["jumlah", "15000", "int"]], "out": [[["Berapa transaksi? ", "out"], ["2", "in"]], [["Jumlah: ", "out"], ["20000", "in"]], [["Jumlah: ", "out"], ["15000", "in"]]], "note": "15000 > 0 bernilai True, jadi baris berikutnya dijalankan"}, {"ln": 6, "before": [["n", "2", "int"], ["total", "20000", "int"], ["i", "1", "int"], ["jumlah", "15000", "int"]], "vars": [["n", "2", "int"], ["total", "35000", "int"], ["i", "1", "int"], ["jumlah", "15000", "int"]], "out": [[["Berapa transaksi? ", "out"], ["2", "in"]], [["Jumlah: ", "out"], ["20000", "in"]], [["Jumlah: ", "out"], ["15000", "in"]]], "note": "total = 20000 + 15000 = 35000"}, {"ln": 3, "before": [["n", "2", "int"], ["total", "35000", "int"], ["i", "1", "int"], ["jumlah", "15000", "int"]], "vars": [["n", "2", "int"], ["total", "35000", "int"], ["i", "1", "int"], ["jumlah", "15000", "int"]], "out": [[["Berapa transaksi? ", "out"], ["2", "in"]], [["Jumlah: ", "out"], ["20000", "in"]], [["Jumlah: ", "out"], ["15000", "in"]]], "note": "range(2) sudah habis, jadi program keluar dari for"}, {"ln": 9, "before": [["n", "2", "int"], ["total", "35000", "int"], ["i", "1", "int"], ["jumlah", "15000", "int"]], "vars": [["n", "2", "int"], ["total", "35000", "int"], ["i", "1", "int"], ["jumlah", "15000", "int"]], "out": [[["Berapa transaksi? ", "out"], ["2", "in"]], [["Jumlah: ", "out"], ["20000", "in"]], [["Jumlah: ", "out"], ["15000", "in"]], [["Total kas:", "out"], [" ", "out"], ["35000", "out"]]], "note": "print() menampilkan: Total kas: 35000"}], "error": null, "output": [[["Berapa transaksi? ", "out"], ["2", "in"]], [["Jumlah: ", "out"], ["20000", "in"]], [["Jumlah: ", "out"], ["15000", "in"]], [["Total kas:", "out"], [" ", "out"], ["35000", "out"]]]}, "v2": {"prog": "benar", "inputs": ["3", "20000", "-5000", "15000"], "steps": [{"ln": 1, "before": [], "vars": [["n", "3", "int"]], "out": [[["Berapa transaksi? ", "out"], ["3", "in"]]], "note": "input() memberi \"3\" (str), lalu int() mengubahnya menjadi 3 (int)"}, {"ln": 2, "before": [["n", "3", "int"]], "vars": [["n", "3", "int"], ["total", "0", "int"]], "out": [[["Berapa transaksi? ", "out"], ["3", "in"]]], "note": "total diisi 0"}, {"ln": 3, "before": [["n", "3", "int"], ["total", "0", "int"]], "vars": [["n", "3", "int"], ["total", "0", "int"], ["i", "0", "int"]], "out": [[["Berapa transaksi? ", "out"], ["3", "in"]]], "note": "range(3) memberi i = 0: putaran 1 dari 3"}, {"ln": 4, "before": [["n", "3", "int"], ["total", "0", "int"], ["i", "0", "int"]], "vars": [["n", "3", "int"], ["total", "0", "int"], ["i", "0", "int"], ["jumlah", "20000", "int"]], "out": [[["Berapa transaksi? ", "out"], ["3", "in"]], [["Jumlah: ", "out"], ["20000", "in"]]], "note": "input() memberi \"20000\" (str), lalu int() mengubahnya menjadi 20000 (int)"}, {"ln": 5, "before": [["n", "3", "int"], ["total", "0", "int"], ["i", "0", "int"], ["jumlah", "20000", "int"]], "vars": [["n", "3", "int"], ["total", "0", "int"], ["i", "0", "int"], ["jumlah", "20000", "int"]], "out": [[["Berapa transaksi? ", "out"], ["3", "in"]], [["Jumlah: ", "out"], ["20000", "in"]]], "note": "20000 > 0 bernilai True, jadi baris berikutnya dijalankan"}, {"ln": 6, "before": [["n", "3", "int"], ["total", "0", "int"], ["i", "0", "int"], ["jumlah", "20000", "int"]], "vars": [["n", "3", "int"], ["total", "20000", "int"], ["i", "0", "int"], ["jumlah", "20000", "int"]], "out": [[["Berapa transaksi? ", "out"], ["3", "in"]], [["Jumlah: ", "out"], ["20000", "in"]]], "note": "total = 0 + 20000 = 20000"}, {"ln": 3, "before": [["n", "3", "int"], ["total", "20000", "int"], ["i", "0", "int"], ["jumlah", "20000", "int"]], "vars": [["n", "3", "int"], ["total", "20000", "int"], ["i", "1", "int"], ["jumlah", "20000", "int"]], "out": [[["Berapa transaksi? ", "out"], ["3", "in"]], [["Jumlah: ", "out"], ["20000", "in"]]], "note": "range(3) memberi i = 1: putaran 2 dari 3"}, {"ln": 4, "before": [["n", "3", "int"], ["total", "20000", "int"], ["i", "1", "int"], ["jumlah", "20000", "int"]], "vars": [["n", "3", "int"], ["total", "20000", "int"], ["i", "1", "int"], ["jumlah", "-5000", "int"]], "out": [[["Berapa transaksi? ", "out"], ["3", "in"]], [["Jumlah: ", "out"], ["20000", "in"]], [["Jumlah: ", "out"], ["-5000", "in"]]], "note": "input() memberi \"-5000\" (str), lalu int() mengubahnya menjadi -5000 (int)"}, {"ln": 5, "before": [["n", "3", "int"], ["total", "20000", "int"], ["i", "1", "int"], ["jumlah", "-5000", "int"]], "vars": [["n", "3", "int"], ["total", "20000", "int"], ["i", "1", "int"], ["jumlah", "-5000", "int"]], "out": [[["Berapa transaksi? ", "out"], ["3", "in"]], [["Jumlah: ", "out"], ["20000", "in"]], [["Jumlah: ", "out"], ["-5000", "in"]]], "note": "-5000 > 0 bernilai False, jadi program lompat ke else"}, {"ln": 8, "before": [["n", "3", "int"], ["total", "20000", "int"], ["i", "1", "int"], ["jumlah", "-5000", "int"]], "vars": [["n", "3", "int"], ["total", "20000", "int"], ["i", "1", "int"], ["jumlah", "-5000", "int"]], "out": [[["Berapa transaksi? ", "out"], ["3", "in"]], [["Jumlah: ", "out"], ["20000", "in"]], [["Jumlah: ", "out"], ["-5000", "in"]], [["Ditolak:", "out"], [" ", "out"], ["-5000", "out"]]], "note": "print() menampilkan: Ditolak: -5000"}, {"ln": 3, "before": [["n", "3", "int"], ["total", "20000", "int"], ["i", "1", "int"], ["jumlah", "-5000", "int"]], "vars": [["n", "3", "int"], ["total", "20000", "int"], ["i", "2", "int"], ["jumlah", "-5000", "int"]], "out": [[["Berapa transaksi? ", "out"], ["3", "in"]], [["Jumlah: ", "out"], ["20000", "in"]], [["Jumlah: ", "out"], ["-5000", "in"]], [["Ditolak:", "out"], [" ", "out"], ["-5000", "out"]]], "note": "range(3) memberi i = 2: putaran 3 dari 3"}, {"ln": 4, "before": [["n", "3", "int"], ["total", "20000", "int"], ["i", "2", "int"], ["jumlah", "-5000", "int"]], "vars": [["n", "3", "int"], ["total", "20000", "int"], ["i", "2", "int"], ["jumlah", "15000", "int"]], "out": [[["Berapa transaksi? ", "out"], ["3", "in"]], [["Jumlah: ", "out"], ["20000", "in"]], [["Jumlah: ", "out"], ["-5000", "in"]], [["Ditolak:", "out"], [" ", "out"], ["-5000", "out"]], [["Jumlah: ", "out"], ["15000", "in"]]], "note": "input() memberi \"15000\" (str), lalu int() mengubahnya menjadi 15000 (int)"}, {"ln": 5, "before": [["n", "3", "int"], ["total", "20000", "int"], ["i", "2", "int"], ["jumlah", "15000", "int"]], "vars": [["n", "3", "int"], ["total", "20000", "int"], ["i", "2", "int"], ["jumlah", "15000", "int"]], "out": [[["Berapa transaksi? ", "out"], ["3", "in"]], [["Jumlah: ", "out"], ["20000", "in"]], [["Jumlah: ", "out"], ["-5000", "in"]], [["Ditolak:", "out"], [" ", "out"], ["-5000", "out"]], [["Jumlah: ", "out"], ["15000", "in"]]], "note": "15000 > 0 bernilai True, jadi baris berikutnya dijalankan"}, {"ln": 6, "before": [["n", "3", "int"], ["total", "20000", "int"], ["i", "2", "int"], ["jumlah", "15000", "int"]], "vars": [["n", "3", "int"], ["total", "35000", "int"], ["i", "2", "int"], ["jumlah", "15000", "int"]], "out": [[["Berapa transaksi? ", "out"], ["3", "in"]], [["Jumlah: ", "out"], ["20000", "in"]], [["Jumlah: ", "out"], ["-5000", "in"]], [["Ditolak:", "out"], [" ", "out"], ["-5000", "out"]], [["Jumlah: ", "out"], ["15000", "in"]]], "note": "total = 20000 + 15000 = 35000"}, {"ln": 3, "before": [["n", "3", "int"], ["total", "35000", "int"], ["i", "2", "int"], ["jumlah", "15000", "int"]], "vars": [["n", "3", "int"], ["total", "35000", "int"], ["i", "2", "int"], ["jumlah", "15000", "int"]], "out": [[["Berapa transaksi? ", "out"], ["3", "in"]], [["Jumlah: ", "out"], ["20000", "in"]], [["Jumlah: ", "out"], ["-5000", "in"]], [["Ditolak:", "out"], [" ", "out"], ["-5000", "out"]], [["Jumlah: ", "out"], ["15000", "in"]]], "note": "range(3) sudah habis, jadi program keluar dari for"}, {"ln": 9, "before": [["n", "3", "int"], ["total", "35000", "int"], ["i", "2", "int"], ["jumlah", "15000", "int"]], "vars": [["n", "3", "int"], ["total", "35000", "int"], ["i", "2", "int"], ["jumlah", "15000", "int"]], "out": [[["Berapa transaksi? ", "out"], ["3", "in"]], [["Jumlah: ", "out"], ["20000", "in"]], [["Jumlah: ", "out"], ["-5000", "in"]], [["Ditolak:", "out"], [" ", "out"], ["-5000", "out"]], [["Jumlah: ", "out"], ["15000", "in"]], [["Total kas:", "out"], [" ", "out"], ["35000", "out"]]], "note": "print() menampilkan: Total kas: 35000"}], "error": null, "output": [[["Berapa transaksi? ", "out"], ["3", "in"]], [["Jumlah: ", "out"], ["20000", "in"]], [["Jumlah: ", "out"], ["-5000", "in"]], [["Ditolak:", "out"], [" ", "out"], ["-5000", "out"]], [["Jumlah: ", "out"], ["15000", "in"]], [["Total kas:", "out"], [" ", "out"], ["35000", "out"]]]}, "v3": {"prog": "benar", "inputs": ["0"], "steps": [{"ln": 1, "before": [], "vars": [["n", "0", "int"]], "out": [[["Berapa transaksi? ", "out"], ["0", "in"]]], "note": "input() memberi \"0\" (str), lalu int() mengubahnya menjadi 0 (int)"}, {"ln": 2, "before": [["n", "0", "int"]], "vars": [["n", "0", "int"], ["total", "0", "int"]], "out": [[["Berapa transaksi? ", "out"], ["0", "in"]]], "note": "total diisi 0"}, {"ln": 3, "before": [["n", "0", "int"], ["total", "0", "int"]], "vars": [["n", "0", "int"], ["total", "0", "int"]], "out": [[["Berapa transaksi? ", "out"], ["0", "in"]]], "note": "range(0) sudah habis, jadi program keluar dari for"}, {"ln": 9, "before": [["n", "0", "int"], ["total", "0", "int"]], "vars": [["n", "0", "int"], ["total", "0", "int"]], "out": [[["Berapa transaksi? ", "out"], ["0", "in"]], [["Total kas:", "out"], [" ", "out"], ["0", "out"]]], "note": "print() menampilkan: Total kas: 0"}], "error": null, "output": [[["Berapa transaksi? ", "out"], ["0", "in"]], [["Total kas:", "out"], [" ", "out"], ["0", "out"]]]}, "v4": {"prog": "bug", "inputs": ["2", "20000", "15000"], "steps": [{"ln": 1, "before": [], "vars": [["n", "2", "int"]], "out": [[["Berapa transaksi? ", "out"], ["2", "in"]]], "note": "input() memberi \"2\" (str), lalu int() mengubahnya menjadi 2 (int)"}, {"ln": 2, "before": [["n", "2", "int"]], "vars": [["n", "2", "int"], ["i", "0", "int"]], "out": [[["Berapa transaksi? ", "out"], ["2", "in"]]], "note": "range(2) memberi i = 0: putaran 1 dari 2"}, {"ln": 3, "before": [["n", "2", "int"], ["i", "0", "int"]], "vars": [["n", "2", "int"], ["i", "0", "int"], ["total", "0", "int"]], "out": [[["Berapa transaksi? ", "out"], ["2", "in"]]], "note": "total diisi 0"}, {"ln": 4, "before": [["n", "2", "int"], ["i", "0", "int"], ["total", "0", "int"]], "vars": [["n", "2", "int"], ["i", "0", "int"], ["total", "0", "int"], ["jumlah", "20000", "int"]], "out": [[["Berapa transaksi? ", "out"], ["2", "in"]], [["Jumlah: ", "out"], ["20000", "in"]]], "note": "input() memberi \"20000\" (str), lalu int() mengubahnya menjadi 20000 (int)"}, {"ln": 5, "before": [["n", "2", "int"], ["i", "0", "int"], ["total", "0", "int"], ["jumlah", "20000", "int"]], "vars": [["n", "2", "int"], ["i", "0", "int"], ["total", "0", "int"], ["jumlah", "20000", "int"]], "out": [[["Berapa transaksi? ", "out"], ["2", "in"]], [["Jumlah: ", "out"], ["20000", "in"]]], "note": "20000 > 0 bernilai True, jadi baris berikutnya dijalankan"}, {"ln": 6, "before": [["n", "2", "int"], ["i", "0", "int"], ["total", "0", "int"], ["jumlah", "20000", "int"]], "vars": [["n", "2", "int"], ["i", "0", "int"], ["total", "20000", "int"], ["jumlah", "20000", "int"]], "out": [[["Berapa transaksi? ", "out"], ["2", "in"]], [["Jumlah: ", "out"], ["20000", "in"]]], "note": "total = 0 + 20000 = 20000"}, {"ln": 2, "before": [["n", "2", "int"], ["i", "0", "int"], ["total", "20000", "int"], ["jumlah", "20000", "int"]], "vars": [["n", "2", "int"], ["i", "1", "int"], ["total", "20000", "int"], ["jumlah", "20000", "int"]], "out": [[["Berapa transaksi? ", "out"], ["2", "in"]], [["Jumlah: ", "out"], ["20000", "in"]]], "note": "range(2) memberi i = 1: putaran 2 dari 2"}, {"ln": 3, "before": [["n", "2", "int"], ["i", "1", "int"], ["total", "20000", "int"], ["jumlah", "20000", "int"]], "vars": [["n", "2", "int"], ["i", "1", "int"], ["total", "0", "int"], ["jumlah", "20000", "int"]], "out": [[["Berapa transaksi? ", "out"], ["2", "in"]], [["Jumlah: ", "out"], ["20000", "in"]]], "note": "total diisi 0 lagi (tadinya 20000)"}, {"ln": 4, "before": [["n", "2", "int"], ["i", "1", "int"], ["total", "0", "int"], ["jumlah", "20000", "int"]], "vars": [["n", "2", "int"], ["i", "1", "int"], ["total", "0", "int"], ["jumlah", "15000", "int"]], "out": [[["Berapa transaksi? ", "out"], ["2", "in"]], [["Jumlah: ", "out"], ["20000", "in"]], [["Jumlah: ", "out"], ["15000", "in"]]], "note": "input() memberi \"15000\" (str), lalu int() mengubahnya menjadi 15000 (int)"}, {"ln": 5, "before": [["n", "2", "int"], ["i", "1", "int"], ["total", "0", "int"], ["jumlah", "15000", "int"]], "vars": [["n", "2", "int"], ["i", "1", "int"], ["total", "0", "int"], ["jumlah", "15000", "int"]], "out": [[["Berapa transaksi? ", "out"], ["2", "in"]], [["Jumlah: ", "out"], ["20000", "in"]], [["Jumlah: ", "out"], ["15000", "in"]]], "note": "15000 > 0 bernilai True, jadi baris berikutnya dijalankan"}, {"ln": 6, "before": [["n", "2", "int"], ["i", "1", "int"], ["total", "0", "int"], ["jumlah", "15000", "int"]], "vars": [["n", "2", "int"], ["i", "1", "int"], ["total", "15000", "int"], ["jumlah", "15000", "int"]], "out": [[["Berapa transaksi? ", "out"], ["2", "in"]], [["Jumlah: ", "out"], ["20000", "in"]], [["Jumlah: ", "out"], ["15000", "in"]]], "note": "total = 0 + 15000 = 15000"}, {"ln": 2, "before": [["n", "2", "int"], ["i", "1", "int"], ["total", "15000", "int"], ["jumlah", "15000", "int"]], "vars": [["n", "2", "int"], ["i", "1", "int"], ["total", "15000", "int"], ["jumlah", "15000", "int"]], "out": [[["Berapa transaksi? ", "out"], ["2", "in"]], [["Jumlah: ", "out"], ["20000", "in"]], [["Jumlah: ", "out"], ["15000", "in"]]], "note": "range(2) sudah habis, jadi program keluar dari for"}, {"ln": 9, "before": [["n", "2", "int"], ["i", "1", "int"], ["total", "15000", "int"], ["jumlah", "15000", "int"]], "vars": [["n", "2", "int"], ["i", "1", "int"], ["total", "15000", "int"], ["jumlah", "15000", "int"]], "out": [[["Berapa transaksi? ", "out"], ["2", "in"]], [["Jumlah: ", "out"], ["20000", "in"]], [["Jumlah: ", "out"], ["15000", "in"]], [["Total kas:", "out"], [" ", "out"], ["15000", "out"]]], "note": "print() menampilkan: Total kas: 15000"}], "error": null, "output": [[["Berapa transaksi? ", "out"], ["2", "in"]], [["Jumlah: ", "out"], ["20000", "in"]], [["Jumlah: ", "out"], ["15000", "in"]], [["Total kas:", "out"], [" ", "out"], ["15000", "out"]]]}, "q3": {"prog": "benar", "inputs": ["3", "10000", "5000", "-2000"], "steps": [{"ln": 1, "before": [], "vars": [["n", "3", "int"]], "out": [[["Berapa transaksi? ", "out"], ["3", "in"]]], "note": "input() memberi \"3\" (str), lalu int() mengubahnya menjadi 3 (int)"}, {"ln": 2, "before": [["n", "3", "int"]], "vars": [["n", "3", "int"], ["total", "0", "int"]], "out": [[["Berapa transaksi? ", "out"], ["3", "in"]]], "note": "total diisi 0"}, {"ln": 3, "before": [["n", "3", "int"], ["total", "0", "int"]], "vars": [["n", "3", "int"], ["total", "0", "int"], ["i", "0", "int"]], "out": [[["Berapa transaksi? ", "out"], ["3", "in"]]], "note": "range(3) memberi i = 0: putaran 1 dari 3"}, {"ln": 4, "before": [["n", "3", "int"], ["total", "0", "int"], ["i", "0", "int"]], "vars": [["n", "3", "int"], ["total", "0", "int"], ["i", "0", "int"], ["jumlah", "10000", "int"]], "out": [[["Berapa transaksi? ", "out"], ["3", "in"]], [["Jumlah: ", "out"], ["10000", "in"]]], "note": "input() memberi \"10000\" (str), lalu int() mengubahnya menjadi 10000 (int)"}, {"ln": 5, "before": [["n", "3", "int"], ["total", "0", "int"], ["i", "0", "int"], ["jumlah", "10000", "int"]], "vars": [["n", "3", "int"], ["total", "0", "int"], ["i", "0", "int"], ["jumlah", "10000", "int"]], "out": [[["Berapa transaksi? ", "out"], ["3", "in"]], [["Jumlah: ", "out"], ["10000", "in"]]], "note": "10000 > 0 bernilai True, jadi baris berikutnya dijalankan"}, {"ln": 6, "before": [["n", "3", "int"], ["total", "0", "int"], ["i", "0", "int"], ["jumlah", "10000", "int"]], "vars": [["n", "3", "int"], ["total", "10000", "int"], ["i", "0", "int"], ["jumlah", "10000", "int"]], "out": [[["Berapa transaksi? ", "out"], ["3", "in"]], [["Jumlah: ", "out"], ["10000", "in"]]], "note": "total = 0 + 10000 = 10000"}, {"ln": 3, "before": [["n", "3", "int"], ["total", "10000", "int"], ["i", "0", "int"], ["jumlah", "10000", "int"]], "vars": [["n", "3", "int"], ["total", "10000", "int"], ["i", "1", "int"], ["jumlah", "10000", "int"]], "out": [[["Berapa transaksi? ", "out"], ["3", "in"]], [["Jumlah: ", "out"], ["10000", "in"]]], "note": "range(3) memberi i = 1: putaran 2 dari 3"}, {"ln": 4, "before": [["n", "3", "int"], ["total", "10000", "int"], ["i", "1", "int"], ["jumlah", "10000", "int"]], "vars": [["n", "3", "int"], ["total", "10000", "int"], ["i", "1", "int"], ["jumlah", "5000", "int"]], "out": [[["Berapa transaksi? ", "out"], ["3", "in"]], [["Jumlah: ", "out"], ["10000", "in"]], [["Jumlah: ", "out"], ["5000", "in"]]], "note": "input() memberi \"5000\" (str), lalu int() mengubahnya menjadi 5000 (int)"}, {"ln": 5, "before": [["n", "3", "int"], ["total", "10000", "int"], ["i", "1", "int"], ["jumlah", "5000", "int"]], "vars": [["n", "3", "int"], ["total", "10000", "int"], ["i", "1", "int"], ["jumlah", "5000", "int"]], "out": [[["Berapa transaksi? ", "out"], ["3", "in"]], [["Jumlah: ", "out"], ["10000", "in"]], [["Jumlah: ", "out"], ["5000", "in"]]], "note": "5000 > 0 bernilai True, jadi baris berikutnya dijalankan"}, {"ln": 6, "before": [["n", "3", "int"], ["total", "10000", "int"], ["i", "1", "int"], ["jumlah", "5000", "int"]], "vars": [["n", "3", "int"], ["total", "15000", "int"], ["i", "1", "int"], ["jumlah", "5000", "int"]], "out": [[["Berapa transaksi? ", "out"], ["3", "in"]], [["Jumlah: ", "out"], ["10000", "in"]], [["Jumlah: ", "out"], ["5000", "in"]]], "note": "total = 10000 + 5000 = 15000"}, {"ln": 3, "before": [["n", "3", "int"], ["total", "15000", "int"], ["i", "1", "int"], ["jumlah", "5000", "int"]], "vars": [["n", "3", "int"], ["total", "15000", "int"], ["i", "2", "int"], ["jumlah", "5000", "int"]], "out": [[["Berapa transaksi? ", "out"], ["3", "in"]], [["Jumlah: ", "out"], ["10000", "in"]], [["Jumlah: ", "out"], ["5000", "in"]]], "note": "range(3) memberi i = 2: putaran 3 dari 3"}, {"ln": 4, "before": [["n", "3", "int"], ["total", "15000", "int"], ["i", "2", "int"], ["jumlah", "5000", "int"]], "vars": [["n", "3", "int"], ["total", "15000", "int"], ["i", "2", "int"], ["jumlah", "-2000", "int"]], "out": [[["Berapa transaksi? ", "out"], ["3", "in"]], [["Jumlah: ", "out"], ["10000", "in"]], [["Jumlah: ", "out"], ["5000", "in"]], [["Jumlah: ", "out"], ["-2000", "in"]]], "note": "input() memberi \"-2000\" (str), lalu int() mengubahnya menjadi -2000 (int)"}, {"ln": 5, "before": [["n", "3", "int"], ["total", "15000", "int"], ["i", "2", "int"], ["jumlah", "-2000", "int"]], "vars": [["n", "3", "int"], ["total", "15000", "int"], ["i", "2", "int"], ["jumlah", "-2000", "int"]], "out": [[["Berapa transaksi? ", "out"], ["3", "in"]], [["Jumlah: ", "out"], ["10000", "in"]], [["Jumlah: ", "out"], ["5000", "in"]], [["Jumlah: ", "out"], ["-2000", "in"]]], "note": "-2000 > 0 bernilai False, jadi program lompat ke else"}, {"ln": 8, "before": [["n", "3", "int"], ["total", "15000", "int"], ["i", "2", "int"], ["jumlah", "-2000", "int"]], "vars": [["n", "3", "int"], ["total", "15000", "int"], ["i", "2", "int"], ["jumlah", "-2000", "int"]], "out": [[["Berapa transaksi? ", "out"], ["3", "in"]], [["Jumlah: ", "out"], ["10000", "in"]], [["Jumlah: ", "out"], ["5000", "in"]], [["Jumlah: ", "out"], ["-2000", "in"]], [["Ditolak:", "out"], [" ", "out"], ["-2000", "out"]]], "note": "print() menampilkan: Ditolak: -2000"}, {"ln": 3, "before": [["n", "3", "int"], ["total", "15000", "int"], ["i", "2", "int"], ["jumlah", "-2000", "int"]], "vars": [["n", "3", "int"], ["total", "15000", "int"], ["i", "2", "int"], ["jumlah", "-2000", "int"]], "out": [[["Berapa transaksi? ", "out"], ["3", "in"]], [["Jumlah: ", "out"], ["10000", "in"]], [["Jumlah: ", "out"], ["5000", "in"]], [["Jumlah: ", "out"], ["-2000", "in"]], [["Ditolak:", "out"], [" ", "out"], ["-2000", "out"]]], "note": "range(3) sudah habis, jadi program keluar dari for"}, {"ln": 9, "before": [["n", "3", "int"], ["total", "15000", "int"], ["i", "2", "int"], ["jumlah", "-2000", "int"]], "vars": [["n", "3", "int"], ["total", "15000", "int"], ["i", "2", "int"], ["jumlah", "-2000", "int"]], "out": [[["Berapa transaksi? ", "out"], ["3", "in"]], [["Jumlah: ", "out"], ["10000", "in"]], [["Jumlah: ", "out"], ["5000", "in"]], [["Jumlah: ", "out"], ["-2000", "in"]], [["Ditolak:", "out"], [" ", "out"], ["-2000", "out"]], [["Total kas:", "out"], [" ", "out"], ["15000", "out"]]], "note": "print() menampilkan: Total kas: 15000"}], "error": null, "output": [[["Berapa transaksi? ", "out"], ["3", "in"]], [["Jumlah: ", "out"], ["10000", "in"]], [["Jumlah: ", "out"], ["5000", "in"]], [["Jumlah: ", "out"], ["-2000", "in"]], [["Ditolak:", "out"], [" ", "out"], ["-2000", "out"]], [["Total kas:", "out"], [" ", "out"], ["15000", "out"]]]}}}; })(typeof window !== "undefined" ? window : globalThis);
+
+/* K18 Simulasi konsep: melacak program Python (kas kelas) baris demi baris.
+   Data jejak (baris, memori, keluaran, catatan) berasal dari jejak.js yang dibuat lacak.py dengan python3 sungguhan.
+   Panel kode, memori, dan keluaran digambar di sini (font kode monospace JetBrains Mono). Gaya diagram Fase F.
+   Semua gambar di atas y≈830 (kartu narasi tiga baris mulai y≈841). */
+(function (global) {
+  const K = global.Kiko, H = K.helpers, C = K.C, L = K.layar, Py = K.py, J = K.k18jejak;
+  const { rr, text, para, card, kiko, ease, clamp, lerp } = H;
+  const MONO = "'JetBrains Mono', 'DejaVu Sans Mono', monospace";
+  const DARK = "#1F2A33", DARK2 = "#2A3742", KWC = "#F2B134", STRC = "#A5D6A7", NUMC = "#8FD0E6";
+  const KW = /^(if|else|elif|for|in|while|def|return|print|input|int|str|range|True|False)$/;
+
+  function mono(ctx, s, x, y, size, opt = {}) {
+    ctx.font = `${opt.weight || 600} ${size}px ${MONO}`; ctx.fillStyle = opt.color || "#FFFFFF"; ctx.textAlign = opt.align || "left"; ctx.textBaseline = "alphabetic"; ctx.fillText(s, x, y);
+    return ctx.measureText(s).width;
+  }
+  // satu baris kode dengan pewarnaan sintaks
+  function codeLine(ctx, t, x, y, size) {
+    let cx = x;
+    t.split(/("[^"]*"|\s+|\(|\)|:|,|\+|>|=)/).forEach(tok => {
+      if (!tok) return;
+      const col = KW.test(tok) ? KWC : /^".*"$/.test(tok) ? STRC : /^-?\d+$/.test(tok) ? NUMC : "#FFFFFF";
+      cx += mono(ctx, tok, cx, y, size, { color: col, weight: KW.test(tok) ? 800 : 600 });
+    });
+  }
+
+  // ---------- panel kode ----------
+  // st: {ln (baris aktif 1-based), prev (baris sebelumnya), u (0..1 perpindahan), mark: {baris: "bad"|"good"}, dim}
+  function codePanel(ctx, x, y, w, lines, st = {}, opt = {}) {
+    const rh = opt.rh || 64, size = opt.size || 29, head = opt.head || 56, h = head + rh * lines.length + 18;
+    card(ctx, x, y, w, h, { fill: DARK, r: 18 });
+    ctx.fillStyle = DARK2; rr(ctx, x, y, w, head, 18); ctx.fill(); ctx.fillRect(x, y + head - 18, w, 18);
+    [C.bad, C.accent, C.good].forEach((c, i) => { ctx.fillStyle = c; ctx.beginPath(); ctx.arc(x + 28 + i * 26, y + head / 2, 8, 0, Math.PI * 2); ctx.fill(); });
+    text(ctx, opt.title || "Editor Python · kas_kelas.py", x + 112, y + head / 2 + 8, 22, { weight: 800, color: "#C9D6DE" });
+    const ly = i => y + head + 8 + i * rh, gx = x + 92;
+    // sorotan baris aktif (bergerak halus dari baris sebelumnya)
+    if (st.ln) {
+      const from = st.prev || st.ln, u = st.u == null ? 1 : st.u, yy = lerp(ly(from - 1), ly(st.ln - 1), u);
+      ctx.fillStyle = "rgba(242,177,52,0.22)"; rr(ctx, x + 8, yy + 2, w - 16, rh - 4, 10); ctx.fill();
+      // panah lompat (bila tidak berurutan)
+      if (st.prev && st.prev !== st.ln && st.prev !== st.ln - 1 && u < 1) {
+        const a = ease(clamp(u * 1.6, 0, 1)), y1 = ly(st.prev - 1) + rh / 2, y2 = ly(st.ln - 1) + rh / 2;
+        ctx.save(); ctx.globalAlpha = 1 - ease(clamp((u - 0.6) / 0.4, 0, 1)); ctx.strokeStyle = KWC; ctx.lineWidth = 5; ctx.beginPath();
+        const bend = x + 20 - 0 * a; ctx.moveTo(x + 52, y1); ctx.bezierCurveTo(bend, y1, bend, lerp(y1, y2, a), x + 52, lerp(y1, y2, a)); ctx.stroke(); ctx.restore();
+      }
+      // panah kuning
+      const ay = yy + rh / 2; ctx.fillStyle = KWC; ctx.beginPath(); ctx.moveTo(x + 50, ay - 15); ctx.lineTo(x + 74, ay); ctx.lineTo(x + 50, ay + 15); ctx.closePath(); ctx.fill();
+    }
+    lines.forEach((t, i) => {
+      const yy = ly(i), m = (st.mark || {})[i + 1];
+      if (m) { ctx.fillStyle = m === "bad" ? "rgba(217,68,59,0.38)" : "rgba(46,158,91,0.40)"; rr(ctx, x + 84, yy + 4, w - 96, rh - 8, 8); ctx.fill(); }
+      mono(ctx, String(i + 1), x + 34, yy + rh / 2 + 9, 20, { align: "center", color: st.ln === i + 1 ? KWC : "#6E808C", weight: 700 });
+      ctx.save(); if (st.dim && st.dim.includes(i + 1)) ctx.globalAlpha = 0.35; codeLine(ctx, t, gx + 8, yy + rh / 2 + 10, size); ctx.restore();
+    });
+    return { h, ly: i => ly(i - 1), rh, gx };
+  }
+
+  // ---------- panel memori ----------
+  const TCOL = { int: "#2E7E9A", str: "#2E9E5B", float: "#7E57C2", bool: "#D9822B", list: "#B57A12" };
+  function memPanel(ctx, x, y, w, vars, prev, opt = {}) {
+    const rh = 64, h = opt.h || 112 + rh * 4;
+    card(ctx, x, y, w, h, { fill: "#FFFFFF", stroke: "#CFDCD5", lw: 3, r: 18 });
+    text(ctx, "MEMORI", x + 24, y + 42, 24, { weight: 900, color: C.kikoDark });
+    const cn = x + 24, cv = x + 230, ct = x + w - 150;
+    [["nama", cn], ["nilai", cv], ["tipe", ct]].forEach(([s, cx]) => text(ctx, s, cx, y + 84, 19, { weight: 800, color: C.ink2 }));
+    ctx.strokeStyle = "#E1E8E4"; ctx.lineWidth = 2; ctx.beginPath(); ctx.moveTo(x + 16, y + 96); ctx.lineTo(x + w - 16, y + 96); ctx.stroke();
+    const pm = {}; (prev || []).forEach(([k, v]) => pm[k] = v);
+    if (!vars.length && opt.empty) text(ctx, opt.empty, x + w / 2, y + 170, 24, { align: "center", weight: 700, color: C.muted });
+    vars.forEach(([k, v, t], i) => {
+      const ry = y + 104 + i * rh, isNew = prev && !(k in pm), chg = prev && k in pm && pm[k] !== v, flash = opt.flash == null ? 1 : opt.flash;
+      if ((isNew || chg) && flash > 0) { ctx.save(); ctx.globalAlpha = flash; ctx.fillStyle = "#FFF3D6"; rr(ctx, x + 10, ry, w - 20, rh - 6, 10); ctx.fill(); ctx.strokeStyle = C.accent; ctx.lineWidth = 3; rr(ctx, x + 10, ry, w - 20, rh - 6, 10); ctx.stroke(); ctx.restore(); }
+      if (opt.badRow === k) { ctx.strokeStyle = C.bad; ctx.lineWidth = 5; rr(ctx, x + 10, ry, w - 20, rh - 6, 10); ctx.stroke(); }
+      mono(ctx, k, cn, ry + 40, 28, { color: C.ink, weight: 800 });
+      mono(ctx, v === "?" ? "?" : v, cv, ry + 40, 30, { color: v === "?" ? C.muted : t === "str" ? C.good : C.ink, weight: 800 });
+      if (t) { const c = TCOL[t] || C.ink2; card(ctx, ct, ry + 10, 110, 40, { fill: c, r: 20 }); mono(ctx, t, ct + 55, ry + 38, 22, { align: "center", color: "#FFFFFF", weight: 800 }); }
+      if (isNew && flash > 0) text(ctx, "baru", ct - 18, ry + 38, 18, { align: "right", weight: 900, color: C.accentDark });
+    });
+    return h;
+  }
+
+  // ---------- layar keluaran ----------
+  function outPanel(ctx, x, y, w, h, lines, opt = {}) {
+    card(ctx, x, y, w, h, { fill: "#0E1418", stroke: "#4A5A66", lw: 3, r: 16 });
+    text(ctx, "KELUARAN", x + 20, y + 32, 18, { weight: 900, color: NUMC });
+    const max = opt.max || Math.floor((h - 46) / 36), show = lines.slice(-max);
+    show.forEach((segs, i) => {
+      let cx = x + 22; const yy = y + 70 + i * 36;
+      segs.forEach(([t, kind]) => { cx += mono(ctx, t, cx, yy, 25, { color: kind === "in" ? KWC : kind === "err" ? "#FF8A80" : "#FFFFFF", weight: kind === "in" ? 800 : 600 }); });
+      if (opt.newLast && i === show.length - 1 && opt.newLast > 0) { ctx.save(); ctx.globalAlpha = opt.newLast * 0.25; ctx.fillStyle = KWC; ctx.fillRect(x + 10, yy - 28, w - 20, 36); ctx.restore(); }
+    });
+    if (lines.length > max) text(ctx, "▲ baris lebih atas", x + w - 20, y + 32, 16, { align: "right", weight: 700, color: "#6E808C" });
+  }
+
+  // ---------- tata letak pelacak ----------
+  const CODE = { x: 110, y: 124, w: 890 }, MEM = { x: 1030, y: 124, w: 780 }, NOTE = { x: 1030, y: 504, w: 780, h: 106 }, OUT = { x: 1030, y: 624, w: 780, h: 202 };
+  const progOf = run => J.programs[J.runs[run].prog];
+  function tracer(ctx, run, k, u, opt = {}) {
+    const R = J.runs[run], steps = R.steps, st = k >= 0 ? steps[k] : null, pv = k > 0 ? steps[k - 1] : null;
+    const mark = R.prog === "bug" ? { 3: "bad" } : {};
+    codePanel(ctx, CODE.x, CODE.y, CODE.w, progOf(run), st ? { ln: st.ln, prev: pv ? pv.ln : null, u, mark } : { mark });
+    if (!opt.noStep) text(ctx, st ? `langkah ${k + 1} dari ${steps.length}` : `${steps.length} langkah`, CODE.x + CODE.w / 2, 812, 24, { align: "center", weight: 800, color: C.ink2 });
+    memPanel(ctx, MEM.x, MEM.y, MEM.w, st ? st.vars : [], st ? (pv ? pv.vars : []) : null, { empty: "belum ada variabel", badRow: opt.badRow });
+    card(ctx, NOTE.x, NOTE.y, NOTE.w, NOTE.h, { fill: C.bg2, r: 16 });
+    if (st) { text(ctx, "baris " + st.ln, NOTE.x + 22, NOTE.y + 32, 20, { weight: 900, color: C.kikoDark }); para(ctx, st.note, NOTE.x + 22, NOTE.y + 64, 24, NOTE.w - 44, { weight: 800, lh: 1.2, color: C.ink }); }
+    else { text(ctx, "masukan: " + R.inputs.join(", "), NOTE.x + 22, NOTE.y + 70, 28, { weight: 800, color: C.ink, fit: NOTE.w - 44 }); }
+    const newOut = st && pv && st.out.length > pv.out.length ? 1 - clamp(u, 0, 1) * 0.6 : 0;
+    outPanel(ctx, OUT.x, OUT.y, OUT.w, OUT.h, st ? st.out : [], { newLast: newOut });
+  }
+  function thinking(ctx, x, y, l, dur) {
+    const frac = clamp(l / Math.max(1, dur), 0, 1); ctx.strokeStyle = "#D7E2DC"; ctx.lineWidth = 12; ctx.beginPath(); ctx.arc(x, y, 34, 0, Math.PI * 2); ctx.stroke();
+    ctx.strokeStyle = C.accent; ctx.beginPath(); ctx.arc(x, y, 34, -Math.PI / 2, -Math.PI / 2 + frac * Math.PI * 2); ctx.stroke();
+    text(ctx, "?", x, y + 14, 40, { align: "center", weight: 900, color: C.accentDark });
+  }
+  const at = (b, f) => (b.audio || b.dur) * f;
+  const VARNO = { v1: 1, v2: 2, v3: 3, v4: 4 };
+  function callout(ctx, s, x, y, tx, ty, opt = {}) { L.callout(ctx, x, y, s, tx, ty, opt); }
+
+  // halaman latihan F11.2 (ponsel), program 1 pelacak dari page.html
+  const PAGE_PROG = ["total = 0", "for t in [20000, 15000, 10000]:", "    total = total + t", "print(total)"];
+  const PAGE_STEPS = [{ ln: 0, v: { total: 0 } }, { ln: 1, v: { t: 20000, total: 0 } }, { ln: 2, v: { t: 20000, total: 20000 } }, { ln: 1, v: { t: 15000, total: 20000 } }, { ln: 2, v: { t: 15000, total: 35000 } }, { ln: 1, v: { t: 10000, total: 35000 } }, { ln: 2, v: { t: 10000, total: 45000 } }, { ln: 3, v: { t: 10000, total: 45000 }, out: "45000" }];
+  function pill(ctx, x, y, w, h, s, opt = {}) {
+    card(ctx, x, y, w, h, { fill: opt.on ? C.accent : opt.fill || "#FFFFFF", stroke: opt.on ? C.accent : "#CFDCD5", lw: 2, r: 10 });
+    text(ctx, s, x + w / 2, y + h / 2 + 7, opt.size || 19, { align: "center", weight: 900, color: opt.on ? "#FFFFFF" : C.ink, fit: w - 16 });
+  }
+
+  Object.assign(K.SCENES, {
+    // versi ringkas untuk Short: kode besar, memori sebagai kartu mendatar, baris keluaran terakhir (wilayah 100–1100 × 120–1000)
+    k18s_jalan(ctx, b, l) {
+      const R = J.runs[b.run], steps = R.steps, [a, z] = b.steps || [-1, -1], m = z - a + 1, t0 = 0.3, per = Math.max(0.5, (at(b, 0.92) - t0) / Math.max(1, m));
+      const j = Math.floor((l - t0) / per), k = a < 0 ? -1 : l < t0 ? a - 1 : a + clamp(j, 0, m - 1), u = l < t0 ? 1 : ease(clamp(((l - t0) - clamp(j, 0, m - 1) * per) / 0.4, 0, 1));
+      const st = k >= 0 ? steps[k] : null, pv = k > 0 ? steps[k - 1] : null, mark = b.mark ? { [b.mark[0]]: b.mark[1] } : R.prog === "bug" ? { 3: "bad" } : {};
+      codePanel(ctx, 100, 120, 1000, progOf(b.run), st ? { ln: st.ln, prev: pv ? pv.ln : null, u, mark } : { mark }, { rh: 56, size: 31, head: 52 });
+      const vars = st ? st.vars : [], pm = {}; (pv ? pv.vars : []).forEach(([k2, v]) => pm[k2] = v);
+      ["n", "i", "total", "jumlah"].forEach((name, i) => {
+        const x = 100 + i * 254, y = 730, v = vars.find(q => q[0] === name), chg = v && pv && pm[name] !== v[1];
+        card(ctx, x, y, 238, 150, { fill: chg ? "#FFF3D6" : "#FFFFFF", stroke: chg ? C.accent : name === b.focus ? C.bad : "#CFDCD5", lw: chg || name === b.focus ? 5 : 3, r: 16 });
+        mono(ctx, name, x + 20, y + 44, 30, { color: C.kikoDark, weight: 800 });
+        mono(ctx, v ? v[1] : "–", x + 20, y + 100, 38, { color: C.ink, weight: 800 });
+        if (v) { card(ctx, x + 20, y + 112, 76, 30, { fill: TCOL[v[2]] || C.ink2, r: 15 }); mono(ctx, v[2], x + 58, y + 134, 20, { align: "center", weight: 800 }); }
+      });
+      const last = st && st.out.length ? st.out[st.out.length - 1] : null;
+      card(ctx, 100, 900, 1000, 84, { fill: "#0E1418", r: 16 });
+      let cx = 126; (last || [["keluaran: …", "out"]]).forEach(([t, kind]) => { cx += mono(ctx, t, cx, 954, 32, { color: kind === "in" ? KWC : last ? "#FFFFFF" : "#6E808C", weight: 700 }); });
+    },
+    k18_tujuan(ctx, b, l) {
+      card(ctx, 160, 150, 1600, 660);
+      text(ctx, "SETELAH MENONTON, KAMU BISA:", 260, 240, 30, { weight: 900, color: C.accentDark });
+      ["melacak program baris demi baris", "membaca isi memori dan tipe datanya", "menebak cabang if yang dijalankan", "menemukan bug dari jejak memori"].forEach((s, i) => {
+        const u = ease((l - 0.6 - i * 0.7) / 0.5); if (u <= 0) return; ctx.globalAlpha = u;
+        card(ctx, 260, 280 + i * 104, 800, 84, { fill: C.bg2, r: 16 }); text(ctx, "✓", 300, 336 + i * 104, 36, { weight: 900, color: C.good }); text(ctx, s, 350, 334 + i * 104, 32, { weight: 800, fit: 690 }); ctx.globalAlpha = 1;
+      });
+      const v = J.runs.v1.steps[5];
+      ctx.save(); ctx.translate(1120, 290); ctx.scale(0.58, 0.58);
+      codePanel(ctx, 0, 0, 890, J.programs.benar, { ln: v.ln }); ctx.restore();
+      ctx.save(); ctx.translate(1120, 680); ctx.scale(0.58, 0.58); card(ctx, 0, 0, 890, 150, { fill: "#fff", stroke: "#CFDCD5", lw: 3, r: 18 });
+      mono(ctx, "total", 30, 90, 40, { color: C.ink, weight: 800 }); mono(ctx, "20000", 300, 90, 42, { color: C.ink, weight: 800 }); card(ctx, 680, 52, 150, 54, { fill: TCOL.int, r: 27 }); mono(ctx, "int", 755, 90, 30, { align: "center", weight: 800 }); ctx.restore();
+    },
+    k18_prasyarat(ctx, b, l) {
+      card(ctx, 160, 150, 1600, 660);
+      text(ctx, "EPISODE YANG DILENGKAPI", 960, 240, 32, { align: "center", weight: 900, color: C.accentDark });
+      card(ctx, 330, 290, 620, 360, { fill: C.bg2, r: 22 });
+      text(ctx, "F11.2", 640, 380, 64, { align: "center", weight: 900, color: C.kiko });
+      para(ctx, "Dari Pseudocode ke Kode", 640, 450, 38, 540, { align: "center", weight: 800, lh: 1.2 });
+      text(ctx, "kelas XI", 640, 600, 26, { align: "center", weight: 700, color: C.ink2 });
+      [["input() dan int()", "membaca masukan"], ["if … else", "percabangan"], ["for … in range()", "perulangan"]].forEach(([s, sub], i) => {
+        const u = ease((l - 1 - i * 0.6) / 0.4); ctx.globalAlpha = Math.max(0.15, u);
+        card(ctx, 1030, 290 + i * 120, 560, 100, { fill: DARK, r: 16 }); mono(ctx, s, 1060, 334 + i * 120, 30, { color: KWC, weight: 800 });
+        text(ctx, sub, 1060, 372 + i * 120, 22, { weight: 700, color: "#C9D6DE" }); ctx.globalAlpha = 1;
+      });
+      kiko(ctx, 1650, 720, 100, 0, { wave: l });
+    },
+    k18_kenal(ctx, b, l) {
+      const prog = J.programs.benar;
+      if (b.step === 1) {
+        const parts = [[[1], "membaca banyaknya transaksi", 0.12], [[2, 3, 4], "menyiapkan total, lalu mengulang n kali", 0.32], [[5, 6, 7, 8], "positif ditambah, selain itu ditolak", 0.52], [[9], "mencetak total kas", 0.72]];
+        let on = -1; parts.forEach((p, i) => { if (l > at(b, p[2])) on = i; });
+        const mark = {}; if (on >= 0) parts[on][0].forEach(n => mark[n] = "good");
+        codePanel(ctx, CODE.x, CODE.y, CODE.w, prog, { mark });
+        parts.forEach(([ls, s], i) => {
+          const y = 150 + i * 150; ctx.save(); ctx.globalAlpha = i <= on ? 1 : 0.18;
+          card(ctx, 1060, y, 740, 120, { fill: i === on ? "#FFF3D6" : "#FFFFFF", stroke: i === on ? C.accent : "#CFDCD5", lw: 3, r: 16 });
+          text(ctx, "baris " + (ls.length > 1 ? ls[0] + "–" + ls[ls.length - 1] : ls[0]), 1090, y + 46, 22, { weight: 900, color: C.kikoDark });
+          text(ctx, s, 1090, y + 90, 30, { weight: 800, fit: 680 }); ctx.restore();
+        });
+        text(ctx, "Ketik di Colab. Bisa juga di IDLE.", 1430, 790, 24, { align: "center", weight: 800, color: C.ink2 });
+        return;
+      }
+      const k = 3; tracer(ctx, "v1", k, 1, { noStep: true });
+      const a = b.audio || b.dur;
+      if (l > a * 0.08) callout(ctx, "panah = baris yang sedang dijalankan", 330, 768, CODE.x + 70, CODE.y + 56 + 8 + 3 * 64 + 32, { fill: "#FFF3D6", maxW: 800, size: 24 });
+      if (l > a * 0.32) { ctx.strokeStyle = C.accent; ctx.lineWidth = 6; rr(ctx, MEM.x - 6, MEM.y - 6, MEM.w + 12, 112 + 64 * 4 + 12, 20); ctx.stroke(); }
+      if (l > a * 0.75) { ctx.strokeStyle = C.accent; ctx.lineWidth = 6; rr(ctx, OUT.x - 6, OUT.y - 6, OUT.w + 12, OUT.h + 12, 20); ctx.stroke(); }
+    },
+    k18_tanya(ctx, b, l) {
+      const R = J.runs[b.run], bug = R.prog === "bug";
+      codePanel(ctx, CODE.x, CODE.y, CODE.w, progOf(b.run), { mark: bug ? { 3: "bad" } : {} });
+      if (bug) text(ctx, "baris 3 ikut menjorok ke dalam for", CODE.x + CODE.w / 2, 812, 24, { align: "center", weight: 900, color: C.bad });
+      card(ctx, MEM.x, MEM.y, MEM.w, 702, { fill: "#FFFFFF", r: 18 });
+      text(ctx, "VARIASI " + VARNO[b.run], MEM.x + MEM.w / 2, MEM.y + 60, 30, { align: "center", weight: 900, color: C.accentDark });
+      text(ctx, "masukan yang diketik:", MEM.x + 40, MEM.y + 130, 24, { weight: 800, color: C.ink2 });
+      const labels = ["banyak transaksi", "jumlah 1", "jumlah 2", "jumlah 3"];
+      R.inputs.forEach((v, i) => {
+        const u = ease((l - 0.6 - i * 0.5) / 0.4), y = MEM.y + 160 + i * 86; ctx.globalAlpha = Math.max(0, u);
+        card(ctx, MEM.x + 40, y, MEM.w - 80, 70, { fill: i === 0 ? C.bg2 : "#F4F7F5", r: 12 });
+        text(ctx, labels[i], MEM.x + 64, y + 45, 24, { weight: 700, color: C.ink2 }); mono(ctx, v, MEM.x + MEM.w - 64, y + 47, 32, { align: "right", color: C.accentDark, weight: 800 });
+        ctx.globalAlpha = 1;
+      });
+      const q = b.run === "v3" ? "Muncul di memori: i dan jumlah?" : b.run === "v2" ? "Bagaimana nasib -5000?" : "Total kas = ?";
+      card(ctx, MEM.x + 40, MEM.y + 560, MEM.w - 80, 100, { fill: "#FFF3D6", stroke: C.accent, lw: 3, r: 16 });
+      text(ctx, q, MEM.x + MEM.w / 2, MEM.y + 624, 32, { align: "center", weight: 900, color: C.accentDark, fit: MEM.w - 120 });
+    },
+    k18_tebak(ctx, b, l) {
+      const R = J.runs[b.run];
+      codePanel(ctx, CODE.x, CODE.y, CODE.w, progOf(b.run), { mark: R.prog === "bug" ? { 3: "bad" } : {} });
+      text(ctx, "masukan: " + R.inputs.join(", "), CODE.x + CODE.w / 2, 812, 26, { align: "center", weight: 900, color: C.accentDark });
+      const names = b.run === "v3" ? [["n", "?", ""], ["total", "?", ""], ["i", "?", ""], ["jumlah", "?", ""]] : [["n", "?", ""], ["total", "?", ""], ["i", "?", ""], ["jumlah", "?", ""]];
+      memPanel(ctx, MEM.x, MEM.y, MEM.w, names, null, {});
+      card(ctx, NOTE.x, NOTE.y, NOTE.w, NOTE.h, { fill: "#FFF3D6", stroke: C.accent, lw: 3, r: 16 });
+      text(ctx, "Tebak isi memori dan keluarannya!", NOTE.x + NOTE.w / 2, NOTE.y + 72, 30, { align: "center", weight: 900, color: C.accentDark });
+      outPanel(ctx, OUT.x, OUT.y, OUT.w, OUT.h, [[["Total kas: ", "out"], ["?", "in"]]]);
+      thinking(ctx, MEM.x + MEM.w - 60, MEM.y + 50, l, b.dur);
+    },
+    k18_jalan(ctx, b, l) {
+      const [a, z] = b.steps, m = z - a + 1, t0 = 0.4, per = Math.max(0.7, (at(b, 0.92) - t0) / m);
+      const j = Math.floor((l - t0) / per), k = l < t0 ? a - 1 : a + clamp(j, 0, m - 1), u = l < t0 ? 1 : clamp(((l - t0) - clamp(j, 0, m - 1) * per) / 0.45, 0, 1);
+      tracer(ctx, b.run, k, ease(u), { badRow: b.run === "v4" && k >= 0 && J.runs.v4.steps[k].ln === 3 && J.runs.v4.steps[k].before.some(v => v[0] === "total") ? "total" : null });
+    },
+    k18_str(ctx, b, l) {
+      const lines = J.programs.benar.slice(); lines[3] = '    jumlah = input("Jumlah: ")';
+      codePanel(ctx, CODE.x, CODE.y, CODE.w, lines, { ln: 5, mark: { 4: "bad" } });
+      memPanel(ctx, MEM.x, MEM.y, MEM.w, [["n", "1", "int"], ["total", "0", "int"], ["i", "0", "int"], ["jumlah", "'20000'", "str"]], null, { badRow: "jumlah" });
+      card(ctx, NOTE.x, NOTE.y, NOTE.w, NOTE.h, { fill: C.goodBg, stroke: C.good, lw: 3, r: 16 });
+      text(ctx, "Jawaban: str (teks), bukan int", NOTE.x + NOTE.w / 2, NOTE.y + 72, 32, { align: "center", weight: 900, color: C.good });
+      if (l > at(b, 0.35)) {
+        card(ctx, OUT.x, OUT.y, OUT.w, OUT.h, { fill: C.badBg, stroke: C.bad, lw: 4, r: 16 });
+        text(ctx, "⚠ error di baris 5", OUT.x + 24, OUT.y + 44, 26, { weight: 900, color: C.bad });
+        mono(ctx, "TypeError: '>' not supported", OUT.x + 24, OUT.y + 100, 26, { color: C.ink, weight: 700 });
+        mono(ctx, "between instances of 'str'", OUT.x + 24, OUT.y + 140, 26, { color: C.ink, weight: 700 });
+        mono(ctx, "and 'int'", OUT.x + 24, OUT.y + 180, 26, { color: C.ink, weight: 700 });
+      }
+    },
+    k18_fix(ctx, b, l) {
+      card(ctx, 110, 124, 1700, 702, { fill: "#FFFFFF", r: 20 });
+      const bug = J.programs.bug, ok = J.programs.benar;
+      text(ctx, "SALAH: total = 0 di dalam for", 480, 178, 26, { align: "center", weight: 900, color: C.bad });
+      text(ctx, "BENAR: total = 0 sebelum for", 1440, 178, 26, { align: "center", weight: 900, color: C.good });
+      codePanel(ctx, 140, 200, 690, bug, { mark: { 3: "bad" } }, { rh: 40, size: 21, head: 44, title: "versi Dito" });
+      const u = ease((l - at(b, 0.5)) / 0.6);
+      codePanel(ctx, 1090, 200, 690, ok, { mark: u > 0 ? { 2: "good" } : {} }, { rh: 40, size: 21, head: 44, title: "versi diperbaiki" });
+      H.arrowIcon(ctx, "east", 960, 380, 70, C.accent);
+      // jejak nilai total dari kedua jalannya program (masukan variasi 1)
+      const seq = run => { const out = []; let last = null; J.runs[run].steps.forEach(s => { const t = s.vars.find(v => v[0] === "total"); if (t && t[1] !== last) { out.push(t[1]); last = t[1]; } }); return out; };
+      const row = (vals, x, y, col) => vals.forEach((v, i) => { const w = 120, xx = x + i * (w + 44); card(ctx, xx, y, w, 60, { fill: v === "0" && i > 0 ? C.badBg : "#F4F7F5", stroke: v === "0" && i > 0 ? C.bad : "#CFDCD5", lw: 3, r: 12 }); mono(ctx, v, xx + w / 2, y + 41, 26, { align: "center", color: C.ink, weight: 800 }); if (i) H.arrowIcon(ctx, "east", xx - 22, y + 30, 24, C.ink2); });
+      text(ctx, "jejak total:", 160, 690, 24, { weight: 900, color: C.ink2 }); row(seq("v4"), 160, 712, C.bad);
+      if (u > 0) { ctx.globalAlpha = u; text(ctx, "jejak total:", 1110, 690, 24, { weight: 900, color: C.ink2 }); row(seq("v1"), 1110, 712, C.good); ctx.globalAlpha = 1; }
+    },
+    k18_latihan(ctx, b, l) {
+      const PX = 210, PY = 128, PW = 600, PH = 694;
+      ctx.fillStyle = "#2B3A44"; rr(ctx, PX, PY, PW, PH, 36); ctx.fill(); ctx.fillStyle = "#F4F7F5"; rr(ctx, PX + 14, PY + 14, PW - 28, PH - 28, 26); ctx.fill();
+      ctx.save(); rr(ctx, PX + 14, PY + 14, PW - 28, PH - 28, 26); ctx.clip();
+      const x = PX + 36, w = PW - 72;
+      card(ctx, PX + 14, PY + 14, PW - 28, 46, { fill: "#FFFFFF", r: 0 }); text(ctx, "belajar-informatika.vercel.app/f112", PX + PW / 2, PY + 45, 19, { align: "center", weight: 800, color: C.kikoDark });
+      let y = PY + 100; text(ctx, "Penerjemah, pelacak, pemburu bug", x, y, 25, { weight: 900, fit: w });
+      const a = b.audio || b.dur, c1 = a * 0.15, lvl = l > c1 + 0.2 ? 1 : 0;
+      const B2 = { x: x + 180, y: y + 22, w: 190, h: 46 };
+      pill(ctx, x, y + 22, 170, 46, "1 Penerjemah", { on: lvl === 0 }); pill(ctx, B2.x, B2.y, B2.w, B2.h, "2 Pelacak Python", { on: lvl === 1 }); pill(ctx, x + 380, y + 22, w - 380, 46, "3 Pemburu bug", {});
+      y += 100;
+      let BL = null;
+      if (lvl === 0) {
+        para(ctx, "Sepuluh baris pseudocode. Pilih baris Python yang tepat untuk tiap baris.", x, y, 19, w, { weight: 700, color: C.ink2, lh: 1.3 }); y += 70;
+        card(ctx, x, y, w, 60, { fill: "#E6EEEA", r: 10 }); mono(ctx, "BACA jumlah", x + 16, y + 39, 22, { color: C.ink, weight: 700 }); y += 76;
+        ['jumlah = input()', 'jumlah = int(input())', 'print(jumlah)'].forEach((t, i) => { card(ctx, x, y + i * 58, w, 48, { fill: "#fff", stroke: "#CFDCD5", lw: 2, r: 10 }); mono(ctx, t, x + 14, y + i * 58 + 32, 20, { color: C.ink, weight: 700 }); });
+      } else {
+        const presses = clamp(Math.floor((l - c1 - 1.2) / (a * 0.1)) + 1, 0, 5), si = presses, st = PAGE_STEPS[si], pv = si > 0 ? PAGE_STEPS[si - 1] : null;
+        text(ctx, `Program 1 dari 4 · langkah ${si + 1} dari ${PAGE_STEPS.length}`, x, y, 17, { weight: 800, color: C.ink2 }); y += 16;
+        card(ctx, x, y, w, 30 + PAGE_PROG.length * 40, { fill: DARK, r: 12 });
+        PAGE_PROG.forEach((t, i) => { const yy = y + 16 + i * 40; if (st.ln === i) { ctx.fillStyle = "rgba(242,177,52,0.3)"; rr(ctx, x + 6, yy, w - 12, 36, 6); ctx.fill(); } mono(ctx, String(i + 1), x + 22, yy + 26, 16, { align: "center", color: "#6E808C" }); codeLine(ctx, t, x + 44, yy + 26, 19); });
+        y += 30 + PAGE_PROG.length * 40 + 14;
+        ["t", "total"].forEach((k, i) => { const chg = pv && pv.v[k] !== st.v[k]; card(ctx, x + i * (w / 2 + 4), y, w / 2 - 4, 70, { fill: chg ? "#FFF3D6" : "#FFFFFF", stroke: chg ? C.accent : "#CFDCD5", lw: chg ? 3 : 2, r: 10 }); text(ctx, k, x + i * (w / 2 + 4) + 16, y + 28, 18, { weight: 900, color: C.kikoDark }); mono(ctx, st.v[k] !== undefined ? String(st.v[k]) : "–", x + i * (w / 2 + 4) + 16, y + 58, 24, { color: C.ink, weight: 800 }); });
+        y += 86;
+        BL = { x: x + 85, y: y + 23 };
+        pill(ctx, x, y, 170, 46, "▶ Langkah", { fill: "#FFE7B0", size: 18 }); pill(ctx, x + 180, y, 180, 46, "↺ Dari awal", { size: 18 });
+      }
+      ctx.restore();
+      const P0 = { x: 760, y: 760 }, P2 = { x: B2.x + B2.w / 2, y: B2.y + B2.h / 2 }, PL = BL || { x: PX + 36 + 85, y: 0 };
+      let p = P0, click = 0;
+      if (l < c1) { const u = ease(l / c1); p = { x: lerp(P0.x, P2.x, u), y: lerp(P0.y, P2.y, u) }; }
+      else if (l < c1 + 1.2) { const u = ease((l - c1 - 0.4) / 0.8); p = { x: lerp(P2.x, PL.x, u), y: lerp(P2.y, PL.y || P2.y, u) }; click = (l - c1) / 0.6; }
+      else { p = PL; const ph = ((l - c1 - 1.2) % (a * 0.1)) / 0.6; click = l < c1 + 1.2 + a * 0.5 ? ph : 0; }
+      L.cursor(ctx, p.x, p.y, { click });
+      card(ctx, 880, 150, 900, 400, { fill: "#FFFFFF", r: 22 });
+      text(ctx, "COBA SENDIRI DI HALAMAN LATIHAN F11.2", 920, 205, 26, { weight: 900, color: C.accentDark });
+      ["Tekan 2 Pelacak Python.", "Tebak isi memori, lalu tekan Langkah.", "Jawab pertanyaan di akhir program.", "Ketik program kas kelas di Colab."].forEach((t, i) => {
+        const yy = 260 + i * 70, now = (i === 0 && l < c1 + 0.6) || (i === 1 && l >= c1 + 0.6 && l < a * 0.45) || (i === 2 && l >= a * 0.45 && l < a * 0.6) || (i === 3 && l >= a * 0.6);
+        if (now) { ctx.fillStyle = "#FFF3D6"; rr(ctx, 905, yy - 10, 850, 58, 12); ctx.fill(); }
+        ctx.fillStyle = C.kiko; ctx.beginPath(); ctx.arc(940, yy + 19, 20, 0, Math.PI * 2); ctx.fill(); text(ctx, String(i + 1), 940, yy + 28, 24, { align: "center", weight: 900, color: "#fff" });
+        text(ctx, t, 978, yy + 29, 27, { weight: 800, fit: 770 });
+      });
+      card(ctx, 880, 580, 900, 230, { fill: "#FFF9E0", r: 22 });
+      text(ctx, "Tugas nyata", 920, 632, 28, { weight: 900 });
+      para(ctx, "Jalankan program kas kelas di Colab dengan masukanmu sendiri. Sebelum menekan Enter, tulis tebakan isi memori di tabel pelacakan.", 920, 680, 26, 820, { weight: 700, lh: 1.3 });
+    }
+  });
+})(typeof window !== "undefined" ? window : globalThis);
+</script>
+<script>/* Inti halaman latihan: pemutar (kanvas + narasi), tombol suara nyala/mati (berpindah antara timeline suara dan teks),
+   kuis dengan petunjuk, dan kemajuan di localStorage (perangkat ini saja).
+   Pakai:  const P = PageCore({ suara: TIMELINE_SUARA_atau_null, teks: TIMELINE_TEKS });
+   Episode menambahkan latihannya sendiri lewat P.$, P.K, P.H, P.progress, P.save(), P.speed(), P.onProgress(fn). */
+function PageCore(TLS, opt = {}) {
+  const $ = id => document.getElementById(id);
+  const K = Kiko, H = K.helpers;
+  let voice = !!TLS.suara; let TL = voice ? TLS.suara : TLS.teks;
+  // ---------- progress storage (per device only) ----------
+  const KEY = opt.key || TL.episode.replace(/\./g, "").toLowerCase() + "-progress";   // D7.5 -> "d75-progress"
+  let progress = { quiz: {} };
+  try { const s = localStorage.getItem(KEY); if (s) progress = { quiz: {}, ...JSON.parse(s) }; } catch (e) {}
+  const extras = [];
+  function renderProgress() {
+    const el = $("progress"); if (!el) return; el.innerHTML = "";
+    Object.keys(TL.quizzes).forEach((id, i) => { const s = document.createElement("span"); s.textContent = "Cek " + (i + 1); s.className = progress.quiz[id] ? "ok" : ""; el.appendChild(s); });
+    extras.forEach(f => f(el));
+  }
+  function save() { try { localStorage.setItem(KEY, JSON.stringify(progress)); } catch (e) {} renderProgress(); }
+
+  // ---------- player ----------
+  const cv = $("screen"), ctx = cv.getContext("2d");
+  let t = 0, playing = false, last = 0, speed = 1, hasAudio = false;
+  const nar = $("nar"); nar.addEventListener("canplay", () => { hasAudio = true; }); nar.addEventListener("error", () => { hasAudio = false; });
+  function fmt(s) { s = Math.max(0, Math.floor(s)); return Math.floor(s / 60) + ":" + String(s % 60).padStart(2, "0"); }
+  function segStart(i) { return TL.beats.find(b => b.seg === i).start; }
+  function syncAudio() { if (voice && hasAudio) { try { nar.currentTime = t; } catch (e) {} } }
+  function drawNow() {
+    const b = K.draw(ctx, Math.min(t, TL.total - 0.01), TL);
+    $("barfill").style.width = (t / TL.total * 100) + "%"; $("bar").setAttribute("aria-valuenow", Math.round(t / TL.total * 100));
+    $("timelabel").textContent = fmt(t) + " / " + fmt(TL.total);
+    [...$("chapters").children].forEach((c, i) => c.classList.toggle("now", i === b.seg));
+    return b;
+  }
+  function loop(now) {
+    if (!playing) return;
+    const dt = Math.min(0.1, (now - last) / 1000); last = now; if (voice && hasAudio && !nar.paused) t = nar.currentTime; else t += dt * speed;
+    if (t >= TL.total) { t = TL.total - 0.01; setPlaying(false); }
+    drawNow(); requestAnimationFrame(loop);
+  }
+  function setPlaying(p) {
+    playing = p; $("bigplay").hidden = p; $("playbtn").textContent = p ? "❚❚ Jeda" : "▶ Putar";
+    if (p) { last = performance.now(); if (voice && hasAudio) { try { nar.currentTime = t; nar.playbackRate = speed; nar.play().catch(() => {}); } catch (e) {} } requestAnimationFrame(loop); } else nar.pause();
+  }
+  $("bigplay").addEventListener("click", () => setPlaying(true));
+  $("playbtn").addEventListener("click", () => setPlaying(!playing));
+  $("replay").addEventListener("click", () => { const b = K.beatAt(TL, t); t = segStart(b.seg); syncAudio(); drawNow(); setPlaying(true); });
+  $("slow").addEventListener("click", e => { speed = speed === 1 ? 0.8 : 1; nar.playbackRate = speed; e.currentTarget.setAttribute("aria-pressed", speed !== 1); });
+  function seekFromBar(ev) { const r = $("bar").getBoundingClientRect(); const x = (ev.touches ? ev.touches[0].clientX : ev.clientX) - r.left; t = Math.max(0, Math.min(TL.total - 0.01, x / r.width * TL.total)); syncAudio(); drawNow(); }
+  $("bar").addEventListener("click", seekFromBar);
+  $("bar").addEventListener("keydown", e => { if (e.key === "ArrowRight") { t = Math.min(TL.total - 0.01, t + 5); syncAudio(); drawNow(); } if (e.key === "ArrowLeft") { t = Math.max(0, t - 5); syncAudio(); drawNow(); } });
+  TL.segments.forEach((name, i) => { const b = document.createElement("button"); b.textContent = (i + 1) + ". " + name; b.addEventListener("click", () => { t = segStart(i); syncAudio(); drawNow(); setPlaying(true); }); $("chapters").appendChild(b); });
+  // voice on/off: switches between the narrated timeline and the reading-paced one, staying on the same beat
+  const vb = $("voice");
+  function setVoice(on) {
+    const cur = K.beatAt(TL, t);
+    voice = on && !!TLS.suara; TL = voice ? TLS.suara : TLS.teks;
+    const nb = TL.beats.find(b => b.id === cur.id) || TL.beats[0]; t = nb.start;
+    if (vb) { vb.setAttribute("aria-pressed", voice); vb.textContent = voice ? "🔊 Suara: nyala" : "🔇 Suara: mati"; }
+    if (playing) { if (voice && hasAudio) { try { nar.currentTime = t; nar.playbackRate = speed; nar.play().catch(() => {}); } catch (e) {} } else nar.pause(); }
+    drawNow();
+  }
+  if (vb) { if (!TLS.suara || !TLS.teks) vb.hidden = true; else { vb.addEventListener("click", () => setVoice(!voice)); vb.setAttribute("aria-pressed", voice); vb.textContent = voice ? "🔊 Suara: nyala" : "🔇 Suara: mati"; } }
+  drawNow();
+
+  // ---------- quiz ----------
+  const quizEl = $("quiz");
+  if (quizEl) Object.entries(TL.quizzes).forEach(([id, q], qi) => {
+    const box = document.createElement("div"); box.className = "q";
+    box.innerHTML = `<h3>${qi + 1}. ${q.q}</h3><div class="opts"></div><div class="fb"></div>`;
+    const opts = box.querySelector(".opts"), fb = box.querySelector(".fb");
+    q.options.forEach((o, i) => {
+      const b = document.createElement("button"); b.innerHTML = `<b>${"ABC"[i]}</b><span>${o}</span>`;
+      b.addEventListener("click", () => {
+        [...opts.children].forEach(c => c.classList.remove("wrong"));
+        if (i === q.answer) { b.classList.add("right"); fb.className = "fb good"; fb.textContent = "Benar! " + (q.explain || ""); progress.quiz[id] = true; save(); [...opts.children].forEach(c => c.disabled = true); }
+        else { b.classList.add("wrong"); fb.className = "fb bad"; fb.textContent = "Belum tepat. Petunjuk: " + q.hint; }
+      });
+      opts.appendChild(b);
+    });
+    if (progress.quiz[id]) { opts.children[q.answer].classList.add("right"); [...opts.children].forEach(c => c.disabled = true); fb.className = "fb good"; fb.textContent = "Sudah dijawab benar."; }
+    quizEl.appendChild(box);
+  });
+  renderProgress();
+
+  return { $, K, H, progress, save, renderProgress, speed: () => speed, timeline: () => TL,
+           onProgress(fn) { extras.push(fn); renderProgress(); } };
+}
+</script>
+<script>
+(function () {
+  const P = PageCore({ suara: {"episode": "K18", "title": "Melacak Program Python Baris demi Baris", "label": "Simulasi Konsep · K18 · Episode F11.2", "kind": "konsep", "for": ["F11.2"], "latihan": "F11.2", "hook": "melacak program Python baris demi baris, menebak isi memori dan keluarannya, lalu menemukan bug dari jejak memori.", "engine": ["../../_alat/kiko-core.js", "../../_alat/kiko-devices.js", "../../_alat/layar.js", "../../D9.1/memori.js", "../../E.7/kode.js", "../../F11.0/py.js", "../../F11.2/terjemah.js", "../../F11.2/scenes.js", "jejak.js", "scenes.js"], "parts": {"K18": {"segs": [0, 1, 2, 3, 4, 5, 6]}}, "recap": ["Panah menunjuk baris yang sedang dijalankan.", "Memori mencatat nama, nilai, dan tipe data variabel.", "Nilai yang aneh di memori adalah petunjuk bug."], "next": {"code": "K19", "title": "Saat Data Membesar", "note": "Simulasi konsep berikutnya.", "heading": "SIMULASI BERIKUTNYA"}, "youtube": {"ringkas": "Simulasi konsep: program kas kelas dalam Python dijalankan baris demi baris. Panah menunjuk baris yang sedang dijalankan, panel memori menunjukkan nama, nilai, dan tipe data setiap variabel, dan keluaran muncul di layar. Ada empat variasi: dua transaksi positif, transaksi negatif yang membuat cabang else berjalan, nol transaksi, dan satu bug salah indentasi yang terlihat dari jejak memori. Semua nilai sama dengan hasil Python sungguhan. Tiga cek pemahaman.", "belajar": ["melacak program Python baris demi baris seperti komputer menjalankannya", "membaca isi memori: nama variabel, nilai, dan tipe data (int, str)", "menebak cabang if atau else mana yang dijalankan untuk masukan tertentu", "menemukan bug salah indentasi dari jejak memori"], "cari": ["cara melacak program python baris demi baris", "tracing program python kelas 11", "belajar for dan if python untuk pemula", "cara mencari bug di python", "visualisasi variabel python"], "prasyarat": "episode F11.2 Dari Pseudocode ke Kode", "tagar": ["#Python", "#Debugging", "#Pemrograman", "#Simulasi", "#Informatika", "#SMA"]}, "segments": ["Pembuka", "Mengenal pelacak", "Variasi 1: dua transaksi", "Variasi 2: transaksi negatif", "Variasi 3: nol transaksi", "Variasi 4: satu bug", "Penutup"], "quizzes": {"q1": {"q": "Masukan jumlahnya 0. Setelah baris 5, baris mana yang dijalankan?", "options": ["Baris 6: total bertambah", "Baris 8: mencetak Ditolak", "Baris 9: mencetak total"], "answer": 1, "hint": "Hitung dulu: apakah 0 > 0 bernilai True atau False?"}, "q2": {"q": "int() di baris 4 dihapus, lalu kamu mengetik 20000. Apa tipe data jumlah?", "options": ["int", "str", "float"], "answer": 1, "hint": "Apa pun yang diketik, input() selalu memberi teks."}, "q3": {"q": "Program yang benar, n = 3, masukan 10000, 5000, dan -2000. Berapa nilai akhir total?", "options": ["13000", "15000", "17000"], "answer": 1, "hint": "Jumlah yang tidak lebih besar dari 0 ditolak dan tidak ditambahkan."}}, "beats": [{"id": "intro1", "seg": 0, "scene": "title", "hold": 0.8, "text": "Halo! Aku Kiko. Hari ini kita menjalankan sebuah program Python baris demi baris, sambil mengintip isi memorinya seperti seorang detektif.", "start": 0.0, "speech": 0.4, "audio": 9.431, "dur": 11.84}, {"id": "intro2", "seg": 0, "scene": "k18_tujuan", "hold": 0.8, "text": "Setelah menonton, kamu bisa melacak program Python baris demi baris, menebak isi memori dan keluarannya, lalu menemukan bug dari jejak memorinya.", "start": 11.84, "speech": 12.24, "audio": 9.498, "dur": 12.34}, {"id": "intro3", "seg": 0, "scene": "k18_prasyarat", "hold": 0.8, "text": "Simulasi ini melengkapi episode F11.2, Dari Pseudocode ke Kode. Kalau input, if, dan for masih terasa asing, tonton dulu episode F11.2, ya.", "start": 24.18, "speech": 24.58, "audio": 11.428, "dur": 12.928}, {"id": "k1", "seg": 1, "scene": "k18_kenal", "step": 1, "hold": 1.0, "text": "Ini program kas kelas. Program ini membaca beberapa transaksi, menjumlahkan yang positif, dan menolak yang nol atau negatif. Kamu bisa mengetiknya di Colab.", "start": 37.108, "speech": 37.508, "audio": 10.164, "dur": 13.54}, {"id": "k2", "seg": 1, "scene": "k18_kenal", "step": 2, "hold": 1.2, "text": "Panah kuning menunjuk baris yang sedang dijalankan. Panel memori mencatat setiap variabel: namanya, nilainya, dan tipe datanya. Di bawah ada layar keluaran.", "start": 50.648, "speech": 51.048, "audio": 11.118, "dur": 13.24}, {"id": "v1q", "seg": 2, "scene": "k18_tanya", "run": "v1", "hold": 0.6, "text": "Variasi pertama. Masukannya dua transaksi, yaitu dua puluh ribu dan lima belas ribu. Menurutmu, apa yang terjadi kalau programnya dijalankan? Berapa total kasnya?", "start": 63.888, "speech": 64.288, "audio": 11.485, "dur": 13.14}, {"id": "v1t", "seg": 2, "scene": "k18_tebak", "run": "v1", "hold": 2.0, "text": "Tebak dulu, lalu tulis tebakanmu di kertas.", "start": 77.028, "speech": 77.428, "audio": 3.269, "dur": 6.54}, {"id": "v1r1", "seg": 2, "scene": "k18_jalan", "run": "v1", "steps": [0, 1], "hold": 0.8, "text": "Baris satu meminta banyaknya transaksi. Input selalu memberi string, lalu int mengubahnya menjadi integer dua. Baris dua membuat total bernilai nol.", "start": 83.568, "speech": 83.968, "audio": 10.378, "dur": 12.34}, {"id": "v1r2", "seg": 2, "scene": "k18_jalan", "run": "v1", "steps": [2, 5], "hold": 0.8, "text": "Perulangan dimulai, dan i bernilai nol. Jumlah diisi dua puluh ribu. Dua puluh ribu lebih besar dari nol, jadi baris enam dijalankan, dan total menjadi dua puluh ribu.", "start": 95.908, "speech": 96.308, "audio": 12.345, "dur": 15.84}, {"id": "v1r3", "seg": 2, "scene": "k18_jalan", "run": "v1", "steps": [6, 11], "hold": 1.4, "text": "Putaran kedua: i bernilai satu, dan total menjadi tiga puluh lima ribu. Range sudah habis, jadi program keluar dari for dan mencetak total kas tiga puluh lima ribu.", "start": 111.748, "speech": 112.148, "audio": 11.48, "dur": 16.44}, {"id": "v2q", "seg": 3, "scene": "k18_tanya", "run": "v2", "hold": 0.6, "text": "Variasi kedua. Sekarang ada tiga transaksi: dua puluh ribu, minus lima ribu, dan lima belas ribu. Menurutmu, apa yang terjadi pada transaksi minus lima ribu?", "start": 128.188, "speech": 128.588, "audio": 11.345, "dur": 14.14}, {"id": "v2t", "seg": 3, "scene": "k18_tebak", "run": "v2", "hold": 2.0, "text": "Tebak dulu, lalu tulis tebakanmu di kertas.", "start": 142.328, "speech": 142.728, "audio": 3.336, "dur": 6.54}, {"id": "v2r1", "seg": 3, "scene": "k18_jalan", "run": "v2", "steps": [0, 5], "hold": 0.6, "text": "Putaran pertama berjalan sama seperti tadi, sehingga total menjadi dua puluh ribu.", "start": 148.868, "speech": 149.268, "audio": 5.628, "dur": 7.64}, {"id": "v2r2", "seg": 3, "scene": "k18_jalan", "run": "v2", "steps": [6, 9], "hold": 1.0, "text": "Di putaran kedua, jumlahnya minus lima ribu. Minus lima ribu tidak lebih besar dari nol, jadi baris enam dilompati. Program pindah ke else dan mencetak Ditolak.", "start": 156.508, "speech": 156.908, "audio": 11.495, "dur": 15.04}, {"id": "v2r3", "seg": 3, "scene": "k18_jalan", "run": "v2", "steps": [10, 15], "hold": 1.4, "text": "Total tetap dua puluh ribu. Putaran ketiga menambahkan lima belas ribu, sehingga total kasnya tiga puluh lima ribu, sama dengan variasi pertama.", "start": 171.548, "speech": 171.948, "audio": 9.771, "dur": 13.44}, {"id": "q1", "seg": 3, "scene": "quiz", "quiz": "q1", "hold": 4.0, "text": "Cek pemahaman. Kalau jumlah yang dimasukkan nol, baris mana yang dijalankan setelah baris lima? Pikirkan dulu.", "start": 184.988, "speech": 185.388, "audio": 8.08, "dur": 13.04}, {"id": "q1a", "seg": 3, "scene": "quiz_answer", "quiz": "q1", "hold": 1.0, "text": "Jawabannya: baris delapan, yang mencetak Ditolak. Nol lebih besar dari nol bernilai False, jadi program pindah ke cabang else.", "start": 198.028, "speech": 198.428, "audio": 9.482, "dur": 11.54}, {"id": "v3q", "seg": 4, "scene": "k18_tanya", "run": "v3", "hold": 0.6, "text": "Variasi ketiga. Menurutmu, apa yang terjadi kalau banyaknya transaksi nol? Apakah variabel i dan jumlah akan muncul di memori?", "start": 209.568, "speech": 209.968, "audio": 8.718, "dur": 11.14}, {"id": "v3t", "seg": 4, "scene": "k18_tebak", "run": "v3", "hold": 2.0, "text": "Tebak dulu, lalu tulis tebakanmu di kertas.", "start": 220.708, "speech": 221.108, "audio": 3.294, "dur": 6.54}, {"id": "v3r", "seg": 4, "scene": "k18_jalan", "run": "v3", "steps": [0, 3], "hold": 1.4, "text": "Range nol tidak berisi angka apa pun, jadi isi for tidak pernah dijalankan. Variabel i dan jumlah tidak pernah dibuat, dan program langsung mencetak total kas nol.", "start": 227.248, "speech": 227.648, "audio": 11.84, "dur": 15.94}, {"id": "q2", "seg": 4, "scene": "quiz", "quiz": "q2", "hold": 4.0, "text": "Cek pemahaman. Kalau int di baris empat dihapus, lalu kamu mengetik dua puluh ribu, apa tipe data jumlah? Pikirkan dulu.", "start": 243.188, "speech": 243.588, "audio": 9.28, "dur": 15.04}, {"id": "q2a", "seg": 4, "scene": "k18_str", "quiz": "q2", "hold": 1.2, "text": "Jawabannya: str. Input selalu memberi teks. Akibatnya, baris lima menjadi error TypeError, karena string tidak bisa dibandingkan dengan angka nol.", "start": 258.228, "speech": 258.628, "audio": 10.563, "dur": 12.463}, {"id": "v4q", "seg": 5, "scene": "k18_tanya", "run": "v4", "hold": 0.6, "text": "Variasi keempat. Dito mengetik ulang programnya, tetapi baris total sama dengan nol ikut menjorok ke dalam for. Menurutmu, apa yang terjadi dengan masukan variasi pertama?", "start": 270.691, "speech": 271.091, "audio": 11.291, "dur": 14.14}, {"id": "v4t", "seg": 5, "scene": "k18_tebak", "run": "v4", "hold": 2.0, "text": "Tebak dulu, lalu tulis tebakanmu di kertas.", "start": 284.831, "speech": 285.231, "audio": 3.432, "dur": 6.54}, {"id": "v4r1", "seg": 5, "scene": "k18_jalan", "run": "v4", "steps": [0, 5], "hold": 0.6, "text": "Putaran pertama terlihat normal. Total dibuat nol, lalu menjadi dua puluh ribu.", "start": 291.371, "speech": 291.771, "audio": 5.633, "dur": 7.64}, {"id": "v4r2", "seg": 5, "scene": "k18_jalan", "run": "v4", "steps": [6, 7], "hold": 1.2, "text": "Perhatikan memorinya di putaran kedua. Baris tiga dijalankan lagi, sehingga total kembali menjadi nol. Dua puluh ribu tadi hilang!", "start": 299.011, "speech": 299.411, "audio": 9.099, "dur": 11.74}, {"id": "v4r3", "seg": 5, "scene": "k18_jalan", "run": "v4", "steps": [8, 12], "hold": 1.4, "text": "Lalu lima belas ribu ditambahkan, dan program mencetak total kas lima belas ribu, padahal seharusnya tiga puluh lima ribu.", "start": 310.751, "speech": 311.151, "audio": 7.888, "dur": 11.94}, {"id": "v4fix", "seg": 5, "scene": "k18_fix", "hold": 1.4, "text": "Jejak memori menunjukkan total selalu kembali nol di awal setiap putaran. Perbaikannya: pindahkan total sama dengan nol ke atas for, tanpa menjorok.", "start": 322.691, "speech": 323.091, "audio": 10.631, "dur": 13.44}, {"id": "q3", "seg": 5, "scene": "quiz", "quiz": "q3", "hold": 4.0, "text": "Cek pemahaman. Program yang benar dijalankan dengan tiga transaksi: sepuluh ribu, lima ribu, dan minus dua ribu. Berapa nilai akhir total? Pikirkan dulu.", "start": 336.131, "speech": 336.531, "audio": 11.309, "dur": 16.54}, {"id": "q3a", "seg": 5, "scene": "quiz_answer", "quiz": "q3", "hold": 1.0, "text": "Jawabannya: lima belas ribu. Sepuluh ribu dan lima ribu ditambahkan, sedangkan minus dua ribu ditolak oleh cabang else.", "start": 352.671, "speech": 353.071, "audio": 8.56, "dur": 11.04}, {"id": "recap", "seg": 6, "scene": "recap", "hold": 1.5, "text": "Tiga hal untuk diingat. Panah menunjuk baris yang sedang dijalankan. Memori mencatat nama, nilai, dan tipe setiap variabel. Nilai yang aneh di memori adalah petunjuk bug.", "start": 363.711, "speech": 364.111, "audio": 12.56, "dur": 15.54}, {"id": "latihan", "seg": 6, "scene": "k18_latihan", "hold": 1.5, "text": "Di halaman latihan episode F11.2, tekan Pelacak Python, lalu tekan Langkah dan tebak isi memorinya. Setelah itu, ketik program kas kelas ini di Colab dan coba masukanmu sendiri.", "start": 379.251, "speech": 379.651, "audio": 12.768, "dur": 16.54}, {"id": "outro", "seg": 6, "scene": "outro", "hold": 2.5, "text": "Simulasi berikutnya: saat data membesar. Sampai jumpa!", "start": 395.791, "speech": 396.191, "audio": 4.471, "dur": 7.671}], "total": 403.462}, teks: null });
+})();
+</script>

@@ -66,7 +66,7 @@
       ctx.globalAlpha = st === "off" ? 0.35 : 1; text(ctx, String(v), xx + w / 2, y + h / 2 + 12, opt.size || 32, { align: "center", weight: 800 }); ctx.globalAlpha = 1;
       if (opt.idx !== false) { LK.mono(ctx, 18, 600); ctx.fillStyle = "#7F8C95"; ctx.textAlign = "center"; ctx.fillText(String(i), xx + w / 2, y + h + 24); } });
   }
-  const OUT_SZ = 21;
+  const OUT_SZ = 23;
 
   Object.assign(K.SCENES, {
     tujuan(ctx, b, l) {
@@ -97,7 +97,7 @@
       const sp = spanOf(b), f = l / sp;
       const a = nb(ctx);
       const T = typedCell(LIN, ph(l, sp, 0.2, 0.7));
-      const c = LK.cell(ctx, cx0(a), a.y + 24, cw0(a), { ...(f < 0.2 ? { lines: [""], caret: { line: 0, col: 0 } } : T), size: 26, active: true, run: "ready", blink: f < 0.7 || blinkAt(l), minLines: 5 });
+      const c = LK.cell(ctx, cx0(a), a.y + 24, cw0(a), { ...(f < 0.2 ? { lines: [""], caret: { line: 0, col: 0 } } : T), size: 30, active: true, run: "ready", blink: f < 0.7 || blinkAt(l), minLines: 5 });
       if (f < 0.2) call(ctx, 420, "Notebook baru: Cari_Urut.ipynb", 360, a.y - 30);
       if (f > 0.72) { LK.focus(ctx, codeBox(c.code, 1, "for i in range(len(daftar)):", LIN), { t: l, pad: 2 }); call(ctx, 430, "Periksa satu per satu: indeks 0, 1, 2, …", c.code.at(1, 33).x, c.code.top(1) + 20); }
       if (f > 0.85) { LK.focus(ctx, codeBox(c.code, 4, "return -1", LIN), { t: l + 1, pad: 2, color: BLUE }); call(ctx, 600, "-1 = tidak ketemu", c.code.at(4, 14).x, c.code.top(4) + 20, { fill: "#E7F1FB", color: BLUE }); }
@@ -106,23 +106,26 @@
     uji_linear(ctx, b, l) {
       const sp = spanOf(b), f = l / sp;
       const a = nb(ctx);
-      const c1 = LK.cell(ctx, cx0(a), a.y + 20, cw0(a), { lines: LIN, size: 22, run: "done", count: 1 });
+      const c1 = LK.cell(ctx, cx0(a), a.y + 20, cw0(a), { lines: LIN, size: 25, run: "done", count: 1 });
       const T = typedCell(T1, ph(l, sp, 0.05, 0.3));
       const r = runOpt(f, 0.34, 0.4, ["4", "-1"], 2);
-      const c2 = LK.cell(ctx, cx0(a), c1.bottom + 18, cw0(a), { ...(f < 0.34 ? T : { lines: T1 }), size: 22, active: true, blink: blinkAt(l), outSize: 24, ...r });
+      const c2 = LK.cell(ctx, cx0(a), c1.bottom + 18, cw0(a), { ...(f < 0.34 ? T : { lines: T1 }), size: 25, active: true, blink: blinkAt(l), outSize: 26, ...r });
       keys(ctx, ["Shift", "Enter"], clamp((f - 0.31) / 0.06, 0, 1));
-      // deretan nilai
-      const sy = 650, hit = f > 0.45 && f < 0.72, n = hit ? 5 : f > 0.72 ? 8 : 0, st = NILAI.map((v, i) => i < n - 1 ? "off" : i === n - 1 ? (hit ? "hit" : "now") : "");
-      if (f > 0.4) { text(ctx, hit ? "cari 58: periksa satu per satu → indeks 4" : "cari 50: semua diperiksa, tidak ada → -1", 180, sy - 22, 24, { weight: 800, color: hit ? GREEN : BLUE });
-        strip(ctx, 180, sy, NILAI, { w: 130, h: 64, state: f > 0.72 ? NILAI.map(() => "off") : st }); }
-      if (f > 0.42 && c2.out) { const y0 = c2.out.lines[0]; call(ctx, 300, "4 = indeks tempat 58 berada", c2.x + 110, y0 - 8, { fill: C.goodBg, color: GREEN }); }
-      if (f > 0.72 && c2.out) { const y1 = c2.out.lines[1]; call(ctx, 450, "-1 = 50 tidak ada di daftar", c2.x + 130, y1 - 8, { fill: "#E7F1FB", color: BLUE }); }
+      // deretan nilai (kolom kanan, dua baris berisi empat)
+      const hit = f > 0.45 && f < 0.72, n = hit ? 5 : f > 0.72 ? 8 : 0, st = NILAI.map((v, i) => f > 0.72 ? "off" : i < n - 1 ? "off" : i === n - 1 ? (hit ? "hit" : "now") : "");
+      if (f > 0.4) { card(ctx, 1440, 520, 390, 290, { fill: "#FFFFFF", stroke: "#D7E2DC", lw: 3, r: 16 });
+        para(ctx, hit ? "cari 58: satu per satu → indeks 4" : "cari 50: semua diperiksa, tidak ada → -1", 1635, 560, 22, 350, { align: "center", weight: 800, color: hit ? GREEN : BLUE, lh: 1.2 });
+        strip(ctx, 1462, 615, NILAI.slice(0, 4), { w: 80, h: 56, size: 26, state: st.slice(0, 4) });
+        strip(ctx, 1462, 715, NILAI.slice(4), { w: 80, h: 56, size: 26, state: st.slice(4), idx: false });
+        [4, 5, 6, 7].forEach((v, i) => { LK.mono(ctx, 18, 600); ctx.fillStyle = "#7F8C95"; ctx.textAlign = "center"; ctx.fillText(String(v), 1462 + i * 88 + 40, 795); }); }
+      if (f > 0.42 && c2.out) { const y0 = c2.out.lines[0]; call(ctx, 160, "4 = indeks tempat 58 berada", c2.x + 110, y0 - 8, { fill: C.goodBg, color: GREEN }); }
+      if (f > 0.72 && c2.out) { const y1 = c2.out.lines[1]; call(ctx, 330, "-1 = 50 tidak ada di daftar", c2.x + 130, y1 - 8, { fill: "#E7F1FB", color: BLUE }); }
     },
     ketik_biner(ctx, b, l) {
       const sp = spanOf(b), f = l / sp;
       const a = nb(ctx);
       const T = typedCell(BIN, ph(l, sp, 0.05, 0.6));
-      const c = LK.cell(ctx, cx0(a), a.y + 20, cw0(a), { ...T, size: 22, active: true, run: "ready", blink: f < 0.6 || blinkAt(l), minLines: 12 });
+      const c = LK.cell(ctx, cx0(a), a.y + 20, cw0(a), { ...T, size: 27, active: true, run: "ready", blink: f < 0.6 || blinkAt(l), minLines: 12 });
       if (f > 0.3) { LK.focus(ctx, codeBox(c.code, 2, "kiri, kanan", BIN), { t: l, pad: 2 }); call(ctx, 300, "Dua penanda: kiri dan kanan", c.code.at(2, 15).x + 10, c.code.top(2) + 18); }
       if (f > 0.55) { LK.focus(ctx, codeBox(c.code, 4, "tengah = (kiri + kanan) // 2", BIN), { t: l + 1, pad: 2, color: BLUE }); call(ctx, 430, "Periksa nilai tengah", c.code.at(4, 36).x + 10, c.code.top(4) + 18, { fill: "#E7F1FB", color: BLUE }); }
       if (f > 0.72) { [8, 10].forEach(k => LK.focus(ctx, codeBox(c.code, k, BIN[k].trim(), BIN), { t: l + k, pad: 2, color: GREEN }));
@@ -131,7 +134,7 @@
     uji_biner(ctx, b, l) {
       const sp = spanOf(b), f = l / sp;
       const a = nb(ctx);
-      const c1 = LK.cell(ctx, cx0(a), a.y + 16, cw0(a), { lines: BIN, size: 20, run: "done", count: 3 });
+      const c1 = LK.cell(ctx, cx0(a), a.y + 16, cw0(a), { lines: BIN, size: 19, run: "done", count: 3 });
       const T = typedCell(T2, ph(l, sp, 0.03, 0.18));
       const r = runOpt(f, 0.22, 0.28, ["4", "-1"], 4);
       LK.cell(ctx, cx0(a), c1.bottom + 14, cw0(a), { ...(f < 0.22 ? T : { lines: T2 }), size: 20, active: true, blink: blinkAt(l), outSize: 22, ...r });
@@ -149,7 +152,7 @@
       const sp = spanOf(b), f = l / sp;
       const a = nb(ctx);
       const T = typedCell(BUB, ph(l, sp, 0.04, 0.45));
-      const c = LK.cell(ctx, cx0(a), a.y + 20, cw0(a), { ...T, size: 24, active: true, run: "ready", blink: f < 0.45 || blinkAt(l), minLines: 7 });
+      const c = LK.cell(ctx, cx0(a), a.y + 20, cw0(a), { ...T, size: 30, active: true, run: "ready", blink: f < 0.45 || blinkAt(l), minLines: 7 });
       if (f > 0.4) { LK.focus(ctx, codeBox(c.code, 2, "for i in range(n - 1):", BUB), { t: l, pad: 2 }); call(ctx, 200, "Perulangan luar: putaran", c.code.at(2, 27).x + 10, c.code.top(2) + 18); }
       if (f > 0.55) { LK.focus(ctx, codeBox(c.code, 3, "for j in range(n - 1 - i):", BUB), { t: l + 1, pad: 2, color: BLUE }); call(ctx, 330, "Perulangan dalam: dua tetangga, j dan j + 1", c.code.at(3, 34).x + 10, c.code.top(3) + 18, { fill: "#E7F1FB", color: BLUE }); }
       if (f > 0.72) { LK.focus(ctx, codeBox(c.code, 5, "a[j], a[j + 1] = a[j + 1], a[j]", BUB), { t: l + 2, pad: 2, color: GREEN }); call(ctx, 500, "Terbalik? Tukar!", c.code.at(5, 47).x + 10, c.code.top(5) + 18, { fill: C.goodBg, color: GREEN }); }
@@ -157,22 +160,22 @@
     uji_bubble(ctx, b, l) {
       const sp = spanOf(b), f = l / sp;
       const a = nb(ctx);
-      const c1 = LK.cell(ctx, cx0(a), a.y + 16, cw0(a), { lines: BUB, size: 22, run: "done", count: 5 });
+      const c1 = LK.cell(ctx, cx0(a), a.y + 16, cw0(a), { lines: BUB, size: 23, run: "done", count: 5 });
       const T = typedCell(T3, ph(l, sp, 0.04, 0.3));
       const r = runOpt(f, 0.36, 0.42, ["[12, 25, 31, 47, 88]"], 6);
-      LK.cell(ctx, cx0(a), c1.bottom + 14, cw0(a), { ...(f < 0.36 ? T : { lines: T3 }), size: 22, active: true, blink: blinkAt(l), outSize: 24, ...r });
+      LK.cell(ctx, cx0(a), c1.bottom + 14, cw0(a), { ...(f < 0.36 ? T : { lines: T3 }), size: 23, active: true, blink: blinkAt(l), outSize: 24, ...r });
       keys(ctx, ["Shift", "Enter"], clamp((f - 0.33) / 0.06, 0, 1));
       const P = [[31, 12, 88, 47, 25], [12, 31, 47, 25, 88], [12, 31, 25, 47, 88], [12, 25, 31, 47, 88]];
       const k = clamp(Math.floor(ph(l, sp, 0.42, 0.9) * 4), 0, 3);
-      if (f > 0.42) { const y = 620; text(ctx, k === 0 ? "awal" : `setelah putaran ${k}`, 180, y - 18, 26, { weight: 900, color: k === 3 ? GREEN : C.ink });
+      if (f > 0.42) { const y = 712; text(ctx, k === 0 ? "awal" : `setelah putaran ${k}`, 1000, y + 30, 28, { weight: 900, color: k === 3 ? GREEN : C.ink });
         strip(ctx, 180, y, P[k], { w: 150, h: 76, size: 36, idx: false, state: P[k].map((v, i) => i >= 5 - k ? "hit" : "") });
-        if (k > 0) text(ctx, "angka terbesar \"menggelembung\" ke kanan", 1000, y + 50, 24, { weight: 800, color: C.ink2 }); }
+        if (k > 0) text(ctx, "terbesar pindah ke kanan", 1000, y + 66, 24, { weight: 800, color: C.ink2 }); }
     },
     ketik_ukur(ctx, b, l) {
       const sp = spanOf(b), f = l / sp;
       const a = nb(ctx);
       const T = typedCell(UK, ph(l, sp, 0.04, 0.4));
-      const c = LK.cell(ctx, cx0(a), a.y + 20, cw0(a), { ...T, size: 22, active: true, run: "ready", blink: f < 0.4 || blinkAt(l), minLines: 11 });
+      const c = LK.cell(ctx, cx0(a), a.y + 20, cw0(a), { ...T, size: 26, active: true, run: "ready", blink: f < 0.4 || blinkAt(l), minLines: 11 });
       const n = stepAt(f, [0.42, 0.58, 0.72]);
       if (n >= 1) LK.focus(ctx, codeBox(c.code, 3, "mulai = time.perf_counter()", UK), { t: l, pad: 2 });
       if (n >= 2) LK.focus(ctx, codeBox(c.code, 4, "cari_linear(data, n - 1)", UK), { t: l, pad: 2, color: BLUE });
@@ -184,17 +187,17 @@
     arti_ukur(ctx, b, l) {
       const sp = spanOf(b), f = l / sp;
       const a = nb(ctx);
-      const c = LK.cell(ctx, cx0(a), a.y + 20, cw0(a), { lines: UK, size: 22, active: true, run: "ready", minLines: 11 });
+      const c = LK.cell(ctx, cx0(a), a.y + 20, cw0(a), { lines: UK, size: 26, active: true, run: "ready", minLines: 11 });
       if (f > 0.05) { LK.focus(ctx, codeBox(c.code, 1, "[1000, 10000, 100000, 1000000]", UK), { t: l, pad: 2 }); call(ctx, 160, "Empat ukuran: seribu sampai sejuta", c.code.at(1, 40).x + 10, c.code.top(1) + 18); }
       if (f > 0.5) { [4, 7].forEach(k => LK.focus(ctx, codeBox(c.code, k, "n - 1", UK), { t: l + k, pad: 2, color: BLUE }));
         call(ctx, 330, "n - 1 = angka paling belakang: linear harus memeriksa semuanya", c.code.at(4, 28).x + 10, c.code.top(4) + 18, { fill: "#E7F1FB", color: BLUE }); }
-      if (f > 0.5) { const y = 690; strip(ctx, 180, y, ["0", "1", "2", "…", "n-1"], { w: 120, h: 60, size: 26, idx: false, state: ["", "", "", "", "hit"] }); text(ctx, "← target di ujung", 820, y + 40, 26, { weight: 800, color: GREEN }); }
+      if (f > 0.5) { const y = 712; strip(ctx, 180, y, ["0", "1", "2", "…", "n-1"], { w: 120, h: 60, size: 26, idx: false, state: ["", "", "", "", "hit"] }); text(ctx, "← target di ujung", 820, y + 40, 26, { weight: 800, color: GREEN }); }
     },
     hasil_ukur(ctx, b, l) {
       const sp = spanOf(b), f = l / sp;
       const a = nb(ctx);
       const r = runOpt(f, 0.05, 0.4, UK_OUT, 7, true);
-      const c = cellFit(ctx, a, a.y + 20, { lines: UK, size: 20, active: true, outSize: OUT_SZ, ...r });
+      const c = cellFit(ctx, a, a.y + 20, { lines: UK, size: 23, active: true, outSize: OUT_SZ, ...r });
       if (f > 0.42 && c.out) { UK_OUT.forEach((s, i) => { const bx = outRect(ctx, c, i, s, s.slice(s.indexOf("linear:"), s.indexOf(" ms")), OUT_SZ); if (bx) LK.focus(ctx, bx, { t: l + i * 0.3, pad: 1 }); });
         const xs = ["", "×10", "×10", "×10"]; card(ctx, 1450, 300, 370, 330, { fill: "#FFFFFF", stroke: "#D7E2DC", lw: 3, r: 16 });
         text(ctx, "cari linear", 1635, 345, 26, { align: "center", weight: 900, color: C.accentDark });
@@ -219,7 +222,7 @@
       const a = nb(ctx);
       const T = typedCell(UB, ph(l, sp, 0.04, 0.5));
       const r = f < 0.55 ? { run: "ready" } : runOpt(f, 0.55, 0.95, UB_OUT, 8, true);
-      const c = cellFit(ctx, a, a.y + 20, { ...(f < 0.52 ? T : { lines: UB }), size: 20, active: true, blink: f < 0.5 || blinkAt(l), outSize: OUT_SZ, minLines: 13, ...r });
+      const c = cellFit(ctx, a, a.y + 20, { ...(f < 0.52 ? T : { lines: UB }), size: 23, active: true, blink: f < 0.5 || blinkAt(l), outSize: OUT_SZ, minLines: 13, ...r });
       if (f > 0.2 && f < 0.55) { LK.focus(ctx, codeBox(c.code, 3, "random.shuffle(data)", UB), { t: l, pad: 2 }); call(ctx, 200, "Data diacak dulu", c.code.at(3, 24).x + 10, c.code.top(3) + 16); }
       if (f > 0.35 && f < 0.55) { LK.focus(ctx, codeBox(c.code, 9, "sorted(salinan)", UB), { t: l + 1, pad: 2, color: BLUE }); call(ctx, 340, "sorted: fungsi bawaan Python, untuk salinan yang sama", c.code.at(9, 19).x + 10, c.code.top(9) + 16, { fill: "#E7F1FB", color: BLUE }); }
       if (f > 0.55 && f < 0.95) call(ctx, 300, "Bubble sort butuh waktu… tunggu sampai selesai.", null, null);
@@ -228,7 +231,7 @@
     banding_urut(ctx, b, l) {
       const sp = spanOf(b), f = l / sp;
       const a = nb(ctx);
-      const c = cellFit(ctx, a, a.y + 20, { lines: UB, size: 20, active: true, run: "done", count: 8, outSize: OUT_SZ, out: UB_OUT });
+      const c = cellFit(ctx, a, a.y + 20, { lines: UB, size: 23, active: true, run: "done", count: 8, outSize: OUT_SZ, out: UB_OUT });
       const part = (s, k) => k ? s.slice(s.indexOf("sorted:"), s.lastIndexOf(" ms")) : s.slice(s.indexOf("bubble:"), s.indexOf(" ms"));
       const k = f < 0.5 ? 0 : 1;
       UB_OUT.forEach((s, i) => { const bx = outRect(ctx, c, i, s, part(s, k), OUT_SZ); if (bx) LK.focus(ctx, bx, { t: l + i * 0.3, pad: 1, color: k ? BLUE : C.accent }); });
@@ -276,8 +279,8 @@
       const a = nb(ctx);
       const fixed = f > 0.62;
       const err = { name: "NameError", msg: "name 'cari_linear' is not defined", kind: "runtime", line: 2, ctx: [[1, T1[0]], [2, T1[1]]] };
-      const c1 = LK.cell(ctx, cx0(a), a.y + 20, cw0(a), { lines: LIN, size: 22, run: fixed ? "done" : (f > 0.5 ? "hover" : "idle"), count: 1, active: f > 0.5 && f < 0.7 });
-      const c2 = LK.cell(ctx, cx0(a), c1.bottom + 18, cw0(a), { lines: T1, size: 22, active: !fixed || f > 0.75, run: "done", count: fixed && f > 0.78 ? 3 : 2, outSize: 21, out: fixed && f > 0.78 ? ["4", "-1"] : fixed ? null : [{ err }] });
+      const c1 = LK.cell(ctx, cx0(a), a.y + 20, cw0(a), { lines: LIN, size: 25, run: fixed ? "done" : (f > 0.5 ? "hover" : "idle"), count: 1, active: f > 0.5 && f < 0.7 });
+      const c2 = LK.cell(ctx, cx0(a), c1.bottom + 18, cw0(a), { lines: T1, size: 25, active: !fixed || f > 0.75, run: "done", count: fixed && f > 0.78 ? 3 : 2, outSize: 21, out: fixed && f > 0.78 ? ["4", "-1"] : fixed ? null : [{ err }] });
       if (!fixed && c2.out && c2.out.err && f > 0.15) { LK.focus(ctx, c2.out.err.lastBox, { t: l, color: RED }); call(ctx, 160, "Fungsi cari_linear belum dikenal", c2.out.err.lastBox.x + c2.out.err.lastBox.w + 6, c2.out.err.lastBox.y + 16, { fill: "#FDECEA", color: RED }); }
       if (!fixed && f > 0.3) call(ctx, 330, "Sel [1] dengan def belum dijalankan.", c1.play.x + 30, c1.play.y, { fill: "#FFF3D6" });
       if (f > 0.42) LK.pointer(ctx, l, sp, [{ at: 0, x: 900, y: 700 }, { at: 0.55, x: c1.play.x, y: c1.play.y, click: true }, { at: 0.75, x: c2.play.x, y: c2.play.y, click: true }]);
@@ -288,7 +291,7 @@
       const a = nb(ctx);
       const code = ["data = list(range(1000000))", "random.shuffle(data)", "bubble_sort(data)"];
       const stop = f > 0.72;
-      const c = LK.cell(ctx, cx0(a), a.y + 20, cw0(a), { lines: code, size: 26, active: true, run: stop ? "done" : "running", spin: l * 1.2, count: 9, outSize: 24, out: stop ? [{ t: "KeyboardInterrupt", k: "bad" }] : null });
+      const c = LK.cell(ctx, cx0(a), a.y + 20, cw0(a), { lines: code, size: 30, active: true, run: stop ? "done" : "running", spin: l * 1.2, count: 9, outSize: 24, out: stop ? [{ t: "KeyboardInterrupt", k: "bad" }] : null });
       const secs = Math.floor(5 + f * 170), mm = String(Math.floor(secs / 60)).padStart(2, "0"), ss = String(secs % 60).padStart(2, "0");
       if (!stop) { text(ctx, `⏱ ${mm}:${ss} … belum selesai`, c.x + 90, c.bottom + 60, 30, { weight: 800, color: RED }); }
       if (f > 0.1 && f < 0.5) call(ctx, 200, "Sejuta data: bisa berjam-jam!", null, null, { fill: "#FDECEA", color: RED });

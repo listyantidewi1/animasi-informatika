@@ -10,9 +10,9 @@ Antrean dan Tumpukan: Siapa Keluar Berikutnya? — video simulasi konsep untuk I
 Simulasi konsep antrean (queue) dan tumpukan (stack): perintah masuk dan keluar dijalankan pada antrean kantin dan tumpukan buku tugas, lalu kamu menebak siapa yang keluar berikutnya. Ada lima variasi: urutan yang sama pada antrean dan tumpukan, keluar dari susunan yang kosong, dan perintah yang bercampur, ditambah dua cek pemahaman.
 
 Setelah menonton, murid bisa:
-• aturan antrean: pertama masuk, pertama keluar
-• aturan tumpukan: terakhir masuk, pertama keluar
-• apa yang terjadi saat mengeluarkan sesuatu dari susunan yang kosong
+• menerapkan aturan antrean: pertama masuk, pertama keluar
+• menerapkan aturan tumpukan: terakhir masuk, pertama keluar
+• menjelaskan apa yang terjadi saat mengeluarkan sesuatu dari susunan yang kosong
 • menelusuri perintah masuk dan keluar yang bercampur dengan mencatat isinya
 
 Video ini cocok untuk yang mencari: perbedaan queue dan stack; antrean dan tumpukan informatika kelas 7; FIFO dan LIFO contoh sehari-hari; struktur data queue stack untuk pemula.

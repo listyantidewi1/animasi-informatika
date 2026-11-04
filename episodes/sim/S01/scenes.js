@@ -298,7 +298,7 @@
       if (st.view === "dok") B.notes(ctx, y, [B.ok("Folder Dokumen terbuka.")]);
     },
     folder_baru(ctx, b, l) {
-      const span = B.spanOf(b), E = G.empty, mx = E.x, my = E.y - 240, sub = { x: mx + MENU_W - 6, y: my + 8 + 2 * MENU_RH - 8 };
+      const span = B.spanOf(b), E = G.empty, mx = E.x - 330, my = E.y - 240, sub = { x: mx + MENU_W - 6, y: my + 8 + 2 * MENU_RH - 8 };
       const ST = [{ to: [700, 700], d: 0.3 }, { to: [E.x, E.y], d: 0.9 }, { to: [E.x, E.y], click: true, set: { menu: 1 }, d: 0.7, lbl: "klik kanan" }, { wait: 1, d: 0.4 },
         { to: ctr(menuRow(mx, my, 2)), set: { hl: 2 }, d: 0.8 }, { set: { sub: true }, d: 0.3 }, { to: [sub.x + 40, menuRow(sub.x, sub.y, 0).cy], d: 0.8 },
         { to: [sub.x + 40, menuRow(sub.x, sub.y, 0).cy], click: true, set: { done: true }, d: 0.7, lbl: "klik" }, { wait: 1, d: 1.2 }];

@@ -208,7 +208,7 @@
       const R = HP.run({ scr: "prof" }, ST, l, span), st = R.st;
       const pg = B.measure(m => profile(m, {}));
       const draw = c => { if (st.scr === "prof") profile(c, { editHl: true }); else editPage(c, { focus: st.focus, del: { 0: st.d0 || 0, 1: st.d1 || 0, 2: st.d2 || 0 } }); B.tapDraw(c, R); };
-      B.show(ctx, draw, st.scr === "prof" ? { u: 0, v: 300, w: 360, h: 140 } : { u: 0, v: 376, w: 360, h: 182 }); appTag(ctx);
+      B.show(ctx, draw, st.scr === "prof" ? { u: 0, v: 300, w: 360, h: 140 } : { u: 0, v: 362, w: 360, h: 196 }); appTag(ctx);
       const y = B.steps(ctx, "HAPUS DARI BIO", ["Nama sekolah dan kelas", "Alamat rumah", "Nomor HP"], st.scr === "prof" ? 0 : (st.d2 >= 1 ? 3 : st.d1 >= 1 ? 2 : st.d0 >= 1 ? 1 : 0));
       B.notes(ctx, y, [B.after(b, l, 0.7) && B.warn("Data ini membantu orang asing menemukanmu.")]);
     },
@@ -248,7 +248,7 @@
       const ST = [{ tap: B.tapRow(rows, 5), set: { scr: "tag" }, d: 1 }, { wait: 1, d: 0.6 }, { tap: B.tapRow(tr, 2, 100), set: { pick: 1 }, d: 1 }, { wait: 1, d: 0.6 }, { tap: [tr[5].toggle.x, tr[5].toggle.y], d: 0.9 }, { anim: "rev", d: 0.5 }, { wait: 1, d: 1.2 }];
       const R = HP.run({ scr: "root", pick: 0 }, ST, l, span), st = R.st;
       const draw = c => { if (st.scr === "root") rootPage(c, { priv: true, req: true, hl: 5 }); else tagPage(c, { pick: st.pick, rev: st.rev || 0, hl: R.i <= 3 ? 2 : 5 }); B.tapDraw(c, R); };
-      B.show(ctx, draw, st.scr === "root" ? { u: 0, v: 340, w: 360, h: 170 } : R.i <= 3 ? { u: 0, v: 104, w: 360, h: 260 } : { u: 0, v: 300, w: 360, h: 150 }); appTag(ctx);
+      B.show(ctx, draw, st.scr === "root" ? { u: 0, v: 340, w: 360, h: 170 } : R.i <= 3 ? { u: 0, v: 104, w: 360, h: 250 } : { u: 0, v: 346, w: 360, h: 130 }); appTag(ctx);
       const y = B.steps(ctx, "TANDA (TAG)", ["Buka Tanda dan sebutan.", "Pilih Orang yang kamu ikuti.", "Nyalakan Tinjau tanda."], B.stepAt(l, span, [0.15, 0.5, 0.8]));
       B.notes(ctx, y, [B.tip("Di aplikasi lain: Tag, atau Penandaan.")]);
     },
@@ -257,7 +257,7 @@
       const ST = [{ tap: B.tapRow(rows, 6), set: { scr: "msg" }, d: 1 }, { wait: 1, d: 0.6 }, { tap: B.tapRow(mr, 2, 100), set: { pick: 1 }, d: 1 }, { wait: 1, d: 0.6, set: { hl5: true } }, { wait: 1, d: 1.4 }];
       const R = HP.run({ scr: "root", pick: 0 }, ST, l, span), st = R.st;
       const draw = c => { if (st.scr === "root") rootPage(c, { priv: true, req: true, hl: 6 }); else msgPage(c, { pick: st.pick, hl: st.hl5 ? 5 : 2 }); B.tapDraw(c, R); };
-      B.show(ctx, draw, st.scr === "root" ? { u: 0, v: 380, w: 360, h: 160 } : st.hl5 ? { u: 0, v: 300, w: 360, h: 150 } : { u: 0, v: 104, w: 360, h: 260 }); appTag(ctx);
+      B.show(ctx, draw, st.scr === "root" ? { u: 0, v: 380, w: 360, h: 160 } : st.hl5 ? { u: 0, v: 346, w: 360, h: 130 } : { u: 0, v: 104, w: 360, h: 260 }); appTag(ctx);
       const y = B.steps(ctx, "PESAN", ["Buka Pesan.", "Pilih Pengikut saja."], B.stepAt(l, span, [0.2, 0.5]));
       if (st.hl5) B.notes(ctx, y, [{ s: "Pesan orang asing menunggu di Permintaan pesan. Kamu boleh tidak membukanya." }]);
     },
@@ -275,7 +275,7 @@
       const a = b.audio || b.dur, hlOn = l > a * 0.35;
       card(ctx, 900, 140, 880, 680, { fill: "#FFFFFF", r: 22 });
       text(ctx, "KESALAHAN 1: MERASA AMAN KARENA SUDAH PRIVAT", 1340, 200, 26, { align: "center", weight: 900, color: RED, fit: 840 });
-      const draw = c => profile(c, { view: "public", priv: true, hl: hlOn ? [1, 2] : [], bio: BIO0.slice(0, 3).concat(BIO0.slice(3)) });
+      const draw = c => profile(c, { view: "public", priv: true, hl: hlOn ? [0, 1, 2] : [], bio: BIO0.slice(0, 3).concat(BIO0.slice(3)) });
       const ph = B.phone(ctx, draw, { cy: 494, h: 650 }); B.tag(ctx, 560, 100, "Dilihat sebagai orang lain", { align: "center", fill: C.ink });
       HP.magnify(ctx, ph, draw, { u: 0, v: 216, w: 360, h: 130 }, { x: 960, y: 250, w: 760 });
       if (hlOn) B.badge(ctx, 930, 560, false, "Akun privat, tetapi nama, foto profil, dan bio tetap terlihat.", { w: 820, h: 100, size: 26 });

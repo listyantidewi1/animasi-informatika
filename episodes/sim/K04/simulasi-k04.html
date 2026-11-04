@@ -1,0 +1,985 @@
+<title>Kiko: Program Robot Kiko: Jalankan dan Perbaiki</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<style>
+/* Inti gaya halaman latihan: satu kolom, pemutar di atas, latihan di bawah; palet kantin sama dengan video. */
+:root {
+  --bg: #EAF2EE; --surface: #FFFFFF; --surface2: #DCE9E2; --ink: #1F2A33; --ink2: #4A5A66; --line: #C9D8D0;
+  --accent: #2E7E9A; --accent-ink: #FFFFFF; --warm: #F2B134; --warm-ink: #5E3E05; --good: #2E9E5B; --good-bg: #DDF3E4; --bad: #D9443B; --bad-bg: #FBE1DF;
+  --font: Inter, "Segoe UI", Roboto, Arial, sans-serif;
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) { --bg: #141C1A; --surface: #1E2926; --surface2: #273532; --ink: #EAF2EE; --ink2: #A9BBB3; --line: #3A4A45; --accent: #5FB3CE; --accent-ink: #0F1D22; --warm: #F2B134; --warm-ink: #2B1C02; --good: #5FCB8A; --good-bg: #1F3A2B; --bad: #F07A72; --bad-bg: #442523; color-scheme: dark } }
+:root[data-theme="dark"] { --bg: #141C1A; --surface: #1E2926; --surface2: #273532; --ink: #EAF2EE; --ink2: #A9BBB3; --line: #3A4A45; --accent: #5FB3CE; --accent-ink: #0F1D22; --warm: #F2B134; --warm-ink: #2B1C02; --good: #5FCB8A; --good-bg: #1F3A2B; --bad: #F07A72; --bad-bg: #442523; color-scheme: dark }
+* { box-sizing: border-box }
+body { background: var(--bg); color: var(--ink); font-family: var(--font); font-size: 17px; line-height: 1.5; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); padding-block: 16px 48px }
+.wrap { max-width: 980px; margin: 0 auto; display: grid; gap: 28px }
+h1 { font-size: clamp(26px, 5vw, 38px); line-height: 1.15; margin: 0; text-wrap: balance; font-weight: 900 }
+h2 { font-size: 22px; margin: 0 0 12px; font-weight: 800 }
+h3 { font-size: 18px; margin: 0 0 8px; font-weight: 800 }
+p { margin: 0 0 10px; max-width: 65ch }
+.eyebrow { font-size: 13px; letter-spacing: .08em; text-transform: uppercase; color: var(--ink2); font-weight: 800; margin-bottom: 6px }
+.card { background: var(--surface); border-radius: 18px; padding: 18px; border: 1px solid var(--line) }
+button { font: inherit; font-weight: 800; border: 0; border-radius: 12px; padding: 12px 16px; cursor: pointer; background: var(--surface2); color: var(--ink); min-height: 48px; touch-action: manipulation }
+button:focus-visible, [tabindex]:focus-visible { outline: 3px solid var(--warm); outline-offset: 2px }
+button.primary { background: var(--accent); color: var(--accent-ink) }
+button.warm { background: var(--warm); color: var(--warm-ink) }
+button[aria-pressed="true"] { box-shadow: inset 0 0 0 3px var(--accent) }
+button:disabled { opacity: .45; cursor: default }
+.row { display: flex; flex-wrap: wrap; gap: 10px; align-items: center }
+/* player */
+.player { display: grid; gap: 12px }
+.stage { position: relative; width: 100%; aspect-ratio: 16 / 9; max-width: 100%; background: #EAF2EE; border-radius: 14px; overflow: hidden; border: 1px solid var(--line) }
+.stage canvas { width: 100%; height: 100%; display: block }
+.bigplay { position: absolute; inset: 0; display: grid; place-items: center; background: rgba(31,42,51,.25); border: 0; border-radius: 0; color: #fff; font-size: 20px; min-height: 0 }
+.bigplay span { background: var(--accent); color: var(--accent-ink); padding: 14px 26px; border-radius: 999px; font-weight: 900 }
+.bar { height: 10px; background: var(--surface2); border-radius: 999px; overflow: hidden; cursor: pointer }
+.bar > i { display: block; height: 100%; width: 0; background: var(--warm) }
+.chapters { display: flex; flex-wrap: wrap; gap: 8px }
+.chapters button { font-size: 14px; padding: 8px 12px; min-height: 40px }
+.chapters button.now { background: var(--warm); color: var(--warm-ink) }
+.hint { color: var(--ink2); font-size: 15px }
+/* exercises (generic parts) */
+.levels { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 12px }
+.levels button { font-size: 14px; padding: 8px 12px; min-height: 40px }
+.levels button.done::after { content: " ✓"; color: var(--good) }
+.task { background: var(--surface2); border-radius: 12px; padding: 12px 14px; margin-bottom: 12px; font-weight: 700 }
+.result { border-radius: 12px; padding: 12px 14px; font-weight: 800; margin-top: 10px }
+.result.good { background: var(--good-bg); color: var(--good) }
+.result.bad { background: var(--bad-bg); color: var(--bad) }
+.result.info { background: var(--surface2); color: var(--ink) }
+/* quiz */
+.quiz { display: grid; gap: 16px }
+.q { border-top: 1px solid var(--line); padding-top: 14px }
+.q:first-child { border-top: 0; padding-top: 0 }
+.opts { display: grid; gap: 8px; margin-top: 8px }
+.opts button { text-align: left; font-weight: 700; background: var(--surface2); display: flex; gap: 10px; align-items: center }
+.opts button b { width: 30px; height: 30px; border-radius: 50%; background: var(--accent); color: var(--accent-ink); display: grid; place-items: center; flex: none }
+.opts button.right { background: var(--good-bg); box-shadow: inset 0 0 0 3px var(--good) }
+.opts button.wrong { background: var(--bad-bg) }
+.fb { margin-top: 8px; font-weight: 700 }
+.fb.good { color: var(--good) } .fb.bad { color: var(--bad) }
+details summary { cursor: pointer; font-weight: 800; font-size: 18px }
+details[open] summary { margin-bottom: 10px }
+ul.plain { padding-left: 20px; margin: 0 0 10px } ul.plain li { margin-bottom: 6px; max-width: 65ch }
+.progress { display: flex; gap: 8px; flex-wrap: wrap } .progress span { background: var(--surface2); border-radius: 999px; padding: 6px 12px; font-size: 14px; font-weight: 700 }
+.progress span.ok { background: var(--good-bg); color: var(--good) }
+@media (prefers-reduced-motion: reduce) { * { transition: none !important } }
+
+/* halaman video simulasi (dibuat build.py dari episodes/_alat/sim-page.html) */
+.links { display: grid; gap: 10px } .links a { display: block; background: var(--surface2); color: var(--ink); text-decoration: none; font-weight: 800; border-radius: 12px; padding: 12px 16px }
+.links a span { display: block; font-weight: 600; color: var(--ink2); font-size: 15px }
+ul.learn { margin: 0; padding-left: 20px } ul.learn li { margin-bottom: 4px }
+</style>
+
+<div class="wrap">
+  <header>
+    <div class="eyebrow">Informatika · Simulasi konsep · K04</div>
+    <h1>Program Robot Kiko: Jalankan dan Perbaiki</h1>
+    <p class="hint">Setelah menonton, kamu bisa menebak ke mana robot berjalan, menemukan baris program yang salah, memperbaikinya, dan menulis program yang lebih pendek. Simulasi ini melengkapi episode D7.5. Saat muncul pertanyaan "Menurutmu …", hentikan dulu videonya dan tebak jawabannya.</p>
+  </header>
+  <section class="card player" aria-label="Pemutar simulasi">
+    <div class="stage">
+      <canvas id="screen" width="1920" height="1080" aria-label="Animasi simulasi"></canvas>
+      <audio id="nar" preload="auto" src="narasi.mp3"></audio>
+      <button class="bigplay" id="bigplay" aria-label="Putar"><span>▶ Putar simulasi</span></button>
+    </div>
+    <div class="bar" id="bar" role="slider" aria-label="Posisi simulasi" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" tabindex="0"><i id="barfill"></i></div>
+    <div class="row">
+      <button class="primary" id="playbtn">▶ Putar</button>
+      <button id="replay">↺ Ulangi bagian ini</button>
+      <button id="voice" aria-pressed="true" hidden>🔊 Suara: nyala</button>
+      <button id="slow" aria-pressed="false">🐢 Mode lambat</button>
+      <span class="hint" id="timelabel">0:00 / 0:00</span>
+    </div>
+    <div>
+      <div class="eyebrow">Bagian</div>
+      <div class="chapters" id="chapters"></div>
+    </div>
+  </section>
+
+  <section class="card" aria-label="Yang dipelajari">
+    <h2>Yang kamu pelajari</h2>
+    <ul class="learn"><li>menebak hasil program sebelum menjalankannya</li><li>menelusuri program baris demi baris untuk menemukan bug</li><li>memperbaiki satu baris yang salah arah (debugging)</li><li>menulis program lebih pendek dengan perulangan dan belokan yang tepat</li></ul>
+  </section>
+
+  <section class="card" aria-label="Cek pemahaman">
+    <h2>Cek pemahaman</h2>
+    <p class="hint">Pilih satu jawaban. Kalau salah, kamu dapat petunjuk, lalu coba lagi.</p>
+    <div class="quiz" id="quiz"></div>
+  </section>
+
+  <section class="card" aria-label="Kemajuan">
+    <h2>Kemajuanmu</h2>
+    <div class="progress" id="progress"></div>
+    <p class="hint" style="margin-top:8px">Kemajuan tersimpan di perangkat ini saja.</p>
+  </section>
+
+  <section class="card" aria-label="Halaman latihan">
+    <h2>Lanjut berlatih</h2>
+    <div class="links"><a href="../../D7.5/episode-d75.html">Episode D7.5: Instruksi untuk Manusia dan Mesin<span>Tonton episodenya dan kerjakan latihannya.</span></a><a href="../../../index.html">Daftar semua episode<span>Kembali ke halaman utama.</span></a></div>
+  </section>
+</div>
+
+<script>/* Kiko core: mesin gambar bersama untuk semua episode Fase D.
+   Kiko.draw(ctx, t, TL) menggambar frame pada detik t di kanvas 1920x1080 secara deterministik.
+   Berisi palet, pembantu gambar, tokoh (Kiko, murid), dan adegan umum (judul, kuis, ringkasan, penutup).
+   Setiap episode menambahkan adegannya sendiri di scenes.js: Object.assign(Kiko.SCENES, {...}). */
+(function (global) {
+  const W = 1920, H = 1080;
+  const FONT = "Inter, 'Segoe UI', Roboto, Arial, sans-serif";
+  const C = {
+    bg: "#EAF2EE", bg2: "#DCE9E2", ink: "#1F2A33", ink2: "#4A5A66", panel: "#FFFFFF",
+    tile: "#F7FAF8", tileLine: "#C9D8D0", table: "#A4653A", tableTop: "#C98A57",
+    kiko: "#2E7E9A", kikoDark: "#1F5A6E", kikoLight: "#8FD0E6", eye: "#FFFFFF", pupil: "#1F2A33",
+    accent: "#F2B134", accentDark: "#B57A12", good: "#2E9E5B", bad: "#D9443B", goodBg: "#DDF3E4", badBg: "#FBE1DF",
+    sub: "#1F2A33", subText: "#FFFFFF", star: "#F2B134", skin: "#F1C9A5", skin2: "#C98A57", hair: "#2B2118",
+    uniform: "#FFFFFF", pants: "#2F4E7D", bubble: "#FFFFFF", muted: "#9AAFA6"
+  };
+  const ease = u => u < 0 ? 0 : u > 1 ? 1 : u * u * (3 - 2 * u);
+  const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
+  const lerp = (a, b, u) => a + (b - a) * u;
+
+  // ---------- drawing helpers ----------
+  function rr(ctx, x, y, w, h, r) {
+    ctx.beginPath(); ctx.moveTo(x + r, y); ctx.arcTo(x + w, y, x + w, y + h, r); ctx.arcTo(x + w, y + h, x, y + h, r);
+    ctx.arcTo(x, y + h, x, y, r); ctx.arcTo(x, y, x + w, y, r); ctx.closePath();
+  }
+  function text(ctx, s, x, y, size, opt = {}) {
+    ctx.font = `${opt.weight || 600} ${size}px ${FONT}`;
+    // opt.fit: lebar maksimum; huruf diperkecil hanya bila teks lebih lebar dari itu
+    while (opt.fit && size > 20 && ctx.measureText(s).width > opt.fit) { size -= 2; ctx.font = `${opt.weight || 600} ${size}px ${FONT}`; } ctx.fillStyle = opt.color || C.ink;
+    ctx.textAlign = opt.align || "left"; ctx.textBaseline = opt.base || "alphabetic"; ctx.fillText(s, x, y);
+  }
+  function wrap(ctx, s, size, weight, maxW) {
+    ctx.font = `${weight} ${size}px ${FONT}`;
+    const words = s.split(" "), lines = []; let cur = "";
+    for (const w of words) {
+      const test = cur ? cur + " " + w : w;
+      if (ctx.measureText(test).width > maxW && cur) { lines.push(cur); cur = w; } else cur = test;
+    }
+    if (cur) lines.push(cur);
+    return lines;
+  }
+  function para(ctx, s, x, y, size, maxW, opt = {}) {
+    const lines = wrap(ctx, s, size, opt.weight || 500, maxW); const lh = size * (opt.lh || 1.35);
+    lines.forEach((l, i) => text(ctx, l, x, y + i * lh, size, opt));
+    return lines.length * lh;
+  }
+  function arrowIcon(ctx, kind, cx, cy, s, color) {
+    ctx.save(); ctx.translate(cx, cy); ctx.strokeStyle = color; ctx.fillStyle = color; ctx.lineWidth = s * 0.16; ctx.lineCap = "round"; ctx.lineJoin = "round";
+    if (kind === "up") {
+      ctx.beginPath(); ctx.moveTo(0, s * 0.45); ctx.lineTo(0, -s * 0.3); ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(-s * 0.32, -s * 0.05); ctx.lineTo(0, -s * 0.45); ctx.lineTo(s * 0.32, -s * 0.05); ctx.stroke();
+    } else if (kind === "left" || kind === "right") {
+      const k = kind === "left" ? -1 : 1;
+      ctx.beginPath(); ctx.moveTo(0, s * 0.45); ctx.lineTo(0, -s * 0.05); ctx.quadraticCurveTo(0, -s * 0.32, k * s * 0.28, -s * 0.32); ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(k * s * 0.12, -s * 0.5); ctx.lineTo(k * s * 0.4, -s * 0.32); ctx.lineTo(k * s * 0.12, -s * 0.14); ctx.stroke();
+    } else if (kind === "east") {
+      ctx.beginPath(); ctx.moveTo(-s * 0.4, 0); ctx.lineTo(s * 0.3, 0); ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(s * 0.05, -s * 0.28); ctx.lineTo(s * 0.4, 0); ctx.lineTo(s * 0.05, s * 0.28); ctx.stroke();
+    } else if (kind === "west") {
+      ctx.beginPath(); ctx.moveTo(s * 0.4, 0); ctx.lineTo(-s * 0.3, 0); ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(-s * 0.05, -s * 0.28); ctx.lineTo(-s * 0.4, 0); ctx.lineTo(-s * 0.05, s * 0.28); ctx.stroke();
+    } else if (kind === "grab") {
+      ctx.beginPath(); ctx.arc(0, s * 0.12, s * 0.22, 0, Math.PI * 2); ctx.fill();
+      ctx.beginPath(); ctx.moveTo(-s * 0.4, -s * 0.42); ctx.lineTo(-s * 0.4, -s * 0.12); ctx.moveTo(s * 0.4, -s * 0.42); ctx.lineTo(s * 0.4, -s * 0.12);
+      ctx.moveTo(-s * 0.4, -s * 0.42); ctx.lineTo(s * 0.4, -s * 0.42); ctx.stroke();
+    }
+    ctx.restore();
+  }
+  function bakso(ctx, cx, cy, s, opt = {}) {
+    // a bowl of bakso: the goal
+    ctx.save(); ctx.translate(cx, cy);
+    if (opt.glow) { ctx.beginPath(); ctx.arc(0, 0, s * 0.62, 0, Math.PI * 2); ctx.fillStyle = "rgba(242,177,52,0.22)"; ctx.fill(); }
+    ctx.fillStyle = "#E4EEF5"; ctx.beginPath(); ctx.moveTo(-s * 0.46, -s * 0.05); ctx.quadraticCurveTo(-s * 0.4, s * 0.45, 0, s * 0.45); ctx.quadraticCurveTo(s * 0.4, s * 0.45, s * 0.46, -s * 0.05); ctx.closePath(); ctx.fill();
+    ctx.strokeStyle = "#8FA9BD"; ctx.lineWidth = s * 0.05; ctx.stroke();
+    ctx.fillStyle = "#C8B49A"; ctx.beginPath(); ctx.ellipse(0, -s * 0.05, s * 0.44, s * 0.14, 0, 0, Math.PI * 2); ctx.fill();
+    for (const [dx, dy, r] of [[-0.16, -0.1, 0.13], [0.14, -0.12, 0.13], [0, -0.22, 0.12]]) {
+      ctx.fillStyle = "#9A7B5B"; ctx.beginPath(); ctx.arc(dx * s, dy * s, r * s, 0, Math.PI * 2); ctx.fill();
+      ctx.fillStyle = "#B8977A"; ctx.beginPath(); ctx.arc(dx * s - r * s * 0.3, dy * s - r * s * 0.3, r * s * 0.4, 0, Math.PI * 2); ctx.fill();
+    }
+    ctx.fillStyle = "#4CA64C"; for (const dx of [-0.26, 0.1, 0.26]) { ctx.beginPath(); ctx.arc(dx * s, -s * 0.07, s * 0.045, 0, Math.PI * 2); ctx.fill(); }
+    ctx.restore();
+  }
+  function table(ctx, x, y, w, h) {
+    ctx.fillStyle = C.table; rr(ctx, x + w * 0.1, y + h * 0.3, w * 0.8, h * 0.55, 10); ctx.fill();
+    ctx.fillStyle = C.tableTop; rr(ctx, x + w * 0.06, y + h * 0.18, w * 0.88, h * 0.3, 10); ctx.fill();
+    ctx.fillStyle = "rgba(0,0,0,0.12)"; ctx.fillRect(x + w * 0.16, y + h * 0.5, w * 0.08, h * 0.35); ctx.fillRect(x + w * 0.76, y + h * 0.5, w * 0.08, h * 0.35);
+  }
+  function kiko(ctx, cx, cy, s, ang, opt = {}) {
+    ctx.save(); ctx.translate(cx, cy);
+    // shadow
+    ctx.fillStyle = "rgba(0,0,0,0.12)"; ctx.beginPath(); ctx.ellipse(0, s * 0.42, s * 0.42, s * 0.12, 0, 0, Math.PI * 2); ctx.fill();
+    ctx.rotate(ang);
+    // wheels
+    ctx.fillStyle = C.kikoDark; rr(ctx, -s * 0.46, -s * 0.2, s * 0.12, s * 0.5, 5); ctx.fill(); rr(ctx, s * 0.34, -s * 0.2, s * 0.12, s * 0.5, 5); ctx.fill();
+    // body
+    ctx.fillStyle = opt.flash ? `rgba(217,68,59,${0.5 + 0.5 * opt.flash})` : C.kiko; rr(ctx, -s * 0.38, -s * 0.36, s * 0.76, s * 0.72, s * 0.16); ctx.fill();
+    // visor (front, facing up)
+    ctx.fillStyle = C.kikoLight; rr(ctx, -s * 0.26, -s * 0.33, s * 0.52, s * 0.3, s * 0.1); ctx.fill();
+    // eyes
+    const mood = opt.mood || "happy";
+    ctx.fillStyle = C.pupil;
+    if (mood === "sad") { ctx.beginPath(); ctx.arc(-s * 0.12, -s * 0.18, s * 0.05, 0, Math.PI * 2); ctx.arc(s * 0.12, -s * 0.18, s * 0.05, 0, Math.PI * 2); ctx.fill(); ctx.strokeStyle = C.pupil; ctx.lineWidth = s * 0.03; ctx.beginPath(); ctx.arc(0, -s * 0.03, s * 0.08, Math.PI * 1.15, Math.PI * 1.85); ctx.stroke(); }
+    else if (mood === "confused") { ctx.beginPath(); ctx.arc(-s * 0.12, -s * 0.18, s * 0.05, 0, Math.PI * 2); ctx.arc(s * 0.12, -s * 0.18, s * 0.035, 0, Math.PI * 2); ctx.fill(); ctx.strokeStyle = C.pupil; ctx.lineWidth = s * 0.03; ctx.beginPath(); ctx.moveTo(-s * 0.08, -s * 0.06); ctx.lineTo(s * 0.08, -s * 0.09); ctx.stroke(); }
+    else { ctx.beginPath(); ctx.arc(-s * 0.12, -s * 0.18, s * 0.055, 0, Math.PI * 2); ctx.arc(s * 0.12, -s * 0.18, s * 0.055, 0, Math.PI * 2); ctx.fill(); ctx.strokeStyle = C.pupil; ctx.lineWidth = s * 0.03; ctx.beginPath(); ctx.arc(0, -s * 0.1, s * 0.08, Math.PI * 0.15, Math.PI * 0.85); ctx.stroke(); }
+    // front pointer
+    ctx.fillStyle = C.accent; ctx.beginPath(); ctx.moveTo(-s * 0.1, -s * 0.38); ctx.lineTo(s * 0.1, -s * 0.38); ctx.lineTo(0, -s * 0.5); ctx.closePath(); ctx.fill();
+    // antenna
+    ctx.strokeStyle = C.kikoDark; ctx.lineWidth = s * 0.04; ctx.beginPath(); ctx.moveTo(0, s * 0.36); ctx.lineTo(0, s * 0.5); ctx.stroke();
+    ctx.fillStyle = C.accent; ctx.beginPath(); ctx.arc(0, s * 0.52, s * 0.07, 0, Math.PI * 2); ctx.fill();
+    // tray with bakso when grabbed
+    if (opt.grabbed) bakso(ctx, 0, s * 0.05, s * 0.45);
+    ctx.restore();
+    if (opt.wave !== undefined) { // arm waving (title scene)
+      ctx.save(); ctx.translate(cx + s * 0.42, cy - s * 0.1); ctx.rotate(-0.6 + Math.sin(opt.wave * 6) * 0.4);
+      ctx.strokeStyle = C.kikoDark; ctx.lineWidth = s * 0.08; ctx.lineCap = "round"; ctx.beginPath(); ctx.moveTo(0, 0); ctx.lineTo(s * 0.3, -s * 0.3); ctx.stroke();
+      ctx.fillStyle = C.kikoLight; ctx.beginPath(); ctx.arc(s * 0.32, -s * 0.33, s * 0.09, 0, Math.PI * 2); ctx.fill(); ctx.restore();
+    }
+  }
+  function kid(ctx, cx, cy, s, opt = {}) {
+    // simple student figure, standing, facing viewer
+    ctx.save(); ctx.translate(cx, cy);
+    ctx.fillStyle = "rgba(0,0,0,0.12)"; ctx.beginPath(); ctx.ellipse(0, s * 1.02, s * 0.5, s * 0.1, 0, 0, Math.PI * 2); ctx.fill();
+    ctx.fillStyle = C.pants; rr(ctx, -s * 0.3, s * 0.35, s * 0.6, s * 0.5, s * 0.1); ctx.fill();
+    ctx.fillStyle = C.skin; ctx.fillRect(-s * 0.24, s * 0.8, s * 0.16, s * 0.2); ctx.fillRect(s * 0.08, s * 0.8, s * 0.16, s * 0.2);
+    ctx.fillStyle = C.uniform; rr(ctx, -s * 0.36, -s * 0.12, s * 0.72, s * 0.56, s * 0.12); ctx.fill();
+    ctx.strokeStyle = "#D5DDE2"; ctx.lineWidth = s * 0.025; rr(ctx, -s * 0.36, -s * 0.12, s * 0.72, s * 0.56, s * 0.12); ctx.stroke();
+    ctx.fillStyle = C.skin; ctx.beginPath(); ctx.arc(0, -s * 0.42, s * 0.32, 0, Math.PI * 2); ctx.fill();
+    ctx.fillStyle = opt.hairColor || C.hair; ctx.beginPath(); ctx.arc(0, -s * 0.5, s * 0.33, Math.PI, 0); ctx.fill();
+    if (opt.hair === "long") { ctx.fillRect(-s * 0.33, -s * 0.5, s * 0.12, s * 0.45); ctx.fillRect(s * 0.21, -s * 0.5, s * 0.12, s * 0.45); }
+    ctx.fillStyle = C.pupil; ctx.beginPath(); ctx.arc(-s * 0.11, -s * 0.4, s * 0.035, 0, Math.PI * 2); ctx.arc(s * 0.11, -s * 0.4, s * 0.035, 0, Math.PI * 2); ctx.fill();
+    ctx.strokeStyle = C.pupil; ctx.lineWidth = s * 0.025; ctx.beginPath(); ctx.arc(0, -s * 0.33, s * 0.08, Math.PI * 0.15, Math.PI * 0.85); ctx.stroke();
+    // arms
+    ctx.strokeStyle = C.skin; ctx.lineWidth = s * 0.11; ctx.lineCap = "round"; ctx.beginPath();
+    if (opt.point) { ctx.moveTo(s * 0.32, s * 0.02); ctx.lineTo(s * 0.75, -s * 0.2); } else { ctx.moveTo(s * 0.34, s * 0.02); ctx.lineTo(s * 0.42, s * 0.38); }
+    ctx.moveTo(-s * 0.34, s * 0.02); ctx.lineTo(-s * 0.42, s * 0.38); ctx.stroke();
+    ctx.restore();
+  }
+  function bubble(ctx, x, y, w, s, size, opt = {}) {
+    const lines = wrap(ctx, s, size, 600, w - 48); const h = lines.length * size * 1.3 + 40;
+    ctx.fillStyle = opt.fill || C.bubble; ctx.strokeStyle = opt.stroke || "#B7C7BF"; ctx.lineWidth = 3;
+    rr(ctx, x, y - h, w, h, 22); ctx.fill(); ctx.stroke();
+    const tx = opt.tailX !== undefined ? opt.tailX : x + 60;
+    ctx.beginPath(); ctx.moveTo(tx - 16, y); ctx.lineTo(tx + 16, y); ctx.lineTo(tx + (opt.tailDir || 0), y + 28); ctx.closePath(); ctx.fillStyle = opt.fill || C.bubble; ctx.fill();
+    ctx.strokeStyle = opt.stroke || "#B7C7BF"; ctx.beginPath(); ctx.moveTo(tx - 16, y); ctx.lineTo(tx + (opt.tailDir || 0), y + 28); ctx.lineTo(tx + 16, y); ctx.stroke();
+    lines.forEach((l, i) => text(ctx, l, x + 24, y - h + 24 + size + i * size * 1.3, size, { color: opt.color || C.ink, weight: 600 }));
+    return h;
+  }
+  function card(ctx, x, y, w, h, opt = {}) { ctx.fillStyle = opt.fill || C.panel; rr(ctx, x, y, w, h, opt.r || 26); ctx.fill(); if (opt.stroke) { ctx.strokeStyle = opt.stroke; ctx.lineWidth = opt.lw || 4; ctx.stroke(); } }
+
+  // ---------- adegan umum (semua episode) ----------
+  const SCENES = {
+    title(ctx, b, l, t, TL) {
+      card(ctx, 160, 160, 1600, 700, { fill: C.panel });
+      kiko(ctx, 420, 520, 260, 0, { wave: l, mood: "happy" });
+      text(ctx, TL.label || ("Informatika · Fase " + (TL.episode || "D")[0] + " · Episode " + TL.episode), 720, 330, 34, { color: C.ink2, weight: 700 });  // TL.label: label khusus, mis. video simulasi
+      const ts = TL.title.length > 34 ? 74 : 92; const th = para(ctx, TL.title, 720, 440, ts, 1000, { weight: 900, lh: 1.1 }); const hookLines = TL.hook ? wrap(ctx, TL.hook, 34, 800, 1000).length : 0; const hy = Math.max(hookLines >= 3 ? 600 : 640, 440 + th - ts * 0.35 + 30);
+      if (TL.hook) { text(ctx, "SETELAH MENONTON, KAMU BISA:", 720, hy, 26, { color: C.accentDark, weight: 800 }); para(ctx, TL.hook, 720, hy + 50, 34, 1000, { weight: 800, lh: 1.3 }); const ny = hy + 50 + wrap(ctx, TL.hook, 34, 800, 1000).length * 34 * 1.3 + 12; if (ny <= 830) text(ctx, "Dengarkan, atau baca teksnya pelan-pelan.", 720, Math.max(800, ny), 26, { color: C.ink2, weight: 600 }); }
+      else text(ctx, "Dengarkan, atau baca teksnya pelan-pelan.", 720, 700, 36, { color: C.ink2, weight: 600 });
+      if (!TL.label) { arrowIcon(ctx, "up", 1560, 250, 70, C.kikoLight); arrowIcon(ctx, "right", 1660, 250, 70, C.kikoLight); }  // ikon panah khas episode, tidak untuk simulasi
+    },
+    quiz(ctx, b, l, t, TL, answered) {
+      const q = TL.quizzes[b.quiz]; card(ctx, 200, 150, 1520, 740, { stroke: C.accent, lw: 6 });
+      text(ctx, "CEK PEMAHAMAN", 960, 230, 32, { align: "center", color: C.accentDark, weight: 800 });
+      para(ctx, q.q, 960, 320, 44, 1360, { weight: 800, align: "center", lh: 1.3 });
+      // tata letak pilihan: mulai di bawah pertanyaan dan selesai di atas kartu narasi (narasi panjang = jarak dirapatkan)
+      const qLines = wrap(ctx, q.q, 44, 800, 1360).length, subTop = 1056 - (wrap(ctx, b.text, 44, 700, 1660).length * 44 * 1.3 + 44);
+      let oy = qLines <= 1 ? 420 : 470, gap = 120, oh = 96; const n = q.options.length;
+      if (oy + (n - 1) * gap + oh > subTop - 12) { gap = Math.max(104, Math.floor((subTop - 12 - oh - oy) / Math.max(1, n - 1))); }
+      if (oy + (n - 1) * gap + oh > subTop - 12) { oh = 86; gap = 100; oy = Math.max(320 + (qLines - 1) * 57 + 40, subTop - 12 - oh - (n - 1) * gap); }
+      q.options.forEach((o, i) => {
+        const y = oy + i * gap; const right = answered && i === q.answer;
+        card(ctx, 320, y, 1280, oh, { fill: right ? C.goodBg : answered ? "#F4F6F5" : C.bg2, stroke: right ? C.good : "#CFDCD5", lw: right ? 6 : 3 });
+        ctx.fillStyle = right ? C.good : C.kiko; ctx.beginPath(); ctx.arc(380, y + oh / 2, 30, 0, Math.PI * 2); ctx.fill();
+        text(ctx, "ABC"[i], 380, y + oh / 2 + 13, 34, { align: "center", color: "#fff", weight: 900 });
+        text(ctx, o, 440, y + oh / 2 + 14, 38, { weight: 700, color: answered && !right ? C.muted : C.ink });
+        if (right) text(ctx, "✓", 1540, y + oh / 2 + 18, 54, { align: "center", color: C.good, weight: 900 });
+      });
+      if (!answered) { // thinking timer
+        const frac = clamp(l / b.dur, 0, 1); ctx.strokeStyle = "#D7E2DC"; ctx.lineWidth = 14; ctx.beginPath(); ctx.arc(1640, 230, 40, 0, Math.PI * 2); ctx.stroke();
+        ctx.strokeStyle = C.accent; ctx.beginPath(); ctx.arc(1640, 230, 40, -Math.PI / 2, -Math.PI / 2 + frac * Math.PI * 2); ctx.stroke();
+        // catatan hanya digambar bila tidak tertutup kartu narasi (narasi tiga baris atau lebih menutupinya)
+        const subTop = 1056 - (wrap(ctx, b.text, 44, 700, 1660).length * 44 * 1.3 + 44);
+        if (subTop > 880) text(ctx, "Pikirkan dulu, jangan buru-buru.", 960, 860, 32, { align: "center", color: C.ink2, weight: 600 });
+      }
+    },
+    quiz_answer(ctx, b, l, t, TL) { SCENES.quiz(ctx, b, l, t, TL, true); },
+    recap(ctx, b, l, t, TL) {
+      // TL.recap: tiga kalimat pendek dari script.json
+      card(ctx, 160, 140, 1600, 760);
+      text(ctx, "TIGA HAL UNTUK DIINGAT", 960, 230, 34, { align: "center", color: C.accentDark, weight: 900 });
+      const items = TL.recap || [];
+      const show = clamp(Math.floor((l - 0.6) / 2.2) + 1, 1, Math.max(1, items.length));
+      items.forEach((s, i) => { if (i >= show) return; card(ctx, 300, 290 + i * 180, 1320, 140, { fill: C.bg2 }); ctx.fillStyle = C.kiko; ctx.beginPath(); ctx.arc(380, 360 + i * 180, 40, 0, Math.PI * 2); ctx.fill(); text(ctx, String(i + 1), 380, 376 + i * 180, 40, { align: "center", color: "#fff", weight: 900 }); text(ctx, s, 450, 375 + i * 180, 42, { weight: 800, fit: 1130 }); });
+      kiko(ctx, 1620, 820, 130, 0);
+    },
+    outro(ctx, b, l, t, TL) {
+      // TL.next: {code, title, note} episode berikutnya, dari script.json
+      const n = TL.next || {};
+      card(ctx, 260, 200, 1400, 600);
+      text(ctx, n.heading || "EPISODE BERIKUTNYA", 960, 320, 34, { align: "center", color: C.accentDark, weight: 900 });
+      text(ctx, n.code || "", 960, 440, 60, { align: "center", weight: 900 });
+      text(ctx, n.title || "", 960, 530, 54, { align: "center", weight: 800, color: C.ink2, fit: 1320 });
+      text(ctx, n.note || "", 960, 680, 34, { align: "center", color: C.ink2, weight: 600 });
+      kiko(ctx, 960, 760 + 20, 140, 0, { wave: l });
+    }
+  };
+
+  function beatAt(TL, t) {
+    let b = TL.beats[0];
+    for (const x of TL.beats) { if (t >= x.start) b = x; else break; }
+    return b;
+  }
+  function draw(ctx, t, TL, opt = {}) {
+    const b = beatAt(TL, t); const l = t - b.start;
+    ctx.save(); ctx.setTransform(1, 0, 0, 1, 0, 0);
+    ctx.fillStyle = C.bg; ctx.fillRect(0, 0, W, H);
+    // header
+    text(ctx, TL.episode + " · " + TL.title, 60, 78, 30, { color: C.ink2, weight: 700 });
+    text(ctx, TL.segments[b.seg], 1860, 78, 30, { color: C.accentDark, weight: 800, align: "right" });
+    ctx.fillStyle = C.bg2; ctx.fillRect(0, 100, W, 6); ctx.fillStyle = C.accent; ctx.fillRect(0, 100, W * clamp(t / TL.total, 0, 1), 6);
+    const fn = SCENES[b.scene]; if (fn) fn(ctx, b, l, t, TL);
+    // narration card (burned-in text the student reads)
+    if (opt.subtitles !== false) {
+      const size = 44; const lines = wrap(ctx, b.text, size, 700, 1660);
+      const h = lines.length * size * 1.3 + 44; const y0 = 1056 - h;
+      ctx.fillStyle = "rgba(31,42,51,0.92)"; rr(ctx, 100, y0, 1720, h, 20); ctx.fill();
+      // reading progress (how far along the text the reader should be)
+      const frac = clamp(l / b.audio, 0, 1); ctx.fillStyle = C.accent; rr(ctx, 100, y0 + h - 8, 1720 * frac, 8, 4); ctx.fill();
+      lines.forEach((ln, i) => text(ctx, ln, 960, y0 + 22 + size + i * size * 1.3, size, { align: "center", color: C.subText, weight: 700 }));
+    }
+    ctx.restore();
+    return b;
+  }
+
+  global.Kiko = { draw, beatAt, W, H, C, FONT, SCENES,
+    helpers: { rr, text, wrap, para, arrowIcon, bakso, table, kiko, kid, bubble, card, ease, clamp, lerp } };
+})(typeof window !== "undefined" ? window : globalThis);
+
+/* Kiko grid: dunia papan robot (kotak, meja, bakso), simulasi perintah MAJU/KIRI/KANAN/AMBIL,
+   dan panel daftar perintah. Dipakai D7.5 dan episode pemrograman berikutnya. Muat setelah kiko-core.js. */
+(function (global) {
+  const K = global.Kiko, H = K.helpers, C = K.C;
+  const { rr, text, arrowIcon, bakso, table, kiko, ease, clamp, lerp } = H;
+  const CMD = {
+    MAJU: { word: "MAJU", icon: "up" },
+    KIRI: { word: "BELOK KIRI", icon: "left" },
+    KANAN: { word: "BELOK KANAN", icon: "right" },
+    AMBIL: { word: "AMBIL", icon: "grab" }
+  };
+
+  // ---------- simulation ----------
+  const DIRS = [[0, 1], [1, 0], [0, -1], [-1, 0]]; // up, right, down, left (y up)
+  function simulate(program, world) {
+    const states = [{ x: world.start[0], y: world.start[1], d: world.dir || 0, crash: false, grabbed: false, moved: false }];
+    let s = states[0];
+    for (const c of program) {
+      let n = { ...s, crash: false, moved: false };
+      if (c === "MAJU") {
+        const nx = s.x + DIRS[s.d][0], ny = s.y + DIRS[s.d][1];
+        const blocked = nx < 0 || ny < 0 || nx >= world.cols || ny >= world.rows || (world.tables || []).some(t => t[0] === nx && t[1] === ny);
+        if (blocked) { n.crash = true; n.cx = nx; n.cy = ny; states.push(n); return states; }
+        n.x = nx; n.y = ny; n.moved = true;
+      } else if (c === "KIRI") n.d = (s.d + 3) % 4;
+      else if (c === "KANAN") n.d = (s.d + 1) % 4;
+      else if (c === "AMBIL") n.grabbed = (world.goal && s.x === world.goal[0] && s.y === world.goal[1]) ? true : s.grabbed;
+      states.push(n); s = n;
+    }
+    return states;
+  }
+  // continuous robot pose at "u" steps executed (fractional)
+  function pose(program, world, u) {
+    const st = simulate(program, world);
+    const n = Math.min(st.length - 1, program.length);
+    u = clamp(u, 0, n);
+    const i = Math.min(Math.floor(u), n - 1 < 0 ? 0 : n - 1), f = n === 0 ? 0 : u - i;
+    const a = st[i], b = st[Math.min(i + 1, st.length - 1)];
+    if (n === 0) return { x: a.x, y: a.y, ang: a.d * Math.PI / 2, grabbed: a.grabbed, crash: false, step: 0, done: true };
+    const cmd = program[i];
+    let x = a.x, y = a.y, ang = a.d * Math.PI / 2, crash = false, flash = 0;
+    if (b.crash) {
+      const dx = b.cx - a.x, dy = b.cy - a.y;
+      const k = f < 0.5 ? ease(f / 0.5) * 0.38 : 0.38 * (1 - ease((f - 0.5) / 0.5));
+      x = a.x + dx * k; y = a.y + dy * k; crash = f > 0.45; flash = f > 0.45 ? 1 - (f - 0.45) / 0.55 : 0;
+    } else if (cmd === "MAJU") { x = lerp(a.x, b.x, ease(f)); y = lerp(a.y, b.y, ease(f)); }
+    else if (cmd === "KIRI" || cmd === "KANAN") {
+      const da = cmd === "KANAN" ? Math.PI / 2 : -Math.PI / 2; ang = a.d * Math.PI / 2 + da * ease(f);
+    }
+    const grabbed = f >= 0.6 ? b.grabbed : a.grabbed;
+    const grabbing = cmd === "AMBIL" && f < 0.6;
+    const finalCrash = st[st.length - 1].crash;
+    return { x, y, ang, grabbed, crash, flash, grabbing, step: i, f, done: u >= n, states: st, finalCrash, lastStep: n };
+  }
+
+  // ---------- grid ----------
+  function gridGeom(x, y, cell, world) { return { x, y, cell, cols: world.cols, rows: world.rows, w: cell * world.cols, h: cell * world.rows }; }
+  function cellCenter(g, cx, cy) { return [g.x + cx * g.cell + g.cell / 2, g.y + (g.rows - 1 - cy) * g.cell + g.cell / 2]; }
+  function drawGrid(ctx, g, world, opt = {}) {
+    ctx.fillStyle = C.panel; rr(ctx, g.x - 14, g.y - 14, g.w + 28, g.h + 28, 22); ctx.fill();
+    for (let r = 0; r < g.rows; r++) for (let c = 0; c < g.cols; c++) {
+      const [px, py] = cellCenter(g, c, r); ctx.fillStyle = C.tile; rr(ctx, px - g.cell / 2 + 3, py - g.cell / 2 + 3, g.cell - 6, g.cell - 6, 10); ctx.fill();
+      ctx.strokeStyle = C.tileLine; ctx.lineWidth = 2; ctx.stroke();
+    }
+    if (opt.highlight) for (const [hx, hy, col] of opt.highlight) { const [px, py] = cellCenter(g, hx, hy); ctx.fillStyle = col; rr(ctx, px - g.cell / 2 + 3, py - g.cell / 2 + 3, g.cell - 6, g.cell - 6, 10); ctx.fill(); }
+    if (opt.path) { ctx.strokeStyle = "rgba(46,126,154,0.35)"; ctx.lineWidth = 10; ctx.lineCap = "round"; ctx.lineJoin = "round"; ctx.beginPath(); opt.path.forEach((p, i) => { const [px, py] = cellCenter(g, p[0], p[1]); i ? ctx.lineTo(px, py) : ctx.moveTo(px, py); }); ctx.stroke(); }
+    for (const t of world.tables || []) { const [px, py] = cellCenter(g, t[0], t[1]); table(ctx, px - g.cell / 2, py - g.cell / 2, g.cell, g.cell); }
+    if (world.goal && !opt.hideGoal) { const [px, py] = cellCenter(g, world.goal[0], world.goal[1]); bakso(ctx, px, py, g.cell * 0.62, { glow: true }); }
+    if (opt.marks) for (const m of opt.marks) { const [px, py] = cellCenter(g, m[0], m[1]); text(ctx, m[2], px, py + 16, 44, { align: "center", color: m[3] || C.bad, weight: 800 }); }
+  }
+  function drawRobotOnGrid(ctx, g, p, world, opt = {}) {
+    const [px, py] = cellCenter(g, p.x, p.y);
+    kiko(ctx, px, py, g.cell * 0.78, p.ang, { grabbed: p.grabbed, flash: p.flash, mood: p.crash ? "sad" : opt.mood });
+    if (p.crash) { text(ctx, "✕", px + g.cell * 0.4, py - g.cell * 0.3, 60, { color: C.bad, weight: 900, align: "center" }); }
+  }
+  // program list panel
+  function drawProgram(ctx, x, y, program, opt = {}) {
+    const rowH = opt.rowH || 78, w = opt.w || 520, style = opt.style || "both";
+    if (opt.title) text(ctx, opt.title, x, y - 22, 30, { color: C.ink2, weight: 700 });
+    program.forEach((c, i) => {
+      const ry = y + i * rowH; const active = opt.active === i, done = opt.done !== undefined && i < opt.done;
+      const bad = opt.bad === i, good = opt.goodRows && opt.goodRows.includes(i), changed = opt.changed && opt.changed.includes(i);
+      ctx.fillStyle = bad ? C.badBg : active ? "#FFF3D6" : good ? C.goodBg : changed ? C.goodBg : C.panel;
+      rr(ctx, x, ry, w, rowH - 10, 16); ctx.fill();
+      ctx.strokeStyle = bad ? C.bad : active ? C.accent : changed ? C.good : "#D7E2DC"; ctx.lineWidth = active || bad || changed ? 5 : 2; ctx.stroke();
+      ctx.fillStyle = done ? C.good : bad ? C.bad : C.ink2; ctx.beginPath(); ctx.arc(x + 36, ry + (rowH - 10) / 2, 22, 0, Math.PI * 2); ctx.fill();
+      text(ctx, done ? "✓" : String(i + 1), x + 36, ry + (rowH - 10) / 2 + 10, 26, { color: "#fff", align: "center", weight: 800 });
+      if (style !== "words") arrowIcon(ctx, CMD[c].icon, x + 100, ry + (rowH - 10) / 2, 44, C.ink);
+      if (style !== "arrows") text(ctx, CMD[c].word, x + (style === "words" ? 80 : 140), ry + (rowH - 10) / 2 + 12, 32, { weight: 700, color: C.ink });
+      if (opt.notes && opt.notes[i]) text(ctx, opt.notes[i], x + w + 20, ry + (rowH - 10) / 2 + 12, 30, { weight: 700, color: bad ? C.bad : C.good });
+    });
+  }
+  // run progress within a beat: steps spread over the reading window
+  function runU(beat, local, n, lead = 1.2) { const span = Math.max(1, beat.audio - lead - 0.6); return clamp((local - lead) / span * n, 0, n); }
+
+  Object.assign(K, { CMD, simulate, pose });
+  Object.assign(H, { gridGeom, cellCenter, drawGrid, drawRobotOnGrid, drawProgram, runU });
+})(typeof window !== "undefined" ? window : globalThis);
+
+/* Adegan episode D7.5: Instruksi untuk Manusia dan Mesin.
+   Muat setelah ../_alat/kiko-core.js dan ../_alat/kiko-grid.js (urutan ada di "engine" pada script.json). */
+(function (global) {
+  const K = global.Kiko, H = K.helpers, C = K.C, CMD = K.CMD, SCENES = K.SCENES, pose = K.pose;
+  const { text, para, arrowIcon, bakso, table, kiko, kid, bubble, card, rr, ease, clamp, lerp, gridGeom, drawGrid, drawRobotOnGrid, drawProgram, runU } = H;
+
+  // ---------- worlds and programs ----------
+  const WORLD_A = { cols: 5, rows: 5, start: [0, 0], dir: 0, goal: [1, 2], tables: [] };
+  const PROG_A = ["MAJU", "MAJU", "KANAN", "MAJU", "AMBIL"];
+  const PROG_B = ["KANAN", "MAJU", "MAJU", "MAJU", "AMBIL"];
+  const WORLD_P = { cols: 5, rows: 5, start: [0, 0], dir: 0, goal: [2, 2], tables: [] };
+  const PROG_P = ["MAJU", "KANAN", "MAJU", "MAJU", "KIRI", "MAJU", "AMBIL"];
+  const WORLD_BUG = { cols: 5, rows: 5, start: [0, 0], dir: 0, goal: [1, 2], tables: [[0, 2]] };
+  const PROG_BUG = ["MAJU", "MAJU", "KANAN", "MAJU", "AMBIL"];
+  const PROG_FIX = ["MAJU", "KANAN", "MAJU", "KIRI", "MAJU", "AMBIL"];
+  const WORLD_MAKE = { cols: 5, rows: 5, start: [0, 0], dir: 0, goal: [2, 3], tables: [[1, 1], [0, 3]] };
+  const WORLD_DEMO = { cols: 3, rows: 3, start: [1, 1], dir: 0, goal: null, tables: [] };
+
+  // ---------- scenes ----------
+  const GX = 150, GY = 150, CELL = 136;
+  Object.assign(SCENES, {
+    prereq(ctx, b, l) {
+      card(ctx, 260, 200, 1400, 600);
+      text(ctx, "TONTON DULU", 960, 300, 34, { align: "center", color: C.accentDark, weight: 800 });
+      text(ctx, "Episode D7.1", 960, 420, 60, { align: "center", weight: 900 });
+      text(ctx, "Empat Jurus Berpikir Komputasional", 960, 500, 52, { align: "center", weight: 700, color: C.ink2 });
+      ["Dekomposisi", "Pola", "Abstraksi", "Algoritma"].forEach((s, i) => { card(ctx, 380 + i * 300, 580, 260, 120, { fill: C.bg2 }); text(ctx, s, 510 + i * 300, 652, 34, { align: "center", weight: 800 }); });
+      kiko(ctx, 1600, 760, 150, 0);
+    },
+    unplugged(ctx, b, l) {
+      card(ctx, 120, 150, 1680, 740);
+      text(ctx, "MAIN DULU TANPA KOMPUTER", 960, 230, 34, { align: "center", color: C.accentDark, weight: 800 });
+      kid(ctx, 560, 540, 220, { point: true });
+      kid(ctx, 1260, 540, 220, { hair: "long", hairColor: "#3A2A1E" });
+      // blindfold on the "robot" kid
+      ctx.fillStyle = C.ink; rr(ctx, 1260 - 80, 540 - 220 * 0.47, 160, 40, 10); ctx.fill();
+      text(ctx, "pemberi perintah", 560, 800, 32, { align: "center", color: C.ink2, weight: 700 });
+      text(ctx, "robot", 1260, 800, 32, { align: "center", color: C.ink2, weight: 700 });
+      const words = ["maju", "kiri", "kanan"]; const k = Math.floor(l / 1.6) % 3;
+      bubble(ctx, 640, 330, 300, words[k], 44, { tailX: 700, tailDir: -30 });
+      if (b.id === "play2") { text(ctx, "Robot tidak boleh menebak!", 960, 880, 36, { align: "center", color: C.bad, weight: 800 }); }
+    },
+    cantin_ask(ctx, b, l) {
+      card(ctx, 120, 150, 1680, 740);
+      const [px, py] = [1500, 560]; table(ctx, px - 110, py - 110, 220, 220); bakso(ctx, px, py - 20, 110);
+      kid(ctx, 420, 560, 220, { point: true }); kid(ctx, 820, 560, 220, { hair: "long" });
+      text(ctx, "Dito", 420, 820, 32, { align: "center", color: C.ink2, weight: 700 }); text(ctx, "Sinta", 820, 820, 32, { align: "center", color: C.ink2, weight: 700 });
+      bubble(ctx, 360, 320, 620, "Ambilkan bakso di meja sana, ya!", 40, { tailX: 460, tailDir: -20 });
+    },
+    cantin_human(ctx, b, l) {
+      card(ctx, 120, 150, 1680, 740);
+      const [px, py] = [1500, 560]; table(ctx, px - 110, py - 110, 220, 220);
+      kid(ctx, 420, 560, 220, {});
+      const u = ease(clamp((l - 0.8) / 3.5, 0, 1));
+      const kx = lerp(820, 1320, u), ky = 560 + Math.sin(u * Math.PI) * -80;
+      if (u < 0.99) bakso(ctx, px, py - 20, 110);
+      kid(ctx, kx, ky, 220, { hair: "long" });
+      if (u >= 0.99) { bakso(ctx, kx + 80, ky + 20, 90); text(ctx, "✓ paham", kx, ky - 180, 44, { align: "center", color: C.good, weight: 900 }); }
+      bubble(ctx, 700, 300, 520, "Meja yang itu. Lewat sini. Lalu ambil.", 34, { tailX: 840, tailDir: 0, fill: "#F3FAF5", stroke: C.good });
+    },
+    cantin_robot(ctx, b, l) {
+      card(ctx, 120, 150, 1680, 740);
+      const [px, py] = [1500, 560]; table(ctx, px - 110, py - 110, 220, 220); bakso(ctx, px, py - 20, 110);
+      kid(ctx, 420, 560, 220, { point: true }); kiko(ctx, 840, 600, 220, 0, { mood: "confused" });
+      bubble(ctx, 360, 320, 620, "Ambilkan bakso di meja sana, ya!", 40, { tailX: 460, tailDir: -20 });
+      const qs = ["?", "? ?", "? ? ?"][Math.min(2, Math.floor(l / 1.2))];
+      bubble(ctx, 900, 360, 220, qs, 48, { tailX: 950, tailDir: -20, fill: C.badBg, stroke: C.bad, color: C.bad });
+      text(ctx, "Kiko tidak bisa menebak", 840, 840, 36, { align: "center", color: C.bad, weight: 800 });
+    },
+    four_cmds(ctx, b, l) {
+      const g = gridGeom(GX, GY, CELL, WORLD_DEMO); // small grid, scale cell larger
+      const g2 = gridGeom(180, 210, 200, WORLD_DEMO); drawGrid(ctx, g2, WORLD_DEMO);
+      drawRobotOnGrid(ctx, g2, { x: 1, y: 1, ang: 0, grabbed: false }, WORLD_DEMO);
+      text(ctx, "Kiko hanya mengerti 4 perintah", 1320, 230, 44, { align: "center", weight: 900 });
+      const cmds = ["MAJU", "KIRI", "KANAN", "AMBIL"]; const show = b.id === "s1i" ? 4 : Math.min(4, Math.floor((l - 1) / 1.1) + 1);
+      cmds.forEach((c, i) => { if (i >= show) return; card(ctx, 900, 290 + i * 140, 840, 120, { stroke: "#D7E2DC", lw: 3 }); arrowIcon(ctx, CMD[c].icon, 980, 350 + i * 140, 70, C.kiko); text(ctx, CMD[c].word, 1060, 368 + i * 140, 46, { weight: 800 }); });
+      if (b.id === "s1i") text(ctx, "persis seperti yang ditulis", 1320, 880, 36, { align: "center", color: C.ink2, weight: 700 });
+    },
+    demo(ctx, b, l, cmd, repeat) {
+      const g2 = gridGeom(180, 210, 200, WORLD_DEMO); const world = cmd === "AMBIL" ? { ...WORLD_DEMO, goal: [1, 1] } : WORLD_DEMO;
+      const prog = [cmd]; const cycle = 2.2; const u = clamp(((l - 0.8) % cycle) / 1.0, 0, 1) * (l > 0.8 ? 1 : 0);
+      const k = Math.floor(Math.max(0, l - 0.8) / cycle);
+      const p = pose(prog, world, k % 2 === 0 || cmd !== "MAJU" ? u : u); // same every cycle; robot resets
+      drawGrid(ctx, g2, world, { hideGoal: p.grabbed });
+      drawRobotOnGrid(ctx, g2, p, world);
+      const cmds = ["MAJU", "KIRI", "KANAN", "AMBIL"];
+      cmds.forEach((c, i) => { const on = c === cmd; card(ctx, 900, 290 + i * 140, 840, 120, { stroke: on ? C.accent : "#D7E2DC", lw: on ? 6 : 3, fill: on ? "#FFF3D6" : C.panel }); arrowIcon(ctx, CMD[c].icon, 980, 350 + i * 140, 70, on ? C.ink : C.muted); text(ctx, CMD[c].word, 1060, 368 + i * 140, 46, { weight: 800, color: on ? C.ink : C.muted }); });
+      const note = { MAJU: "pindah 1 kotak ke depan", KIRI: "berputar, tidak pindah", KANAN: "berputar, tidak pindah", AMBIL: "ambil benda di kotak ini" }[cmd];
+      text(ctx, note, 1320, 880, 36, { align: "center", color: C.accentDark, weight: 800 });
+    },
+    demo_maju(ctx, b, l) { SCENES.demo(ctx, b, l, "MAJU"); },
+    demo_kiri(ctx, b, l) { SCENES.demo(ctx, b, l, "KIRI"); },
+    demo_kanan(ctx, b, l) { SCENES.demo(ctx, b, l, "KANAN"); },
+    demo_ambil(ctx, b, l) { SCENES.demo(ctx, b, l, "AMBIL"); },
+    orderScene(ctx, b, l, prog, u, opt = {}) {
+      const g = gridGeom(GX, GY, CELL, WORLD_A); const p = pose(prog, WORLD_A, u);
+      drawGrid(ctx, g, WORLD_A, { hideGoal: p.grabbed });
+      drawRobotOnGrid(ctx, g, p, WORLD_A);
+      drawProgram(ctx, 1000, 220, prog, { title: opt.title, active: p.done ? -1 : p.step, done: p.done ? prog.length : p.step, style: "both", w: 560 });
+      if (p.done && opt.result) text(ctx, opt.result, 1280, 720, 44, { align: "center", color: opt.good ? C.good : C.bad, weight: 900 });
+      if (opt.note) text(ctx, opt.note, 1280, 820, 34, { align: "center", color: C.ink2, weight: 700 });
+    },
+    order_intro(ctx, b, l) { SCENES.orderScene(ctx, b, l, PROG_A, 0, { title: "Program 1", note: "dijalankan urut dari nomor 1" }); },
+    order_runA(ctx, b, l) { SCENES.orderScene(ctx, b, l, PROG_A, runU(b, l, PROG_A.length), { title: "Program 1", result: "Bakso terambil!", good: true }); },
+    order_introB(ctx, b, l) { SCENES.orderScene(ctx, b, l, PROG_B, 0, { title: "Program 2", note: "perintah sama, urutan berbeda" }); },
+    order_runB(ctx, b, l) { SCENES.orderScene(ctx, b, l, PROG_B, runU(b, l, PROG_B.length), { title: "Program 2", result: "Kotak kosong. Tidak ada bakso.", good: false }); },
+    order_compare(ctx, b, l) {
+      const small = 90; const g1 = gridGeom(140, 220, small, WORLD_A), g2 = gridGeom(1330, 220, small, WORLD_A);
+      const p1 = pose(PROG_A, WORLD_A, 5), p2 = pose(PROG_B, WORLD_A, 5);
+      drawGrid(ctx, g1, WORLD_A, { hideGoal: true }); drawRobotOnGrid(ctx, g1, p1, WORLD_A);
+      drawGrid(ctx, g2, WORLD_A); drawRobotOnGrid(ctx, g2, p2, WORLD_A);
+      drawProgram(ctx, 700, 275, PROG_A, { rowH: 54, w: 420, style: "words", title: "Program 1" });
+      drawProgram(ctx, 700, 610, PROG_B, { rowH: 54, w: 420, style: "words", title: "Program 2" });
+      text(ctx, "✓ dapat bakso", 365, 740, 36, { align: "center", color: C.good, weight: 900 }); text(ctx, "✕ kotak kosong", 1555, 740, 36, { align: "center", color: C.bad, weight: 900 });
+      if (l > 3) { card(ctx, 500, 120, 920, 80, { fill: "#FFF3D6", stroke: C.accent, lw: 4 }); text(ctx, "Daftar perintah yang urut = ALGORITMA", 960, 173, 38, { align: "center", weight: 900 }); }
+    },
+    predictScene(ctx, b, l, u, opt = {}) {
+      const g = gridGeom(GX, GY, CELL, WORLD_P); const p = pose(PROG_P, WORLD_P, u);
+      const hl = opt.wait ? [[1, 1], [2, 2], [2, 3], [3, 1], [1, 3]].map(c => [c[0], c[1], `rgba(242,177,52,${0.25 + 0.2 * Math.sin(l * 3 + c[0] * 2 + c[1])})`]) : opt.result ? [[2, 2, C.goodBg]] : [];
+      drawGrid(ctx, g, WORLD_P, { hideGoal: true, highlight: hl });
+      drawRobotOnGrid(ctx, g, p, WORLD_P);
+      drawProgram(ctx, 1000, 190, PROG_P, { title: "Program", rowH: 72, w: 560, active: opt.run && !p.done ? p.step : -1, done: opt.run ? (p.done ? PROG_P.length : p.step) : 0 });
+      if (opt.wait) { card(ctx, 980, 720, 620, 110, { fill: "#FFF3D6", stroke: C.accent, lw: 4 }); text(ctx, "Kiko berhenti di kotak mana?", 1290, 790, 40, { align: "center", weight: 900 }); }
+      if (opt.result) { text(ctx, "Kiko berhenti di sini", 1290, 760, 40, { align: "center", color: C.good, weight: 900 }); text(ctx, "Tebak → Jalankan → Bandingkan", 1290, 815, 32, { align: "center", color: C.ink2, weight: 700 }); }
+    },
+    predict_show(ctx, b, l) { SCENES.predictScene(ctx, b, l, 0, {}); },
+    predict_wait(ctx, b, l) { SCENES.predictScene(ctx, b, l, 0, { wait: true }); },
+    predict_run(ctx, b, l) { SCENES.predictScene(ctx, b, l, runU(b, l, PROG_P.length, 2.0), { run: true }); },
+    predict_result(ctx, b, l) { SCENES.predictScene(ctx, b, l, PROG_P.length, { run: true, result: true }); },
+    bugScene(ctx, b, l, prog, u, opt = {}) {
+      const g = gridGeom(GX, GY, CELL, WORLD_BUG); const p = pose(prog, WORLD_BUG, u);
+      drawGrid(ctx, g, WORLD_BUG, { hideGoal: p.grabbed, marks: opt.marks, highlight: opt.highlight });
+      drawRobotOnGrid(ctx, g, p, WORLD_BUG);
+      drawProgram(ctx, 1000, 190, prog, { title: opt.title, rowH: 72, w: 520, active: opt.active !== undefined ? opt.active : (opt.run && !p.done ? p.step : -1), done: opt.done !== undefined ? opt.done : (opt.run ? (p.done ? prog.length : p.step) : 0), bad: opt.bad, notes: opt.notes, changed: opt.changed });
+      if (opt.banner) { card(ctx, 980, 700, 640, 110, { fill: opt.good ? C.goodBg : C.badBg, stroke: opt.good ? C.good : C.bad, lw: 4 }); text(ctx, opt.banner, 1300, 770, 40, { align: "center", weight: 900, color: opt.good ? C.good : C.bad }); }
+      if (opt.sub) text(ctx, opt.sub, 1300, 860, 32, { align: "center", color: C.ink2, weight: 700 });
+    },
+    bug_show(ctx, b, l) { SCENES.bugScene(ctx, b, l, PROG_BUG, 0, { title: "Program" }); },
+    bug_run(ctx, b, l) { const u = runU(b, l, 2, 1.0); SCENES.bugScene(ctx, b, l, PROG_BUG, u, { title: "Program", run: true, banner: u >= 1.5 ? "Kiko menabrak meja!" : undefined, sub: u >= 1.9 ? "program berhenti" : undefined }); },
+    bug_find(ctx, b, l) {
+      if (b.id === "s4c") { SCENES.bugScene(ctx, b, l, PROG_BUG, 0, { title: "Program", banner: "Kesalahan = BUG", good: false, sub: "mesin tidak memperbaikinya sendiri" }); return; }
+      // s4d: trace step 1 (safe), then step 2 (hits the table)
+      const phase = l < 3 ? 0 : l < 6.5 ? 1 : 2;
+      const u = phase === 0 ? 0 : phase === 1 ? 1 : 1.5;
+      const notes = phase === 0 ? [] : phase === 1 ? ["aman ✓"] : ["aman ✓", "masuk kotak meja ✕"];
+      SCENES.bugScene(ctx, b, l, PROG_BUG, u, { title: "Telusuri satu per satu", active: phase === 0 ? -1 : phase - 1, done: phase === 2 ? 1 : 0, bad: phase === 2 ? 1 : undefined, notes, banner: phase === 2 ? "Di sini salahnya" : undefined, good: false });
+    },
+    bug_fix(ctx, b, l) {
+      const show = clamp(Math.floor((l - 0.8) / 1.0) + 1, 0, PROG_FIX.length);
+      SCENES.bugScene(ctx, b, l, PROG_FIX.slice(0, Math.max(1, show)), 0, { title: "Program yang diperbaiki", changed: [1, 2, 3], done: 0, active: -1, banner: "Perintah 2–4 diubah", good: true });
+    },
+    bug_fixrun(ctx, b, l) {
+      const u = b.id === "s4g" ? PROG_FIX.length : runU(b, l, PROG_FIX.length, 1.6);
+      SCENES.bugScene(ctx, b, l, PROG_FIX, u, { title: "Program yang diperbaiki", run: true, banner: u >= PROG_FIX.length ? "Berhasil!" : undefined, good: true, sub: b.id === "s4g" ? "mencari dan memperbaiki = DEBUGGING" : undefined });
+    },
+    symbol_arrows(ctx, b, l) {
+      card(ctx, 160, 160, 1600, 720);
+      text(ctx, "Ditulis dengan SIMBOL", 960, 250, 40, { align: "center", weight: 900, color: C.ink2 });
+      PROG_FIX.forEach((c, i) => { card(ctx, 260 + i * 240, 360, 200, 200, { fill: C.bg2 }); arrowIcon(ctx, CMD[c].icon, 360 + i * 240, 460, 110, C.kiko); text(ctx, String(i + 1), 360 + i * 240, 620, 30, { align: "center", color: C.ink2, weight: 800 }); });
+      text(ctx, "mudah dibaca, sulit ditulis di buku", 960, 780, 34, { align: "center", color: C.ink2, weight: 700 });
+    },
+    symbol_words(ctx, b, l) {
+      card(ctx, 160, 140, 1600, 760);
+      text(ctx, "SIMBOL", 500, 220, 34, { align: "center", weight: 900, color: C.ink2 }); text(ctx, "KATA-KATA TERBATAS", 1300, 220, 34, { align: "center", weight: 900, color: C.accentDark });
+      drawProgram(ctx, 260, 250, PROG_FIX, { style: "arrows", rowH: 72, w: 460 });
+      const show = b.id === "s5c" ? 6 : clamp(Math.floor((l - 0.5) / 0.9) + 1, 0, 6);
+      drawProgram(ctx, 1000, 250, PROG_FIX.slice(0, Math.max(1, show)), { style: "words", rowH: 72, w: 620 });
+      for (let i = 0; i < Math.max(1, show); i++) { arrowIcon(ctx, "east", 860, 281 + i * 72, 44, C.muted); }
+      if (b.id === "s5c") { card(ctx, 1000, 690, 620, 140, { fill: "#FFF3D6", stroke: C.accent, lw: 4 }); text(ctx, "PSEUDOCODE", 1310, 745, 40, { align: "center", weight: 900 }); text(ctx, "urut, jelas, mudah jadi program", 1310, 800, 30, { align: "center", color: C.ink2, weight: 700 }); }
+    },
+    symbol_rule(ctx, b, l) {
+      card(ctx, 160, 160, 1600, 720);
+      text(ctx, "Kosakatanya terbatas", 960, 260, 44, { align: "center", weight: 900 });
+      card(ctx, 260, 340, 640, 200, { fill: C.badBg, stroke: C.bad, lw: 5 }); text(ctx, "tolong ambilkan, ya", 580, 450, 44, { align: "center", weight: 800, color: C.bad });
+      ctx.strokeStyle = C.bad; ctx.lineWidth = 8; ctx.beginPath(); ctx.moveTo(300, 380); ctx.lineTo(860, 500); ctx.stroke();
+      card(ctx, 1020, 340, 640, 200, { fill: C.goodBg, stroke: C.good, lw: 5 }); text(ctx, "AMBIL", 1340, 460, 64, { align: "center", weight: 900, color: C.good });
+      text(ctx, "✕ Kiko tidak mengerti", 580, 600, 34, { align: "center", color: C.bad, weight: 800 }); text(ctx, "✓ Kiko mengerti", 1340, 600, 34, { align: "center", color: C.good, weight: 800 });
+      kiko(ctx, 960, 760, 180, 0, { mood: "happy" });
+    },
+    make_show(ctx, b, l) {
+      const g = gridGeom(GX, GY, CELL, WORLD_MAKE); drawGrid(ctx, g, WORLD_MAKE);
+      drawRobotOnGrid(ctx, g, { x: 0, y: 0, ang: 0, grabbed: false }, WORLD_MAKE);
+      card(ctx, 980, 190, 640, 420, { stroke: "#D7E2DC", lw: 3 });
+      text(ctx, "GILIRANMU", 1300, 260, 34, { align: "center", color: C.accentDark, weight: 900 });
+      ["1. Tebak dulu jalannya", "2. Tulis daftar perintah", "3. Jalankan", "4. Perbaiki kalau salah"].forEach((s, i) => text(ctx, s, 1040, 340 + i * 64, 36, { weight: 700 }));
+      card(ctx, 980, 650, 640, 180, { fill: C.bg2 });
+      ["MAJU", "KIRI", "KANAN", "AMBIL"].forEach((c, i) => { arrowIcon(ctx, CMD[c].icon, 1070 + i * 150, 740, 70, C.kiko); });
+      text(ctx, "hanya 4 perintah ini", 1300, 810, 28, { align: "center", color: C.ink2, weight: 700 });
+    }
+  });
+
+  // dipakai halaman latihan (page.html)
+  K.worlds = { WORLD_A, WORLD_P, WORLD_BUG, WORLD_MAKE, WORLD_DEMO };
+  K.programs = { PROG_A, PROG_B, PROG_P, PROG_BUG, PROG_FIX };
+})(typeof window !== "undefined" ? window : globalThis);
+
+/* K04 Simulasi konsep: program robot Kiko di papan kantin (aturan dan gambar papan dari kiko-grid.js / D7.5).
+   Papan kiri (x 130–760, y 170–800), panel program tengah (x 840–1370), kolom kanan (x 1400–1800) untuk catatan, pilihan, hasil.
+   Baris program (kunci "prog"): "MAJU", "KIRI", "KANAN", "AMBIL"; "U4" = ULANGI 4 KALI:, ">MAJU" = baris menjorok di dalam ULANGI.
+   Kunci beat lain: world (W1–W4), cues (potongan narasi tempat tiap langkah mulai), options, marks [[x,y,"A"]], hideGoal, banner,
+   phase (telusur a/b), fix (baris yang diganti). Semua gambar di atas y 830. Muat setelah kiko-grid.js dan D7.5/scenes.js. */
+(function (global) {
+  const K = global.Kiko, H = K.helpers, C = K.C, CMD = K.CMD;
+  const { rr, text, para, card, kiko, kid, bubble, arrowIcon, ease, clamp, lerp, gridGeom, drawGrid, drawRobotOnGrid, cellCenter } = H;
+  const WORLDS = {
+    W1: { cols: 5, rows: 5, start: [0, 0], dir: 0, goal: [1, 3], tables: [[0, 2], [2, 1]] },
+    W2: { cols: 5, rows: 5, start: [0, 0], dir: 0, goal: [3, 2], tables: [[1, 2], [2, 0]] },
+    W3: { cols: 5, rows: 5, start: [0, 0], dir: 0, goal: [4, 4], tables: [[2, 2], [1, 2], [3, 1]] },
+    W4: { cols: 5, rows: 5, start: [0, 0], dir: 0, goal: [3, 1], tables: [[1, 0], [1, 2]] }
+  };
+  const PROG_SINTA = ["MAJU", "KIRI", "KIRI", "KIRI", "MAJU", "MAJU", "MAJU", "AMBIL"];
+  const PROG_DITO = ["MAJU", "KANAN", "MAJU", "MAJU", "MAJU", "AMBIL"];
+  const PROG_LOOP4 = ["MAJU", "KANAN", "U3", ">MAJU", "AMBIL"];
+  const GX = 130, GY = 170, CELL = 126;
+  const DIRNAME = ["atas", "kanan", "bawah", "kiri"];
+
+  // ---------- program: baris -> langkah ----------
+  const parse = s => s[0] === ">" ? { c: s.slice(1), ind: 1 } : s[0] === "U" ? { rep: +s.slice(1) } : { c: s };
+  function flat(prog) {
+    const rows = prog.map(parse), out = [];
+    for (let i = 0; i < rows.length; i++) {
+      const r = rows[i];
+      if (r.rep) { const body = []; let j = i + 1; while (j < rows.length && rows[j].ind) body.push(j++); for (let k = 0; k < r.rep; k++) body.forEach(bi => out.push({ c: rows[bi].c, row: bi, loop: i, iter: k + 1 })); i = j - 1; }
+      else out.push({ c: r.c, row: i });
+    }
+    return out;
+  }
+  const lead = b => b.speech != null && b.start != null ? b.speech - b.start : 0.4;
+  const at = (b, s) => { const i = b.text.indexOf(s); return lead(b) + Math.max(0, i) / b.text.length * (b.audio || b.dur); };
+  // posisi pecahan langkah (u) pada detik l: dari cues bila cocok, kalau tidak dibagi rata dalam ±88% narasi
+  function runU(b, l, n, opt = {}) {
+    const a = b.audio || b.dur, t0 = opt.t0 != null ? opt.t0 : lead(b) + 0.9, t1 = opt.t1 != null ? opt.t1 : lead(b) + a * 0.88;
+    let T;
+    const idx = (b.cues || []).map(c => b.text.indexOf(c));
+    if (!opt.even && b.cues && idx.every(i => i >= 0)) T = idx.map(i => lead(b) + i / b.text.length * a);
+    else T = Array.from({ length: n }, (_, i) => t0 + i * (t1 - t0) / n);
+    if (l < T[0]) return 0;
+    let k = 0; while (k + 1 < T.length && l >= T[k + 1]) k++;
+    const d = Math.max(0.25, Math.min(0.85, (k + 1 < T.length ? T[k + 1] - T[k] : 0.85) - 0.05));
+    return Math.min(n, k + clamp((l - T[k]) / d, 0, 1));
+  }
+  function visited(st, u) { const out = []; for (let i = 0; i <= Math.min(st.length - 1, Math.floor(u)); i++) if (!st[i].crash) out.push([st[i].x, st[i].y]); return out; }
+
+  // ---------- panel program ----------
+  function progPanel(ctx, x, y, prog, opt = {}) {
+    const rows = prog.map(parse), rh = opt.rh || (rows.length > 8 ? 62 : 68), w = opt.w || 530, sz = opt.size || Math.round(rh * 0.46), ic = opt.icon || Math.round(rh * 0.6);
+    if (opt.title) text(ctx, opt.title, x, y - 20, opt.titleSize || 28, { weight: 900, color: C.accentDark });
+    rows.forEach((r, i) => {
+      const ry = y + i * rh, rx = x + (r.ind ? Math.round(rh * 0.8) : 0), rw = w - (rx - x);
+      const active = opt.cur === i || (opt.curLoop === i), done = opt.done && opt.done.includes(i), bad = opt.bad === i, changed = opt.changed === i, dim = opt.dimFrom != null && i >= opt.dimFrom;
+      ctx.fillStyle = bad ? C.badBg : active ? "#FFF3D6" : changed ? C.goodBg : r.rep ? "#EEF4FA" : C.panel; rr(ctx, rx, ry, rw, rh - 8, 12); ctx.fill();
+      ctx.strokeStyle = bad ? C.bad : active ? C.accent : changed ? C.good : "#D7E2DC"; ctx.lineWidth = active || bad || changed ? 5 : 2; ctx.stroke();
+      ctx.save(); if (dim) ctx.globalAlpha = 0.4;
+      const cy = ry + (rh - 8) / 2, nr = Math.round(rh * 0.27);
+      ctx.fillStyle = done ? C.good : bad ? C.bad : C.ink2; ctx.beginPath(); ctx.arc(rx + nr + 12, cy, nr, 0, Math.PI * 2); ctx.fill();
+      text(ctx, done ? "✓" : String(i + 1), rx + nr + 12, cy + nr * 0.42, Math.round(nr * 1.1), { align: "center", weight: 900, color: "#fff" });
+      const tx = rx + nr * 2 + 26;
+      if (r.rep) { text(ctx, "↻", tx + ic * 0.45, cy + sz * 0.42, ic * 0.9, { align: "center", weight: 900, color: C.kikoDark }); text(ctx, "ULANGI " + r.rep + " KALI:", tx + ic + 10, cy + sz * 0.38, sz, { weight: 900, color: C.kikoDark }); if (opt.iter && opt.iter[i]) text(ctx, opt.iter[i], x + w + 22, cy + 10, 28, { weight: 900, color: C.accentDark }); }
+      else { arrowIcon(ctx, CMD[r.c].icon, tx + ic * 0.45, cy, ic, C.ink); text(ctx, CMD[r.c].word, tx + ic + 10, cy + sz * 0.38, sz, { weight: 800, color: C.ink }); }
+      ctx.restore();
+      if (opt.strike === i) { ctx.strokeStyle = C.bad; ctx.lineWidth = 5; ctx.beginPath(); ctx.moveTo(tx, cy); ctx.lineTo(rx + rw - 20, cy); ctx.stroke(); }
+      if (opt.notes && opt.notes[i]) { const [s, col] = opt.notes[i]; text(ctx, s, x + w + 22, cy + 10, 26, { weight: 800, color: col || C.good }); }
+    });
+    return y + rows.length * rh;
+  }
+  // papan + robot pada langkah u
+  function board(ctx, b, prog, u, opt = {}) {
+    const world = WORLDS[opt.world || b.world], g = gridGeom(opt.gx || GX, opt.gy || GY, opt.cell || CELL, world), F = flat(prog);
+    const p = K.pose(F.map(s => s.c), world, u), st = p.states || K.simulate(F.map(s => s.c), world);
+    const hl = (opt.highlight || []).slice();
+    drawGrid(ctx, g, world, { hideGoal: p.grabbed || opt.hideGoal, path: u > 0 ? visited(st, u).concat(u % 1 && !p.crash ? [[p.x, p.y]] : []) : null, highlight: hl, marks: opt.marks && opt.marks.map(m => [m[0], m[1], m[2], C.accentDark]) });
+    drawRobotOnGrid(ctx, g, p, world);
+    return { g, p, F, st, world };
+  }
+  // baris aktif / selesai dari langkah u
+  function rowsState(prog, F, u, p) {
+    const crashed = !!(p.finalCrash && u >= p.lastStep), fin = !crashed && u >= F.length;
+    const k = Math.min(F.length - 1, Math.floor(u)), doneSteps = fin ? F.length : Math.floor(u);
+    const done = [];
+    prog.forEach((_, r) => { const idx = []; F.forEach((s, i) => { if (s.row === r || s.loop === r) idx.push(i); }); if (idx.length && Math.max(...idx) < doneSteps) done.push(r); });
+    const cur = crashed ? F[p.lastStep - 1].row : fin ? -1 : F[k].row;
+    const curLoop = crashed || fin || F[k].loop == null ? -1 : F[k].loop;
+    const iter = {}; if (curLoop >= 0) iter[curLoop] = "putaran " + F[k].iter + "/" + parse(prog[curLoop]).rep;
+    return { done, cur, curLoop, iter, crashed };
+  }
+  function resultCard(ctx, s, good, y = 600) {
+    card(ctx, 1400, y, 400, 150, { fill: good ? C.goodBg : C.badBg, stroke: good ? C.good : C.bad, lw: 5, r: 20 });
+    para(ctx, s, 1600, y + 62, 34, 360, { align: "center", weight: 900, color: good ? C.good : C.bad, lh: 1.2 });
+  }
+  function startNote(ctx) { text(ctx, "mulai: pojok kiri bawah, menghadap ke atas", GX + 315, GY + 670, 24, { align: "center", weight: 700, color: C.ink2 }); }
+
+  Object.assign(K.SCENES, {
+    k4_tujuan(ctx, b, l) {
+      card(ctx, 160, 150, 1600, 660);
+      text(ctx, "SETELAH MENONTON, KAMU BISA:", 260, 240, 30, { weight: 900, color: C.accentDark });
+      ["menebak ke mana robot berjalan", "menemukan baris yang salah (bug)", "memperbaiki programnya", "menulis program lebih pendek"].forEach((s, i) => {
+        const u = ease((l - 0.6 - i * 0.7) / 0.5); if (u <= 0) return; ctx.globalAlpha = u;
+        card(ctx, 260, 280 + i * 104, 760, 84, { fill: C.bg2, r: 16 }); text(ctx, "✓", 300, 336 + i * 104, 36, { weight: 900, color: C.good }); text(ctx, s, 350, 334 + i * 104, 30, { weight: 800 }); ctx.globalAlpha = 1;
+      });
+      board(ctx, { world: "W1" }, ["KANAN", "MAJU", "KIRI", "MAJU", "MAJU", "MAJU", "AMBIL"], clamp((l - 1) / 1.1, 0, 7), { world: "W1", gx: 1150, gy: 250, cell: 96 });
+    },
+    k4_prasyarat(ctx, b, l) {
+      card(ctx, 160, 150, 1600, 660);
+      text(ctx, "SIMULASI INI MELENGKAPI", 960, 240, 32, { align: "center", weight: 900, color: C.accentDark });
+      card(ctx, 460, 290, 1000, 330, { fill: C.bg2, r: 22 });
+      text(ctx, "Episode D7.5", 960, 380, 60, { align: "center", weight: 900, color: C.kiko });
+      text(ctx, "Instruksi untuk Manusia dan Mesin", 960, 450, 40, { align: "center", weight: 800 });
+      text(ctx, "maju · belok kiri · belok kanan · ambil", 960, 530, 30, { align: "center", weight: 700, color: C.ink2 });
+      kiko(ctx, 1640, 700, 110, 0, { wave: l });
+    },
+    k4_tanya(ctx, b, l) {
+      board(ctx, b, b.prog, 0, { hideGoal: b.hideGoal, marks: b.marks });
+      progPanel(ctx, 840, 220, b.prog, { title: b.title || "Program" });
+      kiko(ctx, 1600, 560, 120, 0, { mood: "confused" });
+      const p = 1 + 0.1 * Math.sin(l * 5); text(ctx, "?", 1690, 470, 70 * p, { align: "center", weight: 900, color: C.accentDark });
+      text(ctx, "Apa yang terjadi?", 1600, 680, 30, { align: "center", weight: 900, color: C.ink2 });
+      para(ctx, "Kiko mulai di pojok kiri bawah, menghadap ke atas.", 1600, 730, 24, 380, { align: "center", weight: 700, color: C.ink2, lh: 1.25 });
+    },
+    k4_tebak(ctx, b, l) {
+      const pulse = (b.marks || []).map(m => [m[0], m[1], `rgba(242,177,52,${0.3 + 0.2 * Math.sin(l * 4 + m[0])})`]);
+      board(ctx, b, b.prog, 0, { hideGoal: b.hideGoal, marks: b.marks, highlight: pulse });
+      progPanel(ctx, 840, 220, b.prog, { title: b.title || "Program" });
+      card(ctx, 1390, 140, 420, 690, { fill: "#FFFFFF", stroke: C.accent, lw: 5, r: 22 });
+      text(ctx, "TEBAK DULU", 1600, 200, 32, { align: "center", weight: 900, color: C.accentDark });
+      b.options.forEach((o, i) => {
+        const y = 250 + i * 150; card(ctx, 1410, y, 380, 130, { fill: C.bg2, r: 18 });
+        ctx.fillStyle = C.kiko; ctx.beginPath(); ctx.arc(1456, y + 65, 26, 0, Math.PI * 2); ctx.fill(); text(ctx, "ABC"[i], 1456, y + 76, 30, { align: "center", weight: 900, color: "#fff" });
+        const lines = H.wrap(ctx, o, 30, 800, 290); lines.forEach((ln, j) => text(ctx, ln, 1496, y + 65 + 11 - (lines.length - 1) * 18 + j * 36, 30, { weight: 800 }));
+      });
+      const frac = clamp(l / b.dur, 0, 1); ctx.lineWidth = 12; ctx.strokeStyle = "#D7E2DC"; ctx.beginPath(); ctx.arc(1600, 760, 34, 0, Math.PI * 2); ctx.stroke();
+      ctx.strokeStyle = C.accent; ctx.beginPath(); ctx.arc(1600, 760, 34, -Math.PI / 2, -Math.PI / 2 + frac * Math.PI * 2); ctx.stroke();
+    },
+    k4_jalan(ctx, b, l) {
+      const F = flat(b.prog), u = runU(b, l, F.length, { even: !b.cues });
+      const B = board(ctx, b, b.prog, u, { marks: b.marks, hideGoal: b.hideGoal });
+      const R = rowsState(b.prog, F, u, B.p);
+      progPanel(ctx, 840, 220, b.prog, { title: "Program", cur: R.crashed ? -1 : R.cur, curLoop: R.curLoop, done: R.done, iter: R.iter, changed: b.changed, bad: B.p.crash || R.crashed ? F[B.p.lastStep - 1].row : undefined });
+      if (B.p.crash || R.crashed) resultCard(ctx, "Kiko menabrak meja!", false);
+      else if (B.p.grabbed) resultCard(ctx, "Bakso terambil!", true);
+      else if (B.p.done && !B.p.grabbed) resultCard(ctx, "Tidak ada bakso.", false);
+      if (!B.p.done && !B.p.crash) text(ctx, "menghadap ke " + DIRNAME[((Math.round(B.p.ang / (Math.PI / 2)) % 4) + 4) % 4], 1600, 560, 28, { align: "center", weight: 800, color: C.ink2 });
+    },
+    k4_hasil(ctx, b, l) {
+      const F = flat(b.prog), B = board(ctx, b, b.prog, F.length);
+      progPanel(ctx, 840, 220, b.prog, { title: "Program", done: b.prog.map((_, i) => i) });
+      resultCard(ctx, b.banner, b.good, 300);
+      if (l > at(b, "Sekarang")) { kiko(ctx, 1600, 640, 110, 0, { mood: "happy" }); }
+    },
+    k4_telusur(ctx, b, l) {
+      const F = flat(b.prog);
+      if (b.phase === "a") {
+        const t1 = at(b, "Baris satu"), t2 = at(b, "Kiko menabrak");
+        const step = l < t1 ? 0 : l < t2 ? clamp((l - t1) / ((t2 - t1) * 0.9) * 4, 0, 4) : 4;
+        const B = board(ctx, b, b.prog, l < t2 ? step : 5.6);
+        const notes = {}; ["aman ✓", "menghadap kanan ✓", "aman ✓", "aman ✓"].forEach((s, i) => { if (step >= i + 1) notes[i] = [s, C.good]; });
+        if (l > t2) notes[5] = ["menabrak di sini ✕", C.bad];
+        progPanel(ctx, 840, 220, b.prog, { title: "Telusuri satu per satu", w: 500, done: Object.keys(notes).map(Number).filter(i => i < 4), cur: l < t2 ? Math.min(3, Math.floor(step)) : 5, bad: l > t2 ? 5 : undefined, notes });
+        if (l < at(b, "Kita telusuri")) resultCard(ctx, "Kesalahan dalam program = BUG", false, 600);
+      } else {
+        const B = board(ctx, b, b.prog, l < at(b, "Seharusnya") ? 5 : 4);
+        const world = WORLDS[b.world], g = B.g, [px, py] = cellCenter(g, 2, 1);
+        const notes = { 4: ["menghadap ke bawah ✕", C.bad], 5: ["menabrak", C.bad] };
+        if (l > at(b, "ke arah meja")) { const [tx, ty] = cellCenter(g, 2, 0); ctx.strokeStyle = C.bad; ctx.lineWidth = 8; ctx.setLineDash([14, 10]); ctx.beginPath(); ctx.moveTo(px, py + 40); ctx.lineTo(tx, ty - 30); ctx.stroke(); ctx.setLineDash([]); }
+        if (l > at(b, "Seharusnya")) { notes[4] = ["harus BELOK KIRI", C.good]; const [ux, uy] = cellCenter(g, 2, 2); ctx.strokeStyle = C.good; ctx.lineWidth = 8; ctx.setLineDash([14, 10]); ctx.beginPath(); ctx.moveTo(px, py - 40); ctx.lineTo(ux, uy + 30); ctx.stroke(); ctx.setLineDash([]); }
+        progPanel(ctx, 840, 220, b.prog, { title: "Baris yang salah", w: 500, done: [0, 1, 2, 3], bad: 4, notes, dimFrom: 6 });
+      }
+    },
+    k4_perbaiki(ctx, b, l) {
+      board(ctx, b, b.prog, 0);
+      const t = at(b, "menjadi belok kiri"), old = ["MAJU", "KANAN", "MAJU", "MAJU", "KANAN", "MAJU", "KANAN", "MAJU", "AMBIL"];
+      if (l < t) progPanel(ctx, 840, 220, old, { title: "Perbaiki baris 5", w: 500, strike: l > at(b, "diganti") ? b.fix : undefined, bad: b.fix });
+      else progPanel(ctx, 840, 220, b.prog, { title: "Perbaiki baris 5", w: 500, changed: b.fix, notes: { [b.fix]: ["diganti ✓", C.good] } });
+      if (l > at(b, "Baris yang lain")) resultCard(ctx, "Baris lain tetap sama", true, 640);
+    },
+    k4_ulangi_kenal(ctx, b, l) {
+      card(ctx, 120, 130, 1680, 700, { fill: "#FFFFFF" });
+      text(ctx, "PERULANGAN", 960, 196, 36, { align: "center", weight: 900, color: C.accentDark });
+      progPanel(ctx, 220, 290, ["MAJU", "MAJU", "MAJU", "MAJU"], { title: "Tanpa perulangan: 4 baris", w: 460, rh: 80 });
+      const t1 = at(b, "ulangi empat"), t2 = at(b, "Cara menulis");
+      if (l > t1) { const u = ease((l - t1) / 0.6); ctx.save(); ctx.globalAlpha = u; arrowIcon(ctx, "right", 860, 450, 90, C.accent); text(ctx, "lebih singkat", 860, 540, 28, { align: "center", weight: 900, color: C.accentDark }); progPanel(ctx, 1040, 290, ["U4", ">MAJU"], { title: "Dengan perulangan: 2 baris", w: 560, rh: 80 }); ctx.restore(); }
+      if (l > t2) { card(ctx, 1040, 520, 560, 150, { fill: "#FFF3D6", stroke: C.accent, lw: 4, r: 18 }); para(ctx, "Baris yang menjorok dijalankan 4 kali.", 1320, 582, 32, 500, { align: "center", weight: 900, lh: 1.25 }); }
+      kiko(ctx, 450, 720, 90, 0);
+    },
+    k4_banding_ulangi(ctx, b, l) {
+      card(ctx, 120, 130, 1680, 700, { fill: "#FFFFFF" });
+      text(ctx, "HASILNYA SAMA", 960, 190, 34, { align: "center", weight: 900, color: C.accentDark });
+      progPanel(ctx, 200, 270, ["MAJU", "MAJU", "MAJU", "MAJU", "KANAN", "MAJU", "MAJU", "MAJU", "MAJU", "AMBIL"], { title: "Tanpa perulangan: 10 baris", w: 440, rh: 52, size: 24, icon: 28 });
+      if (l > at(b, "Dengan perulangan")) {
+        text(ctx, "=", 790, 520, 90, { align: "center", weight: 900, color: C.ink2 });
+        progPanel(ctx, 900, 270, ["U4", ">MAJU", "KANAN", "U4", ">MAJU", "AMBIL"], { title: "Dengan perulangan: 6 baris", w: 520, rh: 70, changed: -1 });
+        board(ctx, { world: "W3" }, ["U4", ">MAJU", "KANAN", "U4", ">MAJU", "AMBIL"], 10, { world: "W3", gx: 1480, gy: 470, cell: 58 });
+      }
+      if (l > at(b, "angkanya")) { card(ctx, 900, 720, 520, 90, { fill: "#FFF3D6", stroke: C.accent, lw: 4, r: 16 }); text(ctx, "mau 10 kotak? ganti 4 jadi 10", 1160, 777, 28, { align: "center", weight: 900 }); }
+    },
+    k4_dua(ctx, b, l) {
+      const run = b.run, u = run ? clamp((l - lead(b) - 0.8) / ((b.audio || b.dur) * 0.8), 0, 1) : 0;
+      [[PROG_SINTA, "Program Sinta", 130, u * 8], [PROG_DITO, "Program Dito", 980, Math.min(6, u * 8)]].forEach(([prog, title, x0, uu]) => {
+        card(ctx, x0 - 10, 130, 830, 700, { fill: "#FFFFFF", stroke: title.includes("Sinta") ? C.bad : C.kiko, lw: 4, r: 22 });
+        text(ctx, title + " (" + prog.length + " baris)", x0 + 405, 182, 30, { align: "center", weight: 900, color: title.includes("Sinta") ? C.bad : C.kiko });
+        const B = board(ctx, { world: "W4" }, prog, uu, { world: "W4", gx: x0 + 20, gy: 230, cell: 84 });
+        const R = rowsState(prog, flat(prog), uu, B.p);
+        progPanel(ctx, x0 + 470, 230, prog, { w: 330, rh: 54, size: 22, icon: 30, cur: run ? R.cur : -1, done: run ? R.done : [], changed: !run && l > at(b, "diganti") && title.includes("Dito") ? 1 : undefined });
+        if (!run && l > at(b, "tiga baris belok") && title.includes("Sinta")) { ctx.strokeStyle = C.accent; ctx.lineWidth = 5; rr(ctx, x0 + 462, 230 + 54 - 6, 346, 54 * 3 + 4, 14); ctx.stroke(); }
+        if (run && B.p.grabbed) { card(ctx, x0 + 20, 700, 790, 100, { fill: C.goodBg, stroke: C.good, lw: 4, r: 18 }); text(ctx, title.includes("Dito") ? "Sampai! Selesai lebih dulu." : "Sampai juga!", x0 + 415, 762, 32, { align: "center", weight: 900, color: C.good }); }
+      });
+    },
+    k4_pendek(ctx, b, l) {
+      card(ctx, 120, 130, 1680, 700, { fill: "#FFFFFF" });
+      text(ctx, "TUJUAN SAMA, PANJANG BERBEDA", 960, 190, 34, { align: "center", weight: 900, color: C.accentDark });
+      const cols = [[PROG_SINTA, "Sinta: 8 baris", C.bad, 0], [PROG_DITO, "Dito: 6 baris", C.kiko, at(b, "program Dito")], [PROG_LOOP4, "Perulangan: 5 baris", C.good, at(b, "dengan perulangan")]];
+      cols.forEach(([prog, t, col, t0], i) => { if (l < t0) return; const x = 200 + i * 540; text(ctx, t, x + 210, 262, 30, { align: "center", weight: 900, color: col }); progPanel(ctx, x, 290, prog, { w: 420, rh: 52, size: 22, icon: 28, bad: i === 0 && l < at(b, "Program Sinta") ? undefined : undefined }); });
+      if (l < at(b, "Program Sinta")) { card(ctx, 700, 300, 600, 140, { fill: "#FFF3D6", stroke: C.accent, lw: 4, r: 18 }); text(ctx, "3 × belok kiri = 1 × belok kanan", 1000, 385, 34, { align: "center", weight: 900 }); }
+      if (l > at(b, "Makin pendek")) { card(ctx, 660, 740, 600, 76, { fill: C.goodBg, stroke: C.good, lw: 4, r: 16 }); text(ctx, "makin pendek, makin mudah diperiksa", 960, 790, 28, { align: "center", weight: 900, color: C.good }); }
+    },
+    k4_latihan(ctx, b, l) {
+      card(ctx, 120, 130, 1680, 700, { fill: "#FFFFFF" });
+      text(ctx, "COBA SENDIRI DI HALAMAN LATIHAN", 960, 192, 32, { align: "center", weight: 900, color: C.accentDark });
+      // tiruan halaman latihan D7.5 (generik)
+      card(ctx, 200, 230, 760, 570, { fill: C.bg, stroke: "#B7C4CC", lw: 3, r: 20 });
+      card(ctx, 220, 248, 720, 50, { fill: "#fff", r: 10 }); text(ctx, "belajar-informatika.vercel.app/d75", 580, 282, 24, { align: "center", weight: 800, color: C.kikoDark });
+      const tB = at(b, "Buat 3"), lv = l > tB ? 4 : 1;
+      ["Tebak", "Perbaiki", "Buat 1", "Buat 2", "Buat 3"].forEach((s, i) => { card(ctx, 222 + i * 144, 314, 134, 48, { fill: i === lv ? C.accent : "#fff", stroke: "#B7C4CC", lw: 2, r: 10 }); text(ctx, s, 289 + i * 144, 346, 22, { align: "center", weight: 900 }); });
+      const world = lv === 1 ? { cols: 5, rows: 5, start: [0, 0], dir: 0, goal: [1, 2], tables: [[0, 2]] } : { cols: 5, rows: 5, start: [0, 0], dir: 1, goal: [4, 3], tables: [[0, 1], [2, 2], [3, 0], [2, 4]] };
+      const g = gridGeom(240, 390, 76, world); drawGrid(ctx, g, world); drawRobotOnGrid(ctx, g, { x: world.start[0], y: world.start[1], ang: world.dir * Math.PI / 2 }, world);
+      ["MAJU", "BELOK KIRI", "BELOK KANAN", "AMBIL"].forEach((s, i) => { card(ctx, 660 + (i % 2) * 140, 400 + Math.floor(i / 2) * 60, 130, 50, { fill: "#fff", stroke: "#B7C4CC", lw: 2, r: 10 }); text(ctx, s, 725 + (i % 2) * 140, 432 + Math.floor(i / 2) * 60, 18, { align: "center", weight: 800 }); });
+      card(ctx, 660, 700, 270, 60, { fill: C.accent, r: 12 }); text(ctx, "▶ Jalankan", 795, 740, 26, { align: "center", weight: 900 });
+      text(ctx, lv === 1 ? "Perbaiki: cari baris yang salah" : "Buat 3: paling banyak 12 perintah", 795, 600, 20, { align: "center", weight: 800, color: C.ink2 });
+      card(ctx, 1040, 260, 700, 330, { fill: "#FFF9E0", r: 22 }); text(ctx, "Tugas nyata", 1390, 330, 34, { align: "center", weight: 900 });
+      para(ctx, "Gambar papan 5×5 di kertas, tulis program untuk Kiko, lalu tukar dengan temanmu. Tebak, jalankan dengan jari, dan perbaiki bersama.", 1390, 390, 30, 620, { align: "center", weight: 700, lh: 1.3 });
+      kiko(ctx, 1680, 730, 90, 0, { wave: l });
+    }
+  });
+})(typeof window !== "undefined" ? window : globalThis);
+</script>
+<script>/* Inti halaman latihan: pemutar (kanvas + narasi), tombol suara nyala/mati (berpindah antara timeline suara dan teks),
+   kuis dengan petunjuk, dan kemajuan di localStorage (perangkat ini saja).
+   Pakai:  const P = PageCore({ suara: TIMELINE_SUARA_atau_null, teks: TIMELINE_TEKS });
+   Episode menambahkan latihannya sendiri lewat P.$, P.K, P.H, P.progress, P.save(), P.speed(), P.onProgress(fn). */
+function PageCore(TLS, opt = {}) {
+  const $ = id => document.getElementById(id);
+  const K = Kiko, H = K.helpers;
+  let voice = !!TLS.suara; let TL = voice ? TLS.suara : TLS.teks;
+  // ---------- progress storage (per device only) ----------
+  const KEY = opt.key || TL.episode.replace(/\./g, "").toLowerCase() + "-progress";   // D7.5 -> "d75-progress"
+  let progress = { quiz: {} };
+  try { const s = localStorage.getItem(KEY); if (s) progress = { quiz: {}, ...JSON.parse(s) }; } catch (e) {}
+  const extras = [];
+  function renderProgress() {
+    const el = $("progress"); if (!el) return; el.innerHTML = "";
+    Object.keys(TL.quizzes).forEach((id, i) => { const s = document.createElement("span"); s.textContent = "Cek " + (i + 1); s.className = progress.quiz[id] ? "ok" : ""; el.appendChild(s); });
+    extras.forEach(f => f(el));
+  }
+  function save() { try { localStorage.setItem(KEY, JSON.stringify(progress)); } catch (e) {} renderProgress(); }
+
+  // ---------- player ----------
+  const cv = $("screen"), ctx = cv.getContext("2d");
+  let t = 0, playing = false, last = 0, speed = 1, hasAudio = false;
+  const nar = $("nar"); nar.addEventListener("canplay", () => { hasAudio = true; }); nar.addEventListener("error", () => { hasAudio = false; });
+  function fmt(s) { s = Math.max(0, Math.floor(s)); return Math.floor(s / 60) + ":" + String(s % 60).padStart(2, "0"); }
+  function segStart(i) { return TL.beats.find(b => b.seg === i).start; }
+  function syncAudio() { if (voice && hasAudio) { try { nar.currentTime = t; } catch (e) {} } }
+  function drawNow() {
+    const b = K.draw(ctx, Math.min(t, TL.total - 0.01), TL);
+    $("barfill").style.width = (t / TL.total * 100) + "%"; $("bar").setAttribute("aria-valuenow", Math.round(t / TL.total * 100));
+    $("timelabel").textContent = fmt(t) + " / " + fmt(TL.total);
+    [...$("chapters").children].forEach((c, i) => c.classList.toggle("now", i === b.seg));
+    return b;
+  }
+  function loop(now) {
+    if (!playing) return;
+    const dt = Math.min(0.1, (now - last) / 1000); last = now; if (voice && hasAudio && !nar.paused) t = nar.currentTime; else t += dt * speed;
+    if (t >= TL.total) { t = TL.total - 0.01; setPlaying(false); }
+    drawNow(); requestAnimationFrame(loop);
+  }
+  function setPlaying(p) {
+    playing = p; $("bigplay").hidden = p; $("playbtn").textContent = p ? "❚❚ Jeda" : "▶ Putar";
+    if (p) { last = performance.now(); if (voice && hasAudio) { try { nar.currentTime = t; nar.playbackRate = speed; nar.play().catch(() => {}); } catch (e) {} } requestAnimationFrame(loop); } else nar.pause();
+  }
+  $("bigplay").addEventListener("click", () => setPlaying(true));
+  $("playbtn").addEventListener("click", () => setPlaying(!playing));
+  $("replay").addEventListener("click", () => { const b = K.beatAt(TL, t); t = segStart(b.seg); syncAudio(); drawNow(); setPlaying(true); });
+  $("slow").addEventListener("click", e => { speed = speed === 1 ? 0.8 : 1; nar.playbackRate = speed; e.currentTarget.setAttribute("aria-pressed", speed !== 1); });
+  function seekFromBar(ev) { const r = $("bar").getBoundingClientRect(); const x = (ev.touches ? ev.touches[0].clientX : ev.clientX) - r.left; t = Math.max(0, Math.min(TL.total - 0.01, x / r.width * TL.total)); syncAudio(); drawNow(); }
+  $("bar").addEventListener("click", seekFromBar);
+  $("bar").addEventListener("keydown", e => { if (e.key === "ArrowRight") { t = Math.min(TL.total - 0.01, t + 5); syncAudio(); drawNow(); } if (e.key === "ArrowLeft") { t = Math.max(0, t - 5); syncAudio(); drawNow(); } });
+  TL.segments.forEach((name, i) => { const b = document.createElement("button"); b.textContent = (i + 1) + ". " + name; b.addEventListener("click", () => { t = segStart(i); syncAudio(); drawNow(); setPlaying(true); }); $("chapters").appendChild(b); });
+  // voice on/off: switches between the narrated timeline and the reading-paced one, staying on the same beat
+  const vb = $("voice");
+  function setVoice(on) {
+    const cur = K.beatAt(TL, t);
+    voice = on && !!TLS.suara; TL = voice ? TLS.suara : TLS.teks;
+    const nb = TL.beats.find(b => b.id === cur.id) || TL.beats[0]; t = nb.start;
+    if (vb) { vb.setAttribute("aria-pressed", voice); vb.textContent = voice ? "🔊 Suara: nyala" : "🔇 Suara: mati"; }
+    if (playing) { if (voice && hasAudio) { try { nar.currentTime = t; nar.playbackRate = speed; nar.play().catch(() => {}); } catch (e) {} } else nar.pause(); }
+    drawNow();
+  }
+  if (vb) { if (!TLS.suara || !TLS.teks) vb.hidden = true; else { vb.addEventListener("click", () => setVoice(!voice)); vb.setAttribute("aria-pressed", voice); vb.textContent = voice ? "🔊 Suara: nyala" : "🔇 Suara: mati"; } }
+  drawNow();
+
+  // ---------- quiz ----------
+  const quizEl = $("quiz");
+  if (quizEl) Object.entries(TL.quizzes).forEach(([id, q], qi) => {
+    const box = document.createElement("div"); box.className = "q";
+    box.innerHTML = `<h3>${qi + 1}. ${q.q}</h3><div class="opts"></div><div class="fb"></div>`;
+    const opts = box.querySelector(".opts"), fb = box.querySelector(".fb");
+    q.options.forEach((o, i) => {
+      const b = document.createElement("button"); b.innerHTML = `<b>${"ABC"[i]}</b><span>${o}</span>`;
+      b.addEventListener("click", () => {
+        [...opts.children].forEach(c => c.classList.remove("wrong"));
+        if (i === q.answer) { b.classList.add("right"); fb.className = "fb good"; fb.textContent = "Benar! " + (q.explain || ""); progress.quiz[id] = true; save(); [...opts.children].forEach(c => c.disabled = true); }
+        else { b.classList.add("wrong"); fb.className = "fb bad"; fb.textContent = "Belum tepat. Petunjuk: " + q.hint; }
+      });
+      opts.appendChild(b);
+    });
+    if (progress.quiz[id]) { opts.children[q.answer].classList.add("right"); [...opts.children].forEach(c => c.disabled = true); fb.className = "fb good"; fb.textContent = "Sudah dijawab benar."; }
+    quizEl.appendChild(box);
+  });
+  renderProgress();
+
+  return { $, K, H, progress, save, renderProgress, speed: () => speed, timeline: () => TL,
+           onProgress(fn) { extras.push(fn); renderProgress(); } };
+}
+</script>
+<script>
+(function () {
+  const P = PageCore({ suara: {"episode": "K04", "title": "Program Robot Kiko: Jalankan dan Perbaiki", "label": "Simulasi Konsep · K04 · D7.5 Instruksi untuk Mesin", "kind": "konsep", "for": ["D7.5"], "latihan": "D7.5", "hook": "menebak ke mana robot berjalan, menemukan baris program yang salah, memperbaikinya, dan menulis program yang lebih pendek.", "engine": ["../../_alat/kiko-core.js", "../../_alat/kiko-grid.js", "../../D7.5/scenes.js", "scenes.js"], "parts": {"K04": {"segs": [0, 1, 2, 3, 4, 5, 6]}}, "recap": ["Tebak dulu, baru jalankan programnya.", "Bug: telusuri dari baris pertama.", "Perulangan membuat program lebih pendek."], "next": {"code": "K05", "title": "Antrean dan Tumpukan: Siapa Keluar Berikutnya?", "note": "Simulasi konsep berikutnya.", "heading": "SIMULASI BERIKUTNYA"}, "youtube": {"ringkas": "Simulasi konsep program robot Kiko di papan kantin: empat program dijalankan langkah demi langkah. Kamu menebak dulu ke mana Kiko berjalan, melihat Kiko menabrak meja karena satu baris salah arah, menelusuri dan memperbaiki bug-nya, mengenal perulangan, lalu membandingkan dua program yang tujuannya sama tetapi panjangnya berbeda.", "belajar": ["menebak hasil program sebelum menjalankannya", "menelusuri program baris demi baris untuk menemukan bug", "memperbaiki satu baris yang salah arah (debugging)", "menulis program lebih pendek dengan perulangan dan belokan yang tepat"], "cari": ["cara mencari bug program untuk pemula", "algoritma robot maju belok kiri kanan", "debugging informatika kelas 7", "contoh perulangan program robot"], "prasyarat": "episode D7.5 Instruksi untuk Manusia dan Mesin", "tagar": ["#Algoritma", "#Debugging", "#Simulasi", "#Informatika", "#SMP"]}, "segments": ["Pembuka", "Aturan papan", "Variasi 1: program benar", "Variasi 2: ada bug", "Variasi 3: perulangan", "Variasi 4: lebih pendek", "Penutup"], "quizzes": {"q1": {"q": "Kiko menabrak meja saat baris enam dijalankan. Baris mana yang mungkin salah?", "options": ["Hanya baris enam", "Baris enam atau baris sebelumnya", "Baris sesudah baris enam"], "answer": 1, "hint": "Arah Kiko ditentukan oleh baris-baris sebelumnya."}, "q2": {"q": "Kiko menghadap ke atas, lalu menjalankan ULANGI 3 KALI: MAJU. Berapa kotak Kiko berpindah?", "options": ["Satu kotak", "Tiga kotak", "Empat kotak"], "answer": 1, "hint": "Baris di dalam ULANGI dijalankan sebanyak angka di depannya."}, "q3": {"q": "Kiko menghadap ke atas. Perintah mana yang juga membuatnya menghadap ke kiri?", "options": ["BELOK KANAN satu kali", "BELOK KANAN tiga kali", "MAJU tiga kali"], "answer": 1, "hint": "Tiap belokan memutar Kiko seperempat putaran."}}, "beats": [{"id": "intro1", "seg": 0, "scene": "title", "text": "Halo! Aku Kiko. Ini simulasi konsep tentang program robot. Kita akan menjalankan beberapa program di papan kantin, menemukan kesalahannya, lalu memperbaikinya.", "hold": 0.8, "start": 0.0, "speech": 0.4, "audio": 10.88, "dur": 12.38}, {"id": "intro2", "seg": 0, "scene": "k4_tujuan", "text": "Setelah menonton, kamu bisa menebak ke mana robot berjalan, menemukan baris program yang salah, memperbaikinya, dan menulis program yang lebih pendek.", "hold": 0.8, "start": 12.38, "speech": 12.78, "audio": 9.76, "dur": 12.34}, {"id": "intro3", "seg": 0, "scene": "k4_prasyarat", "text": "Simulasi ini melengkapi episode D7.5 tentang instruksi untuk manusia dan mesin. Kalau perintah maju, belok, dan ambil masih terasa asing, tonton dulu episode itu, ya.", "hold": 0.8, "start": 24.72, "speech": 25.12, "audio": 12.16, "dur": 14.34}, {"id": "aturan", "seg": 1, "scene": "four_cmds", "text": "Ingat aturan papannya. Kiko hanya mengerti empat perintah: maju satu kotak ke arah hadapnya, belok kiri, belok kanan, dan ambil. Belok tidak memindahkan Kiko.", "hold": 1.0, "start": 39.06, "speech": 39.46, "audio": 11.117, "dur": 14.04}, {"id": "v1q", "seg": 2, "scene": "k4_tanya", "world": "W1", "prog": ["KANAN", "MAJU", "KIRI", "MAJU", "MAJU", "MAJU", "AMBIL"], "text": "Menurutmu, apa yang terjadi kalau program ini dijalankan? Kiko mulai di pojok kiri bawah dan menghadap ke atas. Apakah ia sampai ke bakso?", "hold": 0.4, "start": 53.1, "speech": 53.5, "audio": 9.056, "dur": 12.94}, {"id": "v1t", "seg": 2, "scene": "k4_tebak", "world": "W1", "prog": ["KANAN", "MAJU", "KIRI", "MAJU", "MAJU", "MAJU", "AMBIL"], "options": ["Sampai dan mengambil bakso", "Menabrak meja", "Berhenti di kotak kosong"], "text": "Tebak dulu: sampai ke bakso, menabrak meja, atau berhenti di kotak kosong?", "hold": 2.2, "start": 66.04, "speech": 66.44, "audio": 5.491, "dur": 9.24}, {"id": "v1r", "seg": 2, "scene": "k4_jalan", "world": "W1", "prog": ["KANAN", "MAJU", "KIRI", "MAJU", "MAJU", "MAJU", "AMBIL"], "cues": ["Belok kanan", "maju, belok", "belok kiri", "maju tiga", "tiga kali", "kali, lalu", "ambil"], "text": "Kita jalankan. Belok kanan, maju, belok kiri, maju tiga kali, lalu ambil. Kiko sampai di kotak bakso, dan baksonya terambil!", "hold": 1.0, "start": 75.28, "speech": 75.68, "audio": 10.606, "dur": 12.306}, {"id": "v1h", "seg": 2, "scene": "k4_hasil", "world": "W1", "prog": ["KANAN", "MAJU", "KIRI", "MAJU", "MAJU", "MAJU", "AMBIL"], "banner": "Berhasil! Bakso terambil.", "good": true, "text": "Program ini benar, karena setiap baris membawa Kiko lebih dekat ke bakso tanpa menabrak meja. Sekarang kita lihat program yang punya kesalahan.", "hold": 0.8, "start": 87.586, "speech": 87.986, "audio": 9.373, "dur": 12.84}, {"id": "v2q", "seg": 3, "scene": "k4_tanya", "world": "W2", "prog": ["MAJU", "KANAN", "MAJU", "MAJU", "KANAN", "MAJU", "KANAN", "MAJU", "AMBIL"], "text": "Menurutmu, apa yang terjadi kalau program sembilan baris ini dijalankan di papan yang punya dua meja? Apakah Kiko sampai ke bakso?", "hold": 0.4, "start": 100.426, "speech": 100.826, "audio": 8.191, "dur": 11.94}, {"id": "v2t", "seg": 3, "scene": "k4_tebak", "world": "W2", "prog": ["MAJU", "KANAN", "MAJU", "MAJU", "KANAN", "MAJU", "KANAN", "MAJU", "AMBIL"], "options": ["Sampai dan mengambil bakso", "Menabrak meja", "Berhenti di kotak kosong"], "text": "Tebak dulu. Telusuri barisnya satu per satu dengan jarimu, lalu pilih jawabanmu.", "hold": 2.2, "start": 112.366, "speech": 112.766, "audio": 5.684, "dur": 9.24}, {"id": "v2r", "seg": 3, "scene": "k4_jalan", "world": "W2", "prog": ["MAJU", "KANAN", "MAJU", "MAJU", "KANAN", "MAJU", "KANAN", "MAJU", "AMBIL"], "cues": ["Kiko maju", "belok kanan", "maju dua", "dua kali", "Kiko belok", "maju, dan"], "text": "Kita jalankan. Kiko maju, belok kanan, lalu maju dua kali. Kemudian Kiko belok, maju, dan aduh! Kiko menabrak meja, dan programnya berhenti.", "hold": 1.0, "start": 121.606, "speech": 122.006, "audio": 12.417, "dur": 14.117}, {"id": "v2h", "seg": 3, "scene": "k4_telusur", "world": "W2", "prog": ["MAJU", "KANAN", "MAJU", "MAJU", "KANAN", "MAJU", "KANAN", "MAJU", "AMBIL"], "phase": "a", "text": "Kesalahan dalam program disebut bug. Kita telusuri dari baris pertama. Baris satu sampai empat aman, dan Kiko menabrak saat baris enam dijalankan.", "hold": 1.0, "start": 135.723, "speech": 136.123, "audio": 10.403, "dur": 13.04}, {"id": "v2i", "seg": 3, "scene": "k4_telusur", "world": "W2", "prog": ["MAJU", "KANAN", "MAJU", "MAJU", "KANAN", "MAJU", "KANAN", "MAJU", "AMBIL"], "phase": "b", "text": "Tetapi salahnya ada di baris lima. Kiko belok kanan sehingga menghadap ke bawah, ke arah meja. Seharusnya Kiko belok kiri supaya menghadap ke atas.", "hold": 1.0, "start": 148.763, "speech": 149.163, "audio": 10.487, "dur": 14.04}, {"id": "v2f", "seg": 3, "scene": "k4_perbaiki", "world": "W2", "prog": ["MAJU", "KANAN", "MAJU", "MAJU", "KIRI", "MAJU", "KANAN", "MAJU", "AMBIL"], "fix": 4, "text": "Kita perbaiki. Baris lima diganti dari belok kanan menjadi belok kiri. Baris yang lain sudah benar, jadi tidak perlu diubah.", "hold": 0.8, "start": 162.803, "speech": 163.203, "audio": 8.181, "dur": 11.84}, {"id": "v2g", "seg": 3, "scene": "k4_jalan", "world": "W2", "prog": ["MAJU", "KANAN", "MAJU", "MAJU", "KIRI", "MAJU", "KANAN", "MAJU", "AMBIL"], "changed": 4, "text": "Jalankan lagi. Setelah baris lima, Kiko menghadap ke atas, maju, belok kanan, maju, lalu mengambil bakso. Mencari dan memperbaiki bug seperti ini disebut debugging.", "hold": 1.0, "start": 174.643, "speech": 175.043, "audio": 12.693, "dur": 14.393}, {"id": "q1", "seg": 3, "scene": "quiz", "quiz": "q1", "text": "Cek pemahaman. Kiko menabrak meja saat baris enam dijalankan. Baris mana yang mungkin salah? Pikirkan dulu.", "hold": 4.0, "start": 189.036, "speech": 189.436, "audio": 7.669, "dur": 13.04}, {"id": "q1a", "seg": 3, "scene": "quiz_answer", "quiz": "q1", "text": "Jawabannya: baris enam atau baris sebelumnya. Arah Kiko ditentukan oleh baris-baris sebelumnya, seperti baris lima tadi. Baris sesudahnya belum dijalankan.", "hold": 1.0, "start": 202.076, "speech": 202.476, "audio": 10.946, "dur": 12.646}, {"id": "v3a", "seg": 4, "scene": "k4_ulangi_kenal", "text": "Ada program yang barisnya berulang. Maju, maju, maju, maju bisa ditulis lebih singkat: ulangi empat kali, maju. Cara menulis seperti ini disebut perulangan.", "hold": 1.0, "start": 214.722, "speech": 215.122, "audio": 12.118, "dur": 13.818}, {"id": "v3q", "seg": 4, "scene": "k4_tanya", "world": "W3", "prog": ["U4", ">MAJU", "KANAN", "U4", ">MAJU", "AMBIL"], "hideGoal": true, "marks": [[4, 4, "A"], [1, 4, "B"], [4, 1, "C"]], "text": "Menurutmu, apa yang terjadi kalau Kiko menjalankan program dengan perulangan ini? Di kotak mana Kiko akan berhenti?", "hold": 0.4, "start": 228.54, "speech": 228.94, "audio": 7.198, "dur": 9.94}, {"id": "v3t", "seg": 4, "scene": "k4_tebak", "world": "W3", "prog": ["U4", ">MAJU", "KANAN", "U4", ">MAJU", "AMBIL"], "hideGoal": true, "marks": [[4, 4, "A"], [1, 4, "B"], [4, 1, "C"]], "options": ["Kotak A", "Kotak B", "Kotak C"], "text": "Tebak dulu: Kiko berhenti di kotak A, kotak B, atau kotak C?", "hold": 2.2, "start": 238.48, "speech": 238.88, "audio": 5.371, "dur": 9.24}, {"id": "v3r", "seg": 4, "scene": "k4_jalan", "world": "W3", "prog": ["U4", ">MAJU", "KANAN", "U4", ">MAJU", "AMBIL"], "marks": [[4, 4, "A"], [1, 4, "B"], [4, 1, "C"]], "text": "Kita jalankan. Kiko maju empat kotak ke atas, lalu belok kanan, dan maju empat kotak lagi. Kiko berhenti di kotak A dan mengambil baksonya.", "hold": 1.0, "hideGoal": true, "start": 247.72, "speech": 248.12, "audio": 9.984, "dur": 14.04}, {"id": "v3h", "seg": 4, "scene": "k4_banding_ulangi", "text": "Hasilnya sama dengan program sepuluh baris tanpa perulangan. Dengan perulangan, programnya cukup enam baris, lebih mudah dibaca, dan angkanya mudah diganti.", "hold": 1.2, "start": 261.76, "speech": 262.16, "audio": 9.886, "dur": 12.74}, {"id": "q2", "seg": 4, "scene": "quiz", "quiz": "q2", "text": "Cek pemahaman. Kiko menghadap ke atas, lalu menjalankan ulangi tiga kali, maju. Berapa kotak Kiko berpindah? Pikirkan dulu.", "hold": 4.0, "start": 274.5, "speech": 274.9, "audio": 9.775, "dur": 14.475}, {"id": "q2a", "seg": 4, "scene": "quiz_answer", "quiz": "q2", "text": "Jawabannya: tiga kotak. Baris maju di dalam perulangan dijalankan tiga kali, jadi Kiko berpindah tiga kotak ke atas.", "hold": 1.0, "start": 288.975, "speech": 289.375, "audio": 8.639, "dur": 11.04}, {"id": "v4q", "seg": 5, "scene": "k4_dua", "text": "Sinta dan Dito menulis program untuk papan yang sama. Menurutmu, apa yang terjadi kalau tiga baris belok kiri milik Sinta diganti satu baris belok kanan, seperti milik Dito?", "hold": 0.4, "start": 300.015, "speech": 300.415, "audio": 10.839, "dur": 15.44}, {"id": "v4t", "seg": 5, "scene": "k4_tebak", "world": "W4", "prog": ["MAJU", "KANAN", "MAJU", "MAJU", "MAJU", "AMBIL"], "title": "Program Dito", "options": ["Tetap sampai ke bakso", "Kiko salah arah", "Kiko menabrak meja"], "text": "Tebak dulu: program Dito tetap sampai, salah arah, atau menabrak meja?", "hold": 2.2, "start": 315.455, "speech": 315.855, "audio": 5.715, "dur": 8.74}, {"id": "v4r", "seg": 5, "scene": "k4_dua", "run": true, "text": "Kita jalankan keduanya bersamaan. Tiga kali belok kiri ternyata membuat Kiko menghadap ke kanan juga. Keduanya sampai, tetapi program Dito selesai lebih dulu.", "hold": 1.0, "start": 324.195, "speech": 324.595, "audio": 10.64, "dur": 13.54}, {"id": "v4h", "seg": 5, "scene": "k4_pendek", "text": "Tiga kali belok kiri sama dengan satu kali belok kanan. Program Sinta delapan baris, program Dito enam baris, dan dengan perulangan cukup lima baris. Makin pendek, makin mudah diperiksa.", "hold": 1.2, "start": 337.735, "speech": 338.135, "audio": 12.595, "dur": 16.74}, {"id": "q3", "seg": 5, "scene": "quiz", "quiz": "q3", "text": "Cek pemahaman. Kiko menghadap ke atas. Selain belok kiri, perintah mana yang juga membuatnya menghadap ke kiri? Pikirkan dulu.", "hold": 4.0, "start": 354.475, "speech": 354.875, "audio": 8.815, "dur": 14.54}, {"id": "q3a", "seg": 5, "scene": "quiz_answer", "quiz": "q3", "text": "Jawabannya: belok kanan tiga kali. Kiko berputar menghadap ke kanan, ke bawah, lalu ke kiri. Hasilnya sama, tetapi programnya lebih panjang.", "hold": 1.0, "start": 369.015, "speech": 369.415, "audio": 10.98, "dur": 12.68}, {"id": "recap", "seg": 6, "scene": "recap", "text": "Tiga hal untuk diingat. Tebak dulu sebelum menjalankan program. Kalau ada bug, telusuri dari baris pertama. Perulangan dan belokan yang tepat membuat program lebih pendek.", "hold": 1.5, "start": 381.695, "speech": 382.095, "audio": 11.466, "dur": 15.04}, {"id": "latihan", "seg": 6, "scene": "k4_latihan", "text": "Di halaman latihan episode D7.5, buka level Perbaiki dan betulkan program yang menabrak. Lalu coba Buat 3: sampai ke bakso dengan paling banyak dua belas perintah.", "hold": 1.5, "start": 396.735, "speech": 397.135, "audio": 12.267, "dur": 15.54}, {"id": "outro", "seg": 6, "scene": "outro", "text": "Simulasi berikutnya: antrean dan tumpukan, siapa yang keluar berikutnya. Sampai jumpa!", "hold": 2.5, "start": 412.275, "speech": 412.675, "audio": 6.281, "dur": 9.481}], "total": 421.756}, teks: null });
+})();
+</script>

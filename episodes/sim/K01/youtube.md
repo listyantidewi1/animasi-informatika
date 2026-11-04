@@ -10,10 +10,10 @@ RAM dan Penyimpanan saat Listrik Padam — video simulasi konsep untuk Informati
 Simulasi konsep RAM dan penyimpanan: listrik dipadamkan di saat yang berbeda, yaitu sebelum laporan disimpan, setelah disimpan, dan saat simpan otomatis (autosave) menyala, lalu kita melihat apa yang hilang dan apa yang tetap ada. Variasi terakhir membuka banyak aplikasi sampai RAM penuh dan komputer menjadi lambat. Ada tiga cek pemahaman.
 
 Setelah menonton, murid bisa:
-• apa yang ada di RAM dan apa yang ada di penyimpanan
-• mengapa tulisan yang belum disimpan hilang saat listrik padam
-• cara kerja simpan otomatis (autosave)
-• mengapa komputer menjadi lambat saat RAM penuh dan cara mengatasinya
+• membedakan apa yang ada di RAM dan apa yang ada di penyimpanan
+• menjelaskan mengapa tulisan yang belum disimpan hilang saat listrik padam
+• memakai Simpan dan simpan otomatis (autosave) dengan tepat
+• mengatasi komputer yang lambat karena RAM penuh
 
 Video ini cocok untuk yang mencari: perbedaan RAM dan penyimpanan; kenapa file hilang saat listrik mati; fungsi RAM informatika kelas 7; kenapa laptop lemot saat banyak aplikasi.
 

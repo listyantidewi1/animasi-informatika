@@ -161,7 +161,7 @@
   const cur = (ctx, p) => { if (p) L.cursor(ctx, p.x, p.y, { kind: p.kind, click: p.click, down: p.down }); };
   const A_ = b => b.audio || b.dur;
   // detik dalam beat saat frasa mulai dibacakan (perkiraan: sebanding dengan posisi huruf)
-  const ph = (b, s, off = 0) => { const i = b.text.indexOf(s); return (i < 0 ? 0 : i / b.text.length) * A_(b) + off; };
+  const ph = (b, s, off = 0) => { const tx = b.src_text || b.text, i = tx.indexOf(s); return (i < 0 ? 0 : i / tx.length) * A_(b) + off; };
   const typed = (s, l, t0, t1) => s.slice(0, Math.round(s.length * clamp((l - t0) / (t1 - t0), 0, 1)));
   const fade = (l, t0, d = 0.35) => ease(clamp((l - t0) / d, 0, 1));
 

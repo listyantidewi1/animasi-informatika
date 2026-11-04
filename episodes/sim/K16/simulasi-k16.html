@@ -1,0 +1,1568 @@
+<title>Kiko: Balapan Algoritma Pengurutan</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<style>
+/* Inti gaya halaman latihan: satu kolom, pemutar di atas, latihan di bawah; palet kantin sama dengan video. */
+:root {
+  --bg: #EAF2EE; --surface: #FFFFFF; --surface2: #DCE9E2; --ink: #1F2A33; --ink2: #4A5A66; --line: #C9D8D0;
+  --accent: #2E7E9A; --accent-ink: #FFFFFF; --warm: #F2B134; --warm-ink: #5E3E05; --good: #2E9E5B; --good-bg: #DDF3E4; --bad: #D9443B; --bad-bg: #FBE1DF;
+  --font: Inter, "Segoe UI", Roboto, Arial, sans-serif;
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) { --bg: #141C1A; --surface: #1E2926; --surface2: #273532; --ink: #EAF2EE; --ink2: #A9BBB3; --line: #3A4A45; --accent: #5FB3CE; --accent-ink: #0F1D22; --warm: #F2B134; --warm-ink: #2B1C02; --good: #5FCB8A; --good-bg: #1F3A2B; --bad: #F07A72; --bad-bg: #442523; color-scheme: dark } }
+:root[data-theme="dark"] { --bg: #141C1A; --surface: #1E2926; --surface2: #273532; --ink: #EAF2EE; --ink2: #A9BBB3; --line: #3A4A45; --accent: #5FB3CE; --accent-ink: #0F1D22; --warm: #F2B134; --warm-ink: #2B1C02; --good: #5FCB8A; --good-bg: #1F3A2B; --bad: #F07A72; --bad-bg: #442523; color-scheme: dark }
+* { box-sizing: border-box }
+body { background: var(--bg); color: var(--ink); font-family: var(--font); font-size: 17px; line-height: 1.5; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); padding-block: 16px 48px }
+.wrap { max-width: 980px; margin: 0 auto; display: grid; gap: 28px }
+h1 { font-size: clamp(26px, 5vw, 38px); line-height: 1.15; margin: 0; text-wrap: balance; font-weight: 900 }
+h2 { font-size: 22px; margin: 0 0 12px; font-weight: 800 }
+h3 { font-size: 18px; margin: 0 0 8px; font-weight: 800 }
+p { margin: 0 0 10px; max-width: 65ch }
+.eyebrow { font-size: 13px; letter-spacing: .08em; text-transform: uppercase; color: var(--ink2); font-weight: 800; margin-bottom: 6px }
+.card { background: var(--surface); border-radius: 18px; padding: 18px; border: 1px solid var(--line) }
+button { font: inherit; font-weight: 800; border: 0; border-radius: 12px; padding: 12px 16px; cursor: pointer; background: var(--surface2); color: var(--ink); min-height: 48px; touch-action: manipulation }
+button:focus-visible, [tabindex]:focus-visible { outline: 3px solid var(--warm); outline-offset: 2px }
+button.primary { background: var(--accent); color: var(--accent-ink) }
+button.warm { background: var(--warm); color: var(--warm-ink) }
+button[aria-pressed="true"] { box-shadow: inset 0 0 0 3px var(--accent) }
+button:disabled { opacity: .45; cursor: default }
+.row { display: flex; flex-wrap: wrap; gap: 10px; align-items: center }
+/* player */
+.player { display: grid; gap: 12px }
+.stage { position: relative; width: 100%; aspect-ratio: 16 / 9; max-width: 100%; background: #EAF2EE; border-radius: 14px; overflow: hidden; border: 1px solid var(--line) }
+.stage canvas { width: 100%; height: 100%; display: block }
+.bigplay { position: absolute; inset: 0; display: grid; place-items: center; background: rgba(31,42,51,.25); border: 0; border-radius: 0; color: #fff; font-size: 20px; min-height: 0 }
+.bigplay span { background: var(--accent); color: var(--accent-ink); padding: 14px 26px; border-radius: 999px; font-weight: 900 }
+.bar { height: 10px; background: var(--surface2); border-radius: 999px; overflow: hidden; cursor: pointer }
+.bar > i { display: block; height: 100%; width: 0; background: var(--warm) }
+.chapters { display: flex; flex-wrap: wrap; gap: 8px }
+.chapters button { font-size: 14px; padding: 8px 12px; min-height: 40px }
+.chapters button.now { background: var(--warm); color: var(--warm-ink) }
+.hint { color: var(--ink2); font-size: 15px }
+/* exercises (generic parts) */
+.levels { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 12px }
+.levels button { font-size: 14px; padding: 8px 12px; min-height: 40px }
+.levels button.done::after { content: " ✓"; color: var(--good) }
+.task { background: var(--surface2); border-radius: 12px; padding: 12px 14px; margin-bottom: 12px; font-weight: 700 }
+.result { border-radius: 12px; padding: 12px 14px; font-weight: 800; margin-top: 10px }
+.result.good { background: var(--good-bg); color: var(--good) }
+.result.bad { background: var(--bad-bg); color: var(--bad) }
+.result.info { background: var(--surface2); color: var(--ink) }
+/* quiz */
+.quiz { display: grid; gap: 16px }
+.q { border-top: 1px solid var(--line); padding-top: 14px }
+.q:first-child { border-top: 0; padding-top: 0 }
+.opts { display: grid; gap: 8px; margin-top: 8px }
+.opts button { text-align: left; font-weight: 700; background: var(--surface2); display: flex; gap: 10px; align-items: center }
+.opts button b { width: 30px; height: 30px; border-radius: 50%; background: var(--accent); color: var(--accent-ink); display: grid; place-items: center; flex: none }
+.opts button.right { background: var(--good-bg); box-shadow: inset 0 0 0 3px var(--good) }
+.opts button.wrong { background: var(--bad-bg) }
+.fb { margin-top: 8px; font-weight: 700 }
+.fb.good { color: var(--good) } .fb.bad { color: var(--bad) }
+details summary { cursor: pointer; font-weight: 800; font-size: 18px }
+details[open] summary { margin-bottom: 10px }
+ul.plain { padding-left: 20px; margin: 0 0 10px } ul.plain li { margin-bottom: 6px; max-width: 65ch }
+.progress { display: flex; gap: 8px; flex-wrap: wrap } .progress span { background: var(--surface2); border-radius: 999px; padding: 6px 12px; font-size: 14px; font-weight: 700 }
+.progress span.ok { background: var(--good-bg); color: var(--good) }
+@media (prefers-reduced-motion: reduce) { * { transition: none !important } }
+
+/* halaman video simulasi (dibuat build.py dari episodes/_alat/sim-page.html) */
+.links { display: grid; gap: 10px } .links a { display: block; background: var(--surface2); color: var(--ink); text-decoration: none; font-weight: 800; border-radius: 12px; padding: 12px 16px }
+.links a span { display: block; font-weight: 600; color: var(--ink2); font-size: 15px }
+ul.learn { margin: 0; padding-left: 20px } ul.learn li { margin-bottom: 4px }
+</style>
+
+<div class="wrap">
+  <header>
+    <div class="eyebrow">Informatika · Simulasi konsep · K16</div>
+    <h1>Balapan Algoritma Pengurutan</h1>
+    <p class="hint">Setelah menonton, kamu bisa menebak algoritma pengurutan yang paling hemat langkah untuk data acak, hampir urut, atau terbalik, lalu membuktikannya dengan penghitung. Simulasi ini melengkapi episode E.6. Saat muncul pertanyaan "Menurutmu …", hentikan dulu videonya dan tebak jawabannya.</p>
+  </header>
+  <section class="card player" aria-label="Pemutar simulasi">
+    <div class="stage">
+      <canvas id="screen" width="1920" height="1080" aria-label="Animasi simulasi"></canvas>
+      <audio id="nar" preload="auto" src="narasi.mp3"></audio>
+      <button class="bigplay" id="bigplay" aria-label="Putar"><span>▶ Putar simulasi</span></button>
+    </div>
+    <div class="bar" id="bar" role="slider" aria-label="Posisi simulasi" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" tabindex="0"><i id="barfill"></i></div>
+    <div class="row">
+      <button class="primary" id="playbtn">▶ Putar</button>
+      <button id="replay">↺ Ulangi bagian ini</button>
+      <button id="voice" aria-pressed="true" hidden>🔊 Suara: nyala</button>
+      <button id="slow" aria-pressed="false">🐢 Mode lambat</button>
+      <span class="hint" id="timelabel">0:00 / 0:00</span>
+    </div>
+    <div>
+      <div class="eyebrow">Bagian</div>
+      <div class="chapters" id="chapters"></div>
+    </div>
+  </section>
+
+  <section class="card" aria-label="Yang dipelajari">
+    <h2>Yang kamu pelajari</h2>
+    <ul class="learn"><li>membandingkan bubble sort, selection sort, dan insertion sort dengan menghitung perbandingan dan pertukaran</li><li>memilih algoritma pengurutan yang cocok untuk data acak, hampir urut, atau terbalik</li><li>melihat bahwa data dua kali lipat membuat langkah pengurutan sekitar empat kali lipat</li><li>menghitung langkah binary search dan membandingkannya dengan linear search</li></ul>
+  </section>
+
+  <section class="card" aria-label="Cek pemahaman">
+    <h2>Cek pemahaman</h2>
+    <p class="hint">Pilih satu jawaban. Kalau salah, kamu dapat petunjuk, lalu coba lagi.</p>
+    <div class="quiz" id="quiz"></div>
+  </section>
+
+  <section class="card" aria-label="Kemajuan">
+    <h2>Kemajuanmu</h2>
+    <div class="progress" id="progress"></div>
+    <p class="hint" style="margin-top:8px">Kemajuan tersimpan di perangkat ini saja.</p>
+  </section>
+
+  <section class="card" aria-label="Halaman latihan">
+    <h2>Lanjut berlatih</h2>
+    <div class="links"><a href="../../E.6/episode-e6.html">Episode E.6: Algoritma Standar: Pencarian dan Pengurutan<span>Tonton episodenya dan kerjakan latihannya.</span></a><a href="../../../index.html">Daftar semua episode<span>Kembali ke halaman utama.</span></a></div>
+  </section>
+</div>
+
+<script>/* Kiko core: mesin gambar bersama untuk semua episode Fase D.
+   Kiko.draw(ctx, t, TL) menggambar frame pada detik t di kanvas 1920x1080 secara deterministik.
+   Berisi palet, pembantu gambar, tokoh (Kiko, murid), dan adegan umum (judul, kuis, ringkasan, penutup).
+   Setiap episode menambahkan adegannya sendiri di scenes.js: Object.assign(Kiko.SCENES, {...}). */
+(function (global) {
+  const W = 1920, H = 1080;
+  const FONT = "Inter, 'Segoe UI', Roboto, Arial, sans-serif";
+  const C = {
+    bg: "#EAF2EE", bg2: "#DCE9E2", ink: "#1F2A33", ink2: "#4A5A66", panel: "#FFFFFF",
+    tile: "#F7FAF8", tileLine: "#C9D8D0", table: "#A4653A", tableTop: "#C98A57",
+    kiko: "#2E7E9A", kikoDark: "#1F5A6E", kikoLight: "#8FD0E6", eye: "#FFFFFF", pupil: "#1F2A33",
+    accent: "#F2B134", accentDark: "#B57A12", good: "#2E9E5B", bad: "#D9443B", goodBg: "#DDF3E4", badBg: "#FBE1DF",
+    sub: "#1F2A33", subText: "#FFFFFF", star: "#F2B134", skin: "#F1C9A5", skin2: "#C98A57", hair: "#2B2118",
+    uniform: "#FFFFFF", pants: "#2F4E7D", bubble: "#FFFFFF", muted: "#9AAFA6"
+  };
+  const ease = u => u < 0 ? 0 : u > 1 ? 1 : u * u * (3 - 2 * u);
+  const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
+  const lerp = (a, b, u) => a + (b - a) * u;
+
+  // ---------- drawing helpers ----------
+  function rr(ctx, x, y, w, h, r) {
+    ctx.beginPath(); ctx.moveTo(x + r, y); ctx.arcTo(x + w, y, x + w, y + h, r); ctx.arcTo(x + w, y + h, x, y + h, r);
+    ctx.arcTo(x, y + h, x, y, r); ctx.arcTo(x, y, x + w, y, r); ctx.closePath();
+  }
+  function text(ctx, s, x, y, size, opt = {}) {
+    ctx.font = `${opt.weight || 600} ${size}px ${FONT}`;
+    // opt.fit: lebar maksimum; huruf diperkecil hanya bila teks lebih lebar dari itu
+    while (opt.fit && size > 20 && ctx.measureText(s).width > opt.fit) { size -= 2; ctx.font = `${opt.weight || 600} ${size}px ${FONT}`; } ctx.fillStyle = opt.color || C.ink;
+    ctx.textAlign = opt.align || "left"; ctx.textBaseline = opt.base || "alphabetic"; ctx.fillText(s, x, y);
+  }
+  function wrap(ctx, s, size, weight, maxW) {
+    ctx.font = `${weight} ${size}px ${FONT}`;
+    const words = s.split(" "), lines = []; let cur = "";
+    for (const w of words) {
+      const test = cur ? cur + " " + w : w;
+      if (ctx.measureText(test).width > maxW && cur) { lines.push(cur); cur = w; } else cur = test;
+    }
+    if (cur) lines.push(cur);
+    return lines;
+  }
+  function para(ctx, s, x, y, size, maxW, opt = {}) {
+    const lines = wrap(ctx, s, size, opt.weight || 500, maxW); const lh = size * (opt.lh || 1.35);
+    lines.forEach((l, i) => text(ctx, l, x, y + i * lh, size, opt));
+    return lines.length * lh;
+  }
+  function arrowIcon(ctx, kind, cx, cy, s, color) {
+    ctx.save(); ctx.translate(cx, cy); ctx.strokeStyle = color; ctx.fillStyle = color; ctx.lineWidth = s * 0.16; ctx.lineCap = "round"; ctx.lineJoin = "round";
+    if (kind === "up") {
+      ctx.beginPath(); ctx.moveTo(0, s * 0.45); ctx.lineTo(0, -s * 0.3); ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(-s * 0.32, -s * 0.05); ctx.lineTo(0, -s * 0.45); ctx.lineTo(s * 0.32, -s * 0.05); ctx.stroke();
+    } else if (kind === "left" || kind === "right") {
+      const k = kind === "left" ? -1 : 1;
+      ctx.beginPath(); ctx.moveTo(0, s * 0.45); ctx.lineTo(0, -s * 0.05); ctx.quadraticCurveTo(0, -s * 0.32, k * s * 0.28, -s * 0.32); ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(k * s * 0.12, -s * 0.5); ctx.lineTo(k * s * 0.4, -s * 0.32); ctx.lineTo(k * s * 0.12, -s * 0.14); ctx.stroke();
+    } else if (kind === "east") {
+      ctx.beginPath(); ctx.moveTo(-s * 0.4, 0); ctx.lineTo(s * 0.3, 0); ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(s * 0.05, -s * 0.28); ctx.lineTo(s * 0.4, 0); ctx.lineTo(s * 0.05, s * 0.28); ctx.stroke();
+    } else if (kind === "west") {
+      ctx.beginPath(); ctx.moveTo(s * 0.4, 0); ctx.lineTo(-s * 0.3, 0); ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(-s * 0.05, -s * 0.28); ctx.lineTo(-s * 0.4, 0); ctx.lineTo(-s * 0.05, s * 0.28); ctx.stroke();
+    } else if (kind === "grab") {
+      ctx.beginPath(); ctx.arc(0, s * 0.12, s * 0.22, 0, Math.PI * 2); ctx.fill();
+      ctx.beginPath(); ctx.moveTo(-s * 0.4, -s * 0.42); ctx.lineTo(-s * 0.4, -s * 0.12); ctx.moveTo(s * 0.4, -s * 0.42); ctx.lineTo(s * 0.4, -s * 0.12);
+      ctx.moveTo(-s * 0.4, -s * 0.42); ctx.lineTo(s * 0.4, -s * 0.42); ctx.stroke();
+    }
+    ctx.restore();
+  }
+  function bakso(ctx, cx, cy, s, opt = {}) {
+    // a bowl of bakso: the goal
+    ctx.save(); ctx.translate(cx, cy);
+    if (opt.glow) { ctx.beginPath(); ctx.arc(0, 0, s * 0.62, 0, Math.PI * 2); ctx.fillStyle = "rgba(242,177,52,0.22)"; ctx.fill(); }
+    ctx.fillStyle = "#E4EEF5"; ctx.beginPath(); ctx.moveTo(-s * 0.46, -s * 0.05); ctx.quadraticCurveTo(-s * 0.4, s * 0.45, 0, s * 0.45); ctx.quadraticCurveTo(s * 0.4, s * 0.45, s * 0.46, -s * 0.05); ctx.closePath(); ctx.fill();
+    ctx.strokeStyle = "#8FA9BD"; ctx.lineWidth = s * 0.05; ctx.stroke();
+    ctx.fillStyle = "#C8B49A"; ctx.beginPath(); ctx.ellipse(0, -s * 0.05, s * 0.44, s * 0.14, 0, 0, Math.PI * 2); ctx.fill();
+    for (const [dx, dy, r] of [[-0.16, -0.1, 0.13], [0.14, -0.12, 0.13], [0, -0.22, 0.12]]) {
+      ctx.fillStyle = "#9A7B5B"; ctx.beginPath(); ctx.arc(dx * s, dy * s, r * s, 0, Math.PI * 2); ctx.fill();
+      ctx.fillStyle = "#B8977A"; ctx.beginPath(); ctx.arc(dx * s - r * s * 0.3, dy * s - r * s * 0.3, r * s * 0.4, 0, Math.PI * 2); ctx.fill();
+    }
+    ctx.fillStyle = "#4CA64C"; for (const dx of [-0.26, 0.1, 0.26]) { ctx.beginPath(); ctx.arc(dx * s, -s * 0.07, s * 0.045, 0, Math.PI * 2); ctx.fill(); }
+    ctx.restore();
+  }
+  function table(ctx, x, y, w, h) {
+    ctx.fillStyle = C.table; rr(ctx, x + w * 0.1, y + h * 0.3, w * 0.8, h * 0.55, 10); ctx.fill();
+    ctx.fillStyle = C.tableTop; rr(ctx, x + w * 0.06, y + h * 0.18, w * 0.88, h * 0.3, 10); ctx.fill();
+    ctx.fillStyle = "rgba(0,0,0,0.12)"; ctx.fillRect(x + w * 0.16, y + h * 0.5, w * 0.08, h * 0.35); ctx.fillRect(x + w * 0.76, y + h * 0.5, w * 0.08, h * 0.35);
+  }
+  function kiko(ctx, cx, cy, s, ang, opt = {}) {
+    ctx.save(); ctx.translate(cx, cy);
+    // shadow
+    ctx.fillStyle = "rgba(0,0,0,0.12)"; ctx.beginPath(); ctx.ellipse(0, s * 0.42, s * 0.42, s * 0.12, 0, 0, Math.PI * 2); ctx.fill();
+    ctx.rotate(ang);
+    // wheels
+    ctx.fillStyle = C.kikoDark; rr(ctx, -s * 0.46, -s * 0.2, s * 0.12, s * 0.5, 5); ctx.fill(); rr(ctx, s * 0.34, -s * 0.2, s * 0.12, s * 0.5, 5); ctx.fill();
+    // body
+    ctx.fillStyle = opt.flash ? `rgba(217,68,59,${0.5 + 0.5 * opt.flash})` : C.kiko; rr(ctx, -s * 0.38, -s * 0.36, s * 0.76, s * 0.72, s * 0.16); ctx.fill();
+    // visor (front, facing up)
+    ctx.fillStyle = C.kikoLight; rr(ctx, -s * 0.26, -s * 0.33, s * 0.52, s * 0.3, s * 0.1); ctx.fill();
+    // eyes
+    const mood = opt.mood || "happy";
+    ctx.fillStyle = C.pupil;
+    if (mood === "sad") { ctx.beginPath(); ctx.arc(-s * 0.12, -s * 0.18, s * 0.05, 0, Math.PI * 2); ctx.arc(s * 0.12, -s * 0.18, s * 0.05, 0, Math.PI * 2); ctx.fill(); ctx.strokeStyle = C.pupil; ctx.lineWidth = s * 0.03; ctx.beginPath(); ctx.arc(0, -s * 0.03, s * 0.08, Math.PI * 1.15, Math.PI * 1.85); ctx.stroke(); }
+    else if (mood === "confused") { ctx.beginPath(); ctx.arc(-s * 0.12, -s * 0.18, s * 0.05, 0, Math.PI * 2); ctx.arc(s * 0.12, -s * 0.18, s * 0.035, 0, Math.PI * 2); ctx.fill(); ctx.strokeStyle = C.pupil; ctx.lineWidth = s * 0.03; ctx.beginPath(); ctx.moveTo(-s * 0.08, -s * 0.06); ctx.lineTo(s * 0.08, -s * 0.09); ctx.stroke(); }
+    else { ctx.beginPath(); ctx.arc(-s * 0.12, -s * 0.18, s * 0.055, 0, Math.PI * 2); ctx.arc(s * 0.12, -s * 0.18, s * 0.055, 0, Math.PI * 2); ctx.fill(); ctx.strokeStyle = C.pupil; ctx.lineWidth = s * 0.03; ctx.beginPath(); ctx.arc(0, -s * 0.1, s * 0.08, Math.PI * 0.15, Math.PI * 0.85); ctx.stroke(); }
+    // front pointer
+    ctx.fillStyle = C.accent; ctx.beginPath(); ctx.moveTo(-s * 0.1, -s * 0.38); ctx.lineTo(s * 0.1, -s * 0.38); ctx.lineTo(0, -s * 0.5); ctx.closePath(); ctx.fill();
+    // antenna
+    ctx.strokeStyle = C.kikoDark; ctx.lineWidth = s * 0.04; ctx.beginPath(); ctx.moveTo(0, s * 0.36); ctx.lineTo(0, s * 0.5); ctx.stroke();
+    ctx.fillStyle = C.accent; ctx.beginPath(); ctx.arc(0, s * 0.52, s * 0.07, 0, Math.PI * 2); ctx.fill();
+    // tray with bakso when grabbed
+    if (opt.grabbed) bakso(ctx, 0, s * 0.05, s * 0.45);
+    ctx.restore();
+    if (opt.wave !== undefined) { // arm waving (title scene)
+      ctx.save(); ctx.translate(cx + s * 0.42, cy - s * 0.1); ctx.rotate(-0.6 + Math.sin(opt.wave * 6) * 0.4);
+      ctx.strokeStyle = C.kikoDark; ctx.lineWidth = s * 0.08; ctx.lineCap = "round"; ctx.beginPath(); ctx.moveTo(0, 0); ctx.lineTo(s * 0.3, -s * 0.3); ctx.stroke();
+      ctx.fillStyle = C.kikoLight; ctx.beginPath(); ctx.arc(s * 0.32, -s * 0.33, s * 0.09, 0, Math.PI * 2); ctx.fill(); ctx.restore();
+    }
+  }
+  function kid(ctx, cx, cy, s, opt = {}) {
+    // simple student figure, standing, facing viewer
+    ctx.save(); ctx.translate(cx, cy);
+    ctx.fillStyle = "rgba(0,0,0,0.12)"; ctx.beginPath(); ctx.ellipse(0, s * 1.02, s * 0.5, s * 0.1, 0, 0, Math.PI * 2); ctx.fill();
+    ctx.fillStyle = C.pants; rr(ctx, -s * 0.3, s * 0.35, s * 0.6, s * 0.5, s * 0.1); ctx.fill();
+    ctx.fillStyle = C.skin; ctx.fillRect(-s * 0.24, s * 0.8, s * 0.16, s * 0.2); ctx.fillRect(s * 0.08, s * 0.8, s * 0.16, s * 0.2);
+    ctx.fillStyle = C.uniform; rr(ctx, -s * 0.36, -s * 0.12, s * 0.72, s * 0.56, s * 0.12); ctx.fill();
+    ctx.strokeStyle = "#D5DDE2"; ctx.lineWidth = s * 0.025; rr(ctx, -s * 0.36, -s * 0.12, s * 0.72, s * 0.56, s * 0.12); ctx.stroke();
+    ctx.fillStyle = C.skin; ctx.beginPath(); ctx.arc(0, -s * 0.42, s * 0.32, 0, Math.PI * 2); ctx.fill();
+    ctx.fillStyle = opt.hairColor || C.hair; ctx.beginPath(); ctx.arc(0, -s * 0.5, s * 0.33, Math.PI, 0); ctx.fill();
+    if (opt.hair === "long") { ctx.fillRect(-s * 0.33, -s * 0.5, s * 0.12, s * 0.45); ctx.fillRect(s * 0.21, -s * 0.5, s * 0.12, s * 0.45); }
+    ctx.fillStyle = C.pupil; ctx.beginPath(); ctx.arc(-s * 0.11, -s * 0.4, s * 0.035, 0, Math.PI * 2); ctx.arc(s * 0.11, -s * 0.4, s * 0.035, 0, Math.PI * 2); ctx.fill();
+    ctx.strokeStyle = C.pupil; ctx.lineWidth = s * 0.025; ctx.beginPath(); ctx.arc(0, -s * 0.33, s * 0.08, Math.PI * 0.15, Math.PI * 0.85); ctx.stroke();
+    // arms
+    ctx.strokeStyle = C.skin; ctx.lineWidth = s * 0.11; ctx.lineCap = "round"; ctx.beginPath();
+    if (opt.point) { ctx.moveTo(s * 0.32, s * 0.02); ctx.lineTo(s * 0.75, -s * 0.2); } else { ctx.moveTo(s * 0.34, s * 0.02); ctx.lineTo(s * 0.42, s * 0.38); }
+    ctx.moveTo(-s * 0.34, s * 0.02); ctx.lineTo(-s * 0.42, s * 0.38); ctx.stroke();
+    ctx.restore();
+  }
+  function bubble(ctx, x, y, w, s, size, opt = {}) {
+    const lines = wrap(ctx, s, size, 600, w - 48); const h = lines.length * size * 1.3 + 40;
+    ctx.fillStyle = opt.fill || C.bubble; ctx.strokeStyle = opt.stroke || "#B7C7BF"; ctx.lineWidth = 3;
+    rr(ctx, x, y - h, w, h, 22); ctx.fill(); ctx.stroke();
+    const tx = opt.tailX !== undefined ? opt.tailX : x + 60;
+    ctx.beginPath(); ctx.moveTo(tx - 16, y); ctx.lineTo(tx + 16, y); ctx.lineTo(tx + (opt.tailDir || 0), y + 28); ctx.closePath(); ctx.fillStyle = opt.fill || C.bubble; ctx.fill();
+    ctx.strokeStyle = opt.stroke || "#B7C7BF"; ctx.beginPath(); ctx.moveTo(tx - 16, y); ctx.lineTo(tx + (opt.tailDir || 0), y + 28); ctx.lineTo(tx + 16, y); ctx.stroke();
+    lines.forEach((l, i) => text(ctx, l, x + 24, y - h + 24 + size + i * size * 1.3, size, { color: opt.color || C.ink, weight: 600 }));
+    return h;
+  }
+  function card(ctx, x, y, w, h, opt = {}) { ctx.fillStyle = opt.fill || C.panel; rr(ctx, x, y, w, h, opt.r || 26); ctx.fill(); if (opt.stroke) { ctx.strokeStyle = opt.stroke; ctx.lineWidth = opt.lw || 4; ctx.stroke(); } }
+
+  // ---------- adegan umum (semua episode) ----------
+  const SCENES = {
+    title(ctx, b, l, t, TL) {
+      card(ctx, 160, 160, 1600, 700, { fill: C.panel });
+      kiko(ctx, 420, 520, 260, 0, { wave: l, mood: "happy" });
+      text(ctx, TL.label || ("Informatika · Fase " + (TL.episode || "D")[0] + " · Episode " + TL.episode), 720, 330, 34, { color: C.ink2, weight: 700 });  // TL.label: label khusus, mis. video simulasi
+      const ts = TL.title.length > 34 ? 74 : 92; const th = para(ctx, TL.title, 720, 440, ts, 1000, { weight: 900, lh: 1.1 }); const hookLines = TL.hook ? wrap(ctx, TL.hook, 34, 800, 1000).length : 0; const hy = Math.max(hookLines >= 3 ? 600 : 640, 440 + th - ts * 0.35 + 30);
+      if (TL.hook) { text(ctx, "SETELAH MENONTON, KAMU BISA:", 720, hy, 26, { color: C.accentDark, weight: 800 }); para(ctx, TL.hook, 720, hy + 50, 34, 1000, { weight: 800, lh: 1.3 }); const ny = hy + 50 + wrap(ctx, TL.hook, 34, 800, 1000).length * 34 * 1.3 + 12; if (ny <= 830) text(ctx, "Dengarkan, atau baca teksnya pelan-pelan.", 720, Math.max(800, ny), 26, { color: C.ink2, weight: 600 }); }
+      else text(ctx, "Dengarkan, atau baca teksnya pelan-pelan.", 720, 700, 36, { color: C.ink2, weight: 600 });
+      if (!TL.label) { arrowIcon(ctx, "up", 1560, 250, 70, C.kikoLight); arrowIcon(ctx, "right", 1660, 250, 70, C.kikoLight); }  // ikon panah khas episode, tidak untuk simulasi
+    },
+    quiz(ctx, b, l, t, TL, answered) {
+      const q = TL.quizzes[b.quiz]; card(ctx, 200, 150, 1520, 740, { stroke: C.accent, lw: 6 });
+      text(ctx, "CEK PEMAHAMAN", 960, 230, 32, { align: "center", color: C.accentDark, weight: 800 });
+      para(ctx, q.q, 960, 320, 44, 1360, { weight: 800, align: "center", lh: 1.3 });
+      // tata letak pilihan: mulai di bawah pertanyaan dan selesai di atas kartu narasi (narasi panjang = jarak dirapatkan)
+      const qLines = wrap(ctx, q.q, 44, 800, 1360).length, subTop = 1056 - (wrap(ctx, b.text, 44, 700, 1660).length * 44 * 1.3 + 44);
+      let oy = qLines <= 1 ? 420 : 470, gap = 120, oh = 96; const n = q.options.length;
+      if (oy + (n - 1) * gap + oh > subTop - 12) { gap = Math.max(104, Math.floor((subTop - 12 - oh - oy) / Math.max(1, n - 1))); }
+      if (oy + (n - 1) * gap + oh > subTop - 12) { oh = 86; gap = 100; oy = Math.max(320 + (qLines - 1) * 57 + 40, subTop - 12 - oh - (n - 1) * gap); }
+      q.options.forEach((o, i) => {
+        const y = oy + i * gap; const right = answered && i === q.answer;
+        card(ctx, 320, y, 1280, oh, { fill: right ? C.goodBg : answered ? "#F4F6F5" : C.bg2, stroke: right ? C.good : "#CFDCD5", lw: right ? 6 : 3 });
+        ctx.fillStyle = right ? C.good : C.kiko; ctx.beginPath(); ctx.arc(380, y + oh / 2, 30, 0, Math.PI * 2); ctx.fill();
+        text(ctx, "ABC"[i], 380, y + oh / 2 + 13, 34, { align: "center", color: "#fff", weight: 900 });
+        text(ctx, o, 440, y + oh / 2 + 14, 38, { weight: 700, color: answered && !right ? C.muted : C.ink });
+        if (right) text(ctx, "✓", 1540, y + oh / 2 + 18, 54, { align: "center", color: C.good, weight: 900 });
+      });
+      if (!answered) { // thinking timer
+        const frac = clamp(l / b.dur, 0, 1); ctx.strokeStyle = "#D7E2DC"; ctx.lineWidth = 14; ctx.beginPath(); ctx.arc(1640, 230, 40, 0, Math.PI * 2); ctx.stroke();
+        ctx.strokeStyle = C.accent; ctx.beginPath(); ctx.arc(1640, 230, 40, -Math.PI / 2, -Math.PI / 2 + frac * Math.PI * 2); ctx.stroke();
+        // catatan hanya digambar bila tidak tertutup kartu narasi (narasi tiga baris atau lebih menutupinya)
+        const subTop = 1056 - (wrap(ctx, b.text, 44, 700, 1660).length * 44 * 1.3 + 44);
+        if (subTop > 880) text(ctx, "Pikirkan dulu, jangan buru-buru.", 960, 860, 32, { align: "center", color: C.ink2, weight: 600 });
+      }
+    },
+    quiz_answer(ctx, b, l, t, TL) { SCENES.quiz(ctx, b, l, t, TL, true); },
+    recap(ctx, b, l, t, TL) {
+      // TL.recap: tiga kalimat pendek dari script.json
+      card(ctx, 160, 140, 1600, 760);
+      text(ctx, "TIGA HAL UNTUK DIINGAT", 960, 230, 34, { align: "center", color: C.accentDark, weight: 900 });
+      const items = TL.recap || [];
+      const show = clamp(Math.floor((l - 0.6) / 2.2) + 1, 1, Math.max(1, items.length));
+      items.forEach((s, i) => { if (i >= show) return; card(ctx, 300, 290 + i * 180, 1320, 140, { fill: C.bg2 }); ctx.fillStyle = C.kiko; ctx.beginPath(); ctx.arc(380, 360 + i * 180, 40, 0, Math.PI * 2); ctx.fill(); text(ctx, String(i + 1), 380, 376 + i * 180, 40, { align: "center", color: "#fff", weight: 900 }); text(ctx, s, 450, 375 + i * 180, 42, { weight: 800, fit: 1130 }); });
+      kiko(ctx, 1620, 820, 130, 0);
+    },
+    outro(ctx, b, l, t, TL) {
+      // TL.next: {code, title, note} episode berikutnya, dari script.json
+      const n = TL.next || {};
+      card(ctx, 260, 200, 1400, 600);
+      text(ctx, n.heading || "EPISODE BERIKUTNYA", 960, 320, 34, { align: "center", color: C.accentDark, weight: 900 });
+      text(ctx, n.code || "", 960, 440, 60, { align: "center", weight: 900 });
+      text(ctx, n.title || "", 960, 530, 54, { align: "center", weight: 800, color: C.ink2, fit: 1320 });
+      text(ctx, n.note || "", 960, 680, 34, { align: "center", color: C.ink2, weight: 600 });
+      kiko(ctx, 960, 760 + 20, 140, 0, { wave: l });
+    }
+  };
+
+  function beatAt(TL, t) {
+    let b = TL.beats[0];
+    for (const x of TL.beats) { if (t >= x.start) b = x; else break; }
+    return b;
+  }
+  function draw(ctx, t, TL, opt = {}) {
+    const b = beatAt(TL, t); const l = t - b.start;
+    ctx.save(); ctx.setTransform(1, 0, 0, 1, 0, 0);
+    ctx.fillStyle = C.bg; ctx.fillRect(0, 0, W, H);
+    // header
+    text(ctx, TL.episode + " · " + TL.title, 60, 78, 30, { color: C.ink2, weight: 700 });
+    text(ctx, TL.segments[b.seg], 1860, 78, 30, { color: C.accentDark, weight: 800, align: "right" });
+    ctx.fillStyle = C.bg2; ctx.fillRect(0, 100, W, 6); ctx.fillStyle = C.accent; ctx.fillRect(0, 100, W * clamp(t / TL.total, 0, 1), 6);
+    const fn = SCENES[b.scene]; if (fn) fn(ctx, b, l, t, TL);
+    // narration card (burned-in text the student reads)
+    if (opt.subtitles !== false) {
+      const size = 44; const lines = wrap(ctx, b.text, size, 700, 1660);
+      const h = lines.length * size * 1.3 + 44; const y0 = 1056 - h;
+      ctx.fillStyle = "rgba(31,42,51,0.92)"; rr(ctx, 100, y0, 1720, h, 20); ctx.fill();
+      // reading progress (how far along the text the reader should be)
+      const frac = clamp(l / b.audio, 0, 1); ctx.fillStyle = C.accent; rr(ctx, 100, y0 + h - 8, 1720 * frac, 8, 4); ctx.fill();
+      lines.forEach((ln, i) => text(ctx, ln, 960, y0 + 22 + size + i * size * 1.3, size, { align: "center", color: C.subText, weight: 700 }));
+    }
+    ctx.restore();
+    return b;
+  }
+
+  global.Kiko = { draw, beatAt, W, H, C, FONT, SCENES,
+    helpers: { rr, text, wrap, para, arrowIcon, bakso, table, kiko, kid, bubble, card, ease, clamp, lerp } };
+})(typeof window !== "undefined" ? window : globalThis);
+
+/* Pembantu gambar perangkat (dipakai D7.0, D7.2, …): monitor, mouse, pointer, keyboard, HP, jari, ikon file/folder, jendela.
+   Semua digambar dengan kode (tanpa aset unduhan). Muat setelah ../_alat/kiko-core.js; dipakai scenes.js. */
+(function (global) {
+  const K = global.Kiko, H = K.helpers, C = K.C;
+  const { rr, text, wrap, card, ease, clamp, lerp } = H;
+  const D = {};
+  const SCREEN_BG = "#F4F8FB", BEZEL = "#2B3A46", BEZEL2 = "#1A262F", SEL = "rgba(46,126,154,0.22)";
+
+  // ---------- komputer ----------
+  // monitor di atas meja; mengembalikan kotak layar {x,y,w,h}
+  D.monitor = function (ctx, x, y, w, h) {
+    ctx.fillStyle = BEZEL; rr(ctx, x - 18, y - 18, w + 36, h + 36, 22); ctx.fill();
+    ctx.fillStyle = SCREEN_BG; rr(ctx, x, y, w, h, 10); ctx.fill();
+    // kaki dan meja
+    ctx.fillStyle = BEZEL2; rr(ctx, x + w / 2 - 40, y + h + 18, 80, 36, 8); ctx.fill(); rr(ctx, x + w / 2 - 140, y + h + 50, 280, 16, 8); ctx.fill();
+    ctx.fillStyle = C.tableTop; rr(ctx, x - 80, y + h + 66, w + 160, 22, 8); ctx.fill();
+    return { x, y, w, h };
+  };
+  // panah pointer
+  D.pointer = function (ctx, x, y, s = 34, color = C.ink) {
+    ctx.save(); ctx.translate(x, y); ctx.fillStyle = color; ctx.strokeStyle = "#fff"; ctx.lineWidth = s * 0.08; ctx.lineJoin = "round";
+    ctx.beginPath(); ctx.moveTo(0, 0); ctx.lineTo(0, s); ctx.lineTo(s * 0.27, s * 0.78); ctx.lineTo(s * 0.45, s * 1.15); ctx.lineTo(s * 0.62, s * 1.07); ctx.lineTo(s * 0.45, s * 0.7); ctx.lineTo(s * 0.75, s * 0.7); ctx.closePath();
+    ctx.fill(); ctx.stroke(); ctx.restore();
+  };
+  // mouse tampak atas; opt.left / opt.right = tombol ditekan; opt.label = tulis "kiri/kanan"
+  D.mouse = function (ctx, cx, cy, s, opt = {}) {
+    ctx.save(); ctx.translate(cx, cy);
+    ctx.fillStyle = "rgba(0,0,0,0.12)"; ctx.beginPath(); ctx.ellipse(0, s * 0.62, s * 0.5, s * 0.1, 0, 0, Math.PI * 2); ctx.fill();
+    // kabel
+    ctx.strokeStyle = "#7B8B95"; ctx.lineWidth = s * 0.05; ctx.beginPath(); ctx.moveTo(0, -s * 0.6); ctx.quadraticCurveTo(0, -s * 1.0, s * 0.5, -s * 1.1); ctx.stroke();
+    // badan
+    ctx.fillStyle = "#E8EEF2"; rr(ctx, -s * 0.42, -s * 0.62, s * 0.84, s * 1.24, s * 0.4); ctx.fill(); ctx.strokeStyle = "#A9B7C0"; ctx.lineWidth = s * 0.04; ctx.stroke();
+    // dua tombol
+    const btn = (side, on) => { ctx.fillStyle = on ? C.accent : "#F7FAFC"; ctx.beginPath(); const sx = side === "left" ? -1 : 1;
+      ctx.moveTo(sx * s * 0.03, -s * 0.6); ctx.lineTo(sx * s * 0.03, -s * 0.1); ctx.lineTo(sx * s * 0.4, -s * 0.1); ctx.lineTo(sx * s * 0.4, -s * 0.28); ctx.quadraticCurveTo(sx * s * 0.4, -s * 0.6, sx * s * 0.1, -s * 0.6); ctx.closePath(); ctx.fill(); ctx.strokeStyle = "#A9B7C0"; ctx.lineWidth = s * 0.03; ctx.stroke(); };
+    btn("left", opt.left); btn("right", opt.right);
+    ctx.fillStyle = "#A9B7C0"; rr(ctx, -s * 0.04, -s * 0.5, s * 0.08, s * 0.26, s * 0.04); ctx.fill(); // roda
+    ctx.restore();
+    if (opt.label) { text(ctx, "kiri", cx - s * 0.22, cy - s * 0.72, 26, { align: "center", color: opt.left ? C.accentDark : C.ink2, weight: 800 }); text(ctx, "kanan", cx + s * 0.22, cy - s * 0.72, 26, { align: "center", color: opt.right ? C.accentDark : C.ink2, weight: 800 }); }
+  };
+  // riak "klik" di sekitar titik
+  D.ripple = function (ctx, x, y, u, color = C.accent) { if (u <= 0 || u >= 1) return; ctx.strokeStyle = color; ctx.globalAlpha = 1 - u; ctx.lineWidth = 6; ctx.beginPath(); ctx.arc(x, y, 12 + u * 60, 0, Math.PI * 2); ctx.stroke(); ctx.globalAlpha = 1; };
+
+  // ---------- ikon file & folder ----------
+  const KIND = { folder: "#F2B134", foto: "#5FA8D3", tulisan: "#7B8B95", lagu: "#8E6BBF", video: "#D9443B" };
+  D.fileIcon = function (ctx, cx, cy, s, kind, opt = {}) {
+    ctx.save(); ctx.translate(cx, cy);
+    if (opt.selected) { ctx.fillStyle = SEL; rr(ctx, -s * 0.62, -s * 0.62, s * 1.24, s * 1.24 + (opt.name ? s * 0.5 : 0), s * 0.14); ctx.fill(); }
+    if (kind === "folder") {
+      ctx.fillStyle = "#D99A1B"; rr(ctx, -s * 0.5, -s * 0.32, s * 0.45, s * 0.2, s * 0.06); ctx.fill();
+      ctx.fillStyle = opt.open ? "#F7C860" : KIND.folder; rr(ctx, -s * 0.5, -s * 0.22, s, s * 0.7, s * 0.08); ctx.fill();
+      if (opt.open) { ctx.fillStyle = "#D99A1B"; rr(ctx, -s * 0.46, -s * 0.02, s * 0.92, s * 0.5, s * 0.08); ctx.fill(); }
+    } else {
+      ctx.fillStyle = "#FFFFFF"; ctx.strokeStyle = "#B7C4CC"; ctx.lineWidth = s * 0.05;
+      ctx.beginPath(); ctx.moveTo(-s * 0.36, -s * 0.5); ctx.lineTo(s * 0.12, -s * 0.5); ctx.lineTo(s * 0.36, -s * 0.26); ctx.lineTo(s * 0.36, s * 0.5); ctx.lineTo(-s * 0.36, s * 0.5); ctx.closePath(); ctx.fill(); ctx.stroke();
+      ctx.fillStyle = KIND[kind] || KIND.tulisan;
+      if (kind === "foto") { rr(ctx, -s * 0.26, -s * 0.2, s * 0.52, s * 0.44, s * 0.04); ctx.fill(); ctx.fillStyle = "#fff"; ctx.beginPath(); ctx.arc(-s * 0.12, -s * 0.08, s * 0.06, 0, Math.PI * 2); ctx.fill(); ctx.beginPath(); ctx.moveTo(-s * 0.26, s * 0.24); ctx.lineTo(-s * 0.06, s * 0.02); ctx.lineTo(s * 0.06, s * 0.14); ctx.lineTo(s * 0.14, s * 0.06); ctx.lineTo(s * 0.26, s * 0.24); ctx.closePath(); ctx.fill(); }
+      else if (kind === "lagu") { ctx.beginPath(); ctx.arc(-s * 0.1, s * 0.22, s * 0.1, 0, Math.PI * 2); ctx.arc(s * 0.16, s * 0.16, s * 0.1, 0, Math.PI * 2); ctx.fill(); ctx.lineWidth = s * 0.06; ctx.strokeStyle = KIND.lagu; ctx.beginPath(); ctx.moveTo(0, s * 0.2); ctx.lineTo(0, -s * 0.2); ctx.lineTo(s * 0.26, -s * 0.26); ctx.lineTo(s * 0.26, s * 0.14); ctx.stroke(); }
+      else if (kind === "video") { rr(ctx, -s * 0.26, -s * 0.16, s * 0.52, s * 0.4, s * 0.04); ctx.fill(); ctx.fillStyle = "#fff"; ctx.beginPath(); ctx.moveTo(-s * 0.06, -s * 0.04); ctx.lineTo(s * 0.12, s * 0.04); ctx.lineTo(-s * 0.06, s * 0.12); ctx.closePath(); ctx.fill(); }
+      else { for (let i = 0; i < 4; i++) { rr(ctx, -s * 0.22, -s * 0.14 + i * s * 0.14, s * (i === 3 ? 0.26 : 0.44), s * 0.06, s * 0.03); ctx.fill(); } }
+    }
+    ctx.restore();
+    if (opt.name) { const lines = wrap(ctx, opt.name, opt.size || 24, 700, s * 1.6); lines.slice(0, 2).forEach((ln, i) => text(ctx, ln, cx, cy + s * 0.78 + i * (opt.size || 24) * 1.15, opt.size || 24, { align: "center", weight: 700, color: opt.color || C.ink })); }
+  };
+  D.KIND = KIND;
+
+  // jendela aplikasi (file manager / editor) di dalam layar; mengembalikan area isi
+  D.windowFrame = function (ctx, x, y, w, h, title, opt = {}) {
+    ctx.fillStyle = "#FFFFFF"; rr(ctx, x, y, w, h, 14); ctx.fill(); ctx.strokeStyle = "#C9D4DB"; ctx.lineWidth = 3; ctx.stroke();
+    ctx.fillStyle = "#E6EDF2"; rr(ctx, x, y, w, 54, 14); ctx.fill(); ctx.fillRect(x, y + 30, w, 24);
+    ["#E0655C", "#F2B134", "#2E9E5B"].forEach((c, i) => { ctx.fillStyle = c; ctx.beginPath(); ctx.arc(x + 26 + i * 26, y + 27, 8, 0, Math.PI * 2); ctx.fill(); });
+    if (title) text(ctx, title, x + w / 2, y + 36, 24, { align: "center", color: C.ink2, weight: 800 });
+    if (opt.path) { ctx.fillStyle = "#F4F8FB"; rr(ctx, x + 16, y + 66, w - 32, 44, 10); ctx.fill(); text(ctx, opt.path, x + 32, y + 96, 24, { color: C.ink2, weight: 700 }); }
+    return { x: x + 16, y: y + (opt.path ? 124 : 70), w: w - 32, h: h - (opt.path ? 140 : 86) };
+  };
+  // kotak teks dengan kursor berkedip; opt.cursor = posisi karakter (bawaan akhir)
+  D.textBox = function (ctx, x, y, w, h, lines, tt, opt = {}) {
+    ctx.fillStyle = "#FFFFFF"; rr(ctx, x, y, w, h, 14); ctx.fill(); ctx.strokeStyle = opt.stroke || "#C9D4DB"; ctx.lineWidth = 3; ctx.stroke();
+    const size = opt.size || 48, lh = size * 1.4;
+    lines.forEach((ln, i) => text(ctx, ln, x + 28, y + 24 + size + i * lh, size, { weight: 700, color: opt.color || C.ink }));
+    if (opt.cursor !== false) {
+      const li = lines.length - 1, s = lines[li] || ""; ctx.font = `700 ${size}px ${K.FONT}`; const cw = ctx.measureText(s).width;
+      if (Math.floor(tt * 2.5) % 2 === 0 || opt.cursorOn) { ctx.fillStyle = C.kiko; ctx.fillRect(x + 30 + cw, y + 22 + li * lh, 5, size * 1.15); }
+      return [x + 32 + cw, y + 22 + li * lh + size * 0.6];
+    }
+  };
+
+  // ---------- keyboard ----------
+  const ROWS = [["Q", "W", "E", "R", "T", "Y", "U", "I", "O", "P"], ["A", "S", "D", "F", "G", "H", "J", "K", "L"], ["Z", "X", "C", "V", "B", "N", "M"]];
+  // keyboard sederhana: 3 baris huruf + Shift, Spasi, Backspace, Enter. opt.pressed = [tombol], opt.glow = [tombol] disorot lembut
+  D.keyboard = function (ctx, x, y, w, opt = {}) {
+    const key = w / 11.6, gap = key * 0.12, k = key - gap, h = k * 4 + gap * 5;
+    ctx.fillStyle = BEZEL; rr(ctx, x - 16, y - 16, w + 32, h + 32, 22); ctx.fill();
+    const pressed = opt.pressed || [], glow = opt.glow || [];
+    const draw = (kx, ky, kw, label, small) => {
+      const on = pressed.includes(label), soft = glow.includes(label);
+      ctx.fillStyle = on ? C.accent : soft ? "#FFF3D6" : "#F7FAFC"; rr(ctx, kx, ky + (on ? 4 : 0), kw, k - (on ? 4 : 0), 10); ctx.fill();
+      ctx.strokeStyle = on ? C.accentDark : soft ? C.accent : "#B7C4CC"; ctx.lineWidth = on || soft ? 4 : 2; ctx.stroke();
+      // ukuran huruf mengikuti ukuran tombol; pada keyboard mini (tombol < 40 px) label tombol khusus tidak digambar
+      const fs = small ? Math.min(24, k * 0.45) : Math.min(32, k * 0.6);
+      if (small ? k >= 40 : k >= 18) text(ctx, label, kx + kw / 2, ky + k / 2 + fs * 0.38, fs, { align: "center", weight: 800, color: on ? "#fff" : C.ink });
+    };
+    ROWS.forEach((row, r) => { const off = r === 0 ? 0 : r === 1 ? key * 0.35 : key * 0.85; row.forEach((lab, i) => draw(x + gap + off + i * key, y + gap + r * key, k, lab)); });
+    draw(x + gap + key * 0.85 + 7 * key + gap, y + gap + 2 * key, key * 2.4 - gap, "Backspace", true);
+    draw(x + gap, y + gap + 3 * key, key * 1.9 - gap, "Shift", true);
+    draw(x + gap + key * 1.9, y + gap + 3 * key, key * 6.2 - gap, "Spasi", true);
+    draw(x + gap + key * 8.1, y + gap + 3 * key, key * 2.3 - gap, "Enter", true);
+    draw(x + gap + key * 0.35 + 9 * key, y + gap + 1 * key, key * 1.9 - gap, "Enter", true);
+    return { x, y, w, h };
+  };
+
+  // ---------- HP & jari ----------
+  // HP tegak; mengembalikan kotak layar
+  D.phone = function (ctx, cx, cy, w, h) {
+    ctx.fillStyle = BEZEL; rr(ctx, cx - w / 2 - 14, cy - h / 2 - 22, w + 28, h + 44, 40); ctx.fill();
+    ctx.fillStyle = SCREEN_BG; rr(ctx, cx - w / 2, cy - h / 2, w, h, 26); ctx.fill();
+    ctx.fillStyle = BEZEL2; rr(ctx, cx - 40, cy - h / 2 + 8, 80, 12, 6); ctx.fill();
+    return { x: cx - w / 2, y: cy - h / 2, w, h };
+  };
+  // kisi ikon aplikasi generik di layar HP; mengembalikan posisi tiap ikon
+  const APPS = [["Kamera", "#2E7E9A"], ["Galeri", "#5FA8D3"], ["Pesan", "#2E9E5B"], ["Musik", "#8E6BBF"], ["Kalkulator", "#7B8B95"], ["Peta", "#F2B134"], ["Catatan", "#E0A23B"], ["Jam", "#D9443B"], ["Cuaca", "#4C9BE0"]];
+  D.appGrid = function (ctx, sc, opt = {}) {
+    const cols = 3, cell = sc.w / cols, out = [];
+    APPS.forEach(([name, col], i) => {
+      const r = Math.floor(i / cols), c = i % cols; const ax = sc.x + cell * c + cell / 2, ay = sc.y + 90 + r * (cell + 26);
+      const on = opt.active === name; const sz = cell * 0.56 * (on && opt.scale ? opt.scale : 1);
+      ctx.fillStyle = col; rr(ctx, ax - sz / 2, ay - sz / 2, sz, sz, sz * 0.24); ctx.fill();
+      if (on) { ctx.strokeStyle = C.accent; ctx.lineWidth = 6; ctx.stroke(); }
+      text(ctx, name, ax, ay + sz / 2 + 26, 20, { align: "center", weight: 700, color: C.ink2 });
+      out.push({ name, x: ax, y: ay });
+    });
+    return out;
+  };
+  // ujung jari yang menyentuh layar di (x,y); opt.press = sedang menekan (riak); opt.second = jari kedua
+  D.finger = function (ctx, x, y, opt = {}) {
+    const s = opt.s || 46;
+    ctx.save(); ctx.translate(x, y); ctx.rotate(opt.angle !== undefined ? opt.angle : 0.5);
+    ctx.fillStyle = "rgba(0,0,0,0.10)"; ctx.beginPath(); ctx.ellipse(0, s * 0.25, s * 0.7, s * 0.4, 0, 0, Math.PI * 2); ctx.fill();
+    ctx.fillStyle = C.skin; rr(ctx, -s * 0.5, -s * 0.3, s, s * 3.2, s * 0.5); ctx.fill();
+    ctx.fillStyle = "#F7D9BE"; ctx.beginPath(); ctx.ellipse(0, s * 0.1, s * 0.3, s * 0.42, 0, 0, Math.PI * 2); ctx.fill();
+    ctx.restore();
+    if (opt.press) { ctx.fillStyle = "rgba(46,126,154,0.25)"; ctx.beginPath(); ctx.arc(x, y, s * 0.8, 0, Math.PI * 2); ctx.fill(); }
+  };
+  // menu konteks (klik kanan / tekan lama)
+  D.menu = function (ctx, x, y, items, opt = {}) {
+    const w = opt.w || 300, rowH = 52; ctx.fillStyle = "#FFFFFF"; rr(ctx, x, y, w, rowH * items.length + 16, 12); ctx.fill(); ctx.strokeStyle = "#B7C4CC"; ctx.lineWidth = 3; ctx.stroke();
+    ctx.fillStyle = "rgba(0,0,0,0.08)";
+    items.forEach((it, i) => { if (opt.active === i) { ctx.fillStyle = "#FFF3D6"; rr(ctx, x + 8, y + 8 + i * rowH, w - 16, rowH, 8); ctx.fill(); } text(ctx, it, x + 24, y + 8 + i * rowH + 36, 28, { weight: 700 }); });
+  };
+  // kartu keterangan kecil di kanan/bawah adegan
+  D.note = function (ctx, x, y, w, s, opt = {}) { card(ctx, x, y, w, opt.h || 96, { fill: opt.fill || "#FFF3D6", stroke: opt.stroke || C.accent, lw: 4 }); text(ctx, s, x + w / 2, y + (opt.h || 96) / 2 + 14, opt.size || 36, { align: "center", weight: 900, color: opt.color || C.ink }); };
+
+  K.devices = D;
+})(typeof window !== "undefined" ? window : globalThis);
+
+/* Layar: pembantu gambar bersama untuk video simulasi (episodes/sim/...).
+   Aplikasi generik digambar dengan kode, tanpa logo atau tampilan merek: jendela aplikasi, lembar kerja (bilah rumus + kisi sel),
+   pointer mouse dengan efek klik, tombol keyboard, label penunjuk, pembesaran, dan penerjemah "aksi" (klik, ketik, tekan tombol)
+   supaya satu adegan bisa memperagakan beberapa langkah berurutan. Muat setelah kiko-core.js. */
+(function (global) {
+  const K = global.Kiko, H = K.helpers, C = K.C;
+  const { rr, text, ease, clamp, lerp } = H;
+  const L = {};
+  const UI = { frame: "#C9D4DB", bar: "#EEF2F5", menuInk: "#3D4B55", grid: "#DDE5EA", head: "#EEF2F5", headInk: "#5B6B76",
+               select: "#1A73C8", selectBg: "rgba(26,115,200,0.10)", formula: "#1F5A6E", window: "#FFFFFF" };
+  L.UI = UI;
+
+  // ---------- jendela aplikasi ----------
+  // opt: title, menus [..], tools (true = deretan ikon sederhana). Mengembalikan area isi {x, y, w, h}.
+  L.window = function (ctx, x, y, w, h, opt = {}) {
+    ctx.save(); ctx.shadowColor = "rgba(31,42,51,0.18)"; ctx.shadowBlur = 30; ctx.shadowOffsetY = 10;
+    ctx.fillStyle = UI.window; rr(ctx, x, y, w, h, 16); ctx.fill(); ctx.restore();
+    ctx.strokeStyle = UI.frame; ctx.lineWidth = 2; rr(ctx, x, y, w, h, 16); ctx.stroke();
+    ctx.save(); rr(ctx, x, y, w, h, 16); ctx.clip();
+    ctx.fillStyle = UI.bar; ctx.fillRect(x, y, w, 46);
+    ["#E5675F", "#F2B134", "#4CB46A"].forEach((c, i) => { ctx.fillStyle = c; ctx.beginPath(); ctx.arc(x + 28 + i * 26, y + 23, 8, 0, Math.PI * 2); ctx.fill(); });
+    text(ctx, opt.title || "Aplikasi", x + w / 2, y + 31, 22, { align: "center", weight: 700, color: UI.menuInk });
+    let cy = y + 46;
+    if (opt.menus) {
+      ctx.fillStyle = "#FFFFFF"; ctx.fillRect(x, cy, w, 40);
+      let mx = x + 24; opt.menus.forEach((m, i) => {
+        const on = opt.menuOn === m; ctx.font = `600 21px Inter`; const mw = ctx.measureText(m).width + 24;
+        if (on) { ctx.fillStyle = "#DCE9F7"; rr(ctx, mx - 8, cy + 5, mw, 30, 6); ctx.fill(); }
+        text(ctx, m, mx + 4, cy + 27, 21, { weight: 600, color: on ? UI.select : UI.menuInk }); mx += mw + 6;
+      });
+      cy += 40;
+    }
+    if (opt.tools) {
+      ctx.fillStyle = "#F7F9FA"; ctx.fillRect(x, cy, w, 44);
+      const icons = opt.tools === true ? ["💾", "↶", "↷", "B", "I", "Σ", "%"] : opt.tools;
+      icons.forEach((ic, i) => { const bx = x + 20 + i * 52; ctx.fillStyle = "#FFFFFF"; rr(ctx, bx, cy + 6, 40, 32, 6); ctx.fill(); ctx.strokeStyle = "#E1E7EB"; ctx.lineWidth = 1.5; rr(ctx, bx, cy + 6, 40, 32, 6); ctx.stroke();
+        text(ctx, ic, bx + 20, cy + 29, ic.length > 1 ? 18 : 20, { align: "center", weight: 800, color: UI.menuInk }); });
+      cy += 44;
+    }
+    ctx.strokeStyle = UI.grid; ctx.lineWidth = 1.5; ctx.beginPath(); ctx.moveTo(x, cy); ctx.lineTo(x + w, cy); ctx.stroke();
+    ctx.restore();
+    return { x, y: cy, w, h: y + h - cy };
+  };
+
+  // ---------- lembar kerja ----------
+  const COLS = "ABCDEFGHIJ";
+  L.col = c => COLS.indexOf(c);
+  // st: { cells: {A1: {v, f?}} | {A1: "teks"}, active: "B3", edit: {addr, text} (sedang diketik), range: ["B2","B6"] (sorotan rentang),
+  //       copy: ["D2","D6"] (bingkai putus-putus), changed: [alamat] (hijau sesaat), cols: 6, rows: 8, cw: 190 | {A: 170, ...}, rh: 50,
+  //       showFormulas: false, handleHover: false }
+  // Mengembalikan geometri: {cell(addr), handle(addr), nameBox, fx, bottom}
+  L.sheet = function (ctx, area, st = {}) {
+    const x = area.x, y = area.y, cols = st.cols || 6, rows = st.rows || 8, rh = st.rh || 50, hw = 60;
+    const cwOf = c => typeof st.cw === "object" ? (st.cw[COLS[c]] || 180) : (st.cw || 180);
+    const colX = c => { let px = x + hw; for (let i = 0; i < c; i++) px += cwOf(i); return px; };
+    const gridW = colX(cols) - x;
+    // bilah rumus
+    const fy = y + 10; const active = st.edit ? st.edit.addr : st.active;
+    const cell0 = active && L.get(st.cells, active);
+    ctx.fillStyle = "#FFFFFF"; rr(ctx, x + 12, fy, 120, 48, 8); ctx.fill(); ctx.strokeStyle = UI.frame; ctx.lineWidth = 2; rr(ctx, x + 12, fy, 120, 48, 8); ctx.stroke();
+    text(ctx, active || "", x + 72, fy + 33, 24, { align: "center", weight: 800, color: UI.menuInk });
+    const fxW = Math.max(400, gridW - 150);
+    ctx.fillStyle = "#FFFFFF"; rr(ctx, x + 144, fy, fxW, 48, 8); ctx.fill(); ctx.strokeStyle = st.fxFocus ? UI.select : UI.frame; ctx.lineWidth = st.fxFocus ? 3 : 2; rr(ctx, x + 144, fy, fxW, 48, 8); ctx.stroke();
+    text(ctx, "fx", x + 162, fy + 32, 21, { weight: 800, color: "#8A99A3" }); ctx.fillStyle = UI.grid; ctx.fillRect(x + 196, fy + 10, 2, 28);
+    const fxText = st.edit ? st.edit.text : (cell0 ? (cell0.f || L.show(cell0.v)) : "");
+    text(ctx, fxText, x + 212, fy + 33, 25, { weight: 700, color: (st.edit ? st.edit.text : cell0 && cell0.f) && String(fxText).startsWith("=") ? UI.formula : C.ink });
+    if (st.edit && st.caret) { ctx.font = "700 25px Inter"; const cw = ctx.measureText(st.edit.text).width; ctx.fillStyle = C.ink; ctx.fillRect(x + 214 + cw, fy + 11, 2.5, 27); }
+    // kisi
+    const gy = fy + 66; const H0 = rh * (rows + 1);
+    ctx.fillStyle = "#FFFFFF"; ctx.fillRect(x, gy, gridW, H0);
+    ctx.fillStyle = UI.head; ctx.fillRect(x, gy, gridW, rh); ctx.fillRect(x, gy, hw, H0);
+    const ac = active ? { c: L.col(active[0]), r: parseInt(active.slice(1)) } : null;
+    for (let c = 0; c < cols; c++) {
+      if (ac && ac.c === c) { ctx.fillStyle = "#D5E3F3"; ctx.fillRect(colX(c), gy, cwOf(c), rh); }
+      text(ctx, COLS[c], colX(c) + cwOf(c) / 2, gy + rh / 2 + 8, 22, { align: "center", weight: 700, color: ac && ac.c === c ? UI.select : UI.headInk });
+    }
+    for (let r = 1; r <= rows; r++) {
+      if (ac && ac.r === r) { ctx.fillStyle = "#D5E3F3"; ctx.fillRect(x, gy + rh * r, hw, rh); }
+      text(ctx, String(r), x + hw / 2, gy + rh * r + rh / 2 + 8, 22, { align: "center", weight: 700, color: ac && ac.r === r ? UI.select : UI.headInk });
+    }
+    const geo = {
+      cell(addr) { const c = L.col(addr[0]), r = parseInt(addr.slice(1)); const cx = colX(c), cy = gy + rh * r; return { x: cx, y: cy, w: cwOf(c), h: rh, cx: cx + cwOf(c) / 2, cy: cy + rh / 2 }; },
+      handle(addr) { const q = this.cell(addr); return { x: q.x + q.w - 1, y: q.y + q.h - 1 }; },
+      colLine(c) { return { x: colX(c), y: gy + rh / 2 }; },
+      nameBox: { x: x + 72, y: fy + 24 }, fx: { x: x + 212, y: fy + 24 }, bottom: gy + H0, right: x + gridW, top: gy
+    };
+    // sorotan rentang
+    if (st.range) { const a = geo.cell(st.range[0]), b = geo.cell(st.range[1]); ctx.fillStyle = UI.selectBg; ctx.fillRect(a.x, a.y, b.x + b.w - a.x, b.y + b.h - a.y); }
+    (st.changed || []).forEach(addr => { const q = geo.cell(addr); ctx.fillStyle = C.goodBg; ctx.fillRect(q.x + 1, q.y + 1, q.w - 2, q.h - 2); });
+    (st.marks || []).forEach(([addr, color]) => { const q = geo.cell(addr); ctx.fillStyle = color; ctx.fillRect(q.x + 1, q.y + 1, q.w - 2, q.h - 2); });
+    // garis kisi
+    ctx.strokeStyle = UI.grid; ctx.lineWidth = 1.5;
+    for (let r = 0; r <= rows + 1; r++) { ctx.beginPath(); ctx.moveTo(x, gy + rh * r); ctx.lineTo(x + gridW, gy + rh * r); ctx.stroke(); }
+    for (let c = 0; c <= cols; c++) { ctx.beginPath(); ctx.moveTo(colX(c), gy); ctx.lineTo(colX(c), gy + H0); ctx.stroke(); }
+    ctx.beginPath(); ctx.moveTo(x, gy); ctx.lineTo(x, gy + H0); ctx.stroke();
+    // isi sel
+    Object.keys(st.cells || {}).forEach(addr => {
+      const c = L.col(addr[0]), r = parseInt(addr.slice(1)); if (c < 0 || c >= cols || r < 1 || r > rows) return;
+      if (st.edit && st.edit.addr === addr) return;
+      const v = L.get(st.cells, addr); const q = geo.cell(addr);
+      const shown = st.showFormulas && v.f ? v.f : L.show(v.v);
+      const isNum = typeof v.v === "number" && !(st.showFormulas && v.f);
+      let shownFit = shown; if (isNum) { ctx.font = "600 25px Inter"; if (ctx.measureText(shown).width > q.w - 20) shownFit = "#".repeat(Math.max(2, Math.floor((q.w - 20) / 16))); }
+      ctx.save(); ctx.beginPath(); ctx.rect(q.x + 2, q.y, q.w - 4, q.h); ctx.clip();
+      text(ctx, shownFit, isNum ? q.x + q.w - 14 : q.x + 12, q.y + q.h / 2 + 9, 25, { align: isNum ? "right" : "left", weight: v.bold ? 800 : 600, color: v.color || ((st.changed || []).includes(addr) ? C.good : C.ink) });
+      ctx.restore();
+    });
+    // sel yang sedang diketik
+    if (st.edit) { const q = geo.cell(st.edit.addr); ctx.fillStyle = "#FFFFFF"; ctx.fillRect(q.x + 2, q.y + 2, q.w - 4, q.h - 4);
+      const isF = String(st.edit.text).startsWith("=");
+      text(ctx, st.edit.text, q.x + 12, q.y + q.h / 2 + 9, 25, { weight: 600, color: isF ? UI.formula : C.ink });
+      if (st.caret) { ctx.font = "600 25px Inter"; const w = ctx.measureText(st.edit.text).width; ctx.fillStyle = C.ink; ctx.fillRect(q.x + 14 + w, q.y + 11, 2.5, q.h - 22); } }
+    // rujukan rumus berwarna saat mengetik rumus
+    (st.refs || []).forEach(([addr, color]) => { const q = geo.cell(addr); ctx.strokeStyle = color; ctx.lineWidth = 3; ctx.setLineDash([]); ctx.strokeRect(q.x + 2, q.y + 2, q.w - 4, q.h - 4); });
+    // bingkai salin putus-putus
+    if (st.copy) { const a = geo.cell(st.copy[0]), b = geo.cell(st.copy[1]); ctx.strokeStyle = UI.select; ctx.lineWidth = 3; ctx.setLineDash([10, 7]); ctx.lineDashOffset = -(st.dash || 0); ctx.strokeRect(a.x + 2, a.y + 2, b.x + b.w - a.x - 4, b.y + b.h - a.y - 4); ctx.setLineDash([]); }
+    // sel aktif + gagang isi
+    if (active && !st.edit) { const q = geo.cell(active); const q2 = st.selTo ? geo.cell(st.selTo) : q;
+      ctx.strokeStyle = UI.select; ctx.lineWidth = 4; ctx.strokeRect(q.x + 1, q.y + 1, q2.x + q2.w - q.x - 2, q2.y + q2.h - q.y - 2);
+      const hx = q2.x + q2.w - 1, hy = q2.y + q2.h - 1; const s = st.handleHover ? 13 : 10;
+      ctx.fillStyle = "#FFFFFF"; ctx.fillRect(hx - s / 2 - 2, hy - s / 2 - 2, s + 4, s + 4); ctx.fillStyle = UI.select; ctx.fillRect(hx - s / 2, hy - s / 2, s, s); }
+    else if (st.edit) { const q = geo.cell(st.edit.addr); ctx.strokeStyle = UI.select; ctx.lineWidth = 4; ctx.strokeRect(q.x + 1, q.y + 1, q.w - 2, q.h - 2); }
+    return geo;
+  };
+  L.get = (cells, addr) => { const v = (cells || {})[addr]; return v == null ? { v: "" } : (typeof v === "object" ? v : { v }); };
+  L.show = v => typeof v === "number" ? (Number.isInteger(v) ? String(v) : v.toLocaleString("id-ID", { maximumFractionDigits: 2 })) : (v == null ? "" : String(v));
+
+  // ---------- pointer mouse ----------
+  // kind: "arrow" | "plus" (tanda tambah tipis gagang isi) | "text"; click: 0..1 (efek denyut), down: tombol ditahan
+  L.cursor = function (ctx, x, y, opt = {}) {
+    const kind = opt.kind || "arrow";
+    if (opt.click > 0 && opt.click < 1) { const u = opt.click; ctx.strokeStyle = `rgba(242,177,52,${1 - u})`; ctx.lineWidth = 5; ctx.beginPath(); ctx.arc(x, y, 12 + u * 34, 0, Math.PI * 2); ctx.stroke(); }
+    if (opt.down) { ctx.fillStyle = "rgba(242,177,52,0.35)"; ctx.beginPath(); ctx.arc(x, y, 18, 0, Math.PI * 2); ctx.fill(); }
+    ctx.save(); ctx.translate(x, y);
+    if (kind === "plus") {
+      ctx.strokeStyle = "#FFFFFF"; ctx.lineWidth = 7; ctx.beginPath(); ctx.moveTo(-16, 0); ctx.lineTo(16, 0); ctx.moveTo(0, -16); ctx.lineTo(0, 16); ctx.stroke();
+      ctx.strokeStyle = C.ink; ctx.lineWidth = 3; ctx.beginPath(); ctx.moveTo(-15, 0); ctx.lineTo(15, 0); ctx.moveTo(0, -15); ctx.lineTo(0, 15); ctx.stroke();
+    } else if (kind === "text") {
+      ctx.strokeStyle = "#FFFFFF"; ctx.lineWidth = 6; ctx.beginPath(); ctx.moveTo(0, -16); ctx.lineTo(0, 16); ctx.stroke();
+      ctx.strokeStyle = C.ink; ctx.lineWidth = 2.5; ctx.beginPath(); ctx.moveTo(-6, -16); ctx.lineTo(6, -16); ctx.moveTo(0, -16); ctx.lineTo(0, 16); ctx.moveTo(-6, 16); ctx.lineTo(6, 16); ctx.stroke();
+    } else {
+      const s = opt.size || 1.25; ctx.scale(s, s);
+      ctx.beginPath(); ctx.moveTo(0, 0); ctx.lineTo(0, 30); ctx.lineTo(8, 23); ctx.lineTo(13, 35); ctx.lineTo(18, 33); ctx.lineTo(13, 21); ctx.lineTo(23, 21); ctx.closePath();
+      ctx.fillStyle = "#FFFFFF"; ctx.fill(); ctx.strokeStyle = C.ink; ctx.lineWidth = 2.2; ctx.lineJoin = "round"; ctx.stroke();
+    }
+    ctx.restore();
+  };
+
+  // ---------- tombol keyboard ----------
+  // keys: ["Enter"] atau ["Ctrl", "S"]; press: 0..1 (tombol tertekan di tengahnya)
+  L.keys = function (ctx, x, y, keys, opt = {}) {
+    const size = opt.size || 30; let px = x;
+    const ws = keys.map(k => { ctx.font = `800 ${size}px Inter`; return Math.max(size * 2.1, ctx.measureText(k).width + size * 1.2); });
+    const total = ws.reduce((a, b) => a + b, 0) + (keys.length - 1) * 46;
+    if (opt.align === "center") px = x - total / 2;
+    const down = opt.press > 0.15 && opt.press < 0.75;
+    keys.forEach((k, i) => {
+      const w = ws[i], h = size * 2.1, dy = down ? 5 : 0;
+      ctx.fillStyle = "#A9B6BE"; rr(ctx, px, y + 6, w, h, 12); ctx.fill();
+      ctx.fillStyle = down ? "#FFF3D6" : "#FFFFFF"; rr(ctx, px, y + dy, w, h, 12); ctx.fill(); ctx.strokeStyle = down ? C.accent : "#9AA8B1"; ctx.lineWidth = 2.5; rr(ctx, px, y + dy, w, h, 12); ctx.stroke();
+      text(ctx, k, px + w / 2, y + dy + h / 2 + size * 0.36, size, { align: "center", weight: 800, color: C.ink });
+      px += w; if (i < keys.length - 1) { text(ctx, "+", px + 23, y + h / 2 + size * 0.36, size, { align: "center", weight: 900, color: C.ink2 }); px += 46; }
+    });
+    return total;
+  };
+
+  // ---------- label penunjuk ----------
+  // label kotak dengan garis ke titik (tx, ty)
+  L.callout = function (ctx, x, y, s, tx, ty, opt = {}) {
+    const size = opt.size || 26; ctx.font = `800 ${size}px Inter`; const lines = H.wrap(ctx, s, size, 800, opt.maxW || 420);
+    const w = Math.max(...lines.map(l => ctx.measureText(l).width)) + 36, h = lines.length * size * 1.25 + 26;
+    if (tx != null) { ctx.strokeStyle = opt.color || C.accentDark; ctx.lineWidth = 3; ctx.beginPath(); ctx.moveTo(x + w / 2, y + h / 2); ctx.lineTo(tx, ty); ctx.stroke(); ctx.fillStyle = opt.color || C.accentDark; ctx.beginPath(); ctx.arc(tx, ty, 7, 0, Math.PI * 2); ctx.fill(); }
+    ctx.fillStyle = opt.fill || "#FFF3D6"; rr(ctx, x, y, w, h, 12); ctx.fill(); ctx.strokeStyle = opt.color || C.accent; ctx.lineWidth = 3; rr(ctx, x, y, w, h, 12); ctx.stroke();
+    lines.forEach((ln, i) => text(ctx, ln, x + 18, y + 13 + size + i * size * 1.25, size, { weight: 800, color: opt.ink || C.ink }));
+    return { w, h };
+  };
+
+  // ---------- pembesaran ----------
+  // zoom(ctx, px, py, s, fn): gambar fn() dengan pembesaran s berpusat di (px, py) yang dipindah ke (qx, qy)
+  L.zoom = function (ctx, px, py, s, fn, qx = px, qy = py) {
+    ctx.save(); ctx.translate(qx, qy); ctx.scale(s, s); ctx.translate(-px, -py); fn(); ctx.restore();
+  };
+
+  // ---------- penerjemah aksi ----------
+  // steps: daftar aksi berurutan, masing-masing punya durasi relatif "d" (dibagi rata ke "span" detik):
+  //   {move: "B3"} pointer bergerak ke tengah sel · {click: "B3"} klik (memilih sel) · {type: "Bakso", to: "A1"} mengetik ke sel
+  //   {key: "Tab"|"Enter", commit: true} tombol: menyimpan ketikan, pilihan pindah · {set: {A1: ...}} ubah isi sel langsung
+  //   {drag: ["D2", "D6"]} drag gagang isi · {wait: 1}
+  // Hasil: state lembar kerja + posisi pointer + tombol yang sedang tampil, untuk waktu lokal l.
+  L.play = function (base, steps, l, span, geoFn) {
+    const st = { cells: { ...(base.cells || {}) }, active: base.active, edit: null, caret: true, copy: null, refs: [], range: null, changed: [] };
+    const total = steps.reduce((a, s) => a + (s.d || 1), 0); const unit = span / total;
+    let t0 = 0, ptr = base.pointer ? { ...base.pointer } : null, key = null, click = 0, kind = "arrow", down = false;
+    for (const s of steps) {
+      const d = (s.d || 1) * unit, u = clamp((l - t0) / d, 0, 1); if (l < t0) break;
+      const target = a => geoFn().cell(a);
+      if (s.move || s.click) { const q = target(s.move || s.click); const to = { x: q.x + q.w * 0.62, y: q.y + q.h * 0.6 }; const from = ptr || to; const m = ease(clamp(u / 0.6, 0, 1)); ptr = { x: lerp(from.x, to.x, m), y: lerp(from.y, to.y, m) }; kind = "arrow";
+        if (s.tap && u >= 0.6 && u < 1) click = clamp((u - 0.6) / 0.4, 0, 0.99);
+        if (s.click && u >= 0.6) { click = clamp((u - 0.6) / 0.4, 0, 0.99); st.active = s.click; if (st.edit) { st.cells[st.edit.addr] = s.editValue || st.edit.text; st.edit = null; } } if (u >= 1) click = 0; }
+      if (s.type != null) { const addr = s.to || st.active; const n = Math.round(s.type.length * clamp(u / 0.9, 0, 1)); st.edit = { addr, text: (s.prefix || "") + s.type.slice(0, n) }; st.active = addr; st.caret = Math.floor(l * 2.2) % 2 === 0 || u < 1;
+        if (s.refs) st.refs = s.refs.filter(r => n >= r[2]).map(r => [r[0], r[1]]); }
+      if (s.key) { key = u < 1 ? { keys: [].concat(s.key), press: u } : null; if (u >= 0.45 && s.commit && st.edit) { st.cells[st.edit.addr] = s.value != null ? s.value : st.edit.text; st.edit = null; st.refs = []; st.active = s.next || st.active; } }
+      if (s.set && u >= 0.5) { Object.assign(st.cells, s.set); if (s.flash) st.changed = Object.keys(s.set); }
+      if (s.drag) { const g = geoFn(); const a = g.handle(s.drag[0]), b = g.handle(s.drag[1]); kind = "plus";
+        const from = ptr || a; const m1 = ease(clamp(u / 0.25, 0, 1)); const m2 = ease(clamp((u - 0.3) / 0.55, 0, 1));
+        ptr = u < 0.3 ? { x: lerp(from.x, a.x, m1), y: lerp(from.y, a.y, m1) } : { x: lerp(a.x, b.x, m2), y: lerp(a.y, b.y, m2) }; down = u >= 0.25 && u < 0.88;
+        st.active = s.drag[0]; if (down) { st.dragTo = u < 0.3 ? s.drag[0] : (m2 > 0.98 ? s.drag[1] : null); st.dragFrac = m2; st.dragSpan = s.drag; }
+        if (u >= 0.88) { Object.assign(st.cells, s.fill || {}); st.selTo = s.drag[1]; st.changed = Object.keys(s.fill || {}); } }
+      if (s.hover) { const g = geoFn(); const h = g.handle(s.hover); const from = ptr || h; const m = ease(clamp(u / 0.7, 0, 1)); ptr = { x: lerp(from.x, h.x, m), y: lerp(from.y, h.y, m) }; kind = u > 0.7 ? "plus" : "arrow"; st.handleHover = u > 0.7; }
+      if (s.select) { st.active = s.select[0]; st.selTo = s.select[1]; }
+      if (s.state) Object.assign(st, s.state);
+      t0 += d;
+    }
+    if (st.selTo && st.selTo === st.active) st.selTo = null;
+    return { st, ptr, key, click, kind, down };
+  };
+
+  K.layar = L;
+})(typeof window !== "undefined" ? window : globalThis);
+
+/* Pembantu gambar D8.3: bentuk flowchart (oval, kotak, jajar genjang, belah ketupat), panah berlabel, token berjalan,
+   panel pseudocode dengan indentasi dan sorotan. Muat setelah kiko-core.js dan kiko-devices.js. */
+(function (global) {
+  const K = global.Kiko, H = K.helpers, C = K.C;
+  const { rr, text, wrap, card, clamp, lerp } = H;
+  const Q = {};
+  function fillStroke(ctx, hl, kind) { ctx.fillStyle = hl ? "#FFF3D6" : kind === "term" ? "#DCEBF2" : kind === "dec" ? "#FFF9E0" : kind === "io" ? "#EDE6F7" : "#FFFFFF"; ctx.strokeStyle = hl ? C.accent : kind === "dec" ? "#E0B04B" : kind === "term" ? C.kiko : kind === "io" ? "#8E6BBF" : "#7B8B95"; ctx.lineWidth = hl ? 6 : 4; }
+  // simpul: kind "term" | "proc" | "io" | "dec"; (cx, cy) pusat; w,h; label
+  Q.node = function (ctx, kind, cx, cy, w, h, label, opt = {}) {
+    ctx.save(); if (opt.dim) ctx.globalAlpha = 0.25; fillStroke(ctx, opt.hl, kind); ctx.beginPath();
+    if (kind === "term") { rr(ctx, cx - w / 2, cy - h / 2, w, h, h / 2); }
+    else if (kind === "proc") { rr(ctx, cx - w / 2, cy - h / 2, w, h, 8); }
+    else if (kind === "io") { const k = w * 0.12; ctx.moveTo(cx - w / 2 + k, cy - h / 2); ctx.lineTo(cx + w / 2, cy - h / 2); ctx.lineTo(cx + w / 2 - k, cy + h / 2); ctx.lineTo(cx - w / 2, cy + h / 2); ctx.closePath(); }
+    else { ctx.moveTo(cx, cy - h / 2); ctx.lineTo(cx + w / 2, cy); ctx.lineTo(cx, cy + h / 2); ctx.lineTo(cx - w / 2, cy); ctx.closePath(); }
+    ctx.fill(); ctx.stroke();
+    const size = opt.size || 24; const lines = wrap(ctx, label, size, 800, w - (kind === "dec" ? w * 0.3 : 30));
+    lines.forEach((ln, i) => text(ctx, ln, cx, cy + size * 0.36 + (i - (lines.length - 1) / 2) * size * 1.2, size, { align: "center", weight: 800, color: C.ink }));
+    ctx.restore();
+    return { cx, cy, w, h, top: [cx, cy - h / 2], bottom: [cx, cy + h / 2], left: [cx - w / 2, cy], right: [cx + w / 2, cy] };
+  };
+  // panah antar titik dengan belokan siku: pts = [[x,y],...]; opt.label, opt.on (aktif)
+  Q.arrow = function (ctx, pts, opt = {}) {
+    ctx.save(); ctx.strokeStyle = opt.on ? C.accent : "#7B8B95"; ctx.fillStyle = ctx.strokeStyle; ctx.lineWidth = opt.on ? 6 : 4; ctx.lineJoin = "round";
+    ctx.beginPath(); pts.forEach((p, i) => i ? ctx.lineTo(p[0], p[1]) : ctx.moveTo(p[0], p[1])); ctx.stroke();
+    const a = pts[pts.length - 2], b = pts[pts.length - 1]; const ang = Math.atan2(b[1] - a[1], b[0] - a[0]);
+    ctx.beginPath(); ctx.moveTo(b[0], b[1]); ctx.lineTo(b[0] - 16 * Math.cos(ang - 0.45), b[1] - 16 * Math.sin(ang - 0.45)); ctx.lineTo(b[0] - 16 * Math.cos(ang + 0.45), b[1] - 16 * Math.sin(ang + 0.45)); ctx.closePath(); ctx.fill();
+    if (opt.label) { const m = pts[Math.min(1, pts.length - 1)]; text(ctx, opt.label, (pts[0][0] + m[0]) / 2 + (opt.dx || 0), (pts[0][1] + m[1]) / 2 + (opt.dy || -10), 22, { align: "center", weight: 900, color: opt.on ? C.accentDark : C.ink2 }); }
+    ctx.restore();
+  };
+  // token (bulatan) di titik
+  Q.token = function (ctx, x, y, opt = {}) {
+    ctx.save(); ctx.shadowColor = "rgba(0,0,0,0.25)"; ctx.shadowBlur = 10; ctx.fillStyle = opt.color || C.accent; ctx.beginPath(); ctx.arc(x, y, opt.r || 18, 0, Math.PI * 2); ctx.fill(); ctx.restore();
+    ctx.strokeStyle = "#fff"; ctx.lineWidth = 3; ctx.beginPath(); ctx.arc(x, y, (opt.r || 18) - 4, 0, Math.PI * 2); ctx.stroke();
+  };
+  // jalur token: path = daftar titik; u = 0..1 sepanjang jalur
+  Q.along = function (path, u) {
+    const segs = []; let total = 0; for (let i = 1; i < path.length; i++) { const d = Math.hypot(path[i][0] - path[i - 1][0], path[i][1] - path[i - 1][1]); segs.push(d); total += d; }
+    let t = clamp(u, 0, 1) * total; for (let i = 1; i < path.length; i++) { if (t <= segs[i - 1] || i === path.length - 1) { const f = segs[i - 1] ? t / segs[i - 1] : 1; return [lerp(path[i - 1][0], path[i][0], Math.min(1, f)), lerp(path[i - 1][1], path[i][1], Math.min(1, f))]; } t -= segs[i - 1]; }
+    return path[path.length - 1];
+  };
+  // panel pseudocode: lines [{t, ind, hl, kw}] ; kw = baris kata kunci (JIKA/MAKA/LAINNYA) berwarna
+  Q.pseudo = function (ctx, x, y, w, lines, opt = {}) {
+    const rh = opt.rh || 50; card(ctx, x, y, w, 60 + rh * lines.length, { fill: "#FFFFFF", stroke: "#B7C4CC", lw: 3, r: 14 });
+    text(ctx, opt.title || "PSEUDOCODE", x + 20, y + 38, 22, { weight: 900, color: C.ink2 });
+    lines.forEach((ln, i) => { const ly = y + 60 + i * rh; if (ln.hl) { ctx.fillStyle = "#FFF3D6"; rr(ctx, x + 8, ly + 4, w - 16, rh - 8, 8); ctx.fill(); } if (ln.bad) { ctx.fillStyle = C.badBg; rr(ctx, x + 8, ly + 4, w - 16, rh - 8, 8); ctx.fill(); } if (ln.good) { ctx.fillStyle = C.goodBg; rr(ctx, x + 8, ly + 4, w - 16, rh - 8, 8); ctx.fill(); }
+      text(ctx, String(i + 1), x + 34, ly + rh / 2 + 9, 22, { align: "center", weight: 900, color: C.ink2 });
+      const parts = ln.t.split(/(JIKA|MAKA|LAINNYA)/); let cx = x + 60 + (ln.ind || 0) * 40; parts.forEach(p => { if (!p) return; const kw = /^(JIKA|MAKA|LAINNYA)$/.test(p); text(ctx, p, cx, ly + rh / 2 + 9, opt.size || 26, { weight: kw ? 900 : 700, color: kw ? C.kiko : ln.bad ? C.bad : ln.good ? C.good : C.ink }); ctx.font = `${kw ? 900 : 700} ${opt.size || 26}px Inter, sans-serif`; cx += ctx.measureText(p).width; }); });
+  };
+  // kartu langkah (unplugged)
+  Q.stepCard = function (ctx, x, y, w, h, n, label, opt = {}) {
+    card(ctx, x, y, w, h, { fill: opt.hl ? "#FFF3D6" : "#FFF9E0", stroke: opt.hl ? C.accent : "#E0B04B", lw: 3, r: 12 });
+    if (n != null) { ctx.fillStyle = C.kiko; ctx.beginPath(); ctx.arc(x + 28, y + 28, 18, 0, Math.PI * 2); ctx.fill(); text(ctx, String(n), x + 28, y + 36, 20, { align: "center", color: "#fff", weight: 900 }); }
+    const lines = wrap(ctx, label, 24, 800, w - 30); lines.forEach((ln, i) => text(ctx, ln, x + w / 2, y + h / 2 + 8 + (i - (lines.length - 1) / 2) * 30, 24, { align: "center", weight: 800 }));
+  };
+  K.alur = Q;
+})(typeof window !== "undefined" ? window : globalThis);
+
+/* Pembantu gambar D8.2: kartu nilai (terbuka/tertutup/disorot), deretan kartu, tumpukan kelompok, penghitung langkah,
+   kotak syarat saringan, tabel saring. Muat setelah kiko-core.js dan kiko-devices.js. */
+(function (global) {
+  const K = global.Kiko, H = K.helpers, C = K.C;
+  const { rr, text, card, clamp } = H;
+  const Q = {};
+  // satu kartu nilai; opt.face false = tertutup; opt.hl warna bingkai; opt.name teks kecil; opt.dim
+  Q.card = function (ctx, x, y, w, h, value, opt = {}) {
+    ctx.save(); if (opt.dim) ctx.globalAlpha = 0.3;
+    if (opt.face === false) { ctx.fillStyle = C.kiko; rr(ctx, x, y, w, h, 12); ctx.fill(); ctx.strokeStyle = C.kikoDark; ctx.lineWidth = 3; rr(ctx, x, y, w, h, 12); ctx.stroke(); ctx.fillStyle = C.kikoLight; for (let i = 0; i < 3; i++) for (let j = 0; j < 4; j++) { ctx.beginPath(); ctx.arc(x + w * (0.25 + i * 0.25), y + h * (0.2 + j * 0.2), 4, 0, Math.PI * 2); ctx.fill(); } }
+    else { ctx.fillStyle = opt.fill || "#FFFFFF"; rr(ctx, x, y, w, h, 12); ctx.fill(); ctx.strokeStyle = opt.hl || "#B7C4CC"; ctx.lineWidth = opt.hl ? 6 : 3; rr(ctx, x, y, w, h, 12); ctx.stroke(); text(ctx, String(value), x + w / 2, y + h / 2 + (opt.name ? 4 : 14), opt.size || Math.min(44, w * 0.45), { align: "center", weight: 900, color: opt.color || C.ink }); if (opt.name) text(ctx, opt.name, x + w / 2, y + h - 14, Math.min(20, w * 0.2), { align: "center", weight: 700, color: C.ink2 }); }
+    ctx.restore();
+  };
+  // deretan kartu; values[], opt.open = Set/array indeks terbuka (bawaan semua), opt.hl {i: warna}, opt.dim [i], opt.w, gap, opt.names[]
+  Q.row = function (ctx, x, y, values, opt = {}) {
+    const w = opt.w || 110, h = opt.h || 140, gap = opt.gap || 16;
+    values.forEach((v, i) => { const open = opt.open ? (opt.open.has ? opt.open.has(i) : opt.open.includes(i)) : true; Q.card(ctx, x + i * (w + gap), y, w, h, v, { face: open, hl: opt.hl && opt.hl[i], dim: opt.dim && opt.dim.includes(i), name: opt.names && opt.names[i], fill: opt.fills && opt.fills[i] }); if (opt.index) text(ctx, String(i + 1), x + i * (w + gap) + w / 2, y + h + 30, 22, { align: "center", weight: 800, color: C.ink2 }); });
+    return { w, h, gap, cx: i => x + i * (w + gap) + w / 2 };
+  };
+  // penghitung langkah
+  Q.counter = function (ctx, x, y, n, label = "langkah", opt = {}) {
+    card(ctx, x, y, opt.w || 260, 110, { fill: opt.fill || "#FFF3D6", stroke: opt.stroke || C.accent, lw: 4, r: 16 });
+    text(ctx, String(n), x + (opt.w || 260) / 2, y + 62, 54, { align: "center", weight: 900, color: opt.color || C.accentDark });
+    text(ctx, label, x + (opt.w || 260) / 2, y + 96, 22, { align: "center", weight: 800, color: C.ink2 });
+  };
+  // tumpukan kelompok: label, kartu-kartu tertumpuk (n), opt.hl
+  Q.pile = function (ctx, x, y, w, label, n, opt = {}) {
+    card(ctx, x, y, w, 300, { fill: opt.hl ? "#FFF3D6" : C.bg2, stroke: opt.hl ? C.accent : undefined, lw: 4, r: 16 });
+    text(ctx, label, x + w / 2, y + 40, 24, { align: "center", weight: 900, color: C.ink2 });
+    const show = Math.min(n, 8); for (let i = 0; i < show; i++) { ctx.fillStyle = "#FFFFFF"; ctx.strokeStyle = "#B7C4CC"; ctx.lineWidth = 2; rr(ctx, x + w / 2 - 50 + i * 3, y + 200 - i * 12, 100, 70, 8); ctx.fill(); ctx.stroke(); }
+    text(ctx, String(n), x + w / 2, y + 290, 36, { align: "center", weight: 900, color: opt.hl ? C.accentDark : C.kiko });
+  };
+  // kotak syarat
+  Q.condition = function (ctx, x, y, w, parts, opt = {}) {
+    card(ctx, x, y, w, 70 + 50 * parts.length, { fill: "#FFFFFF", stroke: C.kiko, lw: 4, r: 14 });
+    text(ctx, "SYARAT", x + 20, y + 40, 22, { weight: 900, color: C.kiko });
+    parts.forEach((p, i) => text(ctx, p, x + 20, y + 90 + i * 50, 26, { weight: i % 2 ? 900 : 700, color: i % 2 ? C.accentDark : C.ink }));
+  };
+  // tabel sederhana dengan baris disembunyikan: rows [[nama, nilai, remedi]], opt.hide [i], opt.hl [i]
+  Q.table = function (ctx, x, y, rows, opt = {}) {
+    const cw = opt.cw || [220, 120, 160], rh = 44; const W = cw.reduce((a, b) => a + b, 0);
+    const head = ["Nama", "Nilai", "Remedi"]; let cy = y;
+    card(ctx, x, y, W, rh * (rows.length + 1), { fill: "#FFFFFF", stroke: "#B7C4CC", lw: 3, r: 10 });
+    ctx.fillStyle = C.bg2; rr(ctx, x, y, W, rh, 10); ctx.fill(); ctx.fillRect(x, y + rh / 2, W, rh / 2);
+    let cx = x; head.forEach((h, c) => { text(ctx, h + (opt.filterCol === c ? " ▼" : ""), cx + 12, y + 30, 22, { weight: 900, color: opt.filterCol === c ? C.accentDark : C.ink2 }); cx += cw[c]; });
+    rows.forEach((r, i) => { cy += rh; const hide = (opt.hide || []).includes(i), hl = (opt.hl || []).includes(i); ctx.save(); if (hide) ctx.globalAlpha = 0.18; if (hl) { ctx.fillStyle = C.goodBg; ctx.fillRect(x + 1, cy + 1, W - 2, rh - 2); } let cx2 = x; r.forEach((v, c) => { text(ctx, String(v), cx2 + 12, cy + 30, 22, { weight: c ? 700 : 800, color: hl ? C.good : C.ink }); cx2 += cw[c]; }); ctx.restore(); });
+  };
+  K.kartu = Q;
+})(typeof window !== "undefined" ? window : globalThis);
+
+/* Pembantu E.6: penelusuran algoritma pencarian dan pengurutan (daftar langkah), gambar deretan kartu dengan sorotan,
+   penghitung ganda, tabel perbandingan, kurva skala. Gaya diagram Fase E. Muat setelah kiko-core.js dan kartu.js. */
+(function (global) {
+  const K = global.Kiko, H = K.helpers, C = K.C;
+  const { rr, text, wrap, card, clamp, lerp } = H;
+  const U = {};
+  // langkah: {a, hl:[idx...], swap:[i,j]|null, done:[idx...], cmp, sw, note}
+  U.trace = function (kind, arr0) {
+    const a = arr0.slice(), steps = []; let cmp = 0, sw = 0; const n = a.length;
+    const push = (hl, swap, done, note, extra) => steps.push(Object.assign({ a: a.slice(), hl, swap, done: done.slice(), cmp, sw, note }, extra || {}));
+    if (kind === "bubble") { const done = []; for (let i = 0; i < n - 1; i++) { for (let j = 0; j < n - 1 - i; j++) { cmp++; push([j, j + 1], null, done, `bandingkan ${a[j]} dan ${a[j + 1]}`); if (a[j] > a[j + 1]) { [a[j], a[j + 1]] = [a[j + 1], a[j]]; sw++; push([j, j + 1], [j, j + 1], done, "tukar"); } } done.unshift(n - 1 - i); } done.unshift(0); push([], null, done, "selesai"); }
+    else if (kind === "selection") { const done = []; for (let i = 0; i < n - 1; i++) { let m = i; for (let j = i + 1; j < n; j++) { cmp++; push([m, j], null, done, `bandingkan ${a[j]} dengan terkecil ${a[m]}`, { min: m }); if (a[j] < a[m]) m = j; } if (m !== i) { [a[i], a[m]] = [a[m], a[i]]; sw++; push([i, m], [i, m], done, "tukar ke depan"); } done.push(i); push([], null, done, `posisi ${i + 1} beres`); } done.push(n - 1); push([], null, done, "selesai"); }
+    else if (kind === "insertion") { const done = [0]; for (let i = 1; i < n; i++) { const key = a[i]; let j = i - 1; push([i], null, done, `ambil ${key}`); while (j >= 0) { cmp++; push([j, j + 1], null, done, `bandingkan ${a[j]} dan ${key}`); if (a[j] > key) { a[j + 1] = a[j]; sw++; push([j, j + 1], [j, j + 1], done, "geser ke kanan"); j--; } else break; } a[j + 1] = key; done.push(i); push([j + 1], null, done, `sisipkan ${key}`); } push([], null, done, "selesai"); }
+    else if (kind === "linear") { const target = arr0.target; }
+    return steps;
+  };
+  U.linear = function (arr, target) { const steps = []; for (let i = 0; i < arr.length; i++) { steps.push({ a: arr, hl: [i], cmp: i + 1, note: arr[i] === target ? `ketemu di kotak ${i + 1}` : `${arr[i]} ≠ ${target}` , found: arr[i] === target }); if (arr[i] === target) break; } return steps; };
+  U.binary = function (arr, target) { const steps = []; let lo = 0, hi = arr.length - 1, k = 0; while (lo <= hi) { const mid = Math.ceil((lo + hi) / 2); k++; const v = arr[mid]; if (v === target) { steps.push({ a: arr, hl: [mid], lo, hi, cmp: k, note: `tengah ${v}: ketemu`, found: true }); break; } if (target < v) { steps.push({ a: arr, hl: [mid], lo, hi, cmp: k, note: `tengah ${v}: target lebih kecil, buang kanan`, cut: "right" }); hi = mid - 1; } else { steps.push({ a: arr, hl: [mid], lo, hi, cmp: k, note: `tengah ${v}: target lebih besar, buang kiri`, cut: "left" }); lo = mid + 1; } } return steps; };
+  // deretan kartu dari langkah; opt.w, opt.h, opt.y; done = hijau; hl = kuning; swap = panah
+  U.cards = function (ctx, x, y, st, opt = {}) {
+    const w = opt.w || 120, h = opt.h || 120, gap = opt.gap || 14; const a = st.a;
+    a.forEach((v, i) => { const cx = x + i * (w + gap); const hl = (st.hl || []).includes(i), done = (st.done || []).includes(i), dim = st.lo != null && (i < st.lo || i > st.hi); ctx.save(); if (dim) ctx.globalAlpha = 0.18; ctx.fillStyle = hl ? "#FFF3D6" : done ? C.goodBg : "#fff"; rr(ctx, cx, y, w, h, 12); ctx.fill(); ctx.strokeStyle = hl ? C.accent : done ? C.good : "#B7C4CC"; ctx.lineWidth = hl ? 6 : 3; rr(ctx, cx, y, w, h, 12); ctx.stroke(); text(ctx, String(v), cx + w / 2, y + h / 2 + 14, Math.min(40, w * 0.4), { align: "center", weight: 900 }); if (opt.index !== false) text(ctx, String(i + 1), cx + w / 2, y + h + 26, 20, { align: "center", weight: 800, color: C.ink2 }); if (st.min === i) text(ctx, "min", cx + w / 2, y - 12, 18, { align: "center", weight: 900, color: C.kiko }); ctx.restore(); });
+    if (st.swap) { const [i, j] = st.swap; const x1 = x + i * (w + gap) + w / 2, x2 = x + j * (w + gap) + w / 2; ctx.strokeStyle = C.bad; ctx.lineWidth = 6; ctx.beginPath(); ctx.moveTo(x1, y - 30); ctx.quadraticCurveTo((x1 + x2) / 2, y - 80, x2, y - 30); ctx.stroke(); text(ctx, "⇄", (x1 + x2) / 2, y - 60, 34, { align: "center", weight: 900, color: C.bad }); }
+  };
+  U.counters = function (ctx, x, y, cmp, sw, opt = {}) { card(ctx, x, y, 240, 100, { fill: "#FFF3D6", stroke: C.accent, lw: 3, r: 14 }); text(ctx, String(cmp), x + 120, y + 56, 44, { align: "center", weight: 900, color: C.accentDark }); text(ctx, "perbandingan", x + 120, y + 88, 18, { align: "center", weight: 800, color: C.ink2 }); card(ctx, x + 260, y, 240, 100, { fill: C.badBg, stroke: C.bad, lw: 3, r: 14 }); text(ctx, String(sw), x + 380, y + 56, 44, { align: "center", weight: 900, color: C.bad }); text(ctx, opt.swLabel || "pertukaran", x + 380, y + 88, 18, { align: "center", weight: 800, color: C.ink2 }); };
+  // tabel perbandingan: head[], rows[][]; opt.hlRow
+  U.table = function (ctx, x, y, cw, head, rows, opt = {}) {
+    const W = cw.reduce((a, b) => a + b, 0), rh = opt.rh || 56; card(ctx, x, y, W, rh * (rows.length + 1), { fill: "#fff", stroke: "#B7C4CC", lw: 3, r: 12 });
+    ctx.fillStyle = C.bg2; rr(ctx, x, y, W, rh, 12); ctx.fill(); ctx.fillRect(x, y + rh / 2, W, rh / 2);
+    let cx = x; head.forEach((hd, c) => { text(ctx, hd, cx + cw[c] / 2, y + rh / 2 + 9, 22, { align: "center", weight: 900, color: C.ink2 }); cx += cw[c]; });
+    rows.forEach((r, i) => { if (opt.n != null && i >= opt.n) return; const ry = y + rh * (i + 1); if (opt.hlRow === i) { ctx.fillStyle = "#FFF3D6"; ctx.fillRect(x + 2, ry, W - 4, rh); } let cx = x; r.forEach((v, c) => { text(ctx, String(v), cx + cw[c] / 2, ry + rh / 2 + 9, 24, { align: "center", weight: c === 0 ? 900 : 700, color: opt.colors && opt.colors[i] && c > 0 ? opt.colors[i] : C.ink }); cx += cw[c]; }); ctx.strokeStyle = "#E1E8E4"; ctx.lineWidth = 2; ctx.beginPath(); ctx.moveTo(x, ry); ctx.lineTo(x + W, ry); ctx.stroke(); });
+  };
+  K.urut = U;
+})(typeof window !== "undefined" ? window : globalThis);
+
+/* Adegan episode E.6: Pencarian dan Pengurutan. Gaya diagram Fase E. Muat setelah kiko-core.js, kiko-devices.js, alur.js, kartu.js, urut.js. */
+(function (global) {
+  const K = global.Kiko, H = K.helpers, C = K.C, D = K.devices, Al = K.alur, Kr = K.kartu, U = K.urut, SCENES = K.SCENES;
+  const { text, para, card, kiko, kid, bubble, rr, ease, clamp, lerp, arrowIcon } = H;
+  const reveal = (l, t0, step, n) => clamp(Math.floor((l - t0) / step) + 1, 0, n);
+  const banner = (ctx, s, y = 745, w = 1000, opt = {}) => { card(ctx, 960 - w / 2, y, w, 80, { fill: opt.fill || "#FFF3D6", stroke: opt.stroke || C.accent, lw: 4 }); text(ctx, s, 960, y + 52, opt.size || 34, { align: "center", weight: 900, color: opt.color || C.accentDark }); };
+  const label = (ctx, s, x, y, opt = {}) => text(ctx, s, x, y, opt.size || 28, { align: "center", weight: 900, color: opt.color || C.accentDark });
+  const heading = (ctx, s, y = 230) => text(ctx, s, 960, y, 34, { align: "center", color: C.accentDark, weight: 800 });
+  const LIN = [12, 45, 30, 78, 91, 65, 20, 55], SRT = [20, 40, 60, 65, 80, 85, 90, 95], FIVE = [48, 37, 25, 12, 56];
+  const TR = { bubble: U.trace("bubble", FIVE), selection: U.trace("selection", FIVE), insertion: U.trace("insertion", FIVE) };
+  const stepAt = (steps, l, t0, per) => steps[clamp(Math.floor((l - t0) / per), 0, steps.length - 1)];
+  const sortScene = (ctx, kind, title, l, per, note) => {
+    card(ctx, 120, 150, 1680, 740); heading(ctx, title, 215);
+    const st = l < 1 ? { a: FIVE, hl: [], done: [], cmp: 0, sw: 0, note: "data awal" } : stepAt(TR[kind], l, 1, per);
+    U.cards(ctx, 300, 360, st, { w: 150, h: 130, gap: 20 });
+    U.counters(ctx, 1200, 330, st.cmp, st.sw, { swLabel: kind === "insertion" ? "geseran" : "pertukaran" });
+    card(ctx, 1200, 460, 500, 70, { fill: C.bg2, r: 12 }); text(ctx, st.note, 1450, 505, 22, { align: "center", weight: 900 });
+    if (note) text(ctx, note, 960, 600, 24, { align: "center", weight: 800, color: C.ink2 });
+  };
+
+  Object.assign(SCENES, {
+    title_q(ctx, b, l) {
+      card(ctx, 120, 150, 1680, 740);
+      kiko(ctx, 300, 560, 180, 0, { mood: "happy" });
+      card(ctx, 520, 260, 1200, 90, { fill: C.bg2, r: 16 }); text(ctx, "kelas VIII: mencari dan mengurutkan kartu dengan tangan", 1120, 315, 26, { align: "center", weight: 900, color: C.ink2 });
+      arrowIcon(ctx, "down", 1120, 385, 26, C.ink2);
+      const n = reveal(l, 3.0, 1.4, 3);
+      [["🏷️", "beri nama algoritmanya", "linear, biner, bubble, selection, insertion"], ["📜", "tulis pseudocode-nya", "perulangan bersarang"], ["🔢", "pasang penghitung langkah", "bandingkan dengan adil"]].forEach(([ic, t, s], i) => { ctx.save(); if (i >= n) ctx.globalAlpha = 0.2; const x = 540 + i * 400; card(ctx, x, 420, 370, 240, { fill: "#FFF3D6", stroke: C.accent, lw: 3, r: 16 }); text(ctx, ic, x + 185, 500, 56, { align: "center" }); text(ctx, t, x + 185, 560, 24, { align: "center", weight: 900 }); para(ctx, s, x + 185, 600, 19, 330, { align: "center", weight: 700, color: C.ink2 }); ctx.restore(); });
+    },
+    prereq(ctx, b, l) {
+      card(ctx, 260, 200, 1400, 600);
+      text(ctx, "TONTON DULU", 960, 290, 34, { align: "center", color: C.accentDark, weight: 800 });
+      [["D8.2", "Memecahkan Persoalan dengan Data Kecil"], ["E.5", "Struktur Data Standar"]].forEach(([c, t], i) => { const x = 360 + i * 640; card(ctx, x, 340, 580, 300, { fill: C.bg2 }); text(ctx, "Episode " + c, x + 290, 430, 50, { align: "center", weight: 900 }); para(ctx, t, x + 290, 500, 30, 520, { align: "center", weight: 700, color: C.ink2 }); });
+      kiko(ctx, 1600, 760, 150, 0);
+    },
+    unplugged_tebak(ctx, b, l) {
+      card(ctx, 120, 150, 1680, 740);
+      heading(ctx, "MAIN DULU TANPA KOMPUTER: TEBAK ANGKA 1–100");
+      kid(ctx, 380, 560, 150, { hair: "long" }); bubble(ctx, 300, 390, 260, "Angkaku: 37", 24, { tailX: 380 });
+      kid(ctx, 1540, 560, 150, { point: true });
+      const n = reveal(l, 3, 1.3, 6);
+      card(ctx, 600, 300, 400, 400, { fill: C.badBg, stroke: C.bad, lw: 3, r: 16 }); text(ctx, "BABAK 1: dari 1, 2, 3, …", 800, 340, 22, { align: "center", weight: 900, color: C.bad });
+      ["1? lebih besar", "2? lebih besar", "3? lebih besar", "…", "36? lebih besar", "37! (37 tebakan)"].forEach((s, i) => { if (i < n) text(ctx, s, 640, 390 + i * 48, 22, { weight: 800 }); });
+      card(ctx, 1040, 300, 400, 400, { fill: C.goodBg, stroke: C.good, lw: 3, r: 16 }); text(ctx, "BABAK 2: selalu tengah", 1240, 340, 22, { align: "center", weight: 900, color: C.good });
+      ["50? lebih kecil", "25? lebih besar", "37! (3 tebakan)"].forEach((s, i) => { if (i < n - 3) text(ctx, s, 1080, 390 + i * 48, 22, { weight: 800 }); });
+      if (n >= 6) label(ctx, "hitung tebakanmu di tiap babak", 960, 740, { size: 24 });
+    },
+    unplugged_hasil(ctx, b, l) {
+      card(ctx, 120, 150, 1680, 740);
+      heading(ctx, "PALING BANYAK TUJUH TEBAKAN", 215);
+      const n = reveal(l, 1.5, 1.0, 8);
+      [100, 50, 25, 13, 7, 4, 2, 1].forEach((v, i) => { ctx.save(); if (i >= n) ctx.globalAlpha = 0.2; const x = 250 + i * 190; card(ctx, x, 330, 160, 110, { fill: i === 7 ? C.goodBg : "#fff", stroke: i === 7 ? C.good : "#B7C4CC", lw: 3, r: 12 }); text(ctx, String(v), x + 80, 400, 40, { align: "center", weight: 900 }); text(ctx, i === 0 ? "sisa angka" : "÷2", x + 80, 470, 18, { align: "center", weight: 800, color: C.ink2 }); if (i < 7) arrowIcon(ctx, "east", x + 175, 385, 20, C.ink2); ctx.restore(); });
+      if (n >= 8) { label(ctx, "7 kali membelah dua: 100 → 1", 960, 560); card(ctx, 460, 610, 1000, 80, { fill: "#FFF3D6", stroke: C.accent, lw: 3, r: 14 }); text(ctx, "syaratnya satu: angkanya terurut", 960, 660, 28, { align: "center", weight: 900, color: C.accentDark }); }
+    },
+
+    linear(ctx, b, l) {
+      card(ctx, 120, 150, 1680, 740);
+      heading(ctx, "LINEAR SEARCH: SATU PER SATU", 215);
+      const steps = U.linear(LIN, 65); const st = l < 1.5 ? { a: LIN, hl: [], cmp: 0, note: "cari 65" } : stepAt(steps, l, 1.5, 1.1);
+      U.cards(ctx, 260, 330, st, { w: 150, h: 130, gap: 20 });
+      Kr.counter(ctx, 1500, 560, st.cmp, "langkah", {}); card(ctx, 260, 560, 700, 70, { fill: C.bg2, r: 12 }); text(ctx, st.note, 610, 605, 24, { align: "center", weight: 900, color: st.found ? C.good : C.ink });
+      if (l > 10) label(ctx, "kalau tidak ada: baru tahu setelah 8 langkah", 960, 710, { size: 24, color: C.ink2 });
+    },
+    biner(ctx, b, l) {
+      card(ctx, 120, 150, 1680, 740);
+      heading(ctx, "BINARY SEARCH: BELAH DUA (DATA URUT)", 215);
+      const steps = U.binary(SRT, 65); const st = l < 1.5 ? { a: SRT, hl: [], cmp: 0, note: "cari 65 · array sudah urut" } : stepAt(steps, l, 1.5, 3.2);
+      U.cards(ctx, 260, 330, st, { w: 150, h: 130, gap: 20 });
+      if (st.lo != null) { if (st.lo === st.hi) text(ctx, "kiri = kanan", 260 + st.lo * 170 + 75, 310, 18, { align: "center", weight: 900, color: C.kiko }); else { text(ctx, "kiri", 260 + st.lo * 170 + 75, 310, 18, { align: "center", weight: 900, color: C.kiko }); text(ctx, "kanan", 260 + st.hi * 170 + 75, 310, 18, { align: "center", weight: 900, color: C.kiko }); } }
+      Kr.counter(ctx, 1500, 560, st.cmp, "langkah", {}); card(ctx, 260, 560, 900, 70, { fill: C.bg2, r: 12 }); text(ctx, st.note, 710, 605, 24, { align: "center", weight: 900, color: st.found ? C.good : C.ink });
+      if (l > 11) label(ctx, "3 langkah, bukan 6", 960, 710, { color: C.good });
+    },
+    banding_cari(ctx, b, l) {
+      card(ctx, 120, 150, 1680, 740);
+      heading(ctx, "MAKIN BESAR DATANYA, MAKIN JAUH BEDANYA", 215);
+      const n = reveal(l, 1.5, 2.2, 4);
+      U.table(ctx, 360, 280, [360, 420, 420], ["banyak data", "linear (terburuk)", "biner (terburuk)"], [["8", "8", "4"], ["1.000", "1.000", "10"], ["1.000.000", "1.000.000", "20"], ["1 miliar", "1 miliar", "30"]], { n, rh: 70, hlRow: n - 1 });
+      if (n >= 4) label(ctx, "biner: tiap langkah membuang setengah", 960, 700);
+    },
+    pseudo_cari(ctx, b, l) {
+      card(ctx, 120, 150, 1680, 740);
+      heading(ctx, "PSEUDOCODE BINARY SEARCH", 215);
+      const n = reveal(l, 1.0, 1.4, 7);
+      Al.pseudo(ctx, 220, 250, 900, [{ t: "kiri ← 1, kanan ← n" }, { t: "SELAMA kiri ≤ kanan:" }, { t: "tengah ← (kiri + kanan) / 2, dibulatkan ke atas", ind: 1 }, { t: "JIKA data[tengah] = target MAKA ketemu, berhenti", ind: 1 }, { t: "JIKA target < data[tengah] MAKA kanan ← tengah − 1", ind: 1 }, { t: "LAINNYA kiri ← tengah + 1", ind: 1 }, { t: "tidak ketemu" }].map((p, i) => ({ ...p, hl: i === n - 1, t: i < n ? p.t : "" })), { rh: 56, size: 22 });
+      if (n >= 7) { const steps = U.binary(SRT, 65); card(ctx, 1180, 260, 540, 400, { fill: C.bg2, r: 14 }); text(ctx, "pelacakan: cari 65", 1450, 300, 20, { align: "center", weight: 900, color: C.ink2 }); text(ctx, "kiri · kanan · tengah · data", 1450, 340, 18, { align: "center", weight: 800, color: C.ink2 }); steps.forEach((s, i) => { const mid = Math.ceil((s.lo + s.hi) / 2); text(ctx, `${s.lo + 1} · ${s.hi + 1} · ${mid + 1} · ${SRT[mid]}` + (s.found ? " ✓" : ""), 1450, 400 + i * 50, 26, { align: "center", weight: 900, color: s.found ? C.good : C.ink }); }); }
+    },
+
+    bubble(ctx, b, l) { sortScene(ctx, "bubble", "BUBBLE SORT: TUKAR TETANGGA, YANG TERBESAR MENGENDAP", l, 0.75, l > 14 ? "4 putaran · 10 perbandingan · 6 pertukaran" : ""); },
+    selection(ctx, b, l) { sortScene(ctx, "selection", "SELECTION SORT: PILIH YANG TERKECIL, TUKAR KE DEPAN", l, 0.8, l > 14 ? "10 perbandingan · hanya 2 pertukaran" : ""); },
+    insertion(ctx, b, l) { sortScene(ctx, "insertion", "INSERTION SORT: SISIPKAN KE BAGIAN YANG SUDAH URUT", l, 0.75, l > 14 ? "7 perbandingan · 6 geseran" : ""); },
+    banding_urut(ctx, b, l) {
+      card(ctx, 120, 150, 1680, 740);
+      heading(ctx, "LIMA KARTU YANG SAMA, TIGA ALGORITMA", 215);
+      Kr.row(ctx, 560, 260, FIVE, { w: 140, h: 60, gap: 16 });
+      const n = reveal(l, 1.5, 2.4, 3);
+      U.table(ctx, 360, 350, [360, 420, 420], ["algoritma", "perbandingan", "tukar / geser"], [["Bubble", "10", "6"], ["Selection", "10", "2"], ["Insertion", "7", "6"]], { n, rh: 70, hlRow: n - 1 });
+      if (l > 10) { card(ctx, 360, 650, 1200, 70, { fill: "#FFF3D6", stroke: C.accent, lw: 3, r: 12 }); text(ctx, "10 kartu? sekitar 4× langkahnya: pertumbuhan kuadrat", 960, 695, 24, { align: "center", weight: 900, color: C.accentDark }); }
+    },
+    pseudo_urut(ctx, b, l) {
+      card(ctx, 120, 150, 1680, 740);
+      heading(ctx, "PSEUDOCODE BUBBLE SORT: DUA PERULANGAN BERSARANG", 215);
+      const n = reveal(l, 1.0, 1.6, 4);
+      Al.pseudo(ctx, 220, 250, 900, [{ t: "UNTUK i dari 1 sampai n − 1:" }, { t: "UNTUK j dari 1 sampai n − i:", ind: 1 }, { t: "JIKA data[j] > data[j+1] MAKA", ind: 2 }, { t: "tukar data[j] dan data[j+1]", ind: 3 }].map((p, i) => ({ ...p, hl: i === n - 1, t: i < n ? p.t : "" })), { rh: 60, size: 26 });
+      if (l > 8) { const st = stepAt(TR.bubble, l, 8, 0.6); U.cards(ctx, 1180, 300, st, { w: 90, h: 80, gap: 10, index: false }); text(ctx, st.cmp + " perbandingan", 1420, 440, 22, { align: "center", weight: 900, color: C.accentDark }); }
+      if (l > 10) { card(ctx, 1180, 500, 520, 160, { fill: C.bg2, r: 14 }); text(ctx, "perulangan luar × perulangan dalam", 1440, 545, 22, { align: "center", weight: 900 }); text(ctx, "≈ n × n / 2 perbandingan", 1440, 585, 24, { align: "center", weight: 900, color: C.kiko }); text(ctx, "tumbuh kuadrat", 1440, 625, 20, { align: "center", weight: 800, color: C.ink2 }); }
+    },
+    skala(ctx, b, l) {
+      card(ctx, 120, 150, 1680, 740);
+      heading(ctx, "SKALA: n × n / 2", 215);
+      const n = reveal(l, 1.5, 2.4, 3);
+      U.table(ctx, 300, 280, [320, 480], ["banyak data", "perbandingan (≈)"], [["10", "50"], ["100", "5.000"], ["1.000.000", "500.000.000.000"]], { n, rh: 70, hlRow: n - 1 });
+      // kurva
+      card(ctx, 1160, 280, 540, 380, { fill: "#fff", stroke: "#B7C4CC", lw: 3, r: 14 }); ctx.strokeStyle = C.ink2; ctx.lineWidth = 3; ctx.beginPath(); ctx.moveTo(1200, 620); ctx.lineTo(1660, 620); ctx.moveTo(1200, 620); ctx.lineTo(1200, 310); ctx.stroke();
+      ctx.strokeStyle = C.bad; ctx.lineWidth = 6; ctx.beginPath(); for (let i = 0; i <= 40; i++) { const u = i / 40; const x = 1200 + u * 440, y = 620 - u * u * 290; i ? ctx.lineTo(x, y) : ctx.moveTo(x, y); } ctx.stroke(); text(ctx, "n²", 1600, 360, 24, { weight: 900, color: C.bad });
+      ctx.strokeStyle = C.good; ctx.lineWidth = 6; ctx.beginPath(); for (let i = 0; i <= 40; i++) { const u = i / 40; const x = 1200 + u * 440, y = 620 - Math.log2(1 + u * 63) / 6 * 120; i ? ctx.lineTo(x, y) : ctx.moveTo(x, y); } ctx.stroke(); text(ctx, "n log n", 1600, 480, 22, { weight: 900, color: C.good });
+      text(ctx, "banyak data →", 1430, 650, 18, { align: "center", weight: 800, color: C.ink2 });
+      if (n >= 3) label(ctx, "data besar butuh algoritma lebih cerdas: cerita kelas XI", 960, 720, { size: 24 });
+    },
+    make_show(ctx, b, l) {
+      card(ctx, 160, 150, 1600, 740);
+      text(ctx, "GILIRANMU", 960, 240, 34, { align: "center", color: C.accentDark, weight: 900 });
+      const items = [["Visualisator", "pilih algoritma, tekan Langkah", (x, y) => { U.cards(ctx, x - 200, y - 80, { a: [37, 12, 25], hl: [0, 1], done: [], cmp: 3, sw: 1 }, { w: 110, h: 90, gap: 10, index: false }); text(ctx, "3 perbandingan · 1 pertukaran", x, y + 70, 20, { align: "center", weight: 900, color: C.accentDark }); }],
+        ["Lomba tiga algoritma", "data acak vs hampir urut", (x, y) => [["Bubble", "10 · 6"], ["Selection", "10 · 2"], ["Insertion", "7 · 6"]].forEach(([t, v], i) => { card(ctx, x - 190, y - 90 + i * 60, 380, 50, { fill: i === 2 ? C.goodBg : "#fff", stroke: i === 2 ? C.good : "#B7C4CC", lw: 2, r: 10 }); text(ctx, t, x - 170, y - 57 + i * 60, 22, { weight: 900 }); text(ctx, v, x + 170, y - 57 + i * 60, 22, { align: "right", weight: 900, color: C.ink2 }); })],
+        ["Tebak langkah biner", "target mana, berapa langkah?", (x, y) => { U.cards(ctx, x - 215, y - 70, { a: [20, 40, 60, 65, 80], hl: [2], lo: 0, hi: 4 }, { w: 78, h: 70, gap: 8, index: false }); text(ctx, "cari 80: tengah 60 → ?", x, y + 60, 20, { align: "center", weight: 900, color: C.kiko }); }]];
+      items.forEach(([t1, t2, draw], i) => { const x = 440 + i * 520; card(ctx, x - 240, 290, 480, 410, { fill: C.bg2 }); ctx.fillStyle = C.kiko; ctx.beginPath(); ctx.arc(x - 200, 340, 28, 0, Math.PI * 2); ctx.fill(); text(ctx, String(i + 1), x - 200, 352, 30, { align: "center", color: "#fff", weight: 900 }); text(ctx, t1, x - 160, 352, 28, { weight: 900 }); text(ctx, t2, x - 160, 386, 20, { weight: 700, color: C.ink2 }); draw(x, 560); });
+      text(ctx, "di halaman latihan episode ini — tebak dulu siapa yang menang, lalu buktikan", 960, 745, 28, { align: "center", color: C.ink2, weight: 700 });
+    }
+  });
+})(typeof window !== "undefined" ? window : globalThis);
+
+/* K16 Simulasi konsep: balapan algoritma pengurutan (bubble, selection, insertion) dan binary search.
+   Memakai pembantu E.6 (K.urut: binary, cards, table) dan adegan baru berawalan k16_. Gaya diagram Fase E.
+   Penghitung: 1 langkah = 1 perbandingan atau 1 tukar (insertion: 1 geser), persis seperti urut.js / halaman latihan E.6.
+   Semua gambar di atas y≈830 (kartu narasi tiga baris mulai y≈841). */
+(function (global) {
+  const K = global.Kiko, H = K.helpers, C = K.C, U = K.urut, L = K.layar;
+  const { rr, text, para, card, kiko, ease, clamp, lerp } = H;
+
+  const DATA = {
+    acak: [48, 19, 31, 12, 70, 25, 37, 56],
+    hampir: [12, 19, 25, 31, 37, 56, 48, 70],
+    terbalik: [70, 56, 48, 37, 31, 25, 19, 12],
+    besar: [48, 19, 31, 12, 70, 25, 37, 56, 64, 8, 42, 90, 27, 53, 15, 81]
+  };
+  const NAMA = { acak: "DATA ACAK · 8 KARTU", hampir: "DATA HAMPIR URUT · 8 KARTU", terbalik: "DATA TERBALIK · 8 KARTU", besar: "DATA ACAK · 16 KARTU" };
+  const VAR = { acak: 1, hampir: 2, terbalik: 3, besar: 4, biner: 5 };
+  const ALGS = [
+    { k: "bubble", name: "Bubble sort", rule: "tukar dua tetangga yang terbalik", col: "#2E7E9A", sw: "tukar" },
+    { k: "selection", name: "Selection sort", rule: "pilih terkecil, tukar ke depan", col: "#7E57C2", sw: "tukar" },
+    { k: "insertion", name: "Insertion sort", rule: "sisipkan ke bagian yang urut", col: "#D9822B", sw: "geser" }];
+  const TARGET = 48;
+
+  // ---------- penelusuran dengan identitas kartu (agar perpindahan bisa dianimasikan) ----------
+  // snaps[k] = keadaan setelah langkah ke-k: pos[id] = {s: slot, lift: 0/1}, hl = id yang sedang dikerjakan, op = cmp/swap/shift
+  function race(kind, arr) {
+    const n = arr.length, order = arr.map((_, i) => i), snaps = [];
+    let cmp = 0, sw = 0, done = [], min = null, key = null, hole = -1;
+    const snap = (op, hl) => {
+      const pos = []; order.forEach((id, s) => { if (id != null) pos[id] = { s, lift: 0 }; });
+      if (key != null) pos[key] = { s: hole, lift: 1 };
+      snaps.push({ op, hl: hl || [], pos, done: done.slice(), min, cmp, sw });
+    };
+    const resnap = () => { const last = snaps.pop(); cmp = last.cmp; sw = last.sw; snap(last.op, last.hl); };
+    snap("start");
+    if (kind === "bubble") {
+      for (let i = 0; i < n - 1; i++) {
+        for (let j = 0; j < n - 1 - i; j++) {
+          cmp++; snap("cmp", [order[j], order[j + 1]]);
+          if (arr[order[j]] > arr[order[j + 1]]) { [order[j], order[j + 1]] = [order[j + 1], order[j]]; sw++; snap("swap", [order[j], order[j + 1]]); }
+        }
+        done.push(n - 1 - i); resnap();
+      }
+    } else if (kind === "selection") {
+      for (let i = 0; i < n - 1; i++) {
+        let m = i; min = order[i];
+        for (let j = i + 1; j < n; j++) {
+          const was = order[m]; cmp++;
+          if (arr[order[j]] < arr[order[m]]) m = j;
+          min = order[m]; snap("cmp", [was, order[j]]);
+        }
+        if (m !== i) { [order[i], order[m]] = [order[m], order[i]]; sw++; min = null; snap("swap", [order[i], order[m]]); }
+        done.push(i); min = null; resnap();
+      }
+    } else {
+      for (let i = 1; i < n; i++) {
+        key = order[i]; order[i] = null; hole = i; let j = i - 1;
+        while (j >= 0) {
+          cmp++; snap("cmp", [order[j], key]);
+          if (arr[order[j]] > arr[key]) { order[j + 1] = order[j]; order[j] = null; hole = j; sw++; snap("shift", [order[j + 1], key]); j--; }
+          else break;
+        }
+        order[hole] = key; key = null; done = []; for (let s = 0; s <= i; s++) done.push(s); resnap();
+      }
+    }
+    done = []; for (let s = 0; s < n; s++) done.push(s); resnap();
+    return { snaps, cmp, sw, total: cmp + sw, arr };
+  }
+  const RACES = {};
+  function races(d) {
+    if (RACES[d]) return RACES[d];
+    const R = ALGS.map(a => race(a.k, DATA[d]));
+    R.forEach(r => { r.rank = 1 + R.filter(o => o.total < r.total).length; });
+    return (RACES[d] = R);
+  }
+  K.k16 = { race, races, DATA };   // untuk pemeriksaan angka
+
+  // ---------- gambar kartu-batang ----------
+  const barH = (v, big) => (big ? 44 : 34) + v / 90 * (big ? 76 : 64);
+  function bars(ctx, x0, y0, w, arr, st0, st1, u, opt = {}) {
+    const n = arr.length, slot = w / n, bw = Math.min(opt.bw || 104, slot - (n > 8 ? 10 : 22)), base = y0;
+    const fs = n > 8 ? 20 : 28;
+    const moving = id => (st0.pos[id].s !== st1.pos[id].s ? 1 : 0) + st1.pos[id].lift * 2;
+    const order = arr.map((_, id) => id).sort((a, b) => moving(a) - moving(b));
+    order.forEach(id => {
+      const p0 = st0.pos[id], p1 = st1.pos[id];
+      const s = lerp(p0.s, p1.s, u), lift = lerp(p0.lift, p1.lift, u), hop = (p0.s < p1.s && !p1.lift && !p0.lift) ? Math.sin(Math.PI * u) * (st1.op === "swap" ? 44 : 18) : 0;
+      const v = arr[id], h = barH(v, opt.big), x = x0 + s * slot + (slot - bw) / 2, y = base - h - lift * (opt.lift || 30) - hop;
+      const hl = st1.hl.includes(id), doneNow = st1.done.includes(Math.round(p1.s)) && !p1.lift, isKey = p1.lift > 0 || p0.lift > 0 && u < 1;
+      let fill = "#FFFFFF", stroke = "#B7C4CC", lw = 3;
+      if (doneNow) { fill = C.goodBg; stroke = C.good; }
+      if (isKey) { fill = "#E3F3F9"; stroke = C.kiko; lw = 4; }
+      if (hl) { if (st1.op === "cmp") { fill = "#FFF3D6"; stroke = C.accent; lw = 5; } else { fill = C.badBg; stroke = C.bad; lw = 5; } }
+      if (st1.min === id && !hl) { stroke = C.kiko; lw = 5; }
+      ctx.fillStyle = fill; rr(ctx, x, y, bw, h, 8); ctx.fill(); ctx.strokeStyle = stroke; ctx.lineWidth = lw; rr(ctx, x, y, bw, h, 8); ctx.stroke();
+      text(ctx, String(v), x + bw / 2, y + Math.min(fs + 10, h / 2 + fs * 0.36), fs, { align: "center", weight: 900 });
+      if (st1.min === id) text(ctx, "min", x + bw / 2, base + 22, 17, { align: "center", weight: 900, color: C.kiko });
+    });
+  }
+  const stillOf = arr => ({ hl: [], done: [], pos: arr.map((_, i) => ({ s: i, lift: 0 })), min: null, op: "start" });
+  const sortedOf = arr => { const ids = arr.map((_, i) => i).sort((a, b) => arr[a] - arr[b]); const pos = []; ids.forEach((id, s) => pos[id] = { s, lift: 0 }); return { hl: [], done: arr.map((_, i) => i), pos, min: null, op: "end" }; };
+
+  // ---------- satu lintasan lomba ----------
+  const LANE_Y = [166, 382, 598], LANE_H = 208, CX0 = 470, CX1 = 1490;
+  function lane(ctx, y0, A, R, T, opt = {}) {
+    const N = R.total, fin = T >= N, k = Math.min(N, Math.ceil(T - 1e-9)), u = fin ? 1 : ease(T - (k - 1));
+    const s0 = R.snaps[Math.max(0, k - 1)], s1 = fin ? { ...R.snaps[k], hl: [], min: null } : R.snaps[k];
+    card(ctx, 110, y0, 1700, LANE_H, { fill: "#FFFFFF", r: 18, stroke: fin && R.rank === 1 ? C.good : "#D7E2DC", lw: fin && R.rank === 1 ? 5 : 3 });
+    ctx.fillStyle = A.col; rr(ctx, 110, y0, 14, LANE_H, 7); ctx.fill();
+    text(ctx, A.name, 140, y0 + 48, 32, { weight: 900, color: A.col });
+    text(ctx, A.rule, 140, y0 + 80, 19, { weight: 700, color: C.ink2 });
+    // penghitung
+    const c = k ? s1.cmp : 0, s = k ? s1.sw : 0;
+    [[c, "perbandingan", "#FFF3D6", C.accentDark], [s, A.sw, C.badBg, C.bad]].forEach(([v, lab, f, col], i) => {
+      const x = 134 + i * 156; card(ctx, x, y0 + 104, 144, 86, { fill: f, r: 12 });
+      text(ctx, String(v), x + 72, y0 + 152, 38, { align: "center", weight: 900, color: col });
+      text(ctx, lab, x + 72, y0 + 178, 17, { align: "center", weight: 800, color: C.ink2 });
+    });
+    // kartu
+    const big = R.arr.length <= 8;
+    if (opt.still) bars(ctx, CX0, y0 + 150, CX1 - CX0, R.arr, opt.still, opt.still, 1, { big });
+    else bars(ctx, CX0, y0 + 150, CX1 - CX0, R.arr, k ? s0 : R.snaps[0], k ? s1 : R.snaps[0], k ? u : 1, { big, lift: big ? 28 : 24 });
+    // lintasan dan pelari
+    const ty = y0 + 188; ctx.strokeStyle = "#DCE5E0"; ctx.lineWidth = 8; ctx.lineCap = "round"; ctx.beginPath(); ctx.moveTo(CX0, ty); ctx.lineTo(CX1, ty); ctx.stroke();
+    const fr = clamp(T / N, 0, 1); ctx.strokeStyle = A.col; ctx.globalAlpha = 0.45; ctx.beginPath(); ctx.moveTo(CX0, ty); ctx.lineTo(lerp(CX0, CX1, fr), ty); ctx.stroke(); ctx.globalAlpha = 1; ctx.lineCap = "butt";
+    for (let q = 0; q < 4; q++) for (let r = 0; r < 2; r++) { ctx.fillStyle = (q + r) % 2 ? C.ink : "#FFFFFF"; ctx.fillRect(CX1 + 6 + r * 7, ty - 14 + q * 7, 7, 7); }
+    ctx.fillStyle = A.col; ctx.beginPath(); ctx.arc(lerp(CX0, CX1, fr), ty, 12, 0, Math.PI * 2); ctx.fill(); ctx.strokeStyle = "#FFFFFF"; ctx.lineWidth = 3; ctx.stroke();
+    // total langkah dan peringkat
+    const tot = c + s;
+    text(ctx, opt.hideTotal ? "?" : String(tot), 1660, y0 + 98, 64, { align: "center", weight: 900, color: opt.hideTotal ? C.muted : C.ink });
+    text(ctx, "langkah", 1660, y0 + 128, 22, { align: "center", weight: 800, color: C.ink2 });
+    if (fin && !opt.still) {
+      const win = R.rank === 1; card(ctx, 1570, y0 + 146, 180, 46, { fill: win ? C.good : C.bg2, r: 23 });
+      text(ctx, "JUARA " + R.rank, 1660, y0 + 178, 24, { align: "center", weight: 900, color: win ? "#FFFFFF" : C.ink2 });
+    }
+  }
+  function header(ctx, d, T, opt = {}) {
+    card(ctx, 110, 118, 560, 40, { fill: C.kiko, r: 20 }); text(ctx, "VARIASI " + VAR[d] + " · " + NAMA[d], 390, 147, 22, { align: "center", weight: 900, color: "#FFFFFF", fit: 530 });
+    if (T != null) text(ctx, "waktu: " + Math.ceil(T - 1e-9) + " langkah", 1810, 150, 26, { align: "right", weight: 900, color: C.accentDark });
+    if (opt.note) text(ctx, opt.note, 1180, 150, 22, { align: "center", weight: 800, color: C.ink2 });
+  }
+  function raceSpan(b) { const a = b.audio || b.dur; return Math.max(a * 0.9, (b.dur || a) - 1.4); }
+  function thinking(ctx, x, y, l, dur) {
+    const frac = clamp(l / Math.max(1, dur), 0, 1); ctx.strokeStyle = "#D7E2DC"; ctx.lineWidth = 12; ctx.beginPath(); ctx.arc(x, y, 34, 0, Math.PI * 2); ctx.stroke();
+    ctx.strokeStyle = C.accent; ctx.beginPath(); ctx.arc(x, y, 34, -Math.PI / 2, -Math.PI / 2 + frac * Math.PI * 2); ctx.stroke();
+    text(ctx, "?", x, y + 14, 40, { align: "center", weight: 900, color: C.accentDark });
+  }
+  const heading = (ctx, s, y = 215) => text(ctx, s, 960, y, 34, { align: "center", color: C.accentDark, weight: 900 });
+  const banner = (ctx, s, y, opt = {}) => { const w = opt.w || 1200; card(ctx, 960 - w / 2, y, w, 76, { fill: opt.fill || "#FFF3D6", stroke: opt.stroke || C.accent, lw: 3, r: 16 }); text(ctx, s, 960, y + 50, opt.size || 30, { align: "center", weight: 900, color: opt.color || C.accentDark, fit: w - 40 }); };
+  const at = (b, f) => (b.audio || b.dur) * f;
+
+  // mini ilustrasi aturan tiap algoritma (dipakai di adegan peserta)
+  function miniAlg(ctx, k, x, y, l) {
+    const vals = k === "bubble" ? [25, 48, 37, 56] : k === "selection" ? [48, 37, 12, 56] : [25, 48, 56, 37];
+    const W = 74, G = 16, h = v => 30 + v * 1.6; const ph = (l % 3) / 3;
+    vals.forEach((v, i) => {
+      let xx = x + i * (W + G), yy = y, fill = "#fff", stroke = "#B7C4CC";
+      if (k === "bubble" && (i === 1 || i === 2)) { fill = "#FFF3D6"; stroke = C.accent; const u = ease((ph - 0.3) / 0.4); xx += (i === 1 ? 1 : -1) * u * (W + G); }
+      if (k === "selection" && i === 2) { stroke = C.kiko; }
+      if (k === "selection" && (i === 0 || i === 2)) { const u = ease((ph - 0.4) / 0.4); xx += (i === 0 ? 1 : -1) * u * 2 * (W + G); if (u > 0) { fill = C.badBg; stroke = C.bad; } }
+      if (k === "insertion" && i === 3) { const u = ease((ph - 0.15) / 0.3), w2 = ease((ph - 0.5) / 0.3); yy -= 40 * u * (1 - ease((ph - 0.8) / 0.15)); xx -= w2 * 2 * (W + G); fill = "#E3F3F9"; stroke = C.kiko; }
+      if (k === "insertion" && (i === 1 || i === 2)) { const w2 = ease((ph - 0.5) / 0.3); xx += w2 * (W + G); }
+      ctx.fillStyle = fill; rr(ctx, xx, yy - h(v), W, h(v), 8); ctx.fill(); ctx.strokeStyle = stroke; ctx.lineWidth = 4; rr(ctx, xx, yy - h(v), W, h(v), 8); ctx.stroke();
+      text(ctx, String(v), xx + W / 2, yy - h(v) + 34, 26, { align: "center", weight: 900 });
+      if (k === "selection" && i === 2) text(ctx, "min", xx + W / 2, yy + 26, 18, { align: "center", weight: 900, color: C.kiko });
+    });
+  }
+
+  // halaman latihan E.6 (versi ponsel, digambar ulang secara ringkas)
+  function pill(ctx, x, y, w, h, s, opt = {}) {
+    card(ctx, x, y, w, h, { fill: opt.on ? C.accent : opt.fill || "#FFFFFF", stroke: opt.on ? C.accent : opt.done ? C.good : "#CFDCD5", lw: 2, r: 10 });
+    text(ctx, s, x + (opt.left ? 14 : w / 2), y + h / 2 + 7, opt.size || 19, { align: opt.left ? "left" : "center", weight: 900, color: opt.on ? "#FFFFFF" : C.ink, fit: w - 16 });
+  }
+  const PAGE_DATA = { acak: [48, 37, 25, 12, 56, 31], hampir: [12, 25, 31, 37, 56, 48], terbalik: [56, 48, 37, 31, 25, 12] };
+
+  // versi ringkas untuk Short (wilayah 100–1100 × 115–930, dipotong utuh tanpa diperkecil)
+  function laneS(ctx, y0, A, R, T, opt = {}) {
+    const N = R.total, fin = T >= N && !opt.still, k = opt.still ? 0 : Math.min(N, Math.ceil(T - 1e-9)), u = fin || !k ? 1 : ease(T - (k - 1));
+    const s0 = R.snaps[Math.max(0, k - 1)], s1 = fin ? { ...R.snaps[k], hl: [], min: null } : R.snaps[k];
+    card(ctx, 100, y0, 1000, 240, { fill: "#FFFFFF", r: 18, stroke: fin && R.rank === 1 ? C.good : "#D7E2DC", lw: fin && R.rank === 1 ? 6 : 3 });
+    ctx.fillStyle = A.col; rr(ctx, 100, y0, 14, 240, 7); ctx.fill();
+    text(ctx, A.name, 134, y0 + 50, 40, { weight: 900, color: A.col });
+    const c = k ? s1.cmp : 0, s = k ? s1.sw : 0;
+    text(ctx, opt.still ? "? langkah" : (c + s) + " langkah", 1076, y0 + 52, 44, { align: "right", weight: 900, color: opt.still ? C.muted : C.ink });
+    bars(ctx, 130, y0 + 172, 940, R.arr, k ? s0 : R.snaps[0], k ? s1 : R.snaps[0], k ? u : 1, { big: true, lift: 26 });
+    const ty = y0 + 194; ctx.strokeStyle = "#DCE5E0"; ctx.lineWidth = 8; ctx.lineCap = "round"; ctx.beginPath(); ctx.moveTo(134, ty); ctx.lineTo(1066, ty); ctx.stroke(); ctx.lineCap = "butt";
+    ctx.fillStyle = A.col; ctx.beginPath(); ctx.arc(lerp(134, 1066, clamp(T / N, 0, 1)), ty, 12, 0, Math.PI * 2); ctx.fill();
+    text(ctx, `${c} perbandingan · ${s} ${A.sw}`, 134, y0 + 228, 25, { weight: 800, color: C.ink2 });
+    if (fin) { card(ctx, 870, y0 + 200, 206, 34, { fill: R.rank === 1 ? C.good : C.bg2, r: 17 }); text(ctx, "JUARA " + R.rank, 973, y0 + 226, 22, { align: "center", weight: 900, color: R.rank === 1 ? "#fff" : C.ink2 }); }
+  }
+
+  Object.assign(K.SCENES, {
+    k16s_lomba(ctx, b, l) {
+      const d = b.data, R = races(d), max = Math.max(...R.map(r => r.total)), t0 = 0.4, span = raceSpan(b) - t0;
+      const T = b.still ? 0 : clamp((l - t0) / span * max, 0, max);
+      text(ctx, NAMA[d], 600, 152, 34, { align: "center", weight: 900, color: C.kikoDark });
+      ALGS.forEach((A, i) => laneS(ctx, 176 + i * 250, A, R[i], T, { still: b.still }));
+    },
+    k16s_besar(ctx, b, l) {
+      const R8 = races("acak"), R16 = races("besar"), n = clamp(Math.floor((l - 0.3) / 0.7) + 1, 0, 3);
+      card(ctx, 100, 120, 1000, 600, { fill: "#FFFFFF", r: 22 });
+      text(ctx, "LANGKAH: 8 KARTU → 16 KARTU", 600, 186, 36, { align: "center", weight: 900, color: C.accentDark });
+      ALGS.forEach((A, i) => {
+        if (i >= n) return; const y = 230 + i * 150, f = R16[i].total / R8[i].total;
+        card(ctx, 130, y, 940, 130, { fill: C.bg2, r: 16 }); ctx.fillStyle = A.col; rr(ctx, 130, y, 14, 130, 7); ctx.fill();
+        text(ctx, A.name, 168, y + 56, 36, { weight: 900, color: A.col });
+        text(ctx, R8[i].total + " → " + R16[i].total, 168, y + 108, 40, { weight: 900 });
+        text(ctx, "×" + f.toFixed(1).replace(".", ","), 1040, y + 90, 56, { align: "right", weight: 900, color: C.bad });
+      });
+    },
+    k16_tujuan(ctx, b, l) {
+      card(ctx, 160, 150, 1600, 660);
+      text(ctx, "SETELAH MENONTON, KAMU BISA:", 260, 240, 30, { weight: 900, color: C.accentDark });
+      ["menebak pemenang lomba pengurutan", "membuktikannya dengan penghitung langkah", "melihat efek data dua kali lipat", "menghitung langkah binary search"].forEach((s, i) => {
+        const u = ease((l - 0.6 - i * 0.7) / 0.5); if (u <= 0) return; ctx.globalAlpha = u;
+        card(ctx, 260, 280 + i * 104, 860, 84, { fill: C.bg2, r: 16 }); text(ctx, "✓", 300, 336 + i * 104, 36, { weight: 900, color: C.good }); text(ctx, s, 350, 334 + i * 104, 32, { weight: 800, fit: 750 }); ctx.globalAlpha = 1;
+      });
+      ALGS.forEach((A, i) => {
+        const y = 330 + i * 120; card(ctx, 1200, y, 470, 96, { fill: "#fff", stroke: "#D7E2DC", lw: 3, r: 14 });
+        ctx.fillStyle = A.col; rr(ctx, 1200, y, 12, 96, 6); ctx.fill(); text(ctx, A.name, 1230, y + 40, 26, { weight: 900, color: A.col });
+        const fr = clamp((l * [0.22, 0.17, 0.28][i]) % 1.15, 0, 1); ctx.strokeStyle = "#DCE5E0"; ctx.lineWidth = 6; ctx.lineCap = "round"; ctx.beginPath(); ctx.moveTo(1230, y + 70); ctx.lineTo(1620, y + 70); ctx.stroke(); ctx.lineCap = "butt";
+        ctx.fillStyle = A.col; ctx.beginPath(); ctx.arc(1230 + 390 * fr, y + 70, 10, 0, Math.PI * 2); ctx.fill();
+      });
+      text(ctx, "data yang sama, siapa paling hemat?", 1435, 720, 24, { align: "center", weight: 800, color: C.ink2 });
+    },
+    k16_prasyarat(ctx, b, l) {
+      card(ctx, 160, 150, 1600, 660);
+      text(ctx, "EPISODE YANG DILENGKAPI", 960, 240, 32, { align: "center", weight: 900, color: C.accentDark });
+      card(ctx, 330, 290, 620, 360, { fill: C.bg2, r: 22 });
+      text(ctx, "E.6", 640, 380, 64, { align: "center", weight: 900, color: C.kiko });
+      para(ctx, "Algoritma Standar: Pencarian dan Pengurutan", 640, 450, 34, 540, { align: "center", weight: 800, lh: 1.2 });
+      text(ctx, "kelas X", 640, 600, 26, { align: "center", weight: 700, color: C.ink2 });
+      [["Bubble sort", ALGS[0].col], ["Selection sort", ALGS[1].col], ["Insertion sort", ALGS[2].col], ["Binary search", C.good]].forEach(([s, col], i) => {
+        const u = ease((l - 1 - i * 0.6) / 0.4); ctx.globalAlpha = Math.max(0.15, u);
+        card(ctx, 1030, 290 + i * 92, 520, 74, { fill: "#fff", stroke: col, lw: 4, r: 37 }); text(ctx, s, 1290, 338 + i * 92, 30, { align: "center", weight: 900, color: col }); ctx.globalAlpha = 1;
+      });
+      kiko(ctx, 1650, 720, 100, 0, { wave: l });
+    },
+    k16_peserta(ctx, b, l) {
+      card(ctx, 120, 150, 1680, 670); heading(ctx, "TIGA PESERTA LOMBA");
+      const marks = [0.12, 0.36, 0.66];
+      ALGS.forEach((A, i) => {
+        const u = ease((l - at(b, marks[i])) / 0.5); const x = 180 + i * 530;
+        ctx.save(); ctx.globalAlpha = 0.2 + 0.8 * u;
+        card(ctx, x, 260, 500, 520, { fill: "#fff", stroke: A.col, lw: 4, r: 20 });
+        ctx.fillStyle = A.col; rr(ctx, x, 260, 500, 70, 20); ctx.fill(); ctx.fillRect(x, 300, 500, 30);
+        text(ctx, A.name, x + 250, 308, 34, { align: "center", weight: 900, color: "#fff" });
+        miniAlg(ctx, A.k, x + 74, 560, u > 0 ? l - at(b, marks[i]) : 0);
+        para(ctx, A.rule, x + 250, 650, 28, 440, { align: "center", weight: 800, lh: 1.25 });
+        ctx.restore();
+      });
+    },
+    k16_aturan(ctx, b, l) {
+      card(ctx, 120, 150, 1680, 670); heading(ctx, b.step === 2 ? "LANGKAH PALING SEDIKIT = SAMPAI FINIS DULUAN" : "ATURAN LOMBA: SEMUA LANGKAH DIHITUNG");
+      if (b.step !== 2) {
+        // satu kartu data yang sama untuk ketiganya
+        U.cards(ctx, 380, 270, { a: DATA.acak, hl: [], done: [] }, { w: 120, h: 90, gap: 12, index: false });
+        text(ctx, "kartu yang sama untuk ketiga peserta", 960, 400, 24, { align: "center", weight: 800, color: C.ink2 });
+        [["1 perbandingan", "= 1 langkah", "#FFF3D6", C.accentDark, 0.2], ["1 tukar", "= 1 langkah", C.badBg, C.bad, 0.4], ["1 geser (insertion)", "= 1 langkah", C.badBg, C.bad, 0.68]].forEach(([s1, s2, f, col, m], i) => {
+          const u = ease((l - at(b, m)) / 0.4); ctx.globalAlpha = Math.max(0.12, u);
+          const x = 260 + i * 480; card(ctx, x, 460, 440, 200, { fill: f, r: 20 });
+          text(ctx, s1, x + 220, 545, 36, { align: "center", weight: 900, color: col, fit: 400 }); text(ctx, s2, x + 220, 605, 32, { align: "center", weight: 800, color: C.ink });
+          ctx.globalAlpha = 1;
+        });
+        return;
+      }
+      const sp = [1, 0.62, 0.8], t = Math.max(0, l - 0.8);
+      ALGS.forEach((A, i) => {
+        const y = 300 + i * 140, fr = clamp(t / 6 * sp[i] * 1.0, 0, 1);
+        text(ctx, A.name, 200, y + 12, 30, { weight: 900, color: A.col });
+        ctx.strokeStyle = "#DCE5E0"; ctx.lineWidth = 10; ctx.lineCap = "round"; ctx.beginPath(); ctx.moveTo(500, y); ctx.lineTo(1500, y); ctx.stroke(); ctx.lineCap = "butt";
+        for (let q = 0; q < 6; q++) for (let r = 0; r < 2; r++) { ctx.fillStyle = (q + r) % 2 ? C.ink : "#FFFFFF"; ctx.fillRect(1510 + r * 9, y - 27 + q * 9, 9, 9); }
+        ctx.fillStyle = A.col; ctx.beginPath(); ctx.arc(500 + 1000 * fr, y, 18, 0, Math.PI * 2); ctx.fill(); ctx.strokeStyle = "#fff"; ctx.lineWidth = 4; ctx.stroke();
+        if (fr >= 1) text(ctx, "finis!", 1560, y + 12, 26, { weight: 900, color: C.good });
+      });
+      banner(ctx, "setiap langkah = satu ketukan waktu yang sama", 700, { w: 1100 });
+    },
+    k16_tanya(ctx, b, l) {
+      const d = b.data;
+      card(ctx, 120, 150, 1680, 670);
+      if (d === "biner") {
+        heading(ctx, "VARIASI 5 · BINARY SEARCH: CARI " + TARGET);
+        const s8 = DATA.acak.slice().sort((a, c) => a - c), s16 = DATA.besar.slice().sort((a, c) => a - c);
+        text(ctx, "8 kartu urut", 180, 300, 26, { weight: 900, color: C.ink2 });
+        U.cards(ctx, 400, 250, { a: s8, hl: [s8.indexOf(TARGET)], done: [] }, { w: 82, h: 74, gap: 10, index: false });
+        card(ctx, 1180, 252, 520, 70, { fill: C.goodBg, r: 14 }); text(ctx, "binary search: 3 langkah", 1440, 298, 28, { align: "center", weight: 900, color: C.good });
+        const u = ease((l - 1.2) / 0.6); ctx.globalAlpha = u;
+        text(ctx, "16 kartu urut", 180, 470, 26, { weight: 900, color: C.ink2 });
+        U.cards(ctx, 180, 500, { a: s16, hl: [s16.indexOf(TARGET)], done: [] }, { w: 88, h: 74, gap: 10, index: false });
+        card(ctx, 1180, 400, 520, 70, { fill: "#FFF3D6", stroke: C.accent, lw: 3, r: 14 }); text(ctx, "binary search: ? langkah", 1440, 446, 28, { align: "center", weight: 900, color: C.accentDark });
+        ctx.globalAlpha = 1;
+        text(ctx, "Dua kali lipat juga? Atau hanya bertambah sedikit?", 960, 700, 30, { align: "center", weight: 800, color: C.ink2 });
+        return;
+      }
+      heading(ctx, "VARIASI " + VAR[d] + " · " + NAMA[d]);
+      const arr = DATA[d], n = arr.length, w = n > 8 ? 88 : 150, g = n > 8 ? 10 : 22, x0 = 960 - (n * (w + g) - g) / 2;
+      if (d === "besar") {
+        const u = ease((l - 1.2) / 0.8);
+        arr.forEach((v, i) => {
+          const isNew = i >= 8; if (isNew && u <= 0) return;
+          ctx.save(); if (isNew) { ctx.globalAlpha = u; ctx.translate((1 - u) * 80, 0); }
+          U.cards(ctx, x0 + i * (w + g), 340, { a: [v], hl: isNew ? [0] : [], done: [] }, { w, h: 120, gap: 0, index: false }); ctx.restore();
+        });
+        text(ctx, "8 kartu lama", x0 + 4 * (w + g) - g / 2, 300, 26, { align: "center", weight: 900, color: C.ink2 });
+        if (u > 0) { ctx.globalAlpha = u; text(ctx, "+ 8 kartu baru", x0 + 12 * (w + g) - g / 2, 300, 26, { align: "center", weight: 900, color: C.accentDark }); ctx.globalAlpha = 1; }
+      } else {
+        const hl = d === "hampir" ? [5, 6] : [];
+        U.cards(ctx, x0, 330, { a: arr, hl, done: [] }, { w, h: 140, gap: g, index: false });
+        if (d === "hampir") { const xm = x0 + 6 * (w + g) - g / 2; text(ctx, "hanya dua kartu ini yang tertukar", xm, 520, 26, { align: "center", weight: 900, color: C.accentDark }); }
+        if (d === "terbalik") { ctx.strokeStyle = C.bad; ctx.lineWidth = 6; ctx.beginPath(); ctx.moveTo(x0 + 40, 300); ctx.lineTo(x0 + n * (w + g) - 60, 300); ctx.stroke(); H.arrowIcon(ctx, "east", x0 + n * (w + g) - 60, 300, 40, C.bad); text(ctx, "dari yang terbesar sampai yang terkecil", 960, 530, 26, { align: "center", weight: 900, color: C.bad }); }
+      }
+      ALGS.forEach((A, i) => { const x = 330 + i * 430; card(ctx, x, 600, 400, 90, { fill: "#fff", stroke: A.col, lw: 4, r: 45 }); text(ctx, A.name + " ?", x + 200, 658, 30, { align: "center", weight: 900, color: A.col }); });
+      text(ctx, "Siapa yang sampai di garis finis lebih dulu?", 960, 760, 28, { align: "center", weight: 800, color: C.ink2 });
+    },
+    k16_tebak(ctx, b, l) {
+      const d = b.data, R = races(d);
+      header(ctx, d, null, { note: "Tebak dulu sebelum lomba dimulai!" });
+      ALGS.forEach((A, i) => lane(ctx, LANE_Y[i], A, R[i], 0, { hideTotal: true }));
+      thinking(ctx, 1760, 140, l, b.dur);
+    },
+    k16_lomba(ctx, b, l) {
+      const d = b.data, R = races(d), max = Math.max(...R.map(r => r.total)), t0 = 0.6, span = raceSpan(b) - t0;
+      const T = clamp((l - t0) / span * max, 0, max);
+      header(ctx, d, T, { note: "1 langkah = 1 perbandingan atau 1 tukar/geser" });
+      ALGS.forEach((A, i) => lane(ctx, LANE_Y[i], A, R[i], T));
+    },
+    k16_hasil(ctx, b, l) {
+      const d = b.data, R = races(d);
+      card(ctx, 120, 150, 1680, 670); heading(ctx, "HASIL VARIASI " + VAR[d] + " · " + NAMA[d]);
+      const win = R.findIndex(r => r.rank === 1), n = clamp(Math.floor((l - 0.3) / 0.6) + 1, 0, 3);
+      const cw = [360, 270, 270, 230, 200], X = 960 - cw.reduce((a, c) => a + c, 0) / 2, Y = 270, RH = 84;
+      U.table(ctx, X, Y, cw, ["algoritma", "perbandingan", "tukar / geser", "langkah", "peringkat"],
+        R.map((r, i) => [ALGS[i].name, r.cmp, r.sw, r.total, "juara " + r.rank]), { rh: RH, n, hlRow: b.fokus ? null : (n >= 3 ? win : null), colors: R.map(r => r.rank === 1 ? C.good : C.ink) });
+      if (b.fokus === "tukar" && l > 0.5) {
+        const xc = X + cw[0] + cw[1]; ctx.strokeStyle = C.bad; ctx.lineWidth = 6; rr(ctx, xc + 8, Y + RH + 6, cw[2] - 16, RH * 2 - 12, 14); ctx.stroke();
+        const xp = X + cw[0]; ctx.strokeStyle = C.accent; rr(ctx, xp + 8, Y + RH + 6, cw[1] - 16, RH * 2 - 12, 14); ctx.stroke();
+        banner(ctx, `perbandingan sama (${R[0].cmp}), jumlah tukar berbeda: ${R[1].sw} lawan ${R[0].sw}`, 640, { w: 1200 });
+      } else if (n >= 3) {
+        const winners = R.map((r, i) => r.rank === 1 ? ALGS[i].name : null).filter(Boolean);
+        banner(ctx, `juara: ${winners.join(" dan ")} · ${R[win].total} langkah`, 640, { w: 1000, fill: C.goodBg, stroke: C.good, color: C.good });
+      }
+    },
+    k16_besar(ctx, b, l) {
+      card(ctx, 120, 150, 1680, 670); heading(ctx, "8 KARTU LAWAN 16 KARTU (DATA ACAK)");
+      const R8 = races("acak"), R16 = races("besar"), n = clamp(Math.floor((l - 0.3) / 0.7) + 1, 0, 3);
+      const fmt = x => x.toFixed(1).replace(".", ",") + "×";
+      const cw = [360, 300, 300, 300], X = 960 - 630, Y = 260;
+      U.table(ctx, X, Y, cw, ["algoritma", "8 kartu", "16 kartu", "kali lipat"], R8.map((r, i) => [ALGS[i].name, r.total + " langkah", R16[i].total + " langkah", fmt(R16[i].total / r.total)]), { rh: 80, n });
+      if (l > at(b, 0.5)) banner(ctx, `perbandingan bubble sort: ${R8[0].cmp} → ${R16[0].cmp}`, 620, { w: 900 });
+    },
+    k16_skala(ctx, b, l) {
+      card(ctx, 120, 150, 1680, 670); heading(ctx, "PERBANDINGAN BUBBLE SORT: TUMBUH KUADRAT");
+      const ns = [8, 16, 32, 64], vals = ns.map(n => race("bubble", Array.from({ length: n }, (_, i) => n - i)).cmp), max = vals[vals.length - 1];
+      const show = clamp(Math.floor((l - 0.4) / Math.max(0.8, at(b, 0.6) / 4)) + 1, 0, 4);
+      ns.forEach((n, i) => {
+        if (i >= show) return; const y = 270 + i * 112, w = Math.max(8, vals[i] / max * 1100);
+        text(ctx, n + " kartu", 400, y + 52, 32, { align: "right", weight: 900 });
+        ctx.fillStyle = i < 2 ? C.kiko : C.kikoLight; rr(ctx, 430, y + 10, w, 64, 10); ctx.fill();
+        text(ctx, vals[i].toLocaleString("id-ID"), 450 + w, y + 54, 32, { weight: 900, color: C.ink });
+        if (i > 0) text(ctx, "≈ " + (vals[i] / vals[i - 1]).toFixed(1).replace(".", ",") + "×", 1740, y + 54, 28, { align: "right", weight: 900, color: C.bad });
+      });
+      if (show >= 4) text(ctx, "kartu 2× lipat → perbandingan ±4× lipat", 960, 760, 28, { align: "center", weight: 900, color: C.accentDark });
+    },
+    k16_tebak_biner(ctx, b, l) {
+      K.SCENES.k16_tanya(ctx, { ...b, data: "biner" }, 5);
+      thinking(ctx, 1730, 215, l, b.dur);
+    },
+    k16_biner(ctx, b, l) {
+      const n = b.n || 8, arr = (n > 8 ? DATA.besar : DATA.acak).slice().sort((a, c) => a - c);
+      const steps = U.binary(arr, TARGET), lin = arr.indexOf(TARGET) + 1;
+      card(ctx, 120, 150, 1680, 670); heading(ctx, `BINARY SEARCH · CARI ${TARGET} · ${n} KARTU URUT`);
+      const t0 = 1.2, per = Math.max(1.2, (at(b, 0.92) - t0) / steps.length);
+      const k = Math.floor((l - t0) / per), st = l < t0 ? { a: arr, hl: [], cmp: 0, note: `cari ${TARGET} · kartunya sudah urut` } : steps[clamp(k, 0, steps.length - 1)];
+      const w = n > 8 ? 88 : 150, g = n > 8 ? 10 : 20, x0 = 960 - (n * (w + g) - g) / 2;
+      U.cards(ctx, x0, 320, st, { w, h: n > 8 ? 110 : 130, gap: g });
+      if (st.lo != null) {
+        const cx = i => x0 + i * (w + g) + w / 2, mid = Math.ceil((st.lo + st.hi) / 2);
+        if (st.lo === st.hi) text(ctx, "kiri = kanan", cx(st.lo), 300, 20, { align: "center", weight: 900, color: C.kiko });
+        else { text(ctx, "kiri", cx(st.lo), 300, 20, { align: "center", weight: 900, color: C.kiko }); text(ctx, "kanan", cx(st.hi), 300, 20, { align: "center", weight: 900, color: C.kiko }); }
+        if (mid !== st.lo && mid !== st.hi) text(ctx, "tengah", cx(mid), 300, 20, { align: "center", weight: 900, color: C.accentDark });
+      }
+      card(ctx, 200, 520, 960, 76, { fill: C.bg2, r: 14 }); text(ctx, st.note, 680, 570, 28, { align: "center", weight: 900, color: st.found ? C.good : C.ink, fit: 920 });
+      card(ctx, 1220, 500, 500, 116, { fill: C.goodBg, stroke: C.good, lw: 3, r: 16 }); text(ctx, String(st.cmp), 1330, 578, 60, { align: "center", weight: 900, color: C.good }); text(ctx, "langkah binary search", 1400, 568, 24, { weight: 800, color: C.ink2 });
+      if (st.found) { card(ctx, 1220, 640, 500, 70, { fill: "#fff", stroke: "#CFDCD5", lw: 3, r: 14 }); text(ctx, `linear search: ${lin} langkah`, 1470, 686, 26, { align: "center", weight: 900, color: C.ink2 }); }
+    },
+    k16_biner_hasil(ctx, b, l) {
+      card(ctx, 120, 150, 1680, 670); heading(ctx, "LINEAR SEARCH LAWAN BINARY SEARCH");
+      const rows = [8, 16].map(n => {
+        const arr = (n > 8 ? DATA.besar : DATA.acak).slice().sort((a, c) => a - c);
+        const last = s => s[s.length - 1].cmp, probe = []; arr.forEach(v => probe.push(v, v + 1)); probe.push(arr[0] - 1);
+        const worst = Math.max(...probe.map(t => last(U.binary(arr, t))));
+        return [n + " kartu", (arr.indexOf(TARGET) + 1) + " langkah", last(U.binary(arr, TARGET)) + " langkah", worst + " langkah"];
+      });
+      const n = clamp(Math.floor((l - 0.3) / 0.8) + 1, 0, 2);
+      U.table(ctx, 960 - 650, 260, [320, 330, 330, 320], ["banyak kartu", "linear (cari 48)", "binary (cari 48)", "binary paling banyak"], rows, { rh: 84, n, hlRow: n - 1 });
+      if (l > at(b, 0.45)) banner(ctx, "kartu 2× lipat: linear ikut 2× lipat, binary cukup +1 langkah", 560, { w: 1200 });
+    },
+    k16_papan(ctx, b, l) {
+      card(ctx, 120, 150, 1680, 670); heading(ctx, "PAPAN SKOR LOMBA");
+      const win = d => { const R = races(d), i = R.findIndex(r => r.rank === 1); return [ALGS[i].name, R[i].total + " langkah"]; };
+      const s16 = DATA.besar.slice().sort((a, c) => a - c), bs = U.binary(s16, TARGET);
+      const rows = [["1", "acak, 8 kartu", ...win("acak")], ["2", "hampir urut", ...win("hampir")], ["3", "terbalik", ...win("terbalik")], ["4", "acak, 16 kartu", ...win("besar")],
+        ["5", "cari 48 di 16 kartu", "Binary search", bs[bs.length - 1].cmp + " langkah (linear " + (s16.indexOf(TARGET) + 1) + ")"]].slice(0, b.upto || 5);
+      const n = clamp(Math.floor((l - 0.2) / 0.5) + 1, 0, rows.length);
+      U.table(ctx, 960 - 760, 250, [150, 380, 400, 590], ["variasi", "data", "juara", "langkah"], rows, { rh: 80, n, colors: rows.map(r => r[2].startsWith("Selection") ? ALGS[1].col : r[2].startsWith("Insertion") ? ALGS[2].col : C.good) });
+      if ((b.upto || 5) <= 3 && l > at(b, 0.4)) banner(ctx, "tidak ada yang selalu menang: lihat dulu bentuk datanya", 600, { w: 1100 });
+    },
+    k16_latihan(ctx, b, l) {
+      // ponsel berisi halaman latihan E.6
+      const PX = 210, PY = 128, PW = 600, PH = 694, s = 1.3;
+      ctx.fillStyle = "#2B3A44"; rr(ctx, PX, PY, PW, PH, 36); ctx.fill(); ctx.fillStyle = "#F4F7F5"; rr(ctx, PX + 14, PY + 14, PW - 28, PH - 28, 26); ctx.fill();
+      ctx.save(); rr(ctx, PX + 14, PY + 14, PW - 28, PH - 28, 26); ctx.clip();
+      const x = PX + 36, w = PW - 72; let y = PY + 40;
+      card(ctx, PX + 14, PY + 14, PW - 28, 46, { fill: "#FFFFFF", r: 0 }); text(ctx, "belajar-informatika.vercel.app/e6", PX + PW / 2, PY + 45, 19, { align: "center", weight: 800, color: C.kikoDark });
+      y = PY + 100; text(ctx, "Latihan: hitung langkahnya", x, y, 27, { weight: 900 });
+      const a = b.audio || b.dur, c1 = a * 0.18, c2 = a * 0.42, lvl = l > c1 + 0.2 ? 1 : 0, guessed = l > c2 + 0.2;
+      // tombol level
+      const B1 = { x, y: y + 22, w: 200, h: 46 }, B2 = { x: x + 210, y: y + 22, w: w - 210, h: 46 }, B3 = { x, y: y + 78, w: w, h: 46 };
+      pill(ctx, B1.x, B1.y, B1.w, B1.h, "1 Visualisator", { on: lvl === 0 }); pill(ctx, B2.x, B2.y, B2.w, B2.h, "2 Lomba tiga algoritma", { on: lvl === 1 }); pill(ctx, B3.x, B3.y, B3.w, B3.h, "3 Tebak langkah binary search", {});
+      y += 160;
+      let O3 = null;
+      if (lvl === 0) {
+        para(ctx, "Pilih algoritma dan data, lalu tekan Langkah. Amati penghitung.", x, y, 19, w, { weight: 700, color: C.ink2, lh: 1.3 }); y += 64;
+        ["Bubble", "Selection", "Insertion"].forEach((t, i) => pill(ctx, x + i * 176, y, 166, 42, t, { on: i === 0, size: 18 })); y += 52;
+        ["data acak", "hampir urut", "terbalik"].forEach((t, i) => pill(ctx, x + i * 176, y, 166, 42, t, { on: i === 0, size: 18 })); y += 60;
+        U.cards(ctx, x + 20, y, { a: PAGE_DATA.acak, hl: [0, 1], done: [] }, { w: 70, h: 70, gap: 14, index: false }); y += 100;
+        card(ctx, x, y, w / 2 - 6, 70, { fill: "#FFF3D6", r: 12 }); text(ctx, "1", x + w / 4, y + 38, 28, { align: "center", weight: 900 }); text(ctx, "perbandingan", x + w / 4, y + 60, 15, { align: "center", weight: 800, color: C.ink2 });
+        card(ctx, x + w / 2 + 6, y, w / 2 - 6, 70, { fill: C.badBg, r: 12 }); text(ctx, "0", x + w * 0.75, y + 38, 28, { align: "center", weight: 900 }); text(ctx, "pertukaran", x + w * 0.75, y + 60, 15, { align: "center", weight: 800, color: C.ink2 }); y += 84;
+        pill(ctx, x, y, 170, 44, "▶ Langkah", { fill: "#FFE7B0", size: 18 }); pill(ctx, x + 180, y, 220, 44, "⏩ Sampai selesai", { size: 18 });
+      } else if (!guessed) {
+        para(ctx, "Tebak dulu algoritma dengan perbandingan paling sedikit untuk data hampir urut, lalu jalankan lombanya.", x, y, 19, w, { weight: 700, color: C.ink2, lh: 1.3 }); y += 92;
+        card(ctx, x, y, w, 100, { fill: "#E6EEEA", r: 12 }); para(ctx, "Data hampir urut: " + PAGE_DATA.hampir.join(", ") + ". Algoritma mana yang perbandingannya paling sedikit?", x + 14, y + 34, 19, w - 28, { weight: 800, lh: 1.3 }); y += 116;
+        ["Bubble", "Selection", "Insertion"].forEach((t, i) => { pill(ctx, x, y + i * 56, w, 46, t, { left: true }); if (i === 2) O3 = { x: x + 100, y: y + i * 56 + 23 }; });
+      } else {
+        const tr = (k, arr) => race(k, arr);
+        card(ctx, x, y - 10, w, 56, { fill: C.goodBg, r: 12 }); text(ctx, "Tebakanmu: Insertion. Tepat!", x + 14, y + 26, 20, { weight: 900, color: C.good }); y += 64;
+        const cw = [120, 136, 136, 136]; let cx = x;
+        ["data", "Bubble", "Selection", "Insertion"].forEach((h, i) => { card(ctx, cx, y, cw[i] - 2, 40, { fill: "#E6EEEA", r: 6 }); text(ctx, h, cx + cw[i] / 2, y + 27, 17, { align: "center", weight: 900 }); cx += cw[i]; }); y += 44;
+        Object.keys(PAGE_DATA).forEach(d => {
+          const r = ALGS.map(A => tr(A.k, PAGE_DATA[d])), mn = Math.min(...r.map(q => q.cmp)); cx = x;
+          card(ctx, cx, y, cw[0] - 2, 42, { fill: "#FFFFFF", r: 6 }); text(ctx, d, cx + cw[0] / 2, y + 28, 17, { align: "center", weight: 800 }); cx += cw[0];
+          r.forEach((q, i) => { card(ctx, cx, y, cw[i + 1] - 2, 42, { fill: q.cmp === mn ? C.goodBg : "#FFFFFF", r: 6 }); text(ctx, q.cmp + " · " + q.sw, cx + cw[i + 1] / 2, y + 28, 18, { align: "center", weight: q.cmp === mn ? 900 : 700 }); cx += cw[i + 1]; });
+          y += 46;
+        });
+        para(ctx, "angka: perbandingan · pertukaran/geseran; hijau = perbandingan paling sedikit", x, y + 22, 16, w, { weight: 700, color: C.ink2, lh: 1.3 });
+      }
+      ctx.restore();
+      // pointer
+      const P2 = { x: B2.x + B2.w / 2, y: B2.y + B2.h / 2 }, P3 = O3 || { x: x + 100, y: PY + 100 + 160 + 92 + 116 + 2 * 56 + 23 }, P0 = { x: 760, y: 760 };
+      let p = P0, click = 0;
+      if (l < c1) { const u = ease(l / c1); p = { x: lerp(P0.x, P2.x, u), y: lerp(P0.y, P2.y, u) }; }
+      else if (l < c2) { const u = ease((l - c1 - 0.5) / (c2 - c1 - 0.5)); p = { x: lerp(P2.x, P3.x, u), y: lerp(P2.y, P3.y, u) }; click = (l - c1) / 0.6; }
+      else { const u = ease((l - c2 - 0.9) / 0.8); p = { x: lerp(P3.x, 790, u), y: lerp(P3.y, 800, u) }; click = (l - c2) / 0.6; }
+      L.cursor(ctx, p.x, p.y, { click });
+      // panel kanan
+      card(ctx, 880, 150, 900, 400, { fill: "#FFFFFF", r: 22 });
+      text(ctx, "COBA SENDIRI DI HALAMAN LATIHAN E.6", 920, 205, 26, { weight: 900, color: C.accentDark });
+      ["Tekan 2 Lomba tiga algoritma.", "Tebak dulu pemenang untuk data hampir urut.", "Bandingkan angka di tabelnya.", "Di 1 Visualisator, coba data terbalik."].forEach((t, i) => {
+        const yy = 260 + i * 70, now = (i === 0 && l < c1 + 0.6) || (i === 1 && l >= c1 + 0.6 && l < c2 + 0.6) || (i === 2 && l >= c2 + 0.6 && l < a * 0.7) || (i === 3 && l >= a * 0.7);
+        if (now) { ctx.fillStyle = "#FFF3D6"; rr(ctx, 905, yy - 10, 850, 58, 12); ctx.fill(); }
+        ctx.fillStyle = C.kiko; ctx.beginPath(); ctx.arc(940, yy + 19, 20, 0, Math.PI * 2); ctx.fill(); text(ctx, String(i + 1), 940, yy + 28, 24, { align: "center", weight: 900, color: "#fff" });
+        text(ctx, t, 978, yy + 29, 27, { weight: 800, fit: 770 });
+      });
+      card(ctx, 880, 580, 900, 230, { fill: "#FFF9E0", r: 22 });
+      text(ctx, "Tugas nyata", 920, 632, 28, { weight: 900 });
+      para(ctx, "Tulis delapan angka di potongan kertas, acak, lalu urutkan dengan insertion sort sambil menghitung perbandingan dan geserannya.", 920, 680, 26, 820, { weight: 700, lh: 1.3 });
+    }
+  });
+})(typeof window !== "undefined" ? window : globalThis);
+</script>
+<script>/* Inti halaman latihan: pemutar (kanvas + narasi), tombol suara nyala/mati (berpindah antara timeline suara dan teks),
+   kuis dengan petunjuk, dan kemajuan di localStorage (perangkat ini saja).
+   Pakai:  const P = PageCore({ suara: TIMELINE_SUARA_atau_null, teks: TIMELINE_TEKS });
+   Episode menambahkan latihannya sendiri lewat P.$, P.K, P.H, P.progress, P.save(), P.speed(), P.onProgress(fn). */
+function PageCore(TLS, opt = {}) {
+  const $ = id => document.getElementById(id);
+  const K = Kiko, H = K.helpers;
+  let voice = !!TLS.suara; let TL = voice ? TLS.suara : TLS.teks;
+  // ---------- progress storage (per device only) ----------
+  const KEY = opt.key || TL.episode.replace(/\./g, "").toLowerCase() + "-progress";   // D7.5 -> "d75-progress"
+  let progress = { quiz: {} };
+  try { const s = localStorage.getItem(KEY); if (s) progress = { quiz: {}, ...JSON.parse(s) }; } catch (e) {}
+  const extras = [];
+  function renderProgress() {
+    const el = $("progress"); if (!el) return; el.innerHTML = "";
+    Object.keys(TL.quizzes).forEach((id, i) => { const s = document.createElement("span"); s.textContent = "Cek " + (i + 1); s.className = progress.quiz[id] ? "ok" : ""; el.appendChild(s); });
+    extras.forEach(f => f(el));
+  }
+  function save() { try { localStorage.setItem(KEY, JSON.stringify(progress)); } catch (e) {} renderProgress(); }
+
+  // ---------- player ----------
+  const cv = $("screen"), ctx = cv.getContext("2d");
+  let t = 0, playing = false, last = 0, speed = 1, hasAudio = false;
+  const nar = $("nar"); nar.addEventListener("canplay", () => { hasAudio = true; }); nar.addEventListener("error", () => { hasAudio = false; });
+  function fmt(s) { s = Math.max(0, Math.floor(s)); return Math.floor(s / 60) + ":" + String(s % 60).padStart(2, "0"); }
+  function segStart(i) { return TL.beats.find(b => b.seg === i).start; }
+  function syncAudio() { if (voice && hasAudio) { try { nar.currentTime = t; } catch (e) {} } }
+  function drawNow() {
+    const b = K.draw(ctx, Math.min(t, TL.total - 0.01), TL);
+    $("barfill").style.width = (t / TL.total * 100) + "%"; $("bar").setAttribute("aria-valuenow", Math.round(t / TL.total * 100));
+    $("timelabel").textContent = fmt(t) + " / " + fmt(TL.total);
+    [...$("chapters").children].forEach((c, i) => c.classList.toggle("now", i === b.seg));
+    return b;
+  }
+  function loop(now) {
+    if (!playing) return;
+    const dt = Math.min(0.1, (now - last) / 1000); last = now; if (voice && hasAudio && !nar.paused) t = nar.currentTime; else t += dt * speed;
+    if (t >= TL.total) { t = TL.total - 0.01; setPlaying(false); }
+    drawNow(); requestAnimationFrame(loop);
+  }
+  function setPlaying(p) {
+    playing = p; $("bigplay").hidden = p; $("playbtn").textContent = p ? "❚❚ Jeda" : "▶ Putar";
+    if (p) { last = performance.now(); if (voice && hasAudio) { try { nar.currentTime = t; nar.playbackRate = speed; nar.play().catch(() => {}); } catch (e) {} } requestAnimationFrame(loop); } else nar.pause();
+  }
+  $("bigplay").addEventListener("click", () => setPlaying(true));
+  $("playbtn").addEventListener("click", () => setPlaying(!playing));
+  $("replay").addEventListener("click", () => { const b = K.beatAt(TL, t); t = segStart(b.seg); syncAudio(); drawNow(); setPlaying(true); });
+  $("slow").addEventListener("click", e => { speed = speed === 1 ? 0.8 : 1; nar.playbackRate = speed; e.currentTarget.setAttribute("aria-pressed", speed !== 1); });
+  function seekFromBar(ev) { const r = $("bar").getBoundingClientRect(); const x = (ev.touches ? ev.touches[0].clientX : ev.clientX) - r.left; t = Math.max(0, Math.min(TL.total - 0.01, x / r.width * TL.total)); syncAudio(); drawNow(); }
+  $("bar").addEventListener("click", seekFromBar);
+  $("bar").addEventListener("keydown", e => { if (e.key === "ArrowRight") { t = Math.min(TL.total - 0.01, t + 5); syncAudio(); drawNow(); } if (e.key === "ArrowLeft") { t = Math.max(0, t - 5); syncAudio(); drawNow(); } });
+  TL.segments.forEach((name, i) => { const b = document.createElement("button"); b.textContent = (i + 1) + ". " + name; b.addEventListener("click", () => { t = segStart(i); syncAudio(); drawNow(); setPlaying(true); }); $("chapters").appendChild(b); });
+  // voice on/off: switches between the narrated timeline and the reading-paced one, staying on the same beat
+  const vb = $("voice");
+  function setVoice(on) {
+    const cur = K.beatAt(TL, t);
+    voice = on && !!TLS.suara; TL = voice ? TLS.suara : TLS.teks;
+    const nb = TL.beats.find(b => b.id === cur.id) || TL.beats[0]; t = nb.start;
+    if (vb) { vb.setAttribute("aria-pressed", voice); vb.textContent = voice ? "🔊 Suara: nyala" : "🔇 Suara: mati"; }
+    if (playing) { if (voice && hasAudio) { try { nar.currentTime = t; nar.playbackRate = speed; nar.play().catch(() => {}); } catch (e) {} } else nar.pause(); }
+    drawNow();
+  }
+  if (vb) { if (!TLS.suara || !TLS.teks) vb.hidden = true; else { vb.addEventListener("click", () => setVoice(!voice)); vb.setAttribute("aria-pressed", voice); vb.textContent = voice ? "🔊 Suara: nyala" : "🔇 Suara: mati"; } }
+  drawNow();
+
+  // ---------- quiz ----------
+  const quizEl = $("quiz");
+  if (quizEl) Object.entries(TL.quizzes).forEach(([id, q], qi) => {
+    const box = document.createElement("div"); box.className = "q";
+    box.innerHTML = `<h3>${qi + 1}. ${q.q}</h3><div class="opts"></div><div class="fb"></div>`;
+    const opts = box.querySelector(".opts"), fb = box.querySelector(".fb");
+    q.options.forEach((o, i) => {
+      const b = document.createElement("button"); b.innerHTML = `<b>${"ABC"[i]}</b><span>${o}</span>`;
+      b.addEventListener("click", () => {
+        [...opts.children].forEach(c => c.classList.remove("wrong"));
+        if (i === q.answer) { b.classList.add("right"); fb.className = "fb good"; fb.textContent = "Benar! " + (q.explain || ""); progress.quiz[id] = true; save(); [...opts.children].forEach(c => c.disabled = true); }
+        else { b.classList.add("wrong"); fb.className = "fb bad"; fb.textContent = "Belum tepat. Petunjuk: " + q.hint; }
+      });
+      opts.appendChild(b);
+    });
+    if (progress.quiz[id]) { opts.children[q.answer].classList.add("right"); [...opts.children].forEach(c => c.disabled = true); fb.className = "fb good"; fb.textContent = "Sudah dijawab benar."; }
+    quizEl.appendChild(box);
+  });
+  renderProgress();
+
+  return { $, K, H, progress, save, renderProgress, speed: () => speed, timeline: () => TL,
+           onProgress(fn) { extras.push(fn); renderProgress(); } };
+}
+</script>
+<script>
+(function () {
+  const P = PageCore({ suara: {"episode": "K16", "title": "Balapan Algoritma Pengurutan", "label": "Simulasi Konsep · K16 · Episode E.6", "kind": "konsep", "for": ["E.6"], "latihan": "E.6", "hook": "menebak algoritma pengurutan yang paling hemat langkah untuk data acak, hampir urut, atau terbalik, lalu membuktikannya dengan penghitung.", "engine": ["../../_alat/kiko-core.js", "../../_alat/kiko-devices.js", "../../_alat/layar.js", "../../D8.3/alur.js", "../../D8.2/kartu.js", "../../E.6/urut.js", "../../E.6/scenes.js", "scenes.js"], "parts": {"K16": {"segs": [0, 1, 2, 3, 4, 5, 6, 7]}}, "recap": ["Pemenang lomba bergantung pada bentuk datanya.", "Data dua kali lipat, langkah pengurutan ±4 kali lipat.", "Binary search: data dua kali lipat, cukup +1 langkah."], "next": {"code": "K17", "title": "Melacak Pseudocode dengan Array dan Fungsi", "note": "Simulasi konsep berikutnya.", "heading": "SIMULASI BERIKUTNYA"}, "youtube": {"ringkas": "Simulasi konsep: bubble sort, selection sort, dan insertion sort berlomba merapikan kartu angka yang sama, dengan penghitung perbandingan dan pertukaran yang terlihat. Ada lima variasi: data acak, hampir urut, terbalik, data dua kali lebih besar (8 menjadi 16 kartu), lalu binary search pada 8 dan 16 kartu. Setiap variasi diawali jeda untuk menebak, lalu dibuktikan. Tiga cek pemahaman.", "belajar": ["membandingkan bubble sort, selection sort, dan insertion sort dengan menghitung perbandingan dan pertukaran", "memilih algoritma pengurutan yang cocok untuk data acak, hampir urut, atau terbalik", "melihat bahwa data dua kali lipat membuat langkah pengurutan sekitar empat kali lipat", "menghitung langkah binary search dan membandingkannya dengan linear search"], "cari": ["perbandingan bubble sort selection sort insertion sort", "visualisasi algoritma sorting kelas 10", "simulasi binary search langkah demi langkah", "algoritma pengurutan mana yang paling cepat", "cara menghitung langkah algoritma sorting"], "prasyarat": "episode E.6 Algoritma Standar: Pencarian dan Pengurutan", "tagar": ["#Sorting", "#BinarySearch", "#Algoritma", "#Simulasi", "#Informatika", "#SMA"]}, "segments": ["Pembuka", "Aturan lomba", "Variasi 1: data acak", "Variasi 2: hampir urut", "Variasi 3: terbalik", "Variasi 4: 16 kartu", "Variasi 5: binary search", "Penutup"], "quizzes": {"q1": {"q": "Delapan kartu sudah urut sempurna. Berapa perbandingan yang dilakukan insertion sort?", "options": ["0 perbandingan", "7 perbandingan", "28 perbandingan"], "answer": 1, "hint": "Setiap kartu, mulai dari kartu kedua, dibandingkan dengan tetangga kirinya."}, "q2": {"q": "Kartunya dijadikan 32. Perbandingan bubble sort menjadi kira-kira berapa kali lipat dari 16 kartu?", "options": ["2 kali lipat", "4 kali lipat", "8 kali lipat"], "answer": 1, "hint": "Dari 8 menjadi 16 kartu, perbandingannya naik dari 28 menjadi 120."}, "q3": {"q": "Binary search pada 32 kartu yang sudah urut paling banyak butuh berapa langkah?", "options": ["6 langkah", "16 langkah", "32 langkah"], "answer": 0, "hint": "Delapan kartu paling banyak 4 langkah, enam belas kartu paling banyak 5 langkah."}}, "beats": [{"id": "intro1", "seg": 0, "scene": "title", "hold": 0.8, "text": "Halo! Aku Kiko. Hari ini tiga algoritma pengurutan akan berlomba merapikan kartu angka yang sama. Siapa yang paling sedikit langkahnya?", "start": 0.0, "speech": 0.4, "audio": 8.899, "dur": 11.84}, {"id": "intro2", "seg": 0, "scene": "k16_tujuan", "hold": 0.8, "text": "Setelah menonton, kamu bisa menebak algoritma mana yang paling hemat langkah untuk bentuk data tertentu, lalu membuktikannya dengan menghitung.", "start": 11.84, "speech": 12.24, "audio": 8.595, "dur": 11.34}, {"id": "intro3", "seg": 0, "scene": "k16_prasyarat", "hold": 0.8, "text": "Simulasi ini melengkapi episode E.6 tentang pencarian dan pengurutan. Kalau bubble sort, selection sort, dan insertion sort masih asing, tonton dulu episode E.6, ya.", "start": 23.18, "speech": 23.58, "audio": 11.52, "dur": 13.84}, {"id": "a1", "seg": 1, "scene": "k16_peserta", "hold": 1.0, "text": "Ada tiga peserta. Bubble sort menukar dua tetangga yang terbalik. Selection sort mencari kartu terkecil, lalu menukarnya ke depan. Insertion sort menyisipkan kartu ke bagian yang sudah urut.", "start": 37.02, "speech": 37.42, "audio": 12.182, "dur": 16.04}, {"id": "a2", "seg": 1, "scene": "k16_aturan", "hold": 1.0, "text": "Aturannya adil. Ketiganya mendapat kartu yang sama, dan setiap perbandingan atau pertukaran dihitung satu langkah. Pada insertion sort, satu geseran kartu juga dihitung satu langkah.", "start": 53.06, "speech": 53.46, "audio": 12.111, "dur": 14.54}, {"id": "a3", "seg": 1, "scene": "k16_aturan", "step": 2, "hold": 1.0, "text": "Setiap langkah memakan waktu yang sama. Jadi, algoritma yang langkahnya paling sedikit akan sampai di garis finis lebih dulu.", "start": 67.6, "speech": 68.0, "audio": 7.904, "dur": 11.54}, {"id": "v1q", "seg": 2, "scene": "k16_tanya", "data": "acak", "hold": 0.6, "text": "Variasi pertama. Ini delapan kartu yang urutannya acak. Menurutmu, apa yang terjadi kalau ketiganya berlomba? Siapa yang sampai di garis finis lebih dulu?", "start": 79.14, "speech": 79.54, "audio": 10.172, "dur": 13.14}, {"id": "v1t", "seg": 2, "scene": "k16_tebak", "data": "acak", "hold": 2.0, "text": "Tebak dulu, lalu ucapkan jawabanmu.", "start": 92.28, "speech": 92.68, "audio": 2.861, "dur": 5.561}, {"id": "v1run", "seg": 2, "scene": "k16_lomba", "data": "acak", "hold": 1.6, "text": "Lomba dimulai! Bubble sort membandingkan dua tetangga, selection sort mencari kartu terkecil, dan insertion sort mengangkat satu kartu, lalu menyisipkannya di tempat yang tepat.", "start": 97.841, "speech": 98.241, "audio": 11.709, "dur": 14.64}, {"id": "v1hasil", "seg": 2, "scene": "k16_hasil", "data": "acak", "hold": 1.0, "text": "Insertion sort menang dengan dua puluh tujuh langkah. Selection sort kedua dengan tiga puluh tiga langkah, dan bubble sort terakhir dengan tiga puluh sembilan langkah.", "start": 112.481, "speech": 112.881, "audio": 9.69, "dur": 14.54}, {"id": "v1why", "seg": 2, "scene": "k16_hasil", "data": "acak", "fokus": "tukar", "hold": 1.2, "text": "Bubble sort dan selection sort sama-sama membandingkan dua puluh delapan kali. Bedanya, selection sort hanya menukar lima kali, sedangkan bubble sort menukar sebelas kali.", "start": 127.021, "speech": 127.421, "audio": 10.584, "dur": 14.24}, {"id": "v2q", "seg": 3, "scene": "k16_tanya", "data": "hampir", "hold": 0.6, "text": "Variasi kedua. Sekarang kartunya hampir urut, hanya lima puluh enam dan empat puluh delapan yang tertukar. Menurutmu, apa yang terjadi kalau lombanya diulang?", "start": 141.261, "speech": 141.661, "audio": 10.344, "dur": 13.14}, {"id": "v2t", "seg": 3, "scene": "k16_tebak", "data": "hampir", "hold": 2.0, "text": "Tebak dulu, lalu ucapkan jawabanmu.", "start": 154.401, "speech": 154.801, "audio": 2.813, "dur": 5.54}, {"id": "v2run", "seg": 3, "scene": "k16_lomba", "data": "hampir", "hold": 1.6, "text": "Insertion sort melesat jauh di depan. Setiap kartu yang sudah berada di tempatnya cukup dibandingkan sekali dengan tetangga kirinya, lalu langsung beres.", "start": 159.941, "speech": 160.341, "audio": 9.495, "dur": 13.64}, {"id": "v2hasil", "seg": 3, "scene": "k16_hasil", "data": "hampir", "hold": 1.2, "text": "Insertion sort selesai dalam sembilan langkah saja. Bubble sort dan selection sort tetap membandingkan dua puluh delapan kali, padahal hanya satu pasang kartu yang salah tempat.", "start": 173.581, "speech": 173.981, "audio": 10.966, "dur": 15.24}, {"id": "v3q", "seg": 4, "scene": "k16_tanya", "data": "terbalik", "hold": 0.6, "text": "Variasi ketiga. Kartunya kini terbalik, dari yang terbesar sampai yang terkecil. Menurutmu, apa yang terjadi kalau insertion sort, sang juara tadi, berlomba lagi?", "start": 188.821, "speech": 189.221, "audio": 11.393, "dur": 13.14}, {"id": "v3t", "seg": 4, "scene": "k16_tebak", "data": "terbalik", "hold": 2.0, "text": "Tebak dulu, lalu ucapkan jawabanmu.", "start": 201.961, "speech": 202.361, "audio": 2.866, "dur": 5.566}, {"id": "v3run", "seg": 4, "scene": "k16_lomba", "data": "terbalik", "hold": 1.6, "text": "Kali ini insertion sort kerepotan, karena setiap kartu harus digeser melewati semua kartu di kirinya. Bubble sort juga harus menukar pada setiap perbandingan.", "start": 207.527, "speech": 207.927, "audio": 10.711, "dur": 14.14}, {"id": "v3hasil", "seg": 4, "scene": "k16_hasil", "data": "terbalik", "hold": 1.0, "text": "Selection sort menang dengan tiga puluh dua langkah, karena ia hanya menukar empat kali. Bubble sort dan insertion sort seri dengan lima puluh enam langkah.", "start": 221.667, "speech": 222.067, "audio": 9.476, "dur": 14.54}, {"id": "v3why", "seg": 4, "scene": "k16_papan", "upto": 3, "hold": 1.2, "text": "Jadi, tidak ada algoritma yang selalu menang. Pemenangnya bergantung pada bentuk datanya, apakah acak, hampir urut, atau terbalik.", "start": 236.207, "speech": 236.607, "audio": 8.796, "dur": 11.24}, {"id": "q1", "seg": 4, "scene": "quiz", "quiz": "q1", "hold": 4.0, "text": "Cek pemahaman. Delapan kartu sudah urut sempurna. Berapa perbandingan yang dilakukan insertion sort? Pikirkan dulu.", "start": 247.447, "speech": 247.847, "audio": 8.48, "dur": 13.18}, {"id": "q1a", "seg": 4, "scene": "quiz_answer", "quiz": "q1", "hold": 1.0, "text": "Jawabannya: tujuh. Setiap kartu, mulai dari kartu kedua, dibandingkan sekali dengan tetangga kirinya, lalu langsung beres. Tidak ada kartu yang digeser.", "start": 260.627, "speech": 261.027, "audio": 10.413, "dur": 12.54}, {"id": "v4q", "seg": 5, "scene": "k16_tanya", "data": "besar", "hold": 0.6, "text": "Variasi keempat. Kita tambahkan delapan kartu baru di belakang data acak tadi. Menurutmu, apa yang terjadi pada jumlah langkahnya kalau kartunya dua kali lipat?", "start": 273.167, "speech": 273.567, "audio": 10.715, "dur": 13.64}, {"id": "v4t", "seg": 5, "scene": "k16_tebak", "data": "besar", "hold": 2.0, "text": "Tebak dulu, lalu ucapkan jawabanmu.", "start": 286.807, "speech": 287.207, "audio": 2.863, "dur": 5.563}, {"id": "v4run", "seg": 5, "scene": "k16_lomba", "data": "besar", "hold": 1.6, "text": "Lomba enam belas kartu dimulai. Perhatikan penghitungnya. Angkanya naik jauh lebih tinggi daripada lomba delapan kartu tadi.", "start": 292.37, "speech": 292.77, "audio": 8.194, "dur": 11.14}, {"id": "v4hasil", "seg": 5, "scene": "k16_besar", "hold": 1.0, "text": "Kartunya dua kali lipat, tetapi langkahnya sekitar empat kali lipat. Perbandingan bubble sort naik dari dua puluh delapan menjadi seratus dua puluh.", "start": 303.51, "speech": 303.91, "audio": 9.628, "dur": 13.04}, {"id": "v4why", "seg": 5, "scene": "k16_skala", "hold": 1.2, "text": "Itulah pertumbuhan kuadrat. Setiap kali kartunya dua kali lipat, perbandingannya menjadi sekitar empat kali lipat. Karena itu, data besar butuh algoritma yang lebih cerdas.", "start": 316.55, "speech": 316.95, "audio": 11.44, "dur": 14.24}, {"id": "q2", "seg": 5, "scene": "quiz", "quiz": "q2", "hold": 4.0, "text": "Cek pemahaman. Kalau kartunya dijadikan tiga puluh dua, perbandingan bubble sort menjadi kira-kira berapa kali lipat dari enam belas kartu? Pikirkan dulu.", "start": 330.79, "speech": 331.19, "audio": 9.832, "dur": 16.04}, {"id": "q2a", "seg": 5, "scene": "quiz_answer", "quiz": "q2", "hold": 1.0, "text": "Jawabannya: sekitar empat kali lipat. Dari enam belas menjadi tiga puluh dua kartu, perbandingannya naik dari seratus dua puluh menjadi empat ratus sembilan puluh enam.", "start": 346.83, "speech": 347.23, "audio": 10.786, "dur": 14.54}, {"id": "v5a", "seg": 6, "scene": "k16_biner", "n": 8, "hold": 1.0, "text": "Setelah kartunya urut, kita bisa mencari dengan binary search. Cari empat puluh delapan di delapan kartu. Tengahnya tiga puluh tujuh, lalu lima puluh enam, lalu ketemu.", "start": 361.37, "speech": 361.77, "audio": 11.747, "dur": 15.04}, {"id": "v5q", "seg": 6, "scene": "k16_tanya", "data": "biner", "hold": 0.6, "text": "Variasi kelima. Menurutmu, apa yang terjadi kalau kita mencari empat puluh delapan di enam belas kartu? Apakah langkahnya ikut menjadi dua kali lipat?", "start": 376.41, "speech": 376.81, "audio": 9.774, "dur": 13.14}, {"id": "v5t", "seg": 6, "scene": "k16_tebak_biner", "hold": 2.0, "text": "Tebak dulu, lalu ucapkan jawabanmu.", "start": 389.55, "speech": 389.95, "audio": 2.851, "dur": 5.551}, {"id": "v5run", "seg": 6, "scene": "k16_biner", "n": 16, "hold": 1.0, "text": "Tengahnya empat puluh dua, jadi separuh kiri dibuang. Lalu enam puluh empat, separuh kanan dibuang. Lalu lima puluh tiga, dan akhirnya empat puluh delapan ketemu.", "start": 395.101, "speech": 395.501, "audio": 11.668, "dur": 14.54}, {"id": "v5hasil", "seg": 6, "scene": "k16_biner_hasil", "hold": 1.2, "text": "Hanya empat langkah, cuma satu langkah lebih banyak. Linear search butuh sepuluh langkah. Paling banyak, binary search butuh empat langkah untuk delapan kartu dan lima untuk enam belas.", "start": 409.641, "speech": 410.041, "audio": 12.022, "dur": 16.24}, {"id": "q3", "seg": 6, "scene": "quiz", "quiz": "q3", "hold": 4.0, "text": "Cek pemahaman. Binary search pada tiga puluh dua kartu yang sudah urut paling banyak butuh berapa langkah? Pikirkan dulu.", "start": 425.881, "speech": 426.281, "audio": 8.4, "dur": 14.54}, {"id": "q3a", "seg": 6, "scene": "quiz_answer", "quiz": "q3", "hold": 1.0, "text": "Jawabannya: enam langkah. Setiap kali kartunya dua kali lipat, binary search hanya butuh satu langkah tambahan, karena setiap langkah membuang separuh kartu.", "start": 440.421, "speech": 440.821, "audio": 10.54, "dur": 13.04}, {"id": "papan", "seg": 7, "scene": "k16_papan", "upto": 5, "hold": 1.2, "text": "Ini papan skor lomba kita. Insertion sort menang untuk data acak dan hampir urut, selection sort menang untuk data terbalik, dan binary search jauh lebih hemat daripada linear search.", "start": 453.461, "speech": 453.861, "audio": 11.975, "dur": 16.74}, {"id": "recap", "seg": 7, "scene": "recap", "hold": 1.5, "text": "Tiga hal untuk diingat. Pemenangnya bergantung pada bentuk data. Data dua kali lipat membuat langkah pengurutan sekitar empat kali lipat. Binary search cukup menambah satu langkah.", "start": 470.201, "speech": 470.601, "audio": 11.855, "dur": 15.54}, {"id": "latihan", "seg": 7, "scene": "k16_latihan", "hold": 1.5, "text": "Di halaman latihan episode E.6, tekan Lomba tiga algoritma, tebak dulu pemenangnya, lalu jalankan. Setelah itu, urutkan delapan kartu angka di mejamu sambil menghitung langkahnya.", "start": 485.741, "speech": 486.141, "audio": 12.499, "dur": 15.04}, {"id": "outro", "seg": 7, "scene": "outro", "hold": 2.5, "text": "Simulasi berikutnya: melacak pseudocode dengan array dan fungsi. Sampai jumpa!", "start": 500.781, "speech": 501.181, "audio": 5.844, "dur": 9.044}], "total": 509.825}, teks: null });
+})();
+</script>
