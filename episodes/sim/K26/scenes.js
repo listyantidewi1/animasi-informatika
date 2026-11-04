@@ -72,6 +72,10 @@
         for (let k = 0; k < 12; k++) { const lab = k < 9 ? String(k + 1) : k === 10 ? "0" : ""; if (!lab) continue; const bx = 45 + (k % 3) * 75 + 30, by = 220 + Math.floor(k / 3) * 70 + 30; const on = o.press === lab;
           ctx.fillStyle = on ? "#FFD27A" : "#EEF3F6"; ctx.beginPath(); ctx.arc(bx, by, 28, 0, Math.PI * 2); ctx.fill(); text(ctx, lab, bx, by + 10, 24, { align: "center", weight: 800 }); P["k" + lab] = [bx, by]; }
         if (o.cover) hand(ctx, 10, 230, 280);
+      } else if (scr === "proses") {
+        ctx.strokeStyle = "#DCE6EC"; ctx.lineWidth = 10; ctx.beginPath(); ctx.arc(W / 2, 190, 46, 0, Math.PI * 2); ctx.stroke();
+        const a0 = (o.t || 0) * 5; ctx.strokeStyle = TEAL; ctx.beginPath(); ctx.arc(W / 2, 190, 46, a0, a0 + 1.6); ctx.stroke();
+        text(ctx, "memproses …", W / 2, 290, 24, { align: "center", weight: 900 }); text(ctx, "Kedai Sari · Rp15.000", W / 2, 326, 18, { align: "center", weight: 800, color: C.ink2 });
       } else if (scr === "berhasil") {
         ctx.fillStyle = C.good; ctx.beginPath(); ctx.arc(W / 2, 170, 56, 0, Math.PI * 2); ctx.fill(); text(ctx, "✓", W / 2, 192, 64, { align: "center", weight: 900, color: "#fff" });
         text(ctx, "pembayaran berhasil", W / 2, 270, 22, { align: "center", weight: 900 }); text(ctx, (o.nama || "Kedai Sari") + " · " + (o.nominal || "Rp15.000"), W / 2, 306, 18, { align: "center", weight: 800, color: C.ink2 });
@@ -101,7 +105,7 @@
     // garis
     for (let i = 0; i < 3; i++) { ctx.strokeStyle = "#CFDCD5"; ctx.lineWidth = 6; ctx.setLineDash([12, 10]); ctx.beginPath(); ctx.moveTo(NODES[i][0] + 120, y); ctx.lineTo(NODES[i + 1][0] - 120, y); ctx.stroke(); ctx.setLineDash([]); }
     // HP Dito
-    wallet(ctx, NODES[0][0], y, o.ps || 0.72, st.notif > 0 || st.toServer >= 1 ? "berhasil" : "pin", { n: Math.round((st.pin || 0) * 6), cover: (st.pin || 0) > 0 && (st.toServer || 0) < 1, notif: st.notif > 0 ? { title: "Pembayaran berhasil", body: "Rp15.000 ke Kedai Sari", u: st.notif } : null });
+    wallet(ctx, NODES[0][0], y, o.ps || 0.72, st.notif > 0 ? "berhasil" : st.toServer > 0 ? "proses" : "pin", { t: l, n: Math.round((st.pin || 0) * 6), cover: (st.pin || 0) > 0 && (st.toServer || 0) < 1, notif: st.notif > 0 ? { title: "Pembayaran berhasil", body: "Rp15.000 ke Kedai Sari", u: st.notif } : null });
     // server
     J.server(ctx, NODES[1][0], y, 120, 170, { label: false });
     if (st.check >= 1) chip(ctx, "PIN ✓", NODES[1][0], y - 140, { size: 22, w: 140 }); if (st.check >= 2) chip(ctx, "saldo ✓", NODES[1][0], y - 96, { size: 22, w: 140 });
@@ -305,9 +309,9 @@
     // ---------- Short (area 40–1040 × 20–810) ----------
     k26s_pindai(ctx, b, l) {
       const c = cues(b, 3, [0.1, 0.35, 0.6]), k = stepOf(c, l);
-      Bx.stand(ctx, 70, 120, "Kedai Sari");
-      wallet(ctx, 560, 410, 1.28, k >= 2 ? "konfirmasi" : "pindai", { scan: k === 1 ? (l - c[1]) / 1.4 : null });
-      if (k >= 2) { card(ctx, 760, 150, 270, 250, { fill: "#FFF3D6", stroke: C.accent, lw: 4, r: 18 }); para(ctx, "nama merchant dan nominal: cocok?", 895, 230, 32, 240, { align: "center", weight: 900, color: C.accentDark, lh: 1.2 }); }
+      Bx.stand(ctx, 90, 60, "Kedai Sari");
+      wallet(ctx, 730, 410, 1.28, k >= 2 ? "konfirmasi" : "pindai", { scan: k === 1 ? (l - c[1]) / 1.4 : null });
+      if (k >= 2) { card(ctx, 60, 440, 420, 300, { fill: "#FFF3D6", stroke: C.accent, lw: 4, r: 18 }); para(ctx, "Baca dulu: nama merchant dan nominal cocok?", 270, 530, 38, 380, { align: "center", weight: 900, color: C.accentDark, lh: 1.2 }); }
     },
     k26s_jalan(ctx, b, l) {
       const c = cues(b, 3, [0.1, 0.4, 0.7]), k = stepOf(c, l);
@@ -318,15 +322,15 @@
       ctx.strokeStyle = "#CFDCD5"; ctx.lineWidth = 6; ctx.setLineDash([12, 10]); ctx.beginPath(); ctx.moveTo(380, 170); ctx.lineTo(670, 170); ctx.stroke(); ctx.setLineDash([]);
       if (st.toBank > 0 && st.toBank < 1) { const x = lerp(400, 660, ease(st.toBank)); card(ctx, x - 80, 140, 160, 56, { fill: "#FFF3D6", stroke: C.accent, lw: 3, r: 28 }); text(ctx, "Rp15.000", x, 178, 26, { align: "center", weight: 900, color: C.accentDark }); }
       if (st.credit) chip(ctx, "+Rp15.000", 770, 60, { size: 28 });
-      wallet(ctx, 280, 590, 0.68, "berhasil", { notif: st.notif > 0 ? { title: "Pembayaran berhasil", body: "Rp15.000 ke Kedai Sari", u: st.notif } : null }); text(ctx, "HP Dito", 480, 600, 30, { weight: 900 });
-      wallet(ctx, 800, 590, 0.68, "riwayat", { title: "Merchant", head: "Kedai Sari", rows: st.notif > 0.5 ? [["12.05", "dari Dito", "+Rp15.000", "berhasil"]] : [], hl: 0, notif: st.notif > 0 ? { title: "Uang masuk Rp15.000", body: "Pembayaran QRIS dari Dito", u: st.notif } : null }); text(ctx, "HP kasir", 600, 600, 30, { weight: 900 });
+      wallet(ctx, 280, 590, 0.68, "berhasil", { notif: st.notif > 0 ? { title: "Pembayaran berhasil", body: "Rp15.000 ke Kedai Sari", u: st.notif } : null }); text(ctx, "HP Dito", 280, 372, 30, { align: "center", weight: 900 });
+      wallet(ctx, 800, 590, 0.68, "riwayat", { title: "Merchant", head: "Kedai Sari", rows: st.notif > 0.5 ? [["12.05", "dari Dito", "+Rp15.000", "berhasil"]] : [], hl: 0, notif: st.notif > 0 ? { title: "Uang masuk Rp15.000", body: "Pembayaran QRIS dari Dito", u: st.notif } : null }); text(ctx, "HP kasir", 800, 372, 30, { align: "center", weight: 900 });
     },
     k26s_stiker(ctx, b, l) {
       const c = cues(b, 3, [0.1, 0.45, 0.75]), k = stepOf(c, l);
       wallet(ctx, 300, 400, 1.3, k >= 2 && l - c[1] > 0.9 ? "home" : "konfirmasi", { nama: "Pulsa Murah 88", warn: true, tap: k >= 2 ? "batal" : null, tapAt: k >= 2 ? { k: "batal", u: clamp((l - c[1]) / 0.9, 0, 1) } : null });
       card(ctx, 560, 120, 460, 170, { fill: C.badBg, stroke: C.bad, lw: 4, r: 20 }); para(ctx, "Di Kedai Sari, tetapi namanya Pulsa Murah 88", 790, 190, 32, 420, { align: "center", weight: 900, color: C.bad, lh: 1.2 });
       if (k >= 2) { card(ctx, 560, 330, 460, 150, { fill: C.goodBg, stroke: C.good, lw: 4, r: 20 }); para(ctx, "Tekan Batal, lalu tanyakan kasir", 790, 395, 34, 420, { align: "center", weight: 900, color: C.good, lh: 1.2 }); }
-      if (k >= 3) { Bx.stand(ctx, 660, 500, "Kedai Sari", { palsu: true }); }
+      if (k >= 3) { Bx.stand(ctx, 700, 470, "Kedai Sari", { palsu: true }); }
     },
     k26s_tautan(ctx, b, l) {
       const c = cues(b, 3, [0.05, 0.35, 0.6]), k = stepOf(c, l);
