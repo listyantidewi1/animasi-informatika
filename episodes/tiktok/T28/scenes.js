@@ -42,7 +42,7 @@
 
     // selection sort: cari yang terkecil, tukar ke depan, ulangi
     t28_pilih(ctx, b, l, t, TL, A) {
-      const cw = 92, ch = 130, gx = 480 - (8 * cw + 7 * 10) / 2, y = A.y + 200, per = 1.0;
+      const cw = 92, ch = 130, gx = 480 - (8 * cw + 7 * 10) / 2, y = A.y + 200, per = 0.75;
       const st = Math.max(0, cue(b, l, "mencari")), k = Math.min(7, Math.floor(st / per)), f = st <= 0 ? 0 : (st % per) / per;
       const s = SEL[k], a = s.a, m = s.m, scanEnd = 0.55, sw = ease(clamp((f - 0.6) / 0.35, 0, 1));
       text(ctx, k >= 7 ? "selesai, sudah urut!" : "putaran " + (k + 1), 480, A.y + 70, 50, { align: "center", weight: 900, color: C.kuning });
