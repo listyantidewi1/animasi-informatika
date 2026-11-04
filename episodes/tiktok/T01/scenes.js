@@ -44,7 +44,7 @@
         }
         text(ctx, (i + 1) + ".", x + 60, y + rowH * 0.66, 40, { weight: 800, color: C.ink2 });
         text(ctx, s, x + 130, y + rowH * 0.66, 46, { weight: 800, color: first ? C.ink : C.ink2 });
-        if (first && hit > 0) { check(ctx, x + w - 210, y + rowH / 2, 44, C.good); text(ctx, "COCOK!", x + w - 50, y + rowH * 0.66, 40, { weight: 900, color: C.good, align: "right" }); }
+        if (first && hit > 0) { check(ctx, x + w - 240, y + rowH / 2, 44, C.good); text(ctx, "COCOK!", x + w - 50, y + rowH * 0.66, 40, { weight: 900, color: C.good, align: "right" }); }
         ctx.restore();
       });
       const u2 = pop(b, l, "urutan pertama");

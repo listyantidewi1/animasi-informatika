@@ -3,8 +3,13 @@
   python3 episodes/_alat/render_tiktok.py tiktok/T01 --frame k1=0.5 k3   pratinjau JPG (detik dalam beat; tanpa detik = akhir beat) di preview/
   python3 episodes/_alat/render_tiktok.py tiktok/T01 --kontak           lembar kontak preview/kontak.jpg (3 frame per beat: awal, tengah, akhir)
   ... --zona     gambar ruang aman TikTok (merah) di atas frame pratinjau/lembar kontak
+  ... --rapatkan hanya merapatkan timeline (lihat di bawah), tanpa render
   ... --teks     pratinjau memakai timeline-teks.json (dari timing.py) bila suara belum dibuat; render video selalu memakai timeline.json
 Alur: script.json -> cek_tiktok.py -> suara_elevenlabs.py --uji -> suara_elevenlabs.py -> voice.py -> render_tiktok.py --kontak -> render_tiktok.py
+Tempo TikTok: voice.py memberi tiap beat waktu baca pemula (cocok untuk seri belajar, terlalu lambat untuk TikTok). Alat ini
+merapatkan timeline.json dan audio/narration.wav dari audio/<id>.wav buatan voice.py (jeda awal 0,2 s, narasi + 0,25 s, minimal
+waktu baca 17 huruf/detik, lalu "hold" beat) dan menandainya "rapat": true. Otomatis setiap kali timeline belum rapat (mis. sesudah
+voice.py dijalankan ulang); voice.py tidak diubah.
 Mesin gambar: kunci "engine" di script.json (bawaan ["../../_alat/tiktok-core.js", "scenes.js"])."""
 import base64, io, json, os, subprocess, sys
 from playwright.sync_api import sync_playwright
@@ -25,6 +30,31 @@ HTML = """<!doctype html><html><head><meta charset="utf-8"><style>html,body{marg
 const TL = __TIMELINE__; const cv = document.getElementById('c'), ctx = cv.getContext('2d');__ZONA__
 window.__seek = (t, z) => { TikTok.draw(ctx, t, TL); if (z) __zona(); return cv.toDataURL('image/jpeg', 0.92); };
 window.__ready = true;</script></body></html>"""
+
+
+LEAD, TAIL, CPS = 0.2, 0.25, 17.0
+
+
+def rapatkan():
+    import wave
+    TL = E.load_timeline(ROOT, "suara"); A = os.path.join(ROOT, "audio"); rate = None; track = bytearray(); t = 0.0
+    for b in TL["beats"]:
+        with wave.open(os.path.join(A, b["id"] + ".wav")) as w:
+            rate = rate or w.getframerate(); pcm = w.readframes(w.getnframes()); dur = w.getnframes() / rate
+        body = max(dur + TAIL, len(b["text"]) / CPS)
+        total = round(LEAD + body + b.get("hold", 0.3), 3)
+        b.update(start=round(t, 3), speech=round(t + LEAD, 3), audio=round(dur, 3), dur=total)
+        track += b"\x00\x00" * int(LEAD * rate) + pcm + b"\x00\x00" * int(round((total - LEAD - dur) * rate)); t += total
+    with wave.open(os.path.join(A, "narration.wav"), "wb") as w:
+        w.setnchannels(1); w.setsampwidth(2); w.setframerate(rate); w.writeframes(bytes(track))
+    TL.update(total=round(t, 3), rapat=True); E.save_json(TL, E.timeline_path(ROOT, "suara"))
+    mp3 = os.path.join(ROOT, "narasi.mp3")          # buatan voice.py untuk halaman web seri; tidak dipakai TikTok
+    if os.path.exists(mp3): os.remove(mp3)
+    print(f"[rapat] {len(TL['beats'])} beat, total {t:.1f} s -> timeline.json, audio/narration.wav", flush=True)
+
+
+if E.has_variant(ROOT, "suara") and (not E.load_timeline(ROOT, "suara").get("rapat") or "--rapatkan" in flags): rapatkan()
+if "--rapatkan" in flags: raise SystemExit(0)
 
 
 def timeline(variant="suara"):

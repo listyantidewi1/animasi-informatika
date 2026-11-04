@@ -76,7 +76,7 @@
     card(ctx, x, y, WW, hh + rh * rs.length, { fill: "#fff", stroke: "#B7C4CC", lw: 3, r: 14 });
     ctx.fillStyle = C.bg2; rr(ctx, x, y, WW, hh, 14); ctx.fill(); ctx.fillRect(x, y + hh / 2, WW, hh / 2);
     const xs = []; let cx = x; cols.forEach(w => { xs.push(cx); cx += w; });
-    ["#", "aksi", "port", "dari", "hasil cek"].slice(0, cols.length).forEach((h, i) => text(ctx, h, xs[i] + 16, y + hh / 2 + fs * 0.32, fs * 0.8, { weight: 900, color: C.ink2 }));
+    ["#", "aksi", "port", "dari", o.icon ? "cek" : "hasil cek"].slice(0, cols.length).forEach((h, i) => text(ctx, h, xs[i] + 16, y + hh / 2 + fs * 0.32, fs * 0.8, { weight: 900, color: C.ink2 }));
     rs.forEach((r, i) => {
       if (o.n != null && i >= o.n) return;
       const ry = y + hh + rh * i, grey = o.grey != null && i >= o.grey;
@@ -92,7 +92,7 @@
       text(ctx, dariTxt(r), xs[3] + 16, ty, fs * 0.88, { weight: 700, fit: cols[3] - 24 });
       if (!o.noCek) {
         if (grey && o.greyTxt) text(ctx, o.greyTxt, xs[4] + 16, ty, fs * 0.8, { weight: 800, color: C.ink2, fit: cols[4] - 24 });
-        else if (o.marks && o.marks[i]) text(ctx, o.marks[i][0], xs[4] + 16, ty, fs * 0.85, { weight: 900, color: o.marks[i][1] ? C.good : C.bad, fit: cols[4] - 24 });
+        else if (o.marks && o.marks[i]) text(ctx, o.icon ? o.marks[i][0].slice(0, 1) : o.marks[i][0], xs[4] + (o.icon ? cols[4] / 2 : 16), ty + (o.icon ? 4 : 0), o.icon ? fs * 1.3 : fs * 0.85, { align: o.icon ? "center" : "left", weight: 900, color: o.marks[i][1] ? C.good : C.bad, fit: cols[4] - 24 });
       }
       ctx.restore();
     });
@@ -282,9 +282,14 @@
     // ---------- Short (area 40–1040 × 20–810) ----------
     k22s_periksa(ctx, b, l) {
       const rs = RS[b.rs || "A"], p = PK[b.pk], S = jalan(b, l, rs, p), r = rs[S.m];
-      packetCard(ctx, 60, 30, 960, p, { h: 150, noWho: false, title: b.rs === "B" ? "PAKET YANG SAMA · URUTAN BARU" : "PAKET DATANG", fs: 1.15 });
-      rules(ctx, 60, 205, rs, { rh: 74, hh: 50, fs: 28, cw: [50, 170, 120, 360, 260], cur: S.cur, marks: marksOf(S, rs, p), grey: S.done ? S.m + 1 : null, greyTxt: "tak dibaca", hl: b.rs === "B" ? { 2: S.done ? null : "#F3ECFF" } : null });
-      verdict(ctx, 60, 650, 960, 130, S, r, 1.4);
+      card(ctx, 60, 28, 960, 168, { fill: p.ip === "203.0.113.66" ? C.badBg : "#FFF9E0", stroke: p.ip === "203.0.113.66" ? C.bad : C.accent, lw: 5, r: 20 });
+      text(ctx, "📦 " + (b.rs === "B" ? "PAKET YANG SAMA · URUTAN BARU" : "PAKET DATANG"), 88, 70, 28, { weight: 900, color: C.accentDark });
+      text(ctx, "ke port " + p.port, 88, 130, 52, { weight: 900 });
+      text(ctx, "dari " + p.ip, 990, 128, 34, { align: "right", weight: 800, fit: 470 });
+      text(ctx, "(" + p.who + ")", 990, 174, 26, { align: "right", weight: 700, color: C.ink2, fit: 520 });
+      rules(ctx, 60, 214, rs, { rh: 80, hh: 50, fs: 33, cw: [54, 196, 136, 504, 70], icon: true, cur: S.cur, marks: marksOf(S, rs, p), grey: S.done ? S.m + 1 : null, hl: b.rs === "B" ? { 2: S.done ? null : "#F3ECFF" } : null });
+      if (S.done) verdict(ctx, 60, 676, 960, 110, S, r, 1.3);
+      else { const [msg, col] = statusMsg(S, rs, p); card(ctx, 60, 676, 960, 110, { fill: C.bg2, r: 18 }); para(ctx, msg, 540, 720, 32, 900, { align: "center", weight: 900, color: col, lh: 1.15 }); }
     }
   });
 })(typeof window !== "undefined" ? window : globalThis);
