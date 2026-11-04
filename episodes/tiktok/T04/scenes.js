@@ -114,7 +114,7 @@
         if (A.bot - bb < 140) break;
         ctx.save(); ctx.globalAlpha = (1 - s) * 0.9; pill(ctx, rows[i][0], x, y, 32, { fill: [C.kuning, C.pink, C.tosca, C.biru, C.kuning][i] }); ctx.restore();
       }
-      if (ui > 0 && A.bot - (top + 130 + rows.length * 100) > 160) bip(ctx, A.x + 720, A.bot - 80, 140, { mood: "happy", t });
+
     },
 
     // pencarian "nasi goreng": dua baris indeks dibandingkan, halaman yang memuat keduanya menyala

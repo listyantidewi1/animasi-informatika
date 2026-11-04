@@ -1,0 +1,1519 @@
+<title>Kiko: Membuat Infografik Satu Halaman</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<style>
+/* Inti gaya halaman latihan: satu kolom, pemutar di atas, latihan di bawah; palet kantin sama dengan video. */
+:root {
+  --bg: #EAF2EE; --surface: #FFFFFF; --surface2: #DCE9E2; --ink: #1F2A33; --ink2: #4A5A66; --line: #C9D8D0;
+  --accent: #2E7E9A; --accent-ink: #FFFFFF; --warm: #F2B134; --warm-ink: #5E3E05; --good: #2E9E5B; --good-bg: #DDF3E4; --bad: #D9443B; --bad-bg: #FBE1DF;
+  --font: Inter, "Segoe UI", Roboto, Arial, sans-serif;
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) { --bg: #141C1A; --surface: #1E2926; --surface2: #273532; --ink: #EAF2EE; --ink2: #A9BBB3; --line: #3A4A45; --accent: #5FB3CE; --accent-ink: #0F1D22; --warm: #F2B134; --warm-ink: #2B1C02; --good: #5FCB8A; --good-bg: #1F3A2B; --bad: #F07A72; --bad-bg: #442523; color-scheme: dark } }
+:root[data-theme="dark"] { --bg: #141C1A; --surface: #1E2926; --surface2: #273532; --ink: #EAF2EE; --ink2: #A9BBB3; --line: #3A4A45; --accent: #5FB3CE; --accent-ink: #0F1D22; --warm: #F2B134; --warm-ink: #2B1C02; --good: #5FCB8A; --good-bg: #1F3A2B; --bad: #F07A72; --bad-bg: #442523; color-scheme: dark }
+* { box-sizing: border-box }
+body { background: var(--bg); color: var(--ink); font-family: var(--font); font-size: 17px; line-height: 1.5; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); padding-block: 16px 48px }
+.wrap { max-width: 980px; margin: 0 auto; display: grid; gap: 28px }
+h1 { font-size: clamp(26px, 5vw, 38px); line-height: 1.15; margin: 0; text-wrap: balance; font-weight: 900 }
+h2 { font-size: 22px; margin: 0 0 12px; font-weight: 800 }
+h3 { font-size: 18px; margin: 0 0 8px; font-weight: 800 }
+p { margin: 0 0 10px; max-width: 65ch }
+.eyebrow { font-size: 13px; letter-spacing: .08em; text-transform: uppercase; color: var(--ink2); font-weight: 800; margin-bottom: 6px }
+.card { background: var(--surface); border-radius: 18px; padding: 18px; border: 1px solid var(--line) }
+button { font: inherit; font-weight: 800; border: 0; border-radius: 12px; padding: 12px 16px; cursor: pointer; background: var(--surface2); color: var(--ink); min-height: 48px; touch-action: manipulation }
+button:focus-visible, [tabindex]:focus-visible { outline: 3px solid var(--warm); outline-offset: 2px }
+button.primary { background: var(--accent); color: var(--accent-ink) }
+button.warm { background: var(--warm); color: var(--warm-ink) }
+button[aria-pressed="true"] { box-shadow: inset 0 0 0 3px var(--accent) }
+button:disabled { opacity: .45; cursor: default }
+.row { display: flex; flex-wrap: wrap; gap: 10px; align-items: center }
+/* player */
+.player { display: grid; gap: 12px }
+.stage { position: relative; width: 100%; aspect-ratio: 16 / 9; max-width: 100%; background: #EAF2EE; border-radius: 14px; overflow: hidden; border: 1px solid var(--line) }
+.stage canvas { width: 100%; height: 100%; display: block }
+.bigplay { position: absolute; inset: 0; display: grid; place-items: center; background: rgba(31,42,51,.25); border: 0; border-radius: 0; color: #fff; font-size: 20px; min-height: 0 }
+.bigplay span { background: var(--accent); color: var(--accent-ink); padding: 14px 26px; border-radius: 999px; font-weight: 900 }
+.bar { height: 10px; background: var(--surface2); border-radius: 999px; overflow: hidden; cursor: pointer }
+.bar > i { display: block; height: 100%; width: 0; background: var(--warm) }
+.chapters { display: flex; flex-wrap: wrap; gap: 8px }
+.chapters button { font-size: 14px; padding: 8px 12px; min-height: 40px }
+.chapters button.now { background: var(--warm); color: var(--warm-ink) }
+.hint { color: var(--ink2); font-size: 15px }
+/* exercises (generic parts) */
+.levels { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 12px }
+.levels button { font-size: 14px; padding: 8px 12px; min-height: 40px }
+.levels button.done::after { content: " ✓"; color: var(--good) }
+.task { background: var(--surface2); border-radius: 12px; padding: 12px 14px; margin-bottom: 12px; font-weight: 700 }
+.result { border-radius: 12px; padding: 12px 14px; font-weight: 800; margin-top: 10px }
+.result.good { background: var(--good-bg); color: var(--good) }
+.result.bad { background: var(--bad-bg); color: var(--bad) }
+.result.info { background: var(--surface2); color: var(--ink) }
+/* quiz */
+.quiz { display: grid; gap: 16px }
+.q { border-top: 1px solid var(--line); padding-top: 14px }
+.q:first-child { border-top: 0; padding-top: 0 }
+.opts { display: grid; gap: 8px; margin-top: 8px }
+.opts button { text-align: left; font-weight: 700; background: var(--surface2); display: flex; gap: 10px; align-items: center }
+.opts button b { width: 30px; height: 30px; border-radius: 50%; background: var(--accent); color: var(--accent-ink); display: grid; place-items: center; flex: none }
+.opts button.right { background: var(--good-bg); box-shadow: inset 0 0 0 3px var(--good) }
+.opts button.wrong { background: var(--bad-bg) }
+.fb { margin-top: 8px; font-weight: 700 }
+.fb.good { color: var(--good) } .fb.bad { color: var(--bad) }
+details summary { cursor: pointer; font-weight: 800; font-size: 18px }
+details[open] summary { margin-bottom: 10px }
+ul.plain { padding-left: 20px; margin: 0 0 10px } ul.plain li { margin-bottom: 6px; max-width: 65ch }
+.progress { display: flex; gap: 8px; flex-wrap: wrap } .progress span { background: var(--surface2); border-radius: 999px; padding: 6px 12px; font-size: 14px; font-weight: 700 }
+.progress span.ok { background: var(--good-bg); color: var(--good) }
+@media (prefers-reduced-motion: reduce) { * { transition: none !important } }
+
+/* ajakan ke channel YouTube */
+.yt-ajak { display: flex; gap: 12px; align-items: center; background: var(--surface); border: 1px solid var(--line); border-left: 6px solid #D9443B; border-radius: 14px; padding: 12px 16px; color: var(--ink); text-decoration: none }
+.yt-ajak .yt-ic { flex: none; width: 40px; height: 28px; border-radius: 8px; background: #D9443B; color: #fff; display: grid; place-items: center; font-size: 14px }
+.yt-ajak b { display: block; font-size: 16px } .yt-ajak small { display: block; color: var(--ink2); font-size: 14px; font-weight: 600 }
+.yt-video { display: grid; gap: 10px } .yt-frame { position: relative; width: 100%; aspect-ratio: 16 / 9; border-radius: 14px; overflow: hidden; background: #000 }
+.yt-frame iframe { position: absolute; inset: 0; width: 100%; height: 100%; border: 0 }
+
+/* halaman video simulasi (dibuat build.py dari episodes/_alat/sim-page.html) */
+.links { display: grid; gap: 10px } .links a { display: block; background: var(--surface2); color: var(--ink); text-decoration: none; font-weight: 800; border-radius: 12px; padding: 12px 16px }
+.links a span { display: block; font-weight: 600; color: var(--ink2); font-size: 15px }
+ul.learn { margin: 0; padding-left: 20px } ul.learn li { margin-bottom: 4px }
+</style>
+
+<div class="wrap">
+  <header>
+    <div class="eyebrow">Informatika · Simulasi praktik · S30</div>
+    <h1>Membuat Infografik Satu Halaman</h1>
+    <p class="hint">Setelah menonton, kamu bisa menyusun infografik satu halaman dengan judul besar, tiga poin, satu angka penting, sumber data, dan ajakan yang jelas. Simulasi ini melengkapi episode F12.6. Hentikan videonya di setiap jeda "Coba sekarang" untuk mencoba sendiri.</p>
+  </header>
+  <section class="card player" aria-label="Pemutar simulasi">
+    <div class="stage">
+      <canvas id="screen" width="1920" height="1080" aria-label="Animasi simulasi"></canvas>
+      <audio id="nar" preload="auto" src="narasi.mp3"></audio>
+      <button class="bigplay" id="bigplay" aria-label="Putar"><span>▶ Putar simulasi</span></button>
+    </div>
+    <div class="bar" id="bar" role="slider" aria-label="Posisi simulasi" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" tabindex="0"><i id="barfill"></i></div>
+    <div class="row">
+      <button class="primary" id="playbtn">▶ Putar</button>
+      <button id="replay">↺ Ulangi bagian ini</button>
+      <button id="voice" aria-pressed="true" hidden>🔊 Suara: nyala</button>
+      <button id="slow" aria-pressed="false">🐢 Mode lambat</button>
+      <span class="hint" id="timelabel">0:00 / 0:00</span>
+    </div>
+    <div>
+      <div class="eyebrow">Bagian</div>
+      <div class="chapters" id="chapters"></div>
+    </div>
+  </section>
+
+  <section class="card" aria-label="Yang dipelajari">
+    <h2>Yang kamu pelajari</h2>
+    <ul class="learn"><li>merencanakan infografik dari pesan inti dan sketsa lima bagian</li><li>mengatur hierarki ukuran, ruang kosong, dan warna terbatas</li><li>menampilkan satu angka penting beserta sumber datanya</li><li>menguji infografik dengan tes lima detik</li></ul>
+  </section>
+
+  <section class="card" aria-label="Cek pemahaman">
+    <h2>Cek pemahaman</h2>
+    <p class="hint">Pilih satu jawaban. Kalau salah, kamu dapat petunjuk, lalu coba lagi.</p>
+    <div class="quiz" id="quiz"></div>
+  </section>
+
+  <section class="card" aria-label="Kemajuan">
+    <h2>Kemajuanmu</h2>
+    <div class="progress" id="progress"></div>
+    <p class="hint" style="margin-top:8px">Kemajuan tersimpan di perangkat ini saja.</p>
+  </section>
+
+  <section class="card" aria-label="Halaman latihan">
+    <h2>Lanjut berlatih</h2>
+    <div class="links"><a href="../../F12.6/episode-f126.html">Episode F12.6: Kreasi Konten Digital dengan Metode Bervariasi<span>Tonton episodenya dan kerjakan latihannya.</span></a><a href="../../../index.html">Daftar semua episode<span>Kembali ke halaman utama.</span></a></div>
+  </section>
+</div>
+
+<script>/* Kiko core: mesin gambar bersama untuk semua episode Fase D.
+   Kiko.draw(ctx, t, TL) menggambar frame pada detik t di kanvas 1920x1080 secara deterministik.
+   Berisi palet, pembantu gambar, tokoh (Kiko, murid), dan adegan umum (judul, kuis, ringkasan, penutup).
+   Setiap episode menambahkan adegannya sendiri di scenes.js: Object.assign(Kiko.SCENES, {...}). */
+(function (global) {
+  const W = 1920, H = 1080;
+  const FONT = "Inter, 'Segoe UI', Roboto, Arial, sans-serif";
+  const C = {
+    bg: "#EAF2EE", bg2: "#DCE9E2", ink: "#1F2A33", ink2: "#4A5A66", panel: "#FFFFFF",
+    tile: "#F7FAF8", tileLine: "#C9D8D0", table: "#A4653A", tableTop: "#C98A57",
+    kiko: "#2E7E9A", kikoDark: "#1F5A6E", kikoLight: "#8FD0E6", eye: "#FFFFFF", pupil: "#1F2A33",
+    accent: "#F2B134", accentDark: "#B57A12", good: "#2E9E5B", bad: "#D9443B", goodBg: "#DDF3E4", badBg: "#FBE1DF",
+    sub: "#1F2A33", subText: "#FFFFFF", star: "#F2B134", skin: "#F1C9A5", skin2: "#C98A57", hair: "#2B2118",
+    uniform: "#FFFFFF", pants: "#2F4E7D", bubble: "#FFFFFF", muted: "#9AAFA6"
+  };
+  const ease = u => u < 0 ? 0 : u > 1 ? 1 : u * u * (3 - 2 * u);
+  const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
+  const lerp = (a, b, u) => a + (b - a) * u;
+
+  // ---------- drawing helpers ----------
+  function rr(ctx, x, y, w, h, r) {
+    ctx.beginPath(); ctx.moveTo(x + r, y); ctx.arcTo(x + w, y, x + w, y + h, r); ctx.arcTo(x + w, y + h, x, y + h, r);
+    ctx.arcTo(x, y + h, x, y, r); ctx.arcTo(x, y, x + w, y, r); ctx.closePath();
+  }
+  function text(ctx, s, x, y, size, opt = {}) {
+    ctx.font = `${opt.weight || 600} ${size}px ${FONT}`;
+    // opt.fit: lebar maksimum; huruf diperkecil hanya bila teks lebih lebar dari itu
+    while (opt.fit && size > 20 && ctx.measureText(s).width > opt.fit) { size -= 2; ctx.font = `${opt.weight || 600} ${size}px ${FONT}`; } ctx.fillStyle = opt.color || C.ink;
+    ctx.textAlign = opt.align || "left"; ctx.textBaseline = opt.base || "alphabetic"; ctx.fillText(s, x, y);
+  }
+  function wrap(ctx, s, size, weight, maxW) {
+    ctx.font = `${weight} ${size}px ${FONT}`;
+    const words = s.split(" "), lines = []; let cur = "";
+    for (const w of words) {
+      const test = cur ? cur + " " + w : w;
+      if (ctx.measureText(test).width > maxW && cur) { lines.push(cur); cur = w; } else cur = test;
+    }
+    if (cur) lines.push(cur);
+    return lines;
+  }
+  function para(ctx, s, x, y, size, maxW, opt = {}) {
+    const lines = wrap(ctx, s, size, opt.weight || 500, maxW); const lh = size * (opt.lh || 1.35);
+    lines.forEach((l, i) => text(ctx, l, x, y + i * lh, size, opt));
+    return lines.length * lh;
+  }
+  function arrowIcon(ctx, kind, cx, cy, s, color) {
+    ctx.save(); ctx.translate(cx, cy); ctx.strokeStyle = color; ctx.fillStyle = color; ctx.lineWidth = s * 0.16; ctx.lineCap = "round"; ctx.lineJoin = "round";
+    if (kind === "up") {
+      ctx.beginPath(); ctx.moveTo(0, s * 0.45); ctx.lineTo(0, -s * 0.3); ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(-s * 0.32, -s * 0.05); ctx.lineTo(0, -s * 0.45); ctx.lineTo(s * 0.32, -s * 0.05); ctx.stroke();
+    } else if (kind === "left" || kind === "right") {
+      const k = kind === "left" ? -1 : 1;
+      ctx.beginPath(); ctx.moveTo(0, s * 0.45); ctx.lineTo(0, -s * 0.05); ctx.quadraticCurveTo(0, -s * 0.32, k * s * 0.28, -s * 0.32); ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(k * s * 0.12, -s * 0.5); ctx.lineTo(k * s * 0.4, -s * 0.32); ctx.lineTo(k * s * 0.12, -s * 0.14); ctx.stroke();
+    } else if (kind === "east") {
+      ctx.beginPath(); ctx.moveTo(-s * 0.4, 0); ctx.lineTo(s * 0.3, 0); ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(s * 0.05, -s * 0.28); ctx.lineTo(s * 0.4, 0); ctx.lineTo(s * 0.05, s * 0.28); ctx.stroke();
+    } else if (kind === "west") {
+      ctx.beginPath(); ctx.moveTo(s * 0.4, 0); ctx.lineTo(-s * 0.3, 0); ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(-s * 0.05, -s * 0.28); ctx.lineTo(-s * 0.4, 0); ctx.lineTo(-s * 0.05, s * 0.28); ctx.stroke();
+    } else if (kind === "grab") {
+      ctx.beginPath(); ctx.arc(0, s * 0.12, s * 0.22, 0, Math.PI * 2); ctx.fill();
+      ctx.beginPath(); ctx.moveTo(-s * 0.4, -s * 0.42); ctx.lineTo(-s * 0.4, -s * 0.12); ctx.moveTo(s * 0.4, -s * 0.42); ctx.lineTo(s * 0.4, -s * 0.12);
+      ctx.moveTo(-s * 0.4, -s * 0.42); ctx.lineTo(s * 0.4, -s * 0.42); ctx.stroke();
+    }
+    ctx.restore();
+  }
+  function bakso(ctx, cx, cy, s, opt = {}) {
+    // a bowl of bakso: the goal
+    ctx.save(); ctx.translate(cx, cy);
+    if (opt.glow) { ctx.beginPath(); ctx.arc(0, 0, s * 0.62, 0, Math.PI * 2); ctx.fillStyle = "rgba(242,177,52,0.22)"; ctx.fill(); }
+    ctx.fillStyle = "#E4EEF5"; ctx.beginPath(); ctx.moveTo(-s * 0.46, -s * 0.05); ctx.quadraticCurveTo(-s * 0.4, s * 0.45, 0, s * 0.45); ctx.quadraticCurveTo(s * 0.4, s * 0.45, s * 0.46, -s * 0.05); ctx.closePath(); ctx.fill();
+    ctx.strokeStyle = "#8FA9BD"; ctx.lineWidth = s * 0.05; ctx.stroke();
+    ctx.fillStyle = "#C8B49A"; ctx.beginPath(); ctx.ellipse(0, -s * 0.05, s * 0.44, s * 0.14, 0, 0, Math.PI * 2); ctx.fill();
+    for (const [dx, dy, r] of [[-0.16, -0.1, 0.13], [0.14, -0.12, 0.13], [0, -0.22, 0.12]]) {
+      ctx.fillStyle = "#9A7B5B"; ctx.beginPath(); ctx.arc(dx * s, dy * s, r * s, 0, Math.PI * 2); ctx.fill();
+      ctx.fillStyle = "#B8977A"; ctx.beginPath(); ctx.arc(dx * s - r * s * 0.3, dy * s - r * s * 0.3, r * s * 0.4, 0, Math.PI * 2); ctx.fill();
+    }
+    ctx.fillStyle = "#4CA64C"; for (const dx of [-0.26, 0.1, 0.26]) { ctx.beginPath(); ctx.arc(dx * s, -s * 0.07, s * 0.045, 0, Math.PI * 2); ctx.fill(); }
+    ctx.restore();
+  }
+  function table(ctx, x, y, w, h) {
+    ctx.fillStyle = C.table; rr(ctx, x + w * 0.1, y + h * 0.3, w * 0.8, h * 0.55, 10); ctx.fill();
+    ctx.fillStyle = C.tableTop; rr(ctx, x + w * 0.06, y + h * 0.18, w * 0.88, h * 0.3, 10); ctx.fill();
+    ctx.fillStyle = "rgba(0,0,0,0.12)"; ctx.fillRect(x + w * 0.16, y + h * 0.5, w * 0.08, h * 0.35); ctx.fillRect(x + w * 0.76, y + h * 0.5, w * 0.08, h * 0.35);
+  }
+  function kiko(ctx, cx, cy, s, ang, opt = {}) {
+    ctx.save(); ctx.translate(cx, cy);
+    // shadow
+    ctx.fillStyle = "rgba(0,0,0,0.12)"; ctx.beginPath(); ctx.ellipse(0, s * 0.42, s * 0.42, s * 0.12, 0, 0, Math.PI * 2); ctx.fill();
+    ctx.rotate(ang);
+    // wheels
+    ctx.fillStyle = C.kikoDark; rr(ctx, -s * 0.46, -s * 0.2, s * 0.12, s * 0.5, 5); ctx.fill(); rr(ctx, s * 0.34, -s * 0.2, s * 0.12, s * 0.5, 5); ctx.fill();
+    // body
+    ctx.fillStyle = opt.flash ? `rgba(217,68,59,${0.5 + 0.5 * opt.flash})` : C.kiko; rr(ctx, -s * 0.38, -s * 0.36, s * 0.76, s * 0.72, s * 0.16); ctx.fill();
+    // visor (front, facing up)
+    ctx.fillStyle = C.kikoLight; rr(ctx, -s * 0.26, -s * 0.33, s * 0.52, s * 0.3, s * 0.1); ctx.fill();
+    // eyes
+    const mood = opt.mood || "happy";
+    ctx.fillStyle = C.pupil;
+    if (mood === "sad") { ctx.beginPath(); ctx.arc(-s * 0.12, -s * 0.18, s * 0.05, 0, Math.PI * 2); ctx.arc(s * 0.12, -s * 0.18, s * 0.05, 0, Math.PI * 2); ctx.fill(); ctx.strokeStyle = C.pupil; ctx.lineWidth = s * 0.03; ctx.beginPath(); ctx.arc(0, -s * 0.03, s * 0.08, Math.PI * 1.15, Math.PI * 1.85); ctx.stroke(); }
+    else if (mood === "confused") { ctx.beginPath(); ctx.arc(-s * 0.12, -s * 0.18, s * 0.05, 0, Math.PI * 2); ctx.arc(s * 0.12, -s * 0.18, s * 0.035, 0, Math.PI * 2); ctx.fill(); ctx.strokeStyle = C.pupil; ctx.lineWidth = s * 0.03; ctx.beginPath(); ctx.moveTo(-s * 0.08, -s * 0.06); ctx.lineTo(s * 0.08, -s * 0.09); ctx.stroke(); }
+    else { ctx.beginPath(); ctx.arc(-s * 0.12, -s * 0.18, s * 0.055, 0, Math.PI * 2); ctx.arc(s * 0.12, -s * 0.18, s * 0.055, 0, Math.PI * 2); ctx.fill(); ctx.strokeStyle = C.pupil; ctx.lineWidth = s * 0.03; ctx.beginPath(); ctx.arc(0, -s * 0.1, s * 0.08, Math.PI * 0.15, Math.PI * 0.85); ctx.stroke(); }
+    // front pointer
+    ctx.fillStyle = C.accent; ctx.beginPath(); ctx.moveTo(-s * 0.1, -s * 0.38); ctx.lineTo(s * 0.1, -s * 0.38); ctx.lineTo(0, -s * 0.5); ctx.closePath(); ctx.fill();
+    // antenna
+    ctx.strokeStyle = C.kikoDark; ctx.lineWidth = s * 0.04; ctx.beginPath(); ctx.moveTo(0, s * 0.36); ctx.lineTo(0, s * 0.5); ctx.stroke();
+    ctx.fillStyle = C.accent; ctx.beginPath(); ctx.arc(0, s * 0.52, s * 0.07, 0, Math.PI * 2); ctx.fill();
+    // tray with bakso when grabbed
+    if (opt.grabbed) bakso(ctx, 0, s * 0.05, s * 0.45);
+    ctx.restore();
+    if (opt.wave !== undefined) { // arm waving (title scene)
+      ctx.save(); ctx.translate(cx + s * 0.42, cy - s * 0.1); ctx.rotate(-0.6 + Math.sin(opt.wave * 6) * 0.4);
+      ctx.strokeStyle = C.kikoDark; ctx.lineWidth = s * 0.08; ctx.lineCap = "round"; ctx.beginPath(); ctx.moveTo(0, 0); ctx.lineTo(s * 0.3, -s * 0.3); ctx.stroke();
+      ctx.fillStyle = C.kikoLight; ctx.beginPath(); ctx.arc(s * 0.32, -s * 0.33, s * 0.09, 0, Math.PI * 2); ctx.fill(); ctx.restore();
+    }
+  }
+  function kid(ctx, cx, cy, s, opt = {}) {
+    // simple student figure, standing, facing viewer
+    ctx.save(); ctx.translate(cx, cy);
+    ctx.fillStyle = "rgba(0,0,0,0.12)"; ctx.beginPath(); ctx.ellipse(0, s * 1.02, s * 0.5, s * 0.1, 0, 0, Math.PI * 2); ctx.fill();
+    ctx.fillStyle = C.pants; rr(ctx, -s * 0.3, s * 0.35, s * 0.6, s * 0.5, s * 0.1); ctx.fill();
+    ctx.fillStyle = C.skin; ctx.fillRect(-s * 0.24, s * 0.8, s * 0.16, s * 0.2); ctx.fillRect(s * 0.08, s * 0.8, s * 0.16, s * 0.2);
+    ctx.fillStyle = C.uniform; rr(ctx, -s * 0.36, -s * 0.12, s * 0.72, s * 0.56, s * 0.12); ctx.fill();
+    ctx.strokeStyle = "#D5DDE2"; ctx.lineWidth = s * 0.025; rr(ctx, -s * 0.36, -s * 0.12, s * 0.72, s * 0.56, s * 0.12); ctx.stroke();
+    ctx.fillStyle = C.skin; ctx.beginPath(); ctx.arc(0, -s * 0.42, s * 0.32, 0, Math.PI * 2); ctx.fill();
+    ctx.fillStyle = opt.hairColor || C.hair; ctx.beginPath(); ctx.arc(0, -s * 0.5, s * 0.33, Math.PI, 0); ctx.fill();
+    if (opt.hair === "long") { ctx.fillRect(-s * 0.33, -s * 0.5, s * 0.12, s * 0.45); ctx.fillRect(s * 0.21, -s * 0.5, s * 0.12, s * 0.45); }
+    ctx.fillStyle = C.pupil; ctx.beginPath(); ctx.arc(-s * 0.11, -s * 0.4, s * 0.035, 0, Math.PI * 2); ctx.arc(s * 0.11, -s * 0.4, s * 0.035, 0, Math.PI * 2); ctx.fill();
+    ctx.strokeStyle = C.pupil; ctx.lineWidth = s * 0.025; ctx.beginPath(); ctx.arc(0, -s * 0.33, s * 0.08, Math.PI * 0.15, Math.PI * 0.85); ctx.stroke();
+    // arms
+    ctx.strokeStyle = C.skin; ctx.lineWidth = s * 0.11; ctx.lineCap = "round"; ctx.beginPath();
+    if (opt.point) { ctx.moveTo(s * 0.32, s * 0.02); ctx.lineTo(s * 0.75, -s * 0.2); } else { ctx.moveTo(s * 0.34, s * 0.02); ctx.lineTo(s * 0.42, s * 0.38); }
+    ctx.moveTo(-s * 0.34, s * 0.02); ctx.lineTo(-s * 0.42, s * 0.38); ctx.stroke();
+    ctx.restore();
+  }
+  function bubble(ctx, x, y, w, s, size, opt = {}) {
+    const lines = wrap(ctx, s, size, 600, w - 48); const h = lines.length * size * 1.3 + 40;
+    ctx.fillStyle = opt.fill || C.bubble; ctx.strokeStyle = opt.stroke || "#B7C7BF"; ctx.lineWidth = 3;
+    rr(ctx, x, y - h, w, h, 22); ctx.fill(); ctx.stroke();
+    const tx = opt.tailX !== undefined ? opt.tailX : x + 60;
+    ctx.beginPath(); ctx.moveTo(tx - 16, y); ctx.lineTo(tx + 16, y); ctx.lineTo(tx + (opt.tailDir || 0), y + 28); ctx.closePath(); ctx.fillStyle = opt.fill || C.bubble; ctx.fill();
+    ctx.strokeStyle = opt.stroke || "#B7C7BF"; ctx.beginPath(); ctx.moveTo(tx - 16, y); ctx.lineTo(tx + (opt.tailDir || 0), y + 28); ctx.lineTo(tx + 16, y); ctx.stroke();
+    lines.forEach((l, i) => text(ctx, l, x + 24, y - h + 24 + size + i * size * 1.3, size, { color: opt.color || C.ink, weight: 600 }));
+    return h;
+  }
+  function card(ctx, x, y, w, h, opt = {}) { ctx.fillStyle = opt.fill || C.panel; rr(ctx, x, y, w, h, opt.r || 26); ctx.fill(); if (opt.stroke) { ctx.strokeStyle = opt.stroke; ctx.lineWidth = opt.lw || 4; ctx.stroke(); } }
+
+  // ---------- adegan umum (semua episode) ----------
+  const SCENES = {
+    title(ctx, b, l, t, TL) {
+      card(ctx, 160, 160, 1600, 700, { fill: C.panel });
+      kiko(ctx, 420, 520, 260, 0, { wave: l, mood: "happy" });
+      text(ctx, TL.label || ("Informatika · Fase " + (TL.episode || "D")[0] + " · Episode " + TL.episode), 720, 330, 34, { color: C.ink2, weight: 700 });  // TL.label: label khusus, mis. video simulasi
+      const ts = TL.title.length > 34 ? 74 : 92; const th = para(ctx, TL.title, 720, 440, ts, 1000, { weight: 900, lh: 1.1 }); const hookLines = TL.hook ? wrap(ctx, TL.hook, 34, 800, 1000).length : 0; const hy = Math.max(hookLines >= 3 ? 600 : 640, 440 + th - ts * 0.35 + 30);
+      if (TL.hook) { text(ctx, "SETELAH MENONTON, KAMU BISA:", 720, hy, 26, { color: C.accentDark, weight: 800 }); para(ctx, TL.hook, 720, hy + 50, 34, 1000, { weight: 800, lh: 1.3 }); const ny = hy + 50 + wrap(ctx, TL.hook, 34, 800, 1000).length * 34 * 1.3 + 12; if (ny <= 830) text(ctx, "Dengarkan, atau baca teksnya pelan-pelan.", 720, Math.max(800, ny), 26, { color: C.ink2, weight: 600 }); }
+      else text(ctx, "Dengarkan, atau baca teksnya pelan-pelan.", 720, 700, 36, { color: C.ink2, weight: 600 });
+      if (!TL.label) { arrowIcon(ctx, "up", 1560, 250, 70, C.kikoLight); arrowIcon(ctx, "right", 1660, 250, 70, C.kikoLight); }  // ikon panah khas episode, tidak untuk simulasi
+    },
+    quiz(ctx, b, l, t, TL, answered) {
+      const q = TL.quizzes[b.quiz]; card(ctx, 200, 150, 1520, 740, { stroke: C.accent, lw: 6 });
+      text(ctx, "CEK PEMAHAMAN", 960, 230, 32, { align: "center", color: C.accentDark, weight: 800 });
+      para(ctx, q.q, 960, 320, 44, 1360, { weight: 800, align: "center", lh: 1.3 });
+      // tata letak pilihan: mulai di bawah pertanyaan dan selesai di atas kartu narasi (narasi panjang = jarak dirapatkan)
+      const qLines = wrap(ctx, q.q, 44, 800, 1360).length, subTop = 1056 - (wrap(ctx, b.text, 44, 700, 1660).length * 44 * 1.3 + 44);
+      let oy = qLines <= 1 ? 420 : 470, gap = 120, oh = 96; const n = q.options.length;
+      if (oy + (n - 1) * gap + oh > subTop - 12) { gap = Math.max(104, Math.floor((subTop - 12 - oh - oy) / Math.max(1, n - 1))); }
+      if (oy + (n - 1) * gap + oh > subTop - 12) { oh = 86; gap = 100; oy = Math.max(320 + (qLines - 1) * 57 + 40, subTop - 12 - oh - (n - 1) * gap); }
+      q.options.forEach((o, i) => {
+        const y = oy + i * gap; const right = answered && i === q.answer;
+        card(ctx, 320, y, 1280, oh, { fill: right ? C.goodBg : answered ? "#F4F6F5" : C.bg2, stroke: right ? C.good : "#CFDCD5", lw: right ? 6 : 3 });
+        ctx.fillStyle = right ? C.good : C.kiko; ctx.beginPath(); ctx.arc(380, y + oh / 2, 30, 0, Math.PI * 2); ctx.fill();
+        text(ctx, "ABC"[i], 380, y + oh / 2 + 13, 34, { align: "center", color: "#fff", weight: 900 });
+        text(ctx, o, 440, y + oh / 2 + 14, 38, { weight: 700, color: answered && !right ? C.muted : C.ink });
+        if (right) text(ctx, "✓", 1540, y + oh / 2 + 18, 54, { align: "center", color: C.good, weight: 900 });
+      });
+      if (!answered) { // thinking timer
+        const frac = clamp(l / b.dur, 0, 1); ctx.strokeStyle = "#D7E2DC"; ctx.lineWidth = 14; ctx.beginPath(); ctx.arc(1640, 230, 40, 0, Math.PI * 2); ctx.stroke();
+        ctx.strokeStyle = C.accent; ctx.beginPath(); ctx.arc(1640, 230, 40, -Math.PI / 2, -Math.PI / 2 + frac * Math.PI * 2); ctx.stroke();
+        // catatan hanya digambar bila tidak tertutup kartu narasi (narasi tiga baris atau lebih menutupinya)
+        const subTop = 1056 - (wrap(ctx, b.text, 44, 700, 1660).length * 44 * 1.3 + 44);
+        if (subTop > 880) text(ctx, "Pikirkan dulu, jangan buru-buru.", 960, 860, 32, { align: "center", color: C.ink2, weight: 600 });
+      }
+    },
+    quiz_answer(ctx, b, l, t, TL) { SCENES.quiz(ctx, b, l, t, TL, true); },
+    recap(ctx, b, l, t, TL) {
+      // TL.recap: tiga kalimat pendek dari script.json
+      card(ctx, 160, 140, 1600, 760);
+      text(ctx, "TIGA HAL UNTUK DIINGAT", 960, 230, 34, { align: "center", color: C.accentDark, weight: 900 });
+      const items = TL.recap || [];
+      const show = clamp(Math.floor((l - 0.6) / 2.2) + 1, 1, Math.max(1, items.length));
+      items.forEach((s, i) => { if (i >= show) return; card(ctx, 300, 290 + i * 180, 1320, 140, { fill: C.bg2 }); ctx.fillStyle = C.kiko; ctx.beginPath(); ctx.arc(380, 360 + i * 180, 40, 0, Math.PI * 2); ctx.fill(); text(ctx, String(i + 1), 380, 376 + i * 180, 40, { align: "center", color: "#fff", weight: 900 }); text(ctx, s, 450, 375 + i * 180, 42, { weight: 800, fit: 1130 }); });
+      kiko(ctx, 1620, 820, 130, 0);
+    },
+    outro(ctx, b, l, t, TL) {
+      // TL.next: {code, title, note} episode berikutnya, dari script.json
+      const n = TL.next || {};
+      card(ctx, 260, 200, 1400, 600);
+      text(ctx, n.heading || "EPISODE BERIKUTNYA", 960, 320, 34, { align: "center", color: C.accentDark, weight: 900 });
+      text(ctx, n.code || "", 960, 440, 60, { align: "center", weight: 900 });
+      text(ctx, n.title || "", 960, 530, 54, { align: "center", weight: 800, color: C.ink2, fit: 1320 });
+      text(ctx, n.note || "", 960, 680, 34, { align: "center", color: C.ink2, weight: 600 });
+      kiko(ctx, 960, 760 + 20, 140, 0, { wave: l });
+    }
+  };
+
+  function beatAt(TL, t) {
+    let b = TL.beats[0];
+    for (const x of TL.beats) { if (t >= x.start) b = x; else break; }
+    return b;
+  }
+  function draw(ctx, t, TL, opt = {}) {
+    const b = beatAt(TL, t); const l = t - b.start;
+    ctx.save(); ctx.setTransform(1, 0, 0, 1, 0, 0);
+    ctx.fillStyle = C.bg; ctx.fillRect(0, 0, W, H);
+    // header
+    text(ctx, TL.episode + " · " + TL.title, 60, 78, 30, { color: C.ink2, weight: 700 });
+    text(ctx, TL.segments[b.seg], 1860, 78, 30, { color: C.accentDark, weight: 800, align: "right" });
+    ctx.fillStyle = C.bg2; ctx.fillRect(0, 100, W, 6); ctx.fillStyle = C.accent; ctx.fillRect(0, 100, W * clamp(t / TL.total, 0, 1), 6);
+    const fn = SCENES[b.scene]; if (fn) fn(ctx, b, l, t, TL);
+    // narration card (burned-in text the student reads)
+    if (opt.subtitles !== false) {
+      const size = 44; const lines = wrap(ctx, b.text, size, 700, 1660);
+      const h = lines.length * size * 1.3 + 44; const y0 = 1056 - h;
+      ctx.fillStyle = "rgba(31,42,51,0.92)"; rr(ctx, 100, y0, 1720, h, 20); ctx.fill();
+      // reading progress (how far along the text the reader should be)
+      const frac = clamp(l / b.audio, 0, 1); ctx.fillStyle = C.accent; rr(ctx, 100, y0 + h - 8, 1720 * frac, 8, 4); ctx.fill();
+      lines.forEach((ln, i) => text(ctx, ln, 960, y0 + 22 + size + i * size * 1.3, size, { align: "center", color: C.subText, weight: 700 }));
+    }
+    ctx.restore();
+    return b;
+  }
+
+  global.Kiko = { draw, beatAt, W, H, C, FONT, SCENES,
+    helpers: { rr, text, wrap, para, arrowIcon, bakso, table, kiko, kid, bubble, card, ease, clamp, lerp } };
+})(typeof window !== "undefined" ? window : globalThis);
+
+/* Layar: pembantu gambar bersama untuk video simulasi (episodes/sim/...).
+   Aplikasi generik digambar dengan kode, tanpa logo atau tampilan merek: jendela aplikasi, lembar kerja (bilah rumus + kisi sel),
+   pointer mouse dengan efek klik, tombol keyboard, label penunjuk, pembesaran, dan penerjemah "aksi" (klik, ketik, tekan tombol)
+   supaya satu adegan bisa memperagakan beberapa langkah berurutan. Muat setelah kiko-core.js. */
+(function (global) {
+  const K = global.Kiko, H = K.helpers, C = K.C;
+  const { rr, text, ease, clamp, lerp } = H;
+  const L = {};
+  const UI = { frame: "#C9D4DB", bar: "#EEF2F5", menuInk: "#3D4B55", grid: "#DDE5EA", head: "#EEF2F5", headInk: "#5B6B76",
+               select: "#1A73C8", selectBg: "rgba(26,115,200,0.10)", formula: "#1F5A6E", window: "#FFFFFF" };
+  L.UI = UI;
+
+  // ---------- jendela aplikasi ----------
+  // opt: title, menus [..], tools (true = deretan ikon sederhana). Mengembalikan area isi {x, y, w, h}.
+  L.window = function (ctx, x, y, w, h, opt = {}) {
+    ctx.save(); ctx.shadowColor = "rgba(31,42,51,0.18)"; ctx.shadowBlur = 30; ctx.shadowOffsetY = 10;
+    ctx.fillStyle = UI.window; rr(ctx, x, y, w, h, 16); ctx.fill(); ctx.restore();
+    ctx.strokeStyle = UI.frame; ctx.lineWidth = 2; rr(ctx, x, y, w, h, 16); ctx.stroke();
+    ctx.save(); rr(ctx, x, y, w, h, 16); ctx.clip();
+    ctx.fillStyle = UI.bar; ctx.fillRect(x, y, w, 46);
+    ["#E5675F", "#F2B134", "#4CB46A"].forEach((c, i) => { ctx.fillStyle = c; ctx.beginPath(); ctx.arc(x + 28 + i * 26, y + 23, 8, 0, Math.PI * 2); ctx.fill(); });
+    text(ctx, opt.title || "Aplikasi", x + w / 2, y + 31, 22, { align: "center", weight: 700, color: UI.menuInk });
+    let cy = y + 46;
+    if (opt.menus) {
+      ctx.fillStyle = "#FFFFFF"; ctx.fillRect(x, cy, w, 40);
+      let mx = x + 24; opt.menus.forEach((m, i) => {
+        const on = opt.menuOn === m; ctx.font = `600 21px Inter`; const mw = ctx.measureText(m).width + 24;
+        if (on) { ctx.fillStyle = "#DCE9F7"; rr(ctx, mx - 8, cy + 5, mw, 30, 6); ctx.fill(); }
+        text(ctx, m, mx + 4, cy + 27, 21, { weight: 600, color: on ? UI.select : UI.menuInk }); mx += mw + 6;
+      });
+      cy += 40;
+    }
+    if (opt.tools) {
+      ctx.fillStyle = "#F7F9FA"; ctx.fillRect(x, cy, w, 44);
+      const icons = opt.tools === true ? ["💾", "↶", "↷", "B", "I", "Σ", "%"] : opt.tools;
+      icons.forEach((ic, i) => { const bx = x + 20 + i * 52; ctx.fillStyle = "#FFFFFF"; rr(ctx, bx, cy + 6, 40, 32, 6); ctx.fill(); ctx.strokeStyle = "#E1E7EB"; ctx.lineWidth = 1.5; rr(ctx, bx, cy + 6, 40, 32, 6); ctx.stroke();
+        text(ctx, ic, bx + 20, cy + 29, ic.length > 1 ? 18 : 20, { align: "center", weight: 800, color: UI.menuInk }); });
+      cy += 44;
+    }
+    ctx.strokeStyle = UI.grid; ctx.lineWidth = 1.5; ctx.beginPath(); ctx.moveTo(x, cy); ctx.lineTo(x + w, cy); ctx.stroke();
+    ctx.restore();
+    return { x, y: cy, w, h: y + h - cy };
+  };
+
+  // ---------- lembar kerja ----------
+  const COLS = "ABCDEFGHIJ";
+  L.col = c => COLS.indexOf(c);
+  // st: { cells: {A1: {v, f?}} | {A1: "teks"}, active: "B3", edit: {addr, text} (sedang diketik), range: ["B2","B6"] (sorotan rentang),
+  //       copy: ["D2","D6"] (bingkai putus-putus), changed: [alamat] (hijau sesaat), cols: 6, rows: 8, cw: 190 | {A: 170, ...}, rh: 50,
+  //       showFormulas: false, handleHover: false }
+  // Mengembalikan geometri: {cell(addr), handle(addr), nameBox, fx, bottom}
+  L.sheet = function (ctx, area, st = {}) {
+    const x = area.x, y = area.y, cols = st.cols || 6, rows = st.rows || 8, rh = st.rh || 50, hw = 60;
+    const cwOf = c => typeof st.cw === "object" ? (st.cw[COLS[c]] || 180) : (st.cw || 180);
+    const colX = c => { let px = x + hw; for (let i = 0; i < c; i++) px += cwOf(i); return px; };
+    const gridW = colX(cols) - x;
+    // bilah rumus
+    const fy = y + 10; const active = st.edit ? st.edit.addr : st.active;
+    const cell0 = active && L.get(st.cells, active);
+    ctx.fillStyle = "#FFFFFF"; rr(ctx, x + 12, fy, 120, 48, 8); ctx.fill(); ctx.strokeStyle = UI.frame; ctx.lineWidth = 2; rr(ctx, x + 12, fy, 120, 48, 8); ctx.stroke();
+    text(ctx, active || "", x + 72, fy + 33, 24, { align: "center", weight: 800, color: UI.menuInk });
+    const fxW = Math.max(400, gridW - 150);
+    ctx.fillStyle = "#FFFFFF"; rr(ctx, x + 144, fy, fxW, 48, 8); ctx.fill(); ctx.strokeStyle = st.fxFocus ? UI.select : UI.frame; ctx.lineWidth = st.fxFocus ? 3 : 2; rr(ctx, x + 144, fy, fxW, 48, 8); ctx.stroke();
+    text(ctx, "fx", x + 162, fy + 32, 21, { weight: 800, color: "#8A99A3" }); ctx.fillStyle = UI.grid; ctx.fillRect(x + 196, fy + 10, 2, 28);
+    const fxText = st.edit ? st.edit.text : (cell0 ? (cell0.f || L.show(cell0.v)) : "");
+    text(ctx, fxText, x + 212, fy + 33, 25, { weight: 700, color: (st.edit ? st.edit.text : cell0 && cell0.f) && String(fxText).startsWith("=") ? UI.formula : C.ink });
+    if (st.edit && st.caret) { ctx.font = "700 25px Inter"; const cw = ctx.measureText(st.edit.text).width; ctx.fillStyle = C.ink; ctx.fillRect(x + 214 + cw, fy + 11, 2.5, 27); }
+    // kisi
+    const gy = fy + 66; const H0 = rh * (rows + 1);
+    ctx.fillStyle = "#FFFFFF"; ctx.fillRect(x, gy, gridW, H0);
+    ctx.fillStyle = UI.head; ctx.fillRect(x, gy, gridW, rh); ctx.fillRect(x, gy, hw, H0);
+    const ac = active ? { c: L.col(active[0]), r: parseInt(active.slice(1)) } : null;
+    for (let c = 0; c < cols; c++) {
+      if (ac && ac.c === c) { ctx.fillStyle = "#D5E3F3"; ctx.fillRect(colX(c), gy, cwOf(c), rh); }
+      text(ctx, COLS[c], colX(c) + cwOf(c) / 2, gy + rh / 2 + 8, 22, { align: "center", weight: 700, color: ac && ac.c === c ? UI.select : UI.headInk });
+    }
+    for (let r = 1; r <= rows; r++) {
+      if (ac && ac.r === r) { ctx.fillStyle = "#D5E3F3"; ctx.fillRect(x, gy + rh * r, hw, rh); }
+      text(ctx, String(r), x + hw / 2, gy + rh * r + rh / 2 + 8, 22, { align: "center", weight: 700, color: ac && ac.r === r ? UI.select : UI.headInk });
+    }
+    const geo = {
+      cell(addr) { const c = L.col(addr[0]), r = parseInt(addr.slice(1)); const cx = colX(c), cy = gy + rh * r; return { x: cx, y: cy, w: cwOf(c), h: rh, cx: cx + cwOf(c) / 2, cy: cy + rh / 2 }; },
+      handle(addr) { const q = this.cell(addr); return { x: q.x + q.w - 1, y: q.y + q.h - 1 }; },
+      colLine(c) { return { x: colX(c), y: gy + rh / 2 }; },
+      nameBox: { x: x + 72, y: fy + 24 }, fx: { x: x + 212, y: fy + 24 }, bottom: gy + H0, right: x + gridW, top: gy
+    };
+    // sorotan rentang
+    if (st.range) { const a = geo.cell(st.range[0]), b = geo.cell(st.range[1]); ctx.fillStyle = UI.selectBg; ctx.fillRect(a.x, a.y, b.x + b.w - a.x, b.y + b.h - a.y); }
+    (st.changed || []).forEach(addr => { const q = geo.cell(addr); ctx.fillStyle = C.goodBg; ctx.fillRect(q.x + 1, q.y + 1, q.w - 2, q.h - 2); });
+    (st.marks || []).forEach(([addr, color]) => { const q = geo.cell(addr); ctx.fillStyle = color; ctx.fillRect(q.x + 1, q.y + 1, q.w - 2, q.h - 2); });
+    // garis kisi
+    ctx.strokeStyle = UI.grid; ctx.lineWidth = 1.5;
+    for (let r = 0; r <= rows + 1; r++) { ctx.beginPath(); ctx.moveTo(x, gy + rh * r); ctx.lineTo(x + gridW, gy + rh * r); ctx.stroke(); }
+    for (let c = 0; c <= cols; c++) { ctx.beginPath(); ctx.moveTo(colX(c), gy); ctx.lineTo(colX(c), gy + H0); ctx.stroke(); }
+    ctx.beginPath(); ctx.moveTo(x, gy); ctx.lineTo(x, gy + H0); ctx.stroke();
+    // isi sel
+    Object.keys(st.cells || {}).forEach(addr => {
+      const c = L.col(addr[0]), r = parseInt(addr.slice(1)); if (c < 0 || c >= cols || r < 1 || r > rows) return;
+      if (st.edit && st.edit.addr === addr) return;
+      const v = L.get(st.cells, addr); const q = geo.cell(addr);
+      const shown = st.showFormulas && v.f ? v.f : L.show(v.v);
+      const isNum = typeof v.v === "number" && !(st.showFormulas && v.f);
+      let shownFit = shown; if (isNum) { ctx.font = "600 25px Inter"; if (ctx.measureText(shown).width > q.w - 20) shownFit = "#".repeat(Math.max(2, Math.floor((q.w - 20) / 16))); }
+      ctx.save(); ctx.beginPath(); ctx.rect(q.x + 2, q.y, q.w - 4, q.h); ctx.clip();
+      text(ctx, shownFit, isNum ? q.x + q.w - 14 : q.x + 12, q.y + q.h / 2 + 9, 25, { align: isNum ? "right" : "left", weight: v.bold ? 800 : 600, color: v.color || ((st.changed || []).includes(addr) ? C.good : C.ink) });
+      ctx.restore();
+    });
+    // sel yang sedang diketik
+    if (st.edit) { const q = geo.cell(st.edit.addr); ctx.fillStyle = "#FFFFFF"; ctx.fillRect(q.x + 2, q.y + 2, q.w - 4, q.h - 4);
+      const isF = String(st.edit.text).startsWith("=");
+      text(ctx, st.edit.text, q.x + 12, q.y + q.h / 2 + 9, 25, { weight: 600, color: isF ? UI.formula : C.ink });
+      if (st.caret) { ctx.font = "600 25px Inter"; const w = ctx.measureText(st.edit.text).width; ctx.fillStyle = C.ink; ctx.fillRect(q.x + 14 + w, q.y + 11, 2.5, q.h - 22); } }
+    // rujukan rumus berwarna saat mengetik rumus
+    (st.refs || []).forEach(([addr, color]) => { const q = geo.cell(addr); ctx.strokeStyle = color; ctx.lineWidth = 3; ctx.setLineDash([]); ctx.strokeRect(q.x + 2, q.y + 2, q.w - 4, q.h - 4); });
+    // bingkai salin putus-putus
+    if (st.copy) { const a = geo.cell(st.copy[0]), b = geo.cell(st.copy[1]); ctx.strokeStyle = UI.select; ctx.lineWidth = 3; ctx.setLineDash([10, 7]); ctx.lineDashOffset = -(st.dash || 0); ctx.strokeRect(a.x + 2, a.y + 2, b.x + b.w - a.x - 4, b.y + b.h - a.y - 4); ctx.setLineDash([]); }
+    // sel aktif + gagang isi
+    if (active && !st.edit) { const q = geo.cell(active); const q2 = st.selTo ? geo.cell(st.selTo) : q;
+      ctx.strokeStyle = UI.select; ctx.lineWidth = 4; ctx.strokeRect(q.x + 1, q.y + 1, q2.x + q2.w - q.x - 2, q2.y + q2.h - q.y - 2);
+      const hx = q2.x + q2.w - 1, hy = q2.y + q2.h - 1; const s = st.handleHover ? 13 : 10;
+      ctx.fillStyle = "#FFFFFF"; ctx.fillRect(hx - s / 2 - 2, hy - s / 2 - 2, s + 4, s + 4); ctx.fillStyle = UI.select; ctx.fillRect(hx - s / 2, hy - s / 2, s, s); }
+    else if (st.edit) { const q = geo.cell(st.edit.addr); ctx.strokeStyle = UI.select; ctx.lineWidth = 4; ctx.strokeRect(q.x + 1, q.y + 1, q.w - 2, q.h - 2); }
+    return geo;
+  };
+  L.get = (cells, addr) => { const v = (cells || {})[addr]; return v == null ? { v: "" } : (typeof v === "object" ? v : { v }); };
+  L.show = v => typeof v === "number" ? (Number.isInteger(v) ? String(v) : v.toLocaleString("id-ID", { maximumFractionDigits: 2 })) : (v == null ? "" : String(v));
+
+  // ---------- pointer mouse ----------
+  // kind: "arrow" | "plus" (tanda tambah tipis gagang isi) | "text"; click: 0..1 (efek denyut), down: tombol ditahan
+  L.cursor = function (ctx, x, y, opt = {}) {
+    const kind = opt.kind || "arrow";
+    if (opt.click > 0 && opt.click < 1) { const u = opt.click; ctx.strokeStyle = `rgba(242,177,52,${1 - u})`; ctx.lineWidth = 5; ctx.beginPath(); ctx.arc(x, y, 12 + u * 34, 0, Math.PI * 2); ctx.stroke(); }
+    if (opt.down) { ctx.fillStyle = "rgba(242,177,52,0.35)"; ctx.beginPath(); ctx.arc(x, y, 18, 0, Math.PI * 2); ctx.fill(); }
+    ctx.save(); ctx.translate(x, y);
+    if (kind === "plus") {
+      ctx.strokeStyle = "#FFFFFF"; ctx.lineWidth = 7; ctx.beginPath(); ctx.moveTo(-16, 0); ctx.lineTo(16, 0); ctx.moveTo(0, -16); ctx.lineTo(0, 16); ctx.stroke();
+      ctx.strokeStyle = C.ink; ctx.lineWidth = 3; ctx.beginPath(); ctx.moveTo(-15, 0); ctx.lineTo(15, 0); ctx.moveTo(0, -15); ctx.lineTo(0, 15); ctx.stroke();
+    } else if (kind === "text") {
+      ctx.strokeStyle = "#FFFFFF"; ctx.lineWidth = 6; ctx.beginPath(); ctx.moveTo(0, -16); ctx.lineTo(0, 16); ctx.stroke();
+      ctx.strokeStyle = C.ink; ctx.lineWidth = 2.5; ctx.beginPath(); ctx.moveTo(-6, -16); ctx.lineTo(6, -16); ctx.moveTo(0, -16); ctx.lineTo(0, 16); ctx.moveTo(-6, 16); ctx.lineTo(6, 16); ctx.stroke();
+    } else {
+      const s = opt.size || 1.25; ctx.scale(s, s);
+      ctx.beginPath(); ctx.moveTo(0, 0); ctx.lineTo(0, 30); ctx.lineTo(8, 23); ctx.lineTo(13, 35); ctx.lineTo(18, 33); ctx.lineTo(13, 21); ctx.lineTo(23, 21); ctx.closePath();
+      ctx.fillStyle = "#FFFFFF"; ctx.fill(); ctx.strokeStyle = C.ink; ctx.lineWidth = 2.2; ctx.lineJoin = "round"; ctx.stroke();
+    }
+    ctx.restore();
+  };
+
+  // ---------- tombol keyboard ----------
+  // keys: ["Enter"] atau ["Ctrl", "S"]; press: 0..1 (tombol tertekan di tengahnya)
+  L.keys = function (ctx, x, y, keys, opt = {}) {
+    const size = opt.size || 30; let px = x;
+    const ws = keys.map(k => { ctx.font = `800 ${size}px Inter`; return Math.max(size * 2.1, ctx.measureText(k).width + size * 1.2); });
+    const total = ws.reduce((a, b) => a + b, 0) + (keys.length - 1) * 46;
+    if (opt.align === "center") px = x - total / 2;
+    const down = opt.press > 0.15 && opt.press < 0.75;
+    keys.forEach((k, i) => {
+      const w = ws[i], h = size * 2.1, dy = down ? 5 : 0;
+      ctx.fillStyle = "#A9B6BE"; rr(ctx, px, y + 6, w, h, 12); ctx.fill();
+      ctx.fillStyle = down ? "#FFF3D6" : "#FFFFFF"; rr(ctx, px, y + dy, w, h, 12); ctx.fill(); ctx.strokeStyle = down ? C.accent : "#9AA8B1"; ctx.lineWidth = 2.5; rr(ctx, px, y + dy, w, h, 12); ctx.stroke();
+      text(ctx, k, px + w / 2, y + dy + h / 2 + size * 0.36, size, { align: "center", weight: 800, color: C.ink });
+      px += w; if (i < keys.length - 1) { text(ctx, "+", px + 23, y + h / 2 + size * 0.36, size, { align: "center", weight: 900, color: C.ink2 }); px += 46; }
+    });
+    return total;
+  };
+
+  // ---------- label penunjuk ----------
+  // label kotak dengan garis ke titik (tx, ty)
+  L.callout = function (ctx, x, y, s, tx, ty, opt = {}) {
+    const size = opt.size || 26; ctx.font = `800 ${size}px Inter`; const lines = H.wrap(ctx, s, size, 800, opt.maxW || 420);
+    const w = Math.max(...lines.map(l => ctx.measureText(l).width)) + 36, h = lines.length * size * 1.25 + 26;
+    if (tx != null) { ctx.strokeStyle = opt.color || C.accentDark; ctx.lineWidth = 3; ctx.beginPath(); ctx.moveTo(x + w / 2, y + h / 2); ctx.lineTo(tx, ty); ctx.stroke(); ctx.fillStyle = opt.color || C.accentDark; ctx.beginPath(); ctx.arc(tx, ty, 7, 0, Math.PI * 2); ctx.fill(); }
+    ctx.fillStyle = opt.fill || "#FFF3D6"; rr(ctx, x, y, w, h, 12); ctx.fill(); ctx.strokeStyle = opt.color || C.accent; ctx.lineWidth = 3; rr(ctx, x, y, w, h, 12); ctx.stroke();
+    lines.forEach((ln, i) => text(ctx, ln, x + 18, y + 13 + size + i * size * 1.25, size, { weight: 800, color: opt.ink || C.ink }));
+    return { w, h };
+  };
+
+  // ---------- pembesaran ----------
+  // zoom(ctx, px, py, s, fn): gambar fn() dengan pembesaran s berpusat di (px, py) yang dipindah ke (qx, qy)
+  L.zoom = function (ctx, px, py, s, fn, qx = px, qy = py) {
+    ctx.save(); ctx.translate(qx, qy); ctx.scale(s, s); ctx.translate(-px, -py); fn(); ctx.restore();
+  };
+
+  // ---------- penerjemah aksi ----------
+  // steps: daftar aksi berurutan, masing-masing punya durasi relatif "d" (dibagi rata ke "span" detik):
+  //   {move: "B3"} pointer bergerak ke tengah sel · {click: "B3"} klik (memilih sel) · {type: "Bakso", to: "A1"} mengetik ke sel
+  //   {key: "Tab"|"Enter", commit: true} tombol: menyimpan ketikan, pilihan pindah · {set: {A1: ...}} ubah isi sel langsung
+  //   {drag: ["D2", "D6"]} drag gagang isi · {wait: 1}
+  // Hasil: state lembar kerja + posisi pointer + tombol yang sedang tampil, untuk waktu lokal l.
+  L.play = function (base, steps, l, span, geoFn) {
+    const st = { cells: { ...(base.cells || {}) }, active: base.active, edit: null, caret: true, copy: null, refs: [], range: null, changed: [] };
+    const total = steps.reduce((a, s) => a + (s.d || 1), 0); const unit = span / total;
+    let t0 = 0, ptr = base.pointer ? { ...base.pointer } : null, key = null, click = 0, kind = "arrow", down = false;
+    for (const s of steps) {
+      const d = (s.d || 1) * unit, u = clamp((l - t0) / d, 0, 1); if (l < t0) break;
+      const target = a => geoFn().cell(a);
+      if (s.move || s.click) { const q = target(s.move || s.click); const to = { x: q.x + q.w * 0.62, y: q.y + q.h * 0.6 }; const from = ptr || to; const m = ease(clamp(u / 0.6, 0, 1)); ptr = { x: lerp(from.x, to.x, m), y: lerp(from.y, to.y, m) }; kind = "arrow";
+        if (s.tap && u >= 0.6 && u < 1) click = clamp((u - 0.6) / 0.4, 0, 0.99);
+        if (s.click && u >= 0.6) { click = clamp((u - 0.6) / 0.4, 0, 0.99); st.active = s.click; if (st.edit) { st.cells[st.edit.addr] = s.editValue || st.edit.text; st.edit = null; } } if (u >= 1) click = 0; }
+      if (s.type != null) { const addr = s.to || st.active; const n = Math.round(s.type.length * clamp(u / 0.9, 0, 1)); st.edit = { addr, text: (s.prefix || "") + s.type.slice(0, n) }; st.active = addr; st.caret = Math.floor(l * 2.2) % 2 === 0 || u < 1;
+        if (s.refs) st.refs = s.refs.filter(r => n >= r[2]).map(r => [r[0], r[1]]); }
+      if (s.key) { key = u < 1 ? { keys: [].concat(s.key), press: u } : null; if (u >= 0.45 && s.commit && st.edit) { st.cells[st.edit.addr] = s.value != null ? s.value : st.edit.text; st.edit = null; st.refs = []; st.active = s.next || st.active; } }
+      if (s.set && u >= 0.5) { Object.assign(st.cells, s.set); if (s.flash) st.changed = Object.keys(s.set); }
+      if (s.drag) { const g = geoFn(); const a = g.handle(s.drag[0]), b = g.handle(s.drag[1]); kind = "plus";
+        const from = ptr || a; const m1 = ease(clamp(u / 0.25, 0, 1)); const m2 = ease(clamp((u - 0.3) / 0.55, 0, 1));
+        ptr = u < 0.3 ? { x: lerp(from.x, a.x, m1), y: lerp(from.y, a.y, m1) } : { x: lerp(a.x, b.x, m2), y: lerp(a.y, b.y, m2) }; down = u >= 0.25 && u < 0.88;
+        st.active = s.drag[0]; if (down) { st.dragTo = u < 0.3 ? s.drag[0] : (m2 > 0.98 ? s.drag[1] : null); st.dragFrac = m2; st.dragSpan = s.drag; }
+        if (u >= 0.88) { Object.assign(st.cells, s.fill || {}); st.selTo = s.drag[1]; st.changed = Object.keys(s.fill || {}); } }
+      if (s.hover) { const g = geoFn(); const h = g.handle(s.hover); const from = ptr || h; const m = ease(clamp(u / 0.7, 0, 1)); ptr = { x: lerp(from.x, h.x, m), y: lerp(from.y, h.y, m) }; kind = u > 0.7 ? "plus" : "arrow"; st.handleHover = u > 0.7; }
+      if (s.select) { st.active = s.select[0]; st.selTo = s.select[1]; }
+      if (s.state) Object.assign(st, s.state);
+      t0 += d;
+    }
+    if (st.selTo && st.selTo === st.active) st.selTo = null;
+    return { st, ptr, key, click, kind, down };
+  };
+
+  K.layar = L;
+})(typeof window !== "undefined" ? window : globalThis);
+
+/* Layar Dok: pembantu gambar bersama untuk simulasi pengolah dokumen, slide presentasi, dan kanvas infografik
+   (S07, S08, S30; boleh dipakai simulasi lain). Pemilik: kelompok S07/S08/S30.
+   Muat setelah kiko-core.js dan layar.js:
+     "engine": ["../../_alat/kiko-core.js", "../../_alat/layar.js", "../../_alat/layar_dok.js", "scenes.js"]
+   Semua tampilan generik ("Dokumen", "Slide", "Desain", "Penampil PDF"): tanpa logo, warna khas, atau tata letak yang meniru merek.
+   Nama menu memakai nama yang lazim (File, Sisipkan, Format). Kanvas 1920×1080.
+
+   ===== API: Kiko.dok (di adegan: const D = K.dok) =====
+   Umum
+     D.seq(l, span, ds)                 pembagi waktu: ds = durasi relatif tiap langkah → {i, u, p(k) 0..1, at(k)}
+     D.path(l, span, pts, from)         pointer melewati titik [{x, y, d, click, down}] → {x, y, click, down, i} (gambar dengan L.cursor)
+     D.typed(s, u)                      potongan s yang sudah "diketik" pada kemajuan u
+     D.steps(ctx, x, y, w, title, items, n) panel langkah bernomor (langkah ke-n sedang dikerjakan; sebelum n dicentang) → y bawah
+     D.UI                               warna antarmuka (select, work = latar area kerja, page, line, …)
+     D.txt(ctx, s, x, y, size, opt)     seperti H.text, plus opt.italic
+     D.menuPos(ctx, winX, menus, name)  titik tengah nama menu di bilah menu L.window → {x, y} (y relatif: tambahkan winY)
+     D.menu(ctx, x, y, items, opt)      menu tarik-turun. items: "Teks" | {s, sub (panah ▸), key ("Ctrl+S"), sep (garis di atasnya), dim}
+                                        opt.hi = indeks tersorot, opt.w (bawaan 300). → {item(i): {x, y, w, h, cx, cy}, w, h}
+     D.btn(ctx, x, y, w, h, s, opt)     tombol. opt.primary, opt.press (lebih gelap), opt.size. → kotak {x, y, w, h, cx, cy}
+     D.dialog(ctx, x, y, w, h, title, opt) kotak dialog; opt.dim = {x, y, w, h} area yang digelapkan dulu. → area isi {x, y, w, h}
+     D.saveDialog(ctx, x, y, opt)       dialog "Simpan/Unduh": opt.title, name (teks), caret, folder, type ("Dokumen PDF (.pdf)"),
+                                        typeHi (sorot kolom jenis), press (tombol ditekan), btn ("Simpan"). → {name, folder, type, ok} kotak
+     D.selBox(ctx, x, y, w, h, opt)     bingkai pilihan biru dengan 8 gagang (opt.handles=false: tanpa gagang; opt.hot = "br" gagang menyala)
+     D.icon(ctx, kind, cx, cy, s, color) ikon garis sederhana. kind: gembok, kaca, chat, botol, daur, hp, koin, sampah, daun, centang,
+                                        silang, jam, orang, kalender, timbangan, grafik, bintang, buku, perisai, info, panah, gambar
+     D.pic(ctx, x, y, w, h, kind, opt)  "foto/ilustrasi" berbingkai yang digambar dengan kode. kind: gembok, cari, grup, botol, kelas,
+                                        poin, pemandangan (bawaan). opt.r (sudut), opt.label (nama file kecil di pojok)
+   Dokumen (pengolah dokumen)
+     D.STYLES                           ["Teks normal", "Judul 1", "Judul 2", "Judul 3"]
+     D.docApp(ctx, x, y, w, h, opt) → {area, page, blocks, pages, tool(k), menuY}
+         opt.title ("Dokumen — Tanpa judul"), menuOn, style (isi kotak gaya, bawaan "Teks normal"), size (ukuran huruf, bawaan 11),
+         on {bold, italic, ul, ol, center} (tombol aktif), hot (kunci tombol yang disorot kuning),
+         outline (true: panel "Kerangka dokumen" di kiri, daftar diambil dari blok h1/h2/h3), pageW (bawaan 760), scroll (px),
+         blocks (lihat di bawah), caret (true: kursor di akhir blok yang punya typed/caret).
+         tool(k): kotak tombol; k = style, size, bold, italic, under, ul, ol, left, center, img, link.
+     D.docPages(ctx, x, y, pw, blocks, opt) menggambar halaman (bisa lebih dari satu; blok yang tidak muat pindah ke halaman berikutnya).
+         Dipakai docApp dan viewer; bisa dipakai sendiri (mis. kertas kecil). opt.z (skala), opt.gap, opt.side (halaman berjajar ke kanan).
+         → {blocks: [{x, y, w, h, items: [kotak baris daftar], img: {x, y, w, h}}], pages: [{x, y, w, h}]}
+     Blok: {t: "h1"|"h2"|"h3"|"p"|"fake" (tebal-besar tetapi Teks normal; opt pt), s, typed (jumlah huruf tampil), caret,
+            sel (sorotan biru), mark (bingkai kuning), alpha, color, bold, center}
+           {t: "ol"|"ul", items: ["…"], typed: jumlah item tampil (boleh pecahan: item terakhir sedang diketik), sel, mark}
+           {t: "img", kind, wf (lebar relatif lebar teks, 0..1), ratio (tinggi/lebar), sel (gagang), hot, label}
+           {t: "cap", s} keterangan gambar (kecil, miring, rata tengah)
+           {t: "toc", items: [{s, lvl, page}]} daftar isi otomatis · {t: "gap", h}
+     D.outline(ctx, x, y, w, h, heads, opt) panel kerangka: heads = [{s, lvl}], opt.hi = indeks tersorot
+     D.styleList(ctx, x, y, hi, cur)    daftar gaya terbuka di bawah kotak gaya → {item(i)}
+     D.viewer(ctx, x, y, w, h, opt)     jendela "Penampil PDF": opt.name, blocks, pageW, scroll, pageNo, pageN, zoom (teks "100%")
+                                        → {area, pages, blocks}
+   Slide
+     D.slideApp(ctx, x, y, w, h, opt) → {thumbs: [kotak], stage {x, y, w, h}, els (kotak isi slide aktif), tool(k)}
+         opt.title, menuOn, slides [spec], cur (indeks slide aktif), size (ukuran huruf), on {bold}, hot (kunci tombol disorot),
+         show (tombol Tampilkan disorot). tool(k): k = add (Slide baru), layout (Tata letak), size, bold, color, img, play.
+     D.slide(ctx, x, y, w, h, spec, opt) menggambar satu slide di sembarang ukuran; 1 pt = h/540 px. → {title, sub, body, items, img, num}
+         spec.layout: "judul" | "isi" | "isi_gambar" | "gambar" | "angka" | "padat" | "akhir" | "kosong"
+         spec.title, sub, bullets [], img {kind, label}, num, cap, para (teks panjang untuk "padat"), marks [indeks paragraf disorot kuning], colors [warna tiap poin],
+         titlePt (40; "judul": 54), bodyPt (28), bg, ink, accent, band (garis aksen, bawaan true), ph (tampilkan placeholder kosong),
+         typed {title: n, body: n} (jumlah huruf tampil), caret ("title" | "body"), sel ("title" | "body" | "img")
+     D.layoutMenu(ctx, x, y, hi)        pilihan tata letak bergambar (Judul, Judul dan isi, Judul dan gambar, Kosong) → {item(i)}
+     D.SLIDE_LAYOUTS                    nama-nama tata letak di menu
+   Kanvas infografik
+     D.canvasApp(ctx, x, y, w, h, opt) → {page, area, panel(i), swatch(i), tool(k)}
+         opt.title ("Desain — Tanpa judul"), menuOn, panelHi (indeks alat kiri tersorot), size, swatches [warna], swatchOn,
+         ratio (tinggi/lebar halaman, bawaan 4/3), pageW (lebar halaman px = zoom; bawaan muat ke layar), scroll (px), els (elemen D.info), sel (id elemen terpilih), guides, margin, bg (warna halaman)
+         Alat kiri: Teks, Bentuk, Ikon, Gambar, Grafik. tool(k): k = size, bold, align.
+     D.info(ctx, page, els, opt)        menggambar elemen di halaman berukuran desain 600 × (600·ratio) satuan. → {id: kotak px}
+         el: {t: "text", id, x, y (garis dasar), s, size, weight, color, align, maxW (bungkus), lh, typed, alpha}
+             {t: "rect", x, y, w, h, fill, r, stroke, lw} · {t: "circle", x, y, rad, fill} · {t: "line", x, y, x2, y2, color, lw, dash}
+             {t: "icon", kind, x, y (pusat), s, color, bg (lingkaran latar)} · {t: "pic", kind, x, y, w, h}
+         opt.sel = id (bingkai pilihan), opt.guides = [{x} | {y}] garis bantu merah muda, opt.margin = satuan (garis tepi putus-putus)
+*/
+(function (global) {
+  const K = global.Kiko, H = K.helpers, C = K.C, L = K.layar;
+  const { rr, text, ease, clamp, lerp } = H;
+  const FONT = "Inter, 'Segoe UI', Roboto, Arial, sans-serif";
+  const D = {};
+  const UI = { select: "#1A73C8", selectBg: "rgba(26,115,200,0.16)", work: "#E7ECEF", page: "#FFFFFF", line: "#D5DEE3",
+               ink: "#1F2A33", ink2: "#5B6B76", tool: "#3D4B55", hot: "#F2B134", hotBg: "#FFF3D6", onBg: "#DCE9F7", pdf: "#56626A" };
+  D.UI = UI;
+
+  // ---------- teks ----------
+  function font(size, weight, italic) { return `${italic ? "italic " : ""}${weight || 600} ${size}px ${FONT}`; }
+  D.txt = function (ctx, s, x, y, size, opt = {}) {
+    ctx.font = font(size, opt.weight, opt.italic); ctx.fillStyle = opt.color || UI.ink; ctx.textAlign = opt.align || "left"; ctx.textBaseline = "alphabetic"; ctx.fillText(s, x, y);
+  };
+  function wrapF(ctx, s, size, weight, maxW, italic) {
+    ctx.font = font(size, weight, italic); const out = []; let cur = "";
+    String(s).split(" ").forEach(w => { const t = cur ? cur + " " + w : w; if (ctx.measureText(t).width > maxW && cur) { out.push(cur); cur = w; } else cur = t; });
+    if (cur) out.push(cur); return out;
+  }
+  const measure = (ctx, s, size, weight, italic) => { ctx.font = font(size, weight, italic); return ctx.measureText(s).width; };
+  const box = (x, y, w, h) => ({ x, y, w, h, cx: x + w / 2, cy: y + h / 2 });
+
+  // ---------- waktu, pointer, panel langkah ----------
+  // D.seq(l, span, ds): ds = durasi relatif tiap langkah → {i, u, p(k), at(k)}; D.path(l, span, pts, from): pointer melewati titik
+  // pts = [{x, y, d, click, down}] → {x, y, click, down, i}; D.typed(s, u): potongan teks; D.steps(ctx, x, y, w, title, items, n): panel langkah
+  D.seq = function (l, span, ds) {
+    const tot = ds.reduce((a, b) => a + b, 0); let t0 = 0; const st = ds.map(d => { const a = t0; t0 += d; return [a / tot * span, d / tot * span]; });
+    const p = k => clamp((l - st[k][0]) / st[k][1], 0, 1); let i = 0; st.forEach(([a], k) => { if (l >= a) i = k; });
+    return { i, u: p(i), p, at: k => l >= st[k][0] };
+  };
+  D.path = function (l, span, pts, from) {
+    const S = D.seq(l, span, pts.map(q => q.d || 1)); let prev = from || pts[0];
+    for (let k = 0; k < pts.length; k++) { const q = pts[k], u = S.p(k);
+      if (k === S.i || (k === pts.length - 1 && u >= 1)) { const m = ease(clamp(u / 0.6, 0, 1)); const click = q.click && u >= 0.6 && u < 1 ? (u - 0.6) / 0.4 : 0;
+        return { x: lerp(prev.x, q.x, m), y: lerp(prev.y, q.y, m), click, down: !!q.down && u > 0.1, i: k }; }
+      prev = q; }
+    return { x: prev.x, y: prev.y, click: 0, down: false, i: pts.length - 1 };
+  };
+  D.typed = (s, u) => s.slice(0, Math.round(s.length * clamp(u, 0, 1)));
+  D.steps = function (ctx, x, y, w, title, items, n, opt = {}) {
+    const rows = items.map(s => wrapF(ctx, s, 23, 700, w - 86)); let hh = 70; rows.forEach(ls => hh += ls.length * 30 + 22);
+    H.card(ctx, x, y, w, hh, { fill: "#FFFFFF", stroke: "#D7E2DC", lw: 3, r: 18 });
+    text(ctx, title, x + 24, y + 44, 24, { weight: 900, color: C.accentDark }); let yy = y + 74;
+    rows.forEach((ls, i) => { const done = i < n, now = i === n;
+      if (now) { ctx.fillStyle = "#FFF3D6"; rr(ctx, x + 10, yy - 8, w - 20, ls.length * 30 + 16, 10); ctx.fill(); }
+      ctx.fillStyle = done ? C.good : now ? C.accent : "#C9D4DB"; ctx.beginPath(); ctx.arc(x + 36, yy + 13, 14, 0, Math.PI * 2); ctx.fill();
+      text(ctx, done ? "✓" : String(i + 1), x + 36, yy + 21, 18, { align: "center", weight: 900, color: "#FFFFFF" });
+      ls.forEach((ln, j) => text(ctx, ln, x + 62, yy + 22 + j * 30, 23, { weight: 700, color: done ? C.ink2 : C.ink })); yy += ls.length * 30 + 22; });
+    return y + hh;
+  };
+
+  // ---------- menu, tombol, dialog ----------
+  D.menuPos = function (ctx, winX, menus, name) {
+    let mx = winX + 24; for (const m of menus) { ctx.font = "600 21px Inter"; const mw = ctx.measureText(m).width + 24; if (m === name) return { x: mx + mw / 2 - 8, y: 46 + 20 }; mx += mw + 6; }
+    return { x: winX + 40, y: 66 };
+  };
+  D.menu = function (ctx, x, y, items, opt = {}) {
+    const w = opt.w || 300, rh = 46; let h = 12; items.forEach(it => { if (it && it.sep) h += 12; h += rh; });
+    ctx.save(); ctx.shadowColor = "rgba(31,42,51,0.22)"; ctx.shadowBlur = 22; ctx.shadowOffsetY = 6; ctx.fillStyle = "#FFFFFF"; rr(ctx, x, y, w, h, 10); ctx.fill(); ctx.restore();
+    ctx.strokeStyle = "#C9D4DB"; ctx.lineWidth = 2; rr(ctx, x, y, w, h, 10); ctx.stroke();
+    const rects = []; let yy = y + 6;
+    items.forEach((it, i) => {
+      const o = typeof it === "string" ? { s: it } : it;
+      if (o.sep) { ctx.fillStyle = "#E1E7EB"; ctx.fillRect(x + 10, yy + 5, w - 20, 2); yy += 12; }
+      const on = opt.hi === i;
+      if (on) { ctx.fillStyle = UI.onBg; rr(ctx, x + 5, yy, w - 10, rh, 6); ctx.fill(); }
+      D.txt(ctx, o.s, x + 22, yy + 31, 23, { weight: on ? 700 : 600, color: o.dim ? "#A3B0B8" : on ? UI.select : UI.ink });
+      if (o.key) D.txt(ctx, o.key, x + w - 20, yy + 31, 19, { align: "right", weight: 600, color: "#8A99A3" });
+      if (o.sub) D.txt(ctx, "▸", x + w - 24, yy + 31, 22, { align: "right", weight: 800, color: on ? UI.select : "#8A99A3" });
+      rects.push(box(x, yy, w, rh)); yy += rh;
+    });
+    return { item: i => rects[i], w, h };
+  };
+  D.btn = function (ctx, x, y, w, h, s, opt = {}) {
+    const p = opt.primary; ctx.fillStyle = p ? (opt.press ? "#155FA6" : UI.select) : (opt.press ? "#E3EAEF" : "#FFFFFF"); rr(ctx, x, y, w, h, 10); ctx.fill();
+    if (!p) { ctx.strokeStyle = opt.hot ? UI.hot : "#C9D4DB"; ctx.lineWidth = opt.hot ? 4 : 2; rr(ctx, x, y, w, h, 10); ctx.stroke(); }
+    D.txt(ctx, s, x + w / 2, y + h / 2 + (opt.size || 24) * 0.36, opt.size || 24, { align: "center", weight: 800, color: p ? "#FFFFFF" : UI.ink });
+    return box(x, y, w, h);
+  };
+  D.dialog = function (ctx, x, y, w, h, title, opt = {}) {
+    if (opt.dim) { ctx.fillStyle = "rgba(31,42,51,0.28)"; ctx.fillRect(opt.dim.x, opt.dim.y, opt.dim.w, opt.dim.h); }
+    ctx.save(); ctx.shadowColor = "rgba(31,42,51,0.3)"; ctx.shadowBlur = 34; ctx.shadowOffsetY = 10; ctx.fillStyle = "#FFFFFF"; rr(ctx, x, y, w, h, 16); ctx.fill(); ctx.restore();
+    ctx.strokeStyle = "#C9D4DB"; ctx.lineWidth = 2; rr(ctx, x, y, w, h, 16); ctx.stroke();
+    D.txt(ctx, title, x + 36, y + 56, 30, { weight: 900 });
+    return { x: x + 36, y: y + 80, w: w - 72, h: h - 100 };
+  };
+  function field(ctx, x, y, w, label, value, opt = {}) {
+    D.txt(ctx, label, x, y, 22, { weight: 700, color: UI.ink2 });
+    const fy = y + 12, fh = 56; ctx.fillStyle = opt.fill || "#FFFFFF"; rr(ctx, x, fy, w, fh, 8); ctx.fill();
+    ctx.strokeStyle = opt.hot ? UI.hot : opt.focus ? UI.select : "#C9D4DB"; ctx.lineWidth = opt.hot || opt.focus ? 3 : 2; rr(ctx, x, fy, w, fh, 8); ctx.stroke();
+    D.txt(ctx, value, x + 18, fy + 37, 26, { weight: 700 });
+    if (opt.caret) { const tw = measure(ctx, value, 26, 700); ctx.fillStyle = UI.ink; ctx.fillRect(x + 20 + tw, fy + 12, 2.5, 32); }
+    if (opt.drop) D.txt(ctx, "▾", x + w - 22, fy + 37, 24, { align: "right", weight: 800, color: UI.ink2 });
+    return box(x, fy, w, fh);
+  }
+  D.saveDialog = function (ctx, x, y, opt = {}) {
+    const w = opt.w || 820, h = 440; const a = D.dialog(ctx, x, y, w, h, opt.title || "Simpan sebagai", { dim: opt.dim });
+    const name = field(ctx, a.x, a.y + 14, a.w, "Nama file", opt.name || "", { focus: opt.caret, caret: opt.caret, hot: opt.nameHi });
+    const folder = field(ctx, a.x, a.y + 110, a.w, "Folder", "▤  " + (opt.folder || "Dokumen"), { fill: "#F4F7F9", drop: true, hot: opt.folderHi });
+    const type = field(ctx, a.x, a.y + 206, a.w, "Jenis file", opt.type || "Dokumen PDF (.pdf)", { fill: "#F4F7F9", drop: true, hot: opt.typeHi });
+    const ok = D.btn(ctx, x + w - 236, y + h - 82, 200, 56, opt.btn || "Simpan", { primary: true, press: opt.press });
+    D.btn(ctx, x + w - 456, y + h - 82, 200, 56, "Batal");
+    return { name, folder, type, ok };
+  };
+
+  // ---------- bingkai pilihan ----------
+  D.selBox = function (ctx, x, y, w, h, opt = {}) {
+    ctx.strokeStyle = opt.color || UI.select; ctx.lineWidth = opt.lw || 2.5; ctx.setLineDash(opt.dash ? [8, 6] : []); ctx.strokeRect(x, y, w, h); ctx.setLineDash([]);
+    if (opt.handles === false) return;
+    const pts = { tl: [x, y], tc: [x + w / 2, y], tr: [x + w, y], ml: [x, y + h / 2], mr: [x + w, y + h / 2], bl: [x, y + h], bc: [x + w / 2, y + h], br: [x + w, y + h] };
+    Object.entries(pts).forEach(([k, [px, py]]) => { const s = opt.hot === k ? 18 : 12; ctx.fillStyle = "#FFFFFF"; ctx.fillRect(px - s / 2, py - s / 2, s, s); ctx.strokeStyle = opt.hot === k ? UI.hot : (opt.color || UI.select); ctx.lineWidth = opt.hot === k ? 4 : 2.5; ctx.strokeRect(px - s / 2, py - s / 2, s, s); });
+  };
+
+  // ---------- ikon ----------
+  D.icon = function (ctx, kind, cx, cy, s, color) {
+    const c = color || UI.tool; ctx.save(); ctx.translate(cx, cy); ctx.strokeStyle = c; ctx.fillStyle = c; ctx.lineWidth = Math.max(2, s * 0.09); ctx.lineCap = "round"; ctx.lineJoin = "round";
+    const r = s / 2; const circ = (x, y, rad, fill) => { ctx.beginPath(); ctx.arc(x, y, rad, 0, Math.PI * 2); fill ? ctx.fill() : ctx.stroke(); };
+    const line = (...p) => { ctx.beginPath(); ctx.moveTo(p[0], p[1]); for (let i = 2; i < p.length; i += 2) ctx.lineTo(p[i], p[i + 1]); ctx.stroke(); };
+    switch (kind) {
+      case "gembok": rr(ctx, -r * 0.7, -r * 0.1, r * 1.4, r * 1.0, r * 0.18); ctx.stroke(); ctx.beginPath(); ctx.arc(0, -r * 0.1, r * 0.45, Math.PI, 0); ctx.stroke(); circ(0, r * 0.32, r * 0.13, true); line(0, r * 0.38, 0, r * 0.6); break;
+      case "kaca": circ(-r * 0.15, -r * 0.15, r * 0.55); ctx.lineWidth *= 1.4; line(r * 0.25, r * 0.25, r * 0.8, r * 0.8); break;
+      case "chat": rr(ctx, -r * 0.9, -r * 0.8, r * 1.2, r * 0.85, r * 0.2); ctx.stroke(); line(-r * 0.6, r * 0.05, -r * 0.7, r * 0.35, -r * 0.35, r * 0.05);
+        rr(ctx, -r * 0.1, -r * 0.2, r * 1.0, r * 0.75, r * 0.2); ctx.stroke(); line(r * 0.6, r * 0.55, r * 0.7, r * 0.85, r * 0.4, r * 0.55); break;
+      case "botol": ctx.beginPath(); ctx.moveTo(-r * 0.15, -r * 0.95); ctx.lineTo(r * 0.15, -r * 0.95); ctx.lineTo(r * 0.15, -r * 0.65); ctx.quadraticCurveTo(r * 0.45, -r * 0.45, r * 0.45, -r * 0.15);
+        ctx.lineTo(r * 0.45, r * 0.9); ctx.lineTo(-r * 0.45, r * 0.9); ctx.lineTo(-r * 0.45, -r * 0.15); ctx.quadraticCurveTo(-r * 0.45, -r * 0.45, -r * 0.15, -r * 0.65); ctx.closePath(); ctx.stroke(); line(-r * 0.45, r * 0.15, r * 0.45, r * 0.15); line(-r * 0.45, r * 0.5, r * 0.45, r * 0.5); break;
+      case "daur": for (let k = 0; k < 3; k++) { ctx.save(); ctx.rotate(k * Math.PI * 2 / 3); ctx.beginPath(); ctx.arc(0, 0, r * 0.7, -Math.PI * 0.45, Math.PI * 0.05); ctx.stroke();
+          const ax = r * 0.7 * Math.cos(Math.PI * 0.05), ay = r * 0.7 * Math.sin(Math.PI * 0.05); line(ax - r * 0.22, ay - r * 0.05, ax, ay, ax + r * 0.08, ay - r * 0.24); ctx.restore(); } break;
+      case "hp": rr(ctx, -r * 0.5, -r * 0.9, r * 1.0, r * 1.8, r * 0.18); ctx.stroke(); line(-r * 0.15, r * 0.65, r * 0.15, r * 0.65); break;
+      case "koin": circ(0, 0, r * 0.8); circ(0, 0, r * 0.55); ctx.font = `900 ${Math.round(s * 0.42)}px Inter`; ctx.textAlign = "center"; ctx.textBaseline = "middle"; ctx.fillText("P", 0, r * 0.03); ctx.textBaseline = "alphabetic"; break;
+      case "sampah": line(-r * 0.75, -r * 0.55, r * 0.75, -r * 0.55); line(-r * 0.25, -r * 0.55, -r * 0.2, -r * 0.8, r * 0.2, -r * 0.8, r * 0.25, -r * 0.55);
+        ctx.beginPath(); ctx.moveTo(-r * 0.6, -r * 0.4); ctx.lineTo(-r * 0.45, r * 0.85); ctx.lineTo(r * 0.45, r * 0.85); ctx.lineTo(r * 0.6, -r * 0.4); ctx.stroke(); line(-r * 0.15, -r * 0.2, -r * 0.1, r * 0.6); line(r * 0.15, -r * 0.2, r * 0.1, r * 0.6); break;
+      case "daun": ctx.beginPath(); ctx.moveTo(-r * 0.7, r * 0.7); ctx.quadraticCurveTo(-r * 0.8, -r * 0.7, r * 0.75, -r * 0.75); ctx.quadraticCurveTo(r * 0.7, r * 0.75, -r * 0.7, r * 0.7); ctx.stroke(); line(-r * 0.7, r * 0.7, r * 0.3, -r * 0.3); break;
+      case "centang": circ(0, 0, r * 0.85); line(-r * 0.4, 0, -r * 0.1, r * 0.3, r * 0.45, -r * 0.3); break;
+      case "silang": circ(0, 0, r * 0.85); line(-r * 0.32, -r * 0.32, r * 0.32, r * 0.32); line(r * 0.32, -r * 0.32, -r * 0.32, r * 0.32); break;
+      case "jam": circ(0, 0, r * 0.85); line(0, -r * 0.5, 0, 0, r * 0.35, r * 0.2); break;
+      case "orang": circ(0, -r * 0.4, r * 0.32); ctx.beginPath(); ctx.arc(0, r * 0.75, r * 0.65, Math.PI, 0); ctx.stroke(); break;
+      case "kalender": rr(ctx, -r * 0.8, -r * 0.65, r * 1.6, r * 1.45, r * 0.15); ctx.stroke(); line(-r * 0.8, -r * 0.25, r * 0.8, -r * 0.25); line(-r * 0.4, -r * 0.85, -r * 0.4, -r * 0.5); line(r * 0.4, -r * 0.85, r * 0.4, -r * 0.5);
+        for (let i = 0; i < 3; i++) for (let j = 0; j < 2; j++) circ(-r * 0.4 + i * r * 0.4, r * 0.1 + j * r * 0.35, r * 0.07, true); break;
+      case "timbangan": line(-r * 0.8, r * 0.8, r * 0.8, r * 0.8); rr(ctx, -r * 0.6, -r * 0.1, r * 1.2, r * 0.9, r * 0.1); ctx.stroke(); circ(0, r * 0.35, r * 0.25); line(0, r * 0.35, r * 0.12, r * 0.22); line(-r * 0.7, -r * 0.3, r * 0.7, -r * 0.3); break;
+      case "grafik": line(-r * 0.85, -r * 0.85, -r * 0.85, r * 0.8, r * 0.85, r * 0.8); [[-0.55, 0.3], [-0.15, -0.1], [0.25, -0.45], [0.65, -0.7]].forEach(([bx, by]) => { ctx.fillRect(bx * r - r * 0.13, by * r, r * 0.26, r * 0.8 - by * r); }); break;
+      case "bintang": ctx.beginPath(); for (let i = 0; i < 10; i++) { const a = -Math.PI / 2 + i * Math.PI / 5, rad = i % 2 ? r * 0.38 : r * 0.88; ctx.lineTo(Math.cos(a) * rad, Math.sin(a) * rad); } ctx.closePath(); ctx.stroke(); break;
+      case "buku": ctx.beginPath(); ctx.moveTo(0, -r * 0.5); ctx.quadraticCurveTo(-r * 0.4, -r * 0.75, -r * 0.85, -r * 0.6); ctx.lineTo(-r * 0.85, r * 0.65); ctx.quadraticCurveTo(-r * 0.4, r * 0.5, 0, r * 0.75);
+        ctx.quadraticCurveTo(r * 0.4, r * 0.5, r * 0.85, r * 0.65); ctx.lineTo(r * 0.85, -r * 0.6); ctx.quadraticCurveTo(r * 0.4, -r * 0.75, 0, -r * 0.5); ctx.stroke(); line(0, -r * 0.5, 0, r * 0.75); break;
+      case "perisai": ctx.beginPath(); ctx.moveTo(0, -r * 0.85); ctx.lineTo(r * 0.7, -r * 0.55); ctx.quadraticCurveTo(r * 0.7, r * 0.5, 0, r * 0.9); ctx.quadraticCurveTo(-r * 0.7, r * 0.5, -r * 0.7, -r * 0.55); ctx.closePath(); ctx.stroke(); line(-r * 0.28, 0, -r * 0.05, r * 0.25, r * 0.32, -r * 0.2); break;
+      case "info": circ(0, 0, r * 0.85); circ(0, -r * 0.38, r * 0.08, true); line(0, -r * 0.1, 0, r * 0.45); break;
+      case "panah": line(-r * 0.75, 0, r * 0.7, 0); line(r * 0.3, -r * 0.4, r * 0.75, 0, r * 0.3, r * 0.4); break;
+      case "gambar": rr(ctx, -r * 0.85, -r * 0.65, r * 1.7, r * 1.3, r * 0.12); ctx.stroke(); line(-r * 0.7, r * 0.5, -r * 0.2, -r * 0.05, r * 0.1, r * 0.25, r * 0.35, 0, r * 0.7, r * 0.5); circ(r * 0.4, -r * 0.3, r * 0.12, true); break;
+      default: circ(0, 0, r * 0.8);
+    }
+    ctx.restore();
+  };
+
+  // ---------- ilustrasi berbingkai ----------
+  D.pic = function (ctx, x, y, w, h, kind, opt = {}) {
+    const rad = opt.r != null ? opt.r : Math.min(w, h) * 0.06;
+    const bgs = { gembok: "#DCEBF7", cari: "#E8F0E4", grup: "#F6E9D9", botol: "#DFF1EA", kelas: "#EFE8F6", poin: "#FFF1D2", pemandangan: "#DDEFF7" };
+    ctx.save(); rr(ctx, x, y, w, h, rad); ctx.clip();
+    ctx.fillStyle = bgs[kind] || bgs.pemandangan; ctx.fillRect(x, y, w, h);
+    const cx = x + w / 2, cy = y + h / 2, s = Math.min(w, h);
+    if (kind === "gembok") {
+      ctx.fillStyle = "#2B3A44"; rr(ctx, cx - s * 0.2, cy - s * 0.38, s * 0.4, s * 0.76, s * 0.05); ctx.fill(); ctx.fillStyle = "#FFFFFF"; rr(ctx, cx - s * 0.17, cy - s * 0.32, s * 0.34, s * 0.62, s * 0.03); ctx.fill();
+      ctx.fillStyle = "#E7EEF3"; rr(ctx, cx - s * 0.13, cy + s * 0.02, s * 0.26, s * 0.08, s * 0.02); ctx.fill();
+      for (let i = 0; i < 6; i++) { ctx.fillStyle = "#2B3A44"; ctx.beginPath(); ctx.arc(cx - s * 0.09 + i * s * 0.036, cy + s * 0.06, s * 0.011, 0, Math.PI * 2); ctx.fill(); }
+      D.icon(ctx, "gembok", cx, cy - s * 0.12, s * 0.2, "#1A73C8");
+      ctx.fillStyle = "#2E9E5B"; rr(ctx, cx - s * 0.1, cy + s * 0.15, s * 0.2, s * 0.06, s * 0.02); ctx.fill();
+      D.icon(ctx, "perisai", x + w * 0.16, y + h * 0.26, s * 0.18, "#2E7E9A"); D.icon(ctx, "bintang", x + w * 0.84, y + h * 0.74, s * 0.14, "#F2B134");
+    } else if (kind === "cari") {
+      ctx.fillStyle = "#FFFFFF"; rr(ctx, x + w * 0.12, cy - s * 0.09, w * 0.76, s * 0.18, s * 0.09); ctx.fill(); ctx.strokeStyle = "#B9C7CF"; ctx.lineWidth = Math.max(2, s * 0.012); ctx.stroke();
+      D.icon(ctx, "kaca", x + w * 0.12 + s * 0.12, cy, s * 0.11, "#4A5A66"); ctx.fillStyle = "#C9D4DB"; rr(ctx, x + w * 0.12 + s * 0.22, cy - s * 0.015, w * 0.4, s * 0.03, 3); ctx.fill();
+      [0, 1].forEach(i => { ctx.fillStyle = "#FFFFFF"; rr(ctx, x + w * 0.12, cy + s * 0.15 + i * s * 0.13, w * 0.6, s * 0.09, 6); ctx.fill(); });
+    } else if (kind === "grup") {
+      const b = (bx, by, bw, col) => { ctx.fillStyle = col; rr(ctx, bx, by, bw, s * 0.13, s * 0.05); ctx.fill(); };
+      b(x + w * 0.1, y + h * 0.18, w * 0.5, "#FFFFFF"); b(x + w * 0.38, y + h * 0.42, w * 0.5, "#CFEFD9"); b(x + w * 0.1, y + h * 0.66, w * 0.42, "#FFFFFF");
+      D.icon(ctx, "chat", x + w * 0.82, y + h * 0.22, s * 0.18, "#B57A12");
+    } else if (kind === "botol") {
+      ctx.fillStyle = "#2E9E5B"; rr(ctx, cx + s * 0.08, cy - s * 0.12, s * 0.3, s * 0.42, s * 0.03); ctx.fill(); ctx.fillStyle = "#257F49"; ctx.fillRect(cx + s * 0.05, cy - s * 0.17, s * 0.36, s * 0.07);
+      D.icon(ctx, "daur", cx + s * 0.23, cy + s * 0.1, s * 0.2, "#FFFFFF");
+      [[-0.32, 0.1, -0.3], [-0.18, 0.14, 0.25], [-0.05, 0.2, -0.1]].forEach(([dx, dy, a]) => { ctx.save(); ctx.translate(cx + dx * s, cy + dy * s); ctx.rotate(a); ctx.fillStyle = "rgba(120,190,230,0.75)"; rr(ctx, -s * 0.05, -s * 0.16, s * 0.1, s * 0.3, s * 0.03); ctx.fill(); ctx.fillStyle = "#1A73C8"; ctx.fillRect(-s * 0.025, -s * 0.2, s * 0.05, s * 0.05); ctx.restore(); });
+    } else if (kind === "kelas") {
+      ctx.fillStyle = "#FFFFFF"; ctx.fillRect(cx - s * 0.36, y + h * 0.12, s * 0.72, s * 0.3);
+      for (let i = 0; i < 4; i++) { const px = x + w * (0.2 + i * 0.2); ctx.fillStyle = ["#F1C9A5", "#C98A57", "#F1C9A5", "#C98A57"][i]; ctx.beginPath(); ctx.arc(px, y + h * 0.66, s * 0.07, 0, Math.PI * 2); ctx.fill(); ctx.fillStyle = "#2F4E7D"; rr(ctx, px - s * 0.09, y + h * 0.74, s * 0.18, s * 0.2, s * 0.05); ctx.fill(); }
+    } else if (kind === "poin") {
+      D.icon(ctx, "hp", cx - s * 0.12, cy, s * 0.5, "#2B3A44"); D.icon(ctx, "koin", cx + s * 0.2, cy - s * 0.08, s * 0.28, "#B57A12"); D.icon(ctx, "koin", cx + s * 0.27, cy + s * 0.16, s * 0.22, "#B57A12");
+    } else {
+      ctx.fillStyle = "#F2B134"; ctx.beginPath(); ctx.arc(x + w * 0.75, y + h * 0.3, s * 0.1, 0, Math.PI * 2); ctx.fill();
+      ctx.fillStyle = "#7FB98F"; ctx.beginPath(); ctx.moveTo(x, y + h); ctx.lineTo(x + w * 0.35, y + h * 0.45); ctx.lineTo(x + w * 0.6, y + h * 0.8); ctx.lineTo(x + w * 0.78, y + h * 0.6); ctx.lineTo(x + w, y + h * 0.9); ctx.lineTo(x + w, y + h); ctx.fill();
+    }
+    ctx.restore();
+    if (opt.label) { const fs = Math.max(14, Math.round(s * 0.06)); ctx.font = font(fs, 700); const tw = ctx.measureText(opt.label).width; ctx.fillStyle = "rgba(255,255,255,0.85)"; rr(ctx, x + 8, y + h - fs - 18, tw + 16, fs + 10, 6); ctx.fill(); D.txt(ctx, opt.label, x + 16, y + h - 16, fs, { weight: 700, color: UI.ink2 }); }
+  };
+
+  // ---------- pengolah dokumen ----------
+  D.STYLES = ["Teks normal", "Judul 1", "Judul 2", "Judul 3"];
+  const PT = { h1: 20, h2: 15, h3: 13, p: 11, cap: 9.5 };
+  function blockText(b) { const s = b.s || ""; return b.typed != null ? s.slice(0, Math.max(0, Math.round(b.typed))) : s; }
+  D.docPages = function (ctx, x0, y0, pw, blocks, opt = {}) {
+    const z = opt.z || pw / 760, px = pt => pt * 2.2 * z, mx = 72 * z, top = 66 * z, bottom = 70 * z, ph = pw * 1.414, gap = opt.gap || 30 * z;
+    const tw = pw - mx * 2; const pages = []; const rects = [];
+    let x0p = x0;
+    const newPage = () => { const n = pages.length, py = opt.side ? y0 : y0 + n * (ph + gap); x0p = opt.side ? x0 + n * (pw + gap) : x0; const pg = { x: x0p, y: py, w: pw, h: ph }; pages.push(pg);
+      ctx.save(); ctx.shadowColor = "rgba(31,42,51,0.16)"; ctx.shadowBlur = 16 * z + 4; ctx.shadowOffsetY = 4; ctx.fillStyle = UI.page; ctx.fillRect(x0p, py, pw, ph); ctx.restore();
+      ctx.strokeStyle = "#D5DEE3"; ctx.lineWidth = 1; ctx.strokeRect(x0p, py, pw, ph); return py + top; };
+    // ukur dulu tinggi tiap blok (agar bisa pindah halaman), lalu gambar
+    const meas = blocks.map(b => {
+      if (b.t === "gap") return { h: (b.h || 20) * z };
+      if (b.t === "img") { const w = tw * (b.wf || 0.6), h = w * (b.ratio || 0.62); return { h: h + 14 * z, w, ih: h }; }
+      if (b.t === "toc") return { h: px(13) * 1.6 + (b.items || []).length * px(11) * 1.7 + 18 * z };
+      if (b.t === "ol" || b.t === "ul") { const size = px(PT.p); let hh = 0; const lines = (b.items || []).map(s => { const ls = wrapF(ctx, s, size, 500, tw - 44 * z); hh += ls.length * size * 1.45 + 6 * z; return ls; }); return { h: hh + 12 * z, lines, size }; }
+      const kind = b.t === "fake" ? "fake" : b.t; const pt = b.t === "fake" ? (b.pt || 20) : (PT[kind] || 11);
+      const size = px(pt), weight = (kind === "h1" || kind === "h2" || kind === "h3" || b.t === "fake" || b.bold) ? 800 : 500, italic = kind === "cap";
+      const lines = wrapF(ctx, b.s || " ", size, weight, tw, italic); const lh = size * (kind === "p" ? 1.45 : 1.25);
+      const before = kind === "h1" ? 0 : kind === "h2" ? 14 * z : kind === "h3" ? 10 * z : 0, after = kind === "h1" ? 20 * z : kind === "h2" ? 10 * z : kind === "cap" ? 18 * z : 14 * z;
+      return { h: before + lines.length * lh + after, size, weight, italic, lh, before, lines };
+    });
+    let yy = newPage(), py0 = pages[0].y;
+    blocks.forEach((b, i) => {
+      const m = meas[i]; const pageBottom = pages[pages.length - 1].y + ph - bottom;
+      if (yy + m.h > pageBottom && yy > pages[pages.length - 1].y + top + 1) yy = newPage();
+      const r = { x: x0p + mx, y: yy, w: tw, h: m.h, items: [] };
+      ctx.save(); if (b.alpha != null) ctx.globalAlpha = clamp(b.alpha, 0, 1);
+      if (b.t === "img") {
+        const ix = b.center === false ? x0p + mx : x0p + mx + (tw - m.w) / 2; r.img = { x: ix, y: yy, w: m.w, h: m.ih };
+        D.pic(ctx, ix, yy, m.w, m.ih, b.kind || "pemandangan", { r: 6 * z, label: b.label });
+        if (b.sel) D.selBox(ctx, ix, yy, m.w, m.ih, { hot: b.hot });
+      } else if (b.t === "toc") {
+        const s1 = px(13), s2 = px(11);
+        D.txt(ctx, "Daftar isi", x0p + mx, yy + s1, s1, { weight: 800 });
+        (b.items || []).forEach((it, k) => { const ty = yy + s1 * 1.6 + (k + 1) * s2 * 1.7 - s2 * 0.4; const ix = x0p + mx + (it.lvl > 1 ? 30 * z : 0);
+          D.txt(ctx, it.s, ix, ty, s2, { weight: it.lvl > 1 ? 500 : 700, color: "#1A5FA8" });
+          const w1 = measure(ctx, it.s, s2, it.lvl > 1 ? 500 : 700); ctx.fillStyle = "#9AA8B1"; for (let dx = ix + w1 + 10 * z; dx < x0p + mx + tw - 30 * z; dx += 9 * z) ctx.fillRect(dx, ty - 2, 2.5 * z, 2.5 * z);
+          D.txt(ctx, String(it.page || 1), x0p + mx + tw, ty, s2, { align: "right", weight: 600, color: UI.ink2 }); r.items.push({ x: ix, y: ty - s2, w: tw, h: s2 * 1.4 }); });
+        if (b.mark) { ctx.strokeStyle = UI.hot; ctx.lineWidth = 4; rr(ctx, r.x - 10 * z, r.y - 6 * z, r.w + 20 * z, r.h, 8); ctx.stroke(); }
+      } else if (b.t === "ol" || b.t === "ul") {
+        const n = b.typed != null ? b.typed : (b.items || []).length; let ly = yy + 4 * z;
+        (b.items || []).forEach((s, k) => {
+          if (k >= Math.ceil(n - 1e-6)) return;
+          const partial = clamp(n - k, 0, 1); const ls = m.lines[k];
+          const shownAll = partial >= 1 ? ls : wrapF(ctx, s.slice(0, Math.round(s.length * partial)), m.size, 500, tw - 44 * z);
+          const ih = ls.length * m.size * 1.45;
+          if (b.sel) { ctx.fillStyle = UI.selectBg; ctx.fillRect(x0p + mx - 4, ly, tw + 8, ih); }
+          D.txt(ctx, b.t === "ol" ? (k + 1) + "." : "•", x0p + mx + 8 * z, ly + m.size * 1.08, m.size, { weight: 600, color: b.t === "ol" ? UI.ink : UI.ink2 });
+          shownAll.forEach((ln, j) => D.txt(ctx, ln, x0p + mx + 44 * z, ly + m.size * 1.08 + j * m.size * 1.45, m.size, { weight: 500 }));
+          if (b.caret && k === Math.ceil(n) - 1 && opt.caret !== false) { const last = shownAll[shownAll.length - 1] || ""; const cw = measure(ctx, last, m.size, 500); ctx.fillStyle = UI.ink; ctx.fillRect(x0p + mx + 46 * z + cw, ly + (shownAll.length - 1) * m.size * 1.45 + m.size * 0.1, 2.5, m.size * 1.15); }
+          r.items.push({ x: x0p + mx, y: ly, w: tw, h: ih }); ly += ih + 6 * z;
+        });
+        if (b.mark) { ctx.strokeStyle = UI.hot; ctx.lineWidth = 4; rr(ctx, r.x - 10 * z, r.y - 4 * z, r.w + 20 * z, r.h, 8); ctx.stroke(); }
+      } else if (b.t !== "gap") {
+        const s = blockText(b); const lines = s ? wrapF(ctx, s, m.size, m.weight, tw, m.italic) : [""];
+        const center = b.center || b.t === "cap"; const color = b.color || (b.t === "cap" ? UI.ink2 : b.t === "h2" || b.t === "h3" ? "#21455A" : UI.ink);
+        const ty0 = yy + m.before + m.size * 1.0;
+        if (b.sel) { lines.forEach((ln, j) => { const lw = measure(ctx, ln, m.size, m.weight, m.italic); const lx = center ? x0p + mx + (tw - lw) / 2 : x0p + mx; ctx.fillStyle = UI.selectBg; ctx.fillRect(lx - 3, ty0 - m.size * 0.95 + j * m.lh, lw + 6, m.size * 1.25); }); }
+        lines.forEach((ln, j) => D.txt(ctx, ln, center ? x0p + mx + tw / 2 : x0p + mx, ty0 + j * m.lh, m.size, { weight: m.weight, italic: m.italic, color, align: center ? "center" : "left" }));
+        if (b.caret && opt.caret !== false) { const last = lines[lines.length - 1]; const lw = measure(ctx, last, m.size, m.weight, m.italic); const cx = center ? x0p + mx + tw / 2 + lw / 2 + 3 : x0p + mx + lw + 3; ctx.fillStyle = UI.ink; ctx.fillRect(cx, ty0 - m.size * 0.9 + (lines.length - 1) * m.lh, 2.5, m.size * 1.1); }
+        r.textH = lines.length * m.lh; r.ty = ty0; r.size = m.size;
+        if (b.mark) { ctx.strokeStyle = UI.hot; ctx.lineWidth = 4; rr(ctx, r.x - 10 * z, yy + m.before - 6 * z, r.w + 20 * z, lines.length * m.lh + 16 * z, 8); ctx.stroke(); }
+      }
+      ctx.restore();
+      rects.push(r); yy += m.h;
+    });
+    return { blocks: rects, pages, z };
+  };
+  D.outline = function (ctx, x, y, w, h, heads, opt = {}) {
+    ctx.fillStyle = "#FFFFFF"; rr(ctx, x, y, w, h, 12); ctx.fill(); ctx.strokeStyle = opt.hot ? UI.hot : "#D5DEE3"; ctx.lineWidth = opt.hot ? 4 : 2; rr(ctx, x, y, w, h, 12); ctx.stroke();
+    D.txt(ctx, opt.title || "Kerangka dokumen", x + 18, y + 36, 20, { weight: 800, color: UI.ink2 });
+    ctx.fillStyle = "#E1E7EB"; ctx.fillRect(x + 14, y + 52, w - 28, 2);
+    if (!heads.length) { wrapF(ctx, "Judul yang kamu buat akan muncul di sini.", 19, 500, w - 36).forEach((ln, i) => D.txt(ctx, ln, x + 18, y + 86 + i * 26, 19, { weight: 500, color: "#8A99A3" })); return []; }
+    const rows = [];
+    heads.forEach((hd, i) => { const yy = y + 66 + i * 44; const ix = x + 18 + (hd.lvl - 1) * 20; const on = opt.hi === i;
+      if (on) { ctx.fillStyle = UI.onBg; rr(ctx, x + 8, yy, w - 16, 38, 6); ctx.fill(); }
+      ctx.save(); ctx.beginPath(); ctx.rect(x + 8, yy, w - 16, 38); ctx.clip();
+      const fs = hd.lvl > 1 ? 19 : 20, fw = hd.lvl > 1 ? 600 : 800, maxW = x + w - 14 - ix; let s = hd.s;
+      if (measure(ctx, s, fs, fw) > maxW) { while (s.length > 3 && measure(ctx, s + "…", fs, fw) > maxW) s = s.slice(0, -1); s = s.trimEnd() + "…"; }
+      D.txt(ctx, s, ix, yy + 26, fs, { weight: fw, color: on ? UI.select : UI.ink }); ctx.restore(); rows.push(box(x + 8, yy, w - 16, 38)); });
+    return rows;
+  };
+  D.styleList = function (ctx, x, y, hi, cur) {
+    const items = [["Teks normal", 22, 500], ["Judul 1", 32, 800], ["Judul 2", 27, 800], ["Judul 3", 23, 800]]; const w = 290, rh = 58, h = items.length * rh + 14;
+    ctx.save(); ctx.shadowColor = "rgba(31,42,51,0.22)"; ctx.shadowBlur = 22; ctx.shadowOffsetY = 6; ctx.fillStyle = "#FFFFFF"; rr(ctx, x, y, w, h, 10); ctx.fill(); ctx.restore();
+    ctx.strokeStyle = "#C9D4DB"; ctx.lineWidth = 2; rr(ctx, x, y, w, h, 10); ctx.stroke(); const rects = [];
+    items.forEach(([s, size, weight], i) => { const yy = y + 7 + i * rh; if (hi === i) { ctx.fillStyle = UI.onBg; rr(ctx, x + 5, yy, w - 10, rh, 6); ctx.fill(); }
+      if (cur === s) D.txt(ctx, "✓", x + 22, yy + 38, 22, { weight: 900, color: UI.select });
+      D.txt(ctx, s, x + 50, yy + rh / 2 + size * 0.36, size, { weight, color: hi === i ? UI.select : UI.ink }); rects.push(box(x, yy, w, rh)); });
+    return { item: i => rects[i] };
+  };
+  function toolbarBtn(ctx, bx, by, bw, label, opt) {
+    if (opt.on) { ctx.fillStyle = UI.onBg; rr(ctx, bx, by, bw, 38, 7); ctx.fill(); }
+    if (opt.hot) { ctx.fillStyle = UI.hotBg; rr(ctx, bx - 3, by - 3, bw + 6, 44, 8); ctx.fill(); ctx.strokeStyle = UI.hot; ctx.lineWidth = 3; rr(ctx, bx - 3, by - 3, bw + 6, 44, 8); ctx.stroke(); }
+    if (typeof label === "function") label(bx + bw / 2, by + 19); else D.txt(ctx, label, bx + bw / 2, by + 27, 22, { align: "center", weight: 800, color: opt.on ? UI.select : UI.tool, italic: opt.italic });
+    if (opt.under) { ctx.fillStyle = UI.tool; ctx.fillRect(bx + bw / 2 - 8, by + 31, 16, 2.5); }
+    return box(bx, by, bw, 38);
+  }
+  function listIcon(ctx, cx, cy, numbered, color) {
+    for (let i = 0; i < 3; i++) { const y = cy - 10 + i * 10; ctx.fillStyle = color;
+      if (numbered) { ctx.font = "800 10px Inter"; ctx.textAlign = "center"; ctx.fillText(String(i + 1), cx - 10, y + 4); } else { ctx.beginPath(); ctx.arc(cx - 10, y, 2.6, 0, Math.PI * 2); ctx.fill(); }
+      ctx.fillRect(cx - 3, y - 1.5, 16, 3); }
+  }
+  function alignIcon(ctx, cx, cy, center, color) { ctx.fillStyle = color; [18, 12, 18, 12].forEach((w, i) => ctx.fillRect(center ? cx - w / 2 : cx - 9, cy - 9 + i * 6, w, 2.5)); }
+  function dropBox(ctx, x, y, w, s, opt = {}) {
+    ctx.fillStyle = "#FFFFFF"; rr(ctx, x, y, w, 38, 7); ctx.fill(); ctx.strokeStyle = opt.hot ? UI.hot : opt.open ? UI.select : "#C9D4DB"; ctx.lineWidth = opt.hot ? 4 : 2; rr(ctx, x, y, w, 38, 7); ctx.stroke();
+    ctx.save(); ctx.beginPath(); ctx.rect(x + 4, y, w - 30, 38); ctx.clip(); D.txt(ctx, s, x + 14, y + 27, 21, { weight: 700 }); ctx.restore();
+    D.txt(ctx, "▾", x + w - 12, y + 26, 18, { align: "right", weight: 800, color: UI.ink2 }); return box(x, y, w, 38);
+  }
+  const sep = (ctx, x, y) => { ctx.fillStyle = "#D5DEE3"; ctx.fillRect(x, y + 4, 2, 30); };
+  D.docApp = function (ctx, x, y, w, h, opt = {}) {
+    const menus = ["File", "Edit", "Tampilan", "Sisipkan", "Format", "Alat"];
+    const area0 = L.window(ctx, x, y, w, h, { title: opt.title || "Dokumen — Tanpa judul", menus, menuOn: opt.menuOn });
+    const ty = area0.y, on = opt.on || {}, hot = opt.hot; ctx.fillStyle = "#F7F9FA"; ctx.fillRect(x + 1, ty, w - 2, 54);
+    const T = {}; let bx = x + 18; const by = ty + 8;
+    T.style = dropBox(ctx, bx, by, 196, opt.style || "Teks normal", { hot: hot === "style", open: opt.styleOpen }); bx += 208;
+    T.size = dropBox(ctx, bx, by, 70, String(opt.size || 11), { hot: hot === "size" }); bx += 82; sep(ctx, bx, by); bx += 12;
+    T.bold = toolbarBtn(ctx, bx, by, 40, "B", { on: on.bold, hot: hot === "bold" }); bx += 44;
+    T.italic = toolbarBtn(ctx, bx, by, 40, "I", { on: on.italic, hot: hot === "italic", italic: true }); bx += 44;
+    T.under = toolbarBtn(ctx, bx, by, 40, "U", { on: on.under, hot: hot === "under", under: true }); bx += 50; sep(ctx, bx, by); bx += 12;
+    T.ul = toolbarBtn(ctx, bx, by, 44, (cx, cy) => listIcon(ctx, cx, cy, false, on.ul ? UI.select : UI.tool), { on: on.ul, hot: hot === "ul" }); bx += 48;
+    T.ol = toolbarBtn(ctx, bx, by, 44, (cx, cy) => listIcon(ctx, cx, cy, true, on.ol ? UI.select : UI.tool), { on: on.ol, hot: hot === "ol" }); bx += 54; sep(ctx, bx, by); bx += 12;
+    T.left = toolbarBtn(ctx, bx, by, 40, (cx, cy) => alignIcon(ctx, cx, cy, false, UI.tool), { on: on.left, hot: hot === "left" }); bx += 44;
+    T.center = toolbarBtn(ctx, bx, by, 40, (cx, cy) => alignIcon(ctx, cx, cy, true, on.center ? UI.select : UI.tool), { on: on.center, hot: hot === "center" }); bx += 50; sep(ctx, bx, by); bx += 12;
+    T.img = toolbarBtn(ctx, bx, by, 44, (cx, cy) => D.icon(ctx, "gambar", cx, cy, 26, UI.tool), { hot: hot === "img" }); bx += 48;
+    ctx.fillStyle = UI.line; ctx.fillRect(x + 1, ty + 53, w - 2, 1.5);
+    const area = { x: x + 1, y: ty + 54, w: w - 2, h: y + h - ty - 55 };
+    ctx.save(); rr(ctx, x + 1, area.y, w - 2, area.h - 1, 14); ctx.clip(); ctx.fillStyle = UI.work; ctx.fillRect(area.x, area.y, area.w, area.h);
+    const pw = opt.pageW || 760, ol = opt.outline, olW = 250;
+    const pX = ol ? area.x + olW + 30 + (area.w - olW - 30 - pw) / 2 : area.x + (area.w - pw) / 2;
+    const res = D.docPages(ctx, pX, area.y + 26 - (opt.scroll || 0), pw, opt.blocks || [], { caret: opt.caret });
+    let rows = [];
+    if (ol) { const heads = (opt.blocks || []).filter(b => /^h[123]$/.test(b.t) && (b.typed == null || b.typed > 0)).map(b => ({ s: blockText(b), lvl: +b.t[1] }));
+      rows = D.outline(ctx, area.x + 16, area.y + 18, olW, Math.min(area.h - 36, 120 + Math.max(1, heads.length) * 44), heads, { hi: opt.outlineHi, hot: opt.outlineHot }); }
+    ctx.restore();
+    return { area, page: res.pages[0], pages: res.pages, blocks: res.blocks, tool: k => T[k], outlineRows: rows, menu: name => { const p = D.menuPos(ctx, x, menus, name); return { x: p.x, y: y + p.y }; } };
+  };
+  D.viewer = function (ctx, x, y, w, h, opt = {}) {
+    const a0 = L.window(ctx, x, y, w, h, { title: "Penampil PDF — " + (opt.name || "dokumen.pdf") });
+    ctx.fillStyle = "#3F4A51"; ctx.fillRect(x + 1, a0.y, w - 2, 50);
+    D.txt(ctx, opt.name || "dokumen.pdf", x + 24, a0.y + 33, 21, { weight: 700, color: "#FFFFFF" });
+    D.txt(ctx, `${opt.pageNo || 1} / ${opt.pageN || 1}`, x + w / 2, a0.y + 33, 22, { align: "center", weight: 800, color: "#FFFFFF" });
+    D.txt(ctx, "−   " + (opt.zoom || "100%") + "   +", x + w - 30, a0.y + 33, 21, { align: "right", weight: 700, color: "#DDE5EA" });
+    const area = { x: x + 1, y: a0.y + 50, w: w - 2, h: y + h - a0.y - 51 };
+    ctx.save(); rr(ctx, x + 1, area.y, w - 2, area.h - 1, 14); ctx.clip(); ctx.fillStyle = UI.pdf; ctx.fillRect(area.x, area.y, area.w, area.h);
+    const pw = opt.pageW || 700; const res = D.docPages(ctx, area.x + (area.w - pw) / 2, area.y + 24 - (opt.scroll || 0), pw, (opt.blocks || []).map(b => ({ ...b, sel: false, caret: false, hot: null })), { caret: false });
+    ctx.restore();
+    return { area, pages: res.pages, blocks: res.blocks };
+  };
+
+  // ---------- slide ----------
+  D.SLIDE_LAYOUTS = ["Judul", "Judul dan isi", "Judul dan gambar", "Kosong"];
+  function shown(s, n) { s = s || ""; return n != null ? s.slice(0, Math.max(0, Math.round(n))) : s; }
+  D.slide = function (ctx, x, y, w, h, spec = {}, opt = {}) {
+    const k = h / 540, P = pt => pt * k, ink = spec.ink || "#1F2A33", acc = spec.accent || "#2E7E9A", bg = spec.bg || "#FFFFFF"; const R = {};
+    ctx.save(); ctx.beginPath(); ctx.rect(x, y, w, h); ctx.clip(); ctx.fillStyle = bg; ctx.fillRect(x, y, w, h);
+    const lay = spec.layout || "isi", ty = spec.typed || {}, ph = spec.ph;
+    const caretAt = (lines, lx, ly, size, weight, lh, align) => { const last = lines[lines.length - 1] || ""; const lw = measure(ctx, last, size, weight); ctx.fillStyle = ink; ctx.fillRect(align === "center" ? lx + lw / 2 + 3 : lx + lw + 3, ly + (lines.length - 1) * lh - size * 0.85, Math.max(2, 2.5 * k), size * 1.05); };
+    const placeholder = (bx, by, bw, bh, s, size) => { ctx.strokeStyle = "#AEBBC3"; ctx.lineWidth = Math.max(1.5, 2 * k); ctx.setLineDash([8 * k, 6 * k]); ctx.strokeRect(bx, by, bw, bh); ctx.setLineDash([]); D.txt(ctx, s, bx + bw / 2, by + bh / 2 + size * 0.35, size, { align: "center", weight: 600, color: "#93A2AB" }); };
+    const titleBlock = (bx, by, bw, size, align) => {
+      const s = shown(spec.title, ty.title); const lines = s ? wrapF(ctx, s, size, 800, bw) : [];
+      if (!lines.length && ph) { placeholder(bx, by - size * 0.2, bw, size * 1.7, "Klik untuk menambah judul", P(24)); R.title = box(bx, by - size * 0.2, bw, size * 1.7); return size * 1.7; }
+      lines.forEach((ln, i) => D.txt(ctx, ln, align === "center" ? bx + bw / 2 : bx, by + size * 0.95 + i * size * 1.15, size, { weight: 800, color: spec.titleColor || ink, align: align || "left" }));
+      if (spec.caret === "title") caretAt(lines.length ? lines : [""], align === "center" ? bx + bw / 2 : bx, by + size * 0.95, size, 800, size * 1.15, align);
+      const th = Math.max(1, lines.length) * size * 1.15; R.title = box(bx, by, bw, th + size * 0.2); return th;
+    };
+    const bullets = (bx, by, bw, bh) => {
+      const size = P(spec.bodyPt || 28); const items = spec.bullets || []; let yy = by; R.items = [];
+      let left = ty.body != null ? ty.body : Infinity;
+      if (!items.length && ph) { placeholder(bx, by, bw, bh, "Klik untuk menambah teks", P(20)); R.body = box(bx, by, bw, bh); return; }
+      items.forEach((s0, i) => { if (left <= 0 && i > 0) return; const s = left < s0.length ? s0.slice(0, Math.max(0, Math.round(left))) : s0; left -= s0.length;
+        const lines = wrapF(ctx, s0, size, 600, bw - size * 1.3).map(() => "");
+        const real = wrapF(ctx, s || " ", size, 600, bw - size * 1.3); const col = (spec.colors && spec.colors[i]) || ink;
+        ctx.fillStyle = (spec.colors && spec.colors[i]) || acc; ctx.beginPath(); ctx.arc(bx + size * 0.35, yy + size * 0.62, size * 0.16, 0, Math.PI * 2); ctx.fill();
+        real.forEach((ln, j) => D.txt(ctx, ln, bx + size * 1.0, yy + size * 0.95 + j * size * 1.25, size, { weight: 600, color: col }));
+        if (spec.caret === "body" && (left <= 0 || i === items.length - 1)) caretAt(real, bx + size * 1.0, yy + size * 0.95, size, 600, size * 1.25);
+        const ih = Math.max(lines.length, real.length) * size * 1.25; R.items.push(box(bx, yy, bw, ih)); yy += ih + size * 0.5; });
+      R.body = box(bx, by, bw, Math.max(yy - by, size * 1.3));
+    };
+    const band = () => { if (spec.band !== false) { ctx.fillStyle = acc; ctx.fillRect(x, y, w, P(10)); } };
+    const img = (bx, by, bw, bh) => { if (spec.img) { D.pic(ctx, bx, by, bw, bh, spec.img.kind, { r: P(10), label: spec.img.label }); R.img = box(bx, by, bw, bh); } else if (ph) { placeholder(bx, by, bw, bh, "Klik untuk menambah gambar", P(20)); R.img = box(bx, by, bw, bh); } };
+    if (lay === "judul" || lay === "akhir") {
+      ctx.fillStyle = acc; ctx.fillRect(x, y + h - P(70), w, P(70)); band();
+      const ts = P(spec.titlePt || 54); const tw = w - P(140);
+      const lines = wrapF(ctx, shown(spec.title, ty.title) || " ", ts, 800, tw); const top = y + h * 0.36 - (lines.length - 1) * ts * 0.6;
+      titleBlock(x + P(70), top, tw, ts, "center");
+      if (spec.sub != null || ph) { const ss = P(spec.subPt || 28), s = shown(spec.sub, ty.body); const sy = top + (!shown(spec.title, ty.title) && ph ? ts * 1.7 : lines.length * ts * 1.15) + P(30);
+        if (!s && ph) { placeholder(x + P(170), sy, w - P(340), ss * 1.8, "Klik untuk menambah subjudul", P(20)); R.sub = box(x + P(170), sy, w - P(340), ss * 1.8); }
+        else { D.txt(ctx, s, x + w / 2, sy + ss, ss, { align: "center", weight: 600, color: spec.subColor || "#4A5A66" }); if (spec.caret === "sub") caretAt([s], x + w / 2, sy + ss, ss, 600, 0, "center"); R.sub = box(x + P(170), sy, w - P(340), ss * 1.4); } }
+    } else if (lay === "kosong") { band(); }
+    else {
+      band(); const ts = P(spec.titlePt || 40); const th = titleBlock(x + P(56), y + P(40), w - P(112), ts);
+      const by = y + P(40) + Math.max(th, ts * 1.15) + P(28), bh = y + h - P(36) - by;
+      if (lay === "isi") bullets(x + P(60), by, w - P(120), bh);
+      else if (lay === "isi_gambar") { bullets(x + P(60), by, w * 0.52 - P(60), bh); img(x + w * 0.56, by, w * 0.44 - P(56), Math.min(bh, (w * 0.44 - P(56)) * 0.85)); }
+      else if (lay === "gambar") { const iw = Math.min(w - P(200), (bh - (spec.cap ? P(50) : 0)) / 0.62); img(x + (w - iw) / 2, by, iw, iw * 0.62); if (spec.cap) D.txt(ctx, spec.cap, x + w / 2, by + iw * 0.62 + P(36), P(spec.bodyPt || 24), { align: "center", weight: 600, color: "#4A5A66" }); }
+      else if (lay === "angka") { const ns = P(spec.numPt || 120); D.txt(ctx, spec.num || "", x + w / 2, by + ns * 0.9, ns, { align: "center", weight: 900, color: acc }); R.num = box(x + w / 2 - ns * 1.5, by, ns * 3, ns);
+        if (spec.cap) D.txt(ctx, spec.cap, x + w / 2, by + ns * 0.9 + P(56), P(spec.bodyPt || 28), { align: "center", weight: 600, color: ink }); }
+      else if (lay === "padat") { const size = P(spec.bodyPt || 14); let yy = by; (spec.para || []).forEach((s, i) => { const col = (spec.colors && spec.colors[i % spec.colors.length]) || ink;
+          const mk = (spec.marks || []).includes(i);
+          wrapF(ctx, s, size, 500, w - P(120)).forEach(ln => { if (mk) { ctx.fillStyle = "rgba(242,177,52,0.4)"; ctx.fillRect(x + P(56), yy + size * 0.1, measure(ctx, ln, size, 500) + P(8), size * 1.15); }
+            D.txt(ctx, ln, x + P(60), yy + size, size, { weight: 500, color: col }); yy += size * 1.3; }); yy += size * 0.3; });
+        if (spec.img) img(x + w - P(150), y + P(26), P(110), P(70)); R.body = box(x + P(60), by, w - P(120), yy - by); }
+    }
+    if (spec.sel && R[spec.sel]) { const q = R[spec.sel]; D.selBox(ctx, q.x - P(8), q.y - P(6), q.w + P(16), q.h + P(12), { handles: spec.sel === "img", hot: spec.hot }); }
+    ctx.restore();
+    ctx.strokeStyle = opt.border || "#C9D4DB"; ctx.lineWidth = opt.lw || 1.5; ctx.strokeRect(x, y, w, h);
+    return R;
+  };
+  D.layoutMenu = function (ctx, x, y, hi) {
+    const w = 560, h = 300; ctx.save(); ctx.shadowColor = "rgba(31,42,51,0.22)"; ctx.shadowBlur = 22; ctx.shadowOffsetY = 6; ctx.fillStyle = "#FFFFFF"; rr(ctx, x, y, w, h, 12); ctx.fill(); ctx.restore();
+    ctx.strokeStyle = "#C9D4DB"; ctx.lineWidth = 2; rr(ctx, x, y, w, h, 12); ctx.stroke(); const rects = [];
+    const specs = [{ layout: "judul", title: "Judul", sub: "subjudul", band: false }, { layout: "isi", title: "Judul", bullets: ["poin", "poin"], band: false }, { layout: "isi_gambar", title: "Judul", bullets: ["poin"], img: { kind: "pemandangan" }, band: false }, { layout: "kosong", band: false }];
+    specs.forEach((sp, i) => { const cx = x + 20 + (i % 2) * 270, cy = y + 16 + Math.floor(i / 2) * 142; if (hi === i) { ctx.fillStyle = UI.onBg; rr(ctx, cx - 6, cy - 6, 262, 136, 8); ctx.fill(); }
+      D.slide(ctx, cx + 30, cy, 190, 107, { ...sp, accent: "#9AA8B1", ink: "#5B6B76", titlePt: sp.layout === "judul" ? 70 : 60, bodyPt: 50, subPt: 46 }, { border: hi === i ? UI.select : "#C9D4DB", lw: hi === i ? 3 : 1.5 });
+      D.txt(ctx, D.SLIDE_LAYOUTS[i], cx + 125, cy + 126, 17, { align: "center", weight: 700, color: hi === i ? UI.select : UI.ink2 }); rects.push(box(cx, cy, 250, 130)); });
+    return { item: i => rects[i] };
+  };
+  D.slideApp = function (ctx, x, y, w, h, opt = {}) {
+    const menus = ["File", "Edit", "Tampilan", "Sisipkan", "Format", "Slide"];
+    const a0 = L.window(ctx, x, y, w, h, { title: opt.title || "Slide — Tanpa judul", menus, menuOn: opt.menuOn });
+    const ty = a0.y, hot = opt.hot, on = opt.on || {}; ctx.fillStyle = "#F7F9FA"; ctx.fillRect(x + 1, ty, w - 2, 54);
+    const T = {}; let bx = x + 18; const by = ty + 8;
+    T.add = toolbarBtn(ctx, bx, by, 150, "+ Slide baru", { hot: hot === "add" }); bx += 160;
+    T.layout = toolbarBtn(ctx, bx, by, 150, "Tata letak ▾", { hot: hot === "layout" }); bx += 162; sep(ctx, bx, by); bx += 12;
+    T.size = dropBox(ctx, bx, by, 70, String(opt.size || 28), { hot: hot === "size" }); bx += 82;
+    T.bold = toolbarBtn(ctx, bx, by, 40, "B", { on: on.bold, hot: hot === "bold" }); bx += 44;
+    T.color = toolbarBtn(ctx, bx, by, 44, (cx, cy) => { D.txt(ctx, "A", cx, cy + 6, 22, { align: "center", weight: 800, color: UI.tool }); ctx.fillStyle = opt.colorBar || "#1F2A33"; ctx.fillRect(cx - 12, cy + 10, 24, 5); }, { hot: hot === "color" }); bx += 54; sep(ctx, bx, by); bx += 12;
+    T.img = toolbarBtn(ctx, bx, by, 44, (cx, cy) => D.icon(ctx, "gambar", cx, cy, 26, UI.tool), { hot: hot === "img" }); bx += 48;
+    T.play = D.btn(ctx, x + w - 190, by, 170, 38, "▶ Tampilkan", { hot: hot === "play", size: 20 });
+    ctx.fillStyle = UI.line; ctx.fillRect(x + 1, ty + 53, w - 2, 1.5);
+    const area = { x: x + 1, y: ty + 54, w: w - 2, h: y + h - ty - 55 };
+    ctx.save(); rr(ctx, x + 1, area.y, w - 2, area.h - 1, 14); ctx.clip(); ctx.fillStyle = UI.work; ctx.fillRect(area.x, area.y, area.w, area.h);
+    // daftar slide di kiri
+    const pw = 200; ctx.fillStyle = "#F4F7F9"; ctx.fillRect(area.x, area.y, pw, area.h); ctx.fillStyle = UI.line; ctx.fillRect(area.x + pw, area.y, 1.5, area.h);
+    const slides = opt.slides || [], cur = opt.cur || 0, thumbs = []; const tw = 144, th = 81, gap = Math.min(16, (area.h - 16 - slides.length * th) / Math.max(1, slides.length));
+    slides.forEach((sp, i) => { const tx = area.x + 42, tyy = area.y + 10 + i * (th + gap) - (opt.thumbScroll || 0);
+      D.txt(ctx, String(i + 1), area.x + 20, tyy + 24, 17, { align: "center", weight: 700, color: i === cur ? UI.select : UI.ink2 });
+      if (i === cur) { ctx.strokeStyle = UI.select; ctx.lineWidth = 4; rr(ctx, tx - 4, tyy - 4, tw + 8, th + 8, 6); ctx.stroke(); }
+      ctx.save(); if (sp && sp.alpha != null) ctx.globalAlpha = sp.alpha; D.slide(ctx, tx, tyy, tw, th, sp || {}, { lw: 1 }); ctx.restore(); thumbs.push(box(tx, tyy, tw, th)); });
+    // slide besar
+    const sw = Math.min(area.w - pw - 50, (area.h - 24) * 16 / 9), sh = sw * 9 / 16; const stage = { x: area.x + pw + (area.w - pw - sw) / 2, y: area.y + (area.h - sh) / 2, w: sw, h: sh };
+    ctx.save(); ctx.shadowColor = "rgba(31,42,51,0.16)"; ctx.shadowBlur = 18; ctx.shadowOffsetY = 4; ctx.fillStyle = "#FFFFFF"; ctx.fillRect(stage.x, stage.y, sw, sh); ctx.restore();
+    const els = D.slide(ctx, stage.x, stage.y, sw, sh, slides[cur] || { layout: "kosong" });
+    ctx.restore();
+    return { thumbs, stage, els, area, tool: k => T[k], menu: name => { const p = D.menuPos(ctx, x, menus, name); return { x: p.x, y: y + p.y }; } };
+  };
+
+  // ---------- kanvas infografik ----------
+  D.info = function (ctx, page, els, opt = {}) {
+    const k = page.w / 600, out = {};
+    ctx.save(); ctx.beginPath(); ctx.rect(page.x, page.y, page.w, page.h); ctx.clip();
+    const X = v => page.x + v * k, Y = v => page.y + v * k;
+    if (opt.margin) { ctx.strokeStyle = "rgba(214,51,132,0.55)"; ctx.lineWidth = 1.5; ctx.setLineDash([6, 6]); ctx.strokeRect(X(opt.margin), Y(opt.margin), page.w - 2 * opt.margin * k, page.h - 2 * opt.margin * k); ctx.setLineDash([]); }
+    els.forEach(e => {
+      if (!e) return; ctx.save(); if (e.alpha != null) ctx.globalAlpha = clamp(e.alpha, 0, 1);
+      const dx = e.dx || 0, dy = e.dy || 0; let r = null;
+      if (e.t === "rect") { ctx.fillStyle = e.fill || "#EEE"; rr(ctx, X(e.x + dx), Y(e.y + dy), e.w * k, e.h * k, (e.r || 0) * k); ctx.fill(); if (e.stroke) { ctx.strokeStyle = e.stroke; ctx.lineWidth = (e.lw || 2) * k; ctx.stroke(); } r = box(X(e.x + dx), Y(e.y + dy), e.w * k, e.h * k); }
+      else if (e.t === "circle") { ctx.fillStyle = e.fill || "#EEE"; ctx.beginPath(); ctx.arc(X(e.x + dx), Y(e.y + dy), e.rad * k, 0, Math.PI * 2); ctx.fill(); r = box(X(e.x + dx - e.rad), Y(e.y + dy - e.rad), 2 * e.rad * k, 2 * e.rad * k); }
+      else if (e.t === "line") { ctx.strokeStyle = e.color || "#999"; ctx.lineWidth = (e.lw || 2) * k; if (e.dash) ctx.setLineDash([6 * k, 5 * k]); ctx.beginPath(); ctx.moveTo(X(e.x + dx), Y(e.y + dy)); ctx.lineTo(X(e.x2 + dx), Y(e.y2 + dy)); ctx.stroke(); ctx.setLineDash([]); }
+      else if (e.t === "icon") { if (e.bg) { ctx.fillStyle = e.bg; ctx.beginPath(); ctx.arc(X(e.x + dx), Y(e.y + dy), e.s * 0.62 * k, 0, Math.PI * 2); ctx.fill(); } D.icon(ctx, e.kind, X(e.x + dx), Y(e.y + dy), e.s * k, e.color); r = box(X(e.x + dx - e.s * 0.62), Y(e.y + dy - e.s * 0.62), e.s * 1.24 * k, e.s * 1.24 * k); }
+      else if (e.t === "pic") { D.pic(ctx, X(e.x + dx), Y(e.y + dy), e.w * k, e.h * k, e.kind, { r: (e.r || 10) * k }); r = box(X(e.x + dx), Y(e.y + dy), e.w * k, e.h * k); }
+      else if (e.t === "text") {
+        const size = e.size * k, weight = e.weight || 700, s = e.typed != null ? e.s.slice(0, Math.max(0, Math.round(e.typed))) : e.s;
+        const lines = e.maxW ? wrapF(ctx, s || " ", size, weight, e.maxW * k, e.italic) : [s]; const lh = size * (e.lh || 1.2);
+        const ax = X(e.x + dx), ay = Y(e.y + dy);
+        lines.forEach((ln, i) => D.txt(ctx, ln, ax, ay + i * lh, size, { weight, color: e.color || UI.ink, align: e.align || "left", italic: e.italic }));
+        if (e.caret) { const lw = measure(ctx, lines[lines.length - 1], size, weight, e.italic); const cx = e.align === "center" ? ax + lw / 2 + 3 : ax + lw + 3; ctx.fillStyle = UI.ink; ctx.fillRect(cx, ay + (lines.length - 1) * lh - size * 0.85, 2.5, size); }
+        const full = e.maxW ? wrapF(ctx, e.s, size, weight, e.maxW * k, e.italic) : [e.s]; const mw = Math.max(...full.map(ln => measure(ctx, ln, size, weight, e.italic)));
+        const bw = e.maxW && e.align !== "center" ? Math.max(mw, 10) : mw; const bx = e.align === "center" ? ax - bw / 2 : e.align === "right" ? ax - bw : ax;
+        r = box(bx, ay - size * 0.95, bw, size * 0.95 + (full.length - 1) * lh + size * 0.3);
+      }
+      ctx.restore(); if (e.id && r) out[e.id] = r;
+    });
+    (opt.guides || []).forEach(g => { ctx.strokeStyle = "#D63384"; ctx.lineWidth = 2; ctx.beginPath(); if (g.x != null) { ctx.moveTo(X(g.x), page.y); ctx.lineTo(X(g.x), page.y + page.h); } else { ctx.moveTo(page.x, Y(g.y)); ctx.lineTo(page.x + page.w, Y(g.y)); } ctx.stroke(); });
+    ctx.restore();
+    if (opt.sel && out[opt.sel]) { const q = out[opt.sel]; D.selBox(ctx, q.x - 8, q.y - 6, q.w + 16, q.h + 12, { hot: opt.hot }); }
+    return out;
+  };
+  D.canvasApp = function (ctx, x, y, w, h, opt = {}) {
+    const menus = ["File", "Edit", "Tampilan", "Sisipkan", "Atur"];
+    const a0 = L.window(ctx, x, y, w, h, { title: opt.title || "Desain — Tanpa judul", menus, menuOn: opt.menuOn });
+    const ty = a0.y, hot = opt.hot, on = opt.on || {}; ctx.fillStyle = "#F7F9FA"; ctx.fillRect(x + 1, ty, w - 2, 54);
+    const T = {}; let bx = x + 150; const by = ty + 8;
+    T.size = dropBox(ctx, bx, by, 80, String(opt.size || 24), { hot: hot === "size" }); bx += 92;
+    T.bold = toolbarBtn(ctx, bx, by, 40, "B", { on: on.bold, hot: hot === "bold" }); bx += 44;
+    T.align = toolbarBtn(ctx, bx, by, 40, (cx, cy) => alignIcon(ctx, cx, cy, true, UI.tool), { hot: hot === "align" }); bx += 50; sep(ctx, bx, by); bx += 14;
+    D.txt(ctx, "Warna", bx, by + 26, 19, { weight: 700, color: UI.ink2 }); bx += 66;
+    const sw = opt.swatches || ["#1F2A33", "#2E9E5B", "#F2B134", "#FFFFFF"]; const swR = [];
+    sw.forEach((c, i) => { const cx = bx + 18 + i * 44; ctx.fillStyle = c; ctx.beginPath(); ctx.arc(cx, by + 19, 15, 0, Math.PI * 2); ctx.fill(); ctx.strokeStyle = opt.swatchOn === i ? UI.select : "#AEBBC3"; ctx.lineWidth = opt.swatchOn === i ? 4 : 1.5; ctx.stroke(); swR.push(box(cx - 18, by, 36, 38)); });
+    D.txt(ctx, "Zoom: " + (opt.pageW ? Math.round(opt.pageW / 4) + "%" : "muat ke layar"), x + w - 24, by + 26, 19, { align: "right", weight: 700, color: UI.ink2 });
+    ctx.fillStyle = UI.line; ctx.fillRect(x + 1, ty + 53, w - 2, 1.5);
+    const area = { x: x + 1, y: ty + 54, w: w - 2, h: y + h - ty - 55 };
+    ctx.save(); rr(ctx, x + 1, area.y, w - 2, area.h - 1, 14); ctx.clip(); ctx.fillStyle = UI.work; ctx.fillRect(area.x, area.y, area.w, area.h);
+    // panel alat di kiri (juga menutupi bagian kiri bilah alat)
+    const pw = 128; ctx.fillStyle = "#F4F7F9"; ctx.fillRect(area.x, area.y, pw, area.h); ctx.fillStyle = UI.line; ctx.fillRect(area.x + pw, area.y, 1.5, area.h);
+    const tools = [["Teks", null], ["Bentuk", null], ["Ikon", "bintang"], ["Gambar", "gambar"], ["Grafik", "grafik"]]; const pr = [];
+    tools.forEach(([s, ic], i) => { const yy = area.y + 14 + i * 92; const onp = opt.panelHi === i;
+      if (onp) { ctx.fillStyle = UI.hotBg; rr(ctx, area.x + 10, yy, pw - 20, 82, 10); ctx.fill(); ctx.strokeStyle = UI.hot; ctx.lineWidth = 3; rr(ctx, area.x + 10, yy, pw - 20, 82, 10); ctx.stroke(); }
+      const cx = area.x + pw / 2, cy = yy + 32;
+      if (s === "Teks") D.txt(ctx, "T", cx, cy + 12, 34, { align: "center", weight: 900, color: UI.tool });
+      else if (s === "Bentuk") { ctx.strokeStyle = UI.tool; ctx.lineWidth = 3; ctx.strokeRect(cx - 18, cy - 12, 22, 22); ctx.beginPath(); ctx.arc(cx + 8, cy + 4, 12, 0, Math.PI * 2); ctx.stroke(); }
+      else D.icon(ctx, ic, cx, cy, 34, UI.tool);
+      D.txt(ctx, s, cx, yy + 72, 18, { align: "center", weight: 700, color: onp ? UI.ink : UI.ink2 }); pr.push(box(area.x + 10, yy, pw - 20, 82)); });
+    const ratio = opt.ratio || 4 / 3; const pW = opt.pageW || (area.h - 36) / ratio, ph = pW * ratio;
+    const page = { x: area.x + pw + (area.w - pw - pW) / 2, y: area.y + 18 - (opt.scroll || 0), w: pW, h: ph };
+    ctx.save(); ctx.shadowColor = "rgba(31,42,51,0.18)"; ctx.shadowBlur = 18; ctx.shadowOffsetY = 4; ctx.fillStyle = opt.bg || "#FFFFFF"; ctx.fillRect(page.x, page.y, page.w, page.h); ctx.restore();
+    const ids = D.info(ctx, page, opt.els || [], { sel: opt.sel, guides: opt.guides, margin: opt.margin, hot: opt.selHot });
+    ctx.restore();
+    ctx.fillStyle = "#F7F9FA"; ctx.fillRect(x + 1, ty, 140, 53);
+    return { page, area, ids, panel: i => pr[i], swatch: i => swR[i], tool: k => T[k], menu: name => { const p = D.menuPos(ctx, x, menus, name); return { x: p.x, y: y + p.y }; } };
+  };
+
+  K.dok = D;
+})(typeof window !== "undefined" ? window : globalThis);
+
+/* S30 Simulasi praktik: infografik satu halaman (judul besar, satu angka, tiga poin, ajakan, sumber) di aplikasi desain generik.
+   Jendela aplikasi di kiri (x 110–1410, y 122–822), panel langkah dan label di kanan (x 1450–1820).
+   Produk "Setor Sampah" milik Bank Sampah SMA Tunas, angka, dan sumbernya rekaan (sama dengan episode F12.6). */
+(function (global) {
+  const K = global.Kiko, H = K.helpers, C = K.C, L = K.layar, D = K.dok;
+  const { rr, text, para, card, kiko, ease, clamp, lerp } = H;
+  const WIN = { x: 110, y: 122, w: 1300, h: 700 }, PX = 1450, PW = 370;
+  const BLUE = "#1A73C8", RED = "#D9443B", GREEN = "#2E9E5B";
+  const G = "#2E9E5B", DK = "#1F2A33", LG = "#E3F4EA", GR = "#5B6B76";
+  const SW = [DK, G, "#FFFFFF", "#F2B134"];
+
+  // ---------- versi rapi (satuan desain 600 × 800) ----------
+  const SRC = "Sumber: catatan Bank Sampah SMA Tunas, Juli–September 2026 (data rekaan).";
+  const PTS = [["botol", "Pilah botol dan gelas plastik."], ["timbangan", "Timbang setiap hari Jumat."], ["koin", "Kumpulkan poin di aplikasi."]];
+  const PART = {
+    title: [{ id: "title", t: "text", x: 44, y: 104, s: "Sampah Plastik Jadi Poin", size: 54, weight: 900, color: DK, maxW: 512, lh: 1.08 }],
+    sub: [{ id: "sub", t: "text", x: 44, y: 206, s: "Bank Sampah SMA Tunas · aplikasi Setor Sampah", size: 19, weight: 600, color: GR }],
+    num: [{ id: "num", t: "text", x: 40, y: 330, s: "412 kg", size: 96, weight: 900, color: G }],
+    numcap: [{ id: "numcap", t: "text", x: 44, y: 372, s: "plastik terkumpul dalam tiga bulan", size: 24, weight: 600, color: DK }],
+    p0: [{ id: "i0", t: "icon", kind: PTS[0][0], x: 70, y: 452, s: 36, color: G, bg: LG }, { id: "p0", t: "text", x: 112, y: 461, s: PTS[0][1], size: 25, weight: 700, color: DK }],
+    p1: [{ id: "i1", t: "icon", kind: PTS[1][0], x: 70, y: 530, s: 36, color: G, bg: LG }, { id: "p1", t: "text", x: 112, y: 539, s: PTS[1][1], size: 25, weight: 700, color: DK }],
+    p2: [{ id: "i2", t: "icon", kind: PTS[2][0], x: 70, y: 608, s: 36, color: G, bg: LG }, { id: "p2", t: "text", x: 112, y: 617, s: PTS[2][1], size: 25, weight: 700, color: DK }],
+    band: [{ id: "band", t: "rect", x: 0, y: 668, w: 600, h: 66, fill: G }],
+    cta: [{ id: "cta", t: "text", x: 300, y: 710, s: "Setor hari Jumat, 12.00, dekat kantin!", size: 27, weight: 800, color: "#FFFFFF", align: "center" }],
+    src: [{ id: "src", t: "text", x: 44, y: 764, s: SRC, size: 15, weight: 600, color: GR, maxW: 512, lh: 1.25 }]
+  };
+  const ORDER = ["title", "sub", "num", "numcap", "p0", "p1", "p2", "band", "cta", "src"];
+  // rapi(daftar bagian atau "semua", mod): elemen versi rapi; mod[id] menimpa sifat elemen
+  function rapi(parts = ORDER, mod = {}) { const out = []; ORDER.forEach(k => { if (parts.includes(k)) PART[k].forEach(e => out.push({ ...e, ...(mod[e.id] || {}) })); }); return out; }
+  // ---------- versi berantakan ----------
+  const MESSY = (() => { const c = ["#8E44AD", "#E74C3C", "#3498DB", "#F39C12", "#E91E63", "#16A085"]; const e = [];
+    e.push({ t: "rect", x: 0, y: 0, w: 600, h: 70, fill: "#FCE4EC" }, { t: "text", x: 6, y: 46, s: "Bank sampah sekolah kita!!!", size: 34, weight: 800, color: c[0] });
+    const lines = ["Bank Sampah SMA Tunas sekarang punya aplikasi baru yang namanya Setor Sampah.", "Aplikasi ini bisa dipakai oleh semua murid, guru, dan juga karyawan sekolah.", "Sampah plastik seperti botol dan gelas harus dipilah dulu sebelum disetor.",
+      "Penimbangan dilakukan setiap hari Jumat, tetapi kadang-kadang juga hari lain.", "Selama tiga bulan sudah terkumpul 412 kg sampah plastik, banyak sekali!", "Setiap kilogram akan diubah menjadi poin yang tercatat di aplikasi.", "Poin bisa ditukar dengan alat tulis di koperasi sekolah.",
+      "Jangan lupa mencuci botol supaya tidak bau dan tidak mengundang semut.", "Ayo ikut menjaga lingkungan sekolah kita supaya bersih dan sehat.", "Info lebih lanjut tanyakan kepada pengurus bank sampah di dekat kantin."];
+    lines.forEach((s, i) => e.push({ t: "text", x: i % 3 === 1 ? 70 : 4, y: 104 + i * 66, s, size: [16, 14, 18, 13, 20, 15, 17, 14, 16, 13][i], weight: i === 4 ? 800 : 500, color: c[i % 6], maxW: i % 3 === 1 ? 526 : 592, lh: 1.15 }));
+    e.push({ t: "circle", x: 560, y: 380, rad: 30, fill: "#F39C12" }, { t: "icon", kind: "bintang", x: 540, y: 600, s: 44, color: "#E91E63" }, { t: "icon", kind: "daun", x: 90, y: 760, s: 50, color: "#16A085" },
+      { t: "rect", x: 300, y: 740, w: 300, h: 60, fill: "#3498DB" }, { t: "text", x: 310, y: 778, s: "Setor ya!!", size: 22, weight: 800, color: "#F1C40F" });
+    return e; })();
+  const spanOf = b => Math.max(3, (b.audio || b.dur) * 0.9);
+  const ptr = (ctx, p, kind) => L.cursor(ctx, p.x, p.y, { click: p.click, down: p.down, kind });
+  const steps = (ctx, items, n, title, y) => D.steps(ctx, PX, y || 122, PW, title || "LANGKAH", items, n);
+  const blink = l => Math.floor(l * 2.2) % 2 === 0;
+  function app(ctx, opt = {}) { return D.canvasApp(ctx, WIN.x, WIN.y, WIN.w, WIN.h, { title: "Desain — Infografik Setor Sampah", swatches: SW, ...opt }); }
+  // halaman lepas (di luar aplikasi): bayangan + isi
+  function sheet(ctx, x, y, w, els, opt = {}) { const h = w * 4 / 3; ctx.save(); ctx.shadowColor = "rgba(31,42,51,0.2)"; ctx.shadowBlur = 20; ctx.shadowOffsetY = 6; ctx.fillStyle = "#FFFFFF"; ctx.fillRect(x, y, w, h); ctx.restore();
+    const ids = D.info(ctx, { x, y, w, h }, els, opt); if (opt.border) { ctx.strokeStyle = opt.border; ctx.lineWidth = 5; ctx.strokeRect(x - 4, y - 4, w + 8, h + 8); } return ids; }
+  const mark = (ctx, x, y, ok, s) => text(ctx, (ok ? "✓ " : "✗ ") + s, x, y, 28, { align: "center", weight: 900, color: ok ? GREEN : RED });
+
+  Object.assign(K.SCENES, {
+    tujuan(ctx, b, l) {
+      card(ctx, 160, 150, 1600, 660);
+      text(ctx, "SETELAH MENONTON, KAMU BISA:", 260, 240, 30, { weight: 900, color: C.accentDark });
+      ["menyusun lima bagian infografik", "mengatur ukuran dan ruang kosong", "membatasi warna", "menulis sumber data"].forEach((s, i) => {
+        const u = ease((l - 0.6 - i * 0.7) / 0.5); if (u <= 0) return; ctx.globalAlpha = u;
+        card(ctx, 260, 280 + i * 104, 780, 84, { fill: C.bg2, r: 16 }); text(ctx, "✓", 300, 336 + i * 104, 36, { weight: 900, color: GREEN }); text(ctx, s, 350, 334 + i * 104, 32, { weight: 800 }); ctx.globalAlpha = 1;
+      });
+      sheet(ctx, 1220, 200, 420, rapi());
+    },
+    prasyarat(ctx, b, l) {
+      card(ctx, 160, 150, 1600, 660);
+      text(ctx, "SIMULASI INI MELENGKAPI", 960, 240, 32, { align: "center", weight: 900, color: C.accentDark });
+      card(ctx, 330, 300, 600, 330, { fill: C.bg2, r: 22 });
+      text(ctx, "F12.6", 630, 380, 56, { align: "center", weight: 900, color: C.kiko }); para(ctx, "Kreasi Konten Digital dengan Metode Bervariasi", 630, 440, 34, 520, { align: "center", weight: 800, lh: 1.2 });
+      card(ctx, 990, 300, 600, 330, { fill: "#FFF9E0", r: 22 }); text(ctx, "Contoh: Setor Sampah", 1290, 370, 34, { align: "center", weight: 900 });
+      para(ctx, "aplikasi fiktif milik Bank Sampah SMA Tunas; semua angka rekaan", 1290, 430, 28, 520, { align: "center", weight: 700, lh: 1.3, color: C.ink2 });
+      D.icon(ctx, "daur", 1290, 570, 60, G);
+      kiko(ctx, 1660, 720, 100, 0, { wave: l });
+    },
+    rencana(ctx, b, l) {
+      const a = b.audio || b.dur; card(ctx, 160, 140, 1600, 680);
+      text(ctx, "RENCANA DI KERTAS", 960, 205, 32, { align: "center", weight: 900, color: C.accentDark });
+      card(ctx, 230, 250, 760, 160, { fill: "#FFF9E0", r: 18 }); text(ctx, "Pesan inti", 260, 296, 26, { weight: 900, color: C.accentDark });
+      para(ctx, "Setor sampah plastikmu lewat Setor Sampah, kumpulkan poin, dan bantu sekolah lebih bersih.", 260, 340, 27, 700, { weight: 700, lh: 1.25 });
+      // sketsa kotak
+      const px = 1150, py = 230, pw = 420, k = pw / 600; ctx.fillStyle = "#FFFFFF"; ctx.fillRect(px, py, pw, pw * 4 / 3); ctx.strokeStyle = "#B9C7CF"; ctx.lineWidth = 2; ctx.strokeRect(px, py, pw, pw * 4 / 3);
+      const boxes = [["Judul", 30, 30, 540, 130], ["Angka penting", 30, 190, 300, 140], ["Poin 1", 30, 360, 540, 60], ["Poin 2", 30, 440, 540, 60], ["Poin 3", 30, 520, 540, 60], ["Ajakan", 0, 610, 600, 90], ["Sumber", 30, 725, 400, 50]];
+      boxes.forEach(([s, x, y, w, h], i) => { if (l < a * (0.3 + i * 0.07)) return; ctx.strokeStyle = C.kiko; ctx.lineWidth = 3; ctx.setLineDash([9, 6]); ctx.strokeRect(px + x * k, py + y * k, w * k, h * k); ctx.setLineDash([]);
+        text(ctx, s, px + x * k + 14, py + y * k + Math.min(h * k / 2 + 9, 34), i === 0 ? 26 : 20, { weight: 800, color: C.kikoDark }); });
+      const items = ["Judul besar", "Satu angka penting", "Tiga poin", "Ajakan", "Sumber data"];
+      items.forEach((s, i) => { if (l < a * (0.3 + i * 0.1)) return; text(ctx, (i + 1) + ".  " + s, 260, 480 + i * 56, 30, { weight: 800 }); });
+    },
+    kenal_kanvas(ctx, b, l) {
+      const a = b.audio || b.dur; const g = app(ctx, { title: "Desain — Tanpa judul" });
+      if (l > a * 0.12) L.callout(ctx, PX, 220, "Alat: Teks, Bentuk, Ikon, Gambar", g.panel(0).x + g.panel(0).w, g.panel(1).cy, { maxW: 330 });
+      if (l > a * 0.42) L.callout(ctx, PX, 380, "Halaman tegak", g.page.x + g.page.w - 20, g.page.y + 200);
+      if (l > a * 0.65) L.callout(ctx, PX, 170, "Ukuran huruf dan warna", g.tool("size").x + 300, g.tool("size").y + 6);
+    },
+    judul(ctx, b, l) {
+      const sp = spanOf(b), ds = [1, 2.6, 1.2, 0.8, 1.6], S = D.seq(l, sp, ds); const on = S.p(0) >= 0.6, big = S.p(2) >= 0.6, bold = S.p(3) >= 0.6;
+      const m = ease(clamp(S.p(4) / 0.8, 0, 1));
+      const el = { ...PART.title[0], size: big ? 54 : 24, weight: bold ? 900 : 600, typed: PART.title[0].s.length * clamp(S.p(1) / 0.9, 0, 1), caret: S.i <= 1 && on, y: lerp(400, 104, m) };
+      const g = app(ctx, { pageW: 600, els: on ? [el] : [], sel: on && S.i >= 2 ? "title" : null, size: big ? 54 : 24, on: { bold }, panelHi: S.i === 0 ? 0 : null, hot: S.i === 2 ? "size" : S.i === 3 ? "bold" : null });
+      steps(ctx, ["Klik Teks, ketik judulnya.", "Ukuran 54, tebal.", "Geser ke atas."], S.i <= 1 ? 0 : S.i <= 3 ? 1 : m < 1 ? 2 : 3);
+      const sz = g.tool("size"), bd = g.tool("bold"), tr = g.ids.title || { cx: g.page.cx, cy: g.page.y + 260 };
+      const pts = [{ x: g.panel(0).cx, y: g.panel(0).cy, d: ds[0], click: true }, { x: g.page.x + 120, y: g.page.y + 300, d: ds[1] }, { x: sz.cx, y: sz.cy, d: ds[2], click: true }, { x: bd.cx, y: bd.cy, d: ds[3], click: true }, { x: tr.x + 60, y: tr.y + 30, d: ds[4], down: true }];
+      const p = D.path(l, sp, pts, { x: 900, y: 650 }); if (S.i === 4) { p.x = tr.x + 60; p.y = tr.y + 30; p.down = m < 1; } ptr(ctx, p);
+    },
+    angka(ctx, b, l) {
+      const sp = spanOf(b), ds = [1, 1.4, 1, 1, 2.6], S = D.seq(l, sp, ds); const on = S.p(0) >= 0.6, big = S.p(2) >= 0.6, green = S.p(3) >= 0.6;
+      const num = { ...PART.num[0], size: big ? 96 : 24, color: green ? G : DK, typed: 6 * clamp(S.p(1) / 0.9, 0, 1), caret: S.i === 1 };
+      const cap = { ...PART.numcap[0], typed: PART.numcap[0].s.length * clamp(S.p(4) / 0.85, 0, 1), caret: S.i === 4 && (S.p(4) < 0.9 || blink(l)) };
+      const els = rapi(["title", "sub"]).concat(on ? [num] : [], S.at(4) ? [cap] : []);
+      const g = app(ctx, { pageW: 600, els, sel: on && S.i >= 2 && S.i <= 3 ? "num" : null, size: S.i >= 4 ? 24 : big ? 96 : 24, swatchOn: green && S.i < 4 ? 1 : null, panelHi: S.i === 0 ? 0 : null, hot: S.i === 2 ? "size" : null });
+      steps(ctx, ["Ketik: 412 kg.", "Ukuran 96, warna hijau.", "Tulis artinya, huruf kecil."], S.i <= 1 ? 0 : S.i <= 3 ? 1 : S.p(4) < 0.9 ? 2 : 3);
+      const sz = g.tool("size"), swg = g.swatch(1);
+      ptr(ctx, D.path(l, sp, [{ x: g.panel(0).cx, y: g.panel(0).cy, d: ds[0], click: true }, { x: g.page.x + 300, y: g.page.y + 360, d: ds[1] }, { x: sz.cx, y: sz.cy, d: ds[2], click: true }, { x: swg.cx, y: swg.cy, d: ds[3], click: true }, { x: g.page.x + g.page.w - 40, y: g.page.y + 420, d: ds[4] }], { x: 900, y: 650 }));
+    },
+    poin(ctx, b, l) {
+      const sp = spanOf(b), ds = [1.2, 1.6, 1.6, 1.6, 1.2], S = D.seq(l, sp, ds);
+      const els = rapi(["title", "sub", "num", "numcap"]);
+      ["p0", "p1", "p2"].forEach((k, i) => { if (!S.at(i + 1)) return; const u = S.p(i + 1); els.push({ ...PART[k][0], alpha: ease(u * 3) }, { ...PART[k][1], typed: PART[k][1].s.length * clamp(u / 0.8, 0, 1) }); });
+      const g = app(ctx, { pageW: 600, scroll: 190 * ease(clamp(l / (sp * 0.2), 0, 1)), els, guides: S.at(1) ? [{ x: 112 }] : [], panelHi: S.i === 0 ? 2 : null, size: 25 });
+      steps(ctx, ["Pilih ikon dari menu Ikon.", "Satu ikon + satu kalimat pendek.", "Ukuran sama, garis kiri sama."], S.i === 0 ? 0 : S.i <= 2 ? 1 : S.i === 3 ? 2 : 3);
+      if (S.at(4)) L.callout(ctx, PX, 420, "Garis bantu: semua poin rata kiri", g.page.x + 112 * g.page.w / 600, g.page.y + 640 * g.page.w / 600, { maxW: 330 });
+      ptr(ctx, D.path(l, sp, [{ x: g.panel(2).cx, y: g.panel(2).cy, d: ds[0], click: true }, { x: g.page.x + 70, y: g.page.y + 470, d: ds[1] }, { x: g.page.x + 70, y: g.page.y + 548, d: ds[2] }, { x: g.page.x + 70, y: g.page.y + 626, d: ds[3] }, { x: g.page.x + g.page.w + 40, y: g.page.y + 660, d: ds[4] }], { x: 900, y: 650 }));
+    },
+    ajakan(ctx, b, l) {
+      const sp = spanOf(b), ds = [1, 1.2, 2.2, 2.4, 0.8], S = D.seq(l, sp, ds);
+      const els = rapi(["title", "sub", "num", "numcap", "p0", "p1", "p2"]);
+      if (S.p(1) > 0.3) els.push({ ...PART.band[0], w: 600 * ease(clamp((S.p(1) - 0.3) / 0.6, 0, 1)) });
+      if (S.at(2)) els.push({ ...PART.cta[0], typed: PART.cta[0].s.length * clamp(S.p(2) / 0.9, 0, 1) });
+      if (S.at(3)) els.push({ ...PART.src[0], typed: SRC.length * clamp(S.p(3) / 0.9, 0, 1) });
+      const g = app(ctx, { pageW: 600, scroll: lerp(190, 268, ease(clamp(l / (sp * 0.2), 0, 1))), els, panelHi: S.i === 0 ? 1 : null, swatchOn: S.i === 1 ? 1 : null, size: S.i >= 3 ? 15 : 27 });
+      steps(ctx, ["Bentuk: pita hijau.", "Ketik ajakannya.", "Tulis sumber data, kecil."], S.i <= 1 ? 0 : S.i === 2 ? 1 : S.i === 3 ? 2 : 3);
+      ptr(ctx, D.path(l, sp, [{ x: g.panel(1).cx, y: g.panel(1).cy, d: ds[0], click: true }, { x: g.page.x + 30, y: g.page.y + 700, d: ds[1], down: true }, { x: g.page.x + g.page.w + 30, y: g.page.y + 620, d: ds[2] + ds[3] + ds[4] }], { x: 900, y: 650 }));
+    },
+    hierarki(ctx, b, l) {
+      const a = b.audio || b.dur; const g = app(ctx, { els: rapi() }); const id = g.ids;
+      const lab = [["num", "Angka: 96", 160], ["title", "Judul: 54", 270], ["p1", "Poin: 25", 380], ["src", "Sumber: 15", 490]];
+      lab.forEach(([k, s, y], i) => { if (l < a * (0.12 + i * 0.13)) return; const q = id[k]; L.callout(ctx, PX, y, s, q.x + q.w, q.cy, { size: 28 }); });
+      if (l > a * 0.7) { ctx.strokeStyle = C.accent; ctx.lineWidth = 5; ctx.beginPath(); ctx.moveTo(1690, 620); ctx.lineTo(1690, 760); ctx.stroke();
+        text(ctx, "besar → kecil", PX + 10, 700, 28, { weight: 900, color: C.accentDark }); ctx.fillStyle = C.accent; ctx.beginPath(); ctx.moveTo(1675, 750); ctx.lineTo(1705, 750); ctx.lineTo(1690, 775); ctx.fill(); }
+    },
+    ruang(ctx, b, l) {
+      const a = b.audio || b.dur; const showM = l > a * 0.1, showG = l > a * 0.6;
+      const g = app(ctx, { els: rapi(), margin: showM ? 44 : 0, guides: showG ? [{ x: 44 }, { x: 556 }] : [] });
+      const k = g.page.w / 600, X = v => g.page.x + v * k, Y = v => g.page.y + v * k;
+      if (showM) L.callout(ctx, PX, 170, "Tepi kosong di keempat sisi", X(556), Y(250), { maxW: 330 });
+      if (l > a * 0.35) { [[222, 250], [382, 420], [638, 668]].forEach(([y1, y2]) => { ctx.fillStyle = "rgba(214,51,132,0.18)"; ctx.fillRect(X(30), Y(y1), 540 * k, (y2 - y1) * k); });
+        L.callout(ctx, PX, 300, "Jarak antarkelompok", X(560), Y(400)); }
+      if (showG) L.callout(ctx, PX, 430, "Garis bantu: rata kiri", X(44), Y(500), { color: "#D63384", fill: "#FCE4F0" });
+    },
+    warna(ctx, b, l) {
+      const a = b.audio || b.dur; const g = app(ctx, { els: rapi(), swatchOn: 1 });
+      const y = 150; card(ctx, PX, y, PW, 330, { fill: "#FFFFFF", stroke: GREEN, lw: 3, r: 18 }); text(ctx, "WARNA YANG DIPAKAI", PX + 24, y + 46, 23, { weight: 900, color: GREEN });
+      [[G, "hijau (utama)"], [DK, "hitam"], ["#FFFFFF", "putih"]].forEach(([c, s], i) => { if (l < a * (0.15 + i * 0.12)) return; const yy = y + 100 + i * 70;
+        ctx.fillStyle = c; ctx.beginPath(); ctx.arc(PX + 50, yy, 24, 0, Math.PI * 2); ctx.fill(); ctx.strokeStyle = "#AEBBC3"; ctx.lineWidth = 2; ctx.stroke(); text(ctx, s, PX + 92, yy + 9, 26, { weight: 800 }); });
+      if (l > a * 0.6) { const y2 = 510; card(ctx, PX, y2, PW, 150, { fill: "#FDF1F0", stroke: RED, lw: 3, r: 18 }); text(ctx, "Hindari", PX + 24, y2 + 44, 24, { weight: 900, color: RED });
+        ["#8E44AD", "#E74C3C", "#3498DB", "#F39C12", "#E91E63", "#16A085"].forEach((c, i) => { ctx.fillStyle = c; ctx.beginPath(); ctx.arc(PX + 44 + i * 52, y2 + 98, 20, 0, Math.PI * 2); ctx.fill(); });
+        ctx.strokeStyle = RED; ctx.lineWidth = 5; ctx.beginPath(); ctx.moveTo(PX + 20, y2 + 120); ctx.lineTo(PX + PW - 30, y2 + 76); ctx.stroke(); }
+    },
+    coba(ctx, b, l) {
+      card(ctx, 160, 140, 1600, 680, { stroke: C.accent, lw: 6 });
+      ctx.fillStyle = C.accent; ctx.beginPath(); ctx.arc(330, 300, 76, 0, Math.PI * 2); ctx.fill();
+      ctx.fillStyle = "#FFFFFF"; rr(ctx, 298, 262, 22, 76, 6); ctx.fill(); rr(ctx, 340, 262, 22, 76, 6); ctx.fill();
+      text(ctx, "COBA SEKARANG", 450, 280, 44, { weight: 900, color: C.accentDark }); text(ctx, "Hentikan video, kerjakan, lalu putar lagi.", 450, 330, 30, { weight: 700, color: C.ink2 });
+      (b.coba || []).forEach((s, i) => { card(ctx, 230, 420 + i * 110, 900, 90, { fill: C.bg2, r: 16 }); text(ctx, String(i + 1), 276, 476 + i * 110, 34, { align: "center", weight: 900, color: C.kiko }); text(ctx, s, 320, 476 + i * 110, 28, { weight: 700, fit: 790 }); });
+      sheet(ctx, 1260, 260, 390, rapi());
+    },
+    berantakan(ctx, b, l) {
+      const a = b.audio || b.dur; const g = app(ctx, { els: MESSY, title: "Desain — Infografik (versi berantakan)" }); const k = g.page.w / 600;
+      if (l > a * 0.12) L.callout(ctx, PX, 170, "Sepuluh kalimat kecil", g.page.x + g.page.w - 30, g.page.y + 250 * k, { color: RED, fill: "#FDF1F0" });
+      if (l > a * 0.35) L.callout(ctx, PX, 290, "Enam warna", g.page.x + g.page.w - 30, g.page.y + 380 * k, { color: RED, fill: "#FDF1F0" });
+      if (l > a * 0.55) L.callout(ctx, PX, 410, "Banyak ukuran huruf", g.page.x + g.page.w - 60, g.page.y + 420 * k, { color: RED, fill: "#FDF1F0" });
+      if (l > a * 0.72) L.callout(ctx, PX, 530, "Menempel di tepi halaman", g.page.x + 4, g.page.y + 160 * k, { color: RED, fill: "#FDF1F0" });
+    },
+    tes5(ctx, b, l) {
+      const a = b.audio || b.dur; card(ctx, 160, 140, 1600, 680);
+      text(ctx, "TES LIMA DETIK", 960, 205, 34, { align: "center", weight: 900, color: C.accentDark });
+      sheet(ctx, 330, 250, 360, MESSY); sheet(ctx, 1230, 250, 360, rapi());
+      const sec = Math.max(0, 5 - Math.floor(clamp((l - a * 0.3) / (a * 0.6), 0, 1) * 5)); const u = clamp((l - a * 0.3) / (a * 0.6), 0, 1);
+      ctx.strokeStyle = "#D7E2DC"; ctx.lineWidth = 16; ctx.beginPath(); ctx.arc(960, 420, 90, 0, Math.PI * 2); ctx.stroke();
+      ctx.strokeStyle = C.accent; ctx.beginPath(); ctx.arc(960, 420, 90, -Math.PI / 2, -Math.PI / 2 + (1 - u) * Math.PI * 2); ctx.stroke();
+      text(ctx, String(sec), 960, 450, 90, { align: "center", weight: 900 }); text(ctx, "detik", 960, 550, 28, { align: "center", weight: 700, color: C.ink2 });
+      text(ctx, "Apa yang kamu ingat?", 960, 640, 30, { align: "center", weight: 800 });
+      H.kid(ctx, 960, 720, 60, {});
+    },
+    hasil_tes(ctx, b, l) {
+      const a = b.audio || b.dur; card(ctx, 160, 140, 1600, 680);
+      text(ctx, "HASIL TES LIMA DETIK", 960, 205, 34, { align: "center", weight: 900, color: C.accentDark });
+      sheet(ctx, 240, 250, 360, MESSY, { border: RED });
+      const bub = (x, y, w, s, col) => { card(ctx, x, y, w, 150, { fill: "#FFFFFF", stroke: col, lw: 4, r: 24 }); para(ctx, s, x + w / 2, y + 62, 32, w - 40, { align: "center", weight: 800, lh: 1.25, color: col }); };
+      bub(640, 300, 320, "Hmm… apa, ya?", RED); mark(ctx, 800, 520, false, "tidak ingat");
+      if (l > a * 0.45 || b.full) { sheet(ctx, 1000, 250, 360, rapi(), { border: GREEN }); bub(1390, 300, 330, "412 kg! Setor hari Jumat.", GREEN); mark(ctx, 1555, 520, true, "ingat pesannya"); }
+      H.kid(ctx, 960, 690, 60, {});
+    },
+    sumber(ctx, b, l) {
+      const a = b.audio || b.dur; const noSrc = l < a * 0.4;
+      const g = app(ctx, { pageW: 600, scroll: 268, els: noSrc ? rapi(ORDER.filter(k => k !== "src")) : rapi(), sel: noSrc ? null : "src" });
+      if (noSrc) L.callout(ctx, PX, 170, "412 kg menurut siapa? Kapan?", g.page.x + 260, g.page.y + 300, { color: RED, fill: "#FDF1F0", maxW: 330 });
+      else { const zy = 330; card(ctx, PX, zy, PW, 250, { fill: "#FFFFFF", stroke: GREEN, lw: 3, r: 18 }); text(ctx, "SUMBER DATA", PX + 24, zy + 44, 23, { weight: 900, color: GREEN });
+        para(ctx, SRC, PX + 24, zy + 92, 25, PW - 48, { weight: 700, lh: 1.3 });
+        ctx.strokeStyle = GREEN; ctx.lineWidth = 2.5; ctx.beginPath(); ctx.moveTo(PX, zy + 125); ctx.lineTo(g.page.x + g.page.w - 30, g.page.y + 770); ctx.stroke();
+        text(ctx, "✓ siapa dan kapan", PX + 24, zy + 300, 28, { weight: 900, color: GREEN }); }
+    },
+    unduh(ctx, b, l) {
+      const sp = spanOf(b), ds = [1, 1.2, 1.4, 2.4], S = D.seq(l, sp, ds); const open = S.i >= 1 && S.i <= 2;
+      const g = app(ctx, { els: rapi(), menuOn: open || S.i === 0 && S.u > 0.6 ? "File" : null });
+      const mp = g.menu("File"); let png = { cx: 700, cy: 450 };
+      if (open) { const m1 = D.menu(ctx, WIN.x + 16, WIN.y + 88, ["Baru", "Buka", { s: "Unduh", sub: true, sep: true }, "Bagikan"], { hi: S.i >= 1 && S.u > 0.4 || S.i === 2 ? 2 : null, w: 280 });
+        if (S.i === 2 || S.u > 0.6) { const it = m1.item(2); const m2 = D.menu(ctx, it.x + 276, it.y - 6, ["PNG (gambar untuk HP)", "PDF (untuk dicetak)", "JPG"], { hi: S.i === 2 && S.u > 0.3 ? 0 : null, w: 360 }); png = m2.item(0); } }
+      steps(ctx, ["Klik menu File.", "Pilih Unduh.", "Pilih PNG atau PDF.", "Buka di HP, cek tulisan."], S.i === 0 ? 0 : S.i === 1 ? 1 : S.i === 2 ? 2 : 3);
+      if (S.at(3)) { // pratinjau di HP
+        const hx = 1540, hy = 420, hw = 220, hh = 400; ctx.fillStyle = "#2B3A44"; rr(ctx, hx, hy, hw, hh, 28); ctx.fill(); ctx.fillStyle = "#FFFFFF"; rr(ctx, hx + 10, hy + 14, hw - 20, hh - 28, 18); ctx.fill();
+        const pw = hw - 30; D.info(ctx, { x: hx + 15, y: hy + 40, w: pw, h: pw * 4 / 3 }, rapi()); ctx.strokeStyle = "#D5DEE3"; ctx.lineWidth = 1; ctx.strokeRect(hx + 15, hy + 40, pw, pw * 4 / 3);
+        text(ctx, "infografik.png", hx + hw / 2, hy + hh - 30, 18, { align: "center", weight: 700, color: GR }); }
+      const it3 = { x: WIN.x + 130, y: WIN.y + 88 + 6 + 12 + 2 * 46 + 23 };
+      ptr(ctx, D.path(l, sp, [{ x: mp.x, y: mp.y, d: ds[0], click: true }, { ...it3, d: ds[1] }, { x: png.cx || it3.x + 330, y: png.cy || it3.y, d: ds[2], click: true }, { x: 1200, y: 760, d: ds[3] }], { x: 800, y: 560 }));
+    },
+    latihan(ctx, b, l) {
+      card(ctx, 160, 150, 1600, 660);
+      text(ctx, "BERLATIH LAGI", 960, 230, 32, { align: "center", weight: 900, color: C.accentDark });
+      card(ctx, 300, 290, 640, 400, { fill: C.bg2, r: 22 }); text(ctx, "Halaman latihan F12.6", 620, 360, 34, { align: "center", weight: 900 });
+      text(ctx, "pemilih format", 620, 410, 28, { align: "center", weight: 700, color: C.ink2 });
+      card(ctx, 360, 450, 520, 70, { fill: "#FFFFFF", r: 12 }); text(ctx, "belajar-informatika.vercel.app/f126", 620, 496, 26, { align: "center", weight: 800, color: C.kikoDark });
+      text(ctx, "pilih format untuk pesan intimu", 620, 600, 26, { align: "center", weight: 700, color: C.ink2 });
+      card(ctx, 1000, 290, 620, 400, { fill: "#FFF9E0", r: 22 }); text(ctx, "Tugas nyata", 1310, 360, 34, { align: "center", weight: 900 });
+      para(ctx, "Buat infografik untuk produk proyekmu, lalu lakukan tes lima detik bersama kelompok lain.", 1310, 420, 30, 540, { align: "center", weight: 700, lh: 1.3 });
+      kiko(ctx, 1650, 720, 100, 0, { wave: l });
+    }
+  });
+})(typeof window !== "undefined" ? window : globalThis);
+</script>
+<script>window.__YT = [];
+const YT_CHANNEL = "https://www.youtube.com/@iteachswe";   // channel YouTube Bu Dewi (video lengkap seri ini)
+/* Inti halaman latihan: pemutar (kanvas + narasi), tombol suara nyala/mati (berpindah antara timeline suara dan teks),
+   kuis dengan petunjuk, dan kemajuan di localStorage (perangkat ini saja).
+   Pakai:  const P = PageCore({ suara: TIMELINE_SUARA_atau_null, teks: TIMELINE_TEKS });
+   Episode menambahkan latihannya sendiri lewat P.$, P.K, P.H, P.progress, P.save(), P.speed(), P.onProgress(fn). */
+function PageCore(TLS, opt = {}) {
+  const $ = id => document.getElementById(id);
+  const K = Kiko, H = K.helpers;
+  let voice = !!TLS.suara; let TL = voice ? TLS.suara : TLS.teks;
+  // ---------- progress storage (per device only) ----------
+  const KEY = opt.key || TL.episode.replace(/\./g, "").toLowerCase() + "-progress";   // D7.5 -> "d75-progress"
+  let progress = { quiz: {} };
+  try { const s = localStorage.getItem(KEY); if (s) progress = { quiz: {}, ...JSON.parse(s) }; } catch (e) {}
+  const extras = [];
+  function renderProgress() {
+    const el = $("progress"); if (!el) return; el.innerHTML = "";
+    Object.keys(TL.quizzes).forEach((id, i) => { const s = document.createElement("span"); s.textContent = "Cek " + (i + 1); s.className = progress.quiz[id] ? "ok" : ""; el.appendChild(s); });
+    extras.forEach(f => f(el));
+  }
+  function save() { try { localStorage.setItem(KEY, JSON.stringify(progress)); } catch (e) {} renderProgress(); }
+
+  // ---------- player ----------
+  const cv = $("screen"), ctx = cv.getContext("2d");
+  let t = 0, playing = false, last = 0, speed = 1, hasAudio = false;
+  const nar = $("nar"); nar.addEventListener("canplay", () => { hasAudio = true; }); nar.addEventListener("error", () => { hasAudio = false; });
+  function fmt(s) { s = Math.max(0, Math.floor(s)); return Math.floor(s / 60) + ":" + String(s % 60).padStart(2, "0"); }
+  function segStart(i) { return TL.beats.find(b => b.seg === i).start; }
+  function syncAudio() { if (voice && hasAudio) { try { nar.currentTime = t; } catch (e) {} } }
+  function drawNow() {
+    const b = K.draw(ctx, Math.min(t, TL.total - 0.01), TL);
+    $("barfill").style.width = (t / TL.total * 100) + "%"; $("bar").setAttribute("aria-valuenow", Math.round(t / TL.total * 100));
+    $("timelabel").textContent = fmt(t) + " / " + fmt(TL.total);
+    [...$("chapters").children].forEach((c, i) => c.classList.toggle("now", i === b.seg));
+    return b;
+  }
+  function loop(now) {
+    if (!playing) return;
+    const dt = Math.min(0.1, (now - last) / 1000); last = now; if (voice && hasAudio && !nar.paused) t = nar.currentTime; else t += dt * speed;
+    if (t >= TL.total) { t = TL.total - 0.01; setPlaying(false); }
+    drawNow(); requestAnimationFrame(loop);
+  }
+  function setPlaying(p) {
+    playing = p; $("bigplay").hidden = p; $("playbtn").textContent = p ? "❚❚ Jeda" : "▶ Putar";
+    if (p) { last = performance.now(); if (voice && hasAudio) { try { nar.currentTime = t; nar.playbackRate = speed; nar.play().catch(() => {}); } catch (e) {} } requestAnimationFrame(loop); } else nar.pause();
+  }
+  $("bigplay").addEventListener("click", () => setPlaying(true));
+  $("playbtn").addEventListener("click", () => setPlaying(!playing));
+  $("replay").addEventListener("click", () => { const b = K.beatAt(TL, t); t = segStart(b.seg); syncAudio(); drawNow(); setPlaying(true); });
+  $("slow").addEventListener("click", e => { speed = speed === 1 ? 0.8 : 1; nar.playbackRate = speed; e.currentTarget.setAttribute("aria-pressed", speed !== 1); });
+  function seekFromBar(ev) { const r = $("bar").getBoundingClientRect(); const x = (ev.touches ? ev.touches[0].clientX : ev.clientX) - r.left; t = Math.max(0, Math.min(TL.total - 0.01, x / r.width * TL.total)); syncAudio(); drawNow(); }
+  $("bar").addEventListener("click", seekFromBar);
+  $("bar").addEventListener("keydown", e => { if (e.key === "ArrowRight") { t = Math.min(TL.total - 0.01, t + 5); syncAudio(); drawNow(); } if (e.key === "ArrowLeft") { t = Math.max(0, t - 5); syncAudio(); drawNow(); } });
+  TL.segments.forEach((name, i) => { const b = document.createElement("button"); b.textContent = (i + 1) + ". " + name; b.addEventListener("click", () => { t = segStart(i); syncAudio(); drawNow(); setPlaying(true); }); $("chapters").appendChild(b); });
+  // voice on/off: switches between the narrated timeline and the reading-paced one, staying on the same beat
+  const vb = $("voice");
+  function setVoice(on) {
+    const cur = K.beatAt(TL, t);
+    voice = on && !!TLS.suara; TL = voice ? TLS.suara : TLS.teks;
+    const nb = TL.beats.find(b => b.id === cur.id) || TL.beats[0]; t = nb.start;
+    if (vb) { vb.setAttribute("aria-pressed", voice); vb.textContent = voice ? "🔊 Suara: nyala" : "🔇 Suara: mati"; }
+    if (playing) { if (voice && hasAudio) { try { nar.currentTime = t; nar.playbackRate = speed; nar.play().catch(() => {}); } catch (e) {} } else nar.pause(); }
+    drawNow();
+  }
+  if (vb) { if (!TLS.suara || !TLS.teks) vb.hidden = true; else { vb.addEventListener("click", () => setVoice(!voice)); vb.setAttribute("aria-pressed", voice); vb.textContent = voice ? "🔊 Suara: nyala" : "🔇 Suara: mati"; } }
+  drawNow();
+
+  // ---------- quiz ----------
+  const quizEl = $("quiz");
+  if (quizEl) Object.entries(TL.quizzes).forEach(([id, q], qi) => {
+    const box = document.createElement("div"); box.className = "q";
+    box.innerHTML = `<h3>${qi + 1}. ${q.q}</h3><div class="opts"></div><div class="fb"></div>`;
+    const opts = box.querySelector(".opts"), fb = box.querySelector(".fb");
+    q.options.forEach((o, i) => {
+      const b = document.createElement("button"); b.innerHTML = `<b>${"ABC"[i]}</b><span>${o}</span>`;
+      b.addEventListener("click", () => {
+        [...opts.children].forEach(c => c.classList.remove("wrong"));
+        if (i === q.answer) { b.classList.add("right"); fb.className = "fb good"; fb.textContent = "Benar! " + (q.explain || ""); progress.quiz[id] = true; save(); [...opts.children].forEach(c => c.disabled = true); }
+        else { b.classList.add("wrong"); fb.className = "fb bad"; fb.textContent = "Belum tepat. Petunjuk: " + q.hint; }
+      });
+      opts.appendChild(b);
+    });
+    if (progress.quiz[id]) { opts.children[q.answer].classList.add("right"); [...opts.children].forEach(c => c.disabled = true); fb.className = "fb good"; fb.textContent = "Sudah dijawab benar."; }
+    quizEl.appendChild(box);
+  });
+  renderProgress();
+
+  // video YouTube (bila alamatnya sudah diisi di youtube_id.json): pemutar utama di atas; animasi tetap ada untuk luring
+  try {
+    const YTL = (typeof window !== "undefined" && window.__YT) || [];
+    const pl = document.querySelector("section.player");
+    if (YTL.length && pl && !document.getElementById("yt-video")) {
+      const sec = document.createElement("section"); sec.className = "card yt-video"; sec.id = "yt-video"; sec.setAttribute("aria-label", "Video YouTube");
+      const h = document.createElement("h2"); h.textContent = "Video"; sec.appendChild(h);
+      let row = null;
+      if (YTL.length > 1) { row = document.createElement("div"); row.className = "row"; sec.appendChild(row); }
+      const box = document.createElement("div"); box.className = "yt-frame"; sec.appendChild(box);
+      const show = (i) => {
+        box.innerHTML = "";
+        const f = document.createElement("iframe");
+        f.src = "https://www.youtube-nocookie.com/embed/" + YTL[i].id + "?rel=0";
+        f.title = "Video " + YTL[i].part; f.loading = "lazy"; f.allowFullscreen = true;
+        f.setAttribute("allow", "accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share");
+        box.appendChild(f);
+        if (row) [...row.children].forEach((b, j) => b.setAttribute("aria-pressed", String(j === i)));
+      };
+      if (row) YTL.forEach((x, i) => { const b = document.createElement("button"); b.textContent = "Bagian " + (i + 1); b.addEventListener("click", () => show(i)); row.appendChild(b); });
+      const note = document.createElement("p"); note.className = "hint"; note.textContent = "Tidak ada internet? Putar animasinya di bawah; teksnya sama dan bisa dipakai tanpa internet."; sec.appendChild(note);
+      show(0);
+      pl.insertAdjacentElement("beforebegin", sec);
+      const lab = document.createElement("div"); lab.className = "eyebrow"; lab.textContent = "Animasi interaktif (bisa tanpa internet)"; pl.insertAdjacentElement("afterbegin", lab);
+    }
+  } catch (e) {}
+  // ajakan ke channel YouTube (video lengkap): kartu tepat di bawah pemutar, di semua halaman latihan dan simulasi
+  try {
+    const pl = document.querySelector("section.player");
+    if (pl && !document.getElementById("yt-ajak")) {
+      const a = document.createElement("a"); a.id = "yt-ajak"; a.className = "yt-ajak"; a.href = YT_CHANNEL; a.target = "_blank"; a.rel = "noopener";
+      a.innerHTML = '<span class="yt-ic" aria-hidden="true">▶</span><span><b>Tonton video lengkapnya di YouTube</b><small>Subscribe channel @iteachswe untuk belajar lebih banyak.</small></span>';
+      pl.insertAdjacentElement("afterend", a);
+    }
+  } catch (e) {}
+  return { $, K, H, progress, save, renderProgress, speed: () => speed, timeline: () => TL,
+           onProgress(fn) { extras.push(fn); renderProgress(); } };
+}
+</script>
+<script>
+(function () {
+  const P = PageCore({ suara: {"episode": "S30", "title": "Membuat Infografik Satu Halaman", "label": "Simulasi Praktik · S30 · Desain", "kind": "praktik", "for": ["F12.6"], "latihan": "F12.6", "hook": "menyusun infografik satu halaman dengan judul besar, tiga poin, satu angka penting, sumber data, dan ajakan yang jelas.", "engine": ["../../_alat/kiko-core.js", "../../_alat/layar.js", "../../_alat/layar_dok.js", "scenes.js"], "parts": {"S30": {"segs": [0, 1, 2, 3, 4, 5, 6]}}, "recap": ["Judul besar, satu angka, tiga poin, ajakan.", "Ukuran berjenjang, ruang kosong cukup.", "Warna sedikit, setiap angka punya sumber."], "next": {"code": "S31", "title": "Mengunggah Karya dengan Lisensi Creative Commons", "note": "Simulasi praktik berikutnya.", "heading": "SIMULASI BERIKUTNYA"}, "youtube": {"ringkas": "Simulasi praktik langkah demi langkah di aplikasi desain: menyusun infografik satu halaman untuk produk proyek (contoh aplikasi fiktif Setor Sampah) dengan judul besar, satu angka penting, tiga poin berikon, ajakan, dan sumber data. Dibahas hierarki ukuran, ruang kosong, dan warna terbatas, lalu versi berantakan dibandingkan dengan versi rapi lewat tes lima detik. Semua data rekaan.", "belajar": ["merencanakan infografik dari pesan inti dan sketsa lima bagian", "mengatur hierarki ukuran, ruang kosong, dan warna terbatas", "menampilkan satu angka penting beserta sumber datanya", "menguji infografik dengan tes lima detik"], "cari": ["cara membuat infografis yang menarik", "contoh infografis sederhana untuk tugas sekolah", "tips desain poster satu halaman", "cara membuat infografik kelas 12", "infografis yang baik dan buruk"], "prasyarat": "episode F12.6 Kreasi Konten Digital dengan Metode Bervariasi", "tagar": ["#Infografik", "#DesainGrafis", "#Simulasi", "#Informatika", "#SMA"]}, "segments": ["Pembuka", "Rencana dan layar", "Menyusun lima bagian", "Ukuran, ruang, warna", "Berantakan lawan rapi", "Sumber dan unduh", "Penutup"], "quizzes": {"q1": {"q": "Di infografik ini, bagian mana yang seharusnya paling menonjol, selain judul?", "options": ["Sumber data", "Angka penting", "Daftar fitur aplikasi"], "answer": 1, "hint": "Bagian mana yang ingin langsung diingat pembaca?"}, "q2": {"q": "Infografik ditempel di lorong yang dilewati orang sambil berjalan. Mana yang paling penting?", "options": ["Teks sebanyak mungkin", "Judul besar dengan sedikit poin", "Warna sebanyak mungkin"], "answer": 1, "hint": "Orang yang berjalan hanya sempat membaca beberapa detik."}, "q3": {"q": "Angka 412 kg ditulis tanpa sumber. Apa yang sebaiknya kamu lakukan?", "options": ["Menghapus judulnya", "Menambahkan sumber data di bawah", "Memperbesar angkanya lagi"], "answer": 1, "hint": "Pembaca perlu tahu dari mana angka itu berasal."}}, "beats": [{"id": "intro1", "seg": 0, "scene": "title", "hold": 0.8, "text": "Halo, kelas dua belas! Aku Kiko. Kali ini kita membuat infografik satu halaman untuk mengenalkan produk proyekmu.", "start": 0.0, "speech": 0.4, "audio": 8.015, "dur": 10.34}, {"id": "intro2", "seg": 0, "scene": "tujuan", "hold": 0.8, "text": "Setelah menonton, kamu bisa menyusun infografik dengan judul besar, tiga poin, satu angka penting, sumber data, dan ajakan yang jelas.", "start": 10.34, "speech": 10.74, "audio": 9.394, "dur": 11.84}, {"id": "intro3", "seg": 0, "scene": "prasyarat", "hold": 0.8, "text": "Simulasi ini melengkapi episode F12.6 tentang kreasi konten digital. Contoh kita adalah aplikasi fiktif Setor Sampah, dan semua datanya rekaan.", "start": 22.18, "speech": 22.58, "audio": 10.889, "dur": 12.389}, {"id": "s1a", "seg": 1, "scene": "rencana", "hold": 1.2, "text": "Mulailah dari kertas. Tulis pesan inti dalam satu kalimat, lalu gambar kotak untuk lima bagian: judul, angka, tiga poin, ajakan, dan sumber.", "start": 34.569, "speech": 34.969, "audio": 10.987, "dur": 13.24}, {"id": "s1b", "seg": 1, "scene": "kenal_kanvas", "hold": 1.0, "text": "Ini aplikasi desain. Di kiri ada alat Teks, Bentuk, Ikon, dan Gambar. Di tengah ada halaman tegak, dan di atasnya ada ukuran huruf serta warna.", "start": 47.809, "speech": 48.209, "audio": 10.628, "dur": 14.54}, {"id": "s2a", "seg": 2, "scene": "judul", "hold": 1.0, "text": "Klik Teks, lalu ketik judul: Sampah Plastik Jadi Poin. Ubah ukurannya menjadi lima puluh empat, buat tebal, dan letakkan di bagian atas.", "start": 62.349, "speech": 62.749, "audio": 9.702, "dur": 13.04}, {"id": "s2b", "seg": 2, "scene": "angka", "hold": 1.0, "text": "Tambahkan satu angka penting: empat ratus dua belas kilogram. Buat besar dan berwarna hijau, lalu tulis artinya di bawahnya dengan huruf kecil.", "start": 75.389, "speech": 75.789, "audio": 9.455, "dur": 13.04}, {"id": "s2c", "seg": 2, "scene": "poin", "hold": 1.0, "text": "Lalu tulis tiga poin langkah. Setiap poin memakai satu ikon dan satu kalimat pendek. Samakan ukuran hurufnya, dan sejajarkan di garis kiri yang sama.", "start": 88.429, "speech": 88.829, "audio": 10.009, "dur": 14.04}, {"id": "s2d", "seg": 2, "scene": "ajakan", "hold": 1.2, "text": "Di bagian bawah, buat pita hijau berisi ajakan: setor hari Jumat, pukul dua belas, di dekat kantin. Di bawahnya, tulis sumber datanya dengan huruf kecil.", "start": 102.469, "speech": 102.869, "audio": 10.837, "dur": 14.74}, {"id": "q1", "seg": 2, "scene": "quiz", "hold": 4.0, "text": "Cek pemahaman. Di infografik ini, bagian mana yang seharusnya paling menonjol, selain judul? Pikirkan dulu.", "quiz": "q1", "start": 117.209, "speech": 117.609, "audio": 7.453, "dur": 12.54}, {"id": "q1a", "seg": 2, "scene": "quiz_answer", "hold": 1.0, "text": "Jawabannya: angka penting. Satu angka besar langsung menarik mata, sedangkan sumber data cukup ditulis kecil di bawah.", "quiz": "q1", "start": 129.749, "speech": 130.149, "audio": 8.022, "dur": 10.54}, {"id": "s3a", "seg": 3, "scene": "hierarki", "hold": 1.2, "text": "Inilah hierarki ukuran. Angka penting dan judul paling besar, poin di tingkat berikutnya, dan sumber paling kecil. Mata pembaca bergerak dari yang besar ke yang kecil.", "start": 140.289, "speech": 140.689, "audio": 11.157, "dur": 15.24}, {"id": "s3b", "seg": 3, "scene": "ruang", "hold": 1.2, "text": "Beri ruang kosong. Sisakan tepi di keempat sisi, dan beri jarak antara judul, angka, poin, dan ajakan. Garis bantu merah muda membantu meratakan letaknya.", "start": 155.529, "speech": 155.929, "audio": 11.6, "dur": 14.24}, {"id": "s3c", "seg": 3, "scene": "warna", "hold": 1.2, "text": "Batasi warna. Cukup satu warna utama, misalnya hijau, ditambah hitam dan putih. Warna yang sedikit membuat bagian penting lebih menonjol.", "start": 169.769, "speech": 170.169, "audio": 9.797, "dur": 12.24}, {"id": "coba1", "seg": 3, "scene": "coba", "hold": 3.0, "text": "Sekarang giliranmu. Hentikan dulu videonya, buat sketsa lalu infografik untuk produk proyekmu dengan lima bagian tadi, lalu putar lagi.", "coba": ["Tulis pesan inti dan sketsa lima kotak.", "Judul besar, angka, dan tiga poin.", "Ajakan, sumber, dan warna terbatas."], "start": 182.009, "speech": 182.409, "audio": 9.279, "dur": 13.54}, {"id": "s4a", "seg": 4, "scene": "berantakan", "hold": 1.2, "text": "Sekarang bandingkan dengan versi berantakan. Ada sepuluh kalimat kecil, enam warna, banyak ukuran huruf, dan tulisan yang menempel di tepi halaman.", "start": 195.549, "speech": 195.949, "audio": 9.601, "dur": 12.74}, {"id": "s4b", "seg": 4, "scene": "tes5", "hold": 1.0, "text": "Lakukan tes lima detik. Tunjukkan infografik kepada teman selama lima detik, lalu tanyakan apa yang ia ingat.", "start": 208.289, "speech": 208.689, "audio": 7.086, "dur": 10.54}, {"id": "s4c", "seg": 4, "scene": "hasil_tes", "hold": 1.2, "text": "Dari versi berantakan, temanmu tidak ingat apa pun. Dari versi rapi, ia ingat empat ratus dua belas kilogram dan setor hari Jumat.", "start": 218.829, "speech": 219.229, "audio": 8.734, "dur": 13.24}, {"id": "q2", "seg": 4, "scene": "quiz", "hold": 4.0, "text": "Cek pemahaman. Infografik akan ditempel di lorong yang dilewati orang sambil berjalan. Mana yang paling penting? Pikirkan dulu.", "quiz": "q2", "start": 232.069, "speech": 232.469, "audio": 8.414, "dur": 14.04}, {"id": "q2a", "seg": 4, "scene": "quiz_answer", "hold": 1.0, "text": "Jawabannya: judul besar dengan sedikit poin. Orang yang berjalan hanya sempat membaca selama beberapa detik.", "quiz": "q2", "start": 246.109, "speech": 246.509, "audio": 6.982, "dur": 9.54}, {"id": "s5a", "seg": 5, "scene": "sumber", "hold": 1.2, "text": "Periksa sumber datanya. Setiap angka harus punya sumber yang jelas, misalnya catatan bank sampah dan bulannya. Angka tanpa sumber sulit dipercaya.", "start": 255.649, "speech": 256.049, "audio": 10.122, "dur": 12.74}, {"id": "s5b", "seg": 5, "scene": "unduh", "hold": 1.2, "text": "Terakhir, klik File, Unduh, lalu pilih PNG untuk dibagikan di HP, atau PDF untuk dicetak. Buka hasilnya di HP dan pastikan semua tulisan terbaca.", "start": 268.389, "speech": 268.789, "audio": 12.64, "dur": 14.54}, {"id": "q3", "seg": 5, "scene": "quiz", "hold": 4.0, "text": "Cek pemahaman. Angka empat ratus dua belas kilogram ditulis tanpa sumber. Apa yang sebaiknya kamu lakukan? Pikirkan dulu.", "quiz": "q3", "start": 282.929, "speech": 283.329, "audio": 8.415, "dur": 14.04}, {"id": "q3a", "seg": 5, "scene": "quiz_answer", "hold": 1.0, "text": "Jawabannya: tambahkan sumber data di bawah, misalnya catatan Bank Sampah SMA Tunas, Juli sampai September. Pembaca jadi tahu asal angkanya.", "quiz": "q3", "start": 296.969, "speech": 297.369, "audio": 10.552, "dur": 12.252}, {"id": "recap", "seg": 6, "scene": "recap", "hold": 1.5, "text": "Tiga hal untuk diingat. Judul besar, satu angka penting, tiga poin, dan ajakan. Ukuran berjenjang dengan ruang kosong yang cukup. Warna sedikit, dan setiap angka punya sumber.", "start": 309.221, "speech": 309.621, "audio": 12.683, "dur": 16.04}, {"id": "latihan", "seg": 6, "scene": "latihan", "hold": 1.5, "text": "Di halaman latihan episode F12.6 ada pemilih format. Lalu buat infografik untuk produk proyekmu, dan lakukan tes lima detik bersama kelompok lain.", "start": 325.261, "speech": 325.661, "audio": 11.078, "dur": 13.54}, {"id": "outro", "seg": 6, "scene": "outro", "hold": 2.5, "text": "Simulasi berikutnya: mengunggah karya dengan lisensi Creative Commons. Sampai jumpa!", "start": 338.801, "speech": 339.201, "audio": 5.977, "dur": 9.177}], "total": 347.978}, teks: null });
+})();
+</script>

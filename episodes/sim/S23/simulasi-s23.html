@@ -1,0 +1,1453 @@
+<title>Kiko: Fungsi dan List untuk Uang Kembalian</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<style>
+/* Inti gaya halaman latihan: satu kolom, pemutar di atas, latihan di bawah; palet kantin sama dengan video. */
+:root {
+  --bg: #EAF2EE; --surface: #FFFFFF; --surface2: #DCE9E2; --ink: #1F2A33; --ink2: #4A5A66; --line: #C9D8D0;
+  --accent: #2E7E9A; --accent-ink: #FFFFFF; --warm: #F2B134; --warm-ink: #5E3E05; --good: #2E9E5B; --good-bg: #DDF3E4; --bad: #D9443B; --bad-bg: #FBE1DF;
+  --font: Inter, "Segoe UI", Roboto, Arial, sans-serif;
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) { --bg: #141C1A; --surface: #1E2926; --surface2: #273532; --ink: #EAF2EE; --ink2: #A9BBB3; --line: #3A4A45; --accent: #5FB3CE; --accent-ink: #0F1D22; --warm: #F2B134; --warm-ink: #2B1C02; --good: #5FCB8A; --good-bg: #1F3A2B; --bad: #F07A72; --bad-bg: #442523; color-scheme: dark } }
+:root[data-theme="dark"] { --bg: #141C1A; --surface: #1E2926; --surface2: #273532; --ink: #EAF2EE; --ink2: #A9BBB3; --line: #3A4A45; --accent: #5FB3CE; --accent-ink: #0F1D22; --warm: #F2B134; --warm-ink: #2B1C02; --good: #5FCB8A; --good-bg: #1F3A2B; --bad: #F07A72; --bad-bg: #442523; color-scheme: dark }
+* { box-sizing: border-box }
+body { background: var(--bg); color: var(--ink); font-family: var(--font); font-size: 17px; line-height: 1.5; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); padding-block: 16px 48px }
+.wrap { max-width: 980px; margin: 0 auto; display: grid; gap: 28px }
+h1 { font-size: clamp(26px, 5vw, 38px); line-height: 1.15; margin: 0; text-wrap: balance; font-weight: 900 }
+h2 { font-size: 22px; margin: 0 0 12px; font-weight: 800 }
+h3 { font-size: 18px; margin: 0 0 8px; font-weight: 800 }
+p { margin: 0 0 10px; max-width: 65ch }
+.eyebrow { font-size: 13px; letter-spacing: .08em; text-transform: uppercase; color: var(--ink2); font-weight: 800; margin-bottom: 6px }
+.card { background: var(--surface); border-radius: 18px; padding: 18px; border: 1px solid var(--line) }
+button { font: inherit; font-weight: 800; border: 0; border-radius: 12px; padding: 12px 16px; cursor: pointer; background: var(--surface2); color: var(--ink); min-height: 48px; touch-action: manipulation }
+button:focus-visible, [tabindex]:focus-visible { outline: 3px solid var(--warm); outline-offset: 2px }
+button.primary { background: var(--accent); color: var(--accent-ink) }
+button.warm { background: var(--warm); color: var(--warm-ink) }
+button[aria-pressed="true"] { box-shadow: inset 0 0 0 3px var(--accent) }
+button:disabled { opacity: .45; cursor: default }
+.row { display: flex; flex-wrap: wrap; gap: 10px; align-items: center }
+/* player */
+.player { display: grid; gap: 12px }
+.stage { position: relative; width: 100%; aspect-ratio: 16 / 9; max-width: 100%; background: #EAF2EE; border-radius: 14px; overflow: hidden; border: 1px solid var(--line) }
+.stage canvas { width: 100%; height: 100%; display: block }
+.bigplay { position: absolute; inset: 0; display: grid; place-items: center; background: rgba(31,42,51,.25); border: 0; border-radius: 0; color: #fff; font-size: 20px; min-height: 0 }
+.bigplay span { background: var(--accent); color: var(--accent-ink); padding: 14px 26px; border-radius: 999px; font-weight: 900 }
+.bar { height: 10px; background: var(--surface2); border-radius: 999px; overflow: hidden; cursor: pointer }
+.bar > i { display: block; height: 100%; width: 0; background: var(--warm) }
+.chapters { display: flex; flex-wrap: wrap; gap: 8px }
+.chapters button { font-size: 14px; padding: 8px 12px; min-height: 40px }
+.chapters button.now { background: var(--warm); color: var(--warm-ink) }
+.hint { color: var(--ink2); font-size: 15px }
+/* exercises (generic parts) */
+.levels { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 12px }
+.levels button { font-size: 14px; padding: 8px 12px; min-height: 40px }
+.levels button.done::after { content: " ✓"; color: var(--good) }
+.task { background: var(--surface2); border-radius: 12px; padding: 12px 14px; margin-bottom: 12px; font-weight: 700 }
+.result { border-radius: 12px; padding: 12px 14px; font-weight: 800; margin-top: 10px }
+.result.good { background: var(--good-bg); color: var(--good) }
+.result.bad { background: var(--bad-bg); color: var(--bad) }
+.result.info { background: var(--surface2); color: var(--ink) }
+/* quiz */
+.quiz { display: grid; gap: 16px }
+.q { border-top: 1px solid var(--line); padding-top: 14px }
+.q:first-child { border-top: 0; padding-top: 0 }
+.opts { display: grid; gap: 8px; margin-top: 8px }
+.opts button { text-align: left; font-weight: 700; background: var(--surface2); display: flex; gap: 10px; align-items: center }
+.opts button b { width: 30px; height: 30px; border-radius: 50%; background: var(--accent); color: var(--accent-ink); display: grid; place-items: center; flex: none }
+.opts button.right { background: var(--good-bg); box-shadow: inset 0 0 0 3px var(--good) }
+.opts button.wrong { background: var(--bad-bg) }
+.fb { margin-top: 8px; font-weight: 700 }
+.fb.good { color: var(--good) } .fb.bad { color: var(--bad) }
+details summary { cursor: pointer; font-weight: 800; font-size: 18px }
+details[open] summary { margin-bottom: 10px }
+ul.plain { padding-left: 20px; margin: 0 0 10px } ul.plain li { margin-bottom: 6px; max-width: 65ch }
+.progress { display: flex; gap: 8px; flex-wrap: wrap } .progress span { background: var(--surface2); border-radius: 999px; padding: 6px 12px; font-size: 14px; font-weight: 700 }
+.progress span.ok { background: var(--good-bg); color: var(--good) }
+@media (prefers-reduced-motion: reduce) { * { transition: none !important } }
+
+/* ajakan ke channel YouTube */
+.yt-ajak { display: flex; gap: 12px; align-items: center; background: var(--surface); border: 1px solid var(--line); border-left: 6px solid #D9443B; border-radius: 14px; padding: 12px 16px; color: var(--ink); text-decoration: none }
+.yt-ajak .yt-ic { flex: none; width: 40px; height: 28px; border-radius: 8px; background: #D9443B; color: #fff; display: grid; place-items: center; font-size: 14px }
+.yt-ajak b { display: block; font-size: 16px } .yt-ajak small { display: block; color: var(--ink2); font-size: 14px; font-weight: 600 }
+.yt-video { display: grid; gap: 10px } .yt-frame { position: relative; width: 100%; aspect-ratio: 16 / 9; border-radius: 14px; overflow: hidden; background: #000 }
+.yt-frame iframe { position: absolute; inset: 0; width: 100%; height: 100%; border: 0 }
+
+/* halaman video simulasi (dibuat build.py dari episodes/_alat/sim-page.html) */
+.links { display: grid; gap: 10px } .links a { display: block; background: var(--surface2); color: var(--ink); text-decoration: none; font-weight: 800; border-radius: 12px; padding: 12px 16px }
+.links a span { display: block; font-weight: 600; color: var(--ink2); font-size: 15px }
+ul.learn { margin: 0; padding-left: 20px } ul.learn li { margin-bottom: 4px }
+</style>
+
+<div class="wrap">
+  <header>
+    <div class="eyebrow">Informatika · Simulasi praktik · S23</div>
+    <h1>Fungsi dan List untuk Uang Kembalian</h1>
+    <p class="hint">Setelah menonton, kamu bisa menulis fungsi yang menerima list, menghitung uang kembalian dengan greedy dan brute force, lalu menguji kapan greedy gagal. Simulasi ini melengkapi episode F11.6, F12.0. Hentikan videonya di setiap jeda "Coba sekarang" untuk mencoba sendiri.</p>
+  </header>
+  <section class="card player" aria-label="Pemutar simulasi">
+    <div class="stage">
+      <canvas id="screen" width="1920" height="1080" aria-label="Animasi simulasi"></canvas>
+      <audio id="nar" preload="auto" src="narasi.mp3"></audio>
+      <button class="bigplay" id="bigplay" aria-label="Putar"><span>▶ Putar simulasi</span></button>
+    </div>
+    <div class="bar" id="bar" role="slider" aria-label="Posisi simulasi" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" tabindex="0"><i id="barfill"></i></div>
+    <div class="row">
+      <button class="primary" id="playbtn">▶ Putar</button>
+      <button id="replay">↺ Ulangi bagian ini</button>
+      <button id="voice" aria-pressed="true" hidden>🔊 Suara: nyala</button>
+      <button id="slow" aria-pressed="false">🐢 Mode lambat</button>
+      <span class="hint" id="timelabel">0:00 / 0:00</span>
+    </div>
+    <div>
+      <div class="eyebrow">Bagian</div>
+      <div class="chapters" id="chapters"></div>
+    </div>
+  </section>
+
+  <section class="card" aria-label="Yang dipelajari">
+    <h2>Yang kamu pelajari</h2>
+    <ul class="learn"><li>menulis fungsi yang menerima list dan memakai return</li><li>mencari nilai terbesar tanpa max()</li><li>menghitung uang kembalian dengan greedy dan brute force</li><li>menguji kasus saat greedy gagal</li></ul>
+  </section>
+
+  <section class="card" aria-label="Cek pemahaman">
+    <h2>Cek pemahaman</h2>
+    <p class="hint">Pilih satu jawaban. Kalau salah, kamu dapat petunjuk, lalu coba lagi.</p>
+    <div class="quiz" id="quiz"></div>
+  </section>
+
+  <section class="card" aria-label="Kemajuan">
+    <h2>Kemajuanmu</h2>
+    <div class="progress" id="progress"></div>
+    <p class="hint" style="margin-top:8px">Kemajuan tersimpan di perangkat ini saja.</p>
+  </section>
+
+  <section class="card" aria-label="Halaman latihan">
+    <h2>Lanjut berlatih</h2>
+    <div class="links"><a href="../../F11.6/episode-f116.html">Episode F11.6: Strategi Algoritmik dan Alternatif Solusi<span>Tonton episodenya dan kerjakan latihannya.</span></a><a href="../../F12.0/episode-f120.html">Episode F12.0: Jembatan Kelas XII: Perulangan, List, dan Fungsi<span>Tonton episodenya dan kerjakan latihannya.</span></a><a href="../../../index.html">Daftar semua episode<span>Kembali ke halaman utama.</span></a></div>
+  </section>
+</div>
+
+<script>/* Kiko core: mesin gambar bersama untuk semua episode Fase D.
+   Kiko.draw(ctx, t, TL) menggambar frame pada detik t di kanvas 1920x1080 secara deterministik.
+   Berisi palet, pembantu gambar, tokoh (Kiko, murid), dan adegan umum (judul, kuis, ringkasan, penutup).
+   Setiap episode menambahkan adegannya sendiri di scenes.js: Object.assign(Kiko.SCENES, {...}). */
+(function (global) {
+  const W = 1920, H = 1080;
+  const FONT = "Inter, 'Segoe UI', Roboto, Arial, sans-serif";
+  const C = {
+    bg: "#EAF2EE", bg2: "#DCE9E2", ink: "#1F2A33", ink2: "#4A5A66", panel: "#FFFFFF",
+    tile: "#F7FAF8", tileLine: "#C9D8D0", table: "#A4653A", tableTop: "#C98A57",
+    kiko: "#2E7E9A", kikoDark: "#1F5A6E", kikoLight: "#8FD0E6", eye: "#FFFFFF", pupil: "#1F2A33",
+    accent: "#F2B134", accentDark: "#B57A12", good: "#2E9E5B", bad: "#D9443B", goodBg: "#DDF3E4", badBg: "#FBE1DF",
+    sub: "#1F2A33", subText: "#FFFFFF", star: "#F2B134", skin: "#F1C9A5", skin2: "#C98A57", hair: "#2B2118",
+    uniform: "#FFFFFF", pants: "#2F4E7D", bubble: "#FFFFFF", muted: "#9AAFA6"
+  };
+  const ease = u => u < 0 ? 0 : u > 1 ? 1 : u * u * (3 - 2 * u);
+  const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
+  const lerp = (a, b, u) => a + (b - a) * u;
+
+  // ---------- drawing helpers ----------
+  function rr(ctx, x, y, w, h, r) {
+    ctx.beginPath(); ctx.moveTo(x + r, y); ctx.arcTo(x + w, y, x + w, y + h, r); ctx.arcTo(x + w, y + h, x, y + h, r);
+    ctx.arcTo(x, y + h, x, y, r); ctx.arcTo(x, y, x + w, y, r); ctx.closePath();
+  }
+  function text(ctx, s, x, y, size, opt = {}) {
+    ctx.font = `${opt.weight || 600} ${size}px ${FONT}`;
+    // opt.fit: lebar maksimum; huruf diperkecil hanya bila teks lebih lebar dari itu
+    while (opt.fit && size > 20 && ctx.measureText(s).width > opt.fit) { size -= 2; ctx.font = `${opt.weight || 600} ${size}px ${FONT}`; } ctx.fillStyle = opt.color || C.ink;
+    ctx.textAlign = opt.align || "left"; ctx.textBaseline = opt.base || "alphabetic"; ctx.fillText(s, x, y);
+  }
+  function wrap(ctx, s, size, weight, maxW) {
+    ctx.font = `${weight} ${size}px ${FONT}`;
+    const words = s.split(" "), lines = []; let cur = "";
+    for (const w of words) {
+      const test = cur ? cur + " " + w : w;
+      if (ctx.measureText(test).width > maxW && cur) { lines.push(cur); cur = w; } else cur = test;
+    }
+    if (cur) lines.push(cur);
+    return lines;
+  }
+  function para(ctx, s, x, y, size, maxW, opt = {}) {
+    const lines = wrap(ctx, s, size, opt.weight || 500, maxW); const lh = size * (opt.lh || 1.35);
+    lines.forEach((l, i) => text(ctx, l, x, y + i * lh, size, opt));
+    return lines.length * lh;
+  }
+  function arrowIcon(ctx, kind, cx, cy, s, color) {
+    ctx.save(); ctx.translate(cx, cy); ctx.strokeStyle = color; ctx.fillStyle = color; ctx.lineWidth = s * 0.16; ctx.lineCap = "round"; ctx.lineJoin = "round";
+    if (kind === "up") {
+      ctx.beginPath(); ctx.moveTo(0, s * 0.45); ctx.lineTo(0, -s * 0.3); ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(-s * 0.32, -s * 0.05); ctx.lineTo(0, -s * 0.45); ctx.lineTo(s * 0.32, -s * 0.05); ctx.stroke();
+    } else if (kind === "left" || kind === "right") {
+      const k = kind === "left" ? -1 : 1;
+      ctx.beginPath(); ctx.moveTo(0, s * 0.45); ctx.lineTo(0, -s * 0.05); ctx.quadraticCurveTo(0, -s * 0.32, k * s * 0.28, -s * 0.32); ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(k * s * 0.12, -s * 0.5); ctx.lineTo(k * s * 0.4, -s * 0.32); ctx.lineTo(k * s * 0.12, -s * 0.14); ctx.stroke();
+    } else if (kind === "east") {
+      ctx.beginPath(); ctx.moveTo(-s * 0.4, 0); ctx.lineTo(s * 0.3, 0); ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(s * 0.05, -s * 0.28); ctx.lineTo(s * 0.4, 0); ctx.lineTo(s * 0.05, s * 0.28); ctx.stroke();
+    } else if (kind === "west") {
+      ctx.beginPath(); ctx.moveTo(s * 0.4, 0); ctx.lineTo(-s * 0.3, 0); ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(-s * 0.05, -s * 0.28); ctx.lineTo(-s * 0.4, 0); ctx.lineTo(-s * 0.05, s * 0.28); ctx.stroke();
+    } else if (kind === "grab") {
+      ctx.beginPath(); ctx.arc(0, s * 0.12, s * 0.22, 0, Math.PI * 2); ctx.fill();
+      ctx.beginPath(); ctx.moveTo(-s * 0.4, -s * 0.42); ctx.lineTo(-s * 0.4, -s * 0.12); ctx.moveTo(s * 0.4, -s * 0.42); ctx.lineTo(s * 0.4, -s * 0.12);
+      ctx.moveTo(-s * 0.4, -s * 0.42); ctx.lineTo(s * 0.4, -s * 0.42); ctx.stroke();
+    }
+    ctx.restore();
+  }
+  function bakso(ctx, cx, cy, s, opt = {}) {
+    // a bowl of bakso: the goal
+    ctx.save(); ctx.translate(cx, cy);
+    if (opt.glow) { ctx.beginPath(); ctx.arc(0, 0, s * 0.62, 0, Math.PI * 2); ctx.fillStyle = "rgba(242,177,52,0.22)"; ctx.fill(); }
+    ctx.fillStyle = "#E4EEF5"; ctx.beginPath(); ctx.moveTo(-s * 0.46, -s * 0.05); ctx.quadraticCurveTo(-s * 0.4, s * 0.45, 0, s * 0.45); ctx.quadraticCurveTo(s * 0.4, s * 0.45, s * 0.46, -s * 0.05); ctx.closePath(); ctx.fill();
+    ctx.strokeStyle = "#8FA9BD"; ctx.lineWidth = s * 0.05; ctx.stroke();
+    ctx.fillStyle = "#C8B49A"; ctx.beginPath(); ctx.ellipse(0, -s * 0.05, s * 0.44, s * 0.14, 0, 0, Math.PI * 2); ctx.fill();
+    for (const [dx, dy, r] of [[-0.16, -0.1, 0.13], [0.14, -0.12, 0.13], [0, -0.22, 0.12]]) {
+      ctx.fillStyle = "#9A7B5B"; ctx.beginPath(); ctx.arc(dx * s, dy * s, r * s, 0, Math.PI * 2); ctx.fill();
+      ctx.fillStyle = "#B8977A"; ctx.beginPath(); ctx.arc(dx * s - r * s * 0.3, dy * s - r * s * 0.3, r * s * 0.4, 0, Math.PI * 2); ctx.fill();
+    }
+    ctx.fillStyle = "#4CA64C"; for (const dx of [-0.26, 0.1, 0.26]) { ctx.beginPath(); ctx.arc(dx * s, -s * 0.07, s * 0.045, 0, Math.PI * 2); ctx.fill(); }
+    ctx.restore();
+  }
+  function table(ctx, x, y, w, h) {
+    ctx.fillStyle = C.table; rr(ctx, x + w * 0.1, y + h * 0.3, w * 0.8, h * 0.55, 10); ctx.fill();
+    ctx.fillStyle = C.tableTop; rr(ctx, x + w * 0.06, y + h * 0.18, w * 0.88, h * 0.3, 10); ctx.fill();
+    ctx.fillStyle = "rgba(0,0,0,0.12)"; ctx.fillRect(x + w * 0.16, y + h * 0.5, w * 0.08, h * 0.35); ctx.fillRect(x + w * 0.76, y + h * 0.5, w * 0.08, h * 0.35);
+  }
+  function kiko(ctx, cx, cy, s, ang, opt = {}) {
+    ctx.save(); ctx.translate(cx, cy);
+    // shadow
+    ctx.fillStyle = "rgba(0,0,0,0.12)"; ctx.beginPath(); ctx.ellipse(0, s * 0.42, s * 0.42, s * 0.12, 0, 0, Math.PI * 2); ctx.fill();
+    ctx.rotate(ang);
+    // wheels
+    ctx.fillStyle = C.kikoDark; rr(ctx, -s * 0.46, -s * 0.2, s * 0.12, s * 0.5, 5); ctx.fill(); rr(ctx, s * 0.34, -s * 0.2, s * 0.12, s * 0.5, 5); ctx.fill();
+    // body
+    ctx.fillStyle = opt.flash ? `rgba(217,68,59,${0.5 + 0.5 * opt.flash})` : C.kiko; rr(ctx, -s * 0.38, -s * 0.36, s * 0.76, s * 0.72, s * 0.16); ctx.fill();
+    // visor (front, facing up)
+    ctx.fillStyle = C.kikoLight; rr(ctx, -s * 0.26, -s * 0.33, s * 0.52, s * 0.3, s * 0.1); ctx.fill();
+    // eyes
+    const mood = opt.mood || "happy";
+    ctx.fillStyle = C.pupil;
+    if (mood === "sad") { ctx.beginPath(); ctx.arc(-s * 0.12, -s * 0.18, s * 0.05, 0, Math.PI * 2); ctx.arc(s * 0.12, -s * 0.18, s * 0.05, 0, Math.PI * 2); ctx.fill(); ctx.strokeStyle = C.pupil; ctx.lineWidth = s * 0.03; ctx.beginPath(); ctx.arc(0, -s * 0.03, s * 0.08, Math.PI * 1.15, Math.PI * 1.85); ctx.stroke(); }
+    else if (mood === "confused") { ctx.beginPath(); ctx.arc(-s * 0.12, -s * 0.18, s * 0.05, 0, Math.PI * 2); ctx.arc(s * 0.12, -s * 0.18, s * 0.035, 0, Math.PI * 2); ctx.fill(); ctx.strokeStyle = C.pupil; ctx.lineWidth = s * 0.03; ctx.beginPath(); ctx.moveTo(-s * 0.08, -s * 0.06); ctx.lineTo(s * 0.08, -s * 0.09); ctx.stroke(); }
+    else { ctx.beginPath(); ctx.arc(-s * 0.12, -s * 0.18, s * 0.055, 0, Math.PI * 2); ctx.arc(s * 0.12, -s * 0.18, s * 0.055, 0, Math.PI * 2); ctx.fill(); ctx.strokeStyle = C.pupil; ctx.lineWidth = s * 0.03; ctx.beginPath(); ctx.arc(0, -s * 0.1, s * 0.08, Math.PI * 0.15, Math.PI * 0.85); ctx.stroke(); }
+    // front pointer
+    ctx.fillStyle = C.accent; ctx.beginPath(); ctx.moveTo(-s * 0.1, -s * 0.38); ctx.lineTo(s * 0.1, -s * 0.38); ctx.lineTo(0, -s * 0.5); ctx.closePath(); ctx.fill();
+    // antenna
+    ctx.strokeStyle = C.kikoDark; ctx.lineWidth = s * 0.04; ctx.beginPath(); ctx.moveTo(0, s * 0.36); ctx.lineTo(0, s * 0.5); ctx.stroke();
+    ctx.fillStyle = C.accent; ctx.beginPath(); ctx.arc(0, s * 0.52, s * 0.07, 0, Math.PI * 2); ctx.fill();
+    // tray with bakso when grabbed
+    if (opt.grabbed) bakso(ctx, 0, s * 0.05, s * 0.45);
+    ctx.restore();
+    if (opt.wave !== undefined) { // arm waving (title scene)
+      ctx.save(); ctx.translate(cx + s * 0.42, cy - s * 0.1); ctx.rotate(-0.6 + Math.sin(opt.wave * 6) * 0.4);
+      ctx.strokeStyle = C.kikoDark; ctx.lineWidth = s * 0.08; ctx.lineCap = "round"; ctx.beginPath(); ctx.moveTo(0, 0); ctx.lineTo(s * 0.3, -s * 0.3); ctx.stroke();
+      ctx.fillStyle = C.kikoLight; ctx.beginPath(); ctx.arc(s * 0.32, -s * 0.33, s * 0.09, 0, Math.PI * 2); ctx.fill(); ctx.restore();
+    }
+  }
+  function kid(ctx, cx, cy, s, opt = {}) {
+    // simple student figure, standing, facing viewer
+    ctx.save(); ctx.translate(cx, cy);
+    ctx.fillStyle = "rgba(0,0,0,0.12)"; ctx.beginPath(); ctx.ellipse(0, s * 1.02, s * 0.5, s * 0.1, 0, 0, Math.PI * 2); ctx.fill();
+    ctx.fillStyle = C.pants; rr(ctx, -s * 0.3, s * 0.35, s * 0.6, s * 0.5, s * 0.1); ctx.fill();
+    ctx.fillStyle = C.skin; ctx.fillRect(-s * 0.24, s * 0.8, s * 0.16, s * 0.2); ctx.fillRect(s * 0.08, s * 0.8, s * 0.16, s * 0.2);
+    ctx.fillStyle = C.uniform; rr(ctx, -s * 0.36, -s * 0.12, s * 0.72, s * 0.56, s * 0.12); ctx.fill();
+    ctx.strokeStyle = "#D5DDE2"; ctx.lineWidth = s * 0.025; rr(ctx, -s * 0.36, -s * 0.12, s * 0.72, s * 0.56, s * 0.12); ctx.stroke();
+    ctx.fillStyle = C.skin; ctx.beginPath(); ctx.arc(0, -s * 0.42, s * 0.32, 0, Math.PI * 2); ctx.fill();
+    ctx.fillStyle = opt.hairColor || C.hair; ctx.beginPath(); ctx.arc(0, -s * 0.5, s * 0.33, Math.PI, 0); ctx.fill();
+    if (opt.hair === "long") { ctx.fillRect(-s * 0.33, -s * 0.5, s * 0.12, s * 0.45); ctx.fillRect(s * 0.21, -s * 0.5, s * 0.12, s * 0.45); }
+    ctx.fillStyle = C.pupil; ctx.beginPath(); ctx.arc(-s * 0.11, -s * 0.4, s * 0.035, 0, Math.PI * 2); ctx.arc(s * 0.11, -s * 0.4, s * 0.035, 0, Math.PI * 2); ctx.fill();
+    ctx.strokeStyle = C.pupil; ctx.lineWidth = s * 0.025; ctx.beginPath(); ctx.arc(0, -s * 0.33, s * 0.08, Math.PI * 0.15, Math.PI * 0.85); ctx.stroke();
+    // arms
+    ctx.strokeStyle = C.skin; ctx.lineWidth = s * 0.11; ctx.lineCap = "round"; ctx.beginPath();
+    if (opt.point) { ctx.moveTo(s * 0.32, s * 0.02); ctx.lineTo(s * 0.75, -s * 0.2); } else { ctx.moveTo(s * 0.34, s * 0.02); ctx.lineTo(s * 0.42, s * 0.38); }
+    ctx.moveTo(-s * 0.34, s * 0.02); ctx.lineTo(-s * 0.42, s * 0.38); ctx.stroke();
+    ctx.restore();
+  }
+  function bubble(ctx, x, y, w, s, size, opt = {}) {
+    const lines = wrap(ctx, s, size, 600, w - 48); const h = lines.length * size * 1.3 + 40;
+    ctx.fillStyle = opt.fill || C.bubble; ctx.strokeStyle = opt.stroke || "#B7C7BF"; ctx.lineWidth = 3;
+    rr(ctx, x, y - h, w, h, 22); ctx.fill(); ctx.stroke();
+    const tx = opt.tailX !== undefined ? opt.tailX : x + 60;
+    ctx.beginPath(); ctx.moveTo(tx - 16, y); ctx.lineTo(tx + 16, y); ctx.lineTo(tx + (opt.tailDir || 0), y + 28); ctx.closePath(); ctx.fillStyle = opt.fill || C.bubble; ctx.fill();
+    ctx.strokeStyle = opt.stroke || "#B7C7BF"; ctx.beginPath(); ctx.moveTo(tx - 16, y); ctx.lineTo(tx + (opt.tailDir || 0), y + 28); ctx.lineTo(tx + 16, y); ctx.stroke();
+    lines.forEach((l, i) => text(ctx, l, x + 24, y - h + 24 + size + i * size * 1.3, size, { color: opt.color || C.ink, weight: 600 }));
+    return h;
+  }
+  function card(ctx, x, y, w, h, opt = {}) { ctx.fillStyle = opt.fill || C.panel; rr(ctx, x, y, w, h, opt.r || 26); ctx.fill(); if (opt.stroke) { ctx.strokeStyle = opt.stroke; ctx.lineWidth = opt.lw || 4; ctx.stroke(); } }
+
+  // ---------- adegan umum (semua episode) ----------
+  const SCENES = {
+    title(ctx, b, l, t, TL) {
+      card(ctx, 160, 160, 1600, 700, { fill: C.panel });
+      kiko(ctx, 420, 520, 260, 0, { wave: l, mood: "happy" });
+      text(ctx, TL.label || ("Informatika · Fase " + (TL.episode || "D")[0] + " · Episode " + TL.episode), 720, 330, 34, { color: C.ink2, weight: 700 });  // TL.label: label khusus, mis. video simulasi
+      const ts = TL.title.length > 34 ? 74 : 92; const th = para(ctx, TL.title, 720, 440, ts, 1000, { weight: 900, lh: 1.1 }); const hookLines = TL.hook ? wrap(ctx, TL.hook, 34, 800, 1000).length : 0; const hy = Math.max(hookLines >= 3 ? 600 : 640, 440 + th - ts * 0.35 + 30);
+      if (TL.hook) { text(ctx, "SETELAH MENONTON, KAMU BISA:", 720, hy, 26, { color: C.accentDark, weight: 800 }); para(ctx, TL.hook, 720, hy + 50, 34, 1000, { weight: 800, lh: 1.3 }); const ny = hy + 50 + wrap(ctx, TL.hook, 34, 800, 1000).length * 34 * 1.3 + 12; if (ny <= 830) text(ctx, "Dengarkan, atau baca teksnya pelan-pelan.", 720, Math.max(800, ny), 26, { color: C.ink2, weight: 600 }); }
+      else text(ctx, "Dengarkan, atau baca teksnya pelan-pelan.", 720, 700, 36, { color: C.ink2, weight: 600 });
+      if (!TL.label) { arrowIcon(ctx, "up", 1560, 250, 70, C.kikoLight); arrowIcon(ctx, "right", 1660, 250, 70, C.kikoLight); }  // ikon panah khas episode, tidak untuk simulasi
+    },
+    quiz(ctx, b, l, t, TL, answered) {
+      const q = TL.quizzes[b.quiz]; card(ctx, 200, 150, 1520, 740, { stroke: C.accent, lw: 6 });
+      text(ctx, "CEK PEMAHAMAN", 960, 230, 32, { align: "center", color: C.accentDark, weight: 800 });
+      para(ctx, q.q, 960, 320, 44, 1360, { weight: 800, align: "center", lh: 1.3 });
+      // tata letak pilihan: mulai di bawah pertanyaan dan selesai di atas kartu narasi (narasi panjang = jarak dirapatkan)
+      const qLines = wrap(ctx, q.q, 44, 800, 1360).length, subTop = 1056 - (wrap(ctx, b.text, 44, 700, 1660).length * 44 * 1.3 + 44);
+      let oy = qLines <= 1 ? 420 : 470, gap = 120, oh = 96; const n = q.options.length;
+      if (oy + (n - 1) * gap + oh > subTop - 12) { gap = Math.max(104, Math.floor((subTop - 12 - oh - oy) / Math.max(1, n - 1))); }
+      if (oy + (n - 1) * gap + oh > subTop - 12) { oh = 86; gap = 100; oy = Math.max(320 + (qLines - 1) * 57 + 40, subTop - 12 - oh - (n - 1) * gap); }
+      q.options.forEach((o, i) => {
+        const y = oy + i * gap; const right = answered && i === q.answer;
+        card(ctx, 320, y, 1280, oh, { fill: right ? C.goodBg : answered ? "#F4F6F5" : C.bg2, stroke: right ? C.good : "#CFDCD5", lw: right ? 6 : 3 });
+        ctx.fillStyle = right ? C.good : C.kiko; ctx.beginPath(); ctx.arc(380, y + oh / 2, 30, 0, Math.PI * 2); ctx.fill();
+        text(ctx, "ABC"[i], 380, y + oh / 2 + 13, 34, { align: "center", color: "#fff", weight: 900 });
+        text(ctx, o, 440, y + oh / 2 + 14, 38, { weight: 700, color: answered && !right ? C.muted : C.ink });
+        if (right) text(ctx, "✓", 1540, y + oh / 2 + 18, 54, { align: "center", color: C.good, weight: 900 });
+      });
+      if (!answered) { // thinking timer
+        const frac = clamp(l / b.dur, 0, 1); ctx.strokeStyle = "#D7E2DC"; ctx.lineWidth = 14; ctx.beginPath(); ctx.arc(1640, 230, 40, 0, Math.PI * 2); ctx.stroke();
+        ctx.strokeStyle = C.accent; ctx.beginPath(); ctx.arc(1640, 230, 40, -Math.PI / 2, -Math.PI / 2 + frac * Math.PI * 2); ctx.stroke();
+        // catatan hanya digambar bila tidak tertutup kartu narasi (narasi tiga baris atau lebih menutupinya)
+        const subTop = 1056 - (wrap(ctx, b.text, 44, 700, 1660).length * 44 * 1.3 + 44);
+        if (subTop > 880) text(ctx, "Pikirkan dulu, jangan buru-buru.", 960, 860, 32, { align: "center", color: C.ink2, weight: 600 });
+      }
+    },
+    quiz_answer(ctx, b, l, t, TL) { SCENES.quiz(ctx, b, l, t, TL, true); },
+    recap(ctx, b, l, t, TL) {
+      // TL.recap: tiga kalimat pendek dari script.json
+      card(ctx, 160, 140, 1600, 760);
+      text(ctx, "TIGA HAL UNTUK DIINGAT", 960, 230, 34, { align: "center", color: C.accentDark, weight: 900 });
+      const items = TL.recap || [];
+      const show = clamp(Math.floor((l - 0.6) / 2.2) + 1, 1, Math.max(1, items.length));
+      items.forEach((s, i) => { if (i >= show) return; card(ctx, 300, 290 + i * 180, 1320, 140, { fill: C.bg2 }); ctx.fillStyle = C.kiko; ctx.beginPath(); ctx.arc(380, 360 + i * 180, 40, 0, Math.PI * 2); ctx.fill(); text(ctx, String(i + 1), 380, 376 + i * 180, 40, { align: "center", color: "#fff", weight: 900 }); text(ctx, s, 450, 375 + i * 180, 42, { weight: 800, fit: 1130 }); });
+      kiko(ctx, 1620, 820, 130, 0);
+    },
+    outro(ctx, b, l, t, TL) {
+      // TL.next: {code, title, note} episode berikutnya, dari script.json
+      const n = TL.next || {};
+      card(ctx, 260, 200, 1400, 600);
+      text(ctx, n.heading || "EPISODE BERIKUTNYA", 960, 320, 34, { align: "center", color: C.accentDark, weight: 900 });
+      text(ctx, n.code || "", 960, 440, 60, { align: "center", weight: 900 });
+      text(ctx, n.title || "", 960, 530, 54, { align: "center", weight: 800, color: C.ink2, fit: 1320 });
+      text(ctx, n.note || "", 960, 680, 34, { align: "center", color: C.ink2, weight: 600 });
+      kiko(ctx, 960, 760 + 20, 140, 0, { wave: l });
+    }
+  };
+
+  function beatAt(TL, t) {
+    let b = TL.beats[0];
+    for (const x of TL.beats) { if (t >= x.start) b = x; else break; }
+    return b;
+  }
+  function draw(ctx, t, TL, opt = {}) {
+    const b = beatAt(TL, t); const l = t - b.start;
+    ctx.save(); ctx.setTransform(1, 0, 0, 1, 0, 0);
+    ctx.fillStyle = C.bg; ctx.fillRect(0, 0, W, H);
+    // header
+    text(ctx, TL.episode + " · " + TL.title, 60, 78, 30, { color: C.ink2, weight: 700 });
+    text(ctx, TL.segments[b.seg], 1860, 78, 30, { color: C.accentDark, weight: 800, align: "right" });
+    ctx.fillStyle = C.bg2; ctx.fillRect(0, 100, W, 6); ctx.fillStyle = C.accent; ctx.fillRect(0, 100, W * clamp(t / TL.total, 0, 1), 6);
+    const fn = SCENES[b.scene]; if (fn) fn(ctx, b, l, t, TL);
+    // narration card (burned-in text the student reads)
+    if (opt.subtitles !== false) {
+      const size = 44; const lines = wrap(ctx, b.text, size, 700, 1660);
+      const h = lines.length * size * 1.3 + 44; const y0 = 1056 - h;
+      ctx.fillStyle = "rgba(31,42,51,0.92)"; rr(ctx, 100, y0, 1720, h, 20); ctx.fill();
+      // reading progress (how far along the text the reader should be)
+      const frac = clamp(l / b.audio, 0, 1); ctx.fillStyle = C.accent; rr(ctx, 100, y0 + h - 8, 1720 * frac, 8, 4); ctx.fill();
+      lines.forEach((ln, i) => text(ctx, ln, 960, y0 + 22 + size + i * size * 1.3, size, { align: "center", color: C.subText, weight: 700 }));
+    }
+    ctx.restore();
+    return b;
+  }
+
+  global.Kiko = { draw, beatAt, W, H, C, FONT, SCENES,
+    helpers: { rr, text, wrap, para, arrowIcon, bakso, table, kiko, kid, bubble, card, ease, clamp, lerp } };
+})(typeof window !== "undefined" ? window : globalThis);
+
+/* Layar: pembantu gambar bersama untuk video simulasi (episodes/sim/...).
+   Aplikasi generik digambar dengan kode, tanpa logo atau tampilan merek: jendela aplikasi, lembar kerja (bilah rumus + kisi sel),
+   pointer mouse dengan efek klik, tombol keyboard, label penunjuk, pembesaran, dan penerjemah "aksi" (klik, ketik, tekan tombol)
+   supaya satu adegan bisa memperagakan beberapa langkah berurutan. Muat setelah kiko-core.js. */
+(function (global) {
+  const K = global.Kiko, H = K.helpers, C = K.C;
+  const { rr, text, ease, clamp, lerp } = H;
+  const L = {};
+  const UI = { frame: "#C9D4DB", bar: "#EEF2F5", menuInk: "#3D4B55", grid: "#DDE5EA", head: "#EEF2F5", headInk: "#5B6B76",
+               select: "#1A73C8", selectBg: "rgba(26,115,200,0.10)", formula: "#1F5A6E", window: "#FFFFFF" };
+  L.UI = UI;
+
+  // ---------- jendela aplikasi ----------
+  // opt: title, menus [..], tools (true = deretan ikon sederhana). Mengembalikan area isi {x, y, w, h}.
+  L.window = function (ctx, x, y, w, h, opt = {}) {
+    ctx.save(); ctx.shadowColor = "rgba(31,42,51,0.18)"; ctx.shadowBlur = 30; ctx.shadowOffsetY = 10;
+    ctx.fillStyle = UI.window; rr(ctx, x, y, w, h, 16); ctx.fill(); ctx.restore();
+    ctx.strokeStyle = UI.frame; ctx.lineWidth = 2; rr(ctx, x, y, w, h, 16); ctx.stroke();
+    ctx.save(); rr(ctx, x, y, w, h, 16); ctx.clip();
+    ctx.fillStyle = UI.bar; ctx.fillRect(x, y, w, 46);
+    ["#E5675F", "#F2B134", "#4CB46A"].forEach((c, i) => { ctx.fillStyle = c; ctx.beginPath(); ctx.arc(x + 28 + i * 26, y + 23, 8, 0, Math.PI * 2); ctx.fill(); });
+    text(ctx, opt.title || "Aplikasi", x + w / 2, y + 31, 22, { align: "center", weight: 700, color: UI.menuInk });
+    let cy = y + 46;
+    if (opt.menus) {
+      ctx.fillStyle = "#FFFFFF"; ctx.fillRect(x, cy, w, 40);
+      let mx = x + 24; opt.menus.forEach((m, i) => {
+        const on = opt.menuOn === m; ctx.font = `600 21px Inter`; const mw = ctx.measureText(m).width + 24;
+        if (on) { ctx.fillStyle = "#DCE9F7"; rr(ctx, mx - 8, cy + 5, mw, 30, 6); ctx.fill(); }
+        text(ctx, m, mx + 4, cy + 27, 21, { weight: 600, color: on ? UI.select : UI.menuInk }); mx += mw + 6;
+      });
+      cy += 40;
+    }
+    if (opt.tools) {
+      ctx.fillStyle = "#F7F9FA"; ctx.fillRect(x, cy, w, 44);
+      const icons = opt.tools === true ? ["💾", "↶", "↷", "B", "I", "Σ", "%"] : opt.tools;
+      icons.forEach((ic, i) => { const bx = x + 20 + i * 52; ctx.fillStyle = "#FFFFFF"; rr(ctx, bx, cy + 6, 40, 32, 6); ctx.fill(); ctx.strokeStyle = "#E1E7EB"; ctx.lineWidth = 1.5; rr(ctx, bx, cy + 6, 40, 32, 6); ctx.stroke();
+        text(ctx, ic, bx + 20, cy + 29, ic.length > 1 ? 18 : 20, { align: "center", weight: 800, color: UI.menuInk }); });
+      cy += 44;
+    }
+    ctx.strokeStyle = UI.grid; ctx.lineWidth = 1.5; ctx.beginPath(); ctx.moveTo(x, cy); ctx.lineTo(x + w, cy); ctx.stroke();
+    ctx.restore();
+    return { x, y: cy, w, h: y + h - cy };
+  };
+
+  // ---------- lembar kerja ----------
+  const COLS = "ABCDEFGHIJ";
+  L.col = c => COLS.indexOf(c);
+  // st: { cells: {A1: {v, f?}} | {A1: "teks"}, active: "B3", edit: {addr, text} (sedang diketik), range: ["B2","B6"] (sorotan rentang),
+  //       copy: ["D2","D6"] (bingkai putus-putus), changed: [alamat] (hijau sesaat), cols: 6, rows: 8, cw: 190 | {A: 170, ...}, rh: 50,
+  //       showFormulas: false, handleHover: false }
+  // Mengembalikan geometri: {cell(addr), handle(addr), nameBox, fx, bottom}
+  L.sheet = function (ctx, area, st = {}) {
+    const x = area.x, y = area.y, cols = st.cols || 6, rows = st.rows || 8, rh = st.rh || 50, hw = 60;
+    const cwOf = c => typeof st.cw === "object" ? (st.cw[COLS[c]] || 180) : (st.cw || 180);
+    const colX = c => { let px = x + hw; for (let i = 0; i < c; i++) px += cwOf(i); return px; };
+    const gridW = colX(cols) - x;
+    // bilah rumus
+    const fy = y + 10; const active = st.edit ? st.edit.addr : st.active;
+    const cell0 = active && L.get(st.cells, active);
+    ctx.fillStyle = "#FFFFFF"; rr(ctx, x + 12, fy, 120, 48, 8); ctx.fill(); ctx.strokeStyle = UI.frame; ctx.lineWidth = 2; rr(ctx, x + 12, fy, 120, 48, 8); ctx.stroke();
+    text(ctx, active || "", x + 72, fy + 33, 24, { align: "center", weight: 800, color: UI.menuInk });
+    const fxW = Math.max(400, gridW - 150);
+    ctx.fillStyle = "#FFFFFF"; rr(ctx, x + 144, fy, fxW, 48, 8); ctx.fill(); ctx.strokeStyle = st.fxFocus ? UI.select : UI.frame; ctx.lineWidth = st.fxFocus ? 3 : 2; rr(ctx, x + 144, fy, fxW, 48, 8); ctx.stroke();
+    text(ctx, "fx", x + 162, fy + 32, 21, { weight: 800, color: "#8A99A3" }); ctx.fillStyle = UI.grid; ctx.fillRect(x + 196, fy + 10, 2, 28);
+    const fxText = st.edit ? st.edit.text : (cell0 ? (cell0.f || L.show(cell0.v)) : "");
+    text(ctx, fxText, x + 212, fy + 33, 25, { weight: 700, color: (st.edit ? st.edit.text : cell0 && cell0.f) && String(fxText).startsWith("=") ? UI.formula : C.ink });
+    if (st.edit && st.caret) { ctx.font = "700 25px Inter"; const cw = ctx.measureText(st.edit.text).width; ctx.fillStyle = C.ink; ctx.fillRect(x + 214 + cw, fy + 11, 2.5, 27); }
+    // kisi
+    const gy = fy + 66; const H0 = rh * (rows + 1);
+    ctx.fillStyle = "#FFFFFF"; ctx.fillRect(x, gy, gridW, H0);
+    ctx.fillStyle = UI.head; ctx.fillRect(x, gy, gridW, rh); ctx.fillRect(x, gy, hw, H0);
+    const ac = active ? { c: L.col(active[0]), r: parseInt(active.slice(1)) } : null;
+    for (let c = 0; c < cols; c++) {
+      if (ac && ac.c === c) { ctx.fillStyle = "#D5E3F3"; ctx.fillRect(colX(c), gy, cwOf(c), rh); }
+      text(ctx, COLS[c], colX(c) + cwOf(c) / 2, gy + rh / 2 + 8, 22, { align: "center", weight: 700, color: ac && ac.c === c ? UI.select : UI.headInk });
+    }
+    for (let r = 1; r <= rows; r++) {
+      if (ac && ac.r === r) { ctx.fillStyle = "#D5E3F3"; ctx.fillRect(x, gy + rh * r, hw, rh); }
+      text(ctx, String(r), x + hw / 2, gy + rh * r + rh / 2 + 8, 22, { align: "center", weight: 700, color: ac && ac.r === r ? UI.select : UI.headInk });
+    }
+    const geo = {
+      cell(addr) { const c = L.col(addr[0]), r = parseInt(addr.slice(1)); const cx = colX(c), cy = gy + rh * r; return { x: cx, y: cy, w: cwOf(c), h: rh, cx: cx + cwOf(c) / 2, cy: cy + rh / 2 }; },
+      handle(addr) { const q = this.cell(addr); return { x: q.x + q.w - 1, y: q.y + q.h - 1 }; },
+      colLine(c) { return { x: colX(c), y: gy + rh / 2 }; },
+      nameBox: { x: x + 72, y: fy + 24 }, fx: { x: x + 212, y: fy + 24 }, bottom: gy + H0, right: x + gridW, top: gy
+    };
+    // sorotan rentang
+    if (st.range) { const a = geo.cell(st.range[0]), b = geo.cell(st.range[1]); ctx.fillStyle = UI.selectBg; ctx.fillRect(a.x, a.y, b.x + b.w - a.x, b.y + b.h - a.y); }
+    (st.changed || []).forEach(addr => { const q = geo.cell(addr); ctx.fillStyle = C.goodBg; ctx.fillRect(q.x + 1, q.y + 1, q.w - 2, q.h - 2); });
+    (st.marks || []).forEach(([addr, color]) => { const q = geo.cell(addr); ctx.fillStyle = color; ctx.fillRect(q.x + 1, q.y + 1, q.w - 2, q.h - 2); });
+    // garis kisi
+    ctx.strokeStyle = UI.grid; ctx.lineWidth = 1.5;
+    for (let r = 0; r <= rows + 1; r++) { ctx.beginPath(); ctx.moveTo(x, gy + rh * r); ctx.lineTo(x + gridW, gy + rh * r); ctx.stroke(); }
+    for (let c = 0; c <= cols; c++) { ctx.beginPath(); ctx.moveTo(colX(c), gy); ctx.lineTo(colX(c), gy + H0); ctx.stroke(); }
+    ctx.beginPath(); ctx.moveTo(x, gy); ctx.lineTo(x, gy + H0); ctx.stroke();
+    // isi sel
+    Object.keys(st.cells || {}).forEach(addr => {
+      const c = L.col(addr[0]), r = parseInt(addr.slice(1)); if (c < 0 || c >= cols || r < 1 || r > rows) return;
+      if (st.edit && st.edit.addr === addr) return;
+      const v = L.get(st.cells, addr); const q = geo.cell(addr);
+      const shown = st.showFormulas && v.f ? v.f : L.show(v.v);
+      const isNum = typeof v.v === "number" && !(st.showFormulas && v.f);
+      let shownFit = shown; if (isNum) { ctx.font = "600 25px Inter"; if (ctx.measureText(shown).width > q.w - 20) shownFit = "#".repeat(Math.max(2, Math.floor((q.w - 20) / 16))); }
+      ctx.save(); ctx.beginPath(); ctx.rect(q.x + 2, q.y, q.w - 4, q.h); ctx.clip();
+      text(ctx, shownFit, isNum ? q.x + q.w - 14 : q.x + 12, q.y + q.h / 2 + 9, 25, { align: isNum ? "right" : "left", weight: v.bold ? 800 : 600, color: v.color || ((st.changed || []).includes(addr) ? C.good : C.ink) });
+      ctx.restore();
+    });
+    // sel yang sedang diketik
+    if (st.edit) { const q = geo.cell(st.edit.addr); ctx.fillStyle = "#FFFFFF"; ctx.fillRect(q.x + 2, q.y + 2, q.w - 4, q.h - 4);
+      const isF = String(st.edit.text).startsWith("=");
+      text(ctx, st.edit.text, q.x + 12, q.y + q.h / 2 + 9, 25, { weight: 600, color: isF ? UI.formula : C.ink });
+      if (st.caret) { ctx.font = "600 25px Inter"; const w = ctx.measureText(st.edit.text).width; ctx.fillStyle = C.ink; ctx.fillRect(q.x + 14 + w, q.y + 11, 2.5, q.h - 22); } }
+    // rujukan rumus berwarna saat mengetik rumus
+    (st.refs || []).forEach(([addr, color]) => { const q = geo.cell(addr); ctx.strokeStyle = color; ctx.lineWidth = 3; ctx.setLineDash([]); ctx.strokeRect(q.x + 2, q.y + 2, q.w - 4, q.h - 4); });
+    // bingkai salin putus-putus
+    if (st.copy) { const a = geo.cell(st.copy[0]), b = geo.cell(st.copy[1]); ctx.strokeStyle = UI.select; ctx.lineWidth = 3; ctx.setLineDash([10, 7]); ctx.lineDashOffset = -(st.dash || 0); ctx.strokeRect(a.x + 2, a.y + 2, b.x + b.w - a.x - 4, b.y + b.h - a.y - 4); ctx.setLineDash([]); }
+    // sel aktif + gagang isi
+    if (active && !st.edit) { const q = geo.cell(active); const q2 = st.selTo ? geo.cell(st.selTo) : q;
+      ctx.strokeStyle = UI.select; ctx.lineWidth = 4; ctx.strokeRect(q.x + 1, q.y + 1, q2.x + q2.w - q.x - 2, q2.y + q2.h - q.y - 2);
+      const hx = q2.x + q2.w - 1, hy = q2.y + q2.h - 1; const s = st.handleHover ? 13 : 10;
+      ctx.fillStyle = "#FFFFFF"; ctx.fillRect(hx - s / 2 - 2, hy - s / 2 - 2, s + 4, s + 4); ctx.fillStyle = UI.select; ctx.fillRect(hx - s / 2, hy - s / 2, s, s); }
+    else if (st.edit) { const q = geo.cell(st.edit.addr); ctx.strokeStyle = UI.select; ctx.lineWidth = 4; ctx.strokeRect(q.x + 1, q.y + 1, q.w - 2, q.h - 2); }
+    return geo;
+  };
+  L.get = (cells, addr) => { const v = (cells || {})[addr]; return v == null ? { v: "" } : (typeof v === "object" ? v : { v }); };
+  L.show = v => typeof v === "number" ? (Number.isInteger(v) ? String(v) : v.toLocaleString("id-ID", { maximumFractionDigits: 2 })) : (v == null ? "" : String(v));
+
+  // ---------- pointer mouse ----------
+  // kind: "arrow" | "plus" (tanda tambah tipis gagang isi) | "text"; click: 0..1 (efek denyut), down: tombol ditahan
+  L.cursor = function (ctx, x, y, opt = {}) {
+    const kind = opt.kind || "arrow";
+    if (opt.click > 0 && opt.click < 1) { const u = opt.click; ctx.strokeStyle = `rgba(242,177,52,${1 - u})`; ctx.lineWidth = 5; ctx.beginPath(); ctx.arc(x, y, 12 + u * 34, 0, Math.PI * 2); ctx.stroke(); }
+    if (opt.down) { ctx.fillStyle = "rgba(242,177,52,0.35)"; ctx.beginPath(); ctx.arc(x, y, 18, 0, Math.PI * 2); ctx.fill(); }
+    ctx.save(); ctx.translate(x, y);
+    if (kind === "plus") {
+      ctx.strokeStyle = "#FFFFFF"; ctx.lineWidth = 7; ctx.beginPath(); ctx.moveTo(-16, 0); ctx.lineTo(16, 0); ctx.moveTo(0, -16); ctx.lineTo(0, 16); ctx.stroke();
+      ctx.strokeStyle = C.ink; ctx.lineWidth = 3; ctx.beginPath(); ctx.moveTo(-15, 0); ctx.lineTo(15, 0); ctx.moveTo(0, -15); ctx.lineTo(0, 15); ctx.stroke();
+    } else if (kind === "text") {
+      ctx.strokeStyle = "#FFFFFF"; ctx.lineWidth = 6; ctx.beginPath(); ctx.moveTo(0, -16); ctx.lineTo(0, 16); ctx.stroke();
+      ctx.strokeStyle = C.ink; ctx.lineWidth = 2.5; ctx.beginPath(); ctx.moveTo(-6, -16); ctx.lineTo(6, -16); ctx.moveTo(0, -16); ctx.lineTo(0, 16); ctx.moveTo(-6, 16); ctx.lineTo(6, 16); ctx.stroke();
+    } else {
+      const s = opt.size || 1.25; ctx.scale(s, s);
+      ctx.beginPath(); ctx.moveTo(0, 0); ctx.lineTo(0, 30); ctx.lineTo(8, 23); ctx.lineTo(13, 35); ctx.lineTo(18, 33); ctx.lineTo(13, 21); ctx.lineTo(23, 21); ctx.closePath();
+      ctx.fillStyle = "#FFFFFF"; ctx.fill(); ctx.strokeStyle = C.ink; ctx.lineWidth = 2.2; ctx.lineJoin = "round"; ctx.stroke();
+    }
+    ctx.restore();
+  };
+
+  // ---------- tombol keyboard ----------
+  // keys: ["Enter"] atau ["Ctrl", "S"]; press: 0..1 (tombol tertekan di tengahnya)
+  L.keys = function (ctx, x, y, keys, opt = {}) {
+    const size = opt.size || 30; let px = x;
+    const ws = keys.map(k => { ctx.font = `800 ${size}px Inter`; return Math.max(size * 2.1, ctx.measureText(k).width + size * 1.2); });
+    const total = ws.reduce((a, b) => a + b, 0) + (keys.length - 1) * 46;
+    if (opt.align === "center") px = x - total / 2;
+    const down = opt.press > 0.15 && opt.press < 0.75;
+    keys.forEach((k, i) => {
+      const w = ws[i], h = size * 2.1, dy = down ? 5 : 0;
+      ctx.fillStyle = "#A9B6BE"; rr(ctx, px, y + 6, w, h, 12); ctx.fill();
+      ctx.fillStyle = down ? "#FFF3D6" : "#FFFFFF"; rr(ctx, px, y + dy, w, h, 12); ctx.fill(); ctx.strokeStyle = down ? C.accent : "#9AA8B1"; ctx.lineWidth = 2.5; rr(ctx, px, y + dy, w, h, 12); ctx.stroke();
+      text(ctx, k, px + w / 2, y + dy + h / 2 + size * 0.36, size, { align: "center", weight: 800, color: C.ink });
+      px += w; if (i < keys.length - 1) { text(ctx, "+", px + 23, y + h / 2 + size * 0.36, size, { align: "center", weight: 900, color: C.ink2 }); px += 46; }
+    });
+    return total;
+  };
+
+  // ---------- label penunjuk ----------
+  // label kotak dengan garis ke titik (tx, ty)
+  L.callout = function (ctx, x, y, s, tx, ty, opt = {}) {
+    const size = opt.size || 26; ctx.font = `800 ${size}px Inter`; const lines = H.wrap(ctx, s, size, 800, opt.maxW || 420);
+    const w = Math.max(...lines.map(l => ctx.measureText(l).width)) + 36, h = lines.length * size * 1.25 + 26;
+    if (tx != null) { ctx.strokeStyle = opt.color || C.accentDark; ctx.lineWidth = 3; ctx.beginPath(); ctx.moveTo(x + w / 2, y + h / 2); ctx.lineTo(tx, ty); ctx.stroke(); ctx.fillStyle = opt.color || C.accentDark; ctx.beginPath(); ctx.arc(tx, ty, 7, 0, Math.PI * 2); ctx.fill(); }
+    ctx.fillStyle = opt.fill || "#FFF3D6"; rr(ctx, x, y, w, h, 12); ctx.fill(); ctx.strokeStyle = opt.color || C.accent; ctx.lineWidth = 3; rr(ctx, x, y, w, h, 12); ctx.stroke();
+    lines.forEach((ln, i) => text(ctx, ln, x + 18, y + 13 + size + i * size * 1.25, size, { weight: 800, color: opt.ink || C.ink }));
+    return { w, h };
+  };
+
+  // ---------- pembesaran ----------
+  // zoom(ctx, px, py, s, fn): gambar fn() dengan pembesaran s berpusat di (px, py) yang dipindah ke (qx, qy)
+  L.zoom = function (ctx, px, py, s, fn, qx = px, qy = py) {
+    ctx.save(); ctx.translate(qx, qy); ctx.scale(s, s); ctx.translate(-px, -py); fn(); ctx.restore();
+  };
+
+  // ---------- penerjemah aksi ----------
+  // steps: daftar aksi berurutan, masing-masing punya durasi relatif "d" (dibagi rata ke "span" detik):
+  //   {move: "B3"} pointer bergerak ke tengah sel · {click: "B3"} klik (memilih sel) · {type: "Bakso", to: "A1"} mengetik ke sel
+  //   {key: "Tab"|"Enter", commit: true} tombol: menyimpan ketikan, pilihan pindah · {set: {A1: ...}} ubah isi sel langsung
+  //   {drag: ["D2", "D6"]} drag gagang isi · {wait: 1}
+  // Hasil: state lembar kerja + posisi pointer + tombol yang sedang tampil, untuk waktu lokal l.
+  L.play = function (base, steps, l, span, geoFn) {
+    const st = { cells: { ...(base.cells || {}) }, active: base.active, edit: null, caret: true, copy: null, refs: [], range: null, changed: [] };
+    const total = steps.reduce((a, s) => a + (s.d || 1), 0); const unit = span / total;
+    let t0 = 0, ptr = base.pointer ? { ...base.pointer } : null, key = null, click = 0, kind = "arrow", down = false;
+    for (const s of steps) {
+      const d = (s.d || 1) * unit, u = clamp((l - t0) / d, 0, 1); if (l < t0) break;
+      const target = a => geoFn().cell(a);
+      if (s.move || s.click) { const q = target(s.move || s.click); const to = { x: q.x + q.w * 0.62, y: q.y + q.h * 0.6 }; const from = ptr || to; const m = ease(clamp(u / 0.6, 0, 1)); ptr = { x: lerp(from.x, to.x, m), y: lerp(from.y, to.y, m) }; kind = "arrow";
+        if (s.tap && u >= 0.6 && u < 1) click = clamp((u - 0.6) / 0.4, 0, 0.99);
+        if (s.click && u >= 0.6) { click = clamp((u - 0.6) / 0.4, 0, 0.99); st.active = s.click; if (st.edit) { st.cells[st.edit.addr] = s.editValue || st.edit.text; st.edit = null; } } if (u >= 1) click = 0; }
+      if (s.type != null) { const addr = s.to || st.active; const n = Math.round(s.type.length * clamp(u / 0.9, 0, 1)); st.edit = { addr, text: (s.prefix || "") + s.type.slice(0, n) }; st.active = addr; st.caret = Math.floor(l * 2.2) % 2 === 0 || u < 1;
+        if (s.refs) st.refs = s.refs.filter(r => n >= r[2]).map(r => [r[0], r[1]]); }
+      if (s.key) { key = u < 1 ? { keys: [].concat(s.key), press: u } : null; if (u >= 0.45 && s.commit && st.edit) { st.cells[st.edit.addr] = s.value != null ? s.value : st.edit.text; st.edit = null; st.refs = []; st.active = s.next || st.active; } }
+      if (s.set && u >= 0.5) { Object.assign(st.cells, s.set); if (s.flash) st.changed = Object.keys(s.set); }
+      if (s.drag) { const g = geoFn(); const a = g.handle(s.drag[0]), b = g.handle(s.drag[1]); kind = "plus";
+        const from = ptr || a; const m1 = ease(clamp(u / 0.25, 0, 1)); const m2 = ease(clamp((u - 0.3) / 0.55, 0, 1));
+        ptr = u < 0.3 ? { x: lerp(from.x, a.x, m1), y: lerp(from.y, a.y, m1) } : { x: lerp(a.x, b.x, m2), y: lerp(a.y, b.y, m2) }; down = u >= 0.25 && u < 0.88;
+        st.active = s.drag[0]; if (down) { st.dragTo = u < 0.3 ? s.drag[0] : (m2 > 0.98 ? s.drag[1] : null); st.dragFrac = m2; st.dragSpan = s.drag; }
+        if (u >= 0.88) { Object.assign(st.cells, s.fill || {}); st.selTo = s.drag[1]; st.changed = Object.keys(s.fill || {}); } }
+      if (s.hover) { const g = geoFn(); const h = g.handle(s.hover); const from = ptr || h; const m = ease(clamp(u / 0.7, 0, 1)); ptr = { x: lerp(from.x, h.x, m), y: lerp(from.y, h.y, m) }; kind = u > 0.7 ? "plus" : "arrow"; st.handleHover = u > 0.7; }
+      if (s.select) { st.active = s.select[0]; st.selTo = s.select[1]; }
+      if (s.state) Object.assign(st, s.state);
+      t0 += d;
+    }
+    if (st.selTo && st.selTo === st.active) st.selTo = null;
+    return { st, ptr, key, click, kind, down };
+  };
+
+  K.layar = L;
+})(typeof window !== "undefined" ? window : globalThis);
+
+/* Layar kode: pembantu gambar bersama untuk simulasi pemrograman (episodes/sim/...). Muat setelah kiko-core.js dan layar.js.
+   Semua tampilan generik (tanpa logo, warna, atau tata letak merek): editor kode bernomor baris dengan sorotan sintaks Python,
+   notebook di browser ("Colab" hanya disebut di narasi), sel kode dengan tombol ▶ bulat, output, kotak input untuk input(),
+   pesan error ala traceback, dan jendela Terminal (gelap) atau Shell (terang). Dimiliki kelompok kerja S20/S21/S24.
+
+   API: const LK = Kiko.layarKode;
+   ---------------------------------------------------------------------------------------------------------------------------
+   LK.MONO                         font monospace ("JetBrains Mono", DejaVu Sans Mono, Liberation Mono, monospace)
+   LK.T, LK.TD                     tema terang (editor/notebook) dan gelap (terminal): warna sintaks, latar, garis
+   LK.mono(ctx, size, weight)      pasang font monospace; mengembalikan lebar satu huruf
+   LK.monoText(ctx, s, x, y, cw)   tulis teks monospace huruf demi huruf (tanpa ligatur: <= tetap dua huruf, bukan ≤)
+   LK.tokens(line)                 -> [{s, k}]  k: kw | bi (fungsi bawaan) | str | num | com | op | fn (nama setelah def) | txt
+   LK.code(ctx, x, y, lines, opt)  baris kode berwarna tanpa bingkai. lines: ["teks", ...] atau [{t, hl, err, dim}]
+       opt: size 24 · lh (1,55×size) · w (lebar sorotan) · nums true|false|angka awal · hl [i] · err i · dim [i]
+            caret {line, col} · blink true/false (kursor tampil) · marks [{line, from, to, color}] garis bergelombang
+            boxes [{line, from, to, color}] kotak penanda · clipW (potong teks lebih lebar dari ini)
+       -> geo {x, y, x0 (awal teks), cw, lh, size, n, w, h, bottom, top(i), base(i), at(line, col) -> {x, y}}
+   LK.typed(lines, u)              ketik bertahap (u 0..1 atas semua huruf; spasi awal baris = indentasi otomatis, langsung muncul)
+       -> {lines, caret: {line, col}, done}
+   LK.insert(base, at, add, u)     sisipkan baris baru add[] sebelum baris ke-at dari base[], diketik bertahap -> {lines, caret, done}
+   LK.typeStr(s, u)                potongan string yang sudah diketik
+   LK.editor(ctx, x, y, w, h, opt) panel editor putih bernomor baris (opt.lines + opsi LK.code; opt.tab = nama file di tab) -> geo
+   LK.notebook(ctx, x, y, w, h, opt) jendela browser berisi notebook generik.
+       opt: address (teks bilah alamat) · addressCaret · page: "notebook" | "blank" (bawaan notebook)
+            name (nama notebook, mis. "Untitled0.ipynb") · nameEdit {text, caret} · status: "" | "menyambung" | "tersambung"
+            menuOn (nama menu yang terbuka) · compact (tanpa bilah alamat dan menu; lebih banyak ruang untuk sel)
+            files {items: ["sample_data/", "hujan.csv"], hl: i, upHover: bool} panel file di kiri · railOn: "files"
+       -> {x, y, w, h (area isi sel), menu: {File: {x, y, w}}, plus: {kode: {x,y}, teks: {x,y}}, name: {x,y},
+           address: {x, y, w}, rail: {files: {x,y}}, upload: {x,y}, fileItem(i) -> {x,y,w,h}, status: {x,y}}
+   LK.menu(ctx, x, y, items, opt)  daftar menu tarik-turun. items: ["Baru", "-", ...] ("-" = garis); opt.hl index, opt.w, opt.size
+       -> {item(i) -> {x, y, w, h, cx, cy}, h}
+   LK.cell(ctx, x, y, w, opt)      sel kode notebook. opt: lines · caret · blink · hl · err · size (22) · nums (true)
+            active (bingkai fokus) · run: "idle" | "ready" | "hover" | "running" | "done" · count (angka [n]) · spin (0..1)
+            out: item output (lihat LK.output) · minLines (tinggi minimum kode, baris)
+       -> {x, y, w, h, bottom, play: {x, y, r}, code: geo LK.code, out: hasil LK.output (y, h, err, input, lines)}
+   LK.cellHeight(ctx, w, opt)      tinggi sel tanpa menggambar
+   LK.textCell(ctx, x, y, w, opt)  sel teks (Markdown). opt.lines (mentah, mode edit, dengan caret) atau opt.rendered true
+            (# judul tebal besar, ## subjudul, - butir, `kode` monospace) -> {h, bottom}
+   LK.output(ctx, x, y, w, items, opt) output di bawah sel. Item: "teks" | {t, k: "ok"|"bad"|"note"|"muted"}
+            | {k: "in", t: prompt, v: jawaban, active (kotak input aktif), caret} | {err: objek error, lihat LK.error}
+       opt: size (20) · dry (hanya mengukur) -> {h, y, lines: [y baseline], input: {x,y,w,h} | null, err: geo error | null}
+   LK.error(ctx, x, y, w, e, opt)  kotak traceback. e = {name: "NameError", msg: "name 'nma' is not defined",
+            kind: "runtime" | "syntax", line: 2, ctx: [[1, "nama = ..."], [2, "print(nma)"]] (baris konteks; yang = line diberi ---->;
+            [no, teks, true] memaksa panah; [null, "<ipython-input-1> in baca_data(nama_file)"] = baris lokasi untuk traceback berlapis),
+            code: "print(\"Halo)" + col (untuk syntax: baris kode dan posisi ^), file: "<ipython-input-1>"}
+       -> {h, nameBox, lineBox, lastBox, lastNameBox, arrowBox (panah terakhir), arrows [semua panah], codeBox} (kotak {x,y,w,h} untuk sorotan)
+   LK.terminal(ctx, x, y, w, h, opt) jendela Terminal. opt: title ("Terminal") · theme "dark" | "light" (Shell)
+            prompt ("siswa@lab:~$ ") · lines: ["out", {k: "cmd"|"out"|"err"|"ok"|"note", t, prompt}] · typing: {t, u, prompt}
+            caret · size (24) · menus (untuk tema terang, mis. Shell IDLE) -> {x, y, w, h, lineY(i), last}
+   LK.focus(ctx, box, opt)         bingkai sorotan oranye berdenyut di sekitar kotak {x,y,w,h}; opt.t (waktu untuk denyut), opt.color
+   LK.pointer(ctx, l, span, path, opt) pointer mouse mengikuti titik-titik path [{at: 0..1 (tiba pada fraksi span), x, y,
+            click: bool, kind: "arrow"|"text"}]; gerak ±0,6 detik sebelum tiba; klik berdenyut 0,45 detik setelah tiba -> {x, y}
+   LK.steps(ctx, title, items, n, opt) panel langkah di kanan (x 1450, lebar 370) sama dengan S02; langkah ke-n sedang dikerjakan
+   LK.phase(l, span, a, b)         kemajuan 0..1 antara fraksi a dan b dari span (untuk menyusun aksi berurutan)
+   LK.clip(ctx, box, fn)           gambar fn() terpotong di dalam box (mis. isi notebook yang digulir)
+   LK.icons.folder/upload/doc(ctx, x, y, s, warna)  ikon garis sederhana
+   Pola gulir: h = LK.cellHeight(ctx, w, opt); geser sel ke atas sebesar kelebihan tingginya di dalam LK.clip (lihat cellFit di sim/S21).
+*/
+(function (global) {
+  const K = global.Kiko, H = K.helpers, C = K.C, L = K.layar;
+  const { rr, text, ease, clamp, lerp } = H;
+  const LK = {};
+  LK.MONO = "'JetBrains Mono', 'DejaVu Sans Mono', 'Liberation Mono', monospace";
+  LK.T = { bg: "#FFFFFF", cell: "#F6F8F9", line: "#DDE5EA", gutter: "#9AA8B1", ink: "#1F2A33", kw: "#8B3DB5", bi: "#1C6BB0",
+           str: "#B4442C", num: "#16825D", com: "#7F8C95", op: "#3D4B55", fn: "#9A5B00", hl: "rgba(242,177,52,0.24)",
+           errBg: "#FDECEA", errInk: "#C62828", errBar: "#E25B52", ok: "#2E9E5B", focus: "#7AA7D9", out: "#1F2A33", muted: "#6B7B86" };
+  LK.TD = { bg: "#1D242A", bar: "#2B343B", ink: "#DCE5EC", prompt: "#86D993", path: "#7FB8F0", err: "#FF8A80", ok: "#86D993",
+            note: "#9AA8B1", caret: "#DCE5EC" };
+  const KW = new Set(["False", "None", "True", "and", "as", "assert", "break", "class", "continue", "def", "del", "elif", "else",
+    "except", "finally", "for", "from", "global", "if", "import", "in", "is", "lambda", "not", "or", "pass", "raise", "return",
+    "try", "while", "with", "yield"]);
+  const BI = new Set(["print", "input", "int", "float", "str", "len", "range", "list", "dict", "set", "open", "min", "max", "sum",
+    "sorted", "round", "abs", "type", "bool", "enumerate", "zip", "tuple"]);
+
+  LK.mono = function (ctx, size, weight = 500) { ctx.font = `${weight} ${size}px ${LK.MONO}`; return ctx.measureText("M").width; };
+  // teks monospace huruf demi huruf: posisi tepat di kisi dan tanpa ligatur font (<= tetap tampil dua huruf, bukan ≤)
+  LK.monoText = function (ctx, s, x, y, cw) { const w = cw || ctx.measureText("M").width; ctx.textAlign = "left"; for (let i = 0; i < s.length; i++) if (s[i] !== " ") ctx.fillText(s[i], x + i * w, y); };
+
+  // ---------- tokenisasi Python sederhana ----------
+  LK.tokens = function (line) {
+    const out = []; let i = 0, prevKw = "";
+    const push = (s, k) => { if (s) out.push({ s, k }); };
+    while (i < line.length) {
+      const ch = line[i];
+      if (ch === "#") { push(line.slice(i), "com"); break; }
+      if (ch === '"' || ch === "'") { let j = i + 1; while (j < line.length && line[j] !== ch) { if (line[j] === "\\") j++; j++; } push(line.slice(i, j + 1), "str"); i = j + 1; continue; }
+      if (/[0-9]/.test(ch) && !/[A-Za-z_0-9]/.test(line[i - 1] || "")) { let j = i; while (j < line.length && /[0-9._]/.test(line[j])) j++; push(line.slice(i, j), "num"); i = j; continue; }
+      if (/[A-Za-z_]/.test(ch)) { let j = i; while (j < line.length && /[A-Za-z_0-9]/.test(line[j])) j++; const w = line.slice(i, j);
+        const k = KW.has(w) ? "kw" : prevKw === "def" ? "fn" : (BI.has(w) && line[j] === "(") ? "bi" : "txt"; push(w, k); prevKw = KW.has(w) ? w : ""; i = j; continue; }
+      if (ch === " ") { let j = i; while (j < line.length && line[j] === " ") j++; push(line.slice(i, j), "txt"); i = j; continue; }
+      push(ch, "op"); i++;
+    }
+    return out;
+  };
+  const colOf = (k, T) => ({ kw: T.kw, bi: T.bi, str: T.str, num: T.num, com: T.com, op: T.op, fn: T.fn }[k] || T.ink);
+
+  // ---------- baris kode ----------
+  LK.code = function (ctx, x, y, lines, opt = {}) {
+    const T = opt.theme || LK.T, size = opt.size || 24, lh = opt.lh || Math.round(size * 1.55);
+    const L0 = lines.map(v => typeof v === "string" ? { t: v } : v);
+    const nums = opt.nums !== false, start = typeof opt.nums === "number" ? opt.nums : 1;
+    const numW = nums ? (opt.numW || Math.round(size * 1.9)) : 0; const x0 = x + numW + (nums ? Math.round(size * 0.7) : 0);
+    const cw = LK.mono(ctx, size); const w = opt.w || (x0 - x + cw * Math.max(20, ...L0.map(v => v.t.length)) + 20);
+    const top = i => y + i * lh, base = i => y + i * lh + lh * 0.68;
+    L0.forEach((v, i) => {
+      const hl = v.hl || (opt.hl || []).includes(i), err = v.err || opt.err === i;
+      if (err) { ctx.fillStyle = T.errBg; ctx.fillRect(x, top(i), w, lh); ctx.fillStyle = T.errBar; ctx.fillRect(x, top(i), 5, lh); }
+      else if (hl) { ctx.fillStyle = T.hl; ctx.fillRect(x, top(i), w, lh); }
+    });
+    (opt.boxes || []).forEach(b => { ctx.strokeStyle = b.color || C.accent; ctx.lineWidth = 3; rr(ctx, x0 + b.from * cw - 4, top(b.line) + 3, (b.to - b.from) * cw + 8, lh - 6, 6); ctx.stroke(); });
+    L0.forEach((v, i) => {
+      const dim = v.dim || (opt.dim || []).includes(i);
+      if (nums) { LK.mono(ctx, size * 0.82, 500); ctx.fillStyle = T.gutter; ctx.textAlign = "right"; ctx.textBaseline = "alphabetic"; ctx.fillText(String(start + i), x + numW, base(i)); }
+      ctx.save(); if (opt.clipW) { ctx.beginPath(); ctx.rect(x0 - 2, top(i), opt.clipW, lh); ctx.clip(); }
+      if (dim) ctx.globalAlpha = 0.35;
+      let col = 0; LK.tokens(v.t).forEach(tk => {
+        LK.mono(ctx, size, tk.k === "kw" ? 700 : 500); ctx.fillStyle = colOf(tk.k, T); ctx.textAlign = "left"; ctx.textBaseline = "alphabetic";
+        if (tk.k === "com") ctx.font = `italic 500 ${size}px ${LK.MONO}`;
+        if (tk.s.trim()) LK.monoText(ctx, tk.s, x0 + col * cw, base(i), cw); col += tk.s.length;
+      });
+      ctx.restore();
+    });
+    (opt.marks || []).forEach(m => { const yy = base(m.line) + size * 0.28; ctx.strokeStyle = m.color || T.errInk; ctx.lineWidth = 2.5; ctx.beginPath();
+      for (let px = x0 + m.from * cw, k = 0; px <= x0 + m.to * cw; px += 5, k++) { const yv = yy + (k % 2 ? 3 : -1); k === 0 ? ctx.moveTo(px, yv) : ctx.lineTo(px, yv); } ctx.stroke(); });
+    if (opt.caret && opt.blink !== false) { const c = opt.caret; ctx.fillStyle = T.caret || T.ink; ctx.fillRect(x0 + c.col * cw, top(c.line) + lh * 0.14, 2.5, lh * 0.72); }
+    return { x, y, x0, cw, lh, size, n: L0.length, w, h: L0.length * lh, bottom: y + L0.length * lh, top, base,
+             at: (line, col) => ({ x: x0 + col * cw, y: top(line) + lh / 2 }) };
+  };
+
+  // ---------- mengetik bertahap ----------
+  LK.typeStr = (s, u) => s.slice(0, Math.round(s.length * clamp(u, 0, 1)));
+  LK.typed = function (lines, u) {
+    const lead = s => s.length - s.trimStart().length;
+    const total = lines.reduce((a, s) => a + s.trimStart().length + 1, 0) - 1;
+    let n = Math.round(clamp(u, 0, 1) * total); const out = [];
+    for (let i = 0; i < lines.length; i++) {
+      const s = lines[i], ld = lead(s), body = s.length - ld;
+      if (n >= body) { out.push(s); n -= body; if (i === lines.length - 1) return { lines: out, caret: { line: i, col: s.length }, done: true };
+        if (n === 0) return { lines: out, caret: { line: i, col: s.length }, done: false }; n -= 1; continue; }
+      out.push(s.slice(0, ld + n)); return { lines: out, caret: { line: i, col: ld + n }, done: false };
+    }
+    return { lines: out, caret: { line: Math.max(0, out.length - 1), col: (out[out.length - 1] || "").length }, done: true };
+  };
+  LK.insert = function (base, at, add, u) {
+    const r = LK.typed(add, u); const lines = base.slice(0, at).concat(r.lines, base.slice(at));
+    return { lines, caret: { line: at + r.caret.line, col: r.caret.col }, done: r.done };
+  };
+
+  // ---------- editor ----------
+  LK.editor = function (ctx, x, y, w, h, opt = {}) {
+    ctx.fillStyle = LK.T.bg; ctx.fillRect(x, y, w, h);
+    let yy = y;
+    if (opt.tab) { ctx.fillStyle = "#EEF2F5"; ctx.fillRect(x, y, w, 44); ctx.fillStyle = "#FFFFFF"; ctx.fillRect(x + 12, y + 6, Math.min(360, w - 24), 38);
+      text(ctx, opt.tab, x + 30, y + 32, 20, { weight: 700, color: LK.T.op }); yy += 44; }
+    ctx.fillStyle = "#F4F6F8"; ctx.fillRect(x, yy, Math.round((opt.size || 24) * 2.5), y + h - yy);
+    return LK.code(ctx, x + 6, yy + 12, opt.lines || [], { ...opt, w: w - 12 });
+  };
+
+  // ---------- menu tarik-turun ----------
+  LK.menu = function (ctx, x, y, items, opt = {}) {
+    const size = opt.size || 23, rh = Math.round(size * 1.9), w = opt.w || 300;
+    const hh = items.reduce((a, s) => a + (s === "-" ? 14 : rh), 0) + 16;
+    ctx.save(); ctx.shadowColor = "rgba(31,42,51,0.2)"; ctx.shadowBlur = 18; ctx.shadowOffsetY = 6; ctx.fillStyle = "#FFFFFF"; rr(ctx, x, y, w, hh, 10); ctx.fill(); ctx.restore();
+    ctx.strokeStyle = "#C9D4DB"; ctx.lineWidth = 1.5; rr(ctx, x, y, w, hh, 10); ctx.stroke();
+    const pos = []; let yy = y + 8;
+    items.forEach((s, i) => {
+      if (s === "-") { ctx.fillStyle = "#E1E7EB"; ctx.fillRect(x + 12, yy + 6, w - 24, 2); pos.push(null); yy += 14; return; }
+      const [label, key] = s.split("|"); const on = opt.hl === i;
+      if (on) { ctx.fillStyle = "#DCE9F7"; ctx.fillRect(x + 4, yy, w - 8, rh); }
+      text(ctx, label, x + 22, yy + rh / 2 + size * 0.36, size, { weight: 600, color: on ? "#1A5FA8" : C.ink });
+      if (key) text(ctx, key, x + w - 18, yy + rh / 2 + size * 0.36, size * 0.85, { align: "right", weight: 600, color: "#7F8C95" });
+      pos.push({ x: x + 4, y: yy, w: w - 8, h: rh, cx: x + w / 2, cy: yy + rh / 2 }); yy += rh;
+    });
+    return { item: i => pos[i], h: hh };
+  };
+
+  // ---------- notebook di browser ----------
+  function folderIcon(ctx, x, y, s, color) { ctx.fillStyle = color; rr(ctx, x, y + s * 0.18, s, s * 0.7, s * 0.1); ctx.fill(); rr(ctx, x, y + s * 0.06, s * 0.45, s * 0.3, s * 0.08); ctx.fill(); }
+  function uploadIcon(ctx, x, y, s, color) { ctx.strokeStyle = color; ctx.lineWidth = 2.6; ctx.lineCap = "round"; ctx.lineJoin = "round";
+    ctx.beginPath(); ctx.moveTo(x, y + s * 0.6); ctx.lineTo(x, y + s); ctx.lineTo(x + s, y + s); ctx.lineTo(x + s, y + s * 0.6); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(x + s / 2, y + s * 0.72); ctx.lineTo(x + s / 2, y + s * 0.05); ctx.moveTo(x + s * 0.24, y + s * 0.3); ctx.lineTo(x + s / 2, y + s * 0.05); ctx.lineTo(x + s * 0.76, y + s * 0.3); ctx.stroke(); }
+  function docIcon(ctx, x, y, s, color) { ctx.fillStyle = "#FFFFFF"; ctx.strokeStyle = color; ctx.lineWidth = 2.2; ctx.beginPath(); ctx.moveTo(x, y); ctx.lineTo(x + s * 0.62, y); ctx.lineTo(x + s * 0.8, y + s * 0.2); ctx.lineTo(x + s * 0.8, y + s); ctx.lineTo(x, y + s); ctx.closePath(); ctx.fill(); ctx.stroke();
+    for (let k = 0; k < 3; k++) { ctx.fillStyle = color; ctx.fillRect(x + s * 0.14, y + s * (0.38 + k * 0.18), s * 0.5, 2.2); } }
+  LK.icons = { folder: folderIcon, upload: uploadIcon, doc: docIcon };
+
+  LK.notebook = function (ctx, x, y, w, h, opt = {}) {
+    const area = L.window(ctx, x, y, w, h, { title: opt.title || "Browser" });
+    let cy = area.y; const geo = { menu: {}, plus: {}, rail: {} };
+    ctx.save(); rr(ctx, x, y, w, h, 16); ctx.clip();
+    if (!opt.compact) { // bilah alamat
+      ctx.fillStyle = "#F4F6F8"; ctx.fillRect(x, cy, w, 54);
+      ["‹", "›", "↻"].forEach((g, i) => text(ctx, g, x + 30 + i * 40, cy + 37, g === "↻" ? 26 : 34, { align: "center", weight: 700, color: "#7F8C95" }));
+      const ax = x + 150, aw = w - 180; ctx.fillStyle = "#FFFFFF"; rr(ctx, ax, cy + 9, aw, 36, 18); ctx.fill(); ctx.strokeStyle = opt.addressCaret != null ? "#7AA7D9" : "#D3DCE2"; ctx.lineWidth = 2; rr(ctx, ax, cy + 9, aw, 36, 18); ctx.stroke();
+      const adr = opt.address || ""; text(ctx, adr, ax + 22, cy + 35, 21, { weight: 600, color: C.ink });
+      if (opt.addressCaret) { ctx.font = `600 21px ${K.FONT}`; ctx.fillStyle = C.ink; ctx.fillRect(ax + 24 + ctx.measureText(adr).width, cy + 15, 2.2, 24); }
+      geo.address = { x: ax, y: cy + 27, w: aw }; cy += 54;
+      ctx.fillStyle = "#DDE5EA"; ctx.fillRect(x, cy - 1.5, w, 1.5);
+    }
+    if (opt.page === "blank") { ctx.restore(); return { x, y: cy, w, h: y + h - cy, ...geo }; }
+    // kepala notebook: ikon, nama, status
+    ctx.fillStyle = "#FFFFFF"; ctx.fillRect(x, cy, w, 56);
+    docIcon(ctx, x + 24, cy + 12, 32, C.kiko);
+    const nm = opt.nameEdit ? opt.nameEdit.text : (opt.name || "Untitled0.ipynb");
+    if (opt.nameEdit) { ctx.font = `700 25px ${K.FONT}`; const nw = Math.max(260, ctx.measureText(nm).width + 30); ctx.strokeStyle = "#7AA7D9"; ctx.lineWidth = 2.5; rr(ctx, x + 66, cy + 9, nw, 40, 6); ctx.stroke(); }
+    text(ctx, nm, x + 78, cy + 38, 25, { weight: 700, color: C.ink });
+    if (opt.nameEdit && opt.nameEdit.caret) { ctx.font = `700 25px ${K.FONT}`; ctx.fillStyle = C.ink; ctx.fillRect(x + 80 + ctx.measureText(nm).width, cy + 15, 2.4, 28); }
+    geo.name = { x: x + 150, y: cy + 30 };
+    const st = opt.status || ""; const sx = x + w - 30;
+    if (st) { const lab = st === "menyambung" ? "Menyambungkan…" : st === "tersambung" ? "Tersambung" : st; ctx.font = `700 20px ${K.FONT}`; const sw = ctx.measureText(lab).width + 54;
+      ctx.fillStyle = st === "tersambung" ? "#E6F4EA" : "#F4F6F8"; rr(ctx, sx - sw, cy + 12, sw, 34, 17); ctx.fill();
+      ctx.fillStyle = st === "tersambung" ? C.good : C.accent; ctx.beginPath(); ctx.arc(sx - sw + 20, cy + 29, 7, 0, Math.PI * 2); ctx.fill();
+      text(ctx, lab, sx - sw + 36, cy + 36, 20, { weight: 700, color: st === "tersambung" ? C.good : C.ink2 }); geo.status = { x: sx - sw / 2, y: cy + 29 }; }
+    cy += 56;
+    if (!opt.compact) { // menu + tombol tambah sel
+      const menus = opt.menus || ["File", "Edit", "Lihat", "Sisipkan", "Runtime", "Alat", "Bantuan"]; let mx = x + 70;
+      menus.forEach(m => { ctx.font = `600 21px ${K.FONT}`; const mw = ctx.measureText(m).width + 22; const on = opt.menuOn === m;
+        if (on) { ctx.fillStyle = "#DCE9F7"; rr(ctx, mx - 6, cy + 2, mw, 30, 6); ctx.fill(); }
+        text(ctx, m, mx + 5, cy + 24, 21, { weight: 600, color: on ? "#1A5FA8" : "#3D4B55" }); geo.menu[m] = { x: mx + mw / 2 - 6, y: cy + 17, x0: mx - 6, w: mw }; mx += mw + 4; });
+      cy += 36;
+      ctx.fillStyle = "#FFFFFF"; ctx.fillRect(x, cy, w, 44);
+      [["+ Kode", "kode"], ["+ Teks", "teks"]].forEach(([s, k], i) => { const bx = x + 70 + i * 130; ctx.strokeStyle = "#C9D4DB"; ctx.lineWidth = 1.5; rr(ctx, bx, cy + 6, 116, 32, 8); ctx.stroke();
+        text(ctx, s, bx + 58, cy + 29, 20, { align: "center", weight: 700, color: "#3D4B55" }); geo.plus[k] = { x: bx + 58, y: cy + 22 }; });
+      cy += 44;
+    }
+    ctx.fillStyle = "#DDE5EA"; ctx.fillRect(x, cy, w, 1.5);
+    // rel ikon kiri
+    const railW = 52; ctx.fillStyle = "#F7F9FA"; ctx.fillRect(x, cy + 1.5, railW, y + h - cy - 1.5); ctx.fillStyle = "#E4EAEE"; ctx.fillRect(x + railW, cy + 1.5, 1.5, y + h - cy);
+    const railY = cy + 34;
+    [["☰", "toc"], ["⌕", "cari"], ["{x}", "var"], ["files", "files"]].forEach(([g, k], i) => { const ry = railY + i * 58, on = opt.railOn === k || (k === "files" && opt.files);
+      if (on) { ctx.fillStyle = "#DCE9F7"; rr(ctx, x + 6, ry - 22, 40, 44, 8); ctx.fill(); }
+      if (g === "files") folderIcon(ctx, x + 13, ry - 13, 26, on ? "#1A5FA8" : "#7F8C95");
+      else text(ctx, g, x + railW / 2, ry + 9, g.length > 1 ? 17 : 24, { align: "center", weight: 800, color: "#7F8C95" });
+      geo.rail[k] = { x: x + railW / 2, y: ry }; });
+    let cx = x + railW + 1.5;
+    if (opt.files) { // panel file
+      const fw = opt.files.w || 330, f = opt.files; ctx.fillStyle = "#FFFFFF"; ctx.fillRect(cx, cy + 1.5, fw, y + h - cy);
+      ctx.fillStyle = "#E4EAEE"; ctx.fillRect(cx + fw, cy + 1.5, 1.5, y + h - cy);
+      text(ctx, "File", cx + 20, cy + 40, 23, { weight: 800, color: C.ink });
+      const ux = cx + 22, uy = cy + 58; if (f.upHover) { ctx.fillStyle = "#DCE9F7"; rr(ctx, ux - 8, uy - 6, 42, 40, 8); ctx.fill(); }
+      uploadIcon(ctx, ux + 2, uy + 2, 22, f.upHover ? "#1A5FA8" : "#5B6B76"); geo.upload = { x: ux + 13, y: uy + 14 };
+      folderIcon(ctx, ux + 52, uy + 4, 24, "#9AA8B1"); text(ctx, "↻", ux + 112, uy + 23, 24, { align: "center", weight: 700, color: "#5B6B76" });
+      const items = f.items || ["sample_data/"]; geo.fileItem = i => ({ x: cx + 8, y: uy + 52 + i * 44, w: fw - 16, h: 40 });
+      items.forEach((s, i) => { const r = geo.fileItem(i), dir = s.endsWith("/"); if (f.hl === i) { ctx.fillStyle = f.hlColor || "#DCE9F7"; rr(ctx, r.x, r.y, r.w, r.h, 8); ctx.fill(); }
+        if (dir) folderIcon(ctx, r.x + 14, r.y + 8, 24, "#9AA8B1"); else docIcon(ctx, r.x + 16, r.y + 7, 24, "#5B6B76");
+        text(ctx, dir ? s.slice(0, -1) : s, r.x + 52, r.y + 28, 21, { weight: 600, color: C.ink }); });
+      if (f.note) { ctx.font = `600 18px ${K.FONT}`; const lines = H.wrap(ctx, f.note, 18, 600, fw - 40); const ny = y + h - 24 - lines.length * 24;
+        ctx.fillStyle = "#FFF8E5"; rr(ctx, cx + 10, ny - 30, fw - 20, lines.length * 24 + 24, 8); ctx.fill(); lines.forEach((ln, i) => text(ctx, ln, cx + 22, ny - 6 + i * 24, 18, { weight: 600, color: "#7A5A12" })); }
+      cx += fw + 1.5;
+    }
+    ctx.restore();
+    return { x: cx, y: cy + 1.5, w: x + w - cx, h: y + h - cy - 1.5, ...geo };
+  };
+
+  // ---------- output ----------
+  LK.output = function (ctx, x, y, w, items, opt = {}) {
+    const size = opt.size || 20, lh = Math.round(size * 1.5), dry = !!opt.dry; let yy = y + 8; const res = { y, lines: [], input: null, err: null };
+    (items || []).forEach(it => {
+      const o = typeof it === "string" ? { t: it } : it;
+      if (o.err) { const e = LK.error(ctx, x, yy + 2, w, o.err, { size, dry }); if (!res.err) res.err = { ...e, y: yy + 2 }; yy += e.h + 8; return; }
+      const base = yy + lh * 0.72; res.lines.push(base);
+      if (o.k === "in") {
+        const cw = LK.mono(ctx, size); const pw = o.t.length * cw;
+        if (!dry) { LK.mono(ctx, size); ctx.fillStyle = LK.T.out; ctx.textBaseline = "alphabetic"; LK.monoText(ctx, o.t, x, base, cw); }
+        if (o.active) { const bx = x + pw + 4, bw = Math.min(360, w - pw - 20); if (!dry) { ctx.fillStyle = "#FFFFFF"; ctx.fillRect(bx, yy + 2, bw, lh - 2); ctx.strokeStyle = "#7AA7D9"; ctx.lineWidth = 2; ctx.strokeRect(bx, yy + 2, bw, lh - 2);
+            LK.mono(ctx, size); ctx.fillStyle = LK.T.out; LK.monoText(ctx, o.v || "", bx + 8, base, cw); if (o.caret !== false) ctx.fillRect(bx + 9 + (o.v || "").length * cw, yy + 6, 2.2, lh - 10); }
+          res.input = { x: bx, y: yy + 2, w: bw, h: lh - 2 }; }
+        else if (!dry && o.v) { LK.mono(ctx, size, 700); ctx.fillStyle = LK.T.bi; LK.monoText(ctx, o.v, x + pw, base, cw); }
+        yy += lh + (o.active ? 4 : 0); return;
+      }
+      if (!dry) { LK.mono(ctx, size, o.k === "bad" || o.k === "ok" ? 700 : 500); if (o.k === "note") ctx.font = `italic 500 ${size}px ${LK.MONO}`;
+        ctx.fillStyle = { ok: LK.T.ok, bad: LK.T.errInk, note: LK.T.muted, muted: LK.T.muted }[o.k] || LK.T.out; ctx.textAlign = "left"; ctx.textBaseline = "alphabetic";
+        ctx.save(); ctx.beginPath(); ctx.rect(x, yy, w, lh); ctx.clip(); LK.monoText(ctx, o.t, x, base); ctx.restore(); }
+      yy += lh;
+    });
+    res.h = (items && items.length) ? yy - y + 6 : 0; return res;
+  };
+
+  // ---------- pesan error ----------
+  LK.error = function (ctx, x, y, w, e, opt = {}) {
+    const size = opt.size || 20, lh = Math.round(size * 1.5), dry = !!opt.dry, cw = LK.mono(ctx, size);
+    const rows = []; // [teks, jenis]
+    if (e.kind === "syntax") {
+      rows.push([`  File "${e.file || "<ipython-input-1>"}", line ${e.line}`, "file"]); rows.push(["    " + (e.code || ""), "code"]);
+      rows.push(["    " + " ".repeat(e.col || 0) + (e.carets || "^"), "caret"]);
+    } else {
+      rows.push([e.name, "head"]);
+      (e.ctx || []).forEach(([no, s, arrow]) => { if (no == null) { rows.push([s, "where"]); return; } const ar = arrow != null ? arrow : no === e.line;
+        rows.push([(ar ? "----> " : "      ") + no + " " + s, ar ? "arrow" : "ctx"]); });
+      rows.push(["", "blank"]);
+    }
+    rows.push([e.name + (e.msg != null && e.msg !== "" ? ": " + e.msg : ":"), "last"]);
+    const h = rows.length * lh + 20; const geo = { h };
+    if (!dry) { ctx.fillStyle = LK.T.errBg; ctx.fillRect(x - 6, y, w + 6, h); ctx.fillStyle = LK.T.errBar; ctx.fillRect(x - 6, y, 4, h); }
+    rows.forEach(([s, k], i) => {
+      const base = y + 10 + i * lh + lh * 0.72, ty = y + 10 + i * lh; const draw = (str, xx, color, wt = 500) => { if (dry) return; LK.mono(ctx, size, wt); ctx.fillStyle = color; ctx.textBaseline = "alphabetic"; LK.monoText(ctx, str, xx, base, cw); };
+      if (k === "head") { draw(s, x + 6, LK.T.errInk, 800); if (!dry) { text(ctx, "Traceback (most recent call last)", x + w - 16, base, size * 0.9, { align: "right", weight: 600, color: "#9A6B66" }); }
+        geo.nameBox = { x: x, y: ty, w: s.length * cw + 12, h: lh }; }
+      else if (k === "file") { const pre = s.slice(0, s.lastIndexOf("line")); draw(pre, x + 6, LK.T.muted); draw(s.slice(pre.length), x + 6 + pre.length * cw, LK.T.ok, 800);
+        geo.lineBox = { x: x + pre.length * cw, y: ty, w: (s.length - pre.length) * cw + 12, h: lh }; }
+      else if (k === "code") { draw(s, x + 6, LK.T.ink); geo.codeBox = { x: x, y: ty, w: s.length * cw + 12, h: lh }; }
+      else if (k === "caret") draw(s, x + 6, LK.T.errInk, 800);
+      else if (k === "arrow") { const m = s.match(/^(-*> )(\d+)/); draw(m[1], x + 6, LK.T.ok, 800); draw(m[2], x + 6 + m[1].length * cw, LK.T.ok, 800); draw(s.slice(m[0].length), x + 6 + m[0].length * cw, LK.T.ink);
+        geo.arrowBox = { x: x, y: ty, w: s.length * cw + 12, h: lh }; geo.lineBox = { x: x, y: ty, w: m[0].length * cw + 10, h: lh }; (geo.arrows = geo.arrows || []).push(geo.arrowBox); }
+      else if (k === "ctx") draw(s, x + 6, LK.T.muted);
+      else if (k === "where") draw(s, x + 6, "#2F7C8F", 600);
+      else if (k === "last") { draw(e.name, x + 6, LK.T.errInk, 800); draw(s.slice(e.name.length), x + 6 + e.name.length * cw, LK.T.ink, 600);
+        geo.lastBox = { x: x, y: ty, w: Math.min(w, s.length * cw + 12), h: lh }; geo.lastNameBox = { x: x, y: ty, w: e.name.length * cw + 12, h: lh };
+        if (!geo.nameBox) geo.nameBox = geo.lastNameBox; }
+    });
+    return geo;
+  };
+
+  // ---------- sel kode ----------
+  const CELL = { pad: 14, playW: 72 };
+  LK.cellHeight = function (ctx, w, opt = {}) {
+    const size = opt.size || 22, lh = Math.round(size * 1.55), n = Math.max(opt.minLines || 1, (opt.lines || []).length);
+    const codeH = n * lh + CELL.pad * 2; const o = opt.out && opt.out.length ? LK.output(ctx, 0, 0, w - CELL.playW - 20, opt.out, { size: opt.outSize || size * 0.92, dry: true }).h : 0;
+    return codeH + (o ? o + 8 : 0);
+  };
+  LK.cell = function (ctx, x, y, w, opt = {}) {
+    const size = opt.size || 22, lh = Math.round(size * 1.55), n = Math.max(opt.minLines || 1, (opt.lines || []).length);
+    const codeH = n * lh + CELL.pad * 2, cx = x + CELL.playW;
+    const outSize = opt.outSize || size * 0.92;
+    const oH = opt.out && opt.out.length ? LK.output(ctx, 0, 0, w - CELL.playW - 20, opt.out, { size: outSize, dry: true }).h : 0;
+    const h = codeH + (oH ? oH + 8 : 0);
+    if (opt.active) { ctx.save(); ctx.shadowColor = "rgba(31,42,51,0.16)"; ctx.shadowBlur = 14; ctx.shadowOffsetY = 3; ctx.fillStyle = "#FFFFFF"; rr(ctx, x, y, w, h, 10); ctx.fill(); ctx.restore(); }
+    ctx.fillStyle = LK.T.cell; rr(ctx, cx, y, w - CELL.playW, codeH, 8); ctx.fill();
+    ctx.strokeStyle = opt.active ? LK.T.focus : "#E1E7EB"; ctx.lineWidth = opt.active ? 2.5 : 1.5; rr(ctx, cx, y, w - CELL.playW, codeH, 8); ctx.stroke();
+    const code = LK.code(ctx, cx + 4, y + CELL.pad, opt.lines || [], { size, lh, nums: opt.nums !== false ? (typeof opt.nums === "number" ? opt.nums : true) : false, w: w - CELL.playW - 8,
+      hl: opt.hl, err: opt.err, dim: opt.dim, caret: opt.caret, blink: opt.blink, marks: opt.marks, boxes: opt.boxes, clipW: w - CELL.playW - 80 });
+    // tombol jalankan
+    const px = x + CELL.playW / 2, py = y + CELL.pad + lh / 2, r = 21, run = opt.run || "idle";
+    if (run === "done" && opt.count != null) { text(ctx, `[${opt.count}]`, px, py + 8, 20, { align: "center", weight: 700, color: "#7F8C95" }); }
+    else if (run === "running") { ctx.strokeStyle = "#D3DCE2"; ctx.lineWidth = 4; ctx.beginPath(); ctx.arc(px, py, r, 0, Math.PI * 2); ctx.stroke();
+      const a = (opt.spin || 0) * Math.PI * 2; ctx.strokeStyle = "#1A73C8"; ctx.beginPath(); ctx.arc(px, py, r, a, a + Math.PI * 0.6); ctx.stroke();
+      ctx.fillStyle = "#3D4B55"; ctx.fillRect(px - 7, py - 7, 14, 14); }
+    else { const strong = run === "ready" || run === "hover"; ctx.fillStyle = strong ? (run === "hover" ? "#2B3A44" : "#4A5A66") : "#C3CDD3"; ctx.beginPath(); ctx.arc(px, py, r, 0, Math.PI * 2); ctx.fill();
+      ctx.fillStyle = "#FFFFFF"; ctx.beginPath(); ctx.moveTo(px - 6, py - 10); ctx.lineTo(px + 11, py); ctx.lineTo(px - 6, py + 10); ctx.closePath(); ctx.fill(); }
+    let out = null;
+    if (oH) { const oy = y + codeH + 4; out = LK.output(ctx, cx + 16, oy, w - CELL.playW - 28, opt.out, { size: outSize }); out.y = oy; }
+    return { x, y, w, h, bottom: y + h, play: { x: px, y: py, r }, code, out, codeBottom: y + codeH };
+  };
+
+  // ---------- sel teks (Markdown) ----------
+  LK.textCell = function (ctx, x, y, w, opt = {}) {
+    const lines = opt.lines || [];
+    if (!opt.rendered) {
+      const size = opt.size || 21, lh = Math.round(size * 1.55), h = Math.max(1, lines.length) * lh + 28, cx = x + CELL.playW;
+      ctx.fillStyle = "#FFFFFF"; rr(ctx, cx, y, w - CELL.playW, h, 8); ctx.fill(); ctx.strokeStyle = opt.active ? LK.T.focus : "#E1E7EB"; ctx.lineWidth = opt.active ? 2.5 : 1.5; rr(ctx, cx, y, w - CELL.playW, h, 8); ctx.stroke();
+      const cw = LK.mono(ctx, size);
+      lines.forEach((s, i) => { const base = y + 14 + i * lh + lh * 0.7; LK.mono(ctx, size, s.startsWith("#") ? 700 : 500); ctx.fillStyle = s.startsWith("#") ? "#1C6BB0" : s.startsWith("- ") ? "#3D4B55" : LK.T.ink; ctx.textBaseline = "alphabetic"; LK.monoText(ctx, s, cx + 18, base, cw); });
+      if (opt.caret && opt.blink !== false) { const c = opt.caret; ctx.fillStyle = LK.T.ink; ctx.fillRect(cx + 18 + c.col * cw, y + 14 + c.line * lh + lh * 0.14, 2.5, lh * 0.72); }
+      return { h, bottom: y + h };
+    }
+    let yy = y + 10; const cx = x + CELL.playW + 18;
+    lines.forEach(s => {
+      if (s.startsWith("# ")) { text(ctx, s.slice(2), cx, yy + 40, 36, { weight: 800 }); yy += 56; }
+      else if (s.startsWith("## ")) { text(ctx, s.slice(3), cx, yy + 32, 27, { weight: 800 }); yy += 44; }
+      else if (s === "") yy += 12;
+      else { const bullet = s.startsWith("- "), body = bullet ? s.slice(2) : s; let px = cx + (bullet ? 30 : 0);
+        if (bullet) { ctx.fillStyle = C.ink; ctx.beginPath(); ctx.arc(cx + 10, yy + 22, 4.5, 0, Math.PI * 2); ctx.fill(); }
+        body.split("`").forEach((part, k) => { if (!part) return; if (k % 2) { const cw = LK.mono(ctx, 20); const pw = part.length * cw + 12; ctx.fillStyle = "#EEF2F5"; rr(ctx, px, yy + 6, pw, 30, 5); ctx.fill(); LK.mono(ctx, 20); ctx.fillStyle = "#B4442C"; LK.monoText(ctx, part, px + 6, yy + 28, cw); px += pw + 2; }
+          else { text(ctx, part, px, yy + 29, 22, { weight: 500 }); ctx.font = `500 22px ${K.FONT}`; px += ctx.measureText(part).width; } });
+        yy += 38; }
+    });
+    return { h: yy - y + 8, bottom: yy + 8 };
+  };
+
+  // ---------- terminal / shell ----------
+  LK.terminal = function (ctx, x, y, w, h, opt = {}) {
+    const light = opt.theme === "light", T = LK.TD, size = opt.size || 24, lh = Math.round(size * 1.5);
+    let area;
+    if (light) area = L.window(ctx, x, y, w, h, { title: opt.title || "Shell", menus: opt.menus });
+    else { ctx.save(); ctx.shadowColor = "rgba(31,42,51,0.25)"; ctx.shadowBlur = 30; ctx.shadowOffsetY = 10; ctx.fillStyle = T.bg; rr(ctx, x, y, w, h, 16); ctx.fill(); ctx.restore();
+      ctx.save(); rr(ctx, x, y, w, h, 16); ctx.clip(); ctx.fillStyle = T.bar; ctx.fillRect(x, y, w, 46);
+      ["#E5675F", "#F2B134", "#4CB46A"].forEach((c, i) => { ctx.fillStyle = c; ctx.beginPath(); ctx.arc(x + 28 + i * 26, y + 23, 8, 0, Math.PI * 2); ctx.fill(); });
+      text(ctx, opt.title || "Terminal", x + w / 2, y + 31, 22, { align: "center", weight: 700, color: "#C9D4DB" }); ctx.restore(); area = { x, y: y + 46, w, h: h - 46 }; }
+    const prompt = opt.prompt != null ? opt.prompt : (light ? ">>> " : "siswa@lab:~$ ");
+    const rows = (opt.lines || []).map(v => typeof v === "string" ? { k: "out", t: v } : v);
+    if (opt.typing) rows.push({ k: "cmd", t: LK.typeStr(opt.typing.t, opt.typing.u), prompt: opt.typing.prompt, typing: true });
+    else if (opt.caret) rows.push({ k: "cmd", t: "", typing: true });
+    const maxRows = Math.floor((area.h - 24) / lh); const first = Math.max(0, rows.length - maxRows);
+    const cw = LK.mono(ctx, size); const ink = light ? LK.T.ink : T.ink;
+    ctx.save(); ctx.beginPath(); ctx.rect(area.x, area.y, area.w, area.h); ctx.clip();
+    const lineY = []; let last = null;
+    rows.slice(first).forEach((r, i) => {
+      const base = area.y + 18 + i * lh + lh * 0.7, x0 = area.x + 22; lineY.push(base);
+      const put = (s, xx, color, wt = 500) => { LK.mono(ctx, size, wt); ctx.fillStyle = color; ctx.textBaseline = "alphabetic"; LK.monoText(ctx, s, xx, base, cw); };
+      if (r.k === "cmd") { const p = r.prompt != null ? r.prompt : prompt; let px = x0;
+        if (!light && p.includes(":")) { const a = p.indexOf(":"); put(p.slice(0, a), px, T.prompt, 700); px += a * cw; put(":", px, ink); px += cw; const rest = p.slice(a + 1); const d = rest.search(/[$#>]/); put(rest.slice(0, d), px, T.path, 700); px += d * cw; put(rest.slice(d), px, ink); px += (rest.length - d) * cw; }
+        else { put(p, px, light ? "#8B3DB5" : T.prompt, 700); px += p.length * cw; }
+        put(r.t, px, ink, 600); last = { x: px + r.t.length * cw, y: base };
+        if (r.typing && opt.blink !== false) { ctx.fillStyle = light ? LK.T.ink : T.caret; ctx.fillRect(px + r.t.length * cw + 1, base - size * 0.82, size * 0.55, size * 1.02); } }
+      else put(r.t, x0, { err: light ? LK.T.errInk : T.err, ok: light ? LK.T.ok : T.ok, note: light ? LK.T.muted : T.note }[r.k] || (light ? (r.k === "out" ? "#1C3F8C" : ink) : ink), r.k === "err" || r.k === "ok" ? 700 : 500);
+    });
+    ctx.restore();
+    return { ...area, lineY: i => lineY[i], last, cw, lh };
+  };
+
+  // ---------- sorotan, pointer, langkah ----------
+  LK.focus = function (ctx, box, opt = {}) {
+    const p = opt.t != null ? 0.5 + 0.5 * Math.sin(opt.t * 5) : 1, pad = opt.pad != null ? opt.pad : 6;
+    ctx.strokeStyle = opt.color || C.accent; ctx.lineWidth = 4 + 2 * p; rr(ctx, box.x - pad, box.y - pad, box.w + pad * 2, box.h + pad * 2, 10); ctx.stroke();
+  };
+  LK.pointer = function (ctx, l, span, path, opt = {}) {
+    if (!path || !path.length) return null; const f = l / span, mv = (opt.mv || 0.6) / span;
+    let p = { x: path[0].x, y: path[0].y }, click = 0, kind = path[0].kind || "arrow";
+    for (let i = 1; i < path.length; i++) {
+      const a = path[i - 1], b = path[i]; if (f < b.at - Math.min(mv, b.at - (a.at || 0))) break;
+      const st = b.at - Math.min(mv, b.at - (a.at || 0)); const u = ease(clamp((f - st) / Math.max(1e-6, b.at - st), 0, 1));
+      p = { x: lerp(a.x, b.x, u), y: lerp(a.y, b.y, u) }; kind = b.kind || "arrow";
+      if (b.click && f >= b.at) { const c = (f - b.at) * span / 0.45; click = c < 1 ? clamp(c, 0.01, 0.99) : 0; } else click = 0;
+    }
+    if (opt.draw !== false) L.cursor(ctx, p.x, p.y, { kind, click, down: opt.down });
+    return p;
+  };
+  LK.steps = function (ctx, title, items, n, opt = {}) {
+    const x = opt.x || 1450, y = opt.y || 122, w = opt.w || 370; let hh = 70; const GREEN = C.good;
+    const rows = items.map(s => H.wrap(ctx, s, 23, 700, w - 86)); rows.forEach(lines => hh += lines.length * 30 + 22);
+    H.card(ctx, x, y, w, hh, { fill: "#FFFFFF", stroke: "#D7E2DC", lw: 3, r: 18 });
+    text(ctx, title, x + 24, y + 44, 24, { weight: 900, color: C.accentDark });
+    let yy = y + 74;
+    rows.forEach((lines, i) => {
+      const done = i < n, now = i === n;
+      if (now) { ctx.fillStyle = "#FFF3D6"; rr(ctx, x + 10, yy - 8, w - 20, lines.length * 30 + 16, 10); ctx.fill(); }
+      ctx.fillStyle = done ? GREEN : now ? C.accent : "#C9D4DB"; ctx.beginPath(); ctx.arc(x + 36, yy + 13, 14, 0, Math.PI * 2); ctx.fill();
+      text(ctx, done ? "✓" : String(i + 1), x + 36, yy + 21, 18, { align: "center", weight: 900, color: "#FFFFFF" });
+      lines.forEach((ln, j) => text(ctx, ln, x + 62, yy + 22 + j * 30, 23, { weight: 700, color: done ? C.ink2 : C.ink }));
+      yy += lines.length * 30 + 22;
+    });
+    return y + hh;
+  };
+  LK.phase = (l, span, a, b) => clamp((l / span - a) / Math.max(1e-6, b - a), 0, 1);
+  LK.clip = function (ctx, box, fn) { ctx.save(); ctx.beginPath(); ctx.rect(box.x, box.y, box.w, box.h); ctx.clip(); fn(); ctx.restore(); };
+
+  K.layarKode = LK;
+})(typeof window !== "undefined" ? window : globalThis);
+
+/* S23 Simulasi praktik: fungsi dan list untuk uang kembalian (terbesar tanpa max, greedy, brute force) di notebook generik ("Colab" di narasi).
+   Jendela notebook di kiri (x 110–1410, y 122–822), panel langkah/label/gambar koin di kanan (x 1440–1830).
+   Semua kode sudah diuji dengan python3; output persis sama. Waktu brute force dari pengukuran sungguhan (CPython 3.13), dibulatkan
+   seperti perintah print di kode. Muat setelah kiko-core.js, layar.js, layar_kode.js. */
+(function (global) {
+  const K = global.Kiko, H = K.helpers, C = K.C, L = K.layar, LK = K.layarKode;
+  const { rr, text, para, card, kiko, ease, clamp, lerp } = H;
+  const WIN = { x: 110, y: 122, w: 1300, h: 700 };
+  const BLUE = "#1A73C8", GREEN = C.good, RED = LK.T.errInk;
+  const spanOf = b => Math.max(3, (b.audio || b.dur) * 0.92);
+  const ph = LK.phase;
+  const blinkAt = l => Math.floor(l * 2.2) % 2 === 0;
+  const stepAt = (f, marks) => { let n = 0; marks.forEach((m, i) => { if (f >= m) n = i + 1; }); return n; };
+
+  // ---------- kode (diuji dengan python3) ----------
+  const TB = ["def terbesar(daftar):", "    hasil = daftar[0]", "    for x in daftar:", "        if x > hasil:", "            hasil = x", "    return hasil"];
+  const TBU = ["print(terbesar([80, 60, 90]))", "print(terbesar([7]))", "print(terbesar([-5, -2, -9]))"];
+  const GR = ["def kembalian_greedy(jumlah, koin):", "    # koin harus urut dari terbesar", "    hasil = []", "    for k in koin:", "        while jumlah >= k:",
+    "            hasil.append(k)", "            jumlah = jumlah - k", "    return hasil"];
+  const GRU1 = ["print(kembalian_greedy(800, [500, 200, 100]))"], GRU2 = ["print(kembalian_greedy(6, [4, 3, 1]))"];
+  const BR = ["def kembalian_brute(jumlah, koin):", "    if jumlah == 0:", "        return []", "    terbaik = None", "    for k in koin:", "        if k <= jumlah:",
+    "            sisa = kembalian_brute(jumlah - k, koin)", "            if sisa is not None:", "                coba = [k] + sisa",
+    "                if terbaik is None or len(coba) < len(terbaik):", "                    terbaik = coba", "    return terbaik"];
+  const BRU = ["print(kembalian_brute(6, [4, 3, 1]))", "print(kembalian_brute(800, [500, 200, 100]))"];
+  const LB = ["import time", "for jumlah in [20, 30, 35]:", "    mulai = time.perf_counter()", "    kembalian_brute(jumlah, [4, 3, 1])",
+    '    print(jumlah, "→", round(time.perf_counter() - mulai, 3), "detik")'];
+  const LB_OUT = ["20 → 0.007 detik", "30 → 0.728 detik", "35 → 7.281 detik"];
+
+  // ---------- bingkai dan pembantu ----------
+  const nb = (ctx, opt = {}) => LK.notebook(ctx, WIN.x, WIN.y, WIN.w, WIN.h, { name: "Kembalian.ipynb", status: "tersambung", compact: true, ...opt });
+  const cx0 = a => a.x + 20, cw0 = a => a.w - 40;
+  function keys(ctx, k, u, x = 1635, y = 730) { if (u > 0 && u < 1) L.keys(ctx, x, y, k, { press: u, align: "center", size: 30 }); }
+  function call(ctx, y, s, tx, ty, opt = {}) { return L.callout(ctx, opt.x || 1450, y, s, tx, ty, { size: 24, maxW: 320, ...opt }); }
+  function runOpt(f, t0, t1, out, count, n) {
+    if (f < t0) return { run: "ready" };
+    if (f < t1) return { run: "running", spin: f * 8, out: n ? out.slice(0, Math.floor((f - t0) / (t1 - t0) * out.length)) : null };
+    return { run: "done", count, out };
+  }
+  function typedCell(lines, u) { const T = LK.typed(lines, u); return { lines: T.lines, caret: T.caret }; }
+  function codeBox(g, line, s, lines) { const t = lines[line], c = t.indexOf(s); const p = g.at(line, c); return { x: p.x - 4, y: g.top(line) + 2, w: s.length * g.cw + 8, h: g.lh - 4 }; }
+  function lineEnd(g, line, lines) { return { x: g.at(line, lines[line].length).x + 10, y: g.top(line) + g.lh / 2 }; }
+  // label di kolom kanan sejajar dengan titik sasarannya; label berikutnya tidak menimpa label sebelumnya
+  function sider() { let bottom = 120; return (ctx, s, tx, ty, opt = {}) => { ctx.font = `800 24px Inter`; const n = H.wrap(ctx, s, 24, 800, 320).length, h = n * 30 + 26;
+    const y = clamp(Math.max(ty - h / 2, bottom + 12), 126, 820 - h); bottom = y + h; return L.callout(ctx, 1450, y, s, tx, ty, { size: 24, maxW: 320, ...opt }); }; }
+  // catatan pendek di sebelah kanan baris output (tanpa garis penunjuk)
+  function outNote(ctx, cell, i, s, col, x = null) { if (!cell.out || cell.out.lines[i] == null) return; text(ctx, "← " + s, x || cell.x + 260, cell.out.lines[i], 26, { weight: 900, color: col }); }
+  // koin bulat bertuliskan nilainya
+  const COIN = { 500: "#E0B33A", 200: "#B9C2C8", 100: "#C98A57", 4: "#E0B33A", 3: "#B9C2C8", 1: "#C98A57" };
+  function coin(ctx, x, y, v, r = 34, opt = {}) {
+    ctx.save(); if (opt.alpha != null) ctx.globalAlpha = opt.alpha;
+    ctx.fillStyle = "rgba(31,42,51,0.18)"; ctx.beginPath(); ctx.arc(x + 2, y + 4, r, 0, Math.PI * 2); ctx.fill();
+    ctx.fillStyle = COIN[v] || "#D7DEE3"; ctx.beginPath(); ctx.arc(x, y, r, 0, Math.PI * 2); ctx.fill();
+    ctx.strokeStyle = "rgba(31,42,51,0.35)"; ctx.lineWidth = 3; ctx.beginPath(); ctx.arc(x, y, r * 0.8, 0, Math.PI * 2); ctx.stroke();
+    text(ctx, String(v), x, y + r * 0.32, r * (String(v).length > 2 ? 0.62 : 0.9), { align: "center", weight: 900, color: C.ink }); ctx.restore();
+  }
+  function coins(ctx, x, y, vals, r = 34, gap = 10) { vals.forEach((v, i) => coin(ctx, x + r + i * (2 * r + gap), y, v, r)); return x + vals.length * (2 * r + gap); }
+
+  Object.assign(K.SCENES, {
+    tujuan(ctx, b, l) {
+      card(ctx, 160, 150, 1600, 660);
+      text(ctx, "SETELAH MENONTON, KAMU BISA:", 260, 240, 30, { weight: 900, color: C.accentDark });
+      ["menulis fungsi terbesar tanpa max", "menghitung kembalian dengan greedy", "mencoba semua cara dengan brute force", "menguji kasus saat greedy gagal"].forEach((s, i) => {
+        const u = ease((l - 0.6 - i * 0.7) / 0.5); if (u <= 0) return; ctx.globalAlpha = u;
+        card(ctx, 260, 280 + i * 104, 780, 84, { fill: C.bg2, r: 16 }); text(ctx, "✓", 300, 336 + i * 104, 36, { weight: 900, color: GREEN }); text(ctx, s, 350, 334 + i * 104, 30, { weight: 800 }); ctx.globalAlpha = 1;
+      });
+      card(ctx, 1090, 280, 580, 420, { fill: "#FFF9E0", r: 22 });
+      text(ctx, "Kembalian 6, koin 4, 3, 1", 1380, 335, 28, { align: "center", weight: 900 });
+      text(ctx, "greedy", 1130, 425, 26, { weight: 900, color: RED }); coins(ctx, 1300, 415, [4, 1, 1], 36);
+      text(ctx, "3 koin", 1620, 425, 24, { align: "right", weight: 800, color: RED });
+      text(ctx, "brute force", 1130, 545, 26, { weight: 900, color: GREEN }); coins(ctx, 1300, 535, [3, 3], 36);
+      text(ctx, "2 koin", 1620, 545, 24, { align: "right", weight: 800, color: GREEN });
+      text(ctx, "Mana yang benar? Kita uji!", 1380, 650, 26, { align: "center", weight: 800, color: C.ink2 });
+    },
+    prasyarat(ctx, b, l) {
+      card(ctx, 160, 150, 1600, 660);
+      text(ctx, "EPISODE YANG DILENGKAPI", 960, 240, 32, { align: "center", weight: 900, color: C.accentDark });
+      [["F11.6", "Strategi Algoritmik dan Alternatif Solusi", "greedy, brute force"], ["F12.0", "Perulangan, List, dan Fungsi", "fungsi terbesar tanpa max"]].forEach(([c, t, s], i) => {
+        const x = 300 + i * 680; card(ctx, x, 300, 620, 320, { fill: C.bg2, r: 22 });
+        text(ctx, c, x + 310, 385, 58, { align: "center", weight: 900, color: C.kiko }); para(ctx, t, x + 310, 455, 32, 560, { align: "center", weight: 800, lh: 1.2 });
+        text(ctx, s, x + 310, 590, 24, { align: "center", weight: 600, color: C.ink2 });
+      });
+      kiko(ctx, 1660, 735, 90, 0, { wave: l });
+    },
+
+    ketik_terbesar(ctx, b, l) {
+      const sp = spanOf(b), f = l / sp;
+      const a = nb(ctx);
+      const T = typedCell(TB, ph(l, sp, 0.12, 0.6));
+      const c = LK.cell(ctx, cx0(a), a.y + 24, cw0(a), { ...(f < 0.12 ? { lines: [""], caret: { line: 0, col: 0 } } : T), size: 32, active: true, run: "ready", blink: f < 0.6 || blinkAt(l), minLines: 6 });
+      if (f < 0.14) call(ctx, 420, "Notebook baru: Kembalian.ipynb", 360, a.y - 30);
+      const sd = sider();
+      if (f > 0.3) { LK.focus(ctx, codeBox(c.code, 0, "(daftar)", TB), { t: l, pad: 2 }); sd(ctx, "Parameter: sebuah list", lineEnd(c.code, 0, TB).x, lineEnd(c.code, 0, TB).y); }
+      if (f > 0.66) { LK.focus(ctx, codeBox(c.code, 1, "hasil = daftar[0]", TB), { t: l + 1, pad: 2, color: GREEN }); sd(ctx, "Nilai awal: isi pertama list (indeks 0)", lineEnd(c.code, 1, TB).x, lineEnd(c.code, 1, TB).y, { fill: C.goodBg, color: GREEN }); }
+      card(ctx, 1450, 560, 370, 190, { fill: "#FFF9E0", r: 16 }); text(ctx, "Tanpa max( )", 1635, 610, 28, { align: "center", weight: 900 });
+      para(ctx, "tugas dari F12.0: tulis sendiri caranya", 1635, 660, 23, 330, { align: "center", weight: 700, color: C.ink2, lh: 1.25 });
+    },
+    arti_terbesar(ctx, b, l) {
+      const sp = spanOf(b), f = l / sp;
+      const a = nb(ctx);
+      const c = LK.cell(ctx, cx0(a), a.y + 24, cw0(a), { lines: TB, size: 32, active: true, run: "ready", minLines: 6 });
+      const n = stepAt(f, [0.05, 0.4, 0.75]);
+      if (n >= 1) LK.focus(ctx, codeBox(c.code, 2, "for x in daftar:", TB), { t: l, pad: 2 });
+      if (n >= 2) LK.focus(ctx, { ...codeBox(c.code, 3, "if x > hasil:", TB), h: c.code.lh * 2 - 4 }, { t: l, pad: 2, color: BLUE });
+      if (n >= 3) LK.focus(ctx, codeBox(c.code, 5, "return hasil", TB), { t: l, pad: 2, color: GREEN });
+      // pelacak: [80, 60, 90]
+      const L3 = [80, 60, 90], k = clamp(Math.floor(ph(l, sp, 0.05, 0.75) * 3), 0, 2), hs = [80, 80, 90];
+      card(ctx, 160, 560, 1200, 230, { fill: "#FFFFFF", stroke: "#D7E2DC", lw: 3, r: 16 });
+      text(ctx, "daftar = [80, 60, 90]", 190, 605, 26, { weight: 800, color: C.ink2 });
+      L3.forEach((v, i) => { const x = 200 + i * 130, on = i === k, done = i < k; ctx.fillStyle = on ? "#FFF3D6" : done ? "#EEF2F5" : "#FFFFFF"; rr(ctx, x, 630, 110, 70, 10); ctx.fill();
+        ctx.strokeStyle = on ? C.accent : "#C9D4DB"; ctx.lineWidth = on ? 4 : 2; rr(ctx, x, 630, 110, 70, 10); ctx.stroke(); text(ctx, String(v), x + 55, 678, 34, { align: "center", weight: 800 }); });
+      text(ctx, "x = " + L3[k], 640, 678, 32, { weight: 900, color: C.accentDark });
+      text(ctx, k === 2 ? "90 > 80 → ganti" : k === 1 ? "60 > 80? tidak" : "mulai", 640, 740, 26, { weight: 800, color: k === 2 ? BLUE : C.ink2 });
+      card(ctx, 1000, 620, 320, 120, { fill: k === 2 && f > 0.6 ? C.goodBg : C.bg2, r: 14 }); text(ctx, "hasil", 1160, 660, 24, { align: "center", weight: 800, color: C.ink2 }); text(ctx, String(hs[k]), 1160, 718, 46, { align: "center", weight: 900 });
+      LK.steps(ctx, "ALUR", ["Bandingkan satu per satu.", "Lebih besar? Ganti.", "return hasilnya."], n - 1 < 0 ? 0 : n - 1 + (f > 0.95 ? 1 : 0));
+    },
+    uji_terbesar(ctx, b, l) {
+      const sp = spanOf(b), f = l / sp;
+      const a = nb(ctx);
+      const c1 = LK.cell(ctx, cx0(a), a.y + 18, cw0(a), { lines: TB, size: 26, run: "done", count: 1 });
+      const T = typedCell(TBU, ph(l, sp, 0.03, 0.2));
+      const r = runOpt(f, 0.24, 0.28, ["90", "7", "-2"], 2);
+      const c2 = LK.cell(ctx, cx0(a), c1.bottom + 16, cw0(a), { ...(f < 0.24 ? T : { lines: TBU }), size: 26, active: true, blink: blinkAt(l), outSize: 28, ...r });
+      keys(ctx, ["Shift", "Enter"], clamp((f - 0.21) / 0.06, 0, 1));
+      [["kasus biasa", C.ink], ["isi hanya satu angka", BLUE], ["semua angka negatif", GREEN]].forEach(([s, col], i) => { if (f > 0.3 + i * 0.2) outNote(ctx, c2, i, s, col); });
+    },
+
+    ketik_greedy(ctx, b, l) {
+      const sp = spanOf(b), f = l / sp;
+      const a = nb(ctx);
+      const T = typedCell(GR, ph(l, sp, 0.04, 0.55));
+      const c = LK.cell(ctx, cx0(a), a.y + 24, cw0(a), { ...T, size: 30, active: true, run: "ready", blink: f < 0.55 || blinkAt(l), minLines: 8 });
+      const sd = sider();
+      if (f > 0.25) { LK.focus(ctx, codeBox(c.code, 0, "(jumlah, koin)", GR), { t: l, pad: 2 }); sd(ctx, "Menerima jumlah dan list koin", lineEnd(c.code, 0, GR).x, lineEnd(c.code, 0, GR).y); }
+      if (f > 0.45) { LK.focus(ctx, codeBox(c.code, 1, "# koin harus urut dari terbesar", GR), { t: l + 1, pad: 2, color: RED }); sd(ctx, "Syarat: koin urut dari terbesar", lineEnd(c.code, 1, GR).x, lineEnd(c.code, 1, GR).y, { fill: "#FDECEA", color: RED }); }
+      if (f > 0.62) { LK.focus(ctx, codeBox(c.code, 2, "hasil = []", GR), { t: l + 2, pad: 2, color: GREEN }); sd(ctx, "List kosong untuk mengumpulkan koin", lineEnd(c.code, 2, GR).x, lineEnd(c.code, 2, GR).y, { fill: C.goodBg, color: GREEN }); }
+    },
+    arti_greedy(ctx, b, l) {
+      const sp = spanOf(b), f = l / sp;
+      const a = nb(ctx);
+      const c = LK.cell(ctx, cx0(a), a.y + 24, cw0(a), { lines: GR, size: 30, active: true, run: "ready", minLines: 8 });
+      // pelacak: 800 dengan [500, 200, 100]
+      const st = [[800, []], [300, [500]], [100, [500, 200]], [0, [500, 200, 100]]], ks = [500, 500, 200, 100];
+      const k = clamp(Math.floor(ph(l, sp, 0.08, 0.8) * 4), 0, 3);
+      LK.focus(ctx, { ...codeBox(c.code, 4, "while jumlah >= k:", GR), h: c.code.lh * 3 - 4 }, { t: l, pad: 2, color: BLUE });
+      if (f > 0.4) { LK.focus(ctx, codeBox(c.code, 5, "hasil.append(k)", GR), { t: l + 1, pad: 2, color: GREEN }); }
+      card(ctx, 1440, 130, 390, 560, { fill: "#FFFFFF", stroke: "#D7E2DC", lw: 3, r: 16 });
+      text(ctx, "kembalian 800", 1635, 175, 26, { align: "center", weight: 900, color: C.accentDark });
+      text(ctx, "koin [500, 200, 100]", 1635, 210, 21, { align: "center", weight: 700, color: C.ink2 });
+      text(ctx, "jumlah", 1470, 280, 24, { weight: 800, color: C.ink2 }); text(ctx, String(st[k][0]), 1800, 285, 44, { align: "right", weight: 900 });
+      if (k > 0) text(ctx, `ambil ${ks[k]}`, 1635, 350, 28, { align: "center", weight: 900, color: GREEN });
+      text(ctx, "hasil", 1470, 420, 24, { weight: 800, color: C.ink2 });
+      st[k][1].forEach((v, i) => coin(ctx, 1500 + i * 108, 490, v, 46));
+      LK.mono(ctx, 22, 700); ctx.fillStyle = C.kikoDark; ctx.textAlign = "center"; ctx.fillText(JSON.stringify(st[k][1]).replace(/,/g, ", "), 1635, 590);
+      if (k === 3) text(ctx, "jumlah 0 → selesai", 1635, 650, 24, { align: "center", weight: 900, color: GREEN });
+    },
+    uji_greedy(ctx, b, l) {
+      const sp = spanOf(b), f = l / sp;
+      const a = nb(ctx);
+      const c1 = LK.cell(ctx, cx0(a), a.y + 18, cw0(a), { lines: GR, size: 26, run: "done", count: 3 });
+      const T = typedCell(GRU1, ph(l, sp, 0.03, 0.3));
+      const r = runOpt(f, 0.34, 0.38, ["[500, 200, 100]"], 4);
+      const c2 = LK.cell(ctx, cx0(a), c1.bottom + 16, cw0(a), { ...(f < 0.34 ? T : { lines: GRU1 }), size: 26, active: true, blink: blinkAt(l), outSize: 28, ...r });
+      keys(ctx, ["Shift", "Enter"], clamp((f - 0.31) / 0.06, 0, 1));
+      if (f > 0.4) { card(ctx, 1440, 200, 390, 330, { fill: C.goodBg, r: 18 }); text(ctx, "3 koin", 1635, 260, 34, { align: "center", weight: 900, color: GREEN });
+        coins(ctx, 1475, 350, [500, 200, 100], 52, 12); para(ctx, "untuk koin rupiah: jawaban terbaik ✓", 1635, 455, 24, 340, { align: "center", weight: 800, color: GREEN, lh: 1.25 }); }
+    },
+    greedy_gagal(ctx, b, l) {
+      const sp = spanOf(b), f = l / sp;
+      const a = nb(ctx);
+      const c1 = LK.cell(ctx, cx0(a), a.y + 18, cw0(a), { lines: GR, size: 22, run: "done", count: 3 });
+      const c2 = LK.cell(ctx, cx0(a), c1.bottom + 14, cw0(a), { lines: GRU1, size: 22, run: "done", count: 4, outSize: 24, out: ["[500, 200, 100]"] });
+      const T = typedCell(GRU2, ph(l, sp, 0.03, 0.2));
+      const r = runOpt(f, 0.23, 0.27, ["[4, 1, 1]"], 5);
+      const c3 = LK.cell(ctx, cx0(a), c2.bottom + 14, cw0(a), { ...(f < 0.23 ? T : { lines: GRU2 }), size: 22, active: true, blink: blinkAt(l), outSize: 24, ...r });
+      if (f > 0.05) { card(ctx, 1440, 140, 390, 300, { fill: "#FDECEA", stroke: RED, lw: 3, r: 18 }); text(ctx, "greedy: 3 koin", 1635, 195, 30, { align: "center", weight: 900, color: RED });
+        coins(ctx, 1500, 290, [4, 1, 1], 44, 12); text(ctx, "4 + 1 + 1 = 6", 1635, 400, 26, { align: "center", weight: 800 }); }
+      if (f > 0.68) { card(ctx, 1440, 470, 390, 300, { fill: C.goodBg, stroke: GREEN, lw: 3, r: 18 }); text(ctx, "padahal: 2 koin", 1635, 525, 30, { align: "center", weight: 900, color: GREEN });
+        coins(ctx, 1550, 620, [3, 3], 44, 12); text(ctx, "3 + 3 = 6", 1635, 730, 26, { align: "center", weight: 800 }); }
+    },
+
+    ketik_brute(ctx, b, l) {
+      const sp = spanOf(b), f = l / sp;
+      const a = nb(ctx);
+      const T = typedCell(BR, ph(l, sp, 0.03, 0.5));
+      const c = LK.cell(ctx, cx0(a), a.y + 20, cw0(a), { ...T, size: 27, active: true, run: "ready", blink: f < 0.5 || blinkAt(l), minLines: 12 });
+      const sd = sider();
+      if (f > 0.5) { LK.focus(ctx, { ...codeBox(c.code, 4, "for k in koin:", BR), h: c.code.lh * 2 - 4 }, { t: l, pad: 2 }); sd(ctx, "Coba setiap koin yang muat", lineEnd(c.code, 4, BR).x, lineEnd(c.code, 4, BR).y); }
+      if (f > 0.7) { LK.focus(ctx, codeBox(c.code, 6, "kembalian_brute(jumlah - k, koin)", BR), { t: l + 1, pad: 2, color: BLUE }); sd(ctx, "Cari yang terbaik untuk sisanya: memanggil fungsi yang sama", lineEnd(c.code, 6, BR).x, lineEnd(c.code, 6, BR).y, { fill: "#E7F1FB", color: BLUE }); }
+    },
+    arti_brute(ctx, b, l) {
+      const sp = spanOf(b), f = l / sp;
+      const a = nb(ctx);
+      const c = LK.cell(ctx, cx0(a), a.y + 20, cw0(a), { lines: BR, size: 27, active: true, run: "ready", minLines: 12 });
+      const sd = sider();
+      if (f > 0.03) { LK.focus(ctx, { ...codeBox(c.code, 1, "if jumlah == 0:", BR), h: c.code.lh * 2 - 4 }, { t: l, pad: 2, color: GREEN }); sd(ctx, "Base case: jumlah 0 → list kosong", lineEnd(c.code, 1, BR).x + 120, lineEnd(c.code, 1, BR).y, { fill: C.goodBg, color: GREEN }); }
+      if (f > 0.45) { LK.focus(ctx, { ...codeBox(c.code, 9, "if terbaik is None or len(coba) < len(terbaik):", BR), h: c.code.lh * 2 - 4 }, { t: l + 1, pad: 2, color: C.accent }); sd(ctx, "Lebih sedikit koin? Simpan di terbaik.", lineEnd(c.code, 9, BR).x, lineEnd(c.code, 9, BR).y); }
+    },
+    uji_brute(ctx, b, l) {
+      const sp = spanOf(b), f = l / sp;
+      const a = nb(ctx);
+      const c1 = LK.cell(ctx, cx0(a), a.y + 16, cw0(a), { lines: BR, size: 19, run: "done", count: 6 });
+      const T = typedCell(BRU, ph(l, sp, 0.03, 0.2));
+      const r = runOpt(f, 0.23, 0.27, ["[3, 3]", "[500, 200, 100]"], 7);
+      const c2 = LK.cell(ctx, cx0(a), c1.bottom + 14, cw0(a), { ...(f < 0.23 ? T : { lines: BRU }), size: 21, active: true, blink: blinkAt(l), outSize: 23, ...r });
+      // pohon cobaan untuk 6
+      if (f > 0.08) { card(ctx, 1440, 130, 390, 470, { fill: "#FFFFFF", stroke: "#D7E2DC", lw: 3, r: 16 }); text(ctx, "semua cobaan untuk 6", 1635, 172, 23, { align: "center", weight: 900, color: C.accentDark });
+        [["ambil 4", "sisa 2 → [1, 1]", [4, 1, 1]], ["ambil 3", "sisa 3 → [3]", [3, 3]], ["ambil 1", "sisa 5 → [4, 1]", [1, 4, 1]]].forEach(([s, t, cs], i) => {
+          const on = f > 0.1 + i * 0.12; if (!on) return; const y = 200 + i * 130, best = i === 1 && f > 0.6;
+          if (best) { ctx.fillStyle = C.goodBg; rr(ctx, 1452, y, 366, 120, 12); ctx.fill(); }
+          text(ctx, s, 1465, y + 32, 22, { weight: 900 }); text(ctx, t, 1580, y + 32, 20, { weight: 700, color: C.ink2 });
+          coins(ctx, 1465, y + 82, cs, 26, 8); text(ctx, cs.length + " koin" + (best ? " ✓" : ""), 1805, y + 90, 22, { align: "right", weight: 900, color: best ? GREEN : C.ink }); }); }
+      if (f > 0.75) outNote(ctx, c2, 1, "sama dengan greedy", BLUE, c2.x + 330);
+    },
+    brute_lambat(ctx, b, l) {
+      const sp = spanOf(b), f = l / sp;
+      const a = nb(ctx);
+      // jeda tampil sebanding (dimampatkan) dengan waktu sungguhan: 20 cepat, 30 sebentar, 35 lama
+      const out = f < 0.12 ? [] : f < 0.35 ? LB_OUT.slice(0, 1) : f < 0.7 ? LB_OUT.slice(0, 2) : LB_OUT;
+      const running = f >= 0.08 && f < 0.7;
+      const c = LK.cell(ctx, cx0(a), a.y + 24, cw0(a), { lines: LB, size: 25, active: true, run: f < 0.08 ? "ready" : running ? "running" : "done", spin: l, count: 8, outSize: 30, out });
+      const bars = [[20, 0.007], [30, 0.728], [35, 7.281]];
+      card(ctx, 1440, 130, 390, 420, { fill: "#FFFFFF", stroke: "#D7E2DC", lw: 3, r: 16 }); text(ctx, "waktu (detik)", 1635, 172, 24, { align: "center", weight: 900, color: C.ink2 });
+      bars.forEach(([j, t], i) => { if (out.length <= i) return; const y = 200 + i * 110; text(ctx, "kembalian " + j, 1462, y + 28, 23, { weight: 800 });
+        const w = Math.max(6, 250 * t / 7.281); ctx.fillStyle = i === 2 ? RED : C.accent; rr(ctx, 1462, y + 44, w, 34, 8); ctx.fill(); text(ctx, String(t).replace(".", ","), 1474 + w, y + 70, 24, { weight: 900 }); });
+      if (f > 0.75) { card(ctx, 1440, 580, 390, 170, { fill: "#FDECEA", r: 18 }); para(ctx, "+5 rupiah → sekitar 10 kali lebih lama", 1635, 640, 28, 340, { align: "center", weight: 900, color: RED, lh: 1.25 }); }
+    },
+    tabel_uji(ctx, b, l) {
+      const A = b.audio || b.dur;
+      card(ctx, 160, 140, 1600, 680);
+      text(ctx, "TABEL KASUS UJI", 960, 205, 32, { align: "center", weight: 900, color: C.accentDark });
+      const X = [230, 470, 840, 1150, 1480], hdr = ["jumlah", "koin", "greedy", "brute force", "hasil"];
+      ctx.fillStyle = "#EEF2F5"; rr(ctx, 210, 240, 1500, 56, 10); ctx.fill(); hdr.forEach((h, i) => text(ctx, h, X[i], 278, 26, { weight: 900, color: C.ink2 }));
+      const R = [["800", "[500, 200, 100]", [500, 200, 100], [500, 200, 100], "sama ✓", GREEN], ["6", "[4, 3, 1]", [4, 1, 1], [3, 3], "greedy gagal ✗", RED]];
+      R.forEach(([j, k, g, bf, s, col], i) => { const on = l > A * (0.15 + i * 0.35); if (!on) return; const y = 330 + i * 200;
+        ctx.fillStyle = i ? "#FDF0EF" : "#EFF8F2"; rr(ctx, 210, y, 1500, 170, 12); ctx.fill();
+        text(ctx, j, X[0], y + 98, 40, { weight: 900 }); LK.mono(ctx, 24, 700); ctx.fillStyle = C.kikoDark; ctx.textAlign = "left"; ctx.fillText(k, X[1], y + 95);
+        const r = i ? 34 : 40; coins(ctx, X[2], y + 85, g, r, 8); coins(ctx, X[3], y + 85, bf, r, 8);
+        para(ctx, s, X[4] + 100, y + 95, 28, 220, { align: "center", weight: 900, color: col, lh: 1.15 }); });
+    },
+
+    coba(ctx, b, l) {
+      card(ctx, 160, 140, 1600, 680, { stroke: C.accent, lw: 6 });
+      ctx.fillStyle = C.accent; ctx.beginPath(); ctx.arc(330, 290, 76, 0, Math.PI * 2); ctx.fill();
+      ctx.fillStyle = "#FFFFFF"; rr(ctx, 298, 252, 22, 76, 6); ctx.fill(); rr(ctx, 340, 252, 22, 76, 6); ctx.fill();
+      text(ctx, "COBA SEKARANG", 450, 275, 44, { weight: 900, color: C.accentDark }); text(ctx, "Hentikan video, kerjakan, lalu putar lagi.", 450, 325, 30, { weight: 700, color: C.ink2 });
+      (b.coba || []).forEach((s, i) => { card(ctx, 230, 400 + i * 98, 860, 82, { fill: C.bg2, r: 16 }); text(ctx, String(i + 1), 276, 452 + i * 98, 34, { align: "center", weight: 900, color: C.kiko }); text(ctx, s, 320, 452 + i * 98, 27, { weight: 700, fit: 740 }); });
+      card(ctx, 1140, 380, 560, 400, { fill: "#FFFFFF", stroke: "#D7E2DC", lw: 3, r: 16 }); text(ctx, "Tiga fungsi", 1170, 425, 24, { weight: 900, color: C.ink2 });
+      LK.code(ctx, 1160, 450, ["def terbesar(daftar):", "    ...", "def kembalian_greedy(jumlah, koin):", "    ...", "def kembalian_brute(jumlah, koin):", "    ..."], { size: 20, nums: false, w: 520, lh: 50 });
+    },
+    periksa(ctx, b, l) {
+      const A = b.audio || b.dur;
+      card(ctx, 160, 140, 1600, 680);
+      text(ctx, "PERIKSA HASILMU", 960, 205, 32, { align: "center", weight: 900, color: C.accentDark });
+      const R = [["terbesar([80, 60, 90])", "90"], ["terbesar([7])", "7"], ["terbesar([-5, -2, -9])", "-2"], ["kembalian_greedy(6, [4, 3, 1])", "[4, 1, 1]"], ["kembalian_brute(6, [4, 3, 1])", "[3, 3]"]];
+      R.forEach(([q, v], i) => { const on = l > A * (0.08 + (i < 3 ? 0 : 0.4) + i * 0.05); const y = 280 + i * 100; ctx.globalAlpha = on ? 1 : 0.3;
+        ctx.fillStyle = i % 2 ? "#FFFFFF" : "#F4F6F8"; rr(ctx, 240, y - 50, 1440, 80, 12); ctx.fill();
+        LK.code(ctx, 270, y - 40, [q], { size: 28, nums: false, w: 900 }); LK.mono(ctx, 32, 800); ctx.fillStyle = i === 3 ? RED : GREEN; ctx.textAlign = "right"; ctx.fillText(v, 1560, y + 2);
+        if (on) text(ctx, "✓", 1650, y + 4, 40, { align: "right", weight: 900, color: GREEN }); ctx.globalAlpha = 1; });
+    },
+    salah_urut(ctx, b, l) {
+      const sp = spanOf(b), f = l / sp;
+      const a = nb(ctx);
+      const fixed = f > 0.72;
+      const line = fixed ? "print(kembalian_greedy(6, [4, 3, 1]))" : "print(kembalian_greedy(6, [1, 3, 4]))";
+      const c1 = LK.cell(ctx, cx0(a), a.y + 18, cw0(a), { lines: GR, size: 26, run: "done", count: 3 });
+      const c2 = LK.cell(ctx, cx0(a), c1.bottom + 16, cw0(a), { lines: [line], size: 28, active: true, run: "done", count: fixed ? 10 : 9, outSize: 30, out: [fixed ? "[4, 1, 1]" : "[1, 1, 1, 1, 1, 1]"],
+        boxes: [{ line: 0, from: 26, to: 35, color: fixed ? GREEN : RED }] });
+      const sd = sider();
+      if (!fixed && f > 0.1) { sd(ctx, "Koin ditulis dari yang terkecil", c2.code.at(0, 37).x + 10, c2.code.top(0) + 20, { fill: "#FDECEA", color: RED });
+        if (f > 0.3) { coins(ctx, 1460, 230, [1, 1, 1, 1, 1, 1], 26, 6); text(ctx, "6 koin ✗", 1635, 320, 30, { align: "center", weight: 900, color: RED }); } }
+      if (!fixed && f > 0.3) LK.focus(ctx, codeBox(c1.code, 1, "# koin harus urut dari terbesar", GR), { t: l, pad: 2, color: RED });
+      if (fixed) { sd(ctx, "Urutkan dari terbesar: [4, 3, 1]", c2.code.at(0, 37).x + 10, c2.code.top(0) + 20, { fill: C.goodBg, color: GREEN }); }
+    },
+    salah_print(ctx, b, l) {
+      const sp = spanOf(b), f = l / sp;
+      const a = nb(ctx);
+      const bad = TB.slice(0, 5).concat(["    print(hasil)"]), good = TB;
+      const fixed = f > 0.75;
+      const c1 = LK.cell(ctx, cx0(a), a.y + 18, cw0(a), { lines: fixed ? good : bad, size: 28, run: "done", count: fixed ? 13 : 11, active: fixed, boxes: [{ line: 5, from: 4, to: fixed ? 16 : 16, color: fixed ? GREEN : RED }] });
+      const T2 = ["y = terbesar([80, 60, 90])", "print(y)"];
+      const c2 = LK.cell(ctx, cx0(a), c1.bottom + 16, cw0(a), { lines: T2, size: 28, active: !fixed, run: "done", count: fixed ? 14 : 12, outSize: 30, out: fixed ? ["90"] : ["90", "None"] });
+      if (!fixed && c2.out) { outNote(ctx, c2, 0, "dari print di dalam fungsi", C.ink, c2.x + 200);
+        if (f > 0.35) { LK.focus(ctx, { x: c2.x + 84, y: c2.out.lines[1] - 30, w: 90, h: 40 }, { t: l, color: RED, pad: 2 }); outNote(ctx, c2, 1, "y berisi None", RED, c2.x + 200); } }
+      if (fixed) sider()(ctx, "Pakai return: y berisi 90 dan bisa diolah lagi.", c1.code.at(5, 17).x + 10, c1.code.top(5) + 20, { fill: C.goodBg, color: GREEN });
+    },
+    latihan(ctx, b, l) {
+      card(ctx, 160, 150, 1600, 660);
+      text(ctx, "BERLATIH LAGI", 960, 230, 32, { align: "center", weight: 900, color: C.accentDark });
+      card(ctx, 260, 290, 680, 420, { fill: C.bg2, r: 22 }); text(ctx, "Halaman latihan F11.6", 600, 360, 34, { align: "center", weight: 900 });
+      text(ctx, "mesin kembalian", 600, 410, 28, { align: "center", weight: 700, color: C.ink2 });
+      card(ctx, 320, 450, 560, 70, { fill: "#FFFFFF", r: 12 }); text(ctx, "belajar-informatika.vercel.app/f116", 600, 496, 26, { align: "center", weight: 800, color: C.kikoDark });
+      coins(ctx, 420, 620, [4, 3, 1], 40, 16); text(ctx, "greedy lawan brute force", 600, 690, 24, { align: "center", weight: 700, color: C.ink2 });
+      card(ctx, 1000, 290, 660, 420, { fill: "#FFF9E0", r: 22 }); text(ctx, "Tugas nyata", 1330, 360, 34, { align: "center", weight: 900 });
+      para(ctx, "Tulis satu paragraf justifikasi: kapan memakai greedy, kapan brute force, dan apa alasannya?", 1330, 430, 28, 560, { align: "center", weight: 700, lh: 1.3 });
+      kiko(ctx, 1680, 740, 90, 0, { wave: l });
+    }
+  });
+})(typeof window !== "undefined" ? window : globalThis);
+</script>
+<script>window.__YT = [];
+const YT_CHANNEL = "https://www.youtube.com/@iteachswe";   // channel YouTube Bu Dewi (video lengkap seri ini)
+/* Inti halaman latihan: pemutar (kanvas + narasi), tombol suara nyala/mati (berpindah antara timeline suara dan teks),
+   kuis dengan petunjuk, dan kemajuan di localStorage (perangkat ini saja).
+   Pakai:  const P = PageCore({ suara: TIMELINE_SUARA_atau_null, teks: TIMELINE_TEKS });
+   Episode menambahkan latihannya sendiri lewat P.$, P.K, P.H, P.progress, P.save(), P.speed(), P.onProgress(fn). */
+function PageCore(TLS, opt = {}) {
+  const $ = id => document.getElementById(id);
+  const K = Kiko, H = K.helpers;
+  let voice = !!TLS.suara; let TL = voice ? TLS.suara : TLS.teks;
+  // ---------- progress storage (per device only) ----------
+  const KEY = opt.key || TL.episode.replace(/\./g, "").toLowerCase() + "-progress";   // D7.5 -> "d75-progress"
+  let progress = { quiz: {} };
+  try { const s = localStorage.getItem(KEY); if (s) progress = { quiz: {}, ...JSON.parse(s) }; } catch (e) {}
+  const extras = [];
+  function renderProgress() {
+    const el = $("progress"); if (!el) return; el.innerHTML = "";
+    Object.keys(TL.quizzes).forEach((id, i) => { const s = document.createElement("span"); s.textContent = "Cek " + (i + 1); s.className = progress.quiz[id] ? "ok" : ""; el.appendChild(s); });
+    extras.forEach(f => f(el));
+  }
+  function save() { try { localStorage.setItem(KEY, JSON.stringify(progress)); } catch (e) {} renderProgress(); }
+
+  // ---------- player ----------
+  const cv = $("screen"), ctx = cv.getContext("2d");
+  let t = 0, playing = false, last = 0, speed = 1, hasAudio = false;
+  const nar = $("nar"); nar.addEventListener("canplay", () => { hasAudio = true; }); nar.addEventListener("error", () => { hasAudio = false; });
+  function fmt(s) { s = Math.max(0, Math.floor(s)); return Math.floor(s / 60) + ":" + String(s % 60).padStart(2, "0"); }
+  function segStart(i) { return TL.beats.find(b => b.seg === i).start; }
+  function syncAudio() { if (voice && hasAudio) { try { nar.currentTime = t; } catch (e) {} } }
+  function drawNow() {
+    const b = K.draw(ctx, Math.min(t, TL.total - 0.01), TL);
+    $("barfill").style.width = (t / TL.total * 100) + "%"; $("bar").setAttribute("aria-valuenow", Math.round(t / TL.total * 100));
+    $("timelabel").textContent = fmt(t) + " / " + fmt(TL.total);
+    [...$("chapters").children].forEach((c, i) => c.classList.toggle("now", i === b.seg));
+    return b;
+  }
+  function loop(now) {
+    if (!playing) return;
+    const dt = Math.min(0.1, (now - last) / 1000); last = now; if (voice && hasAudio && !nar.paused) t = nar.currentTime; else t += dt * speed;
+    if (t >= TL.total) { t = TL.total - 0.01; setPlaying(false); }
+    drawNow(); requestAnimationFrame(loop);
+  }
+  function setPlaying(p) {
+    playing = p; $("bigplay").hidden = p; $("playbtn").textContent = p ? "❚❚ Jeda" : "▶ Putar";
+    if (p) { last = performance.now(); if (voice && hasAudio) { try { nar.currentTime = t; nar.playbackRate = speed; nar.play().catch(() => {}); } catch (e) {} } requestAnimationFrame(loop); } else nar.pause();
+  }
+  $("bigplay").addEventListener("click", () => setPlaying(true));
+  $("playbtn").addEventListener("click", () => setPlaying(!playing));
+  $("replay").addEventListener("click", () => { const b = K.beatAt(TL, t); t = segStart(b.seg); syncAudio(); drawNow(); setPlaying(true); });
+  $("slow").addEventListener("click", e => { speed = speed === 1 ? 0.8 : 1; nar.playbackRate = speed; e.currentTarget.setAttribute("aria-pressed", speed !== 1); });
+  function seekFromBar(ev) { const r = $("bar").getBoundingClientRect(); const x = (ev.touches ? ev.touches[0].clientX : ev.clientX) - r.left; t = Math.max(0, Math.min(TL.total - 0.01, x / r.width * TL.total)); syncAudio(); drawNow(); }
+  $("bar").addEventListener("click", seekFromBar);
+  $("bar").addEventListener("keydown", e => { if (e.key === "ArrowRight") { t = Math.min(TL.total - 0.01, t + 5); syncAudio(); drawNow(); } if (e.key === "ArrowLeft") { t = Math.max(0, t - 5); syncAudio(); drawNow(); } });
+  TL.segments.forEach((name, i) => { const b = document.createElement("button"); b.textContent = (i + 1) + ". " + name; b.addEventListener("click", () => { t = segStart(i); syncAudio(); drawNow(); setPlaying(true); }); $("chapters").appendChild(b); });
+  // voice on/off: switches between the narrated timeline and the reading-paced one, staying on the same beat
+  const vb = $("voice");
+  function setVoice(on) {
+    const cur = K.beatAt(TL, t);
+    voice = on && !!TLS.suara; TL = voice ? TLS.suara : TLS.teks;
+    const nb = TL.beats.find(b => b.id === cur.id) || TL.beats[0]; t = nb.start;
+    if (vb) { vb.setAttribute("aria-pressed", voice); vb.textContent = voice ? "🔊 Suara: nyala" : "🔇 Suara: mati"; }
+    if (playing) { if (voice && hasAudio) { try { nar.currentTime = t; nar.playbackRate = speed; nar.play().catch(() => {}); } catch (e) {} } else nar.pause(); }
+    drawNow();
+  }
+  if (vb) { if (!TLS.suara || !TLS.teks) vb.hidden = true; else { vb.addEventListener("click", () => setVoice(!voice)); vb.setAttribute("aria-pressed", voice); vb.textContent = voice ? "🔊 Suara: nyala" : "🔇 Suara: mati"; } }
+  drawNow();
+
+  // ---------- quiz ----------
+  const quizEl = $("quiz");
+  if (quizEl) Object.entries(TL.quizzes).forEach(([id, q], qi) => {
+    const box = document.createElement("div"); box.className = "q";
+    box.innerHTML = `<h3>${qi + 1}. ${q.q}</h3><div class="opts"></div><div class="fb"></div>`;
+    const opts = box.querySelector(".opts"), fb = box.querySelector(".fb");
+    q.options.forEach((o, i) => {
+      const b = document.createElement("button"); b.innerHTML = `<b>${"ABC"[i]}</b><span>${o}</span>`;
+      b.addEventListener("click", () => {
+        [...opts.children].forEach(c => c.classList.remove("wrong"));
+        if (i === q.answer) { b.classList.add("right"); fb.className = "fb good"; fb.textContent = "Benar! " + (q.explain || ""); progress.quiz[id] = true; save(); [...opts.children].forEach(c => c.disabled = true); }
+        else { b.classList.add("wrong"); fb.className = "fb bad"; fb.textContent = "Belum tepat. Petunjuk: " + q.hint; }
+      });
+      opts.appendChild(b);
+    });
+    if (progress.quiz[id]) { opts.children[q.answer].classList.add("right"); [...opts.children].forEach(c => c.disabled = true); fb.className = "fb good"; fb.textContent = "Sudah dijawab benar."; }
+    quizEl.appendChild(box);
+  });
+  renderProgress();
+
+  // video YouTube (bila alamatnya sudah diisi di youtube_id.json): pemutar utama di atas; animasi tetap ada untuk luring
+  try {
+    const YTL = (typeof window !== "undefined" && window.__YT) || [];
+    const pl = document.querySelector("section.player");
+    if (YTL.length && pl && !document.getElementById("yt-video")) {
+      const sec = document.createElement("section"); sec.className = "card yt-video"; sec.id = "yt-video"; sec.setAttribute("aria-label", "Video YouTube");
+      const h = document.createElement("h2"); h.textContent = "Video"; sec.appendChild(h);
+      let row = null;
+      if (YTL.length > 1) { row = document.createElement("div"); row.className = "row"; sec.appendChild(row); }
+      const box = document.createElement("div"); box.className = "yt-frame"; sec.appendChild(box);
+      const show = (i) => {
+        box.innerHTML = "";
+        const f = document.createElement("iframe");
+        f.src = "https://www.youtube-nocookie.com/embed/" + YTL[i].id + "?rel=0";
+        f.title = "Video " + YTL[i].part; f.loading = "lazy"; f.allowFullscreen = true;
+        f.setAttribute("allow", "accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share");
+        box.appendChild(f);
+        if (row) [...row.children].forEach((b, j) => b.setAttribute("aria-pressed", String(j === i)));
+      };
+      if (row) YTL.forEach((x, i) => { const b = document.createElement("button"); b.textContent = "Bagian " + (i + 1); b.addEventListener("click", () => show(i)); row.appendChild(b); });
+      const note = document.createElement("p"); note.className = "hint"; note.textContent = "Tidak ada internet? Putar animasinya di bawah; teksnya sama dan bisa dipakai tanpa internet."; sec.appendChild(note);
+      show(0);
+      pl.insertAdjacentElement("beforebegin", sec);
+      const lab = document.createElement("div"); lab.className = "eyebrow"; lab.textContent = "Animasi interaktif (bisa tanpa internet)"; pl.insertAdjacentElement("afterbegin", lab);
+    }
+  } catch (e) {}
+  // ajakan ke channel YouTube (video lengkap): kartu tepat di bawah pemutar, di semua halaman latihan dan simulasi
+  try {
+    const pl = document.querySelector("section.player");
+    if (pl && !document.getElementById("yt-ajak")) {
+      const a = document.createElement("a"); a.id = "yt-ajak"; a.className = "yt-ajak"; a.href = YT_CHANNEL; a.target = "_blank"; a.rel = "noopener";
+      a.innerHTML = '<span class="yt-ic" aria-hidden="true">▶</span><span><b>Tonton video lengkapnya di YouTube</b><small>Subscribe channel @iteachswe untuk belajar lebih banyak.</small></span>';
+      pl.insertAdjacentElement("afterend", a);
+    }
+  } catch (e) {}
+  return { $, K, H, progress, save, renderProgress, speed: () => speed, timeline: () => TL,
+           onProgress(fn) { extras.push(fn); renderProgress(); } };
+}
+</script>
+<script>
+(function () {
+  const P = PageCore({ suara: {"episode": "S23", "title": "Fungsi dan List untuk Uang Kembalian", "label": "Simulasi Praktik · S23 · Notebook Python", "kind": "praktik", "for": ["F11.6", "F12.0"], "latihan": "F11.6", "hook": "menulis fungsi yang menerima list, menghitung uang kembalian dengan greedy dan brute force, lalu menguji kapan greedy gagal.", "engine": ["../../_alat/kiko-core.js", "../../_alat/layar.js", "../../_alat/layar_kode.js", "scenes.js"], "parts": {"S23": {"segs": [0, 1, 2, 3, 4, 5]}}, "recap": ["Fungsi menerima list, mengembalikan hasil dengan return.", "Greedy: ambil koin terbesar dulu; cepat, tetapi bisa gagal.", "Brute force: coba semua; selalu benar, tetapi cepat melambat."], "next": {"code": "S24", "title": "Membaca CSV dan Menguji Program Python", "note": "Simulasi praktik Python berikutnya.", "heading": "SIMULASI BERIKUTNYA"}, "youtube": {"ringkas": "Simulasi praktik langkah demi langkah di Colab: menulis fungsi terbesar tanpa max() dan mengujinya dengan tiga list, lalu menulis fungsi uang kembalian versi greedy dan brute force. Kasus uji memperlihatkan greedy benar untuk koin rupiah tetapi gagal untuk koin 4, 3, 1 dengan kembalian 6, dan brute force yang cepat melambat. Ada dua kesalahan yang sering terjadi (koin tidak urut, print bukan return), jeda untuk mencoba sendiri, dan dua cek pemahaman.", "belajar": ["menulis fungsi yang menerima list dan memakai return", "mencari nilai terbesar tanpa max()", "menghitung uang kembalian dengan greedy dan brute force", "menguji kasus saat greedy gagal"], "cari": ["algoritma greedy python uang kembalian", "brute force python contoh", "cara mencari nilai terbesar tanpa max python", "fungsi dan list python kelas 11", "perbedaan print dan return python"], "prasyarat": "episode F11.6 Strategi Algoritmik dan Alternatif Solusi, dan F12.0 Jembatan Kelas XII: Perulangan, List, dan Fungsi", "tagar": ["#Python", "#Greedy", "#Simulasi", "#Informatika", "#SMA"]}, "segments": ["Pembuka", "Fungsi terbesar", "Kembalian greedy", "Brute force dan kasus uji", "Coba dan periksa", "Penutup"], "quizzes": {"q1": {"q": "Baris pertama diganti hasil = 0. Apa hasil terbesar([-5, -2, -9])?", "options": ["-2", "0", "-9"], "answer": 1, "hint": "Tidak ada angka di list yang lebih besar dari 0."}, "q2": {"q": "Koin [4, 3, 1], kembalian 6. Berapa koin dari greedy dan dari brute force?", "options": ["greedy 2, brute force 2", "greedy 3, brute force 2", "greedy 3, brute force 3"], "answer": 1, "hint": "Greedy: 4 + 1 + 1. Brute force menemukan 3 + 3."}, "q3": {"q": "terbesar memakai print(hasil), bukan return hasil. y = terbesar([80, 60, 90]); print(y) mencetak apa?", "options": ["90", "None", "Error"], "answer": 1, "hint": "Fungsi tanpa return mengembalikan None."}}, "beats": [{"id": "intro1", "seg": 0, "scene": "title", "text": "Halo! Aku Kiko. Di simulasi ini, kita menulis fungsi dan list di Colab untuk menghitung uang kembalian, dengan cara greedy dan brute force.", "hold": 0.8, "start": 0.0, "speech": 0.4, "audio": 9.569, "dur": 13.34}, {"id": "intro2", "seg": 0, "scene": "tujuan", "text": "Setelah menonton, kamu bisa menulis fungsi yang menerima list dan mengembalikan hasil, lalu mengujinya, termasuk kasus saat greedy gagal.", "hold": 0.8, "start": 13.34, "speech": 13.74, "audio": 9.04, "dur": 11.34}, {"id": "intro3", "seg": 0, "scene": "prasyarat", "text": "Simulasi ini melengkapi episode F11.6 tentang strategi algoritmik dan F12.0 tentang perulangan, list, dan fungsi.", "hold": 0.8, "start": 24.68, "speech": 25.08, "audio": 9.148, "dur": 10.648}, {"id": "s1a", "seg": 1, "scene": "ketik_terbesar", "text": "Kita mulai dari tugas F12.0, yaitu fungsi terbesar tanpa max. Fungsi ini menerima sebuah list, lalu memakai isi pertamanya sebagai nilai terbesar sementara.", "hold": 1.2, "start": 35.328, "speech": 35.728, "audio": 11.628, "dur": 13.74}, {"id": "s1b", "seg": 1, "scene": "arti_terbesar", "text": "Perulangan for membandingkan isi list satu per satu. Kalau ada yang lebih besar, nilai sementara diganti. Di akhir, return mengembalikan hasilnya.", "hold": 1.2, "start": 49.068, "speech": 49.468, "audio": 9.898, "dur": 12.74}, {"id": "s1c", "seg": 1, "scene": "uji_terbesar", "text": "Uji dengan tiga list. List pertama menghasilkan sembilan puluh. List yang isinya hanya tujuh menghasilkan tujuh. List berisi angka negatif menghasilkan minus dua.", "hold": 1.2, "start": 61.808, "speech": 62.208, "audio": 11.283, "dur": 13.74}, {"id": "q1", "seg": 1, "scene": "quiz", "text": "Cek pemahaman. Baris pertama diganti menjadi hasil sama dengan nol. Apa hasil terbesar untuk list minus lima, minus dua, minus sembilan? Pikirkan dulu.", "hold": 4.0, "quiz": "q1", "start": 75.548, "speech": 75.948, "audio": 11.189, "dur": 16.54}, {"id": "q1a", "seg": 1, "scene": "quiz_answer", "text": "Jawabannya: nol, padahal nol tidak ada di dalam list. Karena itu, nilai awal diambil dari isi list sendiri, yaitu indeks nol.", "hold": 1.0, "quiz": "q1", "start": 92.088, "speech": 92.488, "audio": 9.905, "dur": 12.54}, {"id": "s2a", "seg": 2, "scene": "ketik_greedy", "text": "Sekarang uang kembalian. Fungsi kembalian_greedy menerima jumlah dan list koin yang urut dari terbesar. Koin yang dipakai dikumpulkan di list kosong bernama hasil.", "hold": 1.2, "start": 104.628, "speech": 105.028, "audio": 11.52, "dur": 13.74}, {"id": "s2b", "seg": 2, "scene": "arti_greedy", "text": "Untuk setiap koin, selama jumlahnya masih cukup, koin itu ditambahkan ke hasil dengan append, lalu jumlah dikurangi. Inilah greedy: ambil yang terbesar dulu.", "hold": 1.2, "start": 118.368, "speech": 118.768, "audio": 10.946, "dur": 13.74}, {"id": "s2c", "seg": 2, "scene": "uji_greedy", "text": "Kembalian delapan ratus dengan koin lima ratus, dua ratus, dan seratus menghasilkan tiga koin. Untuk koin rupiah, greedy memberi jawaban terbaik.", "hold": 1.2, "start": 132.108, "speech": 132.508, "audio": 9.524, "dur": 12.74}, {"id": "s2d", "seg": 2, "scene": "greedy_gagal", "text": "Sekarang kasus dari F11.6: kembalian enam dengan koin empat, tiga, dan satu. Greedy memberi empat, satu, dan satu, yaitu tiga koin. Padahal tiga tambah tiga cukup dua koin.", "hold": 1.5, "start": 144.848, "speech": 145.248, "audio": 14.962, "dur": 17.162}, {"id": "s3a", "seg": 3, "scene": "ketik_brute", "text": "Brute force mencoba semua kemungkinan. Untuk setiap koin yang muat, ambil koin itu, lalu cari kembalian terbaik untuk sisanya dengan memanggil fungsi yang sama.", "hold": 1.2, "start": 162.01, "speech": 162.41, "audio": 9.79, "dur": 14.24}, {"id": "s3b", "seg": 3, "scene": "arti_brute", "text": "Kalau jumlahnya nol, fungsi mengembalikan list kosong. Itulah base case. Dari semua cobaan, yang koinnya paling sedikit disimpan di variabel terbaik.", "hold": 1.2, "start": 176.25, "speech": 176.65, "audio": 9.835, "dur": 12.74}, {"id": "s3c", "seg": 3, "scene": "uji_brute", "text": "Jalankan untuk kembalian enam. Hasilnya tiga dan tiga, yaitu dua koin. Untuk delapan ratus, hasilnya sama dengan greedy.", "hold": 1.2, "start": 188.99, "speech": 189.39, "audio": 9.369, "dur": 11.269}, {"id": "q2", "seg": 3, "scene": "quiz", "text": "Cek pemahaman. Koin empat, tiga, dan satu, kembalian enam. Berapa koin dari greedy, dan berapa dari brute force? Pikirkan dulu.", "hold": 4.0, "quiz": "q2", "start": 200.259, "speech": 200.659, "audio": 10.045, "dur": 15.04}, {"id": "q2a", "seg": 3, "scene": "quiz_answer", "text": "Jawabannya: greedy tiga koin, brute force dua koin. Pilihan terbaik di setiap langkah belum tentu menghasilkan jawaban terbaik secara keseluruhan.", "hold": 1.0, "quiz": "q2", "start": 215.299, "speech": 215.699, "audio": 10.024, "dur": 12.04}, {"id": "s3d", "seg": 3, "scene": "brute_lambat", "text": "Tetapi brute force cepat melambat. Kembalian dua puluh selesai dalam sekejap, tiga puluh butuh hampir satu detik, dan tiga puluh lima butuh sekitar tujuh detik.", "hold": 1.5, "start": 227.339, "speech": 227.739, "audio": 10.383, "dur": 15.04}, {"id": "s3e", "seg": 3, "scene": "tabel_uji", "text": "Rangkum kasus ujinya dalam tabel. Untuk koin rupiah, keduanya sama. Untuk koin empat, tiga, dan satu, hanya brute force yang benar.", "hold": 1.5, "start": 242.379, "speech": 242.779, "audio": 9.547, "dur": 13.04}, {"id": "coba1", "seg": 4, "scene": "coba", "text": "Sekarang giliranmu. Hentikan dulu videonya, tulis ketiga fungsi, lalu jalankan semua kasus uji. Putar lagi videonya kalau sudah selesai.", "hold": 3.0, "coba": ["Tulis fungsi terbesar tanpa max().", "Tulis kembalian_greedy dan kembalian_brute.", "Uji: 800 dengan koin rupiah, 6 dengan [4, 3, 1].", "Bandingkan banyak koinnya."], "start": 255.419, "speech": 255.819, "audio": 9.438, "dur": 13.54}, {"id": "s4a", "seg": 4, "scene": "periksa", "text": "Periksa hasilmu. Terbesar memberi sembilan puluh, tujuh, dan minus dua. Untuk kembalian enam, greedy memberi tiga koin, sedangkan brute force memberi dua koin.", "hold": 1.5, "start": 268.959, "speech": 269.359, "audio": 11.508, "dur": 14.04}, {"id": "s4b", "seg": 4, "scene": "salah_urut", "text": "Kesalahan pertama: list koin ditulis dari yang terkecil. Greedy lalu mengambil koin satu terus-menerus, sehingga hasilnya enam koin. Urutkan koin dari terbesar.", "hold": 1.2, "start": 282.999, "speech": 283.399, "audio": 11.661, "dur": 13.561}, {"id": "q3", "seg": 4, "scene": "quiz", "quiz": "q3", "hold": 4.0, "text": "Cek pemahaman. Fungsi terbesar menulis print hasil, bukan return hasil. Lalu y diisi hasil fungsi itu, dan y dicetak. Apa yang tercetak untuk y? Pikirkan dulu.", "start": 296.56, "speech": 296.96, "audio": 12.48, "dur": 18.04}, {"id": "q3a", "seg": 4, "scene": "quiz_answer", "quiz": "q3", "hold": 1.0, "text": "Jawabannya: None. Fungsi tanpa return tidak mengembalikan apa pun, jadi y berisi None.", "start": 314.6, "speech": 315.0, "audio": 7.038, "dur": 8.738}, {"id": "s4c", "seg": 4, "scene": "salah_print", "text": "Kesalahan kedua: fungsi memakai print, bukan return. Sembilan puluh memang tampil, tetapi y berisi None. Kalau hasilnya masih akan diolah, pakailah return.", "hold": 1.2, "start": 323.338, "speech": 323.738, "audio": 11.583, "dur": 13.483}, {"id": "recap", "seg": 5, "scene": "recap", "text": "Tiga hal untuk diingat. Fungsi menerima list dan mengembalikan hasil dengan return. Greedy cepat, tetapi bisa gagal. Brute force selalu benar, tetapi cepat melambat.", "hold": 1.5, "start": 336.821, "speech": 337.221, "audio": 11.694, "dur": 14.54}, {"id": "latihan", "seg": 5, "scene": "latihan", "text": "Di halaman latihan episode F11.6 ada mesin kembalian untuk membandingkan greedy dan brute force. Lalu tulis satu paragraf: kapan kamu memakai yang mana?", "hold": 1.5, "start": 351.361, "speech": 351.761, "audio": 10.824, "dur": 14.04}, {"id": "outro", "seg": 5, "scene": "outro", "text": "Simulasi berikutnya: membaca CSV dan menguji program Python. Sampai jumpa!", "hold": 2.5, "start": 365.401, "speech": 365.801, "audio": 5.979, "dur": 9.179}], "total": 374.58}, teks: null });
+})();
+</script>
