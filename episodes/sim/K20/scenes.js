@@ -288,4 +288,43 @@
       para(ctx, "Di Colab, tulis kembalian versi greedy dan versi brute force, lalu uji dengan koin 1, 3, 4.", 870, 670, 28, 820, { weight: 700, lh: 1.3 });
     }
   });
+
+  // ---------- adegan khusus Short (area 40..1040 × 30..810; crop [40, 30, 1000, 780]) ----------
+  function sFrame(ctx, i, call, right, mode, opt = {}) {
+    const h = 86, y = 790 - (i + 1) * (h + 10) + (opt.dy || 0);
+    ctx.save(); ctx.globalAlpha = opt.alpha == null ? 1 : opt.alpha;
+    const fill = mode === "ret" ? C.goodBg : mode === "top" ? "#FFF3D6" : mode === "err" ? C.badBg : "#F4F0FA", stroke = mode === "ret" ? C.good : mode === "top" ? C.accent : mode === "err" ? C.bad : PURPLE;
+    card(ctx, 60, y, 960, h, { fill, stroke, lw: 5, r: 14 }); text(ctx, call, 86, y + 56, 40, { weight: 900, color: mode === "ret" ? C.good : mode === "err" ? C.bad : PURPLE_D });
+    if (right) text(ctx, right, 994, y + 55, 34, { align: "right", weight: 800, color: mode === "ret" ? C.good : C.ink2, fit: 480 }); ctx.restore();
+  }
+  Object.assign(K.SCENES, {
+    k20s_stack(ctx, b, l) {
+      const fr = FRAMES.faktorial, n = fr.length;
+      Py.code(ctx, 60, 30, 960, CODE.faktorial, { rh: 46, size: 30 });
+      if (b.phase === "push") { const e = Math.min(n - 0.001, n * prog(l, b, 0.05, 0.85)); const s = Math.floor(e), u = e - s;
+        for (let i = 0; i <= s; i++) { const ent = i === s, a = ease(u * 2.5); sFrame(ctx, i, fr[i].call, fr[i].base ? "base case" : "menunggu " + fr[i].wait, i === s ? "top" : "wait", ent ? { alpha: a, dy: -40 * (1 - a) } : {}); } }
+      else { const e = n + n * prog(l, b, 0.12, 0.92); const s = Math.floor(e), u = e - s;
+        if (e >= 2 * n) { card(ctx, 60, 600, 960, 150, { fill: C.goodBg, stroke: C.good, lw: 5, r: 18 }); text(ctx, "faktorial(4) = 24", 540, 700, 64, { align: "center", weight: 900, color: C.good }); return; }
+        const pop = n - 1 - (s - n); for (let i = 0; i < pop; i++) sFrame(ctx, i, fr[i].call, i === pop - 1 && u > 0.55 ? fr[i].done : "menunggu " + fr[i].wait, "wait");
+        const fu = clamp((u - 0.5) / 0.5, 0, 1); sFrame(ctx, pop, fr[pop].call, (fr[pop].base ? "base case" : fr[pop].done) + " → " + fr[pop].ret, "ret", { alpha: 1 - fu, dy: -50 * fu }); }
+    },
+    k20s_over(ctx, b, l) {
+      Py.code(ctx, 60, 30, 960, [{ t: "def faktorial(n):" }, { t: "    return n * faktorial(n - 1)", hl: true }], { rh: 50, size: 30 });
+      let depth; if (b.phase === "grow") { const p = prog(l, b, 0.05, 0.95); depth = p < 0.45 ? 1 + Math.floor(p / 0.45 * 4) : Math.floor(5 + Math.pow((p - 0.45) / 0.55, 2) * 115); } else depth = Math.floor(120 + prog(l, b, 0, 0.18) * 880);
+      const err = b.phase === "error" && depth >= 1000; const lab = v => String(v).replace("-", "−");
+      text(ctx, "kedalaman call stack: " + depth.toLocaleString("id-ID"), 60, 252, 44, { weight: 900, color: depth > 50 ? C.bad : C.ink2 });
+      const mk = k => ["faktorial(" + lab(3 - k) + ")", "menunggu " + lab(3 - k) + " × faktorial(" + lab(2 - k) + ")"];
+      if (depth <= 5) for (let i = 0; i < depth; i++) sFrame(ctx, i, ...mk(i), i === depth - 1 ? "top" : "wait");
+      else { sFrame(ctx, 0, ...mk(0), err ? "err" : "wait"); text(ctx, "⋮  " + (depth - 4).toLocaleString("id-ID") + " frame lain  ⋮", 540, 650, 38, { align: "center", weight: 900, color: err ? C.bad : C.ink2 }); for (let j = 0; j < 3; j++) sFrame(ctx, 2 + j, ...mk(depth - 3 + j), err ? "err" : j === 2 ? "top" : "wait"); }
+      if (err) { const u = ease((l - A(b) * 0.18) / 0.5); ctx.save(); ctx.globalAlpha = u; card(ctx, 60, 272, 960, 130, { fill: "#0E1418", stroke: C.bad, lw: 5, r: 16 }); text(ctx, "RecursionError:", 90, 327, 40, { weight: 900, color: "#FF8A80" }); text(ctx, "maximum recursion depth exceeded", 90, 377, 36, { weight: 800, color: "#FF8A80" }); ctx.restore();
+        if (l > A(b) * 0.3) { ctx.save(); ctx.translate(540, 520); ctx.rotate(-0.12); card(ctx, -260, -70, 520, 140, { fill: C.bad, r: 22 }); text(ctx, "BERHENTI", 0, 26, 76, { align: "center", weight: 900, color: "#fff" }); ctx.restore(); } }
+    },
+    k20s_fix(ctx, b, l) {
+      text(ctx, "✗ tanpa base case", 60, 80, 40, { weight: 900, color: C.bad });
+      Py.code(ctx, 60, 100, 960, [{ t: "def faktorial(n):" }, { t: "    return n * faktorial(n - 1)" }], { rh: 50, size: 30 });
+      dim(ctx, l > A(b) * 0.1, () => { text(ctx, "✓ base case ditulis lebih dulu", 60, 300, 40, { weight: 900, color: C.good });
+        Py.code(ctx, 60, 320, 960, [{ t: "def faktorial(n):" }, { t: "    if n == 0:", hl: true }, { t: "        return 1", hl: true }, { t: "    return n * faktorial(n - 1)" }], { rh: 50, size: 30 }); });
+      dim(ctx, l > A(b) * 0.5, () => ["3", "2", "1", "0 ✓"].forEach((v, i) => { const x = 60 + i * 250; card(ctx, x, 640, 200, 110, { fill: i === 3 ? C.goodBg : C.bg2, stroke: i === 3 ? C.good : undefined, lw: 4, r: 16 }); text(ctx, v, x + 100, 715, 56, { align: "center", weight: 900, color: i === 3 ? C.good : C.ink }); if (i < 3) text(ctx, "→", x + 225, 712, 44, { align: "center", weight: 900, color: C.ink2 }); }));
+    }
+  });
 })(typeof window !== "undefined" ? window : globalThis);

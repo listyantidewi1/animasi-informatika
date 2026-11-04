@@ -234,4 +234,35 @@
       para(ctx, "Di kertas, gambar BST dari urutan 40, 20, 60, 10, 30, 50, 70, lalu dari 10, 20, 30, 40, 50, 60, 70. Bandingkan tingginya.", 870, 610, 28, 820, { weight: 700, lh: 1.3 });
     }
   });
+
+  // ---------- adegan khusus Short (area 40..1040 × 30..810; crop [40, 30, 1000, 780]) ----------
+  Object.assign(K.SCENES, {
+    k23s_sisip(ctx, b, l) {
+      const vals = b.order === "acak" ? ACAK : URUT; const p = prog(l, b, 0.05, 0.85); const st = insertState(vals, 0, 7, p); const fin = p >= 1, n = fin ? 7 : st.n;
+      orderChips(ctx, 90, 70, vals, fin ? -1 : vals.indexOf(st.cur), n, { s: 116, g: 10, label: " " });
+      tree(ctx, vals, n, { box: b.order === "acak" ? { x: 140, y: 300, w: 800, h: 320 } : { x: 120, y: 250, w: 840, h: 480 }, r: b.order === "acak" ? 52 : 40, cmp: !fin && !st.place && st.at != null ? { v: st.cur, at: st.at } : null, fresh: fin ? null : st.place ? st.cur : null });
+      if (fin) text(ctx, b.order === "acak" ? "3 tingkat: seimbang" : "7 tingkat: miring", b.order === "acak" ? 540 : 120, b.order === "acak" ? 760 : 780, 54, { align: b.order === "acak" ? "center" : "left", weight: 900, color: b.order === "acak" ? C.good : C.bad });
+    },
+    k23s_cari(ctx, b, l) {
+      const p = prog(l, b, 0.08, 0.8);
+      [[ACAK, { x: 110, y: 330, w: 360, h: 220 }, 34, "seimbang", C.good], [URUT, { x: 600, y: 230, w: 380, h: 520 }, 30, "miring", C.bad]].forEach(([vals, box, r, nm, col], j) => {
+        const full = build(vals); const path = []; let c = full.root; while (c) { path.push(c.v); if (c.v === 80) break; c = 80 < c.v ? c.l : c.r; }
+        const k = clamp(Math.floor(p * 7), 0, 6), kk = Math.min(k, path.length - 1), found = k >= path.length - 1;
+        tree(ctx, vals, 7, { box, r, path: path.slice(0, kk + 1), hit: found ? 80 : null });
+        card(ctx, 60 + j * 500, 40, 460, 140, { fill: found ? (j ? C.badBg : C.goodBg) : "#FFF3D6", stroke: found ? col : C.accent, lw: 5, r: 18 });
+        text(ctx, nm + ": " + (kk + 1), 290 + j * 500, 120, 54, { align: "center", weight: 900, color: found ? col : C.accentDark }); text(ctx, "langkah", 290 + j * 500, 162, 28, { align: "center", weight: 800, color: C.ink2 }); });
+      text(ctx, "cari 80", 540, 240, 44, { align: "center", weight: 900, color: C.ink2 });
+    },
+    k23s_hash(ctx, b, l) {
+      const nm = b.step === "sinta" ? "Sinta" : "Kiko"; const u = prog(l, b, 0.0, b.step === "sinta" ? 0.7 : 0.45);
+      [...nm].forEach((ch, i) => { const on = u > 0.1 + i * 0.06; card(ctx, 60 + i * 110, 40, 96, 100, { fill: on ? "#fff" : "#F4F6F5", stroke: on ? C.kiko : "#D7E2DC", lw: 4, r: 14 }); text(ctx, ch, 108 + i * 110, 108, 52, { align: "center", weight: 900 }); });
+      if (u > 0.45) text(ctx, nm.length + " huruf", 640, 108, 50, { weight: 900 });
+      if (u > 0.6) text(ctx, nm.length + " ÷ 5 = " + Math.floor(nm.length / 5) + " sisa " + (nm.length % 5) + "  →  laci " + (nm.length % 5), 60, 220, 46, { weight: 900, color: "#8E6BBF" });
+      let isi, hl = u > 0.7 ? nm.length % 5 : null;
+      if (b.step === "sinta") isi = u >= 0.85 ? { 0: [["Sinta", "new"]] } : {};
+      else { const k = prog(l, b, 0.55, 0.95); isi = { 0: [["Sinta"]], 3: [["Ayu"]], 4: [["Dito", k > 0.4 ? "bad" : ""]] }; if (u >= 0.85) isi[4].push(["Kiko", k > 0.8 ? "good" : "new"]);
+        if (l > A(b) * 0.5) text(ctx, "tabrakan di laci 4!", 1000, 300, 40, { align: "right", weight: 900, color: C.accentDark }); }
+      drawers(ctx, 60, 320, 960, isi, { hl, h: 82 });
+    }
+  });
 })(typeof window !== "undefined" ? window : globalThis);

@@ -55,7 +55,10 @@
         {type: "teks", field: "nama"}  mengetik bertahap ke st[field]   ·  {numpad: "482913", field: "code", y}  tap tombol angka satu per satu
         {anim: "nama"}  st[nama] = 0..1 selama langkah (sakelar, progress)   ·  {set: {...}}  ubah state langsung   ·  {wait: 1}
         Hasil: {st, tap: {x, y, u}|null, ptr: {x, y}|null, click, key: {keys, press}|null, i (langkah ke-), u (0..1 dalam langkah)}
-        Gambar hasilnya: HP.tap(ctx, r.tap.x, r.tap.y, r.tap.u) di dalam draw; L.cursor(ctx, r.ptr.x, r.ptr.y, {click: r.click}) di luar. */
+        Gambar hasilnya: HP.tap(ctx, r.tap.x, r.tap.y, r.tap.u) di dalam draw; L.cursor(ctx, r.ptr.x, r.ptr.y, {click: r.click}) di luar.
+   TIPS: letak baris untuk target tap diukur dulu dengan HP.list di kanvas tak terlihat (lihat rowsOf di S13/scenes.js).
+   Huruf di HP kecil di video; pakai HP.magnify (lup) untuk bagian yang sedang dibahas. Contoh lengkap: episodes/sim/S13/scenes.js
+   (fungsi show = HP + lup, notes = keterangan di bawah panel langkah) dan episodes/sim/S11/scenes.js (browser + HP). */
 (function (global) {
   const K = global.Kiko, H = K.helpers, C = K.C;
   const { rr,  wrap, ease, clamp, lerp } = H;
