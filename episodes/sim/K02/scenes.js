@@ -78,7 +78,7 @@
   function machineState(v, run, opt = {}) {
     const tot = totalOf(v);
     if (v.no === 1) {   // empat angka: ditampilkan diperlambat 1.000 kali supaya terlihat
-      const target = 4821, i = Math.min(target, Math.floor(run * 1000));
+      const target = 4821, i = Math.max(0, Math.min(target, Math.floor(run * 1000)));
       const found = i >= target;
       return { guess: guessAt(v, i), line1: "tebakan ke-" + fmt(i + 1), pct: (i + 1) / tot * 100, found,
                mode: "diperlambat 1.000×", status: found ? "COCOK! setelah 0,0048 detik" : "mencoba…" };

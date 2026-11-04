@@ -142,7 +142,7 @@
       const showLine = shown(b, l, "line"), showErr = shown(b, l, "err"), showSq = shown(b, l, "sq");
       plot(ctx, PG, d, ln, { line: showLine, err: showErr, sq: showSq, values: true, sqLabel: d === "pencilan", hl: d === "pencilan" ? 5 : null });
       if (b.panel === "kurva") panelKurva(ctx, d, ln);
-      else if (b.panel === "tabel") { const n = clamp(Math.floor((l - lead(b) - 1.0) / 0.7) + 1, 0, 6); panelTabel(ctx, d, ln, n); }
+      else if (b.panel === "tabel") { const n = ln.moving ? 0 : clamp(Math.floor((l - lead(b) - 2.3) / 0.7) + 1, 0, 6); panelTabel(ctx, d, ln, n); }
       else panelSSE(ctx, d, ln, { bar: true, max: d === "pencilan" ? 445 : 70 });
     },
     k25_tanya(ctx, b, l) {

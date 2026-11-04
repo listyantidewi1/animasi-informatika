@@ -13,7 +13,7 @@
   const SRC = "Sumber: catatan Bank Sampah SMA Tunas, Juli–September 2026 (data rekaan).";
   const PTS = [["botol", "Pilah botol dan gelas plastik."], ["timbangan", "Timbang setiap hari Jumat."], ["koin", "Kumpulkan poin di aplikasi."]];
   const PART = {
-    title: [{ id: "title", t: "text", x: 44, y: 104, s: "Sampah Plastik Jadi Poin", size: 56, weight: 900, color: DK, maxW: 512, lh: 1.08 }],
+    title: [{ id: "title", t: "text", x: 44, y: 104, s: "Sampah Plastik Jadi Poin", size: 54, weight: 900, color: DK, maxW: 512, lh: 1.08 }],
     sub: [{ id: "sub", t: "text", x: 44, y: 206, s: "Bank Sampah SMA Tunas · aplikasi Setor Sampah", size: 19, weight: 600, color: GR }],
     num: [{ id: "num", t: "text", x: 40, y: 330, s: "412 kg", size: 96, weight: 900, color: G }],
     numcap: [{ id: "numcap", t: "text", x: 44, y: 372, s: "plastik terkumpul dalam tiga bulan", size: 24, weight: 600, color: DK }],
@@ -89,9 +89,9 @@
     judul(ctx, b, l) {
       const sp = spanOf(b), ds = [1, 2.6, 1.2, 0.8, 1.6], S = D.seq(l, sp, ds); const on = S.p(0) >= 0.6, big = S.p(2) >= 0.6, bold = S.p(3) >= 0.6;
       const m = ease(clamp(S.p(4) / 0.8, 0, 1));
-      const el = { ...PART.title[0], size: big ? 56 : 24, weight: bold ? 900 : 600, typed: PART.title[0].s.length * clamp(S.p(1) / 0.9, 0, 1), caret: S.i <= 1 && on, y: lerp(400, 104, m) };
-      const g = app(ctx, { pageW: 600, els: on ? [el] : [], sel: on && S.i >= 2 ? "title" : null, size: big ? 56 : 24, on: { bold }, panelHi: S.i === 0 ? 0 : null, hot: S.i === 2 ? "size" : S.i === 3 ? "bold" : null });
-      steps(ctx, ["Klik Teks, ketik judulnya.", "Ukuran 56, tebal.", "Geser ke atas."], S.i <= 1 ? 0 : S.i <= 3 ? 1 : m < 1 ? 2 : 3);
+      const el = { ...PART.title[0], size: big ? 54 : 24, weight: bold ? 900 : 600, typed: PART.title[0].s.length * clamp(S.p(1) / 0.9, 0, 1), caret: S.i <= 1 && on, y: lerp(400, 104, m) };
+      const g = app(ctx, { pageW: 600, els: on ? [el] : [], sel: on && S.i >= 2 ? "title" : null, size: big ? 54 : 24, on: { bold }, panelHi: S.i === 0 ? 0 : null, hot: S.i === 2 ? "size" : S.i === 3 ? "bold" : null });
+      steps(ctx, ["Klik Teks, ketik judulnya.", "Ukuran 54, tebal.", "Geser ke atas."], S.i <= 1 ? 0 : S.i <= 3 ? 1 : m < 1 ? 2 : 3);
       const sz = g.tool("size"), bd = g.tool("bold"), tr = g.ids.title || { cx: g.page.cx, cy: g.page.y + 260 };
       const pts = [{ x: g.panel(0).cx, y: g.panel(0).cy, d: ds[0], click: true }, { x: g.page.x + 120, y: g.page.y + 300, d: ds[1] }, { x: sz.cx, y: sz.cy, d: ds[2], click: true }, { x: bd.cx, y: bd.cy, d: ds[3], click: true }, { x: tr.x + 60, y: tr.y + 30, d: ds[4], down: true }];
       const p = D.path(l, sp, pts, { x: 900, y: 650 }); if (S.i === 4) { p.x = tr.x + 60; p.y = tr.y + 30; p.down = m < 1; } ptr(ctx, p);
@@ -127,7 +127,7 @@
     },
     hierarki(ctx, b, l) {
       const a = b.audio || b.dur; const g = app(ctx, { els: rapi() }); const id = g.ids;
-      const lab = [["num", "Angka: 96", 160], ["title", "Judul: 56", 270], ["p1", "Poin: 25", 380], ["src", "Sumber: 15", 490]];
+      const lab = [["num", "Angka: 96", 160], ["title", "Judul: 54", 270], ["p1", "Poin: 25", 380], ["src", "Sumber: 15", 490]];
       lab.forEach(([k, s, y], i) => { if (l < a * (0.12 + i * 0.13)) return; const q = id[k]; L.callout(ctx, PX, y, s, q.x + q.w, q.cy, { size: 28 }); });
       if (l > a * 0.7) { ctx.strokeStyle = C.accent; ctx.lineWidth = 5; ctx.beginPath(); ctx.moveTo(1690, 620); ctx.lineTo(1690, 760); ctx.stroke();
         text(ctx, "besar → kecil", PX + 10, 700, 28, { weight: 900, color: C.accentDark }); ctx.fillStyle = C.accent; ctx.beginPath(); ctx.moveTo(1675, 750); ctx.lineTo(1705, 750); ctx.lineTo(1690, 775); ctx.fill(); }
@@ -182,7 +182,7 @@
       sheet(ctx, 240, 250, 360, MESSY, { border: RED });
       const bub = (x, y, w, s, col) => { card(ctx, x, y, w, 150, { fill: "#FFFFFF", stroke: col, lw: 4, r: 24 }); para(ctx, s, x + w / 2, y + 62, 32, w - 40, { align: "center", weight: 800, lh: 1.25, color: col }); };
       bub(640, 300, 320, "Hmm… apa, ya?", RED); mark(ctx, 800, 520, false, "tidak ingat");
-      if (l > a * 0.45) { sheet(ctx, 1000, 250, 360, rapi(), { border: GREEN }); bub(1390, 300, 330, "412 kg! Setor hari Jumat.", GREEN); mark(ctx, 1555, 520, true, "ingat pesannya"); }
+      if (l > a * 0.45 || b.full) { sheet(ctx, 1000, 250, 360, rapi(), { border: GREEN }); bub(1390, 300, 330, "412 kg! Setor hari Jumat.", GREEN); mark(ctx, 1555, 520, true, "ingat pesannya"); }
       H.kid(ctx, 960, 690, 60, {});
     },
     sumber(ctx, b, l) {

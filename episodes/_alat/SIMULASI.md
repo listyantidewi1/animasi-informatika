@@ -64,6 +64,8 @@ episodes/sim/<kode>/short/script.json    # Short; salin juga tts-kit ke short/
    `python3 episodes/_alat/preview.py sim/<kode> <beat>=<detik-dalam-beat> …` → JPG di `sim/<kode>/preview/`.
    **Lihat sendiri** frame tiap beat (gabungkan jadi lembar kontak dengan PIL dan buka dengan Read). Periksa: teks tidak meluber,
    tidak ada yang tertutup kartu narasi, pointer tidak menutupi angka penting, langkah di layar sesuai narasi, ejaan.
+   Lalu `python3 episodes/_alat/cek_teks.py sim/<kode>` (dan `--short` untuk Short): menjalankan seluruh timeline dan menangkap teks rusak
+   seperti "undefined", "NaN", atau angka negatif di awal beat (mis. indeks yang belum dibatasi `Math.max(0, …)`). Harus "OK".
 3. Suara: `python3 episodes/_alat/suara_elevenlabs.py sim/<kode>` (hanya membuat MP3 yang belum ada; bila gagal karena batas
    permintaan, tunggu sebentar lalu jalankan lagi). Jangan `--ulang` kecuali beat itu memang diubah. Lalu `python3 episodes/_alat/voice.py sim/<kode>`.
 4. Pratinjau lagi dengan `--suara` untuk beat beraksi (cek sinkron), lalu render: `nice -n 10 python3 episodes/_alat/render.py sim/<kode> --suara`
