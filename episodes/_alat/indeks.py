@@ -63,11 +63,15 @@ section {{ scroll-margin-top: 110px }} h2 {{ font-size: 22px; margin: 28px 0 10p
 .t {{ font-weight: 800; font-size: 17px; text-decoration: underline; text-decoration-color: var(--line); text-underline-offset: 3px }}
 .hook {{ margin: 6px 0 2px; color: var(--ink2); font-size: 15px }} .meta {{ margin: 0; color: var(--ink2); font-size: 13px; font-weight: 700 }}
 .tools {{ margin: 6px 0 0; font-size: 14px }} .tools a {{ color: var(--accent); font-weight: 700 }}
+.yt {{ display: flex; gap: 12px; align-items: center; background: var(--surface); border: 1px solid var(--line); border-left: 6px solid #D9443B; border-radius: 14px; padding: 10px 14px; color: var(--ink); text-decoration: none; margin: 4px 0 8px }}
+.yt > span:first-child {{ flex: none; width: 40px; height: 28px; border-radius: 8px; background: #D9443B; color: #fff; display: grid; place-items: center; font-size: 14px }}
+.yt b {{ display: block }} .yt small {{ display: block; color: var(--ink2); font-size: 14px; font-weight: 600 }}
 .note {{ background: var(--surface2); border-radius: 12px; padding: 10px 14px; font-size: 14px; color: var(--ink2) }}
 </style></head><body><div class="wrap">
 <div class="eyebrow">Seri Animasi Informatika · SMP–SMA · CP 2025</div>
 <h1>Latihan interaktif per episode</h1>
 <p class="lead">Ketuk judul episode untuk membuka halamannya: video, cek pemahaman dengan petunjuk, dan latihan. Kemajuan tersimpan di perangkat masing-masing. Semua halaman bisa dibuka di HP.</p>
+<a class="yt" href="https://www.youtube.com/@iteachswe" target="_blank" rel="noopener"><span aria-hidden="true">▶</span><span><b>Tonton video lengkapnya di YouTube</b><small>Subscribe channel @iteachswe untuk belajar lebih banyak.</small></span></a>
 <nav aria-label="Kelas">{nav}</nav>
 {"".join(sec)}
 <p class="note" style="margin-top:28px">Tokoh: robot Kiko, Dito, dan Sinta. Semua gambar dibuat dengan kode; semua nama, akun, dan data dalam contoh bersifat fiktif. Untuk guru: tiap halaman memuat bagian "Untuk guru" dengan pembagian JP.</p>

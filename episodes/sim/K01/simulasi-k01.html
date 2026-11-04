@@ -1,0 +1,1200 @@
+<title>Kiko: RAM dan Penyimpanan saat Listrik Padam</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<style>
+/* Inti gaya halaman latihan: satu kolom, pemutar di atas, latihan di bawah; palet kantin sama dengan video. */
+:root {
+  --bg: #EAF2EE; --surface: #FFFFFF; --surface2: #DCE9E2; --ink: #1F2A33; --ink2: #4A5A66; --line: #C9D8D0;
+  --accent: #2E7E9A; --accent-ink: #FFFFFF; --warm: #F2B134; --warm-ink: #5E3E05; --good: #2E9E5B; --good-bg: #DDF3E4; --bad: #D9443B; --bad-bg: #FBE1DF;
+  --font: Inter, "Segoe UI", Roboto, Arial, sans-serif;
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) { --bg: #141C1A; --surface: #1E2926; --surface2: #273532; --ink: #EAF2EE; --ink2: #A9BBB3; --line: #3A4A45; --accent: #5FB3CE; --accent-ink: #0F1D22; --warm: #F2B134; --warm-ink: #2B1C02; --good: #5FCB8A; --good-bg: #1F3A2B; --bad: #F07A72; --bad-bg: #442523; color-scheme: dark } }
+:root[data-theme="dark"] { --bg: #141C1A; --surface: #1E2926; --surface2: #273532; --ink: #EAF2EE; --ink2: #A9BBB3; --line: #3A4A45; --accent: #5FB3CE; --accent-ink: #0F1D22; --warm: #F2B134; --warm-ink: #2B1C02; --good: #5FCB8A; --good-bg: #1F3A2B; --bad: #F07A72; --bad-bg: #442523; color-scheme: dark }
+* { box-sizing: border-box }
+body { background: var(--bg); color: var(--ink); font-family: var(--font); font-size: 17px; line-height: 1.5; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); padding-block: 16px 48px }
+.wrap { max-width: 980px; margin: 0 auto; display: grid; gap: 28px }
+h1 { font-size: clamp(26px, 5vw, 38px); line-height: 1.15; margin: 0; text-wrap: balance; font-weight: 900 }
+h2 { font-size: 22px; margin: 0 0 12px; font-weight: 800 }
+h3 { font-size: 18px; margin: 0 0 8px; font-weight: 800 }
+p { margin: 0 0 10px; max-width: 65ch }
+.eyebrow { font-size: 13px; letter-spacing: .08em; text-transform: uppercase; color: var(--ink2); font-weight: 800; margin-bottom: 6px }
+.card { background: var(--surface); border-radius: 18px; padding: 18px; border: 1px solid var(--line) }
+button { font: inherit; font-weight: 800; border: 0; border-radius: 12px; padding: 12px 16px; cursor: pointer; background: var(--surface2); color: var(--ink); min-height: 48px; touch-action: manipulation }
+button:focus-visible, [tabindex]:focus-visible { outline: 3px solid var(--warm); outline-offset: 2px }
+button.primary { background: var(--accent); color: var(--accent-ink) }
+button.warm { background: var(--warm); color: var(--warm-ink) }
+button[aria-pressed="true"] { box-shadow: inset 0 0 0 3px var(--accent) }
+button:disabled { opacity: .45; cursor: default }
+.row { display: flex; flex-wrap: wrap; gap: 10px; align-items: center }
+/* player */
+.player { display: grid; gap: 12px }
+.stage { position: relative; width: 100%; aspect-ratio: 16 / 9; max-width: 100%; background: #EAF2EE; border-radius: 14px; overflow: hidden; border: 1px solid var(--line) }
+.stage canvas { width: 100%; height: 100%; display: block }
+.bigplay { position: absolute; inset: 0; display: grid; place-items: center; background: rgba(31,42,51,.25); border: 0; border-radius: 0; color: #fff; font-size: 20px; min-height: 0 }
+.bigplay span { background: var(--accent); color: var(--accent-ink); padding: 14px 26px; border-radius: 999px; font-weight: 900 }
+.bar { height: 10px; background: var(--surface2); border-radius: 999px; overflow: hidden; cursor: pointer }
+.bar > i { display: block; height: 100%; width: 0; background: var(--warm) }
+.chapters { display: flex; flex-wrap: wrap; gap: 8px }
+.chapters button { font-size: 14px; padding: 8px 12px; min-height: 40px }
+.chapters button.now { background: var(--warm); color: var(--warm-ink) }
+.hint { color: var(--ink2); font-size: 15px }
+/* exercises (generic parts) */
+.levels { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 12px }
+.levels button { font-size: 14px; padding: 8px 12px; min-height: 40px }
+.levels button.done::after { content: " ✓"; color: var(--good) }
+.task { background: var(--surface2); border-radius: 12px; padding: 12px 14px; margin-bottom: 12px; font-weight: 700 }
+.result { border-radius: 12px; padding: 12px 14px; font-weight: 800; margin-top: 10px }
+.result.good { background: var(--good-bg); color: var(--good) }
+.result.bad { background: var(--bad-bg); color: var(--bad) }
+.result.info { background: var(--surface2); color: var(--ink) }
+/* quiz */
+.quiz { display: grid; gap: 16px }
+.q { border-top: 1px solid var(--line); padding-top: 14px }
+.q:first-child { border-top: 0; padding-top: 0 }
+.opts { display: grid; gap: 8px; margin-top: 8px }
+.opts button { text-align: left; font-weight: 700; background: var(--surface2); display: flex; gap: 10px; align-items: center }
+.opts button b { width: 30px; height: 30px; border-radius: 50%; background: var(--accent); color: var(--accent-ink); display: grid; place-items: center; flex: none }
+.opts button.right { background: var(--good-bg); box-shadow: inset 0 0 0 3px var(--good) }
+.opts button.wrong { background: var(--bad-bg) }
+.fb { margin-top: 8px; font-weight: 700 }
+.fb.good { color: var(--good) } .fb.bad { color: var(--bad) }
+details summary { cursor: pointer; font-weight: 800; font-size: 18px }
+details[open] summary { margin-bottom: 10px }
+ul.plain { padding-left: 20px; margin: 0 0 10px } ul.plain li { margin-bottom: 6px; max-width: 65ch }
+.progress { display: flex; gap: 8px; flex-wrap: wrap } .progress span { background: var(--surface2); border-radius: 999px; padding: 6px 12px; font-size: 14px; font-weight: 700 }
+.progress span.ok { background: var(--good-bg); color: var(--good) }
+@media (prefers-reduced-motion: reduce) { * { transition: none !important } }
+
+/* ajakan ke channel YouTube */
+.yt-ajak { display: flex; gap: 12px; align-items: center; background: var(--surface); border: 1px solid var(--line); border-left: 6px solid #D9443B; border-radius: 14px; padding: 12px 16px; color: var(--ink); text-decoration: none }
+.yt-ajak .yt-ic { flex: none; width: 40px; height: 28px; border-radius: 8px; background: #D9443B; color: #fff; display: grid; place-items: center; font-size: 14px }
+.yt-ajak b { display: block; font-size: 16px } .yt-ajak small { display: block; color: var(--ink2); font-size: 14px; font-weight: 600 }
+
+/* halaman video simulasi (dibuat build.py dari episodes/_alat/sim-page.html) */
+.links { display: grid; gap: 10px } .links a { display: block; background: var(--surface2); color: var(--ink); text-decoration: none; font-weight: 800; border-radius: 12px; padding: 12px 16px }
+.links a span { display: block; font-weight: 600; color: var(--ink2); font-size: 15px }
+ul.learn { margin: 0; padding-left: 20px } ul.learn li { margin-bottom: 4px }
+</style>
+
+<div class="wrap">
+  <header>
+    <div class="eyebrow">Informatika · Simulasi konsep · K01</div>
+    <h1>RAM dan Penyimpanan saat Listrik Padam</h1>
+    <p class="hint">Setelah menonton, kamu bisa menjelaskan mengapa tulisan yang belum disimpan hilang saat listrik padam, dan menjaga pekerjaanmu tetap aman. Simulasi ini melengkapi episode D7.2. Saat muncul pertanyaan "Menurutmu …", hentikan dulu videonya dan tebak jawabannya.</p>
+  </header>
+  <section class="card player" aria-label="Pemutar simulasi">
+    <div class="stage">
+      <canvas id="screen" width="1920" height="1080" aria-label="Animasi simulasi"></canvas>
+      <audio id="nar" preload="auto" src="narasi.mp3"></audio>
+      <button class="bigplay" id="bigplay" aria-label="Putar"><span>▶ Putar simulasi</span></button>
+    </div>
+    <div class="bar" id="bar" role="slider" aria-label="Posisi simulasi" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" tabindex="0"><i id="barfill"></i></div>
+    <div class="row">
+      <button class="primary" id="playbtn">▶ Putar</button>
+      <button id="replay">↺ Ulangi bagian ini</button>
+      <button id="voice" aria-pressed="true" hidden>🔊 Suara: nyala</button>
+      <button id="slow" aria-pressed="false">🐢 Mode lambat</button>
+      <span class="hint" id="timelabel">0:00 / 0:00</span>
+    </div>
+    <div>
+      <div class="eyebrow">Bagian</div>
+      <div class="chapters" id="chapters"></div>
+    </div>
+  </section>
+
+  <section class="card" aria-label="Yang dipelajari">
+    <h2>Yang kamu pelajari</h2>
+    <ul class="learn"><li>membedakan apa yang ada di RAM dan apa yang ada di penyimpanan</li><li>menjelaskan mengapa tulisan yang belum disimpan hilang saat listrik padam</li><li>memakai Simpan dan simpan otomatis (autosave) dengan tepat</li><li>mengatasi komputer yang lambat karena RAM penuh</li></ul>
+  </section>
+
+  <section class="card" aria-label="Cek pemahaman">
+    <h2>Cek pemahaman</h2>
+    <p class="hint">Pilih satu jawaban. Kalau salah, kamu dapat petunjuk, lalu coba lagi.</p>
+    <div class="quiz" id="quiz"></div>
+  </section>
+
+  <section class="card" aria-label="Kemajuan">
+    <h2>Kemajuanmu</h2>
+    <div class="progress" id="progress"></div>
+    <p class="hint" style="margin-top:8px">Kemajuan tersimpan di perangkat ini saja.</p>
+  </section>
+
+  <section class="card" aria-label="Halaman latihan">
+    <h2>Lanjut berlatih</h2>
+    <div class="links"><a href="../../D7.2/episode-d72.html">Episode D7.2: Mengenal Komputer: Perjalanan Satu Ketukan<span>Tonton episodenya dan kerjakan latihannya.</span></a><a href="../../../index.html">Daftar semua episode<span>Kembali ke halaman utama.</span></a></div>
+  </section>
+</div>
+
+<script>/* Kiko core: mesin gambar bersama untuk semua episode Fase D.
+   Kiko.draw(ctx, t, TL) menggambar frame pada detik t di kanvas 1920x1080 secara deterministik.
+   Berisi palet, pembantu gambar, tokoh (Kiko, murid), dan adegan umum (judul, kuis, ringkasan, penutup).
+   Setiap episode menambahkan adegannya sendiri di scenes.js: Object.assign(Kiko.SCENES, {...}). */
+(function (global) {
+  const W = 1920, H = 1080;
+  const FONT = "Inter, 'Segoe UI', Roboto, Arial, sans-serif";
+  const C = {
+    bg: "#EAF2EE", bg2: "#DCE9E2", ink: "#1F2A33", ink2: "#4A5A66", panel: "#FFFFFF",
+    tile: "#F7FAF8", tileLine: "#C9D8D0", table: "#A4653A", tableTop: "#C98A57",
+    kiko: "#2E7E9A", kikoDark: "#1F5A6E", kikoLight: "#8FD0E6", eye: "#FFFFFF", pupil: "#1F2A33",
+    accent: "#F2B134", accentDark: "#B57A12", good: "#2E9E5B", bad: "#D9443B", goodBg: "#DDF3E4", badBg: "#FBE1DF",
+    sub: "#1F2A33", subText: "#FFFFFF", star: "#F2B134", skin: "#F1C9A5", skin2: "#C98A57", hair: "#2B2118",
+    uniform: "#FFFFFF", pants: "#2F4E7D", bubble: "#FFFFFF", muted: "#9AAFA6"
+  };
+  const ease = u => u < 0 ? 0 : u > 1 ? 1 : u * u * (3 - 2 * u);
+  const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
+  const lerp = (a, b, u) => a + (b - a) * u;
+
+  // ---------- drawing helpers ----------
+  function rr(ctx, x, y, w, h, r) {
+    ctx.beginPath(); ctx.moveTo(x + r, y); ctx.arcTo(x + w, y, x + w, y + h, r); ctx.arcTo(x + w, y + h, x, y + h, r);
+    ctx.arcTo(x, y + h, x, y, r); ctx.arcTo(x, y, x + w, y, r); ctx.closePath();
+  }
+  function text(ctx, s, x, y, size, opt = {}) {
+    ctx.font = `${opt.weight || 600} ${size}px ${FONT}`;
+    // opt.fit: lebar maksimum; huruf diperkecil hanya bila teks lebih lebar dari itu
+    while (opt.fit && size > 20 && ctx.measureText(s).width > opt.fit) { size -= 2; ctx.font = `${opt.weight || 600} ${size}px ${FONT}`; } ctx.fillStyle = opt.color || C.ink;
+    ctx.textAlign = opt.align || "left"; ctx.textBaseline = opt.base || "alphabetic"; ctx.fillText(s, x, y);
+  }
+  function wrap(ctx, s, size, weight, maxW) {
+    ctx.font = `${weight} ${size}px ${FONT}`;
+    const words = s.split(" "), lines = []; let cur = "";
+    for (const w of words) {
+      const test = cur ? cur + " " + w : w;
+      if (ctx.measureText(test).width > maxW && cur) { lines.push(cur); cur = w; } else cur = test;
+    }
+    if (cur) lines.push(cur);
+    return lines;
+  }
+  function para(ctx, s, x, y, size, maxW, opt = {}) {
+    const lines = wrap(ctx, s, size, opt.weight || 500, maxW); const lh = size * (opt.lh || 1.35);
+    lines.forEach((l, i) => text(ctx, l, x, y + i * lh, size, opt));
+    return lines.length * lh;
+  }
+  function arrowIcon(ctx, kind, cx, cy, s, color) {
+    ctx.save(); ctx.translate(cx, cy); ctx.strokeStyle = color; ctx.fillStyle = color; ctx.lineWidth = s * 0.16; ctx.lineCap = "round"; ctx.lineJoin = "round";
+    if (kind === "up") {
+      ctx.beginPath(); ctx.moveTo(0, s * 0.45); ctx.lineTo(0, -s * 0.3); ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(-s * 0.32, -s * 0.05); ctx.lineTo(0, -s * 0.45); ctx.lineTo(s * 0.32, -s * 0.05); ctx.stroke();
+    } else if (kind === "left" || kind === "right") {
+      const k = kind === "left" ? -1 : 1;
+      ctx.beginPath(); ctx.moveTo(0, s * 0.45); ctx.lineTo(0, -s * 0.05); ctx.quadraticCurveTo(0, -s * 0.32, k * s * 0.28, -s * 0.32); ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(k * s * 0.12, -s * 0.5); ctx.lineTo(k * s * 0.4, -s * 0.32); ctx.lineTo(k * s * 0.12, -s * 0.14); ctx.stroke();
+    } else if (kind === "east") {
+      ctx.beginPath(); ctx.moveTo(-s * 0.4, 0); ctx.lineTo(s * 0.3, 0); ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(s * 0.05, -s * 0.28); ctx.lineTo(s * 0.4, 0); ctx.lineTo(s * 0.05, s * 0.28); ctx.stroke();
+    } else if (kind === "west") {
+      ctx.beginPath(); ctx.moveTo(s * 0.4, 0); ctx.lineTo(-s * 0.3, 0); ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(-s * 0.05, -s * 0.28); ctx.lineTo(-s * 0.4, 0); ctx.lineTo(-s * 0.05, s * 0.28); ctx.stroke();
+    } else if (kind === "grab") {
+      ctx.beginPath(); ctx.arc(0, s * 0.12, s * 0.22, 0, Math.PI * 2); ctx.fill();
+      ctx.beginPath(); ctx.moveTo(-s * 0.4, -s * 0.42); ctx.lineTo(-s * 0.4, -s * 0.12); ctx.moveTo(s * 0.4, -s * 0.42); ctx.lineTo(s * 0.4, -s * 0.12);
+      ctx.moveTo(-s * 0.4, -s * 0.42); ctx.lineTo(s * 0.4, -s * 0.42); ctx.stroke();
+    }
+    ctx.restore();
+  }
+  function bakso(ctx, cx, cy, s, opt = {}) {
+    // a bowl of bakso: the goal
+    ctx.save(); ctx.translate(cx, cy);
+    if (opt.glow) { ctx.beginPath(); ctx.arc(0, 0, s * 0.62, 0, Math.PI * 2); ctx.fillStyle = "rgba(242,177,52,0.22)"; ctx.fill(); }
+    ctx.fillStyle = "#E4EEF5"; ctx.beginPath(); ctx.moveTo(-s * 0.46, -s * 0.05); ctx.quadraticCurveTo(-s * 0.4, s * 0.45, 0, s * 0.45); ctx.quadraticCurveTo(s * 0.4, s * 0.45, s * 0.46, -s * 0.05); ctx.closePath(); ctx.fill();
+    ctx.strokeStyle = "#8FA9BD"; ctx.lineWidth = s * 0.05; ctx.stroke();
+    ctx.fillStyle = "#C8B49A"; ctx.beginPath(); ctx.ellipse(0, -s * 0.05, s * 0.44, s * 0.14, 0, 0, Math.PI * 2); ctx.fill();
+    for (const [dx, dy, r] of [[-0.16, -0.1, 0.13], [0.14, -0.12, 0.13], [0, -0.22, 0.12]]) {
+      ctx.fillStyle = "#9A7B5B"; ctx.beginPath(); ctx.arc(dx * s, dy * s, r * s, 0, Math.PI * 2); ctx.fill();
+      ctx.fillStyle = "#B8977A"; ctx.beginPath(); ctx.arc(dx * s - r * s * 0.3, dy * s - r * s * 0.3, r * s * 0.4, 0, Math.PI * 2); ctx.fill();
+    }
+    ctx.fillStyle = "#4CA64C"; for (const dx of [-0.26, 0.1, 0.26]) { ctx.beginPath(); ctx.arc(dx * s, -s * 0.07, s * 0.045, 0, Math.PI * 2); ctx.fill(); }
+    ctx.restore();
+  }
+  function table(ctx, x, y, w, h) {
+    ctx.fillStyle = C.table; rr(ctx, x + w * 0.1, y + h * 0.3, w * 0.8, h * 0.55, 10); ctx.fill();
+    ctx.fillStyle = C.tableTop; rr(ctx, x + w * 0.06, y + h * 0.18, w * 0.88, h * 0.3, 10); ctx.fill();
+    ctx.fillStyle = "rgba(0,0,0,0.12)"; ctx.fillRect(x + w * 0.16, y + h * 0.5, w * 0.08, h * 0.35); ctx.fillRect(x + w * 0.76, y + h * 0.5, w * 0.08, h * 0.35);
+  }
+  function kiko(ctx, cx, cy, s, ang, opt = {}) {
+    ctx.save(); ctx.translate(cx, cy);
+    // shadow
+    ctx.fillStyle = "rgba(0,0,0,0.12)"; ctx.beginPath(); ctx.ellipse(0, s * 0.42, s * 0.42, s * 0.12, 0, 0, Math.PI * 2); ctx.fill();
+    ctx.rotate(ang);
+    // wheels
+    ctx.fillStyle = C.kikoDark; rr(ctx, -s * 0.46, -s * 0.2, s * 0.12, s * 0.5, 5); ctx.fill(); rr(ctx, s * 0.34, -s * 0.2, s * 0.12, s * 0.5, 5); ctx.fill();
+    // body
+    ctx.fillStyle = opt.flash ? `rgba(217,68,59,${0.5 + 0.5 * opt.flash})` : C.kiko; rr(ctx, -s * 0.38, -s * 0.36, s * 0.76, s * 0.72, s * 0.16); ctx.fill();
+    // visor (front, facing up)
+    ctx.fillStyle = C.kikoLight; rr(ctx, -s * 0.26, -s * 0.33, s * 0.52, s * 0.3, s * 0.1); ctx.fill();
+    // eyes
+    const mood = opt.mood || "happy";
+    ctx.fillStyle = C.pupil;
+    if (mood === "sad") { ctx.beginPath(); ctx.arc(-s * 0.12, -s * 0.18, s * 0.05, 0, Math.PI * 2); ctx.arc(s * 0.12, -s * 0.18, s * 0.05, 0, Math.PI * 2); ctx.fill(); ctx.strokeStyle = C.pupil; ctx.lineWidth = s * 0.03; ctx.beginPath(); ctx.arc(0, -s * 0.03, s * 0.08, Math.PI * 1.15, Math.PI * 1.85); ctx.stroke(); }
+    else if (mood === "confused") { ctx.beginPath(); ctx.arc(-s * 0.12, -s * 0.18, s * 0.05, 0, Math.PI * 2); ctx.arc(s * 0.12, -s * 0.18, s * 0.035, 0, Math.PI * 2); ctx.fill(); ctx.strokeStyle = C.pupil; ctx.lineWidth = s * 0.03; ctx.beginPath(); ctx.moveTo(-s * 0.08, -s * 0.06); ctx.lineTo(s * 0.08, -s * 0.09); ctx.stroke(); }
+    else { ctx.beginPath(); ctx.arc(-s * 0.12, -s * 0.18, s * 0.055, 0, Math.PI * 2); ctx.arc(s * 0.12, -s * 0.18, s * 0.055, 0, Math.PI * 2); ctx.fill(); ctx.strokeStyle = C.pupil; ctx.lineWidth = s * 0.03; ctx.beginPath(); ctx.arc(0, -s * 0.1, s * 0.08, Math.PI * 0.15, Math.PI * 0.85); ctx.stroke(); }
+    // front pointer
+    ctx.fillStyle = C.accent; ctx.beginPath(); ctx.moveTo(-s * 0.1, -s * 0.38); ctx.lineTo(s * 0.1, -s * 0.38); ctx.lineTo(0, -s * 0.5); ctx.closePath(); ctx.fill();
+    // antenna
+    ctx.strokeStyle = C.kikoDark; ctx.lineWidth = s * 0.04; ctx.beginPath(); ctx.moveTo(0, s * 0.36); ctx.lineTo(0, s * 0.5); ctx.stroke();
+    ctx.fillStyle = C.accent; ctx.beginPath(); ctx.arc(0, s * 0.52, s * 0.07, 0, Math.PI * 2); ctx.fill();
+    // tray with bakso when grabbed
+    if (opt.grabbed) bakso(ctx, 0, s * 0.05, s * 0.45);
+    ctx.restore();
+    if (opt.wave !== undefined) { // arm waving (title scene)
+      ctx.save(); ctx.translate(cx + s * 0.42, cy - s * 0.1); ctx.rotate(-0.6 + Math.sin(opt.wave * 6) * 0.4);
+      ctx.strokeStyle = C.kikoDark; ctx.lineWidth = s * 0.08; ctx.lineCap = "round"; ctx.beginPath(); ctx.moveTo(0, 0); ctx.lineTo(s * 0.3, -s * 0.3); ctx.stroke();
+      ctx.fillStyle = C.kikoLight; ctx.beginPath(); ctx.arc(s * 0.32, -s * 0.33, s * 0.09, 0, Math.PI * 2); ctx.fill(); ctx.restore();
+    }
+  }
+  function kid(ctx, cx, cy, s, opt = {}) {
+    // simple student figure, standing, facing viewer
+    ctx.save(); ctx.translate(cx, cy);
+    ctx.fillStyle = "rgba(0,0,0,0.12)"; ctx.beginPath(); ctx.ellipse(0, s * 1.02, s * 0.5, s * 0.1, 0, 0, Math.PI * 2); ctx.fill();
+    ctx.fillStyle = C.pants; rr(ctx, -s * 0.3, s * 0.35, s * 0.6, s * 0.5, s * 0.1); ctx.fill();
+    ctx.fillStyle = C.skin; ctx.fillRect(-s * 0.24, s * 0.8, s * 0.16, s * 0.2); ctx.fillRect(s * 0.08, s * 0.8, s * 0.16, s * 0.2);
+    ctx.fillStyle = C.uniform; rr(ctx, -s * 0.36, -s * 0.12, s * 0.72, s * 0.56, s * 0.12); ctx.fill();
+    ctx.strokeStyle = "#D5DDE2"; ctx.lineWidth = s * 0.025; rr(ctx, -s * 0.36, -s * 0.12, s * 0.72, s * 0.56, s * 0.12); ctx.stroke();
+    ctx.fillStyle = C.skin; ctx.beginPath(); ctx.arc(0, -s * 0.42, s * 0.32, 0, Math.PI * 2); ctx.fill();
+    ctx.fillStyle = opt.hairColor || C.hair; ctx.beginPath(); ctx.arc(0, -s * 0.5, s * 0.33, Math.PI, 0); ctx.fill();
+    if (opt.hair === "long") { ctx.fillRect(-s * 0.33, -s * 0.5, s * 0.12, s * 0.45); ctx.fillRect(s * 0.21, -s * 0.5, s * 0.12, s * 0.45); }
+    ctx.fillStyle = C.pupil; ctx.beginPath(); ctx.arc(-s * 0.11, -s * 0.4, s * 0.035, 0, Math.PI * 2); ctx.arc(s * 0.11, -s * 0.4, s * 0.035, 0, Math.PI * 2); ctx.fill();
+    ctx.strokeStyle = C.pupil; ctx.lineWidth = s * 0.025; ctx.beginPath(); ctx.arc(0, -s * 0.33, s * 0.08, Math.PI * 0.15, Math.PI * 0.85); ctx.stroke();
+    // arms
+    ctx.strokeStyle = C.skin; ctx.lineWidth = s * 0.11; ctx.lineCap = "round"; ctx.beginPath();
+    if (opt.point) { ctx.moveTo(s * 0.32, s * 0.02); ctx.lineTo(s * 0.75, -s * 0.2); } else { ctx.moveTo(s * 0.34, s * 0.02); ctx.lineTo(s * 0.42, s * 0.38); }
+    ctx.moveTo(-s * 0.34, s * 0.02); ctx.lineTo(-s * 0.42, s * 0.38); ctx.stroke();
+    ctx.restore();
+  }
+  function bubble(ctx, x, y, w, s, size, opt = {}) {
+    const lines = wrap(ctx, s, size, 600, w - 48); const h = lines.length * size * 1.3 + 40;
+    ctx.fillStyle = opt.fill || C.bubble; ctx.strokeStyle = opt.stroke || "#B7C7BF"; ctx.lineWidth = 3;
+    rr(ctx, x, y - h, w, h, 22); ctx.fill(); ctx.stroke();
+    const tx = opt.tailX !== undefined ? opt.tailX : x + 60;
+    ctx.beginPath(); ctx.moveTo(tx - 16, y); ctx.lineTo(tx + 16, y); ctx.lineTo(tx + (opt.tailDir || 0), y + 28); ctx.closePath(); ctx.fillStyle = opt.fill || C.bubble; ctx.fill();
+    ctx.strokeStyle = opt.stroke || "#B7C7BF"; ctx.beginPath(); ctx.moveTo(tx - 16, y); ctx.lineTo(tx + (opt.tailDir || 0), y + 28); ctx.lineTo(tx + 16, y); ctx.stroke();
+    lines.forEach((l, i) => text(ctx, l, x + 24, y - h + 24 + size + i * size * 1.3, size, { color: opt.color || C.ink, weight: 600 }));
+    return h;
+  }
+  function card(ctx, x, y, w, h, opt = {}) { ctx.fillStyle = opt.fill || C.panel; rr(ctx, x, y, w, h, opt.r || 26); ctx.fill(); if (opt.stroke) { ctx.strokeStyle = opt.stroke; ctx.lineWidth = opt.lw || 4; ctx.stroke(); } }
+
+  // ---------- adegan umum (semua episode) ----------
+  const SCENES = {
+    title(ctx, b, l, t, TL) {
+      card(ctx, 160, 160, 1600, 700, { fill: C.panel });
+      kiko(ctx, 420, 520, 260, 0, { wave: l, mood: "happy" });
+      text(ctx, TL.label || ("Informatika · Fase " + (TL.episode || "D")[0] + " · Episode " + TL.episode), 720, 330, 34, { color: C.ink2, weight: 700 });  // TL.label: label khusus, mis. video simulasi
+      const ts = TL.title.length > 34 ? 74 : 92; const th = para(ctx, TL.title, 720, 440, ts, 1000, { weight: 900, lh: 1.1 }); const hookLines = TL.hook ? wrap(ctx, TL.hook, 34, 800, 1000).length : 0; const hy = Math.max(hookLines >= 3 ? 600 : 640, 440 + th - ts * 0.35 + 30);
+      if (TL.hook) { text(ctx, "SETELAH MENONTON, KAMU BISA:", 720, hy, 26, { color: C.accentDark, weight: 800 }); para(ctx, TL.hook, 720, hy + 50, 34, 1000, { weight: 800, lh: 1.3 }); const ny = hy + 50 + wrap(ctx, TL.hook, 34, 800, 1000).length * 34 * 1.3 + 12; if (ny <= 830) text(ctx, "Dengarkan, atau baca teksnya pelan-pelan.", 720, Math.max(800, ny), 26, { color: C.ink2, weight: 600 }); }
+      else text(ctx, "Dengarkan, atau baca teksnya pelan-pelan.", 720, 700, 36, { color: C.ink2, weight: 600 });
+      if (!TL.label) { arrowIcon(ctx, "up", 1560, 250, 70, C.kikoLight); arrowIcon(ctx, "right", 1660, 250, 70, C.kikoLight); }  // ikon panah khas episode, tidak untuk simulasi
+    },
+    quiz(ctx, b, l, t, TL, answered) {
+      const q = TL.quizzes[b.quiz]; card(ctx, 200, 150, 1520, 740, { stroke: C.accent, lw: 6 });
+      text(ctx, "CEK PEMAHAMAN", 960, 230, 32, { align: "center", color: C.accentDark, weight: 800 });
+      para(ctx, q.q, 960, 320, 44, 1360, { weight: 800, align: "center", lh: 1.3 });
+      // tata letak pilihan: mulai di bawah pertanyaan dan selesai di atas kartu narasi (narasi panjang = jarak dirapatkan)
+      const qLines = wrap(ctx, q.q, 44, 800, 1360).length, subTop = 1056 - (wrap(ctx, b.text, 44, 700, 1660).length * 44 * 1.3 + 44);
+      let oy = qLines <= 1 ? 420 : 470, gap = 120, oh = 96; const n = q.options.length;
+      if (oy + (n - 1) * gap + oh > subTop - 12) { gap = Math.max(104, Math.floor((subTop - 12 - oh - oy) / Math.max(1, n - 1))); }
+      if (oy + (n - 1) * gap + oh > subTop - 12) { oh = 86; gap = 100; oy = Math.max(320 + (qLines - 1) * 57 + 40, subTop - 12 - oh - (n - 1) * gap); }
+      q.options.forEach((o, i) => {
+        const y = oy + i * gap; const right = answered && i === q.answer;
+        card(ctx, 320, y, 1280, oh, { fill: right ? C.goodBg : answered ? "#F4F6F5" : C.bg2, stroke: right ? C.good : "#CFDCD5", lw: right ? 6 : 3 });
+        ctx.fillStyle = right ? C.good : C.kiko; ctx.beginPath(); ctx.arc(380, y + oh / 2, 30, 0, Math.PI * 2); ctx.fill();
+        text(ctx, "ABC"[i], 380, y + oh / 2 + 13, 34, { align: "center", color: "#fff", weight: 900 });
+        text(ctx, o, 440, y + oh / 2 + 14, 38, { weight: 700, color: answered && !right ? C.muted : C.ink });
+        if (right) text(ctx, "✓", 1540, y + oh / 2 + 18, 54, { align: "center", color: C.good, weight: 900 });
+      });
+      if (!answered) { // thinking timer
+        const frac = clamp(l / b.dur, 0, 1); ctx.strokeStyle = "#D7E2DC"; ctx.lineWidth = 14; ctx.beginPath(); ctx.arc(1640, 230, 40, 0, Math.PI * 2); ctx.stroke();
+        ctx.strokeStyle = C.accent; ctx.beginPath(); ctx.arc(1640, 230, 40, -Math.PI / 2, -Math.PI / 2 + frac * Math.PI * 2); ctx.stroke();
+        // catatan hanya digambar bila tidak tertutup kartu narasi (narasi tiga baris atau lebih menutupinya)
+        const subTop = 1056 - (wrap(ctx, b.text, 44, 700, 1660).length * 44 * 1.3 + 44);
+        if (subTop > 880) text(ctx, "Pikirkan dulu, jangan buru-buru.", 960, 860, 32, { align: "center", color: C.ink2, weight: 600 });
+      }
+    },
+    quiz_answer(ctx, b, l, t, TL) { SCENES.quiz(ctx, b, l, t, TL, true); },
+    recap(ctx, b, l, t, TL) {
+      // TL.recap: tiga kalimat pendek dari script.json
+      card(ctx, 160, 140, 1600, 760);
+      text(ctx, "TIGA HAL UNTUK DIINGAT", 960, 230, 34, { align: "center", color: C.accentDark, weight: 900 });
+      const items = TL.recap || [];
+      const show = clamp(Math.floor((l - 0.6) / 2.2) + 1, 1, Math.max(1, items.length));
+      items.forEach((s, i) => { if (i >= show) return; card(ctx, 300, 290 + i * 180, 1320, 140, { fill: C.bg2 }); ctx.fillStyle = C.kiko; ctx.beginPath(); ctx.arc(380, 360 + i * 180, 40, 0, Math.PI * 2); ctx.fill(); text(ctx, String(i + 1), 380, 376 + i * 180, 40, { align: "center", color: "#fff", weight: 900 }); text(ctx, s, 450, 375 + i * 180, 42, { weight: 800, fit: 1130 }); });
+      kiko(ctx, 1620, 820, 130, 0);
+    },
+    outro(ctx, b, l, t, TL) {
+      // TL.next: {code, title, note} episode berikutnya, dari script.json
+      const n = TL.next || {};
+      card(ctx, 260, 200, 1400, 600);
+      text(ctx, n.heading || "EPISODE BERIKUTNYA", 960, 320, 34, { align: "center", color: C.accentDark, weight: 900 });
+      text(ctx, n.code || "", 960, 440, 60, { align: "center", weight: 900 });
+      text(ctx, n.title || "", 960, 530, 54, { align: "center", weight: 800, color: C.ink2, fit: 1320 });
+      text(ctx, n.note || "", 960, 680, 34, { align: "center", color: C.ink2, weight: 600 });
+      kiko(ctx, 960, 760 + 20, 140, 0, { wave: l });
+    }
+  };
+
+  function beatAt(TL, t) {
+    let b = TL.beats[0];
+    for (const x of TL.beats) { if (t >= x.start) b = x; else break; }
+    return b;
+  }
+  function draw(ctx, t, TL, opt = {}) {
+    const b = beatAt(TL, t); const l = t - b.start;
+    ctx.save(); ctx.setTransform(1, 0, 0, 1, 0, 0);
+    ctx.fillStyle = C.bg; ctx.fillRect(0, 0, W, H);
+    // header
+    text(ctx, TL.episode + " · " + TL.title, 60, 78, 30, { color: C.ink2, weight: 700 });
+    text(ctx, TL.segments[b.seg], 1860, 78, 30, { color: C.accentDark, weight: 800, align: "right" });
+    ctx.fillStyle = C.bg2; ctx.fillRect(0, 100, W, 6); ctx.fillStyle = C.accent; ctx.fillRect(0, 100, W * clamp(t / TL.total, 0, 1), 6);
+    const fn = SCENES[b.scene]; if (fn) fn(ctx, b, l, t, TL);
+    // narration card (burned-in text the student reads)
+    if (opt.subtitles !== false) {
+      const size = 44; const lines = wrap(ctx, b.text, size, 700, 1660);
+      const h = lines.length * size * 1.3 + 44; const y0 = 1056 - h;
+      ctx.fillStyle = "rgba(31,42,51,0.92)"; rr(ctx, 100, y0, 1720, h, 20); ctx.fill();
+      // reading progress (how far along the text the reader should be)
+      const frac = clamp(l / b.audio, 0, 1); ctx.fillStyle = C.accent; rr(ctx, 100, y0 + h - 8, 1720 * frac, 8, 4); ctx.fill();
+      lines.forEach((ln, i) => text(ctx, ln, 960, y0 + 22 + size + i * size * 1.3, size, { align: "center", color: C.subText, weight: 700 }));
+    }
+    ctx.restore();
+    return b;
+  }
+
+  global.Kiko = { draw, beatAt, W, H, C, FONT, SCENES,
+    helpers: { rr, text, wrap, para, arrowIcon, bakso, table, kiko, kid, bubble, card, ease, clamp, lerp } };
+})(typeof window !== "undefined" ? window : globalThis);
+
+/* Pembantu gambar perangkat (dipakai D7.0, D7.2, …): monitor, mouse, pointer, keyboard, HP, jari, ikon file/folder, jendela.
+   Semua digambar dengan kode (tanpa aset unduhan). Muat setelah ../_alat/kiko-core.js; dipakai scenes.js. */
+(function (global) {
+  const K = global.Kiko, H = K.helpers, C = K.C;
+  const { rr, text, wrap, card, ease, clamp, lerp } = H;
+  const D = {};
+  const SCREEN_BG = "#F4F8FB", BEZEL = "#2B3A46", BEZEL2 = "#1A262F", SEL = "rgba(46,126,154,0.22)";
+
+  // ---------- komputer ----------
+  // monitor di atas meja; mengembalikan kotak layar {x,y,w,h}
+  D.monitor = function (ctx, x, y, w, h) {
+    ctx.fillStyle = BEZEL; rr(ctx, x - 18, y - 18, w + 36, h + 36, 22); ctx.fill();
+    ctx.fillStyle = SCREEN_BG; rr(ctx, x, y, w, h, 10); ctx.fill();
+    // kaki dan meja
+    ctx.fillStyle = BEZEL2; rr(ctx, x + w / 2 - 40, y + h + 18, 80, 36, 8); ctx.fill(); rr(ctx, x + w / 2 - 140, y + h + 50, 280, 16, 8); ctx.fill();
+    ctx.fillStyle = C.tableTop; rr(ctx, x - 80, y + h + 66, w + 160, 22, 8); ctx.fill();
+    return { x, y, w, h };
+  };
+  // panah pointer
+  D.pointer = function (ctx, x, y, s = 34, color = C.ink) {
+    ctx.save(); ctx.translate(x, y); ctx.fillStyle = color; ctx.strokeStyle = "#fff"; ctx.lineWidth = s * 0.08; ctx.lineJoin = "round";
+    ctx.beginPath(); ctx.moveTo(0, 0); ctx.lineTo(0, s); ctx.lineTo(s * 0.27, s * 0.78); ctx.lineTo(s * 0.45, s * 1.15); ctx.lineTo(s * 0.62, s * 1.07); ctx.lineTo(s * 0.45, s * 0.7); ctx.lineTo(s * 0.75, s * 0.7); ctx.closePath();
+    ctx.fill(); ctx.stroke(); ctx.restore();
+  };
+  // mouse tampak atas; opt.left / opt.right = tombol ditekan; opt.label = tulis "kiri/kanan"
+  D.mouse = function (ctx, cx, cy, s, opt = {}) {
+    ctx.save(); ctx.translate(cx, cy);
+    ctx.fillStyle = "rgba(0,0,0,0.12)"; ctx.beginPath(); ctx.ellipse(0, s * 0.62, s * 0.5, s * 0.1, 0, 0, Math.PI * 2); ctx.fill();
+    // kabel
+    ctx.strokeStyle = "#7B8B95"; ctx.lineWidth = s * 0.05; ctx.beginPath(); ctx.moveTo(0, -s * 0.6); ctx.quadraticCurveTo(0, -s * 1.0, s * 0.5, -s * 1.1); ctx.stroke();
+    // badan
+    ctx.fillStyle = "#E8EEF2"; rr(ctx, -s * 0.42, -s * 0.62, s * 0.84, s * 1.24, s * 0.4); ctx.fill(); ctx.strokeStyle = "#A9B7C0"; ctx.lineWidth = s * 0.04; ctx.stroke();
+    // dua tombol
+    const btn = (side, on) => { ctx.fillStyle = on ? C.accent : "#F7FAFC"; ctx.beginPath(); const sx = side === "left" ? -1 : 1;
+      ctx.moveTo(sx * s * 0.03, -s * 0.6); ctx.lineTo(sx * s * 0.03, -s * 0.1); ctx.lineTo(sx * s * 0.4, -s * 0.1); ctx.lineTo(sx * s * 0.4, -s * 0.28); ctx.quadraticCurveTo(sx * s * 0.4, -s * 0.6, sx * s * 0.1, -s * 0.6); ctx.closePath(); ctx.fill(); ctx.strokeStyle = "#A9B7C0"; ctx.lineWidth = s * 0.03; ctx.stroke(); };
+    btn("left", opt.left); btn("right", opt.right);
+    ctx.fillStyle = "#A9B7C0"; rr(ctx, -s * 0.04, -s * 0.5, s * 0.08, s * 0.26, s * 0.04); ctx.fill(); // roda
+    ctx.restore();
+    if (opt.label) { text(ctx, "kiri", cx - s * 0.22, cy - s * 0.72, 26, { align: "center", color: opt.left ? C.accentDark : C.ink2, weight: 800 }); text(ctx, "kanan", cx + s * 0.22, cy - s * 0.72, 26, { align: "center", color: opt.right ? C.accentDark : C.ink2, weight: 800 }); }
+  };
+  // riak "klik" di sekitar titik
+  D.ripple = function (ctx, x, y, u, color = C.accent) { if (u <= 0 || u >= 1) return; ctx.strokeStyle = color; ctx.globalAlpha = 1 - u; ctx.lineWidth = 6; ctx.beginPath(); ctx.arc(x, y, 12 + u * 60, 0, Math.PI * 2); ctx.stroke(); ctx.globalAlpha = 1; };
+
+  // ---------- ikon file & folder ----------
+  const KIND = { folder: "#F2B134", foto: "#5FA8D3", tulisan: "#7B8B95", lagu: "#8E6BBF", video: "#D9443B" };
+  D.fileIcon = function (ctx, cx, cy, s, kind, opt = {}) {
+    ctx.save(); ctx.translate(cx, cy);
+    if (opt.selected) { ctx.fillStyle = SEL; rr(ctx, -s * 0.62, -s * 0.62, s * 1.24, s * 1.24 + (opt.name ? s * 0.5 : 0), s * 0.14); ctx.fill(); }
+    if (kind === "folder") {
+      ctx.fillStyle = "#D99A1B"; rr(ctx, -s * 0.5, -s * 0.32, s * 0.45, s * 0.2, s * 0.06); ctx.fill();
+      ctx.fillStyle = opt.open ? "#F7C860" : KIND.folder; rr(ctx, -s * 0.5, -s * 0.22, s, s * 0.7, s * 0.08); ctx.fill();
+      if (opt.open) { ctx.fillStyle = "#D99A1B"; rr(ctx, -s * 0.46, -s * 0.02, s * 0.92, s * 0.5, s * 0.08); ctx.fill(); }
+    } else {
+      ctx.fillStyle = "#FFFFFF"; ctx.strokeStyle = "#B7C4CC"; ctx.lineWidth = s * 0.05;
+      ctx.beginPath(); ctx.moveTo(-s * 0.36, -s * 0.5); ctx.lineTo(s * 0.12, -s * 0.5); ctx.lineTo(s * 0.36, -s * 0.26); ctx.lineTo(s * 0.36, s * 0.5); ctx.lineTo(-s * 0.36, s * 0.5); ctx.closePath(); ctx.fill(); ctx.stroke();
+      ctx.fillStyle = KIND[kind] || KIND.tulisan;
+      if (kind === "foto") { rr(ctx, -s * 0.26, -s * 0.2, s * 0.52, s * 0.44, s * 0.04); ctx.fill(); ctx.fillStyle = "#fff"; ctx.beginPath(); ctx.arc(-s * 0.12, -s * 0.08, s * 0.06, 0, Math.PI * 2); ctx.fill(); ctx.beginPath(); ctx.moveTo(-s * 0.26, s * 0.24); ctx.lineTo(-s * 0.06, s * 0.02); ctx.lineTo(s * 0.06, s * 0.14); ctx.lineTo(s * 0.14, s * 0.06); ctx.lineTo(s * 0.26, s * 0.24); ctx.closePath(); ctx.fill(); }
+      else if (kind === "lagu") { ctx.beginPath(); ctx.arc(-s * 0.1, s * 0.22, s * 0.1, 0, Math.PI * 2); ctx.arc(s * 0.16, s * 0.16, s * 0.1, 0, Math.PI * 2); ctx.fill(); ctx.lineWidth = s * 0.06; ctx.strokeStyle = KIND.lagu; ctx.beginPath(); ctx.moveTo(0, s * 0.2); ctx.lineTo(0, -s * 0.2); ctx.lineTo(s * 0.26, -s * 0.26); ctx.lineTo(s * 0.26, s * 0.14); ctx.stroke(); }
+      else if (kind === "video") { rr(ctx, -s * 0.26, -s * 0.16, s * 0.52, s * 0.4, s * 0.04); ctx.fill(); ctx.fillStyle = "#fff"; ctx.beginPath(); ctx.moveTo(-s * 0.06, -s * 0.04); ctx.lineTo(s * 0.12, s * 0.04); ctx.lineTo(-s * 0.06, s * 0.12); ctx.closePath(); ctx.fill(); }
+      else { for (let i = 0; i < 4; i++) { rr(ctx, -s * 0.22, -s * 0.14 + i * s * 0.14, s * (i === 3 ? 0.26 : 0.44), s * 0.06, s * 0.03); ctx.fill(); } }
+    }
+    ctx.restore();
+    if (opt.name) { const lines = wrap(ctx, opt.name, opt.size || 24, 700, s * 1.6); lines.slice(0, 2).forEach((ln, i) => text(ctx, ln, cx, cy + s * 0.78 + i * (opt.size || 24) * 1.15, opt.size || 24, { align: "center", weight: 700, color: opt.color || C.ink })); }
+  };
+  D.KIND = KIND;
+
+  // jendela aplikasi (file manager / editor) di dalam layar; mengembalikan area isi
+  D.windowFrame = function (ctx, x, y, w, h, title, opt = {}) {
+    ctx.fillStyle = "#FFFFFF"; rr(ctx, x, y, w, h, 14); ctx.fill(); ctx.strokeStyle = "#C9D4DB"; ctx.lineWidth = 3; ctx.stroke();
+    ctx.fillStyle = "#E6EDF2"; rr(ctx, x, y, w, 54, 14); ctx.fill(); ctx.fillRect(x, y + 30, w, 24);
+    ["#E0655C", "#F2B134", "#2E9E5B"].forEach((c, i) => { ctx.fillStyle = c; ctx.beginPath(); ctx.arc(x + 26 + i * 26, y + 27, 8, 0, Math.PI * 2); ctx.fill(); });
+    if (title) text(ctx, title, x + w / 2, y + 36, 24, { align: "center", color: C.ink2, weight: 800 });
+    if (opt.path) { ctx.fillStyle = "#F4F8FB"; rr(ctx, x + 16, y + 66, w - 32, 44, 10); ctx.fill(); text(ctx, opt.path, x + 32, y + 96, 24, { color: C.ink2, weight: 700 }); }
+    return { x: x + 16, y: y + (opt.path ? 124 : 70), w: w - 32, h: h - (opt.path ? 140 : 86) };
+  };
+  // kotak teks dengan kursor berkedip; opt.cursor = posisi karakter (bawaan akhir)
+  D.textBox = function (ctx, x, y, w, h, lines, tt, opt = {}) {
+    ctx.fillStyle = "#FFFFFF"; rr(ctx, x, y, w, h, 14); ctx.fill(); ctx.strokeStyle = opt.stroke || "#C9D4DB"; ctx.lineWidth = 3; ctx.stroke();
+    const size = opt.size || 48, lh = size * 1.4;
+    lines.forEach((ln, i) => text(ctx, ln, x + 28, y + 24 + size + i * lh, size, { weight: 700, color: opt.color || C.ink }));
+    if (opt.cursor !== false) {
+      const li = lines.length - 1, s = lines[li] || ""; ctx.font = `700 ${size}px ${K.FONT}`; const cw = ctx.measureText(s).width;
+      if (Math.floor(tt * 2.5) % 2 === 0 || opt.cursorOn) { ctx.fillStyle = C.kiko; ctx.fillRect(x + 30 + cw, y + 22 + li * lh, 5, size * 1.15); }
+      return [x + 32 + cw, y + 22 + li * lh + size * 0.6];
+    }
+  };
+
+  // ---------- keyboard ----------
+  const ROWS = [["Q", "W", "E", "R", "T", "Y", "U", "I", "O", "P"], ["A", "S", "D", "F", "G", "H", "J", "K", "L"], ["Z", "X", "C", "V", "B", "N", "M"]];
+  // keyboard sederhana: 3 baris huruf + Shift, Spasi, Backspace, Enter. opt.pressed = [tombol], opt.glow = [tombol] disorot lembut
+  D.keyboard = function (ctx, x, y, w, opt = {}) {
+    const key = w / 11.6, gap = key * 0.12, k = key - gap, h = k * 4 + gap * 5;
+    ctx.fillStyle = BEZEL; rr(ctx, x - 16, y - 16, w + 32, h + 32, 22); ctx.fill();
+    const pressed = opt.pressed || [], glow = opt.glow || [];
+    const draw = (kx, ky, kw, label, small) => {
+      const on = pressed.includes(label), soft = glow.includes(label);
+      ctx.fillStyle = on ? C.accent : soft ? "#FFF3D6" : "#F7FAFC"; rr(ctx, kx, ky + (on ? 4 : 0), kw, k - (on ? 4 : 0), 10); ctx.fill();
+      ctx.strokeStyle = on ? C.accentDark : soft ? C.accent : "#B7C4CC"; ctx.lineWidth = on || soft ? 4 : 2; ctx.stroke();
+      // ukuran huruf mengikuti ukuran tombol; pada keyboard mini (tombol < 40 px) label tombol khusus tidak digambar
+      const fs = small ? Math.min(24, k * 0.45) : Math.min(32, k * 0.6);
+      if (small ? k >= 40 : k >= 18) text(ctx, label, kx + kw / 2, ky + k / 2 + fs * 0.38, fs, { align: "center", weight: 800, color: on ? "#fff" : C.ink });
+    };
+    ROWS.forEach((row, r) => { const off = r === 0 ? 0 : r === 1 ? key * 0.35 : key * 0.85; row.forEach((lab, i) => draw(x + gap + off + i * key, y + gap + r * key, k, lab)); });
+    draw(x + gap + key * 0.85 + 7 * key + gap, y + gap + 2 * key, key * 2.4 - gap, "Backspace", true);
+    draw(x + gap, y + gap + 3 * key, key * 1.9 - gap, "Shift", true);
+    draw(x + gap + key * 1.9, y + gap + 3 * key, key * 6.2 - gap, "Spasi", true);
+    draw(x + gap + key * 8.1, y + gap + 3 * key, key * 2.3 - gap, "Enter", true);
+    draw(x + gap + key * 0.35 + 9 * key, y + gap + 1 * key, key * 1.9 - gap, "Enter", true);
+    return { x, y, w, h };
+  };
+
+  // ---------- HP & jari ----------
+  // HP tegak; mengembalikan kotak layar
+  D.phone = function (ctx, cx, cy, w, h) {
+    ctx.fillStyle = BEZEL; rr(ctx, cx - w / 2 - 14, cy - h / 2 - 22, w + 28, h + 44, 40); ctx.fill();
+    ctx.fillStyle = SCREEN_BG; rr(ctx, cx - w / 2, cy - h / 2, w, h, 26); ctx.fill();
+    ctx.fillStyle = BEZEL2; rr(ctx, cx - 40, cy - h / 2 + 8, 80, 12, 6); ctx.fill();
+    return { x: cx - w / 2, y: cy - h / 2, w, h };
+  };
+  // kisi ikon aplikasi generik di layar HP; mengembalikan posisi tiap ikon
+  const APPS = [["Kamera", "#2E7E9A"], ["Galeri", "#5FA8D3"], ["Pesan", "#2E9E5B"], ["Musik", "#8E6BBF"], ["Kalkulator", "#7B8B95"], ["Peta", "#F2B134"], ["Catatan", "#E0A23B"], ["Jam", "#D9443B"], ["Cuaca", "#4C9BE0"]];
+  D.appGrid = function (ctx, sc, opt = {}) {
+    const cols = 3, cell = sc.w / cols, out = [];
+    APPS.forEach(([name, col], i) => {
+      const r = Math.floor(i / cols), c = i % cols; const ax = sc.x + cell * c + cell / 2, ay = sc.y + 90 + r * (cell + 26);
+      const on = opt.active === name; const sz = cell * 0.56 * (on && opt.scale ? opt.scale : 1);
+      ctx.fillStyle = col; rr(ctx, ax - sz / 2, ay - sz / 2, sz, sz, sz * 0.24); ctx.fill();
+      if (on) { ctx.strokeStyle = C.accent; ctx.lineWidth = 6; ctx.stroke(); }
+      text(ctx, name, ax, ay + sz / 2 + 26, 20, { align: "center", weight: 700, color: C.ink2 });
+      out.push({ name, x: ax, y: ay });
+    });
+    return out;
+  };
+  // ujung jari yang menyentuh layar di (x,y); opt.press = sedang menekan (riak); opt.second = jari kedua
+  D.finger = function (ctx, x, y, opt = {}) {
+    const s = opt.s || 46;
+    ctx.save(); ctx.translate(x, y); ctx.rotate(opt.angle !== undefined ? opt.angle : 0.5);
+    ctx.fillStyle = "rgba(0,0,0,0.10)"; ctx.beginPath(); ctx.ellipse(0, s * 0.25, s * 0.7, s * 0.4, 0, 0, Math.PI * 2); ctx.fill();
+    ctx.fillStyle = C.skin; rr(ctx, -s * 0.5, -s * 0.3, s, s * 3.2, s * 0.5); ctx.fill();
+    ctx.fillStyle = "#F7D9BE"; ctx.beginPath(); ctx.ellipse(0, s * 0.1, s * 0.3, s * 0.42, 0, 0, Math.PI * 2); ctx.fill();
+    ctx.restore();
+    if (opt.press) { ctx.fillStyle = "rgba(46,126,154,0.25)"; ctx.beginPath(); ctx.arc(x, y, s * 0.8, 0, Math.PI * 2); ctx.fill(); }
+  };
+  // menu konteks (klik kanan / tekan lama)
+  D.menu = function (ctx, x, y, items, opt = {}) {
+    const w = opt.w || 300, rowH = 52; ctx.fillStyle = "#FFFFFF"; rr(ctx, x, y, w, rowH * items.length + 16, 12); ctx.fill(); ctx.strokeStyle = "#B7C4CC"; ctx.lineWidth = 3; ctx.stroke();
+    ctx.fillStyle = "rgba(0,0,0,0.08)";
+    items.forEach((it, i) => { if (opt.active === i) { ctx.fillStyle = "#FFF3D6"; rr(ctx, x + 8, y + 8 + i * rowH, w - 16, rowH, 8); ctx.fill(); } text(ctx, it, x + 24, y + 8 + i * rowH + 36, 28, { weight: 700 }); });
+  };
+  // kartu keterangan kecil di kanan/bawah adegan
+  D.note = function (ctx, x, y, w, s, opt = {}) { card(ctx, x, y, w, opt.h || 96, { fill: opt.fill || "#FFF3D6", stroke: opt.stroke || C.accent, lw: 4 }); text(ctx, s, x + w / 2, y + (opt.h || 96) / 2 + 14, opt.size || 36, { align: "center", weight: 900, color: opt.color || C.ink }); };
+
+  K.devices = D;
+})(typeof window !== "undefined" ? window : globalThis);
+
+/* Pembantu gambar D7.2: bagian dalam komputer (prosesor, RAM, hard disk), alat input/output (mikrofon, kamera, speaker, printer),
+   dan papan alur input → proses → output → penyimpanan dengan denyut "H" yang berjalan. Muat setelah kiko-core.js dan kiko-devices.js. */
+(function (global) {
+  const K = global.Kiko, H = K.helpers, C = K.C, D = K.devices;
+  const { rr, text, card, ease, clamp, lerp } = H;
+  const M = {};
+  const DARK = "#2B3A46", CHIP = "#3E4C59", GOLD = "#E0B04B", GREEN_PCB = "#2E6B4F";
+
+  // prosesor (chip persegi dengan kaki)
+  M.chip = function (ctx, cx, cy, s, opt = {}) {
+    ctx.save(); ctx.translate(cx, cy);
+    ctx.strokeStyle = "#9AAFA6"; ctx.lineWidth = s * 0.05; for (let i = -3; i <= 3; i++) { const p = i * s * 0.14; ctx.beginPath(); ctx.moveTo(p, -s * 0.62); ctx.lineTo(p, -s * 0.5); ctx.moveTo(p, s * 0.5); ctx.lineTo(p, s * 0.62); ctx.moveTo(-s * 0.62, p); ctx.lineTo(-s * 0.5, p); ctx.moveTo(s * 0.5, p); ctx.lineTo(s * 0.62, p); ctx.stroke(); }
+    ctx.fillStyle = opt.hot ? "#F2B134" : CHIP; rr(ctx, -s / 2, -s / 2, s, s, s * 0.12); ctx.fill();
+    ctx.fillStyle = opt.hot ? "#FFF3D6" : "#6B7B88"; rr(ctx, -s * 0.3, -s * 0.3, s * 0.6, s * 0.6, s * 0.08); ctx.fill();
+    text(ctx, opt.label || "CPU", 0, s * 0.12, s * 0.3, { align: "center", weight: 900, color: opt.hot ? C.accentDark : "#fff" });
+    ctx.restore();
+  };
+  // RAM (keping memanjang dengan chip kecil); opt.cells = teks di sel (isi sementara)
+  M.ram = function (ctx, x, y, w, h, opt = {}) {
+    ctx.fillStyle = GREEN_PCB; rr(ctx, x, y, w, h, 10); ctx.fill();
+    ctx.fillStyle = GOLD; for (let i = 0; i < 12; i++) ctx.fillRect(x + 14 + i * (w - 28) / 12, y + h - 10, (w - 28) / 12 - 6, 10);
+    const n = 6, cw = (w - 40) / n;
+    for (let i = 0; i < n; i++) { const c = (opt.cells || [])[i]; ctx.fillStyle = c ? "#FFF3D6" : DARK; rr(ctx, x + 20 + i * cw, y + 14, cw - 8, h - 40, 6); ctx.fill(); if (c) text(ctx, c, x + 20 + i * cw + (cw - 8) / 2, y + 14 + (h - 40) / 2 + 12, Math.min(34, h * 0.45, (cw - 8) * 0.85), { align: "center", weight: 900, color: C.ink }); }
+    if (opt.label !== false) text(ctx, opt.label || "RAM", x + w / 2, y - 14, 28, { align: "center", weight: 900, color: C.ink2 });
+  };
+  // hard disk / SSD (kotak dengan piringan)
+  M.disk = function (ctx, cx, cy, s, opt = {}) {
+    ctx.save(); ctx.translate(cx, cy);
+    ctx.fillStyle = "#6B7B88"; rr(ctx, -s * 0.6, -s * 0.45, s * 1.2, s * 0.9, s * 0.1); ctx.fill();
+    ctx.fillStyle = "#B7C4CC"; ctx.beginPath(); ctx.arc(-s * 0.12, 0, s * 0.32, 0, Math.PI * 2); ctx.fill(); ctx.fillStyle = "#6B7B88"; ctx.beginPath(); ctx.arc(-s * 0.12, 0, s * 0.08, 0, Math.PI * 2); ctx.fill();
+    ctx.strokeStyle = "#E6EDF2"; ctx.lineWidth = s * 0.05; ctx.beginPath(); ctx.moveTo(s * 0.4, -s * 0.3); ctx.lineTo(0, -s * 0.05); ctx.stroke();
+    if (opt.full !== undefined) { ctx.fillStyle = C.good; rr(ctx, -s * 0.55, s * 0.3, s * 1.1 * opt.full, s * 0.1, 4); ctx.fill(); }
+    ctx.restore();
+    if (opt.label) text(ctx, opt.label, cx, cy + s * 0.75, 28, { align: "center", weight: 900, color: C.ink2 });
+  };
+  M.ssd = function (ctx, cx, cy, s) { ctx.fillStyle = GREEN_PCB; rr(ctx, cx - s * 0.7, cy - s * 0.2, s * 1.4, s * 0.4, 8); ctx.fill(); ctx.fillStyle = CHIP; for (let i = 0; i < 4; i++) { rr(ctx, cx - s * 0.6 + i * s * 0.33, cy - s * 0.12, s * 0.26, s * 0.24, 4); ctx.fill(); } ctx.fillStyle = GOLD; ctx.fillRect(cx + s * 0.5, cy - s * 0.1, s * 0.2, s * 0.2); };
+  M.flashdisk = function (ctx, cx, cy, s) { ctx.fillStyle = C.kiko; rr(ctx, cx - s * 0.5, cy - s * 0.22, s * 0.7, s * 0.44, 8); ctx.fill(); ctx.fillStyle = "#B7C4CC"; rr(ctx, cx + s * 0.2, cy - s * 0.14, s * 0.3, s * 0.28, 3); ctx.fill(); };
+  M.sdcard = function (ctx, cx, cy, s) { ctx.fillStyle = "#1F2A33"; ctx.beginPath(); ctx.moveTo(cx - s * 0.3, cy - s * 0.4); ctx.lineTo(cx + s * 0.2, cy - s * 0.4); ctx.lineTo(cx + s * 0.3, cy - s * 0.3); ctx.lineTo(cx + s * 0.3, cy + s * 0.4); ctx.lineTo(cx - s * 0.3, cy + s * 0.4); ctx.closePath(); ctx.fill(); ctx.fillStyle = GOLD; for (let i = 0; i < 4; i++) ctx.fillRect(cx - s * 0.22 + i * s * 0.12, cy - s * 0.34, s * 0.07, s * 0.14); };
+  M.cloud = function (ctx, cx, cy, s) { ctx.fillStyle = "#8FD0E6"; [[0, 0, 0.5], [-0.5, 0.15, 0.35], [0.5, 0.15, 0.35], [-0.2, -0.25, 0.35], [0.25, -0.2, 0.3]].forEach(([dx, dy, r]) => { ctx.beginPath(); ctx.arc(cx + dx * s, cy + dy * s, r * s, 0, Math.PI * 2); ctx.fill(); }); ctx.fillRect(cx - s * 0.75, cy + s * 0.1, s * 1.5, s * 0.4); };
+  // alat input/output kecil
+  M.mic = function (ctx, cx, cy, s) { ctx.fillStyle = "#4A5A66"; rr(ctx, cx - s * 0.22, cy - s * 0.55, s * 0.44, s * 0.8, s * 0.22); ctx.fill(); ctx.strokeStyle = "#4A5A66"; ctx.lineWidth = s * 0.08; ctx.beginPath(); ctx.arc(cx, cy, s * 0.4, 0, Math.PI); ctx.moveTo(cx, cy + s * 0.4); ctx.lineTo(cx, cy + s * 0.65); ctx.moveTo(cx - s * 0.3, cy + s * 0.65); ctx.lineTo(cx + s * 0.3, cy + s * 0.65); ctx.stroke(); };
+  M.camera = function (ctx, cx, cy, s) { ctx.fillStyle = "#4A5A66"; rr(ctx, cx - s * 0.6, cy - s * 0.35, s * 1.2, s * 0.8, s * 0.12); ctx.fill(); ctx.fillStyle = "#1F2A33"; ctx.beginPath(); ctx.arc(cx, cy + s * 0.05, s * 0.28, 0, Math.PI * 2); ctx.fill(); ctx.fillStyle = "#8FD0E6"; ctx.beginPath(); ctx.arc(cx, cy + s * 0.05, s * 0.14, 0, Math.PI * 2); ctx.fill(); ctx.fillStyle = "#4A5A66"; rr(ctx, cx - s * 0.2, cy - s * 0.5, s * 0.4, s * 0.2, 4); ctx.fill(); };
+  M.speaker = function (ctx, cx, cy, s, opt = {}) { ctx.fillStyle = "#4A5A66"; rr(ctx, cx - s * 0.35, cy - s * 0.6, s * 0.7, s * 1.2, s * 0.1); ctx.fill(); ctx.fillStyle = "#1F2A33"; ctx.beginPath(); ctx.arc(cx, cy + s * 0.15, s * 0.26, 0, Math.PI * 2); ctx.arc(cx, cy - s * 0.32, s * 0.13, 0, Math.PI * 2); ctx.fill(); if (opt.on) { ctx.strokeStyle = C.accent; ctx.lineWidth = s * 0.07; for (let i = 1; i <= 3; i++) { ctx.beginPath(); ctx.arc(cx + s * 0.4, cy, s * 0.25 * i, -0.6, 0.6); ctx.stroke(); } } };
+  M.printer = function (ctx, cx, cy, s, opt = {}) { ctx.fillStyle = "#B7C4CC"; rr(ctx, cx - s * 0.7, cy - s * 0.25, s * 1.4, s * 0.6, s * 0.1); ctx.fill(); ctx.fillStyle = "#6B7B88"; rr(ctx, cx - s * 0.5, cy - s * 0.55, s, s * 0.35, s * 0.06); ctx.fill(); ctx.fillStyle = "#fff"; rr(ctx, cx - s * 0.4, cy + s * 0.2, s * 0.8, s * (opt.out || 0.4), 4); ctx.fill(); if (opt.text) text(ctx, opt.text, cx, cy + s * 0.5, s * 0.3, { align: "center", weight: 900, color: C.ink }); };
+  M.scanner = function (ctx, cx, cy, s) { ctx.fillStyle = "#B7C4CC"; rr(ctx, cx - s * 0.7, cy - s * 0.2, s * 1.4, s * 0.4, s * 0.08); ctx.fill(); ctx.fillStyle = "#8FD0E6"; rr(ctx, cx - s * 0.6, cy - s * 0.12, s * 1.2, s * 0.2, 4); ctx.fill(); ctx.fillStyle = C.accent; ctx.fillRect(cx - s * 0.1, cy - s * 0.12, s * 0.06, s * 0.2); };
+  // kartu stasiun (kotak berjudul) untuk papan alur
+  M.station = function (ctx, x, y, w, h, title, opt = {}) {
+    card(ctx, x, y, w, h, { fill: opt.on ? "#FFF3D6" : opt.dim ? "#F4F6F5" : C.panel, stroke: opt.on ? C.accent : opt.done ? C.good : "#D7E2DC", lw: opt.on || opt.done ? 5 : 3, r: 20 });
+    text(ctx, title, x + w / 2, y + 44, 30, { align: "center", weight: 900, color: opt.on ? C.accentDark : opt.dim ? C.muted : C.ink });
+    if (opt.sub) text(ctx, opt.sub, x + w / 2, y + h - 18, 24, { align: "center", weight: 700, color: C.ink2 });
+  };
+  // panah tebal mendatar/menurun antar stasiun
+  M.arrow = function (ctx, x1, y1, x2, y2, opt = {}) {
+    ctx.strokeStyle = opt.color || "#9AAFA6"; ctx.fillStyle = opt.color || "#9AAFA6"; ctx.lineWidth = opt.lw || 10; ctx.lineCap = "round";
+    ctx.beginPath(); ctx.moveTo(x1, y1); ctx.lineTo(x2, y2); ctx.stroke();
+    const a = Math.atan2(y2 - y1, x2 - x1), s = (opt.lw || 10) * 2.2; ctx.beginPath(); ctx.moveTo(x2, y2); ctx.lineTo(x2 - s * Math.cos(a - 0.5), y2 - s * Math.sin(a - 0.5)); ctx.lineTo(x2 - s * Math.cos(a + 0.5), y2 - s * Math.sin(a + 0.5)); ctx.closePath(); ctx.fill();
+  };
+  // denyut "H" berjalan di sepanjang titik-titik path pada u (0..n-1)
+  M.pulse = function (ctx, path, u, label = "H") {
+    if (u <= 0) return; const i = Math.min(Math.floor(u), path.length - 2), f = u - i; const x = lerp(path[i][0], path[i + 1][0], f), y = lerp(path[i][1], path[i + 1][1], f);
+    ctx.fillStyle = "rgba(242,177,52,0.35)"; ctx.beginPath(); ctx.arc(x, y, 36, 0, Math.PI * 2); ctx.fill();
+    ctx.fillStyle = C.accent; ctx.beginPath(); ctx.arc(x, y, 24, 0, Math.PI * 2); ctx.fill(); text(ctx, label, x, y + 10, 28, { align: "center", weight: 900, color: "#fff" });
+  };
+  // papan alur lengkap: stasiun INPUT → PROSES → OUTPUT dan PENYIMPANAN di bawah proses.
+  // opt.stage: indeks stasiun yang disorot (0 input,1 proses,2 output,3 simpan); opt.show: jumlah stasiun yang tampak; opt.u: posisi denyut (0..4)
+  M.board = function (ctx, opt = {}) {
+    const show = opt.show === undefined ? 4 : opt.show, st = opt.stage;
+    const X = [160, 700, 1240], Y = 250, W = 520, Hh = 300;
+    const titles = ["INPUT (masukan)", "PROSES", "OUTPUT (keluaran)"];
+    for (let i = 0; i < 3; i++) if (i < show) M.station(ctx, X[i], Y, W, Hh, titles[i], { on: st === i, done: st !== undefined && i < st });
+    if (show >= 1) { D.keyboard(ctx, X[0] + 40, Y + 90, 300, { pressed: opt.key ? ["H"] : [] }); D.mouse(ctx, X[0] + 430, Y + 190, 60, {}); }
+    if (show >= 2) { M.chip(ctx, X[1] + 150, Y + 170, 110, { hot: st === 1 }); M.ram(ctx, X[1] + 260, Y + 110, 230, 110, { cells: opt.ramCells }); }
+    if (show >= 3) { const sc = D.monitor(ctx, X[2] + 60, Y + 80, 260, 150); if (opt.screen) text(ctx, opt.screen, sc.x + 20, sc.y + 80, 64, { weight: 900 }); M.speaker(ctx, X[2] + 420, Y + 170, 60, { on: opt.sound }); }
+    if (show >= 1 && show >= 2) M.arrow(ctx, X[0] + W + 6, Y + Hh / 2, X[1] - 6, Y + Hh / 2);
+    if (show >= 3) M.arrow(ctx, X[1] + W + 6, Y + Hh / 2, X[2] - 6, Y + Hh / 2);
+    if (show >= 4) { M.station(ctx, X[1], Y + Hh + 90, W, 200, "PENYIMPANAN (storage)", { on: st === 3, done: st !== undefined && st > 3 }); M.disk(ctx, X[1] + 170, Y + Hh + 200, 80); M.sdcard(ctx, X[1] + 330, Y + Hh + 200, 70); M.flashdisk(ctx, X[1] + 430, Y + Hh + 200, 70); M.arrow(ctx, X[1] + W / 2 - 30, Y + Hh + 6, X[1] + W / 2 - 30, Y + Hh + 84); M.arrow(ctx, X[1] + W / 2 + 30, Y + Hh + 84, X[1] + W / 2 + 30, Y + Hh + 6); }
+    if (opt.u !== undefined) M.pulse(ctx, [[X[0] + 190, Y + 150], [X[0] + W, Y + Hh / 2], [X[1] + 150, Y + 170], [X[1] + 375, Y + 165], [X[2] + 190, Y + 160]], opt.u, opt.label || "H");
+    return { X, Y, W, H: Hh };
+  };
+  K.komp = M;
+})(typeof window !== "undefined" ? window : globalThis);
+
+/* Adegan episode D7.2: Mengenal Komputer — perjalanan satu ketukan. Muat setelah kiko-core.js, kiko-devices.js, komputer.js. */
+(function (global) {
+  const K = global.Kiko, H = K.helpers, C = K.C, D = K.devices, M = K.komp, SCENES = K.SCENES;
+  const { text, para, card, kiko, kid, bubble, rr, ease, clamp, lerp } = H;
+  const reveal = (l, t0, step, n) => clamp(Math.floor((l - t0) / step) + 1, 0, n);
+  const label = (ctx, s, x, y, col) => text(ctx, s, x, y, 28, { align: "center", weight: 800, color: col || C.ink2 });
+
+  Object.assign(SCENES, {
+    prereq(ctx, b, l) {
+      card(ctx, 260, 200, 1400, 600);
+      text(ctx, "TONTON DULU", 960, 300, 34, { align: "center", color: C.accentDark, weight: 800 });
+      text(ctx, "Episode D7.0", 960, 420, 60, { align: "center", weight: 900 });
+      text(ctx, "Cara Memakai Komputer dan HP", 960, 500, 52, { align: "center", weight: 700, color: C.ink2 });
+      ["Mouse", "Keyboard", "File & folder"].forEach((s, i) => { card(ctx, 480 + i * 340, 580, 300, 120, { fill: C.bg2 }); text(ctx, s, 630 + i * 340, 652, 34, { align: "center", weight: 800 }); });
+      kiko(ctx, 1600, 760, 150, 0);
+    },
+    unplugged(ctx, b, l) {
+      card(ctx, 120, 150, 1680, 740);
+      text(ctx, "MAIN DULU TANPA KOMPUTER", 960, 230, 34, { align: "center", color: C.accentDark, weight: 800 });
+      kid(ctx, 420, 560, 200, { point: true }); kid(ctx, 960, 560, 200, { hair: "long" }); kid(ctx, 1500, 560, 200, { hairColor: "#4A3A2A" });
+      const ph = Math.floor((l / 2.2) % 3);
+      if (ph === 0) bubble(ctx, 300, 360, 300, "psst… bakso", 32, { tailX: 420, tailDir: 0 });
+      if (ph === 1) { ctx.fillStyle = "#FFF3B0"; rr(ctx, 1060, 300, 200, 140, 8); ctx.fill(); text(ctx, "bakso", 1160, 385, 36, { align: "center", weight: 900 }); }
+      if (ph === 2) bubble(ctx, 1340, 360, 340, "BAKSO!", 44, { tailX: 1500, tailDir: 0, fill: C.goodBg, stroke: C.good, color: C.good });
+      ["membisikkan", "menulis", "membacakan"].forEach((s, i) => label(ctx, s, 420 + i * 540, 820));
+    },
+    unplugged_roles(ctx, b, l) {
+      card(ctx, 120, 150, 1680, 740);
+      kid(ctx, 420, 450, 170, { point: true }); kid(ctx, 960, 450, 170, { hair: "long" }); kid(ctx, 1500, 450, 170, { hairColor: "#4A3A2A" });
+      const n = reveal(l, 0.8, 1.1, 3); const names = ["INPUT", "PROSES", "OUTPUT"];
+      names.forEach((s, i) => { if (i >= n) return; card(ctx, 260 + i * 540, 650, 320, 90, { fill: "#FFF3D6", stroke: C.accent, lw: 4 }); text(ctx, s, 420 + i * 540, 708, 36, { align: "center", weight: 900 }); if (i) M.arrow(ctx, 600 + (i - 1) * 540, 695, 740 + (i - 1) * 540, 695, { color: C.accentDark }); });
+      if (n >= 3) text(ctx, "komputer bekerja seperti barisan ini", 960, 800, 32, { align: "center", color: C.ink2, weight: 800 });
+    },
+
+    input_intro(ctx, b, l) {
+      M.board(ctx, { show: 1, stage: 0, key: l > 1.5 });
+      const items = [["keyboard", "huruf & angka"], ["mouse", "gerakan & klik"]]; const n = reveal(l, 2.0, 1.2, 2);
+      items.forEach(([t1, t2], i) => { if (i >= n) return; card(ctx, 760 + i * 440, 300, 400, 200, { fill: C.bg2 }); text(ctx, t1, 960 + i * 440, 380, 40, { align: "center", weight: 900 }); text(ctx, "memasukkan " + t2, 960 + i * 440, 440, 28, { align: "center", weight: 700, color: C.ink2 }); });
+      text(ctx, "alat untuk memasukkan sesuatu ke komputer", 960, 680, 34, { align: "center", color: C.accentDark, weight: 800 });
+    },
+    input_more(ctx, b, l) {
+      card(ctx, 120, 150, 1680, 740);
+      text(ctx, "ALAT INPUT (masukan)", 960, 230, 34, { align: "center", color: C.accentDark, weight: 800 });
+      const items = [["layar sentuh", (x, y) => { D.phone(ctx, x, y, 90, 160); D.finger(ctx, x + 10, y + 10, { s: 20, press: true }); }], ["mikrofon", (x, y) => M.mic(ctx, x, y, 110)], ["kamera", (x, y) => M.camera(ctx, x, y, 110)], ["scanner", (x, y) => M.scanner(ctx, x, y, 120)]];
+      const n = reveal(l, 0.6, 1.0, 4);
+      items.forEach(([t, draw], i) => { if (i >= n) return; const x = 330 + i * 420; card(ctx, x - 160, 290, 320, 420, { fill: C.bg2 }); draw(x, 450); text(ctx, t, x, 650, 34, { align: "center", weight: 900 }); });
+      if (n >= 4) text(ctx, "cuma memasukkan, tidak berpikir", 960, 800, 34, { align: "center", color: C.ink2, weight: 800 });
+    },
+    input_signal(ctx, b, l) {
+      const u = clamp((l - 1.5) / 2.5, 0, 1);
+      D.keyboard(ctx, 160, 300, 700, { pressed: l > 0.8 ? ["H"] : [] });
+      ctx.strokeStyle = "#7B8B95"; ctx.lineWidth = 14; ctx.lineCap = "round"; ctx.beginPath(); ctx.moveTo(880, 480); ctx.lineTo(1150, 480); ctx.lineTo(1150, 560); ctx.lineTo(1420, 560); ctx.stroke();
+      card(ctx, 1420, 380, 380, 360, { fill: "#2B3A46" }); text(ctx, "komputer", 1610, 440, 30, { align: "center", color: "#fff", weight: 800 }); M.chip(ctx, 1610, 580, 110, { hot: u >= 1 });
+      if (l > 0.8) { const path = [[880, 480], [1150, 480], [1150, 560], [1420, 560]]; M.pulse(ctx, path, u * 3, "H"); }
+      card(ctx, 160, 190, 700, 80, { fill: "#FFF3D6", stroke: C.accent, lw: 4 }); text(ctx, l > 0.8 ? "kode: tombol nomor 35 ditekan" : "H ditekan…", 510, 242, 32, { align: "center", weight: 900 });
+      text(ctx, "bukan huruf, melainkan kode listrik", 1610, 800, 28, { align: "center", color: C.ink2, weight: 800 });
+    },
+
+    cpu_intro(ctx, b, l) {
+      const u = clamp((l - 0.5) / 1.5, 0, 1); M.board(ctx, { show: 2, stage: 1, u: 1 + u, key: true });
+      if (u >= 1) { bubble(ctx, 760, 700, 520, "Oh, ini huruf H. Tampilkan di layar!", 32, { tailX: 850, tailDir: 0, fill: "#FFF3D6", stroke: C.accent }); }
+      text(ctx, "prosesor (CPU): otak komputer", 960, 820, 34, { align: "center", color: C.accentDark, weight: 800 });
+    },
+    cpu_speed(ctx, b, l) {
+      card(ctx, 120, 150, 1680, 740);
+      M.chip(ctx, 500, 520, 260, { hot: true });
+      const n = Math.floor(Math.max(0, l - 0.5) * 1e9).toLocaleString("id-ID");
+      card(ctx, 900, 300, 760, 200, { fill: C.bg2 }); text(ctx, "langkah kecil tiap detik:", 1280, 360, 30, { align: "center", color: C.ink2, weight: 700 }); text(ctx, "miliaran", 1280, 450, 64, { align: "center", weight: 900, color: C.accentDark });
+      card(ctx, 900, 540, 760, 200, { fill: C.bg2 }); text(ctx, "tetapi hanya menjalankan perintah,", 1280, 610, 30, { align: "center", color: C.ink2, weight: 700 }); text(ctx, "seperti Kiko di episode robot", 1280, 670, 32, { align: "center", weight: 900 });
+      kiko(ctx, 1700, 760, 100, 0);
+    },
+    ram_intro(ctx, b, l) {
+      const typed = "HALO".slice(0, reveal(l, 1.0, 0.8, 4));
+      M.board(ctx, { show: 2, stage: 1, ramCells: typed.split("") });
+      D.textBox(ctx, 760, 660, 800, 100, [typed], l, { size: 48 });
+      text(ctx, "RAM: meja kerja prosesor, memori sementara", 960, 830, 34, { align: "center", color: C.accentDark, weight: 800 });
+    },
+    ram_volatile(ctx, b, l) {
+      const off = l > 3.0;
+      card(ctx, 120, 150, 1680, 740);
+      // papan tulis
+      ctx.fillStyle = "#2E6B4F"; rr(ctx, 200, 240, 760, 480, 14); ctx.fill(); ctx.strokeStyle = "#C98A57"; ctx.lineWidth = 16; rr(ctx, 200, 240, 760, 480, 14); ctx.stroke();
+      if (!off) text(ctx, "HALO", 580, 500, 110, { align: "center", color: "#fff", weight: 900 });
+      else { ctx.fillStyle = "rgba(255,255,255,0.08)"; for (let i = 0; i < 6; i++) { rr(ctx, 260 + i * 110, 400, 90, 60, 20); ctx.fill(); } text(ctx, "(terhapus)", 580, 500, 44, { align: "center", color: "#9AAFA6", weight: 700 }); }
+      text(ctx, "RAM = papan tulis", 580, 780, 34, { align: "center", weight: 900 });
+      // tombol daya
+      ctx.fillStyle = off ? C.bad : C.good; ctx.beginPath(); ctx.arc(1400, 440, 90, 0, Math.PI * 2); ctx.fill(); ctx.strokeStyle = "#fff"; ctx.lineWidth = 14; ctx.beginPath(); ctx.arc(1400, 445, 45, -1.1, 4.25); ctx.stroke(); ctx.beginPath(); ctx.moveTo(1400, 380); ctx.lineTo(1400, 440); ctx.stroke();
+      text(ctx, off ? "komputer dimatikan" : "komputer menyala", 1400, 600, 36, { align: "center", weight: 900, color: off ? C.bad : C.good });
+      if (off) text(ctx, "tulisan yang belum disimpan hilang", 1400, 680, 30, { align: "center", color: C.ink2, weight: 800 });
+    },
+    output_intro(ctx, b, l) {
+      const u = clamp((l - 0.5) / 1.5, 0, 1); M.board(ctx, { show: 3, stage: 2, u: 2 + u * 2, screen: u >= 1 ? "H" : "", sound: u >= 1 });
+      const n = reveal(l, 2.5, 1.0, 3); const items = [["layar", "menampilkan"], ["speaker", "membunyikan"], ["printer", "mencetak"]];
+      items.forEach(([t1, t2], i) => { if (i >= n) return; card(ctx, 300 + i * 460, 640, 420, 110, { fill: C.bg2 }); text(ctx, t1 + ": " + t2, 510 + i * 460, 706, 32, { align: "center", weight: 900 }); if (i === 2) M.printer(ctx, 1720, 690, 56, { text: "H" }); });
+      text(ctx, "alat output (keluaran)", 960, 830, 34, { align: "center", color: C.accentDark, weight: 800 });
+    },
+    ipo_flow(ctx, b, l) {
+      const u = ((l * 1.2) % 5); M.board(ctx, { show: 3, u: u > 4 ? undefined : u, screen: u > 3.5 ? "H" : "", key: u < 1 });
+      card(ctx, 360, 640, 1200, 110, { fill: "#FFF3D6", stroke: C.accent, lw: 4 }); text(ctx, "input → proses → output", 960, 690, 40, { align: "center", weight: 900 }); text(ctx, "keyboard → prosesor → layar", 960, 730, 28, { align: "center", color: C.ink2, weight: 700 });
+      text(ctx, "lebih cepat dari kedipan mata", 960, 830, 32, { align: "center", color: C.ink2, weight: 800 });
+    },
+
+    storage_intro(ctx, b, l) {
+      const u = clamp((l - 1.0) / 1.5, 0, 1); M.board(ctx, { show: 4, stage: 3, ramCells: u < 1 ? ["H", "A", "L", "O"] : [] });
+      if (u > 0 && u < 1) { const y = lerp(380, 740, ease(u)); card(ctx, 880, y - 30, 160, 60, { fill: "#FFF3D6", stroke: C.accent, lw: 3 }); text(ctx, "HALO", 960, y + 10, 30, { align: "center", weight: 900 }); }
+      if (u >= 1) text(ctx, "tersimpan ✓", 960, 870, 30, { align: "center", color: C.good, weight: 900 });
+      text(ctx, "tempat penyimpanan (storage): hard disk, SSD, memori HP", 960, 230, 32, { align: "center", color: C.accentDark, weight: 800 });
+    },
+    storage_vs_ram(ctx, b, l) {
+      card(ctx, 120, 150, 1680, 740);
+      card(ctx, 180, 220, 760, 580, { fill: C.bg2 }); card(ctx, 980, 220, 760, 580, { fill: C.bg2 });
+      M.ram(ctx, 300, 320, 520, 110, { cells: l > 4 ? [] : ["H", "A", "L", "O"], label: false }); text(ctx, "RAM", 560, 290, 36, { align: "center", weight: 900 });
+      text(ctx, "papan tulis", 560, 520, 34, { align: "center", weight: 800, color: C.ink2 }); text(ctx, "cepat, tetapi lupa", 560, 600, 40, { align: "center", weight: 900, color: C.bad });
+      text(ctx, "saat dimatikan: kosong", 560, 680, 28, { align: "center", color: C.ink2, weight: 700 });
+      M.disk(ctx, 1360, 380, 110, { full: 0.6 }); text(ctx, "PENYIMPANAN", 1360, 290, 36, { align: "center", weight: 900 });
+      text(ctx, "buku catatan", 1360, 520, 34, { align: "center", weight: 800, color: C.ink2 }); text(ctx, "lambat, tetapi ingat", 1360, 600, 40, { align: "center", weight: 900, color: C.good });
+      text(ctx, "saat dimatikan: tetap ada", 1360, 680, 28, { align: "center", color: C.ink2, weight: 700 });
+    },
+    storage_kinds(ctx, b, l) {
+      card(ctx, 120, 150, 1680, 740);
+      text(ctx, "MACAM-MACAM PENYIMPANAN", 960, 230, 34, { align: "center", color: C.accentDark, weight: 800 });
+      const items = [["hard disk", (x, y) => M.disk(ctx, x, y, 90)], ["SSD", (x, y) => M.ssd(ctx, x, y, 110)], ["flashdisk", (x, y) => M.flashdisk(ctx, x, y, 130)], ["kartu memori", (x, y) => M.sdcard(ctx, x, y, 110)], ["cloud (internet)", (x, y) => M.cloud(ctx, x, y, 80)]];
+      const n = reveal(l, 0.6, 0.9, 5);
+      items.forEach(([t, draw], i) => { if (i >= n) return; const x = 300 + i * 330; card(ctx, x - 140, 290, 280, 380, { fill: C.bg2 }); draw(x, 440); text(ctx, t, x, 620, 28, { align: "center", weight: 900 }); });
+      if (n >= 5) { D.fileIcon(ctx, 760, 740, 56, "tulisan", {}); D.fileIcon(ctx, 860, 740, 56, "foto", {}); D.fileIcon(ctx, 960, 740, 64, "folder", {}); text(ctx, "semuanya menyimpan file dan folder", 1300, 752, 30, { align: "center", color: C.ink2, weight: 800 }); }
+    },
+    full_flow(ctx, b, l) {
+      const u = ((l * 1.1) % 6); M.board(ctx, { show: 4, u: u > 4 ? undefined : u, screen: u > 3.5 ? "H" : "", key: u < 1, stage: u > 4.5 ? 3 : undefined });
+      text(ctx, "empat bagian di setiap komputer, besar maupun kecil", 960, 870, 32, { align: "center", color: C.accentDark, weight: 800 });
+    },
+
+    hardware(ctx, b, l) {
+      card(ctx, 120, 150, 1680, 740);
+      text(ctx, "HARDWARE (perangkat keras)", 960, 230, 34, { align: "center", color: C.accentDark, weight: 800 });
+      const items = [["keyboard", (x, y) => D.keyboard(ctx, x - 130, y - 50, 260, {})], ["prosesor", (x, y) => M.chip(ctx, x, y, 110)], ["layar", (x, y) => D.monitor(ctx, x - 110, y - 80, 220, 130)], ["hard disk", (x, y) => M.disk(ctx, x, y, 90)]];
+      const n = reveal(l, 0.6, 0.9, 4);
+      items.forEach(([t, draw], i) => { if (i >= n) return; const x = 330 + i * 420; card(ctx, x - 170, 290, 340, 420, { fill: C.bg2 }); draw(x, 450); text(ctx, t, x, 660, 32, { align: "center", weight: 900 }); });
+      if (n >= 4) text(ctx, "bisa dipegang", 960, 810, 40, { align: "center", weight: 900 });
+    },
+    software(ctx, b, l) {
+      card(ctx, 120, 150, 1680, 740);
+      const sc = D.monitor(ctx, 240, 260, 700, 420);
+      const on = l > 1.8;
+      if (!on) { ctx.fillStyle = "#2B3A46"; rr(ctx, sc.x, sc.y, sc.w, sc.h, 10); ctx.fill(); text(ctx, "…", sc.x + sc.w / 2, sc.y + sc.h / 2 + 20, 80, { align: "center", color: "#6B7B88" }); }
+      else { const win = D.windowFrame(ctx, sc.x + 30, sc.y + 30, sc.w - 60, sc.h - 60, "Pengolah kata"); text(ctx, "Halo, Ibu.", win.x + 20, win.y + 60, 40, { weight: 700 }); }
+      text(ctx, on ? "hardware + software: bekerja" : "hardware saja: kotak diam", 590, 820, 34, { align: "center", weight: 900, color: on ? C.good : C.ink2 });
+      card(ctx, 1080, 300, 640, 380, { fill: on ? "#FFF3D6" : C.bg2, stroke: on ? C.accent : "#D7E2DC", lw: 4 });
+      text(ctx, "SOFTWARE", 1400, 380, 34, { align: "center", color: C.accentDark, weight: 800 }); text(ctx, "(perangkat lunak)", 1400, 430, 30, { align: "center", color: C.ink2, weight: 700 });
+      text(ctx, "program yang memberi perintah", 1400, 530, 32, { align: "center", weight: 900 }); text(ctx, "tidak bisa dipegang", 1400, 600, 32, { align: "center", color: C.ink2, weight: 800 });
+      if (on) M.arrow(ctx, 1080, 490, 960, 490, { color: C.accentDark });
+    },
+    os_apps(ctx, b, l) {
+      card(ctx, 120, 150, 1680, 740);
+      const n = reveal(l, 0.6, 1.4, 2);
+      if (n >= 1) { card(ctx, 180, 240, 760, 560, { fill: C.bg2 }); text(ctx, "SISTEM OPERASI", 560, 320, 36, { align: "center", weight: 900 }); text(ctx, "(operating system)", 560, 365, 28, { align: "center", color: C.ink2, weight: 700 }); text(ctx, "mengatur seluruh komputer", 560, 440, 30, { align: "center", weight: 800, color: C.accentDark }); ["Windows", "Android", "iOS"].forEach((s, i) => { card(ctx, 250 + i * 210, 520, 180, 90, { fill: C.panel }); text(ctx, s, 340 + i * 210, 578, 30, { align: "center", weight: 900 }); }); text(ctx, "di laptop, di HP", 560, 700, 28, { align: "center", color: C.ink2, weight: 700 }); }
+      if (n >= 2) { card(ctx, 980, 240, 760, 560, { fill: C.bg2 }); text(ctx, "APLIKASI", 1360, 320, 36, { align: "center", weight: 900 }); text(ctx, "(app)", 1360, 365, 28, { align: "center", color: C.ink2, weight: 700 }); text(ctx, "untuk satu tugas tertentu", 1360, 440, 30, { align: "center", weight: 800, color: C.accentDark }); [["kamera", "#2E7E9A"], ["game", "#D9443B"], ["pengolah kata", "#2E9E5B"]].forEach(([s, col], i) => { ctx.fillStyle = col; rr(ctx, 1060 + i * 210, 500, 150, 150, 30); ctx.fill(); text(ctx, s, 1135 + i * 210, 700, 26, { align: "center", weight: 800 }); }); }
+    },
+    hw_sw_pair(ctx, b, l) {
+      card(ctx, 120, 150, 1680, 740);
+      // angkot dan sopir
+      ctx.fillStyle = "#4C9BE0"; rr(ctx, 300, 420, 520, 200, 30); ctx.fill(); ctx.fillStyle = "#DCEBFF"; rr(ctx, 340, 450, 160, 90, 12); ctx.fill(); rr(ctx, 540, 450, 240, 90, 12); ctx.fill();
+      ctx.fillStyle = "#1F2A33"; [400, 720].forEach(x => { ctx.beginPath(); ctx.arc(x, 630, 46, 0, Math.PI * 2); ctx.fill(); });
+      text(ctx, "ANGKOT", 560, 700, 30, { align: "center", color: "#fff", weight: 900 });
+      if (l > 1.5) kid(ctx, 420, 470, 90, {});
+      text(ctx, "angkot = hardware", 560, 740, 32, { align: "center", weight: 900 }); text(ctx, l > 1.5 ? "sopir = software" : "tanpa sopir: diam", 560, 785, 32, { align: "center", weight: 900, color: l > 1.5 ? C.good : C.bad });
+      card(ctx, 1000, 260, 720, 520, { fill: C.bg2 });
+      text(ctx, "saling butuh", 1360, 340, 40, { align: "center", weight: 900 });
+      text(ctx, "hardware tanpa software:", 1360, 440, 30, { align: "center", color: C.ink2, weight: 700 }); text(ctx, "kotak diam", 1360, 490, 36, { align: "center", weight: 900, color: C.bad });
+      text(ctx, "software tanpa hardware:", 1360, 600, 30, { align: "center", color: C.ink2, weight: 700 }); text(ctx, "tidak punya tempat berjalan", 1360, 650, 36, { align: "center", weight: 900, color: C.bad });
+    },
+
+    phone_is_computer(ctx, b, l) {
+      const sc = D.phone(ctx, 560, 520, 360, 680); D.appGrid(ctx, sc);
+      const tags = [["INPUT: layar sentuh, mikrofon", 1000, 300, 560, 330], ["PROSES: prosesor + RAM di dalam", 1000, 420, 560, 520], ["OUTPUT: layar, speaker", 1000, 540, 560, 620], ["PENYIMPANAN: memori HP", 1000, 660, 560, 760]];
+      const n = reveal(l, 0.8, 1.1, 4);
+      tags.forEach(([s, x, y, tx, ty], i) => { if (i >= n) return; card(ctx, x, y - 50, 760, 80, { fill: i === 1 ? "#FFF3D6" : C.bg2, stroke: i === 1 ? C.accent : "#D7E2DC", lw: 3 }); text(ctx, s, x + 24, y + 2, 30, { weight: 800 }); ctx.strokeStyle = "#9AAFA6"; ctx.lineWidth = 4; ctx.beginPath(); ctx.moveTo(x, y - 10); ctx.lineTo(tx + 180, ty); ctx.stroke(); });
+      if (n >= 4) text(ctx, "HP juga komputer", 1380, 800, 40, { align: "center", weight: 900, color: C.accentDark });
+    },
+    everywhere(ctx, b, l) {
+      card(ctx, 120, 150, 1680, 740);
+      const items = [["mesin kasir", (x, y) => { D.monitor(ctx, x - 90, y - 90, 180, 110); text(ctx, "Rp13.000", x, y - 30, 26, { align: "center", weight: 900 }); }], ["ATM", (x, y) => { ctx.fillStyle = "#6B7B88"; rr(ctx, x - 100, y - 130, 200, 260, 16); ctx.fill(); ctx.fillStyle = "#8FD0E6"; rr(ctx, x - 70, y - 100, 140, 90, 8); ctx.fill(); D.keyboard(ctx, x - 60, y + 10, 120, {}); }], ["smart TV", (x, y) => { ctx.fillStyle = "#2B3A46"; rr(ctx, x - 150, y - 90, 300, 180, 10); ctx.fill(); ctx.fillStyle = "#8FD0E6"; rr(ctx, x - 138, y - 78, 276, 156, 6); ctx.fill(); }]];
+      const n = reveal(l, 0.6, 1.0, 3);
+      items.forEach(([t, draw], i) => { if (i >= n) return; const x = 400 + i * 560; card(ctx, x - 220, 250, 440, 440, { fill: C.bg2 }); draw(x, 440); text(ctx, t, x, 650, 32, { align: "center", weight: 900 }); });
+      if (n >= 3) { card(ctx, 360, 740, 1200, 100, { fill: "#FFF3D6", stroke: C.accent, lw: 4 }); text(ctx, "bentuk beda, empat bagian sama: input, proses, output, penyimpanan", 960, 800, 30, { align: "center", weight: 900 }); }
+    },
+    make_show(ctx, b, l) {
+      card(ctx, 160, 150, 1600, 740);
+      text(ctx, "GILIRANMU", 960, 240, 34, { align: "center", color: C.accentDark, weight: 900 });
+      const items = [["Kelompokkan alat", "input, proses, output, atau penyimpanan?", (x, y) => { M.mic(ctx, x - 60, y, 50); M.chip(ctx, x + 50, y, 60); }], ["Urutkan perjalanan", "satu ketukan dari keyboard ke layar", (x, y) => { D.keyboard(ctx, x - 110, y - 30, 100, {}); M.arrow(ctx, x - 5, y, x + 25, y, { lw: 6 }); M.chip(ctx, x + 60, y, 50); }], ["Hardware atau software?", "pilah yang bisa dipegang", (x, y) => { D.mouse(ctx, x - 50, y, 50, {}); ctx.fillStyle = "#2E9E5B"; rr(ctx, x + 20, y - 35, 70, 70, 14); ctx.fill(); }]];
+      items.forEach(([t1, t2, draw], i) => { const x = 440 + i * 520; card(ctx, x - 240, 290, 480, 410, { fill: C.bg2 }); ctx.fillStyle = C.kiko; ctx.beginPath(); ctx.arc(x - 190, 340, 28, 0, Math.PI * 2); ctx.fill(); text(ctx, String(i + 1), x - 190, 352, 30, { align: "center", color: "#fff", weight: 900 }); draw(x, 470); text(ctx, t1, x, 600, 32, { align: "center", weight: 900 }); text(ctx, t2, x, 650, Math.min(24, 440 / (t2.length * 0.5)), { align: "center", weight: 700, color: C.ink2 }); });
+      text(ctx, "di halaman latihan episode ini — lalu coba sebutkan empat bagian pada HP di rumahmu", 960, 745, 28, { align: "center", color: C.ink2, weight: 700 });
+    }
+  });
+})(typeof window !== "undefined" ? window : globalThis);
+
+/* K01 Simulasi konsep: RAM dan penyimpanan saat listrik padam (gambar perangkat dari kiko-devices.js dan D7.2/komputer.js).
+   Kiri: monitor dengan aplikasi "Dokumen" generik (layar x 170–970, y 240–660); lajur atas (y 130–205): jam dan status listrik.
+   Kanan (x 1040–1800): "di dalam komputer": RAM (papan hijau berisi halaman yang sedang dikerjakan atau kotak aplikasi) dan
+   PENYIMPANAN (hard disk + daftar file). Semua gambar di atas y 830. Waktu kejadian diambil dari posisi kata di narasi (at). */
+(function (global) {
+  const K = global.Kiko, H = K.helpers, C = K.C, D = K.devices, M = K.komp;
+  const { rr, text, para, card, kiko, ease, clamp, lerp, wrap } = H;
+  const GREEN_PCB = "#2E6B4F", GOLD = "#E0B04B";
+  const lead = b => b.speech != null && b.start != null ? b.speech - b.start : 0.4;
+  const at = (b, s) => { const i = b.text.indexOf(s); return lead(b) + Math.max(0, i) / b.text.length * (b.audio || b.dur); };
+  const DITO = ["Kunjungan ke Museum", "Kelas 7B pergi ke museum kota.", "Kami melihat komputer kuno.", "Ukurannya sebesar satu kamar!"];
+  const SINTA = ["Laporan Kebun Sekolah", "Kami menanam cabai dan tomat.", "Tomat tumbuh paling cepat.", "Besok kami menyiramnya lagi."];
+  const LIBUR = ["Cerita Liburan", "Aku pergi ke rumah nenek.", "Kami naik angkot ke pasar.", "Nenek membeli ikan segar.", "Sorenya kami memasak bersama."];
+  const BASE_FILES = [{ name: "Foto liburan", kind: "foto", note: "kemarin" }, { name: "Aplikasi Dokumen", kind: "folder", note: "terpasang" }];
+  const APPS = [["Dokumen", 1, "#7B8B95"], ["Musik", 1, "#8E6BBF"], ["Browser 12 tab", 3, "#2E7E9A"], ["Game", 3, "#D9443B"], ["Pengedit Foto", 2, "#2E9E5B"]];
+  const RAMC = [1420, 350], DISKC = [1150, 660];
+
+  // ---------- bagian gambar ----------
+  function topStrip(ctx, s) {
+    if (s.clock) text(ctx, "pukul " + s.clock, 190, 186, 32, { weight: 900, color: C.ink2 });
+    if (s.speed != null) { // meteran kecepatan (variasi RAM penuh)
+      text(ctx, "kecepatan:", 190, 186, 28, { weight: 800, color: C.ink2 });
+      ctx.fillStyle = "#DDE5EA"; rr(ctx, 360, 160, 180, 32, 16); ctx.fill();
+      const col = s.speed > 0.6 ? C.good : s.speed > 0.35 ? C.accent : C.bad; ctx.fillStyle = col; rr(ctx, 360, 160, Math.max(32, 180 * s.speed), 32, 16); ctx.fill();
+      text(ctx, s.speed > 0.6 ? "cepat" : s.speed > 0.35 ? "berat" : "lambat", 556, 186, 28, { weight: 900, color: col });
+    }
+    const on = s.power !== false;
+    card(ctx, 790, 146, 190, 54, { fill: on ? C.goodBg : C.badBg, stroke: on ? C.good : C.bad, lw: 3, r: 27 });
+    text(ctx, on ? "⚡ listrik nyala" : "✕ listrik padam", 885, 182, 24, { align: "center", weight: 900, color: on ? C.good : C.bad });
+    if (s.ask && s.speed == null) { const p = 1 + 0.08 * Math.sin((s.l || 0) * 5); text(ctx, "lalu listrik padam", 560, 184, 28, { align: "center", weight: 900, color: C.accentDark }); text(ctx, "?", 740, 190, 52 * p, { align: "center", weight: 900, color: C.accentDark }); }
+  }
+  function screen(ctx, s) {
+    const sc = D.monitor(ctx, 170, 240, 800, 420);
+    if (s.power === false) {
+      ctx.fillStyle = "#121A20"; rr(ctx, sc.x, sc.y, sc.w, sc.h, 10); ctx.fill();
+      if (s.offFlash) { ctx.fillStyle = `rgba(255,255,255,${0.5 * (1 - s.offFlash)})`; rr(ctx, sc.x, sc.y, sc.w, sc.h, 10); ctx.fill(); }
+      text(ctx, "layar mati", sc.x + sc.w / 2, sc.y + sc.h / 2 + 12, 32, { align: "center", weight: 800, color: "#3A4A56" });
+      return sc;
+    }
+    if (s.screen === "apps") { appsScreen(ctx, sc, s); return sc; }
+    if (s.screen === "desktop") {
+      const a = D.windowFrame(ctx, sc.x + 20, sc.y + 18, sc.w - 40, sc.h - 36, "Folder Tugas");
+      const fs = (s.files || []).filter(f => f.kind === "tulisan");
+      if (!fs.length) { text(ctx, "(folder kosong)", a.x + a.w / 2, a.y + 120, 34, { align: "center", weight: 800, color: C.muted }); if (s.desktopNote) text(ctx, s.desktopNote, a.x + a.w / 2, a.y + 180, 28, { align: "center", weight: 800, color: C.bad }); }
+      fs.forEach((f, i) => D.fileIcon(ctx, a.x + 110 + i * 200, a.y + 90, 80, "tulisan", { name: f.name, selected: s.openSel }));
+      return sc;
+    }
+    // jendela Dokumen
+    const a = D.windowFrame(ctx, sc.x + 20, sc.y + 18, sc.w - 40, sc.h - 36, (s.title || "Laporan") + " — Dokumen");
+    if (s.badge) { const ok = s.badge === "tersimpan"; card(ctx, a.x, a.y + a.h - 22, 230, 36, { fill: ok ? C.goodBg : "#FFF3D6", r: 18 }); text(ctx, ok ? "✓ tersimpan" : "● belum disimpan", a.x + 115, a.y + a.h + 4, 21, { align: "center", weight: 900, color: ok ? C.good : C.accentDark }); }
+    (s.lines || []).forEach((ln, i) => {
+      const y = a.y + 30 + i * 46, t = ln.t.slice(0, ln.n == null ? ln.t.length : ln.n);
+      if (ln.st === "new") { ctx.fillStyle = "#FFF3D6"; rr(ctx, a.x + 8, y - 30, a.w - 16, 42, 8); ctx.fill(); }
+      if (ln.st === "lost") { ctx.save(); ctx.globalAlpha = 0.45; }
+      text(ctx, t, a.x + 20, y, i === 0 ? 30 : 28, { weight: i === 0 ? 900 : 700, color: ln.st === "lost" ? C.bad : C.ink });
+      if (ln.st === "lost") { ctx.restore(); ctx.font = `700 28px ${K.FONT}`; const w = ctx.measureText(t).width; ctx.strokeStyle = C.bad; ctx.lineWidth = 4; ctx.beginPath(); ctx.moveTo(a.x + 16, y - 9); ctx.lineTo(a.x + 24 + w, y - 9); ctx.stroke(); text(ctx, "hilang", a.x + 40 + w, y, 24, { weight: 900, color: C.bad }); }
+    });
+    const li = (s.lines || []).length - 1;
+    if (s.cursor && li >= 0) { const ln = s.lines[li], t = ln.t.slice(0, ln.n == null ? ln.t.length : ln.n); ctx.font = `700 28px ${K.FONT}`; if (Math.floor((s.l || 0) * 2.5) % 2 === 0) { ctx.fillStyle = C.kiko; ctx.fillRect(a.x + 22 + ctx.measureText(t).width, a.y + 30 + li * 46 - 26, 4, 32); } }
+    if (s.status) text(ctx, s.status, a.x + a.w - 10, a.y + a.h + 6, 22, { align: "right", weight: 800, color: s.statusColor || C.ink2 });
+    if (s.dialog) { card(ctx, sc.x + 120, sc.y + 230, sc.w - 240, 120, { fill: "#FFFFFF", stroke: C.kiko, lw: 4, r: 16 }); para(ctx, s.dialog, sc.x + sc.w / 2, sc.y + 278, 26, sc.w - 290, { align: "center", weight: 800, lh: 1.25 }); }
+    return sc;
+  }
+  function appsScreen(ctx, sc, s) {
+    ctx.fillStyle = "#DCE9F2"; rr(ctx, sc.x, sc.y, sc.w, sc.h, 10); ctx.fill();
+    const open = s.open || [];
+    open.forEach((nm, i) => { const ap = APPS.find(a => a[0] === nm); const a = D.windowFrame(ctx, sc.x + 30 + i * 60, sc.y + 24 + i * 42, 470, 230, nm); ctx.fillStyle = ap[2]; ctx.globalAlpha = 0.25; rr(ctx, a.x, a.y, a.w, a.h - 10, 8); ctx.fill(); ctx.globalAlpha = 1; });
+    // dok aplikasi di bawah layar
+    ctx.fillStyle = "rgba(31,42,51,0.8)"; rr(ctx, sc.x + 60, sc.y + sc.h - 62, sc.w - 120, 52, 14); ctx.fill();
+    APPS.forEach((ap, i) => { const x = sc.x + 100 + i * 130, on = open.includes(ap[0]); ctx.fillStyle = ap[2]; rr(ctx, x - 20, sc.y + sc.h - 54, 40, 36, 8); ctx.fill(); if (on) { ctx.fillStyle = "#fff"; ctx.beginPath(); ctx.arc(x, sc.y + sc.h - 12, 4, 0, Math.PI * 2); ctx.fill(); } text(ctx, ap[0].split(" ")[0], x + 24, sc.y + sc.h - 30, 16, { weight: 800, color: "#fff" }); });
+    if (s.slow) { const cx = sc.x + sc.w - 120, cy = sc.y + 150; ctx.save(); ctx.translate(cx, cy); ctx.rotate((s.l || 0) * 4); ctx.strokeStyle = C.accentDark; ctx.lineWidth = 12; ctx.lineCap = "round"; ctx.beginPath(); ctx.arc(0, 0, 40, 0, Math.PI * 1.4); ctx.stroke(); ctx.restore(); text(ctx, "tunggu…", cx, cy + 86, 28, { align: "center", weight: 900, color: C.accentDark }); }
+  }
+  function ramPanel(ctx, s) {
+    text(ctx, "RAM", 1070, 232, 30, { weight: 900, color: C.ink }); text(ctx, s.slots ? "memori sementara" : "memori sementara: cepat, hilang saat listrik padam", 1150, 232, 22, { weight: 700, color: C.ink2 });
+    const x = 1070, y = 248, w = 700, h = 210;
+    ctx.fillStyle = GREEN_PCB; rr(ctx, x, y, w, h, 14); ctx.fill();
+    ctx.fillStyle = GOLD; for (let i = 0; i < 20; i++) ctx.fillRect(x + 20 + i * 33, y + h - 12, 22, 12);
+    if (s.ramFlash) { ctx.fillStyle = `rgba(217,68,59,${0.7 * (1 - s.ramFlash)})`; rr(ctx, x, y, w, h, 14); ctx.fill(); }
+    if (s.slots) { ramSlots(ctx, x, y, s); return; }
+    const page = s.ram;
+    if (!page || !page.length || s.power === false) { text(ctx, s.power === false ? "kosong: isinya terhapus" : "kosong", x + w / 2, y + h / 2 + 8, 32, { align: "center", weight: 900, color: "#CFE3D8" }); return; }
+    ctx.fillStyle = "#FFFFFF"; rr(ctx, x + 24, y + 18, w - 48, h - 50, 10); ctx.fill();
+    page.forEach((ln, i) => { if (i > 4) return; const t = ln.t.slice(0, ln.n == null ? ln.t.length : ln.n); if (ln.st === "new") { ctx.fillStyle = "#FFF3D6"; ctx.fillRect(x + 32, y + 26 + i * 27, w - 64, 26); } text(ctx, t, x + 40, y + 46 + i * 27, i === 0 ? 22 : 20, { weight: i === 0 ? 900 : 700, color: C.ink }); });
+  }
+  function ramSlots(ctx, x, y, s) {
+    const cw = 160, chh = 78; let k = 0;
+    for (let i = 0; i < 8; i++) { const r = Math.floor(i / 4), c = i % 4; ctx.fillStyle = "#24543E"; rr(ctx, x + 22 + c * (cw + 8), y + 18 + r * (chh + 10), cw, chh, 8); ctx.fill(); }
+    (s.slots || []).forEach(([nm, n, alpha]) => {
+      const ap = APPS.find(a => a[0] === nm);
+      for (let j = 0; j < n; j++) { const i = k++; if (i >= 8) return; const r = Math.floor(i / 4), c = i % 4; ctx.save(); ctx.globalAlpha = alpha == null ? 1 : alpha; ctx.fillStyle = ap[2]; rr(ctx, x + 22 + c * (cw + 8), y + 18 + r * (chh + 10), cw, chh, 8); ctx.fill(); text(ctx, nm, x + 22 + c * (cw + 8) + cw / 2, y + 18 + r * (chh + 10) + chh / 2 + 8, 20, { align: "center", weight: 900, color: "#fff", fit: cw - 10 }); ctx.restore(); }
+    });
+    const used = (s.slots || []).reduce((a, b) => a + b[1] * (b[2] == null ? 1 : b[2]), 0);
+    text(ctx, used >= 8 ? "RAM PENUH" : "terpakai " + Math.round(used) + " dari 8", 1770, 232, 24, { align: "right", weight: 900, color: used >= 8 ? C.bad : C.ink2 });
+  }
+  function diskPanel(ctx, s) {
+    text(ctx, "PENYIMPANAN", 1070, 512, 30, { weight: 900, color: C.ink }); text(ctx, "tetap ada walau listrik padam", 1310, 512, 22, { weight: 700, color: C.ink2 });
+    card(ctx, 1070, 528, 700, 290, { fill: "#F2F5F7", stroke: "#C9D4DB", lw: 3, r: 16 });
+    M.disk(ctx, DISKC[0], DISKC[1], 100, {}); text(ctx, "hard disk / SSD", DISKC[0], DISKC[1] + 95, 22, { align: "center", weight: 800, color: C.ink2 });
+    (s.files || []).forEach((f, i) => {
+      const y = 556 + i * 62; ctx.save(); if (f.alpha != null) ctx.globalAlpha = f.alpha;
+      if (f.hl) { ctx.fillStyle = f.hl; rr(ctx, 1240, y, 510, 56, 10); ctx.fill(); }
+      D.fileIcon(ctx, 1272, y + 28, 40, f.kind || "tulisan", {}); text(ctx, f.name, 1306, y + 36, 26, { weight: 800, fit: 260 }); if (f.note) text(ctx, f.note, 1740, y + 36, 22, { align: "right", weight: 700, color: f.noteColor || C.ink2 });
+      ctx.restore();
+    });
+    if (s.swap) { // pindahan sementara saat RAM penuh
+      card(ctx, 1250, 740, 500, 66, { fill: "#FFF3D6", stroke: C.accent, lw: 3, r: 12 });
+      text(ctx, "pindahan dari RAM (lambat)", 1270, 782, 22, { weight: 900, color: C.accentDark });
+      s.swap.forEach(([nm, alpha], i) => { const ap = APPS.find(a => a[0] === nm); ctx.save(); ctx.globalAlpha = alpha; ctx.fillStyle = ap[2]; rr(ctx, 1590 + i * 76, 750, 66, 46, 8); ctx.fill(); ctx.restore(); });
+    }
+  }
+  function fly(ctx, from, to, u, label) {
+    if (u <= 0 || u >= 1) return; const e = ease(u), x = lerp(from[0], to[0], e), y = lerp(from[1], to[1], e) - Math.sin(e * Math.PI) * 60;
+    ctx.strokeStyle = "rgba(242,177,52,0.6)"; ctx.lineWidth = 6; ctx.setLineDash([12, 10]); ctx.beginPath(); ctx.moveTo(from[0], from[1]); ctx.lineTo(x, y); ctx.stroke(); ctx.setLineDash([]);
+    ctx.fillStyle = "rgba(242,177,52,0.35)"; ctx.beginPath(); ctx.arc(x, y, 50, 0, Math.PI * 2); ctx.fill();
+    D.fileIcon(ctx, x, y, 60, "tulisan", {}); if (label) text(ctx, label, x, y - 50, 24, { align: "center", weight: 900, color: C.accentDark });
+  }
+  function comp(ctx, s) {
+    topStrip(ctx, s); screen(ctx, s);
+    card(ctx, 1040, 130, 760, 700, { fill: "#FFFFFF", stroke: "#D7E2DC", lw: 3, r: 22 });
+    text(ctx, "DI DALAM KOMPUTER", 1420, 180, 28, { align: "center", weight: 900, color: C.accentDark });
+    ramPanel(ctx, s); diskPanel(ctx, s);
+    if (s.fly) fly(ctx, s.fly[0], s.fly[1], s.fly[2], s.fly[3]);
+    if (s.power === false && s.offFlash != null && s.offFlash < 1) { ctx.fillStyle = `rgba(18,26,32,${0.35 * (1 - s.offFlash)})`; ctx.fillRect(0, 106, 1920, 734); }
+  }
+  // baris dokumen yang sedang diketik: lines[] muncul satu per satu antara t0 dan t1
+  function typed(arr, l, t0, t1, opt = {}) {
+    const n = arr.length, out = [];
+    for (let i = 0; i < n; i++) { const a = t0 + (t1 - t0) * i / n, d = (t1 - t0) / n; if (l < a && !(opt.pre && i < opt.pre)) break; const f = opt.pre && i < opt.pre ? 1 : clamp((l - a) / (d * 0.85), 0, 1); out.push({ t: arr[i], n: Math.round(arr[i].length * f), st: opt.st && opt.st(i) }); }
+    return out;
+  }
+  const files = (extra) => (extra || []).concat(BASE_FILES);
+
+  // keadaan awal tiap variasi (untuk adegan tanya/tebak)
+  function startState(v, l) {
+    if (v === 1) return { clock: "10.30", title: "Kunjungan ke Museum", badge: "belum", lines: DITO.map(t => ({ t })), ram: DITO.map(t => ({ t })), files: files(), cursor: true, l };
+    if (v === 2) return { clock: "10.00", title: "Laporan Kebun Sekolah", badge: "belum", lines: SINTA.slice(0, 3).map(t => ({ t })), ram: SINTA.slice(0, 3).map(t => ({ t })), files: files(), cursor: true, l };
+    if (v === 3) return { clock: "10.00", title: "Cerita Liburan", badge: "tersimpan", status: "simpan otomatis: nyala", statusColor: C.good, lines: LIBUR.slice(0, 1).map(t => ({ t })), ram: LIBUR.slice(0, 1).map(t => ({ t })), files: files([{ name: "Cerita Liburan", note: "10.00" }]), cursor: true, l };
+    return { speed: 1, screen: "apps", open: ["Dokumen", "Musik"], slots: [["Dokumen", 1], ["Musik", 1]], files: files([{ name: "Laporan Kebun", note: "tersimpan" }]), l };
+  }
+
+  Object.assign(K.SCENES, {
+    k1_tujuan(ctx, b, l) {
+      card(ctx, 160, 150, 1600, 660);
+      text(ctx, "SETELAH MENONTON, KAMU BISA:", 260, 240, 30, { weight: 900, color: C.accentDark });
+      ["membedakan isi RAM dan penyimpanan", "menebak apa yang hilang saat listrik padam", "memakai Simpan dan autosave dengan tepat", "mengatasi komputer yang lambat"].forEach((s, i) => {
+        const u = ease((l - 0.6 - i * 0.7) / 0.5); if (u <= 0) return; ctx.globalAlpha = u;
+        card(ctx, 260, 280 + i * 104, 860, 84, { fill: C.bg2, r: 16 }); text(ctx, "✓", 300, 336 + i * 104, 36, { weight: 900, color: C.good }); text(ctx, s, 350, 334 + i * 104, 30, { weight: 800 }); ctx.globalAlpha = 1;
+      });
+      M.ram(ctx, 1220, 320, 420, 100, { cells: ["H", "A", "L", "O"] }); M.disk(ctx, 1430, 590, 110, {}); text(ctx, "PENYIMPANAN", 1430, 700, 26, { align: "center", weight: 900, color: C.ink2 });
+    },
+    k1_prasyarat(ctx, b, l) {
+      card(ctx, 160, 150, 1600, 660);
+      text(ctx, "SIMULASI INI MELENGKAPI", 960, 240, 32, { align: "center", weight: 900, color: C.accentDark });
+      card(ctx, 420, 290, 1080, 330, { fill: C.bg2, r: 22 });
+      text(ctx, "Episode D7.2", 960, 380, 60, { align: "center", weight: 900, color: C.kiko });
+      text(ctx, "Mengenal Komputer: Perjalanan Satu Ketukan", 960, 450, 38, { align: "center", weight: 800 });
+      text(ctx, "segmen Penyimpanan: RAM sementara, penyimpanan tetap", 960, 530, 28, { align: "center", weight: 700, color: C.ink2 });
+      kiko(ctx, 1640, 700, 110, 0, { wave: l });
+    },
+    k1_alur(ctx, b, l) {
+      const t1 = at(b, "membuka aplikasi"), t2 = at(b, "Yang kamu ketik"), t3 = at(b, "menekan Simpan"), a = b.audio || b.dur;
+      const appIn = clamp((l - t1) / 1.4, 0, 1), saveU = clamp((l - t3 - 0.6) / 1.4, 0, 1);
+      const lines = l < t2 ? [] : typed(DITO.slice(0, 3), l, t2, t3 - 0.2);
+      const s = { clock: "09.00", title: "Kunjungan ke Museum", badge: l < t2 ? null : saveU >= 1 ? "tersimpan" : "belum", lines, ram: lines, cursor: l > t2, l,
+        files: files(saveU >= 1 ? [{ name: "Kunjungan ke Museum", note: "baru disimpan", hl: C.goodBg }] : []) };
+      if (l < t2) { s.screen = "desktop"; s.files = files(); }
+      if (appIn > 0 && appIn < 1) s.fly = [DISKC, RAMC, appIn, "aplikasi dibuka"];
+      if (saveU > 0 && saveU < 1) s.fly = [RAMC, [1500, 590], saveU, "Simpan"];
+      comp(ctx, s);
+      if (l > t1 && l < t2) { ctx.fillStyle = "#FFFFFF"; rr(ctx, 1094, 266, 652, 160, 10); ctx.fill(); text(ctx, "aplikasi Dokumen", 1420, 360, 32, { align: "center", weight: 900, color: C.ink2 }); }
+    },
+    k1_pilah(ctx, b, l) {
+      card(ctx, 120, 130, 1680, 700, { fill: "#FFFFFF" });
+      card(ctx, 160, 170, 780, 630, { fill: "#E6F2EC", stroke: GREEN_PCB, lw: 4, r: 22 }); card(ctx, 980, 170, 780, 630, { fill: "#F2F5F7", stroke: "#8EA1AD", lw: 4, r: 22 });
+      text(ctx, "RAM: sedang dikerjakan", 550, 230, 34, { align: "center", weight: 900, color: GREEN_PCB }); text(ctx, "PENYIMPANAN: sudah tersimpan", 1370, 230, 34, { align: "center", weight: 900, color: C.ink2 });
+      const items = [["laporan yang sedang diketik", 0, "tulisan", "laporan yang sedang"], ["game yang sedang dimainkan", 0, "video", "game"], ["file yang sudah disimpan", 1, "tulisan", "File yang sudah"], ["foto di galeri", 1, "foto", "foto"], ["aplikasi yang terpasang", 1, "folder", "aplikasi ada"]];
+      const cnt = [0, 0];
+      items.forEach(([s, side, kind, cue]) => { const t0 = at(b, cue); const k = cnt[side]++; if (l < t0) return; const u = ease((l - t0) / 0.5); const x = side ? 1020 : 200, y = 290 + k * 120; ctx.save(); ctx.globalAlpha = u; card(ctx, x, y, 700, 96, { fill: "#FFFFFF", r: 16 }); D.fileIcon(ctx, x + 60, y + 48, 56, kind, {}); text(ctx, s, x + 110, y + 58, 30, { weight: 800 }); ctx.restore(); });
+    },
+    k1_tanya(ctx, b, l) {
+      const s = startState(b.v, l); s.ask = true; comp(ctx, s);
+    },
+    k1_tebak(ctx, b, l) {
+      const s = startState(b.v, l); comp(ctx, s);
+      card(ctx, 1040, 130, 760, 700, { fill: "#FFFFFF", stroke: C.accent, lw: 5, r: 22 });
+      text(ctx, "TEBAK DULU", 1420, 196, 34, { align: "center", weight: 900, color: C.accentDark });
+      b.options.forEach((o, i) => { const y = 240 + i * 140; card(ctx, 1080, y, 680, 116, { fill: C.bg2, r: 18 }); ctx.fillStyle = C.kiko; ctx.beginPath(); ctx.arc(1136, y + 58, 30, 0, Math.PI * 2); ctx.fill(); text(ctx, "ABC"[i], 1136, y + 71, 34, { align: "center", weight: 900, color: "#fff" }); text(ctx, o, 1190, y + 70, 34, { weight: 800, fit: 550 }); });
+      const frac = clamp(l / b.dur, 0, 1); ctx.lineWidth = 12; ctx.strokeStyle = "#D7E2DC"; ctx.beginPath(); ctx.arc(1420, 720, 36, 0, Math.PI * 2); ctx.stroke();
+      ctx.strokeStyle = C.accent; ctx.beginPath(); ctx.arc(1420, 720, 36, -Math.PI / 2, -Math.PI / 2 + frac * Math.PI * 2); ctx.stroke();
+    },
+    k1_v1(ctx, b, l) {
+      const tT = at(b, "Dito mengetik"), tR = at(b, "hanya ada di RAM"), tO = at(b, "Listrik padam"), tN = at(b, "Saat komputer menyala");
+      if (l < tO) { const lines = typed(DITO, l, tT, tR + 0.8, { pre: 2 }); comp(ctx, { clock: "10.30", title: "Kunjungan ke Museum", badge: "belum", lines, ram: lines, files: files(), cursor: true, l }); if (l > tR) { ctx.strokeStyle = C.accent; ctx.lineWidth = 6; rr(ctx, 1064, 242, 712, 222, 16); ctx.stroke(); } return; }
+      if (l < tN) { comp(ctx, { power: false, offFlash: clamp((l - tO) / 0.8, 0, 1), ramFlash: clamp((l - tO) / 1.2, 0, 1), files: files(), clock: "10.30" }); return; }
+      comp(ctx, { screen: "desktop", files: files(), desktopNote: l > tN + 1.2 ? "laporan Dito tidak ada" : null, ram: [], clock: "10.45" });
+      if (l > tN + 1.2) { ctx.strokeStyle = C.bad; ctx.lineWidth = 6; rr(ctx, 1064, 522, 712, 302, 18); ctx.stroke(); text(ctx, "tidak ada file laporan", 1500, 800, 24, { align: "center", weight: 900, color: C.bad }); }
+    },
+    k1_v1h(ctx, b, l) {
+      comp(ctx, { screen: "desktop", files: files(), desktopNote: "laporan Dito tidak ada", ram: [], clock: "10.45" });
+      card(ctx, 200, 690, 760, 120, { fill: C.badBg, stroke: C.bad, lw: 4, r: 18 }); para(ctx, "belum disalin ke penyimpanan = hilang", 580, 742, 30, 700, { align: "center", weight: 900, color: C.bad });
+    },
+    k1_v2(ctx, b, l) {
+      const tS = at(b, "menekan Simpan"), tA = at(b, "menambah"), tO = at(b, "Listrik padam");
+      const saveU = clamp((l - tS - 0.3) / 1.4, 0, 1), saved = saveU >= 1;
+      const savedFile = saved ? [{ name: "Laporan Kebun Sekolah", note: "3 kalimat, 10.00", hl: l < tA + 0.5 ? C.goodBg : null }] : [];
+      if (l < tO) {
+        let lines = SINTA.slice(0, 3).map(t => ({ t }));
+        if (l > tA) { const f = clamp((l - tA) / ((tO - tA) * 0.8), 0, 1); lines = lines.concat([{ t: SINTA[3], n: Math.round(SINTA[3].length * f), st: "new" }]); }
+        comp(ctx, { clock: l > tA ? "10.03" : "10.00", title: "Laporan Kebun Sekolah", badge: saved && l < tA ? "tersimpan" : "belum", lines, ram: lines, files: files(savedFile), cursor: true, l, fly: saveU > 0 && saveU < 1 ? [RAMC, [1500, 590], saveU, "Simpan"] : null });
+        if (l > tS && l < tS + 1.6) { card(ctx, 330, 580, 300, 64, { fill: "#2B3A46", r: 14 }); text(ctx, "Ctrl + S", 480, 624, 32, { align: "center", weight: 900, color: "#fff" }); }
+        return;
+      }
+      comp(ctx, { power: false, offFlash: clamp((l - tO) / 0.8, 0, 1), ramFlash: clamp((l - tO) / 1.2, 0, 1), files: files([{ name: "Laporan Kebun Sekolah", note: "3 kalimat, 10.00" }]), clock: "10.04" });
+    },
+    k1_v2h(ctx, b, l) {
+      const tC = at(b, "menyalinnya"), tH = at(b, "jadi hanya");
+      const u = clamp((l - tC) / 1.4, 0, 1);
+      const lines = u < 1 ? [] : SINTA.slice(0, 3).map(t => ({ t })).concat(l > tH ? [{ t: SINTA[3], st: "lost" }] : []);
+      comp(ctx, { clock: "10.20", title: "Laporan Kebun Sekolah", badge: u >= 1 ? "tersimpan" : null, screen: u > 0 ? "doc" : "desktop", lines, ram: u >= 1 ? SINTA.slice(0, 3).map(t => ({ t })) : [], files: files([{ name: "Laporan Kebun Sekolah", note: "3 kalimat, 10.00", hl: u > 0 && u < 1 ? "#FFF3D6" : null }]), fly: u > 0 && u < 1 ? [[1500, 590], RAMC, u, "dibuka"] : null, l });
+    },
+    k1_autosave(ctx, b, l) {
+      const a = b.audio || b.dur, T = 1.6; // tiap ±1,6 detik di layar = dua menit simpan otomatis
+      const k = Math.floor(l / T), f = (l % T) / T, n = clamp(1 + Math.floor(l / (T / 2)), 1, LIBUR.length);
+      const lines = LIBUR.slice(0, n).map(t => ({ t })), saving = f < 0.35 && k > 0;
+      const mins = 2 * Math.min(k, 4);
+      comp(ctx, { clock: "10.0" + Math.min(9, Math.floor(l / T * 2)), title: "Cerita Liburan", badge: "tersimpan", status: saving ? "menyimpan…" : "tersimpan otomatis pukul 10.0" + mins, statusColor: C.good, lines, ram: lines, files: files([{ name: "Cerita Liburan", note: "otomatis, 10.0" + mins, hl: saving ? C.goodBg : null }]), cursor: true, l, fly: saving ? [RAMC, [1500, 590], f / 0.35, "otomatis"] : null });
+    },
+    k1_v3(ctx, b, l) {
+      const tS = at(b, "Setiap dua menit"), tO = at(b, "listrik padam"), tR = at(b, "Tulisan satu menit");
+      const m = l < tS ? 0 : clamp((l - tS) / (tO - tS) * 5, 0, 5); // menit 0..5
+      const n = clamp(1 + Math.floor(m + 0.5), 1, 5);
+      const lastSave = m >= 4 ? 4 : m >= 2 ? 2 : 0;
+      const lines = LIBUR.slice(0, n).map((t, i) => ({ t, st: i >= lastSave + 1 && i >= 1 && lastSave > 0 && i > lastSave ? "new" : undefined }));
+      // garis waktu di lajur atas
+      const timeline = () => { const x0 = 430, w = 320; ctx.strokeStyle = "#B7C4CC"; ctx.lineWidth = 6; ctx.beginPath(); ctx.moveTo(x0, 170); ctx.lineTo(x0 + w, 170); ctx.stroke();
+        [0, 2, 4].forEach(mm => { ctx.fillStyle = m >= mm ? C.good : "#B7C4CC"; ctx.beginPath(); ctx.arc(x0 + mm / 5 * w, 170, 10, 0, Math.PI * 2); ctx.fill(); text(ctx, "simpan", x0 + mm / 5 * w, 204, 18, { align: "center", weight: 800, color: C.good }); });
+        ctx.fillStyle = C.bad; ctx.beginPath(); ctx.arc(x0 + m / 5 * w, 170, 8, 0, Math.PI * 2); ctx.fill(); };
+      const saving = (m >= 2 && m < 2.4) || (m >= 4 && m < 4.4);
+      if (l < tO) {
+        comp(ctx, { clock: "10.0" + Math.floor(m), title: "Cerita Liburan", badge: "tersimpan", status: saving ? "menyimpan…" : "tersimpan otomatis pukul 10.0" + lastSave, statusColor: C.good, lines, ram: lines, files: files([{ name: "Cerita Liburan", note: "otomatis, 10.0" + lastSave, hl: saving ? C.goodBg : null }]), cursor: true, l, fly: saving ? [RAMC, [1500, 590], ((m % 2) / 0.4), "otomatis"] : null });
+      } else {
+        comp(ctx, { power: false, offFlash: clamp((l - tO) / 0.8, 0, 1), ramFlash: clamp((l - tO) / 1.2, 0, 1), files: files([{ name: "Cerita Liburan", note: "otomatis, 10.04" }]), clock: "10.05" });
+        if (l > tR) { card(ctx, 1080, 300, 680, 110, { fill: C.badBg, stroke: C.bad, lw: 4, r: 16 }); text(ctx, "hilang: “" + LIBUR[4] + "”", 1420, 366, 26, { align: "center", weight: 900, color: C.bad, fit: 640 }); }
+      }
+      timeline();
+    },
+    k1_v3h(ctx, b, l) {
+      const tK = at(b, "Ctrl");
+      const lines = LIBUR.slice(0, 4).map(t => ({ t })).concat([{ t: LIBUR[4], st: "lost" }]);
+      comp(ctx, { clock: "10.20", title: "Cerita Liburan (dipulihkan)", badge: "tersimpan", lines: l > 1.5 ? lines : LIBUR.slice(0, 4).map(t => ({ t })), ram: LIBUR.slice(0, 4).map(t => ({ t })), files: files([{ name: "Cerita Liburan", note: "otomatis, 10.04", hl: C.goodBg }]), status: "versi dipulihkan: pukul 10.04", statusColor: C.kiko, l });
+      if (l > tK) { const keys = [["Ctrl", 150], ["S", 90]]; let x = 330; card(ctx, 200, 690, 760, 120, { fill: "#FFFFFF", stroke: C.accent, lw: 4, r: 18 }); text(ctx, "biasakan:", 230, 762, 28, { weight: 900, color: C.accentDark });
+        keys.forEach(([k, w], i) => { const press = Math.floor((l - tK) * 1.5) % 2 === 0; ctx.fillStyle = press ? C.accent : "#F7FAFC"; rr(ctx, x + 60, 712 + (press ? 3 : 0), w, 74, 12); ctx.fill(); ctx.strokeStyle = "#8EA1AD"; ctx.lineWidth = 3; ctx.stroke(); text(ctx, k, x + 60 + w / 2, 760, 34, { align: "center", weight: 900 }); if (!i) text(ctx, "+", x + 60 + w + 30, 762, 40, { align: "center", weight: 900, color: C.ink2 }); x += w + 60; });
+        text(ctx, "= Simpan", 760, 762, 32, { weight: 900, color: C.good }); }
+    },
+    k1_v4q(ctx, b, l) {
+      const s = startState(4, l); s.ask = true; comp(ctx, s);
+      const names = ["Game", "Browser 12 tab", "Pengedit Foto"]; names.forEach((nm, i) => { const t0 = at(b, nm.split(" ")[0].replace("Pengedit", "pengedit").replace("Game", "game").replace("Browser", "browser")); if (l < t0) return; const ap = APPS.find(a => a[0] === nm); card(ctx, 1092 + i * 225, 360, 210, 56, { fill: ap[2], r: 10 }); text(ctx, "+ " + nm, 1197 + i * 225, 396, 22, { align: "center", weight: 900, color: "#fff", fit: 196 }); });
+    },
+    k1_v4(ctx, b, l) {
+      const t0 = at(b, "Setiap aplikasi"), tF = at(b, "Saat RAM penuh"), tM = at(b, "memindahkan"), tL = at(b, "sehingga");
+      const extra = ["Game", "Browser 12 tab", "Pengedit Foto"], step = (tF - t0) / 3;
+      const open = ["Dokumen", "Musik"], slots = [["Dokumen", 1], ["Musik", 1]];
+      extra.forEach((nm, i) => { const ts = t0 + i * step; if (l < ts) return; open.push(nm); slots.push([nm, APPS.find(a => a[0] === nm)[1], clamp((l - ts) / 0.6, 0, 1)]); });
+      const sw = clamp((l - tM) / 1.2, 0, 1);
+      if (sw > 0) { slots[0][2] = 1 - sw; slots[1][2] = 1 - sw; }
+      const used = slots.reduce((a, s) => a + s[1] * (s[2] == null ? 1 : s[2]), 0);
+      const speed = l < tM ? clamp(1 - Math.max(0, used - 4) * 0.12, 0.45, 1) : lerp(0.45, 0.15, clamp((l - tM) / 1.5, 0, 1));
+      // saat dipindah, kotak aplikasi lain bergeser maju (digambar ulang tanpa yang dipindah)
+      const shown = sw >= 1 ? slots.slice(2) : slots;
+      comp(ctx, { screen: "apps", open, slots: shown.length && sw >= 1 ? shown.concat([]) : shown, speed, slow: l > tL, files: files([{ name: "Laporan Kebun", note: "tersimpan" }]), swap: sw > 0 ? [["Dokumen", sw], ["Musik", sw]] : null, l });
+      if (sw > 0 && sw < 1) { ctx.strokeStyle = C.accent; ctx.lineWidth = 6; ctx.setLineDash([12, 10]); ctx.beginPath(); ctx.moveTo(1170, 300); ctx.lineTo(1620, 760); ctx.stroke(); ctx.setLineDash([]); }
+    },
+    k1_v4h(ctx, b, l) {
+      const tC = at(b, "Tutup aplikasi"), tK = at(b, "maka tempat"), tF = at(b, "File di penyimpanan");
+      const close = clamp((l - tC - 0.3) / 1.0, 0, 1), back = clamp((l - tK) / 1.2, 0, 1);
+      const open = ["Musik", "Dokumen", "Pengedit Foto"].concat(close < 1 ? ["Browser 12 tab", "Game"] : []);
+      const slots = [["Pengedit Foto", 2]]; if (close < 1) slots.push(["Browser 12 tab", 3, 1 - close], ["Game", 3, 1 - close]);
+      const slots2 = back > 0 ? [["Dokumen", 1, back], ["Musik", 1, back]].concat(slots) : slots;
+      const speed = lerp(0.15, 1, clamp((l - tK) / 1.5, 0, 1));
+      comp(ctx, { screen: "apps", open: close < 1 ? open : ["Dokumen", "Musik", "Pengedit Foto"], slots: slots2, speed, slow: l < tK, files: files([{ name: "Laporan Kebun", note: l > tF ? "aman ✓" : "tersimpan", noteColor: l > tF ? C.good : null, hl: l > tF ? C.goodBg : null }]).map(f => l > tF ? { ...f, note: "aman ✓", noteColor: C.good, hl: C.goodBg } : f), swap: back < 1 ? [["Dokumen", 1 - back], ["Musik", 1 - back]] : null, l });
+      if (l > tC && close < 1) { card(ctx, 600, 560, 320, 70, { fill: C.bad, r: 14 }); text(ctx, "✕ tutup Game dan Browser", 760, 604, 22, { align: "center", weight: 900, color: "#fff" }); }
+    },
+    k1_latihan(ctx, b, l) {
+      card(ctx, 120, 130, 1680, 700, { fill: "#FFFFFF" });
+      text(ctx, "COBA SENDIRI DI HALAMAN LATIHAN", 960, 192, 32, { align: "center", weight: 900, color: C.accentDark });
+      card(ctx, 200, 230, 780, 570, { fill: C.bg, stroke: "#B7C4CC", lw: 3, r: 20 });
+      card(ctx, 220, 248, 740, 50, { fill: "#fff", r: 10 }); text(ctx, "belajar-informatika.vercel.app/d72", 590, 282, 24, { align: "center", weight: 800, color: C.kikoDark });
+      const lv = l > at(b, "Urutkan") ? 1 : 0;
+      ["1 Kelompokkan alat", "2 Urutkan perjalanan", "3 Hardware/software"].forEach((s, i) => { card(ctx, 222 + i * 248, 314, 238, 50, { fill: i === lv ? C.accent : "#fff", stroke: "#B7C4CC", lw: 2, r: 10 }); text(ctx, s, 341 + i * 248, 347, 20, { align: "center", weight: 900, fit: 226 }); });
+      if (lv === 0) {
+        [["RAM", "Proses"], ["hard disk", "Penyimpanan"], ["kartu memori", "Penyimpanan"], ["keyboard", "Input"]].forEach(([a, g], i) => { const y = 390 + i * 96; card(ctx, 240, y, 300, 76, { fill: "#fff", stroke: "#B7C4CC", lw: 2, r: 12 }); text(ctx, a, 390, y + 48, 28, { align: "center", weight: 800 }); text(ctx, "→", 590, y + 50, 34, { align: "center", weight: 900, color: C.ink2 }); card(ctx, 640, y, 300, 76, { fill: l > 1 + i * 0.8 ? C.goodBg : C.bg2, r: 12 }); text(ctx, g, 790, y + 48, 28, { align: "center", weight: 800, color: l > 1 + i * 0.8 ? C.good : C.ink2 }); });
+      } else {
+        ["Dito menekan tombol H", "Prosesor membaca kode", "Huruf H ditaruh di RAM", "Layar menampilkan H", "Simpan: file ke hard disk"].forEach((s, i) => { const y = 386 + i * 80; card(ctx, 240, y, 700, 66, { fill: i === 4 ? C.goodBg : "#fff", stroke: "#B7C4CC", lw: 2, r: 12 }); text(ctx, (i + 1) + ". " + s, 270, y + 43, 26, { weight: 800 }); text(ctx, "▲▼", 900, y + 43, 22, { align: "right", weight: 900, color: C.ink2 }); });
+      }
+      card(ctx, 1040, 260, 700, 330, { fill: "#FFF9E0", r: 22 }); text(ctx, "Tugas nyata", 1390, 330, 34, { align: "center", weight: 900 });
+      para(ctx, "Di rumah, buka beberapa aplikasi di HP satu per satu. Catat kapan HP mulai lambat, lalu tutup aplikasi yang tidak dipakai dan bandingkan.", 1390, 390, 30, 620, { align: "center", weight: 700, lh: 1.3 });
+      kiko(ctx, 1680, 730, 90, 0, { wave: l });
+    }
+  });
+})(typeof window !== "undefined" ? window : globalThis);
+</script>
+<script>const YT_CHANNEL = "https://www.youtube.com/@iteachswe";   // channel YouTube Bu Dewi (video lengkap seri ini)
+/* Inti halaman latihan: pemutar (kanvas + narasi), tombol suara nyala/mati (berpindah antara timeline suara dan teks),
+   kuis dengan petunjuk, dan kemajuan di localStorage (perangkat ini saja).
+   Pakai:  const P = PageCore({ suara: TIMELINE_SUARA_atau_null, teks: TIMELINE_TEKS });
+   Episode menambahkan latihannya sendiri lewat P.$, P.K, P.H, P.progress, P.save(), P.speed(), P.onProgress(fn). */
+function PageCore(TLS, opt = {}) {
+  const $ = id => document.getElementById(id);
+  const K = Kiko, H = K.helpers;
+  let voice = !!TLS.suara; let TL = voice ? TLS.suara : TLS.teks;
+  // ---------- progress storage (per device only) ----------
+  const KEY = opt.key || TL.episode.replace(/\./g, "").toLowerCase() + "-progress";   // D7.5 -> "d75-progress"
+  let progress = { quiz: {} };
+  try { const s = localStorage.getItem(KEY); if (s) progress = { quiz: {}, ...JSON.parse(s) }; } catch (e) {}
+  const extras = [];
+  function renderProgress() {
+    const el = $("progress"); if (!el) return; el.innerHTML = "";
+    Object.keys(TL.quizzes).forEach((id, i) => { const s = document.createElement("span"); s.textContent = "Cek " + (i + 1); s.className = progress.quiz[id] ? "ok" : ""; el.appendChild(s); });
+    extras.forEach(f => f(el));
+  }
+  function save() { try { localStorage.setItem(KEY, JSON.stringify(progress)); } catch (e) {} renderProgress(); }
+
+  // ---------- player ----------
+  const cv = $("screen"), ctx = cv.getContext("2d");
+  let t = 0, playing = false, last = 0, speed = 1, hasAudio = false;
+  const nar = $("nar"); nar.addEventListener("canplay", () => { hasAudio = true; }); nar.addEventListener("error", () => { hasAudio = false; });
+  function fmt(s) { s = Math.max(0, Math.floor(s)); return Math.floor(s / 60) + ":" + String(s % 60).padStart(2, "0"); }
+  function segStart(i) { return TL.beats.find(b => b.seg === i).start; }
+  function syncAudio() { if (voice && hasAudio) { try { nar.currentTime = t; } catch (e) {} } }
+  function drawNow() {
+    const b = K.draw(ctx, Math.min(t, TL.total - 0.01), TL);
+    $("barfill").style.width = (t / TL.total * 100) + "%"; $("bar").setAttribute("aria-valuenow", Math.round(t / TL.total * 100));
+    $("timelabel").textContent = fmt(t) + " / " + fmt(TL.total);
+    [...$("chapters").children].forEach((c, i) => c.classList.toggle("now", i === b.seg));
+    return b;
+  }
+  function loop(now) {
+    if (!playing) return;
+    const dt = Math.min(0.1, (now - last) / 1000); last = now; if (voice && hasAudio && !nar.paused) t = nar.currentTime; else t += dt * speed;
+    if (t >= TL.total) { t = TL.total - 0.01; setPlaying(false); }
+    drawNow(); requestAnimationFrame(loop);
+  }
+  function setPlaying(p) {
+    playing = p; $("bigplay").hidden = p; $("playbtn").textContent = p ? "❚❚ Jeda" : "▶ Putar";
+    if (p) { last = performance.now(); if (voice && hasAudio) { try { nar.currentTime = t; nar.playbackRate = speed; nar.play().catch(() => {}); } catch (e) {} } requestAnimationFrame(loop); } else nar.pause();
+  }
+  $("bigplay").addEventListener("click", () => setPlaying(true));
+  $("playbtn").addEventListener("click", () => setPlaying(!playing));
+  $("replay").addEventListener("click", () => { const b = K.beatAt(TL, t); t = segStart(b.seg); syncAudio(); drawNow(); setPlaying(true); });
+  $("slow").addEventListener("click", e => { speed = speed === 1 ? 0.8 : 1; nar.playbackRate = speed; e.currentTarget.setAttribute("aria-pressed", speed !== 1); });
+  function seekFromBar(ev) { const r = $("bar").getBoundingClientRect(); const x = (ev.touches ? ev.touches[0].clientX : ev.clientX) - r.left; t = Math.max(0, Math.min(TL.total - 0.01, x / r.width * TL.total)); syncAudio(); drawNow(); }
+  $("bar").addEventListener("click", seekFromBar);
+  $("bar").addEventListener("keydown", e => { if (e.key === "ArrowRight") { t = Math.min(TL.total - 0.01, t + 5); syncAudio(); drawNow(); } if (e.key === "ArrowLeft") { t = Math.max(0, t - 5); syncAudio(); drawNow(); } });
+  TL.segments.forEach((name, i) => { const b = document.createElement("button"); b.textContent = (i + 1) + ". " + name; b.addEventListener("click", () => { t = segStart(i); syncAudio(); drawNow(); setPlaying(true); }); $("chapters").appendChild(b); });
+  // voice on/off: switches between the narrated timeline and the reading-paced one, staying on the same beat
+  const vb = $("voice");
+  function setVoice(on) {
+    const cur = K.beatAt(TL, t);
+    voice = on && !!TLS.suara; TL = voice ? TLS.suara : TLS.teks;
+    const nb = TL.beats.find(b => b.id === cur.id) || TL.beats[0]; t = nb.start;
+    if (vb) { vb.setAttribute("aria-pressed", voice); vb.textContent = voice ? "🔊 Suara: nyala" : "🔇 Suara: mati"; }
+    if (playing) { if (voice && hasAudio) { try { nar.currentTime = t; nar.playbackRate = speed; nar.play().catch(() => {}); } catch (e) {} } else nar.pause(); }
+    drawNow();
+  }
+  if (vb) { if (!TLS.suara || !TLS.teks) vb.hidden = true; else { vb.addEventListener("click", () => setVoice(!voice)); vb.setAttribute("aria-pressed", voice); vb.textContent = voice ? "🔊 Suara: nyala" : "🔇 Suara: mati"; } }
+  drawNow();
+
+  // ---------- quiz ----------
+  const quizEl = $("quiz");
+  if (quizEl) Object.entries(TL.quizzes).forEach(([id, q], qi) => {
+    const box = document.createElement("div"); box.className = "q";
+    box.innerHTML = `<h3>${qi + 1}. ${q.q}</h3><div class="opts"></div><div class="fb"></div>`;
+    const opts = box.querySelector(".opts"), fb = box.querySelector(".fb");
+    q.options.forEach((o, i) => {
+      const b = document.createElement("button"); b.innerHTML = `<b>${"ABC"[i]}</b><span>${o}</span>`;
+      b.addEventListener("click", () => {
+        [...opts.children].forEach(c => c.classList.remove("wrong"));
+        if (i === q.answer) { b.classList.add("right"); fb.className = "fb good"; fb.textContent = "Benar! " + (q.explain || ""); progress.quiz[id] = true; save(); [...opts.children].forEach(c => c.disabled = true); }
+        else { b.classList.add("wrong"); fb.className = "fb bad"; fb.textContent = "Belum tepat. Petunjuk: " + q.hint; }
+      });
+      opts.appendChild(b);
+    });
+    if (progress.quiz[id]) { opts.children[q.answer].classList.add("right"); [...opts.children].forEach(c => c.disabled = true); fb.className = "fb good"; fb.textContent = "Sudah dijawab benar."; }
+    quizEl.appendChild(box);
+  });
+  renderProgress();
+
+  // ajakan ke channel YouTube (video lengkap): kartu tepat di bawah pemutar, di semua halaman latihan dan simulasi
+  try {
+    const pl = document.querySelector("section.player");
+    if (pl && !document.getElementById("yt-ajak")) {
+      const a = document.createElement("a"); a.id = "yt-ajak"; a.className = "yt-ajak"; a.href = YT_CHANNEL; a.target = "_blank"; a.rel = "noopener";
+      a.innerHTML = '<span class="yt-ic" aria-hidden="true">▶</span><span><b>Tonton video lengkapnya di YouTube</b><small>Subscribe channel @iteachswe untuk belajar lebih banyak.</small></span>';
+      pl.insertAdjacentElement("afterend", a);
+    }
+  } catch (e) {}
+  return { $, K, H, progress, save, renderProgress, speed: () => speed, timeline: () => TL,
+           onProgress(fn) { extras.push(fn); renderProgress(); } };
+}
+</script>
+<script>
+(function () {
+  const P = PageCore({ suara: {"episode": "K01", "title": "RAM dan Penyimpanan saat Listrik Padam", "label": "Simulasi Konsep · K01 · D7.2 Mengenal Komputer", "kind": "konsep", "for": ["D7.2"], "latihan": "D7.2", "hook": "menjelaskan mengapa tulisan yang belum disimpan hilang saat listrik padam, dan menjaga pekerjaanmu tetap aman.", "engine": ["../../_alat/kiko-core.js", "../../_alat/kiko-devices.js", "../../D7.2/komputer.js", "../../D7.2/scenes.js", "scenes.js"], "parts": {"K01": {"segs": [0, 1, 2, 3, 4, 5, 6]}}, "recap": ["RAM sementara: isinya hilang saat listrik padam.", "Simpan = salin pekerjaan ke penyimpanan.", "RAM penuh? Tutup aplikasi yang tidak dipakai."], "next": {"code": "K02", "title": "Berapa Lama Sandimu Bisa Ditebak?", "note": "Simulasi konsep berikutnya.", "heading": "SIMULASI BERIKUTNYA"}, "youtube": {"ringkas": "Simulasi konsep RAM dan penyimpanan: listrik dipadamkan di saat yang berbeda, yaitu sebelum laporan disimpan, setelah disimpan, dan saat simpan otomatis (autosave) menyala, lalu kita melihat apa yang hilang dan apa yang tetap ada. Variasi terakhir membuka banyak aplikasi sampai RAM penuh dan komputer menjadi lambat. Ada tiga cek pemahaman.", "belajar": ["membedakan apa yang ada di RAM dan apa yang ada di penyimpanan", "menjelaskan mengapa tulisan yang belum disimpan hilang saat listrik padam", "memakai Simpan dan simpan otomatis (autosave) dengan tepat", "mengatasi komputer yang lambat karena RAM penuh"], "cari": ["perbedaan RAM dan penyimpanan", "kenapa file hilang saat listrik mati", "fungsi RAM informatika kelas 7", "kenapa laptop lemot saat banyak aplikasi"], "prasyarat": "episode D7.2 Mengenal Komputer: Perjalanan Satu Ketukan", "tagar": ["#RAM", "#Penyimpanan", "#Simulasi", "#Informatika", "#SMP"]}, "segments": ["Pembuka", "RAM dan penyimpanan", "Variasi 1: belum disimpan", "Variasi 2: sudah disimpan", "Variasi 3: autosave", "Variasi 4: RAM penuh", "Penutup"], "quizzes": {"q1": {"q": "Laporan disimpan pukul 10.00. Sinta terus mengetik sampai 10.20 tanpa menyimpan, lalu listrik padam. Tulisan mana yang hilang?", "options": ["Semua tulisan", "Tulisan pukul 10.00–10.20", "Tidak ada yang hilang"], "answer": 1, "hint": "Yang sudah disimpan ada di penyimpanan."}, "q2": {"q": "Laptop terasa lambat karena banyak aplikasi terbuka. Apa yang paling tepat dilakukan?", "options": ["Menghapus foto di galeri", "Menutup aplikasi yang tidak dipakai", "Mengetik lebih cepat"], "answer": 1, "hint": "Yang penuh adalah RAM, bukan penyimpanan."}, "q3": {"q": "Kamu memotret dengan HP, lalu baterainya habis. Setelah diisi ulang, apakah fotonya masih ada?", "options": ["Hilang, karena ada di RAM", "Masih ada di penyimpanan", "Hilang separuh"], "answer": 1, "hint": "Aplikasi kamera langsung menyimpan foto."}}, "beats": [{"id": "intro1", "seg": 0, "scene": "title", "text": "Halo! Aku Kiko. Ini simulasi konsep tentang RAM dan penyimpanan. Kita akan memadamkan listrik di saat yang berbeda, lalu melihat apa yang hilang dan apa yang tetap ada.", "hold": 0.8, "start": 0.0, "speech": 0.4, "audio": 11.406, "dur": 15.84}, {"id": "intro2", "seg": 0, "scene": "k1_tujuan", "text": "Setelah menonton, kamu bisa menjelaskan mengapa tulisan yang belum disimpan hilang saat listrik padam, dan apa yang harus dilakukan supaya pekerjaanmu aman.", "hold": 0.8, "start": 15.84, "speech": 16.24, "audio": 9.732, "dur": 12.84}, {"id": "intro3", "seg": 0, "scene": "k1_prasyarat", "text": "Simulasi ini melengkapi episode D7.2 tentang mengenal komputer. Kalau RAM dan penyimpanan masih terasa asing, tonton dulu segmen penyimpanan di episode itu, ya.", "hold": 0.8, "start": 28.68, "speech": 29.08, "audio": 10.977, "dur": 13.34}, {"id": "m1", "seg": 1, "scene": "storage_vs_ram", "text": "Ingat dulu bedanya. RAM seperti papan tulis: cepat, tetapi isinya terhapus saat listrik mati. Penyimpanan seperti buku catatan: lebih lambat, tetapi isinya tetap ada.", "hold": 1.0, "start": 42.02, "speech": 42.42, "audio": 12.352, "dur": 14.052}, {"id": "m2", "seg": 1, "scene": "k1_alur", "text": "Saat kamu membuka aplikasi, komputer menyalinnya dari penyimpanan ke RAM. Yang kamu ketik juga ditaruh di RAM. Baru saat kamu menekan Simpan, tulisanmu disalin ke penyimpanan.", "hold": 1.0, "start": 56.072, "speech": 56.472, "audio": 12.0, "dur": 15.04}, {"id": "m3", "seg": 1, "scene": "k1_pilah", "text": "Jadi, yang sedang kamu kerjakan ada di RAM, misalnya laporan yang sedang diketik dan game yang sedang dimainkan. File yang sudah disimpan, foto, dan aplikasi ada di penyimpanan.", "hold": 1.2, "start": 71.112, "speech": 71.512, "audio": 11.798, "dur": 16.24}, {"id": "v1q", "seg": 2, "scene": "k1_tanya", "v": 1, "text": "Menurutmu, apa yang terjadi kalau Dito sudah mengetik laporan selama setengah jam, belum menekan Simpan, lalu listrik padam?", "hold": 0.4, "start": 87.352, "speech": 87.752, "audio": 7.986, "dur": 10.44}, {"id": "v1t", "seg": 2, "scene": "k1_tebak", "v": 1, "options": ["Laporannya tetap ada", "Laporannya hilang semua", "Hilang separuh"], "text": "Tebak dulu: laporannya tetap ada, hilang semua, atau hilang separuh?", "hold": 2.2, "start": 97.792, "speech": 98.192, "audio": 5.374, "dur": 8.274}, {"id": "v1r", "seg": 2, "scene": "k1_v1", "text": "Kita jalankan. Dito mengetik, dan tulisannya hanya ada di RAM. Listrik padam, dan RAM kehilangan isinya. Saat komputer menyala lagi, laporan Dito tidak ada di penyimpanan.", "hold": 1.2, "start": 106.066, "speech": 106.466, "audio": 12.32, "dur": 15.24}, {"id": "v1h", "seg": 2, "scene": "k1_v1h", "text": "Jadi laporan Dito hilang semua, karena tulisannya belum pernah disalin ke penyimpanan. RAM hanya bisa menyimpan selama ada listrik.", "hold": 1.0, "start": 121.306, "speech": 121.706, "audio": 8.435, "dur": 11.54}, {"id": "v2q", "seg": 3, "scene": "k1_tanya", "v": 2, "text": "Menurutmu, apa yang terjadi kalau Sinta menekan Simpan dulu, lalu menambah satu kalimat lagi, dan tiba-tiba listrik padam?", "hold": 0.4, "start": 132.846, "speech": 133.246, "audio": 7.966, "dur": 10.44}, {"id": "v2t", "seg": 3, "scene": "k1_tebak", "v": 2, "options": ["Semua tulisan hilang", "Hanya kalimat terakhir hilang", "Tidak ada yang hilang"], "text": "Tebak dulu: semua hilang, hanya kalimat terakhir yang hilang, atau tidak ada yang hilang?", "hold": 2.2, "start": 143.286, "speech": 143.686, "audio": 5.924, "dur": 10.24}, {"id": "v2r", "seg": 3, "scene": "k1_v2", "text": "Kita jalankan. Sinta menekan Simpan, dan laporannya disalin ke penyimpanan. Lalu ia menambah satu kalimat. Listrik padam, dan RAM kosong lagi.", "hold": 1.0, "start": 153.526, "speech": 153.926, "audio": 10.437, "dur": 12.54}, {"id": "v2h", "seg": 3, "scene": "k1_v2h", "text": "Saat file dibuka lagi, komputer menyalinnya dari penyimpanan. Yang kembali adalah versi saat terakhir disimpan, jadi hanya kalimat terakhir yang hilang.", "hold": 1.2, "start": 166.066, "speech": 166.466, "audio": 9.877, "dur": 12.74}, {"id": "q1", "seg": 3, "scene": "quiz", "quiz": "q1", "text": "Cek pemahaman. Laporan disimpan pukul sepuluh. Sinta terus mengetik sampai pukul sepuluh lewat dua puluh, lalu listrik padam. Tulisan mana yang hilang? Pikirkan dulu.", "hold": 4.0, "start": 178.806, "speech": 179.206, "audio": 11.709, "dur": 17.04}, {"id": "q1a", "seg": 3, "scene": "quiz_answer", "quiz": "q1", "text": "Jawabannya: tulisan dari pukul sepuluh sampai sepuluh lewat dua puluh. Tulisan yang sudah disimpan pukul sepuluh tetap ada di penyimpanan.", "hold": 1.0, "start": 195.846, "speech": 196.246, "audio": 8.973, "dur": 12.04}, {"id": "v3a", "seg": 4, "scene": "k1_autosave", "text": "Banyak aplikasi punya fitur simpan otomatis, atau autosave. Aplikasi menyalin pekerjaanmu ke penyimpanan dengan sendirinya, misalnya setiap dua menit.", "hold": 1.0, "start": 207.886, "speech": 208.286, "audio": 10.255, "dur": 11.955}, {"id": "v3q", "seg": 4, "scene": "k1_tanya", "v": 3, "text": "Menurutmu, apa yang terjadi kalau Dito mengetik dengan autosave menyala, lalu listrik padam satu menit setelah simpan otomatis yang terakhir?", "hold": 0.4, "start": 219.841, "speech": 220.241, "audio": 8.505, "dur": 11.44}, {"id": "v3t", "seg": 4, "scene": "k1_tebak", "v": 3, "options": ["Semua tulisan hilang", "Tulisan satu menit terakhir hilang", "Tidak ada yang hilang"], "text": "Tebak dulu: semua hilang, satu menit terakhir hilang, atau tidak ada yang hilang?", "hold": 2.2, "start": 231.281, "speech": 231.681, "audio": 5.55, "dur": 9.74}, {"id": "v3r", "seg": 4, "scene": "k1_v3", "text": "Kita jalankan. Setiap dua menit, aplikasi menyimpan sendiri. Satu menit setelah simpan terakhir, listrik padam. Tulisan satu menit terakhir itu hanya ada di RAM.", "hold": 1.0, "start": 241.021, "speech": 241.421, "audio": 10.48, "dur": 14.04}, {"id": "v3h", "seg": 4, "scene": "k1_v3h", "text": "Saat dibuka lagi, aplikasi menampilkan versi yang dipulihkan, dan hanya tulisan satu menit terakhir yang hilang. Tetap biasakan menekan Simpan, atau Ctrl dan S.", "hold": 1.2, "start": 255.061, "speech": 255.461, "audio": 11.152, "dur": 14.24}, {"id": "v4q", "seg": 5, "scene": "k1_v4q", "text": "Menurutmu, apa yang terjadi kalau Sinta membuka banyak aplikasi sekaligus: game, browser dengan banyak tab, pengedit foto, dan musik, sampai RAM penuh?", "hold": 0.4, "start": 269.301, "speech": 269.701, "audio": 10.328, "dur": 12.44}, {"id": "v4t", "seg": 5, "scene": "k1_tebak", "v": 4, "options": ["Komputer makin cepat", "Komputer jadi lambat", "File di penyimpanan terhapus"], "text": "Tebak dulu: komputer makin cepat, jadi lambat, atau file di penyimpanan terhapus?", "hold": 2.2, "start": 281.741, "speech": 282.141, "audio": 6.082, "dur": 9.24}, {"id": "v4r", "seg": 5, "scene": "k1_v4", "text": "Kita jalankan. Setiap aplikasi yang dibuka mengambil tempat di RAM. Saat RAM penuh, komputer memindahkan sebagian isinya ke penyimpanan yang lambat, sehingga semuanya terasa lambat.", "hold": 1.2, "start": 290.981, "speech": 291.381, "audio": 11.553, "dur": 14.74}, {"id": "v4h", "seg": 5, "scene": "k1_v4h", "text": "Tutup aplikasi yang tidak dipakai, maka tempat di RAM kosong lagi dan komputer kembali cepat. File di penyimpanan tetap aman, karena RAM dan penyimpanan adalah tempat yang berbeda.", "hold": 1.2, "start": 305.721, "speech": 306.121, "audio": 11.827, "dur": 16.24}, {"id": "q2", "seg": 5, "scene": "quiz", "quiz": "q2", "text": "Cek pemahaman. Laptop terasa lambat karena banyak aplikasi terbuka. Apa yang paling tepat dilakukan? Pikirkan dulu.", "hold": 4.0, "start": 321.961, "speech": 322.361, "audio": 7.94, "dur": 13.04}, {"id": "q2a", "seg": 5, "scene": "quiz_answer", "quiz": "q2", "text": "Jawabannya: menutup aplikasi yang tidak dipakai. Yang penuh adalah RAM. Menghapus foto hanya mengosongkan penyimpanan, bukan RAM.", "hold": 1.0, "start": 335.001, "speech": 335.401, "audio": 9.382, "dur": 11.082}, {"id": "q3", "seg": 6, "scene": "quiz", "quiz": "q3", "text": "Cek pemahaman. Kamu memotret dengan HP, lalu baterainya habis. Setelah diisi ulang, apakah fotonya masih ada? Pikirkan dulu.", "hold": 4.0, "start": 346.083, "speech": 346.483, "audio": 9.227, "dur": 14.04}, {"id": "q3a", "seg": 6, "scene": "quiz_answer", "quiz": "q3", "text": "Jawabannya: masih ada. Aplikasi kamera langsung menyimpan foto ke penyimpanan HP, jadi fotonya tetap ada walaupun HP mati.", "hold": 1.0, "start": 360.123, "speech": 360.523, "audio": 9.372, "dur": 11.072}, {"id": "recap", "seg": 6, "scene": "recap", "text": "Tiga hal untuk diingat. Isi RAM hilang saat listrik padam. Menekan Simpan menyalin pekerjaan ke penyimpanan. Kalau RAM penuh, tutup aplikasi yang tidak dipakai.", "hold": 1.5, "start": 371.195, "speech": 371.595, "audio": 11.701, "dur": 14.54}, {"id": "latihan", "seg": 6, "scene": "k1_latihan", "text": "Di halaman latihan episode D7.2, kerjakan Kelompokkan alat dan Urutkan perjalanan. Di rumah, perhatikan kapan HP mulai lambat, lalu tutup aplikasi yang tidak dipakai.", "hold": 1.5, "start": 385.735, "speech": 386.135, "audio": 12.694, "dur": 14.894}, {"id": "outro", "seg": 6, "scene": "outro", "text": "Simulasi berikutnya: berapa lama sandimu bisa ditebak? Sampai jumpa!", "hold": 2.5, "start": 400.629, "speech": 401.029, "audio": 5.051, "dur": 8.251}], "total": 408.88}, teks: null });
+})();
+</script>

@@ -1,3 +1,4 @@
+const YT_CHANNEL = "https://www.youtube.com/@iteachswe";   // channel YouTube Bu Dewi (video lengkap seri ini)
 /* Inti halaman latihan: pemutar (kanvas + narasi), tombol suara nyala/mati (berpindah antara timeline suara dan teks),
    kuis dengan petunjuk, dan kemajuan di localStorage (perangkat ini saja).
    Pakai:  const P = PageCore({ suara: TIMELINE_SUARA_atau_null, teks: TIMELINE_TEKS });
@@ -83,6 +84,15 @@ function PageCore(TLS, opt = {}) {
   });
   renderProgress();
 
+  // ajakan ke channel YouTube (video lengkap): kartu tepat di bawah pemutar, di semua halaman latihan dan simulasi
+  try {
+    const pl = document.querySelector("section.player");
+    if (pl && !document.getElementById("yt-ajak")) {
+      const a = document.createElement("a"); a.id = "yt-ajak"; a.className = "yt-ajak"; a.href = YT_CHANNEL; a.target = "_blank"; a.rel = "noopener";
+      a.innerHTML = '<span class="yt-ic" aria-hidden="true">▶</span><span><b>Tonton video lengkapnya di YouTube</b><small>Subscribe channel @iteachswe untuk belajar lebih banyak.</small></span>';
+      pl.insertAdjacentElement("afterend", a);
+    }
+  } catch (e) {}
   return { $, K, H, progress, save, renderProgress, speed: () => speed, timeline: () => TL,
            onProgress(fn) { extras.push(fn); renderProgress(); } };
 }
