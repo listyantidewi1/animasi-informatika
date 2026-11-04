@@ -89,7 +89,7 @@
     },
     // balapan: berita palsu vs berita benar menuju 1.500 orang
     t08_balap(ctx, b, l, t, TL, A) {
-      const go = Math.max(0, cue(b, l, "berita palsu")), Tf = 1.4, kf = clamp(go / Tf, 0, 1), kt = clamp(go / (Tf * 6), 0, 1);
+      const go = Math.max(0, cue(b, l, "berita palsu")), Tf = 1.0, kf = clamp(go / Tf, 0, 1), kt = clamp(go / (Tf * 6), 0, 1);
       text(ctx, "Siapa duluan sampai ke 1.500 orang?", A.x, A.y + 60, 44, { weight: 900, color: C.ink, fit: 820 });
       const lane = (y, label, col, k, done) => {
         text(ctx, label, A.x, y - 20, 42, { weight: 800, color: col });

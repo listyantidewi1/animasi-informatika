@@ -64,7 +64,7 @@
     t33_belajar(ctx, b, l, t, TL, A) {
       const cols = ["#C98B62", "#B57B55", "#D29A70"], sh = [C.pink, C.biru, C.tosca];
       for (let i = 0; i < 6; i++) {
-        const u = pop(b, l, (i * 0.03) + 0.32); if (u <= 0) continue;
+        const c = cue(b, l, "foto") + 0.5 - i * 0.08, u = c <= 0 ? 0 : back(c / 0.45); if (u <= 0) continue;
         const px = A.x + 10 + (i % 3) * 140, py = A.y + 10 + Math.floor(i / 3) * 150;
         ctx.save(); ctx.translate(px + 60, py + 65); ctx.scale(u, u);
         card(ctx, -60, -65, 120, 130, { fill: C.panel2, r: 14 });
@@ -92,6 +92,9 @@
         text(ctx, "AI", 45, 30, 90, { align: "center", weight: 900, color: C.ink }); ctx.restore();
       }
       // hasil tiruan
+      const ud = pop(b, l, "deepfake");
+      if (ud > 0 && cue(b, l, "meniru") < 0) { ctx.save(); ctx.translate(480, A.y + 760); ctx.rotate(-0.05); ctx.scale(ud, ud);
+        card(ctx, -300, -80, 600, 160, { fill: C.pink, r: 30, glow: "rgba(255,79,154,0.5)" }); text(ctx, "DEEPFAKE", 0, 34, 96, { align: "center", weight: 900, color: C.ink }); ctx.restore(); }
       const um = pop(b, l, "meniru"), oy = ay + 200;
       if (um > 0) {
         arrow(ctx, 480, ay + 175, 480, oy + 20, C.ink2, 8, 26);
@@ -157,7 +160,7 @@
       }
       const ur = pop(b, l, "sendiri");
       if (ur > 0) { ctx.save(); ctx.globalAlpha = clamp(ur, 0, 1);
-        bubble(ctx, "Hah? Aku tidak pernah kirim pesan itu!", 500, A.y + 520, 360, 38, { tailX: 560, em: ["tidak"] }); ctx.restore(); }
+        bubble(ctx, "Hah? Aku tidak pernah kirim pesan itu!", 530, A.y + 520, 340, 38, { tailX: 680, em: ["tidak"] }); ctx.restore(); }
       bip(ctx, 690, A.y + 680, 200, { mood: ur > 0 ? "happy" : "think", t, look: [-0.7, 0] });
     }
   });
