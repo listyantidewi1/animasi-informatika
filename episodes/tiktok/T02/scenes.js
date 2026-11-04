@@ -28,7 +28,7 @@
     return out;
   })();
   const rgb = c => `rgb(${c[0]},${c[1]},${c[2]})`;
-  const PICK = [20, 21];                                                  // piksel yang diperbesar (badan Bip)
+  const PICK = [13, 18];                                                  // piksel yang diperbesar (badan Bip)
   const PC = IMG[PICK[1] * N + PICK[0]];
 
   // menggambar potret; z = perbesaran di sekitar piksel PICK; grid = 0..1 garis kotak
@@ -70,7 +70,7 @@
     // perbesar terus sampai tampak kotak-kotak piksel
     t02_zoom(ctx, b, l, t, TL, A) {
       const S = Math.min(800, A.h - 120), x = 480 - S / 2, y = A.y + 10;
-      const z = lerp(1, 9, ease(cue(b, l, "perbesar") / Math.max(1, cueTo(b, "kotak") - cueTo(b, "perbesar"))));
+      const z = lerp(1, 6, ease(cue(b, l, "perbesar") / Math.max(1, cueTo(b, "kotak") - cueTo(b, "perbesar"))));
       card(ctx, x - 10, y - 10, S + 20, S + 20, { fill: C.ink, r: 30 });
       const g = portrait(ctx, x, y, S, z, clamp((z - 3) / 3, 0, 1));
       text(ctx, "×" + z.toFixed(1).replace(".", ","), x + 30, y + 70, 48, { weight: 900, color: C.ink, shadow: true });

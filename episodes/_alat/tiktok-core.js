@@ -316,8 +316,10 @@
         ctx.save(); ctx.translate(SW / 2, y0 + 250); ctx.scale(0.6 + 0.4 * u, 0.6 + 0.4 * u); ctx.globalAlpha = clamp(u, 0, 1);
         text(ctx, s, 0, 0, b.numSize || 190, { align: "center", weight: 900, color: col, fit: 960, shadow: true }); ctx.restore();
       }
-      if (b.sub) { const us = ph(b, l, b.cueSub ?? 0.3); if (us > 0) { ctx.save(); ctx.globalAlpha = us; para(ctx, b.sub, SW / 2, y0 + 370, 46, 900, { align: "center", weight: 700, color: C.ink2, em: b.subEm }); ctx.restore(); } }
-      if (b.mood !== null) bip(ctx, 480, Math.min(A.bot - 150, y0 + 640), Math.min(260, A.bot - y0 - 520), { mood: b.mood || "wow", t, bounce: 1.2 });
+      let sh = 0;
+      if (b.sub) { sh = wrap(ctx, b.sub, 46, 700, 900).length * 46 * 1.3; const us = ph(b, l, b.cueSub ?? 0.3); if (us > 0) { ctx.save(); ctx.globalAlpha = us; para(ctx, b.sub, SW / 2, y0 + 370, 46, 900, { align: "center", weight: 700, color: C.ink2, em: b.subEm }); ctx.restore(); } }
+      const btop = y0 + 370 + sh + 10, bs = Math.min(260, (A.bot - btop) * 0.85);   // Bip di sisa ruang di bawah keterangan
+      if (b.mood !== null && bs > 80) bip(ctx, 480, btop + (A.bot - btop) / 2, bs, { mood: b.mood || "wow", t, bounce: 1.2 });
     },
     // bip: Bip besar dengan balon kata b.say (kata di b.sayEm berwarna pink), b.mood
     bip(ctx, b, l, t, TL, A) {

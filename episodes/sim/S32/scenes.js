@@ -23,7 +23,7 @@
   const needMarks = (k, n) => { const m = {}, d = KT.L[k]; KT.NEEDS.forEach(([key], i) => { if (i >= n) return; m[key] = key === "fund" ? (k === "kirana" ? "bad" : "ok") : (d.mark[key] === "ok" ? "ok" : "bad"); }); return m; };
 
   // ---------- lembar kerja ----------
-  const CW = { A: 305, B: 170, C: 170, D: 230, E: 230, F: 240 }, RH = 48, COLS = "ABCDEF";
+  const CW = { A: 305, B: 160, C: 160, D: 220, E: 220, F: 220 }, RH = 48, COLS = "ABCDEF";
   const AREA_Y = SW.y + 46 + 40 + 44, GY = AREA_Y + 10 + 66;
   const colX = c => { let x = SW.x + 60; for (let i = 0; i < COLS.indexOf(c); i++) x += CW[COLS[i]]; return x; };
   const GEO = { cell(a) { const c = a[0], r = parseInt(a.slice(1)); const x = colX(c), y = GY + RH * r; return { x, y, w: CW[c], h: RH, cx: x + CW[c] / 2, cy: y + RH / 2 }; },
@@ -43,10 +43,10 @@
     return L.sheet(ctx, a, { cols: 6, rows: 8, cw: CW, rh: RH, ...st });
   }
   function menuPos(ctx, name) { let mx = SW.x + 24; ctx.font = "600 21px Inter"; for (const m of MENUS) { const mw = ctx.measureText(m).width + 24; if (m === name) return { x: mx - 8, cx: mx + 4 + (mw - 24) / 2, cy: SW.y + 66 }; mx += mw + 6; } }
-  const CH = { x: 800, y: 330, w: 628, h: 440 };
-  const SPEC = { type: "batang", labels: ["Harga beli", "Listrik", "Perawatan", "Langganan", "Cadangan"],
+  const CH = { x: 782, y: 330, w: 648, h: 440 };
+  const SPEC = { type: "batang", labels: ["Beli", "Listrik", "Perawatan", "Langganan", "Cadangan"],
     series: [{ name: "Nusa Lite 14", values: [...NB, B6.v], color: "#8A99A3" }, { name: "Bima 14", values: [...NC, C6.v], color: "#2E7E9A" }],
-    title: "Biaya 5 tahun (juta Rp)", dataLabels: true, dec: 1, legend: true, s: 1 };
+    title: "Biaya 5 tahun (juta Rp)", dataLabels: true, dec: 1, legend: true, s: 0.95 };
   function steps2(ctx, title, items, n) { return KT.steps(ctx, PX2, SW.y, PW2, title, items, n); }
   function pcard(ctx, title, h, y0) { const y = y0 || SW.y; card(ctx, PX2, y, PW2, h, { fill: "#FFFFFF", stroke: "#D7E2DC", lw: 3, r: 18 }); text(ctx, title, PX2 + 22, y + 44, 23, { weight: 900, color: C.accentDark, fit: PW2 - 44 }); return y + 70; }
   function line(ctx, s, y, opt = {}) { text(ctx, s, PX2 + 22, y, opt.size || 22, { weight: opt.weight || 700, color: opt.color || C.ink, fit: PW2 - 44 }); }
@@ -59,7 +59,7 @@
   }
   function bars(ctx, x, y, w, rows, max, opt = {}) {
     rows.forEach(([lab, v, col], i) => { const yy = y + i * 74; text(ctx, lab, x, yy + 34, 24, { weight: 800 });
-      const bw = (w - 260) * v / max; ctx.fillStyle = col; rr(ctx, x + 170, yy + 8, bw, 40, 8); ctx.fill();
+      const bw = (w - 330) * v / max; ctx.fillStyle = col; rr(ctx, x + 170, yy + 8, bw, 40, 8); ctx.fill();
       text(ctx, G.fmt(v, 1) + " juta", x + 180 + bw, yy + 37, 24, { weight: 900, color: col }); });
   }
 
