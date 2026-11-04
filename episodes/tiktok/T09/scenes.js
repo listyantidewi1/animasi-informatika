@@ -80,7 +80,7 @@
       }
       // legenda
       const ly = zy + zs + 70, ub = pop(b, l, "satu bit");
-      if (ub > 0) { ctx.save(); ctx.translate(A.x + 170, A.y + 400); ctx.scale(ub, ub); pill(ctx, "1 kotak = 1 bit", 0, 0, 38, { fill: C.kuning }); ctx.restore(); }
+      if (ub > 0) { ctx.save(); ctx.translate(A.x + 170, A.y + 430); ctx.scale(ub, ub); pill(ctx, "1 kotak = 1 bit", 0, 0, 38, { fill: C.kuning }); ctx.restore(); }
       [["hitam", "#0B0E2A", "1", C.kuning], ["putih", "#FFFFFF", "0", C.pink]].forEach(([w, f, v, col], k) => {
         const u = pop(b, l, w); if (u <= 0 || ly + 120 > A.bot) return;
         ctx.save(); ctx.translate(A.x + 200 + k * 420, ly + 40); ctx.scale(u, u);

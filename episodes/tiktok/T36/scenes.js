@@ -73,10 +73,10 @@
     // separuh demi separuh: sejuta -> 1 dalam 20 langkah
     t36_paruh(ctx, b, l, t, TL, A) {
       const c0 = cue(b, l, "sejuta"), c1 = cue(b, l, "lima ratus"), c2 = cue(b, l, "dua ratus"), c3 = cue(b, l, "terus");
-      let k = 0; if (c1 > 0) k = 1; if (c2 > 0) k = 2; if (c3 > 0) k = Math.min(20, 2 + Math.floor(c3 / 0.12));
+      let k = 0; if (c1 > 0) k = 1; if (c2 > 0) k = 2; if (c3 > 0) k = Math.min(20, 2 + Math.floor(c3 / 0.06));
       if (c0 < 0) k = 0;
       const v = HALF[k], y0 = A.y + 40;
-      text(ctx, "Sisa nama", 480, y0 + 40, 46, { align: "center", weight: 800, color: C.ink2 });
+      text(ctx, k === 0 ? "Sisa nama" : "Sisa nama setelah " + k + " langkah", 480, y0 + 40, 46, { align: "center", weight: 800, color: C.ink2 });
       text(ctx, fmt(v), 480, y0 + 200, 150, { align: "center", weight: 900, color: k === 20 ? C.good : C.kuning, fit: 820, shadow: true });
       // batang: seluruh daftar, bagian yang tersisa tetap terang
       const bx = A.x + 10, bw = 800, by = y0 + 280;
@@ -88,8 +88,8 @@
         const c = Math.floor(i / 7), r = i % 7, xx = A.x + 10 + c * cw, yy = by + 120 + r * rh;
         if (yy + rh > A.bot) continue;
         ctx.globalAlpha = i === k ? 1 : 0.65;
-        text(ctx, (i === 0 ? "awal" : "langkah " + i), xx, yy + 40, 28, { weight: 700, color: C.ink2 });
-        text(ctx, fmt(HALF[i]), xx + 250, yy + 40, 32, { align: "right", weight: 900, color: i === k ? C.kuning : C.ink }); ctx.globalAlpha = 1;
+        text(ctx, (i + "."), xx, yy + 40, 30, { weight: 800, color: C.ink2 });
+        text(ctx, fmt(HALF[i]), xx + 245, yy + 40, 34, { align: "right", weight: 900, color: i === k ? C.kuning : C.ink }); ctx.globalAlpha = 1;
       }
     }
   });
