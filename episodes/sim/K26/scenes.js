@@ -239,6 +239,7 @@
       const rows = [["11.47", "dari Sinta", "+Rp12.000", "berhasil"], ["11.52", "dari Rani", "+Rp8.000", "berhasil"]];
       wallet(ctx, 1100, 518, 0.86, "riwayat", { title: "Dompet Digital · Merchant", head: "Kedai Sari", sub: "masuk hari ini", rows, empty: k >= 2 ? "tidak ada Rp15.000 dari pembeli ini" : null }); text(ctx, "HP kasir", 1100, 806, 24, { align: "center", weight: 900 });
       if (k >= 1) { kid(ctx, 1540, 470, 100, { hair: "long" }); text(ctx, "kasir", 1540, 600, 22, { align: "center", weight: 900 }); }
+      if (k >= 2) { card(ctx, 1330, 240, 420, 120, { fill: C.badBg, stroke: C.bad, lw: 4, r: 16 }); para(ctx, "Tidak ada Rp15.000 dari pembeli ini", 1540, 290, 28, 380, { align: "center", weight: 900, color: C.bad, lh: 1.15 }); }
       if (k >= 3) { card(ctx, 1360, 630, 380, 120, { fill: "#fff", stroke: "#B7C4CC", lw: 2, r: 16 }); para(ctx, "“Coba periksa aplikasimu lagi, ya.”", 1550, 680, 24, 340, { align: "center", weight: 800, lh: 1.2 }); }
     },
     k26_tautan(ctx, b, l) {
