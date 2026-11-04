@@ -64,7 +64,7 @@
     const st1 = { qs: qs(n, newQ), active: n };
     const menuOpen = S.at(3) && S.p(3) > 0.6 && !(S.at(5) && S.p(5) > 0.5);
     const hiSeq = ["short", "para", "radio", "check", "drop", "date", "num"], ti = hiSeq.indexOf(type);
-    const hi = S.at(4) ? hiSeq[Math.min(ti, Math.floor(S.p(4) * (ti + 1)))] : null;
+    const hi = S.at(4) ? hiSeq[Math.round(ease(clamp(S.p(4) / 0.55, 0, 1)) * ti)] : null;
     let st;
     if (!added) st = { ...st0, plusHot: S.at(1) && S.p(1) > 0.5 };
     else st = { ...st1, scroll: lerp(scrollOf(st0), scrollOf(st1), ease(clamp((l - (ds[0] + ds[1] * 0.6) * span / ds.reduce((a, c) => a + c, 0)) / 0.5, 0, 1))),
