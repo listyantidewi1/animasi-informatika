@@ -127,6 +127,10 @@
   function stepAt(b, l) {
     const a = b.audio || b.dur, [s0, s1] = b.steps, [f0, f1] = b.span || [0.05, 0.9];
     const n = s1 - s0, t0 = f0 * a, dt = (f1 - f0) * a / n;
+    if (b.ts) {   // waktu mulai tiap langkah (pecahan b.audio), disesuaikan dengan narasi
+      const T = b.ts.map(f => f * a); let k = s0 - 1; T.forEach((t, i) => { if (l >= t) k = s0 + i; });
+      return { k, since: k < s0 ? 99 : l - T[k - s0] };
+    }
     const k = l < t0 ? s0 - 1 : Math.min(s1 - 1, s0 + Math.floor((l - t0) / dt));
     const since = l < t0 ? 99 : (l - t0) - (k - s0) * dt;
     return { k, since };

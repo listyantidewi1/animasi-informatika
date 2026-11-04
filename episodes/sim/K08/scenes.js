@@ -113,7 +113,7 @@
   }
   // berapa putaran tampil, dari waktu tiba tiap putaran (b.at, pecahan b.audio)
   function shownAt(v, b, l) {
-    const a = b.audio || b.dur, at = (b.at || [0.2, 0.4, 0.6, 0.8]).map(f => f * a);
+    const a = b.audio || b.dur, at = (b.tt || b.at || [0.2, 0.4, 0.6, 0.8]).map(f => f * a);
     const rounds = v.koreksi != null ? v.koreksi : R;
     let s = 0;
     for (let r = 1; r <= rounds; r++) { const t = at[r - 1], g = clamp((l - (t - 1.0)) / 1.0, 0, 1); if (g > 0) s = r - 1 + g; }

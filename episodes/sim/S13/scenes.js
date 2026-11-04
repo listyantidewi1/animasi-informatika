@@ -47,6 +47,13 @@
     ctx.fillStyle = ok ? GREEN : RED; ctx.beginPath(); ctx.arc(x + 34, y + h / 2, 19, 0, Math.PI * 2); ctx.fill(); HP.icon(ctx, ok ? "check" : "close", x + 34, y + h / 2, 18, "#FFFFFF");
     const sz = opt.size || 24, lines = wrap(ctx, s, sz, 800, w - 80); lines.forEach((ln, i) => text(ctx, ln, x + 66, y + h / 2 + sz * 0.36 - (lines.length - 1) * sz * 0.6 + i * sz * 1.2, sz, { weight: 800, color: C.ink }));
   }
+  const MAG = { x: 790, y: 150, w: 620 };
+  // HP + lup bagian pentingnya (src dalam satuan lokal HP)
+  function show(ctx, draw, src, opt = {}) { const ph = phone(ctx, draw, opt); const m = src ? HP.magnify(ctx, ph, draw, src, { x: MAG.x, y: opt.my || MAG.y, w: MAG.w }, { bg: opt.dark ? "#11181D" : undefined }) : null; return { ph, m }; }
+  // keterangan bertumpuk di bawah panel langkah
+  function notes(ctx, y, list) { let yy = y + 24; list.forEach(n => { if (!n) return; const r = L.callout(ctx, 1450, yy, n.s, null, null, { size: n.size || 22, maxW: 330, fill: n.fill, color: n.color }); yy += r.h + 16; }); return yy; }
+  const HOME_APPS = [{ name: "Kamera", color: "#2E7E9A", icon: "camera" }, { name: "Galeri", color: "#5FA8D3", icon: "photo" }, { name: "Obrolan", color: "#4C9BE0", icon: "chat" }, { name: "Peta", color: GREEN, icon: "map" },
+    { name: "Senter Super", color: "#E0A23B", icon: "flashlight" }, { name: "Kuota Gratis", color: ORANGE, icon: "download" }, { name: "Pengaturan", color: "#5B6B76", icon: "gear" }, { name: "Toko Aplikasi", color: "#2E9E5B", icon: "store" }];
   function tapDraw(c, R) { if (R.tap) HP.tap(c, R.tap.x, R.tap.y, R.tap.u); }
 
   // ---------- layar Pengaturan ----------
@@ -73,7 +80,7 @@
     const out = {};
     if (st.u === "awal" || st.u === "cek") {
       text(c, "Versi sistem 5.1", 180, 282, 24, { align: "center", weight: 800 }); text(c, "Pembaruan keamanan: Maret 2026", 180, 312, 18, { align: "center", weight: 600, color: "#5B6B76" });
-      if (st.u === "cek") { HP.spinner(c, 120, 400, 16, st.t || 0); text(c, "Memeriksa pembaruan…", 146, 407, 19, { weight: 700, color: "#5B6B76" }); }
+      if (st.u === "cek") { HP.spinner(c, 180, 380, 16, st.t || 0); text(c, "Memeriksa pembaruan…", 180, 430, 19, { align: "center", weight: 700, color: "#5B6B76" }); }
       out.btn = HP.button(c, 60, 470, 240, 56, "Cek pembaruan", { hl: st.hl, fill: st.u === "cek" ? "#9FB6CC" : BLUE });
     } else if (st.u === "ada" || st.u === "unduh") {
       text(c, "Pembaruan tersedia", 180, 282, 24, { align: "center", weight: 800, color: BLUE });
@@ -132,7 +139,7 @@
     text(c, "Akses " + perm + " untuk aplikasi ini", 180, 264, 16, { align: "center", weight: 600, color: "#5B6B76" });
     return HP.list(c, opts.map((s, i) => ({ label: s, radio: pick === i, hl: hl === i })), { y: 290 });
   }
-  const LOKASI = (o = {}) => [{ section: "DIIZINKAN SETIAP SAAT" }, ...(o.balapOff ? [] : [{ label: "Balap Liar", app: APP.balap, hl: o.hl }]),
+  const LOKASI = (o = {}) => [{ section: "DIIZINKAN SETIAP SAAT" }, ...(o.balapOff ? [{ label: "Tidak ada aplikasi", dim: true }] : [{ label: "Balap Liar", app: APP.balap, hl: o.hl }]),
     { section: "DIIZINKAN SAAT DIGUNAKAN" }, { label: "Peta", app: APP.peta, hl: o.petaHl }, { label: "Kamera", app: APP.kamera },
     { section: "TIDAK DIIZINKAN" }, ...(o.balapOff ? [{ label: "Balap Liar", app: APP.balap, hl: true }] : []), { label: "Kalkulator", app: APP.kalku }];
   function lokasiPage(c, o = {}) { HP.header(c, "Izin lokasi", { back: true }); return HP.list(c, LOKASI(o), { y: 112 }); }
@@ -174,194 +181,197 @@
     pengaturan_buka(ctx, b, l) {
       const span = spanOf(b), rows = ROOT_ROWS();
       const R = HP.run({ scr: "home" }, [{ wait: 1, d: 0.4 }, { tap: [225, 354], set: { scr: "root" }, d: 1 }, { wait: 1, d: 0.6 }, { tap: tapRow(rows, IDX.keamanan), set: { scr: "sec" }, d: 1 }, { wait: 1, d: 0.8 }, { tap: [32, 70], set: { scr: "root" }, d: 1 }, { wait: 1, d: 0.6 }], l, span);
-      const ph = phone(ctx, c => {
-        if (R.st.scr === "home") HP.home(c, [{ name: "Kamera", color: "#2E7E9A", icon: "camera" }, { name: "Galeri", color: "#5FA8D3", icon: "photo" }, { name: "Obrolan", color: "#4C9BE0", icon: "chat" }, { name: "Peta", color: GREEN, icon: "map" },
-          { name: "Senter Super", color: "#E0A23B", icon: "flashlight" }, { name: "Kuota Gratis", color: ORANGE, icon: "download" }, { name: "Pengaturan", color: "#5B6B76", icon: "gear" }, { name: "Toko Aplikasi", color: "#2E9E5B", icon: "store" }], { hl: R.i >= 1 ? "Pengaturan" : null });
-        else if (R.st.scr === "root") root(c, {}); else secPage(c, {});
+      const draw = c => {
+        if (R.st.scr === "home") HP.home(c, HOME_APPS, { hl: R.i >= 1 ? "Pengaturan" : null });
+        else if (R.st.scr === "root") root(c, { hl: R.i >= 3 && R.i < 5 ? IDX.keamanan : null }); else secPage(c, {});
         tapDraw(c, R);
-      });
-      steps(ctx, "LANGKAH", ["Tap ikon roda gigi: Pengaturan.", "Tap satu menu untuk masuk.", "Tap panah kiri atas untuk kembali."], stepAt(l, span, [0.28, 0.6, 0.9]));
-      if (R.st.scr === "sec") { const p = at(32, 70); note(ctx, 900, 200, "Panah kembali", { tx: p.x, ty: p.y }); }
+      };
+      const src = R.st.scr === "home" ? { u: 0, v: 190, w: 360, h: 230 } : R.st.scr === "sec" || R.i >= 5 ? { u: 0, v: 36, w: 360, h: 210 } : { u: 0, v: 300, w: 360, h: 240 };
+      show(ctx, draw, src);
+      const y = steps(ctx, "LANGKAH", ["Tap ikon roda gigi: Pengaturan.", "Tap satu menu untuk masuk.", "Tap panah kiri atas untuk kembali."], stepAt(l, span, [0.28, 0.6, 0.9]));
+      if (R.st.scr === "sec") notes(ctx, y, [{ s: "Panah di kiri atas: kembali" }]);
     },
     pengaturan_cari(ctx, b, l) {
       const span = spanOf(b);
       const R = HP.run({ q: "", focus: false }, [{ tap: [180, 137], set: { focus: true }, d: 1 }, { type: "pembaruan", field: "q", d: 2 }, { wait: 1, d: 2 }], l, span);
-      phone(ctx, c => { if (!R.st.focus) root(c, {}); else searchResults(c, R.st.q || ""); tapDraw(c, R); });
-      steps(ctx, "LANGKAH", ["Tap kolom Cari.", "Ketik kata kunci."], stepAt(l, span, [0.2, 0.6]));
-      if (after(b, l, 0.5)) { const p = at(330, 137); note(ctx, 900, 230, "Kata kunci: pembaruan, izin, kunci layar", { tx: p.x, ty: p.y, maxW: 380 }); }
+      show(ctx, c => { if (!R.st.focus) root(c, {}); else searchResults(c, R.st.q || ""); tapDraw(c, R); }, { u: 0, v: 100, w: 360, h: 300 });
+      const y = steps(ctx, "LANGKAH", ["Tap kolom Cari.", "Ketik kata kunci."], stepAt(l, span, [0.2, 0.6]));
+      if (after(b, l, 0.5)) notes(ctx, y, [{ s: "Kata kunci lain: izin, kunci layar." }]);
     },
     update_buka(ctx, b, l) {
-      const span = spanOf(b), rows = ROOT_ROWS();
+      const span = spanOf(b), rows = ROOT_ROWS(), ry = rows[IDX.update].cy;
       const R = HP.run({ scr: "root", u: "awal" }, [{ wait: 1, d: 0.5 }, { tap: tapRow(rows, IDX.update), set: { scr: "upd" }, d: 1.1 }, { wait: 1, d: 1 }, { tap: [180, 498], set: { u: "cek" }, d: 1 }, { anim: "t", d: 2 }], l, span);
-      phone(ctx, c => { if (R.st.scr === "root") root(c, { hl: R.i >= 1 ? IDX.update : null }); else updatePage(c, { u: R.st.u, t: l }); tapDraw(c, R); });
-      steps(ctx, "LANGKAH", ["Tap Pembaruan sistem.", "Tap Cek pembaruan.", "Tunggu HP memeriksa."], stepAt(l, span, [0.3, 0.65, 1]));
-      if (R.st.scr === "upd") { const p = at(250, 282); note(ctx, 900, 230, "Versi sekarang: 5.1", { tx: p.x, ty: p.y }); }
+      show(ctx, c => { if (R.st.scr === "root") root(c, { hl: R.i >= 1 ? IDX.update : null }); else updatePage(c, { u: R.st.u, t: l }); tapDraw(c, R); },
+        R.st.scr === "root" ? { u: 0, v: ry - 130, w: 360, h: 230 } : { u: 0, v: 250, w: 360, h: 300 });
+      const y = steps(ctx, "LANGKAH", ["Tap Pembaruan sistem.", "Tap Cek pembaruan.", "Tunggu HP memeriksa."], stepAt(l, span, [0.3, 0.65, 1]));
+      if (R.st.scr === "upd") notes(ctx, y, [{ s: "Versi sekarang: 5.1" }]);
     },
     update_ada(ctx, b, l) {
-      phone(ctx, c => updatePage(c, { u: "ada", hl: after(b, l, 0.85) }));
-      const p1 = at(330, 360), p2 = at(250, 420);
-      if (after(b, l, 0.1)) note(ctx, 900, 200, "Pembaruan keamanan: menambal lubang yang dipakai malware", { tx: p1.x, ty: p1.y, maxW: 420 });
-      if (after(b, l, 0.55)) note(ctx, 900, 420, "Wi-Fi tersambung, baterai cukup", { tx: p2.x, ty: p2.y, fill: C.goodBg, color: GREEN });
-      steps(ctx, "SEBELUM MEMASANG", ["Sambungkan ke Wi-Fi.", "Baterai minimal 50%."], after(b, l, 0.7) ? 2 : after(b, l, 0.55) ? 1 : 0);
+      show(ctx, c => updatePage(c, { u: "ada", hl: after(b, l, 0.85) }), { u: 0, v: 250, w: 360, h: 310 });
+      const y = steps(ctx, "SEBELUM MEMASANG", ["Sambungkan ke Wi-Fi.", "Baterai minimal 50%."], after(b, l, 0.7) ? 2 : after(b, l, 0.55) ? 1 : 0);
+      notes(ctx, y, [after(b, l, 0.1) && { s: "Pembaruan keamanan menambal lubang yang dipakai malware." }]);
     },
     update_pasang(ctx, b, l) {
       const span = spanOf(b);
       const R = HP.run({ u: "ada", p: 0 }, [{ tap: [180, 518], set: { u: "unduh" }, d: 1 }, { anim: "p", d: 3.2 }, { tap: [180, 628], set: { hl2: true, u: "restart" }, d: 1 }, { wait: 1, d: 1 }], l, span);
-      phone(ctx, c => { updatePage(c, { u: R.st.u, p: R.st.p, t: l, hl2: R.i === 2 }); tapDraw(c, R); }, { dark: R.st.u === "restart" });
-      steps(ctx, "LANGKAH", ["Tap Download dan pasang.", "Tunggu sampai selesai.", "Tap Mulai ulang."], stepAt(l, span, [0.16, 0.68, 0.84]));
-      if (R.st.u === "unduh" && R.st.p < 1) { const p = at(250, 548); note(ctx, 900, 420, "Jangan matikan HP saat memasang.", { tx: p.x, ty: p.y, fill: C.badBg, color: RED }); }
+      const dark = R.st.u === "restart";
+      show(ctx, c => { updatePage(c, { u: R.st.u, p: R.st.p, t: l, hl2: R.i === 2 }); tapDraw(c, R); }, dark ? { u: 0, v: 290, w: 360, h: 180 } : { u: 0, v: 440, w: 360, h: 240 }, { dark });
+      const y = steps(ctx, "LANGKAH", ["Tap Download dan pasang.", "Tunggu sampai selesai.", "Tap Mulai ulang."], stepAt(l, span, [0.16, 0.68, 0.84]));
+      if (R.st.u === "unduh" && R.st.p < 1) notes(ctx, y, [{ s: "Jangan matikan HP saat memasang.", fill: C.badBg, color: RED }]);
     },
     update_selesai(ctx, b, l) {
       const span = spanOf(b);
       const R = HP.run({ auto: 0 }, [{ wait: 1, d: 2 }, { tap: [306, 391], set: { autoHl: true }, d: 1 }, { anim: "auto", d: 0.6 }, { wait: 1, d: 1.4 }], l, span);
-      phone(ctx, c => { updatePage(c, { u: "baru", auto: R.st.auto, autoHl: R.i >= 1 }); tapDraw(c, R); });
-      steps(ctx, "LANGKAH", ["Buka lagi Pembaruan sistem.", "Lihat: sistem sudah terbaru.", "Nyalakan Pembaruan otomatis."], stepAt(l, span, [0.2, 0.4, 0.75]));
-      const p = at(250, 282); note(ctx, 900, 230, "Versi 5.2: sudah terbaru", { tx: p.x, ty: p.y, fill: C.goodBg, color: GREEN });
+      show(ctx, c => { updatePage(c, { u: "baru", auto: R.st.auto, autoHl: R.i >= 1 }); tapDraw(c, R); }, { u: 0, v: 250, w: 360, h: 200 });
+      const y = steps(ctx, "LANGKAH", ["Buka lagi Pembaruan sistem.", "Lihat: sistem sudah terbaru.", "Nyalakan Pembaruan otomatis."], stepAt(l, span, [0.2, 0.4, 0.75]));
+      notes(ctx, y, [{ s: "Versi 5.2: sudah terbaru", fill: C.goodBg, color: GREEN }]);
     },
     sumber_buka(ctx, b, l) {
       const span = spanOf(b), rows = ROOT_ROWS(), sr = rowsOf(SEC_ITEMS(), { y: 120 });
       const R = HP.run({ scr: "root" }, [{ wait: 1, d: 0.5 }, { tap: tapRow(rows, IDX.keamanan), set: { scr: "sec" }, d: 1.1 }, { wait: 1, d: 1 }, { tap: tapRow(sr, 2), set: { scr: "src" }, d: 1.1 }, { wait: 1, d: 1.4 }], l, span);
-      phone(ctx, c => { if (R.st.scr === "root") root(c, { hl: R.i >= 1 ? IDX.keamanan : null }); else if (R.st.scr === "sec") secPage(c, { hl: R.i >= 3 ? 2 : null }); else srcPage(c, {}); tapDraw(c, R); });
-      steps(ctx, "LANGKAH", ["Tap Keamanan.", "Tap Pasang aplikasi tidak dikenal."], stepAt(l, span, [0.32, 0.72]));
-      if (after(b, l, 0.5)) note(ctx, 900, 560, "Di HP lain: Sumber tidak dikenal, atau Instal aplikasi tak dikenal.", { fill: "#E7F1FB", color: BLUE, size: 22, maxW: 400 });
+      show(ctx, c => { if (R.st.scr === "root") root(c, { hl: R.i >= 1 ? IDX.keamanan : null }); else if (R.st.scr === "sec") secPage(c, { hl: R.i >= 3 ? 2 : null }); else srcPage(c, {}); tapDraw(c, R); },
+        R.st.scr === "root" ? { u: 0, v: rows[IDX.keamanan].cy - 110, w: 360, h: 220 } : { u: 0, v: 104, w: 360, h: 300 });
+      const y = steps(ctx, "LANGKAH", ["Tap Keamanan.", "Tap Pasang aplikasi tidak dikenal."], stepAt(l, span, [0.32, 0.72]));
+      if (after(b, l, 0.5)) notes(ctx, y, [{ s: "Di HP lain: Sumber tidak dikenal, atau Instal aplikasi tak dikenal.", fill: "#E7F1FB", color: BLUE }]);
     },
     sumber_daftar(ctx, b, l) {
-      const rows = rowsOf(SRC_ITEMS(), { y: 180 }), hl = after(b, l, 0.3) ? 2 : null;
-      phone(ctx, c => srcPage(c, { hl }));
-      const pb = at(340, rows[1].cy), po = at(340, rows[2].cy);
-      if (after(b, l, 0.12)) note(ctx, 900, 200, "Boleh memasang aplikasi lain", { tx: pb.x, ty: pb.y });
-      if (after(b, l, 0.3)) note(ctx, 900, 360, "Obrolan: diizinkan!", { tx: po.x, ty: po.y, fill: C.badBg, color: RED });
-      if (after(b, l, 0.6)) { card(ctx, 900, 480, 520, 210, { fill: "#FFFFFF", stroke: ORANGE, lw: 3, r: 18 }); HP.appIcon(ctx, 960, 545, 64, ORANGE, "download");
-        text(ctx, "Kuota Gratis 50GB", 1010, 540, 26, { weight: 900 }); text(ctx, "dari link di grup kelas", 1010, 572, 22, { weight: 700, color: C.ink2 });
-        para(ctx, "terpasang lewat Obrolan (D9.3: trojan)", 930, 640, 22, 470, { weight: 800, color: RED }); }
+      const hl = after(b, l, 0.3) ? 2 : null;
+      show(ctx, c => srcPage(c, { hl }), { u: 0, v: 104, w: 360, h: 300 });
+      notes(ctx, 140, [after(b, l, 0.12) && { s: "Daftar aplikasi yang boleh memasang aplikasi lain" }, after(b, l, 0.3) && { s: "Obrolan: diizinkan!", fill: C.badBg, color: RED }]);
+      if (after(b, l, 0.6)) { card(ctx, 1450, 420, 370, 250, { fill: "#FFFFFF", stroke: ORANGE, lw: 3, r: 18 }); HP.appIcon(ctx, 1500, 474, 56, ORANGE, "download");
+        text(ctx, "Kuota Gratis 50GB", 1540, 468, 23, { weight: 900 }); text(ctx, "dari link di grup", 1540, 496, 20, { weight: 700, color: C.ink2 });
+        para(ctx, "Terpasang lewat Obrolan. Di episode D9.3, ini adalah trojan.", 1472, 556, 22, 330, { weight: 800, color: RED, lh: 1.25 }); }
     },
     sumber_matikan(ctx, b, l) {
       const span = spanOf(b), rows = rowsOf(SRC_ITEMS(), { y: 180 });
       const R = HP.run({ scr: "list", on: 1 }, [{ tap: tapRow(rows, 2), set: { scr: "obrolan" }, d: 1 }, { tap: [306, 322], d: 0.9 }, { anim: "off", d: 0.5 }, { set: { obrolan: true }, d: 0.1 }, { tap: [32, 70], set: { scr: "list" }, d: 0.9 },
         { tap: tapRow(rows, 1), set: { scr: "browser", off: 0 }, d: 1 }, { tap: [306, 322], d: 0.9 }, { anim: "off", d: 0.5 }, { set: { browserOff: true }, d: 0.1 }, { tap: [32, 70], set: { scr: "list2" }, d: 0.9 }, { wait: 1, d: 0.8 }], l, span);
-      const st = R.st;
-      phone(ctx, c => {
+      const st = R.st, app = st.scr === "obrolan" || st.scr === "browser";
+      show(ctx, c => {
         if (st.scr === "obrolan") srcApp(c, "Obrolan", APP.obrolan, st.obrolan ? 0 : 1 - (st.off || 0), R.i >= 1);
         else if (st.scr === "browser") srcApp(c, "Browser", APP.browser, st.browserOff ? 0 : 1 - (st.off || 0), R.i >= 6);
         else srcPage(c, { obrolan: st.obrolan, browser: st.browserOff });
         tapDraw(c, R);
-      });
-      steps(ctx, "LANGKAH", ["Tap Obrolan.", "Matikan Izinkan dari sumber ini.", "Ulangi untuk Browser."], stepAt(l, span, [0.12, 0.35, 0.85]));
-      if (st.scr === "list2") note(ctx, 900, 480, "Aplikasi hanya dari toko aplikasi resmi", { fill: C.goodBg, color: GREEN });
+      }, app ? { u: 0, v: 136, w: 360, h: 260 } : { u: 0, v: 104, w: 360, h: 300 });
+      const y = steps(ctx, "LANGKAH", ["Tap Obrolan.", "Matikan Izinkan dari sumber ini.", "Ulangi untuk Browser."], stepAt(l, span, [0.12, 0.35, 0.85]));
+      if (st.scr === "list2") notes(ctx, y, [{ s: "Aplikasi hanya dari toko aplikasi resmi", fill: C.goodBg, color: GREEN }]);
     },
     apps_daftar(ctx, b, l) {
-      const span = spanOf(b), rows = ROOT_ROWS(), ar = rowsOf(APPS(), { y: 112 });
+      const span = spanOf(b), rows = ROOT_ROWS();
       const R = HP.run({ scr: "root" }, [{ wait: 1, d: 0.6 }, { tap: tapRow(rows, IDX.aplikasi), set: { scr: "apps" }, d: 1.1 }, { wait: 1, d: 3 }], l, span);
-      phone(ctx, c => { if (R.st.scr === "root") root(c, { hl: R.i >= 1 ? IDX.aplikasi : null }); else appsPage(c, {}); tapDraw(c, R); });
-      steps(ctx, "LANGKAH", ["Tap Aplikasi.", "Cari aplikasi yang lama tidak dibuka."], stepAt(l, span, [0.3, 1]));
-      if (R.st.scr === "apps") {
-        [[1, "dari luar toko, 2 bulan tidak dibuka", RED, 0.4], [2, "5 bulan tidak dibuka", ORANGE, 0.55], [3, "1 bulan tidak dibuka", ORANGE, 0.7]].forEach(([i, s, col, f], k) => {
-          if (!after(b, l, f)) return; const p = at(345, ar[i].cy); note(ctx, 900, 180 + k * 130, s, { tx: p.x, ty: p.y, fill: col === RED ? C.badBg : "#FFF3D6", color: col, size: 22 }); });
-      }
+      const hl = after(b, l, 0.7) ? "senter" : after(b, l, 0.55) ? "balap" : after(b, l, 0.4) ? "kuota" : null;
+      show(ctx, c => { if (R.st.scr === "root") root(c, { hl: R.i >= 1 ? IDX.aplikasi : null }); else appsPage(c, { hl }); tapDraw(c, R); },
+        R.st.scr === "root" ? { u: 0, v: rows[IDX.aplikasi].cy - 110, w: 360, h: 220 } : { u: 0, v: 104, w: 360, h: 290 });
+      const y = steps(ctx, "LANGKAH", ["Tap Aplikasi.", "Cari aplikasi yang lama tidak dibuka."], stepAt(l, span, [0.3, 1]));
+      if (R.st.scr === "apps") notes(ctx, y, [after(b, l, 0.4) && { s: "Kuota Gratis: dari luar toko", fill: C.badBg, color: RED }, after(b, l, 0.55) && { s: "Balap Liar: 5 bulan tidak dibuka" }, after(b, l, 0.7) && { s: "Senter Super: 1 bulan tidak dibuka" }]);
     },
     apps_uninstal(ctx, b, l) {
-      const span = spanOf(b), ar = rowsOf(APPS(), { y: 112 }), ok = measure(m => appInfo(m, { dialog: 1 })).ok;
-      const R = HP.run({ scr: "apps" }, [{ tap: tapRow(ar, 1), set: { scr: "info" }, d: 1 }, { wait: 1, d: 0.4 }, { tap: [150, 338], set: { dialog: 1 }, d: 1 }, { wait: 1, d: 0.5 }, { tap: [ok.cx, ok.cy], set: { ok: true }, d: 1 }, { set: { scr: "apps2", dialog: 0 }, d: 0.1 }, { anim: "toast", d: 2 }], l, span);
+      const span = spanOf(b), ar = rowsOf(APPS(), { y: 112 }), dl = measure(m => appInfo(m, { dialog: 1 })).ok;
+      const R = HP.run({ scr: "apps" }, [{ tap: tapRow(ar, 1), set: { scr: "info" }, d: 1 }, { wait: 1, d: 0.4 }, { tap: [150, 338], set: { dialog: 1 }, d: 1 }, { wait: 1, d: 0.5 }, { tap: [dl.cx, dl.cy], set: { ok: true }, d: 1 }, { set: { scr: "apps2", dialog: 0 }, d: 0.1 }, { anim: "toast", d: 2 }], l, span);
       const st = R.st;
-      phone(ctx, c => {
+      const src = st.scr === "apps" ? { u: 0, v: 104, w: 360, h: 200 } : st.scr === "info" ? (st.dialog ? { u: 0, v: dl.cy - 150, w: 360, h: 200 } : { u: 0, v: 130, w: 360, h: 270 }) : { u: 0, v: 104, w: 360, h: 260 };
+      show(ctx, c => {
         if (st.scr === "apps") appsPage(c, { hl: "kuota" });
         else if (st.scr === "info") appInfo(c, { hl: R.i >= 2 && !st.dialog ? 1 : null, dialog: st.dialog, ok: st.ok });
         else { appsPage(c, { kuota: false }); HP.toast(c, "Kuota Gratis 50GB sudah dihapus.", st.toast || 0); }
         tapDraw(c, R);
-      });
-      steps(ctx, "LANGKAH", ["Tap Kuota Gratis 50GB.", "Tap Uninstal.", "Tap OK."], stepAt(l, span, [0.15, 0.42, 0.62]));
-      if (st.scr === "info") note(ctx, 900, 560, "Di HP lain: Copot pemasangan, atau Hapus.", { fill: "#E7F1FB", color: BLUE, size: 22 });
+      }, src);
+      const y = steps(ctx, "LANGKAH", ["Tap Kuota Gratis 50GB.", "Tap Uninstal.", "Tap OK."], stepAt(l, span, [0.15, 0.42, 0.62]));
+      if (st.scr === "info") notes(ctx, y, [{ s: "Di HP lain: Copot pemasangan, atau Hapus.", fill: "#E7F1FB", color: BLUE }]);
+      if (st.scr === "apps2") notes(ctx, y, [{ s: "Aplikasi hilang bersama semua izinnya.", fill: C.goodBg, color: GREEN }]);
     },
     apps_lain(ctx, b, l) {
-      const span = spanOf(b), ar = rowsOf(APPS({ kuota: false }), { y: 112 });
-      phone(ctx, c => appsPage(c, { kuota: false, hl: after(b, l, 0.1) && !after(b, l, 0.5) ? "balap" : null }));
-      const p = at(345, ar[1].cy); if (after(b, l, 0.1)) note(ctx, 900, 200, "Sudah 5 bulan tidak dibuka? Uninstal juga.", { tx: p.x, ty: p.y, maxW: 400 });
-      if (after(b, l, 0.45)) { card(ctx, 900, 380, 520, 300, { fill: "#FFFFFF", stroke: "#D7E2DC", lw: 3, r: 18 });
-        text(ctx, "Makin sedikit aplikasi:", 930, 430, 26, { weight: 900 });
-        badge(ctx, 920, 460, true, "makin sedikit pintu yang dijaga", { w: 480, h: 90, size: 23 }); if (after(b, l, 0.7)) badge(ctx, 920, 566, true, "memori HP lebih lega", { w: 480, h: 90, size: 23 }); }
+      show(ctx, c => appsPage(c, { kuota: false, hl: after(b, l, 0.1) && !after(b, l, 0.5) ? "balap" : null }), { u: 0, v: 104, w: 360, h: 200 });
+      notes(ctx, 140, [after(b, l, 0.1) && { s: "Sudah 5 bulan tidak dibuka? Uninstal juga." }]);
+      if (after(b, l, 0.45)) { card(ctx, 790, 520, 620, 250, { fill: "#FFFFFF", stroke: "#D7E2DC", lw: 3, r: 18 });
+        text(ctx, "Makin sedikit aplikasi:", 820, 566, 26, { weight: 900 });
+        badge(ctx, 810, 590, true, "makin sedikit pintu yang dijaga", { w: 580, h: 74, size: 24 }); if (after(b, l, 0.7)) badge(ctx, 810, 676, true, "memori HP lebih lega", { w: 580, h: 74, size: 24 }); }
     },
     izin_buka(ctx, b, l) {
-      const span = spanOf(b), rows = ROOT_ROWS(), pr = measure(m => { const r = HP.list(m, [{ label: "Pengelola izin", icon: "contacts", arrow: true }], { y: 120 }); return r; });
+      const span = spanOf(b), rows = ROOT_ROWS(), pr = rowsOf([{ label: "Pengelola izin", icon: "contacts", arrow: true }], { y: 120 });
       const R = HP.run({ scr: "root" }, [{ wait: 1, d: 0.5 }, { tap: tapRow(rows, IDX.privasi), set: { scr: "priv" }, d: 1 }, { wait: 1, d: 0.6 }, { tap: tapRow(pr, 0), set: { scr: "perm" }, d: 1 }, { wait: 1, d: 2.4 }], l, span);
-      phone(ctx, c => {
+      show(ctx, c => {
         if (R.st.scr === "root") root(c, { hl: R.i >= 1 ? IDX.privasi : null });
         else if (R.st.scr === "priv") { HP.header(c, "Privasi", { back: true }); HP.list(c, [{ label: "Pengelola izin", icon: "contacts", arrow: true, hl: R.i >= 3 }, { label: "Riwayat izin", icon: "clock", arrow: true }, { label: "Iklan", icon: "info", arrow: true }], { y: 120 }); }
         else permRoot(c, null);
         tapDraw(c, R);
-      });
-      steps(ctx, "LANGKAH", ["Tap Privasi.", "Tap Pengelola izin.", "Lihat daftar izin."], stepAt(l, span, [0.3, 0.55, 1]));
-      if (R.st.scr === "perm") note(ctx, 900, 560, "Lokasi, kamera, mikrofon, kontak: data pribadimu.", { fill: "#E7F1FB", color: BLUE, size: 22, maxW: 400 });
+      }, R.st.scr === "root" ? { u: 0, v: rows[IDX.privasi].cy - 110, w: 360, h: 220 } : R.st.scr === "priv" ? { u: 0, v: 40, w: 360, h: 240 } : { u: 0, v: 104, w: 360, h: 320 });
+      const y = steps(ctx, "LANGKAH", ["Tap Privasi.", "Tap Pengelola izin.", "Lihat daftar izin."], stepAt(l, span, [0.3, 0.55, 1]));
+      if (R.st.scr === "perm") notes(ctx, y, [{ s: "Lokasi, kamera, mikrofon, kontak: data pribadimu.", fill: "#E7F1FB", color: BLUE }]);
     },
     izin_kontak(ctx, b, l) {
-      const span = spanOf(b), pr = rowsOf(PERMS, { y: 120 }), kr = rowsOf(KONTAK(), { y: 112 });
+      const span = spanOf(b), pr = rowsOf(PERMS, { y: 120 });
       const R = HP.run({ scr: "perm" }, [{ wait: 1, d: 0.3 }, { tap: tapRow(pr, 3), set: { scr: "kontak" }, d: 1 }, { wait: 1, d: 3 }], l, span);
-      phone(ctx, c => { if (R.st.scr === "perm") permRoot(c, R.i >= 1 ? 3 : null); else kontakPage(c, { hl: after(b, l, 0.3), danger: after(b, l, 0.3) }); tapDraw(c, R); });
-      steps(ctx, "LANGKAH", ["Tap Kontak.", "Baca daftar aplikasi yang diizinkan."], stepAt(l, span, [0.25, 1]));
-      if (R.st.scr === "kontak" && after(b, l, 0.3)) { const p = at(345, kr[3].cy); note(ctx, 900, 220, "Senter Super membaca kontak?", { tx: p.x, ty: p.y, fill: C.badBg, color: RED });
-        if (after(b, l, 0.55)) { card(ctx, 900, 380, 520, 230, { fill: "#FFFFFF", stroke: RED, lw: 3, r: 18 }); HP.icon(ctx, "flashlight", 960, 450, 56, "#E0A23B");
-          text(ctx, "Senter butuh:", 1010, 440, 26, { weight: 900 }); text(ctx, "lampu kilat saja", 1010, 474, 24, { weight: 700, color: GREEN });
-          text(ctx, "Kontak? TIDAK MASUK AKAL", 930, 570, 28, { weight: 900, color: RED }); } }
+      show(ctx, c => { if (R.st.scr === "perm") permRoot(c, R.i >= 1 ? 3 : null); else kontakPage(c, { hl: after(b, l, 0.3), danger: after(b, l, 0.3) }); tapDraw(c, R); }, { u: 0, v: 104, w: 360, h: 300 });
+      const y = steps(ctx, "LANGKAH", ["Tap Kontak.", "Baca aplikasi yang diizinkan."], stepAt(l, span, [0.25, 1]));
+      if (R.st.scr === "kontak") notes(ctx, y, [after(b, l, 0.3) && { s: "Senter Super membaca kontak?", fill: C.badBg, color: RED },
+        after(b, l, 0.55) && { s: "Senter hanya butuh lampu kilat. Kontak: tidak masuk akal.", fill: C.badBg, color: RED }]);
     },
     izin_cabut(ctx, b, l) {
       const span = spanOf(b), kr = rowsOf(KONTAK(), { y: 112 }), opts = ["Izinkan", "Jangan izinkan"], or = rowsOf(opts.map(s => ({ label: s, radio: false })), { y: 290 });
       const R = HP.run({ scr: "kontak", pick: 0 }, [{ tap: tapRow(kr, 3), set: { scr: "app" }, d: 1 }, { wait: 1, d: 0.4 }, { tap: tapRow(or, 1, 120), set: { pick: 1 }, d: 1 }, { wait: 1, d: 0.6 }, { tap: [32, 70], set: { scr: "kontak2" }, d: 0.9 }, { wait: 1, d: 2 }], l, span);
-      phone(ctx, c => {
+      show(ctx, c => {
         if (R.st.scr === "kontak") kontakPage(c, { hl: true, danger: true });
         else if (R.st.scr === "app") permApp(c, "Senter Super", APP.senter, "kontak", opts, R.st.pick, R.i >= 2 ? 1 : null);
         else kontakPage(c, { senterOff: true });
         tapDraw(c, R);
-      });
-      steps(ctx, "LANGKAH", ["Tap Senter Super.", "Pilih Jangan izinkan.", "Senter pindah ke Tidak diizinkan."], stepAt(l, span, [0.2, 0.5, 0.75]));
-      if (R.st.scr === "kontak2") badge(ctx, 900, 480, true, "Senternya tetap bisa menyala.", { w: 520, h: 90 });
+      }, R.st.scr === "app" ? { u: 0, v: 128, w: 360, h: 300 } : { u: 0, v: 104, w: 360, h: 330 });
+      const y = steps(ctx, "LANGKAH", ["Tap Senter Super.", "Pilih Jangan izinkan.", "Senter pindah ke Tidak diizinkan."], stepAt(l, span, [0.2, 0.5, 0.75]));
+      if (R.st.scr === "kontak2") notes(ctx, y, [{ s: "Senternya tetap bisa menyala.", fill: C.goodBg, color: GREEN }]);
     },
     izin_lokasi(ctx, b, l) {
       const span = spanOf(b), lr = rowsOf(LOKASI(), { y: 112 }), opts = ["Izinkan setiap saat", "Izinkan saat aplikasi digunakan", "Jangan izinkan"], or = rowsOf(opts.map(s => ({ label: s, radio: false })), { y: 290 });
       const R = HP.run({ scr: "lok", pick: 0 }, [{ wait: 1, d: 1.6 }, { tap: tapRow(lr, 1), set: { scr: "app" }, d: 1 }, { wait: 1, d: 0.3 }, { tap: tapRow(or, 2, 120), set: { pick: 2 }, d: 1 }, { wait: 1, d: 0.4 }, { tap: [32, 70], set: { scr: "lok2" }, d: 0.9 }, { wait: 1, d: 1 }], l, span);
-      phone(ctx, c => {
+      show(ctx, c => {
         if (R.st.scr === "lok") lokasiPage(c, { hl: after(b, l, 0.3), petaHl: after(b, l, 0.12) && !after(b, l, 0.3) });
         else if (R.st.scr === "app") permApp(c, "Balap Liar", APP.balap, "lokasi", opts, R.st.pick, R.i >= 3 ? 2 : null);
         else lokasiPage(c, { balapOff: true });
         tapDraw(c, R);
-      });
-      if (R.st.scr === "lok") { const pp = at(345, lr[3].cy), pb = at(345, lr[1].cy);
-        if (after(b, l, 0.12)) note(ctx, 900, 330, "Peta saat dibuka: wajar", { tx: pp.x, ty: pp.y, fill: C.goodBg, color: GREEN });
-        if (after(b, l, 0.3)) note(ctx, 900, 180, "Game setiap saat: tidak perlu", { tx: pb.x, ty: pb.y, fill: C.badBg, color: RED }); }
-      steps(ctx, "LANGKAH", ["Tap Lokasi, baca daftarnya.", "Tap Balap Liar.", "Pilih Jangan izinkan."], stepAt(l, span, [0.25, 0.42, 0.7]));
+      }, R.st.scr === "app" ? { u: 0, v: 128, w: 360, h: 330 } : { u: 0, v: 104, w: 360, h: 330 });
+      const y = steps(ctx, "LANGKAH", ["Baca daftar izin lokasi.", "Tap Balap Liar.", "Pilih Jangan izinkan."], stepAt(l, span, [0.25, 0.42, 0.7]));
+      if (R.st.scr === "lok") notes(ctx, y, [after(b, l, 0.12) && { s: "Peta saat dibuka: wajar", fill: C.goodBg, color: GREEN }, after(b, l, 0.3) && { s: "Game setiap saat: tidak perlu", fill: C.badBg, color: RED }]);
     },
     izin_dialog(ctx, b, l) {
       card(ctx, 140, 140, 1640, 680);
-      const two = (cx, app, color, ic, perm, pick, ok, label) => {
-        phone(ctx, c => { c.fillStyle = "#E9EEF0"; c.fillRect(0, 0, HP.W, HP.H); HP.header(c, app); HP.permission(c, { app, perm, color, hl: after(b, l, ok ? 0.45 : 0.7) ? pick : null }); }, { cx, cy: 460, h: 560 });
-        if (after(b, l, ok ? 0.45 : 0.7)) { ctx.fillStyle = ok ? C.goodBg : C.badBg; rr(ctx, cx - 210, 760 - 14, 420, 54, 14); ctx.fill(); text(ctx, label, cx, 782, 24, { align: "center", weight: 900, color: ok ? GREEN : RED }); }
+      // dua dialog izin diperbesar 1,5 kali (layar HP digelapkan di belakangnya)
+      const two = (x0, app, color, perm, pick, ok, label) => {
+        const f = ok ? 0.45 : 0.7, k = 1.5;
+        ctx.save(); ctx.translate(x0, 160); ctx.scale(k, k); rr(ctx, 0, 0, HP.W, 380, 26); ctx.clip();
+        ctx.fillStyle = "#E9EEF0"; ctx.fillRect(0, 0, HP.W, 380); HP.permission(ctx, { app, perm, color, hl: after(b, l, f) ? pick : null, y: 0 }); ctx.restore();
+        if (after(b, l, f)) { ctx.fillStyle = ok ? C.goodBg : C.badBg; rr(ctx, x0 + 20, 750, HP.W * k - 40, 56, 14); ctx.fill(); text(ctx, label, x0 + HP.W * k / 2, 788, 26, { align: "center", weight: 900, color: ok ? GREEN : RED }); }
       };
-      two(560, "Peta", GREEN, "map", "lokasi", 0, true, "Masuk akal: saat digunakan");
-      two(1360, "Senter Super", "#E0A23B", "flashlight", "kontak", 2, false, "Tidak masuk akal: tolak");
-      text(ctx, "BACA DULU", 960, 300, 34, { align: "center", weight: 900, color: C.accentDark }); text(ctx, "pertanyaannya", 960, 344, 26, { align: "center", weight: 700, color: C.ink2 });
+      two(200, "Peta", GREEN, "lokasi", 0, true, "Masuk akal: saat digunakan");
+      two(1180, "Senter Super", "#E0A23B", "kontak", 2, false, "Tidak masuk akal: tolak");
+      text(ctx, "BACA DULU", 960, 380, 38, { align: "center", weight: 900, color: C.accentDark }); text(ctx, "pertanyaannya,", 960, 428, 28, { align: "center", weight: 700, color: C.ink2 });
+      text(ctx, "lalu pilih", 960, 466, 28, { align: "center", weight: 700, color: C.ink2 });
     },
     kunci_buka(ctx, b, l) {
       const span = spanOf(b), rows = ROOT_ROWS(), sr = rowsOf(SEC_ITEMS(), { y: 120 });
       const R = HP.run({ scr: "root" }, [{ wait: 1, d: 0.5 }, { tap: tapRow(rows, IDX.keamanan), set: { scr: "sec" }, d: 1 }, { wait: 1, d: 0.5 }, { tap: tapRow(sr, 0), set: { scr: "lock" }, d: 1 }, { wait: 1, d: 2.4 }], l, span);
-      phone(ctx, c => { if (R.st.scr === "root") root(c, { hl: R.i >= 1 ? IDX.keamanan : null }); else if (R.st.scr === "sec") secPage(c, { hl: R.i >= 3 ? 0 : null }); else lockPage(c, 1, null); tapDraw(c, R); });
-      steps(ctx, "LANGKAH", ["Tap Keamanan.", "Tap Kunci layar.", "Lihat: masih Geser."], stepAt(l, span, [0.3, 0.55, 1]));
-      if (R.st.scr === "lock") { const lr = rowsOf(LOCK_OPTS.map((s, i) => ({ label: s, radio: false, sub: i === 1 || i === 3 ? "x" : null })), { y: 120 }); const p = at(345, lr[1].cy); note(ctx, 900, 230, "Geser: siapa pun bisa membuka HP", { tx: p.x, ty: p.y, fill: C.badBg, color: RED }); }
+      show(ctx, c => { if (R.st.scr === "root") root(c, { hl: R.i >= 1 ? IDX.keamanan : null }); else if (R.st.scr === "sec") secPage(c, { hl: R.i >= 3 ? 0 : null }); else lockPage(c, 1, null); tapDraw(c, R); },
+        R.st.scr === "root" ? { u: 0, v: rows[IDX.keamanan].cy - 110, w: 360, h: 220 } : { u: 0, v: 104, w: 360, h: 300 });
+      const y = steps(ctx, "LANGKAH", ["Tap Keamanan.", "Tap Kunci layar.", "Lihat: masih Geser."], stepAt(l, span, [0.3, 0.55, 1]));
+      if (R.st.scr === "lock") notes(ctx, y, [{ s: "Geser: siapa pun bisa membuka HP", fill: C.badBg, color: RED }]);
     },
     kunci_pin(ctx, b, l) {
       const span = spanOf(b), lr = rowsOf(LOCK_OPTS.map((s, i) => ({ label: s, radio: false, sub: i === 1 || i === 3 ? "x" : null })), { y: 120 });
       const R = HP.run({ scr: "lock", n: "" }, [{ tap: tapRow(lr, 3), set: { scr: "pin" }, d: 1 }, { wait: 1, d: 0.5 }, { numpad: "582049", field: "n", d: 3.2 }, { wait: 1, d: 1.6 }], l, span);
-      phone(ctx, c => { if (R.st.scr === "lock") lockPage(c, 1, 3); else pinPage(c, "Buat PIN", (R.st.n || "").length, R.st.press, R.st.pressU, (R.st.n || "").length >= 6); tapDraw(c, R); });
-      steps(ctx, "LANGKAH", ["Pilih PIN.", "Ketik enam angka."], stepAt(l, span, [0.18, 0.75]));
-      card(ctx, 900, 330, 520, 330, { fill: "#FFFFFF", stroke: "#D7E2DC", lw: 3, r: 18 });
-      text(ctx, "PIN YANG BAIK", 1160, 372, 24, { align: "center", weight: 900, color: C.accentDark });
-      if (after(b, l, 0.55)) badge(ctx, 920, 396, false, "tanggal lahir, misalnya 120311", { w: 480, h: 72, size: 22 });
-      if (after(b, l, 0.72)) badge(ctx, 920, 480, false, "berurutan: 123456", { w: 480, h: 72, size: 22 });
-      if (after(b, l, 0.3)) badge(ctx, 920, 564, true, "mudah kamu ingat, sulit ditebak", { w: 480, h: 72, size: 22 });
+      show(ctx, c => { if (R.st.scr === "lock") lockPage(c, 1, 3); else pinPage(c, "Buat PIN", (R.st.n || "").length, R.st.press, R.st.pressU, (R.st.n || "").length >= 6); tapDraw(c, R); },
+        R.st.scr === "lock" ? { u: 0, v: 104, w: 360, h: 300 } : { u: 0, v: 200, w: 360, h: 160 }, { my: 150 });
+      const y = steps(ctx, "LANGKAH", ["Pilih PIN.", "Ketik enam angka."], stepAt(l, span, [0.18, 0.75]));
+      card(ctx, 790, 470, 620, 330, { fill: "#FFFFFF", stroke: "#D7E2DC", lw: 3, r: 18 });
+      text(ctx, "PIN YANG BAIK", 1100, 512, 24, { align: "center", weight: 900, color: C.accentDark });
+      if (after(b, l, 0.3)) badge(ctx, 810, 536, true, "mudah kamu ingat, sulit ditebak", { w: 580, h: 74, size: 24 });
+      if (after(b, l, 0.55)) badge(ctx, 810, 620, false, "tanggal lahir, misalnya 120311", { w: 580, h: 74, size: 24 });
+      if (after(b, l, 0.72)) badge(ctx, 810, 704, false, "angka berurutan: 123456", { w: 580, h: 74, size: 24 });
     },
     kunci_ulang(ctx, b, l) {
       const span = spanOf(b);
       const R = HP.run({ scr: "pin", n: "" }, [{ numpad: "582049", field: "n", d: 3 }, { tap: [HP.numpadKey("✓").x, HP.numpadKey("✓").y], set: { scr: "sec" }, d: 1 }, { wait: 1, d: 2.4 }], l, span);
-      phone(ctx, c => { if (R.st.scr === "pin") pinPage(c, "Ketik ulang PIN", (R.st.n || "").length, R.st.press, R.st.pressU, (R.st.n || "").length >= 6); else secPage(c, { pin: true, src: true, hl: 0 }); tapDraw(c, R); });
-      steps(ctx, "LANGKAH", ["Ketik ulang PIN yang sama.", "Tap Selesai.", "Kunci layar: PIN."], stepAt(l, span, [0.5, 0.66, 0.8]));
-      if (R.st.scr === "sec") { const p = at(330, 152); note(ctx, 900, 220, "HP terkunci setiap layarnya mati", { tx: p.x, ty: p.y, fill: C.goodBg, color: GREEN }); if (after(b, l, 0.8)) note(ctx, 900, 420, "Sidik jari boleh jadi pelengkap.", { fill: "#E7F1FB", color: BLUE, size: 22 }); }
+      show(ctx, c => { if (R.st.scr === "pin") pinPage(c, "Ketik ulang PIN", (R.st.n || "").length, R.st.press, R.st.pressU, (R.st.n || "").length >= 6); else secPage(c, { pin: true, src: true, hl: 0 }); tapDraw(c, R); },
+        R.st.scr === "pin" ? { u: 0, v: 200, w: 360, h: 160 } : { u: 0, v: 104, w: 360, h: 300 });
+      const y = steps(ctx, "LANGKAH", ["Ketik ulang PIN yang sama.", "Tap Selesai.", "Kunci layar: PIN."], stepAt(l, span, [0.5, 0.66, 0.8]));
+      if (R.st.scr === "sec") notes(ctx, y, [{ s: "HP terkunci setiap layarnya mati.", fill: C.goodBg, color: GREEN }, after(b, l, 0.8) && { s: "Sidik jari boleh jadi pelengkap.", fill: "#E7F1FB", color: BLUE }]);
     },
     coba(ctx, b, l) {
       card(ctx, 160, 140, 1600, 680, { stroke: C.accent, lw: 6 });
@@ -388,15 +398,18 @@
       const R = HP.run({ scr: "cam", pick: 2 }, [{ wait: 1, d: 1.6 }, { set: { scr: "camdlg" }, d: 0.1 }, { wait: 1, d: 1 }, { tap: [pb.cx, pb.cy], set: { scr: "perm" }, d: 1 }, { wait: 1, d: 0.3 }, { tap: tapRow(or, 0, 100), set: { pick: 0 }, d: 1 }, { wait: 1, d: 1.6 }], l, span);
       card(ctx, 900, 140, 880, 680, { fill: "#FFFFFF", r: 22 });
       text(ctx, "KESALAHAN 1: IZIN YANG DIBUTUHKAN IKUT DICABUT", 1340, 200, 26, { align: "center", weight: 900, color: RED, fit: 840 });
-      phone(ctx, c => {
+      const draw = c => {
         if (R.st.scr === "perm") permApp(c, "Kamera", APP.kamera, "kamera", opts, R.st.pick, R.i >= 5 ? 0 : null);
         else { c.fillStyle = "#11181D"; c.fillRect(0, 0, HP.W, HP.H); HP.icon(c, "camera", 180, 330, 80, "#5B6B76");
           if (R.st.scr === "camdlg") HP.dialog(c, { ...DLG, hl: R.i >= 3 ? 1 : null }); }
         tapDraw(c, R);
-      }, { dark: R.st.scr !== "perm" });
-      badge(ctx, 930, 250, false, "Semua izin Kamera dicabut, jadi Kamera tidak bisa memotret.", { w: 820, h: 100, size: 26 });
-      if (R.st.scr === "perm") badge(ctx, 930, 380, true, "Nyalakan lagi: Izinkan saat aplikasi digunakan.", { w: 820, h: 100, size: 26 });
-      if (after(b, l, 0.8)) badge(ctx, 930, 510, true, "Cabut hanya izin yang tidak sesuai fungsinya.", { w: 820, h: 100, size: 26 });
+      };
+      const ph = phone(ctx, draw, { dark: R.st.scr !== "perm" });
+      badge(ctx, 930, 240, false, "Semua izin Kamera dicabut, jadi Kamera tidak bisa memotret.", { w: 820, h: 90, size: 26 });
+      if (R.st.scr === "perm") badge(ctx, 930, 344, true, "Nyalakan lagi: Izinkan saat aplikasi digunakan.", { w: 820, h: 90, size: 26 });
+      if (after(b, l, 0.82)) badge(ctx, 930, 448, true, "Cabut hanya izin yang tidak sesuai fungsinya.", { w: 820, h: 90, size: 26 });
+      else if (R.st.scr === "perm") HP.magnify(ctx, ph, draw, { u: 0, v: 282, w: 360, h: 140 }, { x: 1010, y: 460, w: 660 });
+      else if (R.st.scr === "camdlg") { const bx = measure(m => HP.dialog(m, DLG)).box; HP.magnify(ctx, ph, draw, { u: 0, v: bx.y + 10, w: 360, h: bx.h - 20 }, { x: 1100, y: 450, w: 480 }, { bg: "#11181D" }); }
     },
     salah_tunda(ctx, b, l) {
       const span = spanOf(b), d0 = measure(m => HP.dialog(m, { icon: "update", title: "Pembaruan siap dipasang", body: "HP akan dimulai ulang. Kapan dipasang?", buttons: ["Pasang sekarang", "Pasang malam ini", "Nanti"], stack: true }));
@@ -404,12 +417,14 @@
       const R = HP.run({ n: 0 }, [{ tap: bt(2), set: { n: 1 }, d: 0.8 }, { tap: bt(2), set: { n: 2 }, d: 0.6 }, { tap: bt(2), set: { n: 3 }, d: 0.6 }, { wait: 1, d: 1.2 }, { tap: bt(1), set: { pick: 1 }, d: 1 }, { wait: 1, d: 1.8 }], l, span);
       card(ctx, 900, 140, 880, 680, { fill: "#FFFFFF", r: 22 });
       text(ctx, "KESALAHAN 2: MENUNDA PEMBARUAN", 1340, 200, 28, { align: "center", weight: 900, color: RED });
-      phone(ctx, c => { HP.home(c, [{ name: "Kamera", color: "#2E7E9A", icon: "camera" }, { name: "Obrolan", color: "#4C9BE0", icon: "chat" }, { name: "Peta", color: GREEN, icon: "map" }, { name: "Pengaturan", color: "#5B6B76", icon: "gear" }]);
+      const draw = c => { HP.home(c, [{ name: "Kamera", color: "#2E7E9A", icon: "camera" }, { name: "Obrolan", color: "#4C9BE0", icon: "chat" }, { name: "Peta", color: GREEN, icon: "map" }, { name: "Pengaturan", color: "#5B6B76", icon: "gear" }]);
         if (!R.st.pick) HP.dialog(c, { icon: "update", title: "Pembaruan siap dipasang", body: "HP akan dimulai ulang. Kapan dipasang?", buttons: ["Pasang sekarang", "Pasang malam ini", "Nanti"], stack: true, hl: R.i === 4 ? 1 : null });
         else HP.toast(c, "Dipasang malam ini, saat diisi daya.", clamp((l - span * 0.75) / (span * 0.3), 0, 0.9), { y: 520 });
-        tapDraw(c, R); });
+        tapDraw(c, R); };
+      const ph = phone(ctx, draw), bx = d0.box;
+      if (!R.st.pick) HP.magnify(ctx, ph, draw, { u: 0, v: bx.y + bx.h - 216, w: 360, h: 210 }, { x: 1100, y: 520, w: 480 });
       badge(ctx, 930, 260, false, "Menekan Nanti terus-menerus: " + (R.st.n || 0) + " kali", { w: 820, h: 100, size: 28 });
-      if (R.i >= 4) badge(ctx, 930, 390, true, "Pilih Pasang malam ini: terpasang sendiri saat HP diisi daya.", { w: 820, h: 120, size: 28 });
+      if (R.i >= 4) badge(ctx, 930, 380, true, "Pilih Pasang malam ini: terpasang sendiri saat HP diisi daya.", { w: 820, h: 120, size: 28 });
     },
     latihan(ctx, b, l) {
       card(ctx, 160, 150, 1600, 660);

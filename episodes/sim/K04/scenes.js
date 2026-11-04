@@ -59,7 +59,7 @@
       ctx.fillStyle = done ? C.good : bad ? C.bad : C.ink2; ctx.beginPath(); ctx.arc(rx + nr + 12, cy, nr, 0, Math.PI * 2); ctx.fill();
       text(ctx, done ? "✓" : String(i + 1), rx + nr + 12, cy + nr * 0.42, Math.round(nr * 1.1), { align: "center", weight: 900, color: "#fff" });
       const tx = rx + nr * 2 + 26;
-      if (r.rep) { text(ctx, "↻", tx + ic * 0.45, cy + sz * 0.42, ic * 0.9, { align: "center", weight: 900, color: C.kikoDark }); text(ctx, "ULANGI " + r.rep + " KALI:", tx + ic + 10, cy + sz * 0.38, sz, { weight: 900, color: C.kikoDark }); if (opt.iter && opt.iter[i]) text(ctx, opt.iter[i], rx + rw - 18, cy + sz * 0.38, sz * 0.9, { align: "right", weight: 900, color: C.accentDark }); }
+      if (r.rep) { text(ctx, "↻", tx + ic * 0.45, cy + sz * 0.42, ic * 0.9, { align: "center", weight: 900, color: C.kikoDark }); text(ctx, "ULANGI " + r.rep + " KALI:", tx + ic + 10, cy + sz * 0.38, sz, { weight: 900, color: C.kikoDark }); if (opt.iter && opt.iter[i]) text(ctx, opt.iter[i], x + w + 22, cy + 10, 28, { weight: 900, color: C.accentDark }); }
       else { arrowIcon(ctx, CMD[r.c].icon, tx + ic * 0.45, cy, ic, C.ink); text(ctx, CMD[r.c].word, tx + ic + 10, cy + sz * 0.38, sz, { weight: 800, color: C.ink }); }
       ctx.restore();
       if (opt.strike === i) { ctx.strokeStyle = C.bad; ctx.lineWidth = 5; ctx.beginPath(); ctx.moveTo(tx, cy); ctx.lineTo(rx + rw - 20, cy); ctx.stroke(); }
@@ -113,15 +113,16 @@
       kiko(ctx, 1640, 700, 110, 0, { wave: l });
     },
     k4_tanya(ctx, b, l) {
-      board(ctx, b, b.prog, 0, { hideGoal: b.hideGoal, marks: b.marks }); startNote(ctx);
+      board(ctx, b, b.prog, 0, { hideGoal: b.hideGoal, marks: b.marks });
       progPanel(ctx, 840, 220, b.prog, { title: b.title || "Program" });
       kiko(ctx, 1600, 560, 120, 0, { mood: "confused" });
       const p = 1 + 0.1 * Math.sin(l * 5); text(ctx, "?", 1690, 470, 70 * p, { align: "center", weight: 900, color: C.accentDark });
-      text(ctx, "Apa yang terjadi?", 1600, 700, 30, { align: "center", weight: 900, color: C.ink2 });
+      text(ctx, "Apa yang terjadi?", 1600, 680, 30, { align: "center", weight: 900, color: C.ink2 });
+      para(ctx, "Kiko mulai di pojok kiri bawah, menghadap ke atas.", 1600, 730, 24, 380, { align: "center", weight: 700, color: C.ink2, lh: 1.25 });
     },
     k4_tebak(ctx, b, l) {
       const pulse = (b.marks || []).map(m => [m[0], m[1], `rgba(242,177,52,${0.3 + 0.2 * Math.sin(l * 4 + m[0])})`]);
-      board(ctx, b, b.prog, 0, { hideGoal: b.hideGoal, marks: b.marks, highlight: pulse }); startNote(ctx);
+      board(ctx, b, b.prog, 0, { hideGoal: b.hideGoal, marks: b.marks, highlight: pulse });
       progPanel(ctx, 840, 220, b.prog, { title: b.title || "Program" });
       card(ctx, 1390, 140, 420, 690, { fill: "#FFFFFF", stroke: C.accent, lw: 5, r: 22 });
       text(ctx, "TEBAK DULU", 1600, 200, 32, { align: "center", weight: 900, color: C.accentDark });
@@ -135,7 +136,7 @@
     },
     k4_jalan(ctx, b, l) {
       const F = flat(b.prog), u = runU(b, l, F.length, { even: !b.cues });
-      const B = board(ctx, b, b.prog, u, { marks: b.marks, hideGoal: b.hideGoal }); startNote(ctx);
+      const B = board(ctx, b, b.prog, u, { marks: b.marks, hideGoal: b.hideGoal });
       const R = rowsState(b.prog, F, u, B.p);
       progPanel(ctx, 840, 220, b.prog, { title: "Program", cur: R.crashed ? -1 : R.cur, curLoop: R.curLoop, done: R.done, iter: R.iter, changed: b.changed, bad: B.p.crash || R.crashed ? F[B.p.lastStep - 1].row : undefined });
       if (B.p.crash || R.crashed) resultCard(ctx, "Kiko menabrak meja!", false);
@@ -144,7 +145,7 @@
       if (!B.p.done && !B.p.crash) text(ctx, "menghadap ke " + DIRNAME[((Math.round(B.p.ang / (Math.PI / 2)) % 4) + 4) % 4], 1600, 560, 28, { align: "center", weight: 800, color: C.ink2 });
     },
     k4_hasil(ctx, b, l) {
-      const F = flat(b.prog), B = board(ctx, b, b.prog, F.length); startNote(ctx);
+      const F = flat(b.prog), B = board(ctx, b, b.prog, F.length);
       progPanel(ctx, 840, 220, b.prog, { title: "Program", done: b.prog.map((_, i) => i) });
       resultCard(ctx, b.banner, b.good, 300);
       if (l > at(b, "Sekarang")) { kiko(ctx, 1600, 640, 110, 0, { mood: "happy" }); }
@@ -154,13 +155,13 @@
       if (b.phase === "a") {
         const t1 = at(b, "Baris satu"), t2 = at(b, "Kiko menabrak");
         const step = l < t1 ? 0 : l < t2 ? clamp((l - t1) / ((t2 - t1) * 0.9) * 4, 0, 4) : 4;
-        const B = board(ctx, b, b.prog, l < t2 ? step : 5.6); startNote(ctx);
+        const B = board(ctx, b, b.prog, l < t2 ? step : 5.6);
         const notes = {}; ["aman ✓", "menghadap kanan ✓", "aman ✓", "aman ✓"].forEach((s, i) => { if (step >= i + 1) notes[i] = [s, C.good]; });
         if (l > t2) notes[5] = ["menabrak di sini ✕", C.bad];
         progPanel(ctx, 840, 220, b.prog, { title: "Telusuri satu per satu", w: 500, done: Object.keys(notes).map(Number).filter(i => i < 4), cur: l < t2 ? Math.min(3, Math.floor(step)) : 5, bad: l > t2 ? 5 : undefined, notes });
         if (l < at(b, "Kita telusuri")) resultCard(ctx, "Kesalahan dalam program = BUG", false, 600);
       } else {
-        const B = board(ctx, b, b.prog, l < at(b, "Seharusnya") ? 5 : 4); startNote(ctx);
+        const B = board(ctx, b, b.prog, l < at(b, "Seharusnya") ? 5 : 4);
         const world = WORLDS[b.world], g = B.g, [px, py] = cellCenter(g, 2, 1);
         const notes = { 4: ["menghadap ke bawah ✕", C.bad], 5: ["menabrak", C.bad] };
         if (l > at(b, "ke arah meja")) { const [tx, ty] = cellCenter(g, 2, 0); ctx.strokeStyle = C.bad; ctx.lineWidth = 8; ctx.setLineDash([14, 10]); ctx.beginPath(); ctx.moveTo(px, py + 40); ctx.lineTo(tx, ty - 30); ctx.stroke(); ctx.setLineDash([]); }
@@ -169,7 +170,7 @@
       }
     },
     k4_perbaiki(ctx, b, l) {
-      board(ctx, b, b.prog, 0); startNote(ctx);
+      board(ctx, b, b.prog, 0);
       const t = at(b, "menjadi belok kiri"), old = ["MAJU", "KANAN", "MAJU", "MAJU", "KANAN", "MAJU", "KANAN", "MAJU", "AMBIL"];
       if (l < t) progPanel(ctx, 840, 220, old, { title: "Perbaiki baris 5", w: 500, strike: l > at(b, "diganti") ? b.fix : undefined, bad: b.fix });
       else progPanel(ctx, 840, 220, b.prog, { title: "Perbaiki baris 5", w: 500, changed: b.fix, notes: { [b.fix]: ["diganti ✓", C.good] } });

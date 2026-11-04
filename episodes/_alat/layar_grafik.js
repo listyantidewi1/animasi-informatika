@@ -158,13 +158,13 @@
       tabPos[t] = { x: tx + tw / 2, y: y + 74 }; tx += tw + 34; });
     ctx.fillStyle = "#E1E7EB"; ctx.fillRect(x, y + 96, w, 2);
     const geo = { tab: t => tabPos[t], rows: {} }; geo.row = l => geo.rows[l];
-    let yy = y + 116; const iw = w - 40; let overlay = null;
+    let yy = y + 110; const iw = w - 40; let overlay = null;
     (st.rows || []).forEach(r => {
-      if (r.kind === "section") { ctx.fillStyle = r.on ? "#F2F7FC" : "#F7F9FA"; ctx.fillRect(x + 1, yy - 4, w - 2, 44); text(ctx, (r.open === false ? "▸ " : "▾ ") + r.label, x + 20, yy + 26, 21, { weight: 800, color: INK }); geo.rows[r.label] = { x: x + 20, y: yy, w: iw, h: 40, cx: x + w / 2, cy: yy + 18 }; yy += 52; return; }
+      if (r.kind === "section") { ctx.fillStyle = r.on ? "#F2F7FC" : "#F7F9FA"; ctx.fillRect(x + 1, yy - 4, w - 2, 44); text(ctx, (r.open === false ? "▸ " : "▾ ") + r.label, x + 20, yy + 26, 21, { weight: 800, color: INK }); geo.rows[r.label] = { x: x + 20, y: yy, w: iw, h: 40, cx: x + w / 2, cy: yy + 18 }; yy += 46; return; }
       if (r.kind === "toggle") { const on = !!r.on; text(ctx, r.label, x + 20, yy + 28, 21, { weight: 700, color: INK });
         const bx = x + w - 76; ctx.fillStyle = on ? BLUE : "#C9D4DB"; rr(ctx, bx, yy + 8, 52, 28, 14); ctx.fill(); ctx.fillStyle = "#FFFFFF"; ctx.beginPath(); ctx.arc(on ? bx + 38 : bx + 14, yy + 22, 11, 0, Math.PI * 2); ctx.fill();
         if (r.hot) { ctx.strokeStyle = C.accent; ctx.lineWidth = 3; rr(ctx, x + 10, yy - 2, w - 20, 48, 10); ctx.stroke(); }
-        geo.rows[r.label] = { x: x + 20, y: yy, w: iw, h: 44, cx: bx + 26, cy: yy + 22 }; yy += 54; return; }
+        geo.rows[r.label] = { x: x + 20, y: yy, w: iw, h: 44, cx: bx + 26, cy: yy + 22 }; yy += 50; return; }
       text(ctx, r.label, x + 20, yy + 20, 19, { weight: 700, color: INK2 });
       if (r.kind === "pair") { const hw = (iw - 16) / 2; const g2 = {};
         [["a", x + 20], ["b", x + 20 + hw + 16]].forEach(([k, bx]) => { const f = r[k] || {}; text(ctx, f.label || "", bx, yy + 46, 18, { weight: 600, color: INK2 });
@@ -173,18 +173,23 @@
           if (f.caret) { ctx.font = "700 22px Inter"; const cw = ctx.measureText(String(f.value || "")).width; ctx.fillStyle = INK; ctx.fillRect(bx + 16 + cw, yy + 64, 2.5, 26); }
           if (f.hot) { ctx.strokeStyle = C.accent; ctx.lineWidth = 3; rr(ctx, bx - 5, yy + 49, hw + 10, 56, 10); ctx.stroke(); }
           g2[k] = { x: bx, y: yy + 54, w: hw, h: 46, cx: bx + hw / 2, cy: yy + 77 }; });
-        geo.rows[r.label] = { x: x + 20, y: yy, w: iw, h: 104, ...g2 }; yy += 116; return; }
-      const box = { x: x + 20, y: yy + 30, w: iw, h: 48 };
+        geo.rows[r.label] = { x: x + 20, y: yy, w: iw, h: 104, ...g2 }; yy += 110; return; }
+      const box = { x: x + 20, y: yy + 28, w: iw, h: 44 };
       ctx.fillStyle = "#FFFFFF"; rr(ctx, box.x, box.y, box.w, box.h, 8); ctx.fill(); ctx.strokeStyle = r.focus || r.open ? BLUE : "#C9D4DB"; ctx.lineWidth = r.focus || r.open ? 3 : 2; rr(ctx, box.x, box.y, box.w, box.h, 8); ctx.stroke();
-      let vx = box.x + 14; if (r.icon) { G.icon(ctx, r.icon, box.x + 10, box.y + 10, 28); vx += 36; }
+      let vx = box.x + 14; if (r.icon) { G.icon(ctx, r.icon, box.x + 10, box.y + 8, 28); vx += 36; }
       const val = r.value == null ? "" : String(r.value), ph = !val && r.ph;
-      text(ctx, val || r.ph || "", vx, box.y + 32, 22, { weight: 700, color: ph ? "#A9B6BE" : INK, fit: box.w - (vx - box.x) - 40 });
-      if (r.caret) { ctx.font = "700 22px Inter"; const cw = ctx.measureText(val).width; ctx.fillStyle = INK; ctx.fillRect(vx + cw + 2, box.y + 10, 2.5, 28); }
-      if (r.kind === "dropdown") text(ctx, "▾", box.x + box.w - 22, box.y + 32, 22, { align: "center", weight: 800, color: INK2 });
+      // isi kotak: teks panjang digeser (yang terlihat ujungnya) saat diketik, dipotong saat tidak aktif
+      const avail = box.x + box.w - (r.kind === "dropdown" ? 40 : 12) - vx; ctx.font = "700 22px Inter"; const tw = ctx.measureText(val || r.ph || "").width;
+      ctx.save(); ctx.beginPath(); ctx.rect(vx - 2, box.y, avail + 4, box.h); ctx.clip();
+      const tx0 = tw > avail && (r.focus || r.caret) ? vx + avail - tw - 4 : vx;
+      text(ctx, val || r.ph || "", tx0, box.y + 30, 22, { weight: 700, color: ph ? "#A9B6BE" : INK });
+      if (r.caret) { const cw = ctx.measureText(val).width; ctx.fillStyle = INK; ctx.fillRect(tx0 + cw + 2, box.y + 8, 2.5, 28); }
+      ctx.restore();
+      if (r.kind === "dropdown") text(ctx, "▾", box.x + box.w - 22, box.y + 30, 22, { align: "center", weight: 800, color: INK2 });
       if (r.hot) { ctx.strokeStyle = C.accent; ctx.lineWidth = 3; rr(ctx, box.x - 5, box.y - 5, box.w + 10, box.h + 10, 10); ctx.stroke(); }
       const rowGeo = { x: x + 20, y: yy, w: iw, h: 84, box, cx: box.x + box.w / 2, cy: box.y + box.h / 2 };
       if (r.kind === "dropdown" && r.items) { rowGeo.item = i => ({ x: box.x + box.w * 0.6, y: box.y + box.h + 8 + i * 50 + 25 }); if (r.open) overlay = { r, box }; }
-      geo.rows[r.label] = rowGeo; yy += 92;
+      geo.rows[r.label] = rowGeo; yy += 84;
     });
     if (overlay) { const { r, box } = overlay; const ih = 50, lh = 16 + r.items.length * ih;
       ctx.save(); ctx.shadowColor = "rgba(31,42,51,0.22)"; ctx.shadowBlur = 18; ctx.shadowOffsetY = 5; ctx.fillStyle = "#FFFFFF"; rr(ctx, box.x, box.y + box.h + 4, box.w, lh, 10); ctx.fill(); ctx.restore();

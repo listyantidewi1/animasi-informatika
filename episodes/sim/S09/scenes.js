@@ -7,6 +7,9 @@
   const WIN = { x: 110, y: 122, w: 1300, h: 700 };
   const BLUE = "#1A73C8", RED = "#D9443B", GREEN = "#2E9E5B";
   const PX = 1450, PW = 370;
+  // Short: adegan digambar di kanvas tak terlihat lalu dipotong; garis penunjuk dari panel kanan tidak ikut digambar supaya tidak memotong gambar
+  const inShort = ctx => !!(ctx.canvas && ctx.canvas.isConnected === false);
+  const callout = (ctx, x, y, s, tx, ty, o) => L.callout(ctx, x, y, s, inShort(ctx) ? null : tx, inShort(ctx) ? null : ty, o);
 
   // ---------- hasil pencarian rekaan ----------
   const R = {
@@ -187,7 +190,7 @@
     },
     hasil_awal(ctx, b, l) {
       const a = A(b), g = resultScene(ctx, b, l, 0, { countMark: l > a * 0.15 });
-      if (l > a * 0.15) L.callout(ctx, PX, 420, "Sekitar tiga juta hasil", g.count.cx + 160, g.count.cy, {});
+      if (l > a * 0.15) callout(ctx, PX, 420, "Sekitar tiga juta hasil", g.count.cx + 160, g.count.cy, {});
       if (l > a * 0.5) {
         card(ctx, PX, 540, PW, 250, { fill: "#FFFFFF", stroke: "#D7E2DC", lw: 3, r: 16 });
         text(ctx, "Tanpa operator:", PX + 24, 584, 24, { weight: 900, color: C.ink2 });
@@ -198,9 +201,9 @@
     hasil_campur(ctx, b, l) {
       const a = A(b), marks = [l > a * 0.12 ? "bad" : null, l > a * 0.3 ? "bad" : null, l > a * 0.55 ? "good" : null];
       const g = resultScene(ctx, b, l, 0, { results: ST[0].res.map((r, i) => ({ ...r, mark: marks[i] })) });
-      if (marks[0]) L.callout(ctx, PX, 360, "Toko plastik kemasan", g.result(0).x + 700, g.result(0).y + 14, { color: RED, fill: "#FBE1DF" });
-      if (marks[1]) L.callout(ctx, PX, 480, "Resep jajanan", g.result(1).x + 560, g.result(1).y + 14, { color: RED, fill: "#FBE1DF" });
-      if (marks[2]) L.callout(ctx, PX, 600, "✓ Yang dicari Sinta", g.result(2).x + 620, g.result(2).y + 14, { color: GREEN, fill: C.goodBg });
+      if (marks[0]) callout(ctx, PX, 360, "Toko plastik kemasan", g.result(0).x + 700, g.result(0).y + 14, { color: RED, fill: "#FBE1DF" });
+      if (marks[1]) callout(ctx, PX, 480, "Resep jajanan", g.result(1).x + 560, g.result(1).y + 14, { color: RED, fill: "#FBE1DF" });
+      if (marks[2]) callout(ctx, PX, 600, "✓ Yang dicari Sinta", g.result(2).x + 620, g.result(2).y + 14, { color: GREEN, fill: C.goodBg });
     },
     operator_kenal(ctx, b, l) {
       const a = A(b); card(ctx, 160, 140, 1600, 680);
@@ -217,13 +220,13 @@
     },
     kutip_hasil(ctx, b, l) {
       const a = A(b), g = resultScene(ctx, b, l, 1, { mark: [0, PH.length], countMark: l < a * 0.45 }, { hot: true });
-      if (l > a * 0.12) L.callout(ctx, PX, 330, "3.120.000 → 48.600", g.count.cx + 150, g.count.cy);
-      if (l > a * 0.5) { const r = g.result(1); ctx.strokeStyle = C.accent; ctx.lineWidth = 4; rr(ctx, r.x - 10, r.y + 60, 820, 64, 10); ctx.stroke(); L.callout(ctx, PX, 520, "Frasanya persis berurutan dan ditebalkan", r.x + 820, r.y + 92, { maxW: 320 }); }
+      if (l > a * 0.12) callout(ctx, PX, 330, "3.120.000 → 48.600", g.count.cx + 150, g.count.cy);
+      if (l > a * 0.5) { const r = g.result(1); ctx.strokeStyle = C.accent; ctx.lineWidth = 4; rr(ctx, r.x - 10, r.y + 60, 820, 64, 10); ctx.stroke(); callout(ctx, PX, 520, "Frasanya persis berurutan dan ditebalkan", r.x + 820, r.y + 92, { maxW: 320 }); }
     },
     kutip_toko(ctx, b, l) {
       const a = A(b), g = resultScene(ctx, b, l, 1, { results: ST[1].res.map((r, i) => ({ ...r, mark: i === 0 && l > a * 0.1 ? "bad" : null })) });
-      if (l > a * 0.1) { const r = g.result(0); ctx.fillStyle = "rgba(217,68,59,0.18)"; rr(ctx, r.x + 2, r.y + 2, 60, 28, 6); ctx.fill(); L.callout(ctx, PX, 340, "Masih ada toko: kata jual", r.x + 30, r.y + 18, { color: RED, fill: "#FBE1DF", maxW: 320 }); }
-      if (l > a * 0.55) L.callout(ctx, PX, 520, "Tidak diperlukan untuk tugas", null, null, { fill: "#F4F6F5", color: "#9AAFA6", maxW: 320 });
+      if (l > a * 0.1) { const r = g.result(0); ctx.fillStyle = "rgba(217,68,59,0.18)"; rr(ctx, r.x + 2, r.y + 2, 60, 28, 6); ctx.fill(); callout(ctx, PX, 340, "Masih ada toko: kata jual", r.x + 30, r.y + 18, { color: RED, fill: "#FBE1DF", maxW: 320 }); }
+      if (l > a * 0.55) callout(ctx, PX, 520, "Tidak diperlukan untuk tugas", null, null, { fill: "#F4F6F5", color: "#9AAFA6", maxW: 320 });
     },
     minus_ketik(ctx, b, l) {
       act(ctx, b, l, 1, [{ wait: 1, d: 0.4 }, { click: "end", d: 1.2 }, { type: " -jual", d: 1.6 }, { wait: 1, d: 2 }],
@@ -231,32 +234,32 @@
         { after: (ctx, g, P, ll) => { if (ll > P.span * 0.68) { const x0 = g.box.at(PH.length + 1), x1 = g.box.at(PH.length + 6);
             const zx = 1000, zy = 450; L.zoom(ctx, (x0 + x1) / 2, g.box.cy, 2.4, () => { ctx.fillStyle = "#FFFFFF"; rr(ctx, x0 - 20, g.box.y + 6, x1 - x0 + 40, g.box.h - 12, 10); ctx.fill(); text(ctx, "-jual", x0, g.box.ty, 24, { weight: 600, color: C.ink }); }, zx, zy);
             ctx.strokeStyle = C.accent; ctx.lineWidth = 4; rr(ctx, zx - (x1 - x0) * 1.2 - 48, zy - 70, (x1 - x0) * 2.4 + 96, 140, 18); ctx.stroke();
-            L.callout(ctx, PX, 610, "Tanpa spasi antara - dan jual", zx + (x1 - x0) * 1.2 + 48, zy, { maxW: 320 }); } } });
+            callout(ctx, PX, 610, "Tanpa spasi antara - dan jual", zx + (x1 - x0) * 1.2 + 48, zy, { maxW: 320 }); } } });
     },
     minus_hasil(ctx, b, l) {
       const a = A(b);
       if (l < a * 0.4) { // Enter, lalu toko dicoret
         act(ctx, b, l, 1, [{ key: "Enter", enter: 1, d: 0.8 }, { wait: 1, d: 1.6 }], null, { q0: ST[2].q, mark0: qEnd(2), speed: 0.4,
-          after: (ctx, g, P, ll) => { const r = g.result(0); const u = ease((ll - a * 0.1) / (a * 0.2)); if (u > 0) { ctx.strokeStyle = RED; ctx.lineWidth = 5; ctx.beginPath(); ctx.moveTo(r.x - 8, r.y + 18); ctx.lineTo(r.x - 8 + 790 * u, r.y + 18); ctx.stroke(); L.callout(ctx, PX, 340, "Memuat kata jual: dibuang", r.x + 400, r.y + 18, { color: RED, fill: "#FBE1DF", maxW: 320 }); } } });
+          after: (ctx, g, P, ll) => { const r = g.result(0); const u = ease((ll - a * 0.1) / (a * 0.2)); if (u > 0) { ctx.strokeStyle = RED; ctx.lineWidth = 5; ctx.beginPath(); ctx.moveTo(r.x - 8, r.y + 18); ctx.lineTo(r.x - 8 + 790 * u, r.y + 18); ctx.stroke(); callout(ctx, PX, 340, "Memuat kata jual: dibuang", r.x + 400, r.y + 18, { color: RED, fill: "#FBE1DF", maxW: 320 }); } } });
         return;
       }
       const g = resultScene(ctx, b, l, 2, { mark: qEnd(2), countMark: true }, { from: 1 });
-      L.callout(ctx, PX, 330, "48.600 → 21.300", g.count.cx + 150, g.count.cy);
-      L.callout(ctx, PX, 470, "Artikel dan berita naik ke atas", g.result(0).x + 600, g.result(0).y + 14, { color: GREEN, fill: C.goodBg, maxW: 320 });
+      callout(ctx, PX, 330, "48.600 → 21.300", g.count.cx + 150, g.count.cy);
+      callout(ctx, PX, 470, "Artikel dan berita naik ke atas", g.result(0).x + 600, g.result(0).y + 14, { color: GREEN, fill: C.goodBg, maxW: 320 });
     },
     site_ketik(ctx, b, l) {
       act(ctx, b, l, 2, [{ wait: 1, d: 0.3 }, { click: "end", d: 1 }, { type: " site:go.id", d: 2.4 }, { wait: 1, d: 1.6 }],
         { items: ["Klik di akhir query.", "Ketik spasi, lalu site:go.id", "Tanpa spasi setelah titik dua."], marks: [0.25, 0.72, 1] },
-        { after: (ctx, g, P, ll) => { if (ll > P.span * 0.72) L.callout(ctx, PX, 610, "site:go.id menempel, tanpa spasi", g.box.end - 60, g.box.y + g.box.h, { maxW: 320 }); } });
+        { after: (ctx, g, P, ll) => { if (ll > P.span * 0.72) callout(ctx, PX, 610, "site:go.id menempel, tanpa spasi", g.box.end - 60, g.box.y + g.box.h, { maxW: 320 }); } });
     },
     site_hasil(ctx, b, l) {
       const a = A(b);
       if (l < a * 0.2) { act(ctx, b, l, 2, [{ key: "Enter", enter: 3, d: 0.8 }, { wait: 1, d: 0.6 }], null, { q0: ST[3].q, mark0: qEnd(3), speed: 0.2 }); return; }
       const g = resultScene(ctx, b, l, 3, { mark: qEnd(3), countMark: l < a * 0.5 }, { from: 2 });
-      L.callout(ctx, PX, 330, "21.300 → 1.240", g.count.cx + 150, g.count.cy);
+      callout(ctx, PX, 330, "21.300 → 1.240", g.count.cx + 150, g.count.cy);
       if (l > a * 0.35) [0, 1, 2].forEach(i => { const r = g.result(i); if (!r || r.y + 50 > 820) return; ctx.font = "600 19px Inter"; const uw = ctx.measureText(ST[3].res[i].url.split(" ›")[0]).width; ctx.strokeStyle = GREEN; ctx.lineWidth = 3; rr(ctx, r.x - 6, r.y + 34, uw + 12, 30, 6); ctx.stroke(); });
-      if (l > a * 0.35) L.callout(ctx, PX, 450, "Semua berakhiran go.id: situs pemerintah", g.result(0).x + 260, g.result(0).y + 50, { color: GREEN, fill: C.goodBg, maxW: 320 });
-      if (l > a * 0.7) L.callout(ctx, PX, 610, "site:sch.id → situs sekolah", null, null, { fill: "#E7F1FB", color: BLUE, maxW: 320 });
+      if (l > a * 0.35) callout(ctx, PX, 450, "Semua berakhiran go.id: situs pemerintah", g.result(0).x + 260, g.result(0).y + 50, { color: GREEN, fill: C.goodBg, maxW: 320 });
+      if (l > a * 0.7) callout(ctx, PX, 610, "site:sch.id → situs sekolah", null, null, { fill: "#E7F1FB", color: BLUE, maxW: 320 });
     },
     file_ketik(ctx, b, l) {
       act(ctx, b, l, 3, [{ wait: 1, d: 0.3 }, { click: "end", d: 1 }, { type: " filetype:pdf", d: 2.6 }, { wait: 1, d: 1.8 }],
@@ -266,10 +269,10 @@
       const a = A(b);
       if (l < a * 0.2) { act(ctx, b, l, 3, [{ key: "Enter", enter: 4, d: 0.8 }, { wait: 1, d: 0.6 }], null, { q0: ST[4].q, mark0: qEnd(4), speed: 0.2 }); return; }
       const g = resultScene(ctx, b, l, 4, { mark: qEnd(4), countMark: l < a * 0.5 }, { from: 3 });
-      L.callout(ctx, PX, 330, "1.240 → 86", g.count.cx + 150, g.count.cy);
+      callout(ctx, PX, 330, "1.240 → 86", g.count.cx + 150, g.count.cy);
       if (l > a * 0.35) { [0, 1, 2].forEach(i => { const r = g.result(i); if (!r || r.y + 30 > 820) return; ctx.strokeStyle = C.accent; ctx.lineWidth = 3; rr(ctx, r.x - 4, r.y, 58, 30, 6); ctx.stroke(); });
-        L.callout(ctx, PX, 450, "Setiap hasil bertanda PDF", g.result(1).x + 30, g.result(1).y + 2, { maxW: 320 }); }
-      if (l > a * 0.65) L.callout(ctx, PX, 570, "Klik untuk membaca atau download", null, null, { fill: "#E7F1FB", color: BLUE, maxW: 320 });
+        callout(ctx, PX, 450, "Setiap hasil bertanda PDF", g.result(1).x + 30, g.result(1).y + 2, { maxW: 320 }); }
+      if (l > a * 0.65) callout(ctx, PX, 570, "Klik untuk membaca atau download", null, null, { fill: "#E7F1FB", color: BLUE, maxW: 320 });
     },
     waktu_buka(ctx, b, l) {
       const a = A(b), span = a * 0.9, S = W.seq(l, span, [1.6, 1.1, 1.3, 1.6]);
@@ -278,8 +281,8 @@
       const st = stage(4, { tools, time: "Kapan saja", timeOpen: open, results: ST[4].res.map((r, i) => ({ ...r, mark: i === 0 ? "bad" : null })), snipLines: tools ? 1 : 2 });
       const g = app(ctx, st); counter(ctx, ST[4].n);
       steps(ctx, "LANGKAH", ["Klik Alat.", "Klik Waktu: Kapan saja.", "Daftar pilihan waktu muncul."], S.i === 0 ? 0 : S.i === 1 ? 0 : S.i === 2 ? 1 : 3);
-      if (S.i === 0) { const r = g.result(0); L.callout(ctx, PX, 450, "Masih ada terbitan 2018", r.x + 30, r.y + 80, { color: RED, fill: "#FBE1DF", maxW: 320 }); }
-      if (open) L.callout(ctx, PX, 600, "Di aplikasi lain, menu ini bernama Filter atau Tanggal.", null, null, { size: 22, fill: "#F4F6F5", color: "#9AAFA6", maxW: 320 });
+      if (S.i === 0) { const r = g.result(0); callout(ctx, PX, 450, "Masih ada terbitan 2018", r.x + 30, r.y + 80, { color: RED, fill: "#FBE1DF", maxW: 320 }); }
+      if (open) callout(ctx, PX, 600, "Di aplikasi lain, menu ini bernama Filter atau Tanggal.", null, null, { size: 22, fill: "#F4F6F5", color: "#9AAFA6", maxW: 320 });
       const p = W.path(l, span, [{ x: 1000, y: 700, d: 1.6 }, { x: g0.tools.cx, y: g0.tools.cy + 6, d: 1.1, click: true }, { x: g0.timeBtn.cx, y: g0.timeBtn.cy + 6, d: 1.3, click: true }, { x: g0.timeBtn.cx + 30, y: g0.timeBtn.cy + 60, d: 1.6 }], { x: 1000, y: 700 });
       L.cursor(ctx, p.x, p.y, { click: p.click });
     },
@@ -294,7 +297,7 @@
       const g = app(ctx, st);
       counter(ctx, picked && since >= 0.4 ? logLerp(ST[4].n, ST[5].n, (since - 0.4) / 1.2) : ST[4].n, { hot: picked });
       steps(ctx, "LANGKAH", ["Pilih Setahun terakhir.", "Hasil lama hilang."], picked ? (since > 1.5 ? 2 : 1) : 0);
-      if (picked && since > 1.6) { L.callout(ctx, PX, 600, "86 → 12, semuanya terbit setahun ini", g.count.cx + 120, g.count.cy, { maxW: 320 }); }
+      if (picked && since > 1.6) { callout(ctx, PX, 600, "86 → 12, semuanya terbit setahun ini", g.count.cx + 120, g.count.cy, { maxW: 320 }); }
       const it = g0.timeItem(4);
       const p = W.path(l, span, [{ x: g0.timeBtn.cx + 30, y: g0.timeBtn.cy + 60, d: 0.3 }, { x: it.cx, y: it.cy + 6, d: 0.9 }, { x: it.cx, y: it.cy + 6, d: 1.2, click: true }, { x: 1000, y: 720, d: 3 }]);
       L.cursor(ctx, p.x, p.y, { click: p.click });
@@ -330,13 +333,13 @@
       miniBox(ctx, 250, 330, 660, wrong, { color: RED, hl: [wrong.indexOf(":") + 1, wrong.indexOf(":") + 2], size: 24 });
       text(ctx, "Sekitar 51.200 hasil", 690, 430, 22, { weight: 700, color: C.ink2 });
       W.result(ctx, 270, 460, 620, { ...R.toko2, mark: "bad" }, 1); W.result(ctx, 270, 590, 620, R.video, 1);
-      L.callout(ctx, 330, 700, "site dianggap kata biasa", null, null, { color: RED, fill: "#FFFFFF", size: 24 });
+      callout(ctx, 330, 700, "site dianggap kata biasa", null, null, { color: RED, fill: "#FFFFFF", size: 24 });
       if (l > a * 0.5) {
         card(ctx, 980, 250, 720, 540, { fill: "#F2FAF4", stroke: GREEN, lw: 4, r: 20 }); text(ctx, "✓ tanpa spasi", 1340, 300, 30, { align: "center", weight: 900, color: GREEN });
         miniBox(ctx, 1010, 330, 660, right, { color: GREEN, size: 24 });
         text(ctx, "Sekitar 1.300 hasil", 1030, 430, 22, { weight: 700, color: C.ink2 });
         W.result(ctx, 1030, 460, 620, { ...R.pemkot, mark: "good" }, 1); W.result(ctx, 1030, 590, 620, R.panduan, 1);
-        L.callout(ctx, 1090, 700, "semua dari situs go.id", null, null, { color: GREEN, fill: "#FFFFFF", size: 24 });
+        callout(ctx, 1090, 700, "semua dari situs go.id", null, null, { color: GREEN, fill: "#FFFFFF", size: 24 });
       }
     },
     salah_minus(ctx, b, l) {
@@ -347,13 +350,13 @@
       miniBox(ctx, 250, 330, 660, wrong, { color: RED, hl: [wrong.indexOf("- ") + 1, wrong.indexOf("- ") + 2] });
       text(ctx, "Sekitar 48.600 hasil", 690, 430, 22, { weight: 700, color: C.ink2 });
       W.result(ctx, 270, 460, 620, { ...R.toko2, mark: "bad" }, 1); W.result(ctx, 270, 590, 620, R.berita, 1);
-      L.callout(ctx, 330, 700, "minus diabaikan: toko muncul", null, null, { color: RED, fill: "#FFFFFF", size: 24 });
+      callout(ctx, 330, 700, "minus diabaikan: toko muncul", null, null, { color: RED, fill: "#FFFFFF", size: 24 });
       if (l > a * 0.5) {
         card(ctx, 980, 250, 720, 540, { fill: "#F2FAF4", stroke: GREEN, lw: 4, r: 20 }); text(ctx, "✓ minus menempel", 1340, 300, 30, { align: "center", weight: 900, color: GREEN });
         miniBox(ctx, 1010, 330, 660, right, { color: GREEN });
         text(ctx, "Sekitar 21.300 hasil", 1030, 430, 22, { weight: 700, color: C.ink2 });
         W.result(ctx, 1030, 460, 620, { ...R.berita, mark: "good" }, 1); W.result(ctx, 1030, 590, 620, R.pemkot, 1);
-        L.callout(ctx, 1090, 700, "toko hilang dari daftar", null, null, { color: GREEN, fill: "#FFFFFF", size: 24 });
+        callout(ctx, 1090, 700, "toko hilang dari daftar", null, null, { color: GREEN, fill: "#FFFFFF", size: 24 });
       }
     },
     kosong(ctx, b, l) {
@@ -367,7 +370,7 @@
       const g = app(ctx, st);
       counter(ctx, fixed && since > 0.3 ? 12 : 0, { hot: fixed });
       steps(ctx, "JIKA HASIL KOSONG", ["Cari operator yang terlalu ketat.", "Longgarkan atau hapus satu.", "Cari lagi."], S.i === 0 ? 0 : S.i < 3 ? 1 : 3);
-      if (S.i === 0) L.callout(ctx, PX, 640, "Terlalu ketat: 24 jam terakhir", g0.timeBtn.x + g0.timeBtn.w, g0.timeBtn.cy, { color: RED, fill: "#FBE1DF", maxW: 320 });
+      if (S.i === 0) callout(ctx, PX, 640, "Terlalu ketat: 24 jam terakhir", g0.timeBtn.x + g0.timeBtn.w, g0.timeBtn.cy, { color: RED, fill: "#FBE1DF", maxW: 320 });
       const it = g0.timeItem(4);
       const p = W.path(l, span, [{ x: 1000, y: 700, d: 1.6 }, { x: g0.timeBtn.cx, y: g0.timeBtn.cy + 6, d: 1, click: true }, { x: it.cx, y: it.cy + 6, d: 1, click: true }, { x: 1000, y: 720, d: 2.4 }]);
       L.cursor(ctx, p.x, p.y, { click: p.click });

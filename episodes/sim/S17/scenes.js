@@ -7,6 +7,9 @@
   const WIN = { x: 110, y: 122, w: 1300, h: 700 };
   const BLUE = "#1A73C8", RED = "#D9443B", GREEN = "#2E9E5B";
   const PX = 1450, PW = 370;
+  // Short: adegan digambar di kanvas tak terlihat lalu dipotong; garis penunjuk dari panel kanan tidak ikut digambar supaya tidak memotong gambar
+  const inShort = ctx => !!(ctx.canvas && ctx.canvas.isConnected === false);
+  const callout = (ctx, x, y, s, tx, ty, o) => L.callout(ctx, x, y, s, inShort(ctx) ? null : tx, inShort(ctx) ? null : ty, o);
   const SEC_ITEMS = ["Terbuka (tanpa sandi)", "WEP (lama)", "WPA2-Personal", "WPA2/WPA3-Personal", "WPA3-Personal"], SEC_OK = SEC_ITEMS[3];
   const NEWPASS = "pisang-goreng-hangat-27", ADMIN_NEW = "••••••••••••••••••••••", GUEST_PASS = "jeruk-manis-tamu-8";
   const DEVICES = [{ name: "HP Ayah", kind: "hp", ip: "192.168.1.20" }, { name: "HP Ibu", kind: "hp", ip: "192.168.1.21" }, { name: "Laptop Dito", kind: "laptop", ip: "192.168.1.22" },
@@ -214,7 +217,7 @@
       const n = S.n >= 4 ? 3 : S.i <= 1 ? 0 : S.i === 2 ? 1 : 2;
       steps(ctx, "LANGKAH", ["Klik bilah alamat.", "Ketik 192.168.1.1", "Tekan Enter."], n);
       W.sticker(ctx, PX, 400, PW, [["Halaman admin", "192.168.1.1"], ["Pengguna", "admin"], ["Sandi admin", "admin"]], { title: "DARI STIKER", size: 24, hi: 0, kw: 190 });
-      if (t > 1) L.callout(ctx, PX, 640, "Tanda Tidak aman di bilah alamat wajar untuk halaman router di rumah.", null, null, { size: 21, maxW: 330, fill: "#F4F6F5", color: "#9AAFA6" });
+      if (t > 1) callout(ctx, PX, 640, "Tanda Tidak aman di bilah alamat wajar untuk halaman router di rumah.", null, null, { size: 21, maxW: 330, fill: "#F4F6F5", color: "#9AAFA6" });
       const urlP = { x: 700, y: WIN.y + 86 };
       const p = W.path(l, span, [{ x: 900, y: 600, d: 0.4 }, { ...urlP, d: 1, click: true }, { ...urlP, d: 5.6 }], { x: 900, y: 600 });
       if (t < 0) cursor(ctx, p, S.at(1) && S.p(1) > 0.6 ? "text" : "arrow");
@@ -237,14 +240,14 @@
       const k = Math.floor((l - a * 0.22) / (a * 0.1));
       if (k >= 0 && k < 5) { const r = g.menu(W.ROUTER_MENU[k]); ctx.strokeStyle = C.accent; ctx.lineWidth = 5; rr(ctx, r.x + 6, r.y + 2, r.w - 12, r.h - 4, 10); ctx.stroke(); }
       steps(ctx, "MENU ROUTER", ["Status: ringkasan", "Wi-Fi: nama Wi-Fi", "Keamanan: jenis dan sandi", "Jaringan Tamu", "Sistem: sandi admin"], clamp(k, 0, 5));
-      if (l > a * 0.75) L.callout(ctx, PX, 640, "Di router lain, menu bisa bernama Wireless, Security, atau Advanced.", null, null, { size: 21, maxW: 330, fill: "#F4F6F5", color: "#9AAFA6" });
+      if (l > a * 0.75) callout(ctx, PX, 640, "Di router lain, menu bisa bernama Wireless, Security, atau Advanced.", null, null, { size: 21, maxW: 330, fill: "#F4F6F5", color: "#9AAFA6" });
     },
     admin_buka(ctx, b, l) {
       const span = A(b) * 0.9, ds = [1.8, 1.2, 0.6, 1.2, 1], S = W.seq(l, span, ds);
       const g0 = probe(ctx, () => admin(ctx, { warn: WARN, menu: "Sistem" }));
       const menu = S.at(1) && S.p(1) > 0.6 ? "Sistem" : "Status", sub = S.at(3) && S.p(3) > 0.6 ? "Sandi Admin" : "Info";
       const g = admin(ctx, { warn: WARN, menu, sub });
-      if (S.i === 0) { ctx.strokeStyle = C.accent; ctx.lineWidth = 5; rr(ctx, g.c.x - 42, WIN.y + 108 + 78, g.c.w + 72, 66, 12); ctx.stroke(); L.callout(ctx, PX, 470, "Peringatan: sandi admin masih bawaan", g.c.x + g.c.w + 30, WIN.y + 108 + 110, { maxW: 320, color: RED, fill: "#FBE1DF" }); }
+      if (S.i === 0) { ctx.strokeStyle = C.accent; ctx.lineWidth = 5; rr(ctx, g.c.x - 42, WIN.y + 108 + 78, g.c.w + 72, 66, 12); ctx.stroke(); callout(ctx, PX, 470, "Peringatan: sandi admin masih bawaan", g.c.x + g.c.w + 30, WIN.y + 108 + 110, { maxW: 320, color: RED, fill: "#FBE1DF" }); }
       steps(ctx, "LANGKAH", ["Baca peringatannya.", "Klik menu Sistem.", "Pilih Sandi Admin."], S.i === 0 ? 0 : S.i <= 2 ? 1 : S.n >= 4 ? 3 : 2);
       const p = W.path(l, span, [{ x: 900, y: 700, d: 1.8 }, { ...P(g0.menu("Sistem"), 0.45), d: 1.2, click: true }, { ...P(g0.menu("Sistem"), 0.45), d: 0.6 }, { ...P(g0.ctl["sub_Sandi Admin"]), d: 1.2, click: true }, { x: 900, y: 720, d: 1 }]);
       cursor(ctx, p);
@@ -270,7 +273,7 @@
         p = W.path(l, span, [{ ...P(g.ctl.btn), d: 1, click: true }, { ...P(g.ctl.btn), d: 1.6 }], { x: 900, y: 720 }); }
       else if (S.i <= 4) { const bg = browser(ctx, {}); W.routerLogin(ctx, bg, { user: "admin", pass: typed(ADMIN_NEW, S.p(3) / 0.9), focus: S.i === 4 ? null : "pass", caret: true, press: S.i === 4 ? S.p(4) : 0 });
         p = W.path(l, span, [{ x: 900, y: 720, d: 2.6 }, { ...P(gl.pass), d: 1, click: true }, { ...P(gl.pass), d: 1.2 }, { ...P(gl.btn), d: 1, click: true }]); }
-      else { admin(ctx, {}); L.callout(ctx, PX, 470, "Peringatan sandi bawaan sudah hilang.", null, null, { color: GREEN, fill: C.goodBg, maxW: 320 }); }
+      else { admin(ctx, {}); callout(ctx, PX, 470, "Peringatan sandi bawaan sudah hilang.", null, null, { color: GREEN, fill: C.goodBg, maxW: 320 }); }
       steps(ctx, "LANGKAH", ["Klik Simpan.", "Masuk lagi dengan sandi baru.", "Peringatan hilang."], S.i <= 1 ? 0 : S.i <= 4 ? 1 : 3);
       if (p) cursor(ctx, p, S.i === 2 || S.i === 3 ? "text" : "arrow");
     },
@@ -280,7 +283,7 @@
       const on = S.at(1) && S.p(1) > 0.6;
       const g = admin(ctx, { menu: on ? "Keamanan" : "Status" });
       steps(ctx, "LANGKAH", ["Klik menu Keamanan.", "Lihat jenis keamanan."], on ? (l > a * 0.6 ? 2 : 1) : 0);
-      if (on && l > a * 0.45) L.callout(ctx, PX, 400, "WEP: cara lama, mudah dibobol", g.ctl.sel.x + g.ctl.sel.w, g.ctl.sel.cy, { color: RED, fill: "#FBE1DF", maxW: 320 });
+      if (on && l > a * 0.45) callout(ctx, PX, 400, "WEP: cara lama, mudah dibobol", g.ctl.sel.x + g.ctl.sel.w, g.ctl.sel.cy, { color: RED, fill: "#FBE1DF", maxW: 320 });
       const p = W.path(l, span, [{ x: 900, y: 720, d: 0.6 }, { ...P(g0.menu("Keamanan"), 0.45), d: 1.2, click: true }, { x: 1000, y: 740, d: 3 }]);
       cursor(ctx, p);
     },
@@ -292,9 +295,9 @@
       const hi = S.i === 1 ? 0 : S.i === 2 ? 1 : S.i >= 3 ? 3 : null;
       const g = admin(ctx, { menu: "Keamanan", open, hi, s: { sec: picked ? SEC_OK : DEF.sec }, dirty: picked });
       steps(ctx, "LANGKAH", ["Klik kotak pilihan.", "Jangan Terbuka atau WEP.", "Pilih WPA2/WPA3-Personal."], S.i === 0 ? 0 : S.i <= 2 ? 1 : picked ? 3 : 2);
-      if (open && S.i === 1) L.callout(ctx, PX, 420, "✗ Terbuka: tanpa sandi", g0.ctl.sel.item(0).x + g0.ctl.sel.w, g0.ctl.sel.item(0).cy, { color: RED, fill: "#FBE1DF", maxW: 320 });
-      if (open && S.i === 2) L.callout(ctx, PX, 420, "✗ WEP: lama, mudah dibobol", g0.ctl.sel.item(1).x + g0.ctl.sel.w, g0.ctl.sel.item(1).cy, { color: RED, fill: "#FBE1DF", maxW: 320 });
-      if (picked) L.callout(ctx, PX, 420, "✓ WPA2/WPA3: HP lama dan baru bisa tersambung", g.ctl.sel.x + g.ctl.sel.w, g.ctl.sel.cy, { color: GREEN, fill: C.goodBg, maxW: 320 });
+      if (open && S.i === 1) callout(ctx, PX, 420, "✗ Terbuka: tanpa sandi", g0.ctl.sel.item(0).x + g0.ctl.sel.w, g0.ctl.sel.item(0).cy, { color: RED, fill: "#FBE1DF", maxW: 320 });
+      if (open && S.i === 2) callout(ctx, PX, 420, "✗ WEP: lama, mudah dibobol", g0.ctl.sel.item(1).x + g0.ctl.sel.w, g0.ctl.sel.item(1).cy, { color: RED, fill: "#FBE1DF", maxW: 320 });
+      if (picked) callout(ctx, PX, 420, "✓ WPA2/WPA3: HP lama dan baru bisa tersambung", g.ctl.sel.x + g.ctl.sel.w, g.ctl.sel.cy, { color: GREEN, fill: C.goodBg, maxW: 320 });
       const it = i => P(g0.ctl.sel.item(i), 0.4);
       const p = W.path(l, span, [{ ...P(g0.ctl.sel, 0.85), d: 1, click: true }, { ...it(0), d: 1.6 }, { ...it(1), d: 0.8 }, { ...it(3), d: 1 }, { ...it(3), d: 1.2, click: true }, { x: 1000, y: 740, d: 1.2 }], { x: 900, y: 720 });
       cursor(ctx, p);
@@ -308,7 +311,7 @@
       const wpass = S.i >= 2 ? typed(NEWPASS, S.p(2) / 0.9) : "12345678";
       admin(ctx, { menu: "Keamanan", s, f: { wpass: S.i >= 2 && !wpass ? "" : wpass, focus: focus ? "pass" : null, mark: sel ? [0, 8] : null }, dirty: true });
       steps(ctx, "LANGKAH", ["Klik kolom Sandi Wi-Fi.", "Tekan Ctrl+A untuk memilih semua.", "Ketik frasa panjang baru."], S.i === 0 ? 0 : S.i === 1 ? 1 : S.n >= 3 ? 3 : 2);
-      if (S.i >= 3) L.callout(ctx, PX, 520, "23 karakter: sangat kuat", g0.ctl.pass.x + g0.ctl.pass.w, g0.ctl.pass.cy + 60, { color: GREEN, fill: C.goodBg, maxW: 320 });
+      if (S.i >= 3) callout(ctx, PX, 520, "23 karakter: sangat kuat", g0.ctl.pass.x + g0.ctl.pass.w, g0.ctl.pass.cy + 60, { color: GREEN, fill: C.goodBg, maxW: 320 });
       if (S.i === 1) keys(ctx, ["Ctrl", "A"], S.p(1));
       const p = W.path(l, span, [{ ...P(g0.ctl.pass, 0.7), d: 1, click: true }, { ...P(g0.ctl.pass, 0.7), d: 5.8 }], { x: 900, y: 720 });
       cursor(ctx, p, "text");
@@ -400,7 +403,7 @@
       const devices = DEVICES.map((d, i) => ({ ...d, on: i < k, net: i < k ? "rumah-biru" : "Terputus", hi: i === k - 1 ? "good" : null }));
       admin(ctx, { s: DONE, devices });
       steps(ctx, "SAMBUNG ULANG", DEVICES.map(d => d.name), k);
-      if (k >= 5) L.callout(ctx, PX, 690, "Semua tersambung lagi", null, null, { color: GREEN, fill: C.goodBg });
+      if (k >= 5) callout(ctx, PX, 690, "Semua tersambung lagi", null, null, { color: GREEN, fill: C.goodBg });
     },
     coba(ctx, b, l) {
       card(ctx, 160, 140, 1600, 680, { stroke: C.accent, lw: 6 });
@@ -419,7 +422,7 @@
       compare(ctx, "KESALAHAN 1: LUPA MENYIMPAN", { head: "✗ tab ditutup sebelum Simpan", draw: (ctx, x, y) => {
         text(ctx, "Setelah dibuka lagi:", x + 40, y + 30, 24, { weight: 700, color: C.ink2 });
         [["Keamanan", "WEP (lama)"], ["Nama Wi-Fi", "RUMAH-KITA-12"], ["Jaringan tamu", "Mati"]].forEach(([k, v], i) => { text(ctx, k, x + 40, y + 90 + i * 64, 26, { weight: 700 }); text(ctx, v, x + 680, y + 90 + i * 64, 26, { align: "right", weight: 900, color: RED }); });
-        L.callout(ctx, x + 40, y + 300, "Semua perubahan hilang.", null, null, { color: RED, fill: "#FFFFFF", size: 26 }); } },
+        callout(ctx, x + 40, y + 300, "Semua perubahan hilang.", null, null, { color: RED, fill: "#FFFFFF", size: 26 }); } },
       { head: "✓ klik Simpan dan Terapkan", draw: (ctx, x, y) => {
         text(ctx, "Setelah dibuka lagi:", x + 40, y + 30, 24, { weight: 700, color: C.ink2 });
         [["Keamanan", "WPA2/WPA3"], ["Nama Wi-Fi", "rumah-biru"], ["Jaringan tamu", "Menyala"]].forEach(([k, v], i) => { text(ctx, k, x + 40, y + 90 + i * 64, 26, { weight: 700 }); text(ctx, v, x + 680, y + 90 + i * 64, 26, { align: "right", weight: 900, color: GREEN }); });
@@ -429,10 +432,10 @@
       const a = A(b);
       compare(ctx, "KESALAHAN 2: PERANGKAT BELUM DISAMBUNG ULANG", { head: "✗ masih memakai sandi lama", draw: (ctx, x, y) => {
         W.devices(ctx, x + 30, y + 10, 660, [{ name: "HP Dito", kind: "hp", on: true, net: "rumah-biru" }, { name: "TV ruang tamu", kind: "tv", on: false, net: "Gagal tersambung" }, { name: "Printer", kind: "printer", on: false, net: "Gagal tersambung" }], { rh: 64 });
-        L.callout(ctx, x + 40, y + 300, "TV dan printer belum tahu sandi baru.", null, null, { color: RED, fill: "#FFFFFF", size: 24 }); } },
+        callout(ctx, x + 40, y + 300, "TV dan printer belum tahu sandi baru.", null, null, { color: RED, fill: "#FFFFFF", size: 24 }); } },
       { head: "✓ disambung ulang satu per satu", draw: (ctx, x, y) => {
         W.devices(ctx, x + 30, y + 10, 660, [{ name: "HP Dito", kind: "hp", on: true, net: "rumah-biru" }, { name: "TV ruang tamu", kind: "tv", on: true, net: "rumah-biru" }, { name: "Printer", kind: "printer", on: true, net: "rumah-biru" }], { rh: 64 });
-        L.callout(ctx, x + 40, y + 300, "Pilih rumah-biru, ketik sandi baru.", null, null, { color: GREEN, fill: "#FFFFFF", size: 24 }); } }, l > a * 0.55);
+        callout(ctx, x + 40, y + 300, "Pilih rumah-biru, ketik sandi baru.", null, null, { color: GREEN, fill: "#FFFFFF", size: 24 }); } }, l > a * 0.55);
     },
     salah_lemah(ctx, b, l) {
       const a = A(b);

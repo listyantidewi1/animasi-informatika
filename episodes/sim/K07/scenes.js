@@ -113,7 +113,7 @@
     const R = route(v), a = b.audio || b.dur;
     const ph1 = R.r.slice(0, 3), ph2 = R.r.slice(2);   // fase 2 dimulai dari dec1 (sudah diputuskan)
     const stops = b.fase === 1 ? ph1 : ph2.slice(1);
-    const ats = (b.at || stops.map((_, i) => i / stops.length)).map(f => f * a);
+    const ats = (b.tt || b.at || stops.map((_, i) => i / stops.length)).map(f => f * a);
     const st = { lit: new Set(), seen: new Set(), conds: [], nilai: null, pred: null, out: null };
     const ev = (k, t) => {   // simpul k tercapai pada waktu t (waktu lokal; -99 = sebelum beat)
       st.seen.add(k);
