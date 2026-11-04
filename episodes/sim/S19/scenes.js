@@ -62,7 +62,7 @@
     g.first = first;
     g.box = (i, c0, c1) => { const vi = i - first; const top = g.y + 18 + vi * g.lh; return { x: g.x + 22 + c0 * g.cw - 4, y: top + 2, w: (c1 - c0) * g.cw + 8, h: g.lh - 2 }; };
     g.vis = i => i - first >= 0;
-    g.str = i => { const r = st.rows[i]; return typeof r === "string" ? r : (r.k === "cmd" ? (r.prompt || "") + r.t : r.t); };
+    g.str = i => { const r = st.rows[i]; if (r == null) return ""; return typeof r === "string" ? r : (r.k === "cmd" ? (r.prompt || "") + r.t : r.t); };
     g.find = (i, s) => { const t = g.str(i), a = t.indexOf(s); return a < 0 ? null : g.box(i, a, a + s.length); };
     return g;
   }

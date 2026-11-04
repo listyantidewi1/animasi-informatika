@@ -60,7 +60,7 @@
     tujuan(ctx, b, l) {
       card(ctx, 160, 150, 1600, 660);
       text(ctx, "SETELAH MENONTON, KAMU BISA:", 260, 240, 30, { weight: 900, color: C.accentDark });
-      [["lock", "membuat sandi induk yang kuat"], ["key", "membuat sandi acak tiap akun"], ["fingerprint", "memakai isi otomatis saat login"], ["shield", "memeriksa sandi lemah"]].forEach(([ic, s], i) => {
+      [["lock", "membuat sandi induk yang kuat"], ["key", "membuat sandi acak tiap akun"], ["user", "memakai isi otomatis saat login"], ["shield", "memeriksa sandi lemah"]].forEach(([ic, s], i) => {
         const u = ease((l - 0.6 - i * 0.8) / 0.5); if (u <= 0) return; ctx.globalAlpha = u;
         card(ctx, 260, 280 + i * 104, 820, 84, { fill: C.bg2, r: 16 }); HP.icon(ctx, ic, 308, 322 + i * 104, 36, GREEN); text(ctx, s, 350, 334 + i * 104, 32, { weight: 800 }); ctx.globalAlpha = 1;
       });
@@ -73,7 +73,7 @@
       text(ctx, "E.3", 580, 370, 60, { align: "center", weight: 900, color: C.kiko }); para(ctx, "Keamanan Akun dan Jaringan Dasar", 580, 440, 34, 560, { align: "center", weight: 800, lh: 1.2 });
       text(ctx, "satu sandi, delapan pintu", 580, 580, 26, { align: "center", weight: 600, color: C.ink2 });
       text(ctx, "Yang kita kerjakan hari ini:", 1000, 320, 28, { weight: 900 });
-      [["lock", "Sandi induk"], ["key", "Generator sandi acak"], ["fingerprint", "Isi otomatis"], ["warning", "Laporan sandi lemah"], ["shield", "Verifikasi dua langkah"]].forEach(([ic, s], i) => {
+      [["lock", "Sandi induk"], ["key", "Generator sandi acak"], ["user", "Isi otomatis"], ["warning", "Laporan sandi lemah"], ["shield", "Verifikasi dua langkah"]].forEach(([ic, s], i) => {
         const u = ease((l - 0.5 - i * 0.5) / 0.4); if (u <= 0) return; ctx.globalAlpha = u; const y = 350 + i * 62;
         ctx.fillStyle = "#E3EEFA"; ctx.beginPath(); ctx.arc(1030, y + 24, 22, 0, Math.PI * 2); ctx.fill(); HP.icon(ctx, ic, 1030, y + 24, 24, BLUE); text(ctx, s, 1066, y + 33, 26, { weight: 800 }); ctx.globalAlpha = 1; });
       card(ctx, 360, 680, 1200, 64, { fill: "#FFF3D6", r: 14 }); text(ctx, "Password manager bawaan HP atau browser bekerja dengan cara yang mirip.", 960, 722, 26, { align: "center", weight: 800, color: C.accentDark, fit: 1160 });
@@ -94,7 +94,7 @@
       ctx.save(); ctx.translate(kx, ky); ctx.fillStyle = "#F2B134"; ctx.strokeStyle = "#B57A12"; ctx.lineWidth = 4;
       ctx.beginPath(); ctx.arc(-50, 0, 34, 0, Math.PI * 2); ctx.fill(); ctx.stroke(); ctx.fillStyle = "#FFFFFF"; ctx.beginPath(); ctx.arc(-50, 0, 12, 0, Math.PI * 2); ctx.fill();
       ctx.fillStyle = "#F2B134"; rr(ctx, -18, -10, 96, 20, 6); ctx.fill(); ctx.stroke(); rr(ctx, 46, 8, 14, 22, 4); ctx.fill(); ctx.stroke(); rr(ctx, 64, 8, 12, 16, 4); ctx.fill(); ctx.stroke(); ctx.restore();
-      if (ku > 0.2) L.callout(ctx, 200, 600, "Sandi induk: hanya di ingatanmu", null, null, { size: 26, maxW: 300 });
+      if (ku > 0.2) L.callout(ctx, 170, 160, "Sandi induk: hanya di ingatanmu", kx - 50, ky - 36, { size: 24, maxW: 420 });
       // isi brankas
       text(ctx, "ISI BRANKAS", 900, 250, 28, { weight: 900, color: C.accentDark });
       [["email", "tR8#qL2!vX9m@Kp4"], ["game", "Zq3!mW7#cY2eHs6$"], ["toko", "h6$Lp9Vx!3Rt@Nb8"], ["perpus", "Ue5@k2Nw8#Qs4!Jm"]].forEach(([k, pw], i) => {
@@ -113,14 +113,14 @@
         else if (R.st.scr === "wel") B.welcome(c, { hl: R.i >= 3 }); else B.master(c, {});
         tapDraw(c, R);
       };
-      show(ctx, draw, R.st.scr === "home" ? { u: 0, v: 190, w: 360, h: 230 } : R.st.scr === "wel" ? { u: 0, v: 130, w: 360, h: 300 } : { u: 0, v: 100, w: 360, h: 260 });
+      show(ctx, draw, R.st.scr === "home" ? { u: 0, v: 190, w: 360, h: 230 } : R.st.scr === "wel" ? { u: 0, v: 290, w: 360, h: 330 } : { u: 0, v: 100, w: 360, h: 260 });
       const y = steps(ctx, "LANGKAH", ["Tap ikon Brankas Sandi.", "Tap Buat brankas baru."], stepAt(l, span, [0.3, 0.7]));
       if (R.st.scr !== "home") notes(ctx, y, [{ s: "Di HP lain: password manager bawaan HP atau browser.", fill: "#E7F1FB", color: BLUE }]);
     },
     induk_ketik(ctx, b, l) {
-      const span = spanOf(b), ST = [{ tap: [180, 211], set: { kb: true }, d: 0.8 }, { type: B.PHRASE, field: "v", d: 5 }, { wait: 1, d: 0.8 }, { set: { kb: false }, d: 0.1 }, { wait: 1, d: 1.2 }];
+      const span = spanOf(b), ST = [{ tap: [180, 227], set: { kb: true }, d: 0.8 }, { type: B.PHRASE, field: "v", d: 5 }, { wait: 1, d: 0.8 }, { set: { kb: false }, d: 0.1 }, { wait: 1, d: 1.2 }];
       const R = HP.run({ v: "" }, ST, l, span), tp = typing(R, ST);
-      show(ctx, c => { const pr = R.st.kb ? (tp ? (tp.u < 0.6 ? tp.ch : null) : null) : null; B.master(c, { value: R.st.v, kb: R.st.kb, press: pr }); if (R.st.kb) keyTap(c, tp); tapDraw(c, R); }, { u: 0, v: 150, w: 360, h: 200 });
+      show(ctx, c => { const pr = R.st.kb ? (tp ? (tp.u < 0.6 ? tp.ch : null) : null) : null; B.master(c, { value: R.st.v, kb: R.st.kb, press: pr }); if (R.st.kb) keyTap(c, tp); tapDraw(c, R); }, { u: 0, v: 182, w: 360, h: 196 });
       const y = steps(ctx, "LANGKAH", ["Tap kolom Sandi induk.", "Ketik frasa dari beberapa kata acak."], stepAt(l, span, [0.13, 0.8]));
       if (after(b, l, 0.82)) notes(ctx, y, [{ s: "29 karakter: sangat kuat", fill: C.goodBg, color: GREEN }]);
       card(ctx, 790, 520, 620, 290, { fill: "#FFFFFF", stroke: "#D7E2DC", lw: 3, r: 18 });

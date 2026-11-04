@@ -145,14 +145,14 @@
   // o: value, kb, press, hl (tombol Lanjut)
   B.master = function (ctx, o = {}) {
     HP.header(ctx, "Buat sandi induk", { back: true });
-    HP.para(ctx, "Sandi induk membuka semua sandimu. Pakai frasa panjang dari beberapa kata acak.", 20, 132, 16, 320);
+    HP.para(ctx, "Sandi induk membuka semua sandimu. Pakai frasa panjang dari beberapa kata acak.", 20, 130, 16, 320);
     const v = o.value || "";
-    const f = B.field(ctx, 20, 180, W - 40, { label: "Sandi induk", value: v, focus: !!o.kb, caret: !!o.kb, eye: true, show: true, size: 17 });
-    B.meter(ctx, 22, 252, W - 44, B.levelOf(v));
+    const f = B.field(ctx, 20, 196, W - 40, { label: "Sandi induk", value: v, focus: !!o.kb, caret: !!o.kb, eye: true, show: true, size: 17 });
+    B.meter(ctx, 22, 268, W - 44, B.levelOf(v));
     const words = v.trim() ? v.trim().split(/\s+/).length : 0;
     const tips = [["Empat kata atau lebih", words >= 4], ["Bukan nama atau tanggal lahir", v.length > 0]];
-    tips.forEach(([s, ok], i) => { const y = 314 + i * 28; HP.icon(ctx, ok ? "check" : "info", 32, y - 6, 16, ok ? GREEN : "#9AA8B1"); text(ctx, s, 50, y, 15, { weight: 700, color: ok ? UI.ink : "#8A99A3" }); });
-    let btn = null; if (!o.kb) btn = HP.button(ctx, 20, 390, W - 40, 50, "Lanjut", { fill: V, hl: o.hl, size: 18, r: 14 });
+    tips.forEach(([s, ok], i) => { const y = 330 + i * 28; HP.icon(ctx, ok ? "check" : "info", 32, y - 6, 16, ok ? GREEN : "#9AA8B1"); text(ctx, s, 50, y, 15, { weight: 700, color: ok ? UI.ink : "#8A99A3" }); });
+    let btn = null; if (!o.kb) btn = HP.button(ctx, 20, 400, W - 40, 50, "Lanjut", { fill: V, hl: o.hl, size: 18, r: 14 });
     if (o.kb) B.kb(ctx, { press: o.press });
     return { field: f, btn };
   };

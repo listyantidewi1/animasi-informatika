@@ -110,7 +110,23 @@
     }
     ctx.restore(); ctx.strokeStyle = "#D7DEE3"; ctx.lineWidth = 2; ctx.strokeRect(x, y, w, h);
   };
+  // wayang golek (kepala boneka kayu bermahkota)
+  A.golek = function (ctx, x, y, w, h) {
+    const u = w / 300; ctx.save(); ctx.beginPath(); ctx.rect(x, y, w, h); ctx.clip();
+    ctx.fillStyle = "#2E6E7A"; ctx.fillRect(x, y, w, h); const cx = x + w / 2;
+    ctx.fillStyle = "#6B3E1F"; ctx.fillRect(cx - 8 * u, y + 250 * u, 16 * u, h); // tangkai
+    ctx.fillStyle = "#B8342A"; ctx.beginPath(); ctx.moveTo(cx - 90 * u, y + h); ctx.quadraticCurveTo(cx, y + 230 * u, cx + 90 * u, y + h); ctx.fill(); // baju
+    ctx.fillStyle = "#E0B456"; ctx.fillRect(cx - 70 * u, y + 300 * u, 140 * u, 14 * u);
+    ctx.fillStyle = "#C9773D"; ctx.beginPath(); ctx.ellipse(cx, y + 190 * u, 58 * u, 72 * u, 0, 0, Math.PI * 2); ctx.fill(); // wajah
+    ctx.fillStyle = "#E0B456"; ctx.beginPath(); ctx.moveTo(cx - 64 * u, y + 140 * u); ctx.lineTo(cx - 40 * u, y + 60 * u); ctx.lineTo(cx, y + 90 * u); ctx.lineTo(cx + 40 * u, y + 60 * u); ctx.lineTo(cx + 64 * u, y + 140 * u); ctx.closePath(); ctx.fill(); // mahkota
+    ctx.fillStyle = "#B8342A"; ctx.beginPath(); ctx.arc(cx, y + 112 * u, 10 * u, 0, Math.PI * 2); ctx.fill();
+    ctx.fillStyle = "#FFFFFF"; [-22, 22].forEach(d => { ctx.beginPath(); ctx.ellipse(cx + d * u, y + 182 * u, 12 * u, 8 * u, 0, 0, Math.PI * 2); ctx.fill(); });
+    ctx.fillStyle = "#26323B"; [-22, 22].forEach(d => { ctx.beginPath(); ctx.arc(cx + d * u, y + 182 * u, 5 * u, 0, Math.PI * 2); ctx.fill(); });
+    ctx.strokeStyle = "#7A3A1A"; ctx.lineWidth = 4 * u; ctx.beginPath(); ctx.arc(cx, y + 222 * u, 20 * u, 0.15 * Math.PI, 0.85 * Math.PI); ctx.stroke();
+    ctx.restore(); ctx.strokeStyle = "#D7DEE3"; ctx.lineWidth = 2; ctx.strokeRect(x, y, w, h);
+  };
   A.art = function (ctx, kind, x, y, w, h, opt) {
+    if (kind === "golek") return A.golek(ctx, x, y, w, h);
     if (kind === "poster") A.poster(ctx, x, y, w, h, opt); else if (kind === "gunungan") A.gunungan(ctx, x, y, w, h, opt);
     else if (kind === "kelir") A.kelir(ctx, x, y, w, h); else if (kind === "kawung") A.kawung(ctx, x, y, w, h);
   };
@@ -124,6 +140,7 @@
       desc: "Foto gunungan wayang kulit koleksi sanggar di kampung kami, diambil dengan cahaya lampu blencong.",
       tags: ["wayang", "gunungan", "kriya"], lic: "CC BY" },
     kelir: { art: "kelir", title: "Pertunjukan Wayang Semalam", by: "Tim 11B", date: "17 Agu 2026", id: 2240, tags: ["wayang", "pertunjukan"], lic: "CC BY-NC" },
+    golek: { art: "golek", title: "Wayang Golek Cepot", by: "Sanggar Giri Asih", date: "9 Sep 2026", id: 2311, tags: ["wayang", "golek"], lic: "CC BY-SA" },
     poster2: { art: "poster", title: "Poster Dolanan Cublak-cublak Suweng", by: "Sinta, Tim 10A", date: "12 Okt 2026", id: 3051, tags: ["dolanan"], lic: "CC BY-SA" },
     kawung: { art: "kawung", title: "Motif Batik Kawung", by: "Galeri Wastra Rumah", date: "2 Jun 2026", up: "2 Jun 2026", id: 1904,
       desc: "Foto kain batik tulis motif kawung dari koleksi galeri kami.", tags: ["batik", "kawung", "wastra"], lic: "©" }
