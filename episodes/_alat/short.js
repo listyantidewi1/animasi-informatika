@@ -56,7 +56,7 @@
       const u = ease(l / 0.6);
       ctx.save(); ctx.globalAlpha = u;
       card(ctx, 70, IMG_TOP + 10, 940, 800, { fill: "#fff", r: 30 });
-      text(ctx, "TONTON EPISODE LENGKAPNYA", SW / 2, IMG_TOP + 100, 34, { align: "center", weight: 900, color: C.accentDark });
+      text(ctx, TL.cta_heading || "TONTON EPISODE LENGKAPNYA", SW / 2, IMG_TOP + 100, 34, { align: "center", weight: 900, color: C.accentDark });
       para(ctx, TL.full_title, SW / 2, IMG_TOP + 180, 50, 820, { align: "center", weight: 900, lh: 1.2 });
       card(ctx, 130, IMG_TOP + 400, 820, 150, { fill: C.bg2, r: 22 });
       text(ctx, "latihan interaktif:", SW / 2, IMG_TOP + 458, 30, { align: "center", weight: 700, color: C.ink2 });

@@ -18,10 +18,17 @@ PARENT = E.load_script(EP); SCRIPT = E.load_script(ROOT)
 ENGINE = "\n".join(open(os.path.join(EP, f), encoding="utf-8").read() for f in PARENT["engine"]) + "\n" + \
          open(os.path.join(E.ALAT, "short.js"), encoding="utf-8").read()
 CFG = E.load_json(os.path.join(E.ALAT, "alat_luar.json")); SITE = CFG.get("situs", "https://belajar-informatika.vercel.app").rstrip("/")
-LINK = SITE.replace("https://", "") + "/" + E.code_slug(PARENT["episode"])
-code = PARENT["episode"]; kelas = "Kelas 7" if code.startswith("D7") else "Kelas 8" if code.startswith("D8") else "Kelas 9" if code.startswith("D9") \
-    else "Kelas 10" if code.startswith("E") else "Kelas 11" if code.startswith("F11") else "Kelas 12"
-FULL = f"Informatika {kelas} | {PARENT['title']}"
+def kelas_of(c):
+    return 7 if c.startswith("D7") else 8 if c.startswith("D8") else 9 if c.startswith("D9") else 10 if c.startswith("E") else 11 if c.startswith("F11") else 12
+code = PARENT["episode"]; SIM = "for" in PARENT    # video simulasi: kelas dan link latihan diambil dari episode pemakainya
+if SIM:
+    ks = sorted({kelas_of(c) for c in PARENT["for"]}); kelas = f"Kelas {ks[0]}" if len(ks) == 1 else f"Kelas {ks[0]}–{ks[-1]}"
+    LINK = SITE.replace("https://", "") + "/" + E.code_slug(PARENT.get("latihan", PARENT["for"][0]))
+    FULL = f"Simulasi Informatika {kelas} | {PARENT['title']}"
+else:
+    kelas = f"Kelas {kelas_of(code)}"
+    LINK = SITE.replace("https://", "") + "/" + E.code_slug(code)
+    FULL = f"Informatika {kelas} | {PARENT['title']}"
 OUT = os.path.join(EP, "video"); os.makedirs(OUT, exist_ok=True)
 FPS = 30
 HTML = """<!doctype html><html><head><meta charset="utf-8"><style>html,body{margin:0;background:#000}canvas{display:block}</style></head>
@@ -36,7 +43,8 @@ def timeline(variant):
     src = {b["id"]: b for b in E.load_timeline(EP, variant)["beats"]}
     for b in TL["beats"]:
         if b.get("src") in src: b["src_dur"] = src[b["src"]]["dur"]; b["src_audio"] = src[b["src"]]["audio"]
-    TL.update(episode=code, label=f"Informatika {kelas}", full_title=FULL, link=LINK)
+    TL.update(episode=code, label=("Simulasi Informatika " if SIM else "Informatika ") + kelas, full_title=FULL, link=LINK,
+              cta_heading="TONTON SIMULASI LENGKAPNYA" if SIM else "TONTON EPISODE LENGKAPNYA")
     return TL
 
 def page(pg, TL):
@@ -70,12 +78,12 @@ def render(pg, variant):
 def youtube_md():
     yt = SCRIPT.get("youtube", {})
     title = SCRIPT.get("judul_short") or SCRIPT["hook"]
-    desc = "\n".join([SCRIPT.get("ringkas", ""), "", f"Episode lengkap: {FULL} (lihat video terkait di atas judul).",
+    desc = "\n".join([SCRIPT.get("ringkas", ""), "", ("Simulasi lengkap: " if SIM else "Episode lengkap: ") + f"{FULL} (lihat video terkait di atas judul).",
                       f"Latihan interaktif: https://{LINK}", f"Semua episode: {SITE}/", "",
                       "Semua nama, akun, dan contoh di video ini fiktif.", "", " ".join(yt.get("tagar", ["#shorts", "#informatika"]))])
     md = f"# YouTube Short {code}\n\n**Judul** (≤100 karakter):\n\n{title}\n\n**Deskripsi:**\n\n```\n{desc}\n```\n\n" \
-         f"**Video terkait** (fitur \"Related video\" di YouTube Studio): {FULL}\n\n" \
-         "**Berkas:** `video/Short_*_suara.mp4` (narasi) dan `video/Short_*_teks.mp4` (tanpa suara, waktu baca 1,6 kata/detik).\n"
+         f"**Video terkait** (fitur \"Related video\" di YouTube Studio): {FULL}\n\n" + \
+         ("**Berkas:** `video/Short_*_suara.mp4` (narasi; simulasi hanya versi bersuara).\n" if SIM else "**Berkas:** `video/Short_*_suara.mp4` (narasi) dan `video/Short_*_teks.mp4` (tanpa suara, waktu baca 1,6 kata/detik).\n")
     open(os.path.join(ROOT, "youtube.md"), "w", encoding="utf-8").write(md)
 
 with sync_playwright() as p:
