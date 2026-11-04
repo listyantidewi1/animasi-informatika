@@ -97,14 +97,16 @@
     let sc = G.nice(lo, spec.yMax != null ? spec.yMax : dMax + (dMax - lo) * 0.08, spec.ticks || 5);
     if (spec.yMin != null) sc.min = spec.yMin; if (spec.yMax != null) sc.max = spec.yMax; if (spec.yStep) sc.step = spec.yStep;
     const dec = spec.tickDec != null ? spec.tickDec : decOf(sc.step);
-    ctx.font = `600 ${19 * s}px Inter`; let tw = 0; for (let v = sc.min; v <= sc.max + 1e-9; v += sc.step) tw = Math.max(tw, ctx.measureText(G.fmt(v, dec)).width);
+    ctx.font = `600 ${19 * s}px Inter`; let tw = 0; for (let v = Math.ceil(sc.min / sc.step - 1e-9) * sc.step; v <= sc.max + 1e-9; v += sc.step) tw = Math.max(tw, ctx.measureText(G.fmt(v, dec)).width);
     let left = x + 20 * s + tw + 12 * s; if (spec.yTitle) left += 36 * s;
     const catH = (type === "titik" ? 30 : 36) * s; bottom -= catH; if (spec.xTitle) bottom -= 34 * s;
     const plot = { x: left, y: top + 10 * s, w: right - left, h: bottom - top - 10 * s }; geo.plot = plot;
     const yOf = v => plot.y + plot.h - (v - sc.min) / (sc.max - sc.min) * plot.h; geo.yOf = yOf; geo.ticks = [];
-    for (let v = sc.min; v <= sc.max + 1e-9; v += sc.step) { const yy = yOf(v); geo.ticks.push({ v, y: yy });
-      ctx.strokeStyle = Math.abs(v - sc.min) < 1e-9 ? AXIS : GRID; ctx.lineWidth = Math.abs(v - sc.min) < 1e-9 ? 2 : 1.2; ctx.beginPath(); ctx.moveTo(plot.x, yy); ctx.lineTo(plot.x + plot.w, yy); ctx.stroke();
-      text(ctx, G.fmt(v, dec), plot.x - 10 * s, yy + 7 * s, 19 * s, { align: "right", weight: 600, color: INK2 }); }
+    // garis kisi pada kelipatan step (juga saat yMin dianimasikan), garis dasar tebal di bawah plot
+    for (let v = Math.ceil(sc.min / sc.step - 1e-9) * sc.step; v <= sc.max + 1e-9; v += sc.step) { const yy = yOf(v); geo.ticks.push({ v, y: yy });
+      ctx.strokeStyle = GRID; ctx.lineWidth = 1.2; ctx.beginPath(); ctx.moveTo(plot.x, yy); ctx.lineTo(plot.x + plot.w, yy); ctx.stroke();
+      text(ctx, G.fmt(Math.abs(v) < 1e-9 ? 0 : v, dec), plot.x - 10 * s, yy + 7 * s, 19 * s, { align: "right", weight: 600, color: INK2 }); }
+    ctx.strokeStyle = AXIS; ctx.lineWidth = 2; ctx.beginPath(); ctx.moveTo(plot.x, plot.y + plot.h); ctx.lineTo(plot.x + plot.w, plot.y + plot.h); ctx.stroke();
     geo.yAxis = { x: plot.x - 10 * s - tw / 2, y: plot.y + plot.h - 10 * s };
     if (spec.yTitle) { ctx.save(); ctx.translate(x + 26 * s, plot.y + plot.h / 2); ctx.rotate(-Math.PI / 2); text(ctx, spec.yTitle, 0, 0, 20 * s, { align: "center", weight: 800, color: INK, fit: plot.h }); ctx.restore(); }
     // sumbu datar

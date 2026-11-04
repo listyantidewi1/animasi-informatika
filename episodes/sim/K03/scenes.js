@@ -288,6 +288,27 @@
       Q.cabinet(ctx, 150, 560, 330, 250, labs, { open: labs.indexOf(openW) });
       text(ctx, "Mesin hanya membuka laci", 520, 650, 30, { weight: 800, color: C.ink2 }); text(ctx, "kata kunci di lemari indeks,", 520, 692, 30, { weight: 800, color: C.ink2 }); text(ctx, "bukan membaca semua halaman.", 520, 734, 30, { weight: 800, color: C.ink2 });
     },
+    // versi sempit untuk Short (lebar 900 px): judul dan nilai besar, rincian nilai di baris kedua
+    k3_peringkat_hp(ctx, b, l) {
+      const R = RANK[b.v], a = b.audio || b.dur, n = R.rows.length;
+      search(ctx, 130, 140, 900, R.q, { h: 84, size: 44 });
+      let top = 250;
+      if (b.v === "v4b") { card(ctx, 130, 240, 900, 64, { fill: "#FDECEA", stroke: C.bad, lw: 3, r: 16 }); text(ctx, "+3 link baru ke Warung Bu Rina", 580, 283, 30, { align: "center", weight: 900, color: C.bad }); top = 330; }
+      const from = R.from ? RANK[R.from].rows.map(r => r[0]) : null, mv = from ? ease(clamp((l - at(b, 0.15)) / (a * 0.35), 0, 1)) : 1;
+      R.rows.forEach(([p, isi, jud, lk], i) => {
+        const oldI = from ? from.indexOf(p) : i, y = top + lerp(oldI, i, mv) * 132;
+        const rev = from ? 1 : clamp((l - at(b, 0.08 + i * (0.6 / n))) / 0.6, 0, 1); if (rev <= 0) return;
+        const first = from ? (mv > 0.5 ? i === 0 : oldI === 0) : i === 0, rank = from ? (mv > 0.5 ? i : oldI) + 1 : i + 1;
+        const lkShow = b.v === "v4b" && p === 4 ? Math.round(lerp(2, 5, mv)) : lk;
+        ctx.globalAlpha = rev;
+        card(ctx, 130, y, 900, 118, { fill: first ? C.goodBg : "#FFFFFF", stroke: first ? C.good : p === 4 && from ? C.bad : "#D7E2DC", lw: first || (p === 4 && from) ? 4 : 2, r: 16 });
+        ctx.fillStyle = first ? C.good : C.kiko; ctx.beginPath(); ctx.arc(182, y + 59, 30, 0, Math.PI * 2); ctx.fill(); text(ctx, String(rank), 182, y + 71, 32, { align: "center", weight: 900, color: "#FFFFFF" });
+        text(ctx, P[p].t, 232, y + 50, 36, { weight: 900, fit: 600 });
+        let cx = 232; [["isi +" + isi, DEEP], ["judul +" + jud, C.accentDark], ["link +" + lkShow, C.good]].forEach(([s, col]) => { text(ctx, s, cx, y + 94, 28, { weight: 900, color: col }); ctx.font = "900 28px Inter"; cx += ctx.measureText(s).width + 30; });
+        text(ctx, "= " + (isi + jud + lkShow), 1005, y + 78, 56, { align: "right", weight: 900, color: first ? C.good : C.ink });
+        ctx.globalAlpha = 1;
+      });
+    },
     k3_peringkat(ctx, b, l) {
       const R = RANK[b.v], a = b.audio || b.dur, n = R.rows.length;
       search(ctx, 130, 140, 900, R.q, { h: 80, size: 40 });

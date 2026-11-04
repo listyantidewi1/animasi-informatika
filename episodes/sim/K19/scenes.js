@@ -346,4 +346,52 @@
       para(ctx, "Di Colab, ukur waktu bubble_sort dan sorted() untuk 1.000 dan 10.000 data dengan modul time.", 870, 650, 28, 820, { weight: 700, lh: 1.3 });
     }
   });
+
+  // ---------- adegan khusus Short (kanvas 1920×1080, area 40..1040 × 30..810; crop [40, 30, 1000, 780]) ----------
+  function shortCards(ctx, st, opt = {}) {
+    ARR10.forEach((v, i) => { const r = Math.floor(i / 5), c = i % 5; const x = 70 + c * 192, y = 200 + r * 210; const s = st(i);
+      ctx.save(); if (s === "dim") ctx.globalAlpha = 0.18;
+      const fill = s === "now" ? "#FFF3D6" : s === "found" ? C.goodBg : s === "seen" ? "#EEF1F3" : "#fff", stroke = s === "now" ? C.accent : s === "found" ? C.good : s === "seen" ? "#C9D4DB" : "#B7C4CC";
+      ctx.fillStyle = fill; rr(ctx, x, y, 170, 150, 16); ctx.fill(); ctx.strokeStyle = stroke; ctx.lineWidth = s === "now" || s === "found" ? 8 : 4; rr(ctx, x, y, 170, 150, 16); ctx.stroke();
+      text(ctx, String(v), x + 85, y + 95, 60, { align: "center", weight: 900, color: s === "seen" ? C.muted : C.ink }); ctx.restore(); });
+  }
+  Object.assign(K.SCENES, {
+    k19s_cari(ctx, b, l) {
+      const lin = b.mode === "linear";
+      text(ctx, lin ? "cari linear · 10 data" : "cari biner · 10 data", 70, 90, 44, { weight: 900, color: lin ? C.bad : C.good });
+      text(ctx, "target: 85", 70, 160, 40, { weight: 900, color: C.accentDark });
+      let cmp, done;
+      if (lin) { const p = prog(l, b, 0.08, 0.7), k = Math.min(9, Math.floor(p * 10)); done = p >= 1; cmp = Math.min(10, k + 1); shortCards(ctx, i => i < k ? "seen" : i === k ? (done ? "found" : "now") : ""); }
+      else { const steps = Qk.binary(ARR10, 85); const p = prog(l, b, 0.08, 0.72); const k = clamp(Math.floor(p * steps.length), 0, steps.length - 1); const st = steps[k]; done = st.found && p >= 1; cmp = k + 1;
+        shortCards(ctx, i => i < st.lo || i > st.hi ? "dim" : i === st.mid ? (st.found ? "found" : "now") : "");
+        text(ctx, "sisa data:", 70, 690, 36, { weight: 900, color: C.ink2 }); [10, 5, 2, 1].forEach((v, i) => { if (i > k) return; const x = 270 + i * 180; card(ctx, x, 640, 130, 76, { fill: i === k ? "#FFF3D6" : C.bg2, stroke: i === k ? C.accent : undefined, lw: 4, r: 14 }); text(ctx, String(v), x + 65, 693, 44, { align: "center", weight: 900 }); if (i < k) text(ctx, "→", x + 155, 692, 34, { align: "center", weight: 900, color: C.ink2 }); }); }
+      counter(ctx, 700, 40, cmp, "perbandingan", { w: 320, size: 64, ...(done ? { fill: C.goodBg, stroke: C.good, color: C.good } : {}) });
+      if (lin) text(ctx, done ? "85 = 85: ketemu" : "satu per satu →", 70, 700, 44, { weight: 900, color: done ? C.good : C.ink2 });
+    },
+    k19s_juta(ctx, b, l) {
+      const fin = b.fin; const pl = fin ? 1 : prog(l, b, 0.03, 0.3);
+      counter(ctx, 60, 40, Math.round(1000000 * Math.pow(pl, 2.2)), "cari linear", { w: 560, size: 70, fill: C.badBg, stroke: C.bad, color: C.bad });
+      const seq = []; let lo = 0, hi = 999999; while (lo <= hi) { seq.push(hi - lo + 1); const m = Math.floor((lo + hi) / 2); lo = m + 1; }
+      const pb = fin ? 1 : prog(l, b, 0.36, 0.88), kb = fin ? 19 : (l > A(b) * 0.33 ? clamp(Math.floor(pb * 20), 0, 19) : -1);
+      counter(ctx, 660, 40, kb + 1, "cari biner", { w: 360, size: 70, fill: C.goodBg, stroke: C.good, color: C.good });
+      seq.forEach((s, i) => { if (i > kb) return; const c = i % 4, r = Math.floor(i / 4); const x = 60 + c * 245, y = 200 + r * 92;
+        card(ctx, x, y, 230, 76, { fill: i === kb ? "#FFF3D6" : i === 19 ? C.goodBg : C.bg2, stroke: i === kb ? C.accent : undefined, lw: 4, r: 12 }); text(ctx, fmt(s), x + 115, y + 52, 36, { align: "center", weight: 900, fit: 210 }); });
+      if (fin) { card(ctx, 60, 680, 960, 110, { fill: "#FFF3D6", stroke: C.accent, lw: 5, r: 18 }); text(ctx, "1.000.000 lawan 20", 540, 755, 60, { align: "center", weight: 900, color: C.accentDark }); }
+    },
+    k19s_urut(ctx, b, l) {
+      const u2 = l > A(b) * 0.4;
+      card(ctx, 60, 40, 960, 330, { fill: C.badBg, stroke: C.bad, lw: 5, r: 22 }); text(ctx, "bubble sort · sejuta data", 100, 110, 42, { weight: 900, color: C.bad });
+      text(ctx, "499.999.500.000", 100, 200, 66, { weight: 900 }); text(ctx, "perbandingan", 100, 245, 32, { weight: 800, color: C.ink2 });
+      dim(ctx, u2, () => { stopwatch(ctx, 860, 200, 70, (l * 0.8) % 1); text(ctx, "≈ 13,9 jam", 100, 335, 60, { weight: 900, color: C.bad }); });
+      card(ctx, 60, 400, 960, 330, { fill: C.goodBg, stroke: C.good, lw: 5, r: 22 }); text(ctx, "sorted() · sejuta data", 100, 470, 42, { weight: 900, color: C.good });
+      text(ctx, "≈ 19.931.569", 100, 560, 66, { weight: 900 }); text(ctx, "perbandingan", 100, 605, 32, { weight: 800, color: C.ink2 });
+      dim(ctx, u2, () => { text(ctx, "⚡", 860, 590, 110, { align: "center" }); text(ctx, "≈ 2 detik", 100, 695, 60, { weight: 900, color: C.good }); });
+      text(ctx, "andaikan 10 juta perbandingan per detik", 540, 785, 32, { align: "center", weight: 800, color: C.ink2 });
+    },
+    k19s_grafik(ctx, b, l) {
+      const show = [1, 1, prog(l, b, 0.03, 0.4), prog(l, b, 0.5, 0.8)];
+      chart(ctx, show, { x: 180, y: 80, w: 800, h: 480, nx: 1000, ny: 10000 });
+      CURVES.forEach(([name, big, f, col], k) => { const x = 60 + (k % 2) * 490, y = 640 + Math.floor(k / 2) * 80; ctx.save(); if (!show[k]) ctx.globalAlpha = 0.2; ctx.fillStyle = col; rr(ctx, x, y + 18, 50, 14, 7); ctx.fill(); text(ctx, name + " (" + big + ")", x + 66, y + 38, 36, { weight: 900, color: col, fit: 400 }); ctx.restore(); });
+    }
+  });
 })(typeof window !== "undefined" ? window : globalThis);

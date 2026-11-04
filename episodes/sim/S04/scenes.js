@@ -268,7 +268,7 @@
       });
       kiko(ctx, 1300, 600, 150, 0, { mood: t > 0.7 ? "confused" : "happy" });
       if (t > 0.7) { card(ctx, 1110, 220, 520, 180, { fill: "#FFFFFF", stroke: C.accent, lw: 4, r: 24 }); para(ctx, "Benarkah dua kali lebih sering telat?", 1370, 290, 32, 460, { align: "center", weight: 900, lh: 1.25 }); }
-      if (t > 1.02) { const u = clamp((t - 1.02) / 0.3, 0, 1); ctx.strokeStyle = C.accent; ctx.lineWidth = 10; ctx.beginPath(); ctx.arc(1600, 160, 34, -Math.PI / 2, -Math.PI / 2 + u * Math.PI * 2); ctx.stroke(); text(ctx, "Pikirkan dulu", 1600, 230, 24, { align: "center", weight: 800, color: C.ink2 }); }
+      if (t > 1.02) { const u = clamp((t - 1.02) / 0.3, 0, 1); ctx.strokeStyle = C.accent; ctx.lineWidth = 10; ctx.beginPath(); ctx.arc(1600, 520, 34, -Math.PI / 2, -Math.PI / 2 + u * Math.PI * 2); ctx.stroke(); text(ctx, "Pikirkan dulu", 1600, 595, 24, { align: "center", weight: 800, color: C.ink2 }); }
     },
     tipu_sumbu(ctx, b, l) {
       const t = l / spanOf(b);
@@ -314,7 +314,7 @@
       const t = l / spanOf(b);
       chartCard(ctx, 140, 136, 780, 600, "SEBELUM: MENIPU ✗", { ...S_TELAT, yMin: 3, yMax: 3.6, yStep: 0.1, title: "Rata-rata murid telat per hari", dataLabels: true, s: 0.9 }, RED);
       chartCard(ctx, 1000, 136, 780, 600, "SESUDAH: JUJUR ✓", { ...S_TELAT, color: GREEN, yMin: 0, yMax: 4, yStep: 0.5, title: "Rata-rata murid telat per hari", dataLabels: true, s: 0.9, grow: clamp(l / 1.2, 0, 1) }, GREEN);
-      if (t > 0.3) { const s2 = t > 0.72 ? "Klaim di grup kelas: tidak terbukti." : "Selisih kecil tampak kecil."; card(ctx, 560, 752, 800, 66, { fill: t > 0.72 ? C.ink : GREEN, r: 18 }); text(ctx, s2, 960, 796, 30, { align: "center", weight: 900, color: "#FFFFFF" }); }
+      if (t > 0.45) { const s2 = t > 0.72 ? "Klaim di grup kelas: tidak terbukti." : "Selisih kecil tampak kecil."; card(ctx, 560, 752, 800, 66, { fill: t > 0.72 ? C.ink : GREEN, r: 18 }); text(ctx, s2, 960, 796, 30, { align: "center", weight: 900, color: "#FFFFFF" }); }
     },
     tipu_otomatis(ctx, b, l) {
       const t = l / spanOf(b);

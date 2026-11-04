@@ -236,10 +236,11 @@
       opsRow(ctx, QUE, b.ask ? -1 : r.s);
       // meja kantin di kiri (tempat dilayani)
       ctx.fillStyle = C.tableTop; rr(ctx, 130, 400, 150, 110, 12); ctx.fill(); text(ctx, "KASIR", 205, 465, 24, { align: "center", weight: 900, color: "#fff" });
-      queueDraw(ctx, 480, 420, r.items, r.moving, { w: 190, h: 72, cap: 5, size: 30 });
+      const sh = !!b.short; // versi Short: antrean lebih rapat supaya terbaca di ponsel
+      queueDraw(ctx, sh ? 300 : 480, 420, r.items, r.moving, { w: sh ? 140 : 190, h: 72, cap: sh ? 4 : 5, size: 30 });
       if (b.ask) askCard(ctx, 480, 560, 1300, 240, "Siapa yang dilayani pada dequeue ketiga, dan siapa yang tersisa?");
-      else outPanel(ctx, 480, 580, 1300, "DILAYANI (dequeue), urut", r.out, { hlLast: b.done, cw: 190, h: 190 });
-      if (b.done) { card(ctx, 1240, 655, 520, 90, { fill: C.goodBg, stroke: C.good, lw: 3, r: 14 }); text(ctx, "sisa: Budi (paling depan)", 1500, 712, 30, { align: "center", weight: 900, color: C.good }); }
+      else outPanel(ctx, sh ? 100 : 480, 580, sh ? 820 : 1300, "DILAYANI (dequeue), urut", r.out, { hlLast: b.done, cw: sh ? 150 : 190, h: 190 });
+      if (b.done) { if (sh) ctx.translate(-1140, 135); card(ctx, 1240, 655, 520, 90, { fill: C.goodBg, stroke: C.good, lw: 3, r: 14 }); text(ctx, "sisa: Budi (paling depan)", 1500, 712, 30, { align: "center", weight: 900, color: C.good }); }
     },
     k15_dua(ctx, b, l) {
       heading(ctx, "VARIASI 5 · URUTAN SAMA, STACK LAWAN QUEUE");

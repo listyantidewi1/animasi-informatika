@@ -255,6 +255,21 @@
       text(ctx, msg, 990, 650, 30, { weight: 900, color: st.kind === "done" ? C.good : C.ink, fit: 790 });
       if (st.kind === "cmp") { text(ctx, "kuning = calon terkecil", 990, 700, 24, { weight: 800, color: AMBER }); text(ctx, "biru = kartu yang dibandingkan", 1310, 700, 24, { weight: 800, color: C.kiko }); }
     },
+    // versi sempit untuk Short (lebar 900 px)
+    k6_banding_hp(ctx, b, l) {
+      card(ctx, 130, 140, 900, 640);
+      header(ctx, "PALING LAMA BERAPA LANGKAH?", 580, 200, { align: "center", size: 32 });
+      text(ctx, "8 kartu", 700, 255, 28, { align: "center", weight: 900, color: C.ink2 }); text(ctx, "16 kartu", 900, 255, 28, { align: "center", weight: 900, color: C.ink2 });
+      const rows = [["cari satu per satu", 8, 16, "× 2", C.bad], ["cari belah dua", 4, 5, "+ 1", C.good], ["mengurutkan", 28, 120, "× 4,3", DEEP]];
+      rows.forEach(([nm, x8, x16, ch, col], i) => {
+        if (i === 2 && !b.full) return;
+        const y = 280 + i * 160, g = ease(clamp((l - 0.3 - i * 0.6) / 0.8, 0, 1));
+        card(ctx, 150, y, 860, 140, { fill: "#F7FAF8", stroke: "#D7E2DC", lw: 2, r: 18 });
+        text(ctx, nm, 175, y + 62, 34, { weight: 900, fit: 400 }); text(ctx, ch, 175, y + 112, 34, { weight: 900, color: col });
+        text(ctx, String(x8), 700, y + 92, 60, { align: "center", weight: 900, color: C.ink2 });
+        ctx.globalAlpha = g; text(ctx, String(x16), 900, y + 92, 60, { align: "center", weight: 900, color: col }); ctx.globalAlpha = 1;
+      });
+    },
     k6_banding(ctx, b, l) {
       const a = b.audio || b.dur, full = !!b.full;
       card(ctx, 120, 140, 1680, 690);

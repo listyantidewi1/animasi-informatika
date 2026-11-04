@@ -125,7 +125,7 @@
     bs.forEach(([s, ic], i) => { const x = 30 + i * 104, hl = o.hl === i; c.fillStyle = hl ? "#FFF3D6" : "#FFFFFF"; rr(c, x, 296, 92, 84, 16); c.fill(); if (hl) { c.strokeStyle = C.accent; c.lineWidth = 2.5; rr(c, x, 296, 92, 84, 16); c.stroke(); }
       HP.icon(c, ic, x + 46, 326, 24, i === 1 ? RED : BLUE); text(c, s, x + 46, 364, 15, { align: "center", weight: 800, color: i === 1 ? RED : BLUE, fit: 86 }); out[s] = { x: x + 46, y: 338 }; });
     HP.list(c, [{ label: "Izin", sub: "SMS, kontak, lokasi", subColor: RED, arrow: true }, { label: "Penyimpanan", sub: "120 MB", arrow: true }, { label: "Notifikasi", sub: "Diizinkan", arrow: true }], { y: 396 });
-    if (o.dialog) { const d = HP.dialog(c, { title: "Uninstal Kuota Gratis 50GB?", body: "Aplikasi dan datanya akan dihapus dari HP.", buttons: ["Batal", "OK"], hl: o.ok ? 1 : null, u: o.dialog }); out.ok = d.buttons[1]; }
+    if (o.dialog) { const d = HP.dialog(c, { title: "Uninstal Kuota Gratis 50GB?", body: "Aplikasi dan datanya akan dihapus dari HP.", buttons: ["Batal", "OK"], hl: o.ok ? 1 : null, u: o.dialog }); out.ok = d.buttons[1]; out.box = d.box; }
     return out;
   }
   const PERMS = [{ label: "Lokasi", icon: "location", sub: "5 aplikasi diizinkan" }, { label: "Kamera", icon: "camera", sub: "3 aplikasi diizinkan" }, { label: "Mikrofon", icon: "mic", sub: "2 aplikasi diizinkan" },
@@ -266,10 +266,10 @@
       if (R.st.scr === "apps") notes(ctx, y, [after(b, l, 0.4) && { s: "Kuota Gratis: dari luar toko", fill: C.badBg, color: RED }, after(b, l, 0.55) && { s: "Balap Liar: 5 bulan tidak dibuka" }, after(b, l, 0.7) && { s: "Senter Super: 1 bulan tidak dibuka" }]);
     },
     apps_uninstal(ctx, b, l) {
-      const span = spanOf(b), ar = rowsOf(APPS(), { y: 112 }), dl = measure(m => appInfo(m, { dialog: 1 })).ok;
+      const span = spanOf(b), ar = rowsOf(APPS(), { y: 112 }), di = measure(m => appInfo(m, { dialog: 1 })), dl = di.ok, db = di.box;
       const R = HP.run({ scr: "apps" }, [{ tap: tapRow(ar, 1), set: { scr: "info" }, d: 1 }, { wait: 1, d: 0.4 }, { tap: [150, 338], set: { dialog: 1 }, d: 1 }, { wait: 1, d: 0.5 }, { tap: [dl.cx, dl.cy], set: { ok: true }, d: 1 }, { set: { scr: "apps2", dialog: 0 }, d: 0.1 }, { anim: "toast", d: 2 }], l, span);
       const st = R.st;
-      const src = st.scr === "apps" ? { u: 0, v: 104, w: 360, h: 200 } : st.scr === "info" ? (st.dialog ? { u: 0, v: dl.cy - 150, w: 360, h: 200 } : { u: 0, v: 130, w: 360, h: 270 }) : { u: 0, v: 104, w: 360, h: 260 };
+      const src = st.scr === "apps" ? { u: 0, v: 104, w: 360, h: 200 } : st.scr === "info" ? (st.dialog ? { u: 0, v: db.y - 12, w: 360, h: db.h + 24 } : { u: 0, v: 130, w: 360, h: 270 }) : { u: 0, v: 104, w: 360, h: 260 };
       show(ctx, c => {
         if (st.scr === "apps") appsPage(c, { hl: "kuota" });
         else if (st.scr === "info") appInfo(c, { hl: R.i >= 2 && !st.dialog ? 1 : null, dialog: st.dialog, ok: st.ok });

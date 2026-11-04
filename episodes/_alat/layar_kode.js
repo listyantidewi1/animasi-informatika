@@ -8,6 +8,7 @@
    LK.MONO                         font monospace ("JetBrains Mono", DejaVu Sans Mono, Liberation Mono, monospace)
    LK.T, LK.TD                     tema terang (editor/notebook) dan gelap (terminal): warna sintaks, latar, garis
    LK.mono(ctx, size, weight)      pasang font monospace; mengembalikan lebar satu huruf
+   LK.monoText(ctx, s, x, y, cw)   tulis teks monospace huruf demi huruf (tanpa ligatur: <= tetap dua huruf, bukan ≤)
    LK.tokens(line)                 -> [{s, k}]  k: kw | bi (fungsi bawaan) | str | num | com | op | fn (nama setelah def) | txt
    LK.code(ctx, x, y, lines, opt)  baris kode berwarna tanpa bingkai. lines: ["teks", ...] atau [{t, hl, err, dim}]
        opt: size 24 · lh (1,55×size) · w (lebar sorotan) · nums true|false|angka awal · hl [i] · err i · dim [i]
@@ -52,6 +53,8 @@
    LK.steps(ctx, title, items, n, opt) panel langkah di kanan (x 1450, lebar 370) sama dengan S02; langkah ke-n sedang dikerjakan
    LK.phase(l, span, a, b)         kemajuan 0..1 antara fraksi a dan b dari span (untuk menyusun aksi berurutan)
    LK.clip(ctx, box, fn)           gambar fn() terpotong di dalam box (mis. isi notebook yang digulir)
+   LK.icons.folder/upload/doc(ctx, x, y, s, warna)  ikon garis sederhana
+   Pola gulir: h = LK.cellHeight(ctx, w, opt); geser sel ke atas sebesar kelebihan tingginya di dalam LK.clip (lihat cellFit di sim/S21).
 */
 (function (global) {
   const K = global.Kiko, H = K.helpers, C = K.C, L = K.layar;
