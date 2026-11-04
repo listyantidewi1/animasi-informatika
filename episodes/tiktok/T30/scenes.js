@@ -54,7 +54,7 @@
       if (k > 0) {
         ctx.save(); ctx.strokeStyle = "rgba(184,192,238,0.4)"; ctx.lineWidth = 8; ctx.setLineDash([16, 14]); ctx.beginPath(); ctx.moveTo(260, y + 420); ctx.quadraticCurveTo(400, y + 160, 560, y + 200); ctx.stroke(); ctx.restore();
         const px = k < 1 ? lerp(200, 640, k) : 640, py = k < 1 ? lerp(y + 470, y + 180, k) - Math.sin(k * Math.PI) * 80 : y + 180;
-        if (k < 1) photo(ctx, px - 50, py - 38, 100, 76);
+        if (k < 1) photo(ctx, px - 50, py - 38, 100, 76); else { card(ctx, 640, y + 140, 120, 92, { fill: C.ink, r: 10 }); photo(ctx, 646, y + 146, 108, 80); }
         // bilah upload di layar HP
         card(ctx, 110, y + 600, 180, 22, { fill: C.panel2, r: 11 }); card(ctx, 110, y + 600, Math.max(22, 180 * k), 22, { fill: C.tosca, r: 11 });
         text(ctx, "upload " + Math.round(100 * k) + "%", 200, y + 660, 30, { align: "center", weight: 800, color: C.ink });
@@ -77,8 +77,8 @@
       for (let i = 0; i < 8; i++) { ctx.fillStyle = rnd(i + Math.floor(t * 2)) > 0.3 ? C.kuning : "#1B2257"; rr(ctx, 180 + i * 80, y + 260, 50, 70, 6); ctx.fill(); }
       // deretan server di dalam
       const ry = y + 520;
-      for (let i = 0; i < 5; i++) { const u = clamp(ph(b, l, "berjajar", 0.3) * 5 - i * 0.6, 0, 1); if (u <= 0) continue; ctx.save(); ctx.globalAlpha = u; rack(ctx, 160 + i * 160, ry, 130, t, i + 5); ctx.restore(); }
-      const us = pop(b, l, "siang malam"), sy = ry + 150;
+      for (let r = 0; r < 2; r++) for (let i = 0; i < 5; i++) { const u = clamp(ph(b, l, "berjajar", 0.3) * 5 - i * 0.6 - r * 0.5, 0, 1); if (u <= 0) continue; ctx.save(); ctx.globalAlpha = u; rack(ctx, 160 + i * 160, ry + r * 200, 150, t, i + 5 + r * 7); ctx.restore(); }
+      const us = pop(b, l, "siang malam"), sy = ry + 330;
       if (us > 0 && sy + 40 < A.bot) { ctx.save(); ctx.translate(480, sy); ctx.scale(us, us); pill(ctx, "menyala 24 jam", 0, 0, 46, { fill: C.tosca }); ctx.restore(); }
     },
 
@@ -86,13 +86,13 @@
     t30_salin(ctx, b, l, t, TL, A) {
       const y = A.y + 20, xs = [200, 480, 760], names = ["Gedung A", "Gedung B", "Gedung C"];
       xs.forEach((x, i) => {
-        const u = pop(b, l, "disalin", 0.4 + i * 0.12); rack(ctx, x, y + 160, 180, t, i + 9);
-        text(ctx, names[i], x, y + 310, 36, { align: "center", weight: 800, color: C.ink2 });
-        if (u > 0) { ctx.save(); ctx.translate(x, y + 160); ctx.scale(u, u); card(ctx, -62, -48, 124, 96, { fill: C.ink, r: 10 }); photo(ctx, -56, -42, 112, 84); ctx.restore(); }
+        const u = pop(b, l, "disalin", 0.4 + i * 0.12); rack(ctx, x, y + 180, 220, t, i + 9);
+        text(ctx, names[i], x, y + 360, 38, { align: "center", weight: 800, color: C.ink2 });
+        if (u > 0) { ctx.save(); ctx.translate(x, y + 180); ctx.scale(u, u); card(ctx, -62, -48, 124, 96, { fill: C.ink, r: 10 }); photo(ctx, -56, -42, 112, 84); ctx.restore(); }
       });
-      const ph1 = ph(b, l, "hilang", 0.5), py = y + 560;
-      ctx.save(); ctx.globalAlpha = 1 - ph1 * 0.6; phone(ctx, 300, py, 260); photo(ctx, 260, py - 60, 80, 60); ctx.restore();
-      if (ph1 > 0) { cross(ctx, 300, py, 160 * ph1, C.bad); text(ctx, "HP hilang", 300, py + 180, 40, { align: "center", weight: 900, color: C.bad }); }
+      const ph1 = ph(b, l, "hilang", 0.5), py = y + 640;
+      ctx.save(); ctx.globalAlpha = 1 - ph1 * 0.6; phone(ctx, 280, py, 320); photo(ctx, 232, py - 80, 96, 72); ctx.restore();
+      if (ph1 > 0) { cross(ctx, 280, py, 180 * ph1, C.bad); text(ctx, "HP hilang", 280, py + 210, 42, { align: "center", weight: 900, color: C.bad }); }
       const ut = pop(b, l, "tetap ada");
       if (ut > 0) { ctx.save(); ctx.translate(650, py); ctx.scale(ut, ut); card(ctx, -170, -100, 340, 200, { fill: C.goodBg, stroke: C.good, lw: 5 });
         check(ctx, 0, -30, 70, C.good); text(ctx, "File tetap ada", 0, 60, 40, { align: "center", weight: 900, color: C.ink }); ctx.restore(); }
