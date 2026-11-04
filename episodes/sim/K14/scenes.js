@@ -72,19 +72,19 @@
     J.laptop(ctx, 110, 110, 150);
     text(ctx, "seseorang", 110, 205, 22, { align: "center", weight: 900 }); text(ctx, "di kota lain", 110, 232, 20, { align: "center", weight: 800, color: C.ink2 });
     chip(ctx, "🔑 punya sandi Sinta", 110, 280, { size: 18, fill: "#FFF3D6", stroke: C.accent, color: C.accentDark });
-    const g1 = S.k >= 2 || (S.k >= 1 && S.u >= 1) ? "ok" : null;
+    const sd = mode === "sandi", g1 = sd ? (S.k >= 3 || (S.k >= 2 && S.u >= 0.8) ? "ok" : null) : (S.k >= 2 || (S.k >= 1 && S.u >= 1) ? "ok" : null);
     let g2 = mode === "sandi" ? "none" : null; if (mode !== "sandi" && S.k >= 3 && S.u > 0.3) g2 = "stop";
     gate(ctx, 430, 10, "lapis 1: sandi", "🔑", g1);
     gate(ctx, 660, 10, mode === "sandi" ? "lapis 2" : "lapis 2: " + M.g2, M.g2ic, g2);
     const open = mode === "sandi" && S.k >= 3 && S.u > 0.6;
     account(ctx, 830, 10, 250, open ? "open" : mode !== "sandi" && S.k >= 3 && S.u > 0.6 ? "safe" : null);
     // token kunci bergerak
-    let tx = 200, ty = 115;
-    if (S.k === 1) tx = lerp(200, 430, ease(Math.min(1, S.u * 1.4)));
-    if (S.k === 2) tx = lerp(430, 660, ease(Math.min(1, S.u * 1.4)));
-    if (S.k >= 3) tx = mode === "sandi" ? lerp(660, 900, ease(Math.min(1, S.u * 1.4))) : 600;
+    let tx = 270, ty = 115;
+    if (sd) { if (S.k === 1) tx = lerp(270, 300, ease(Math.min(1, S.u * 1.4))); if (S.k >= 2) tx = lerp(300, 545, ease(Math.min(1, S.k > 2 ? 1 : S.u * 1.4))); }
+    else { if (S.k === 1) tx = lerp(270, 545, ease(Math.min(1, S.u * 1.4))); if (S.k >= 2) tx = 545; }
+    if (S.k >= 3 && mode === "sandi") tx = lerp(545, 900, ease(Math.min(1, S.u * 1.4)));
     if (!(mode === "sandi" && S.k >= 3 && S.u >= 0.7)) { ctx.fillStyle = "#FFF3D6"; ctx.beginPath(); ctx.arc(tx, ty, 30, 0, Math.PI * 2); ctx.fill(); ctx.strokeStyle = C.accent; ctx.lineWidth = 4; ctx.stroke(); text(ctx, "🔑", tx, ty + 12, 32, { align: "center" }); }
-    if (mode !== "sandi" && S.k >= 3) chip(ctx, "tertahan", 600, 52, { size: 22, fill: C.badBg, stroke: C.bad, color: C.bad });
+    if (mode !== "sandi" && S.k >= 3) chip(ctx, "tertahan", 545, 40, { size: 22, fill: C.badBg, stroke: C.bad, color: C.bad });
     ctx.restore();
   }
   // HP Sinta
@@ -119,6 +119,26 @@
       }
     });
     return ph;
+  }
+  // panel besar di samping HP: isi layar HP yang sedang penting, dengan huruf besar
+  function callout(ctx, x, y, w, mode, S, l, o = {}) {
+    const box = (h, fill, stroke) => card(ctx, x, y, w, h, { fill, stroke, lw: 4, r: 18 });
+    const cx = x + w / 2;
+    if (mode === "sandi") { box(200, "#F1F4F2", "#B7C4CC"); text(ctx, "🔕", cx, y + 70, 48, { align: "center" }); para(ctx, "Tidak ada pemberitahuan. Sinta tidak tahu apa-apa.", cx, y + 125, 24, w - 40, { align: "center", weight: 900, color: C.ink2, lh: 1.2 }); return; }
+    if (mode === "otp") { if (S.k < 2) return; const u = S.k > 2 ? 1 : clamp(S.u * 1.6, 0, 1); ctx.save(); ctx.globalAlpha = u;
+      box(300, "#fff", "#2E8B57"); text(ctx, "💬 SMS · 21.14", x + 22, y + 44, 22, { weight: 900, color: "#2E8B57" }); text(ctx, "Kode masuk:", x + 22, y + 94, 24, { weight: 800 });
+      text(ctx, fmt(codeAt(3)), cx, y + 162, 56, { align: "center", weight: 900, color: C.kiko }); para(ctx, "Jangan berikan kode ini kepada siapa pun.", cx, y + 214, 23, w - 40, { align: "center", weight: 900, color: C.bad, lh: 1.2 }); ctx.restore(); return; }
+    if (mode === "app") { const T = HP.totp(l * 3 + 12, 30); box(300, "#fff", HP.UI.primary); text(ctx, "🔢 Autentikator", x + 22, y + 44, 22, { weight: 900, color: HP.UI.primary }); text(ctx, "Akun sekolah", x + 22, y + 88, 22, { weight: 800 });
+      text(ctx, fmt(codeAt(T.idx)), x + 22, y + 160, 56, { weight: 900, color: T.secs <= 5 ? C.bad : C.kiko }); HP.ring(ctx, x + w - 46, y + 142, 24, T.secs / 30, T.secs <= 5 ? C.bad : HP.UI.primary);
+      para(ctx, "Kode baru setiap 30 detik, bisa tanpa internet.", cx, y + 214, 23, w - 40, { align: "center", weight: 800, color: C.ink2, lh: 1.2 }); return; }
+    if (S.k < 1 && !o.force) return;
+    const u = S.k > 1 || o.force ? 1 : clamp(S.u * 1.5, 0, 1), tolak = o.tolak || (S.k >= 2 && (S.k > 2 || S.u > 0.35)), done = S.k >= 3 && S.u > 0.4;
+    ctx.save(); ctx.globalAlpha = u; box(o.h || 380, "#fff", HP.UI.primary);
+    text(ctx, "🛡️ Apakah ini kamu?", cx, y + 52, 30, { align: "center", weight: 900 });
+    para(ctx, "Percobaan masuk dari perangkat baru di Kota Lain, pukul 21.14.", cx, y + 100, 23, w - 40, { align: "center", weight: 700, color: C.ink2, lh: 1.2 });
+    [["Ya, ini saya", false], ["Tolak", true]].forEach(([t, isT], i) => { const by = y + 200 + i * 76, on = isT && tolak; card(ctx, x + 24, by, w - 48, 62, { fill: on ? C.bad : HP.UI.primaryBg, r: 16 }); text(ctx, t, cx, by + 41, 26, { align: "center", weight: 900, color: on ? "#fff" : isT ? C.bad : HP.UI.primary }); if (isT && S.k === 2 && !o.tolak) HP.tap(ctx, cx + 60, by + 31, clamp(S.u * 1.3, 0, 1), { r: 30 }); });
+    ctx.restore();
+    if (done) chip(ctx, "✓ percobaan diblokir", cx, y + (o.h || 380) + 34, { size: 24, fill: C.goodBg, stroke: C.good, color: C.good });
   }
   function log(ctx, x, y, w, mode, S) {
     const L = MODE[mode].log;
@@ -158,14 +178,15 @@
     k14_masuk(ctx, b, l) {
       const mode = b.mode || "sandi", S = alur(b, l);
       card(ctx, 120, 150, 1680, 670); heading(ctx, MODE[mode].head, 200);
-      row(ctx, 170, 240, 1, mode, S);
-      phone(ctx, 1560, 485, 560, mode, S, l);
-      text(ctx, "HP Sinta", 1560, 798, 22, { align: "center", weight: 900, color: C.ink2 });
+      row(ctx, 170, 245, 0.9, mode, S);
+      phone(ctx, 1652, 490, 540, mode, S, l);
+      text(ctx, "HP Sinta", 1652, 800, 22, { align: "center", weight: 900, color: C.ink2 });
+      callout(ctx, 1180, 250, 330, mode, S, l);
       if (b.after) {
-        card(ctx, 170, 600, 1100, 190, { fill: C.badBg, stroke: C.bad, lw: 3, r: 16 });
+        card(ctx, 170, 600, 990, 190, { fill: C.badBg, stroke: C.bad, lw: 3, r: 16 });
         text(ctx, "Orang itu kini bisa:", 200, 645, 26, { weight: 900, color: C.bad });
         ["membaca pesan Sinta", "mengganti sandinya", "mengirim pesan atas nama Sinta"].forEach((s, i) => { if (l < 0.6 + i * 1.2) return; text(ctx, "• " + s, 220 + (i % 2) * 520, 700 + Math.floor(i / 2) * 50, 26, { weight: 800 }); });
-      } else log(ctx, 170, 600, 1100, mode, S);
+      } else log(ctx, 170, 600, 990, mode, S);
     },
     k14_tanya(ctx, b, l) {
       const v = b.v; card(ctx, 120, 150, 1680, 670);
@@ -173,11 +194,11 @@
       heading(ctx, H2[v]);
       const mode = { 1: "otp", 2: "app", 3: "notif", 4: "app" }[v];
       if (v < 4) {
-        row(ctx, 170, 240, 1, mode, { k: 0, u: 0 });
-        ctx.save(); ctx.fillStyle = "rgba(255,255,255,0.0)"; ctx.restore();
-        text(ctx, "?", 830, 320, 80, { align: "center", weight: 900, color: C.accentDark });
-        phone(ctx, 1560, 485, 560, mode, { k: v === 3 ? 1 : 2, u: v === 3 ? 0.7 : 1 }, 0);
-        text(ctx, "HP Sinta", 1560, 798, 22, { align: "center", weight: 900, color: C.ink2 });
+        row(ctx, 170, 245, 0.9, mode, { k: 0, u: 0 });
+        phone(ctx, 1652, 490, 540, mode, { k: 0, u: 0 }, 0);
+        text(ctx, "HP Sinta", 1652, 800, 22, { align: "center", weight: 900, color: C.ink2 });
+        const D = { 1: ["💬", "Kode dikirim lewat SMS ke HP Sinta."], 2: ["🔢", "Kode dibuat oleh aplikasi di HP Sinta."], 3: ["🛡️", "HP Sinta bertanya: Apakah ini kamu?"] }[v];
+        card(ctx, 1180, 250, 330, 230, { fill: "#FFF3D6", stroke: C.accent, lw: 4, r: 18 }); text(ctx, D[0], 1345, 320, 50, { align: "center" }); para(ctx, D[1], 1345, 380, 25, 290, { align: "center", weight: 900, color: C.accentDark, lh: 1.2 });
       } else {
         // HP hilang: HP dicoret, Sinta di laptop rumah ingin masuk
         ctx.save(); ctx.globalAlpha = 0.35; phone(ctx, 1560, 485, 560, "app", { k: 0, u: 0 }, 0); ctx.restore();
@@ -194,7 +215,7 @@
       K.SCENES.k14_tanya(ctx, b, 5);
       const n = b.pilih.length, w = 380, g = 24, x0 = 720 - (n * w + (n - 1) * g) / 2;
       b.pilih.forEach((s, i) => { card(ctx, x0 + i * (w + g), 718, w, 70, { fill: "#fff", stroke: C.kiko, lw: 3, r: 35 }); text(ctx, "ABC"[i] + ". " + s, x0 + i * (w + g) + w / 2, 763, 26, { align: "center", weight: 900, color: C.kikoDark, fit: w - 30 }); });
-      thinking(ctx, 1730, 215, l, b.dur);
+      thinking(ctx, 1440, 210, l, b.dur);
     },
     k14_cadangan(ctx, b, l) {
       const c = cues(b, 3, [0.15, 0.5, 0.78]);
@@ -231,7 +252,7 @@
       card(ctx, 120, 150, 1680, 670);
       if (v === 1) {
         heading(ctx, "KODE DATANG, PADAHAL SINTA TIDAK LOGIN");
-        phone(ctx, 420, 485, 560, "otp", { k: 3, u: 1 }, 0);
+        callout(ctx, 220, 300, 420, "otp", { k: 3, u: 1 }, l);
         const items = [["⚠️", "Sandi Sinta sudah diketahui orang lain.", C.bad, C.badBg, "Perhatikan"], ["🤐", "Jangan bagikan kode kepada siapa pun.", C.accentDark, "#FFF3D6", "Jangan bagikan"], ["🔁", "Segera ganti sandi akun itu.", C.good, C.goodBg, "ganti sandi"]];
         items.forEach(([ic, s, col, bg, cue], i) => { const t = i === 0 ? at(b, "Artinya") : at(b, cue); if (l < t) return; card(ctx, 720, 270 + i * 150, 1000, 124, { fill: bg, stroke: col, lw: 4, r: 18 }); text(ctx, ic, 790, 350 + i * 150, 50, { align: "center" }); text(ctx, s, 850, 345 + i * 150, 32, { weight: 900, color: col, fit: 840 }); });
       } else if (v === 2) {
@@ -243,7 +264,7 @@
         if (l > a * 0.6) banner(ctx, "keduanya jauh lebih aman daripada sandi saja", 680, { w: 1100, fill: C.goodBg, stroke: C.good, color: C.good });
       } else if (v === 3) {
         heading(ctx, "PERMINTAAN MASUK YANG BUKAN KAMU");
-        phone(ctx, 420, 485, 560, "notif", { k: 2, u: 0.5 }, 0);
+        callout(ctx, 220, 260, 420, "notif", { k: 2, u: 1 }, l, { force: true, tolak: true, h: 360 });
         const st = [["1", "Tekan Tolak, sesering apa pun ia muncul.", "jangan tekan Ya"], ["2", "Ganti sandimu.", "Tekan Tolak"], ["3", "Periksa daftar perangkat di akunmu.", "karena sandimu"]];
         card(ctx, 720, 260, 1000, 110, { fill: C.badBg, stroke: C.bad, lw: 4, r: 18 }); text(ctx, "❌ Jangan tekan Ya untuk permintaan yang tidak kamu lakukan.", 1220, 325, 28, { align: "center", weight: 900, color: C.bad, fit: 950 });
         st.forEach(([k, s, cue], i) => { if (l < at(b, cue) + (i === 0 ? 0.5 : 0)) return; card(ctx, 720, 400 + i * 110, 1000, 90, { fill: C.goodBg, r: 16 }); text(ctx, k, 770, 458 + i * 110, 34, { align: "center", weight: 900, color: C.good }); text(ctx, s, 820, 456 + i * 110, 30, { weight: 900, fit: 870 }); });
@@ -265,11 +286,9 @@
     k14_latihan(ctx, b, l) {
       const a = A(b), t = [a * 0.1, a * 0.24, a * 0.34];
       const form = { custom: (ctx, x, y, w) => {
-        text(ctx, "Babak 1 dari 4", x, y + 12, 11, { weight: 800, color: C.ink2 }); y += 22;
         text(ctx, "Kata sandi", x, y + 12, 12, { weight: 800 }); ctx.fillStyle = "#F4F8FB"; rr(ctx, x, y + 18, w, 30, 7); ctx.fill(); ctx.strokeStyle = "#C9D4DB"; ctx.lineWidth = 1.5; ctx.stroke(); text(ctx, l >= t[1] ? "••••••••••" : "", x + 10, y + 38, 13, { weight: 800 }); y += 56;
         text(ctx, "Kode 6 angka (langkah 2)", x, y + 12, 12, { weight: 800 }); ctx.fillStyle = l >= t[2] ? "#FFF3D6" : "#F4F8FB"; rr(ctx, x, y + 18, w, 30, 7); ctx.fill(); ctx.stroke(); text(ctx, l >= t[2] + 0.8 ? "482913" : "", x + 10, y + 38, 13, { weight: 800 }); y += 56;
-        ctx.fillStyle = "#EAF2EE"; rr(ctx, x, y, w, 46, 8); ctx.fill(); text(ctx, "Autentikator: 482 913 · 21 detik lagi", x + 10, y + 28, 12, { weight: 800, color: C.kiko });
-        return y + 56; } };
+        return y + 4; } };
       K.halaman(ctx, 250, 190, 1.15, { url: "belajar-informatika.vercel.app/e3", judul: "Simulasi dua langkah, audit akun, atur router",
         rows: [{ tabs: ["1 Simulasi dua langkah", "2 Audit akun fiktif", "3 Atur router fiktif"], on: -1 },
           { task: "Empat babak: masuk dengan sandi dan kode, tolak permintaan OTP, lihat penipu gagal, lalu putuskan langkah berikutnya." },
@@ -285,11 +304,12 @@
     k14s_masuk(ctx, b, l) {
       const mode = b.mode || "sandi", S = alur(b, l);
       row(ctx, 50, 40, 0.86, mode, S);
-      phone(ctx, 220, 580, 420, mode, S, l);
+      text(ctx, "HP Sinta:", 60, 372, 28, { weight: 900, color: C.ink2 });
+      callout(ctx, 60, 390, 470, mode, S, l, { h: 340 });
       const L = MODE[mode].log;
       L.forEach((s, i) => { const on = i < S.k, bad = i === 2 && mode === "sandi"; ctx.save(); if (!on) ctx.globalAlpha = 0.25;
-        card(ctx, 400, 380 + i * 140, 620, 122, { fill: i === S.k - 1 ? (i === 2 ? (bad ? C.badBg : C.goodBg) : "#FFF3D6") : C.bg2, r: 16 });
-        para(ctx, s, 710, 428 + i * 140, 32, 580, { align: "center", weight: 900, color: i === 2 && on ? (bad ? C.bad : C.good) : C.ink, lh: 1.15 }); ctx.restore(); });
+        card(ctx, 560, 350 + i * 145, 460, 128, { fill: i === S.k - 1 ? (i === 2 ? (bad ? C.badBg : C.goodBg) : "#FFF3D6") : C.bg2, r: 16 });
+        para(ctx, s, 790, 400 + i * 145, 30, 420, { align: "center", weight: 900, color: i === 2 && on ? (bad ? C.bad : C.good) : C.ink, lh: 1.15 }); ctx.restore(); });
     },
     k14s_inti(ctx, b, l) {
       const c = cues(b, 3, [0.05, 0.35, 0.7]);

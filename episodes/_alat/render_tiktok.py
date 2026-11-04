@@ -3,6 +3,7 @@
   python3 episodes/_alat/render_tiktok.py tiktok/T01 --frame k1=0.5 k3   pratinjau JPG (detik dalam beat; tanpa detik = akhir beat) di preview/
   python3 episodes/_alat/render_tiktok.py tiktok/T01 --kontak           lembar kontak preview/kontak.jpg (3 frame per beat: awal, tengah, akhir)
   ... --zona     gambar ruang aman TikTok (merah) di atas frame pratinjau/lembar kontak
+  ... --caption  hanya menulis ulang caption.md (keterangan unggahan) dari kunci "caption" di script.json
   ... --rapatkan hanya merapatkan timeline (lihat di bawah), tanpa render
   ... --teks     pratinjau memakai timeline-teks.json (dari timing.py) bila suara belum dibuat; render video selalu memakai timeline.json
 Alur: script.json -> cek_tiktok.py -> suara_elevenlabs.py --uji -> suara_elevenlabs.py -> voice.py -> render_tiktok.py --kontak -> render_tiktok.py
@@ -81,7 +82,7 @@ def srt_time(s):
 def caption_md(TL, name):
     cap = SCRIPT.get("caption", {}); tags = cap.get("tagar", ["#belajarditiktok", "#informatika", "#teknologi", "#faktaunik"])
     body = "\n".join([cap.get("teks", SCRIPT["title"]), "", f"Belajar lebih banyak di YouTube: {CHANNEL}", "", " ".join(tags)])
-    md = (f"# Keterangan TikTok {code}\n\n**Judul/topik:** {SCRIPT['title']}\n\n**Berkas:** `video/{name}.mp4` ({TL['total']:.1f} detik, "
+    md = (f"# Keterangan TikTok {code}\n\n**Judul/topik:** {SCRIPT['title']}\n\n**Berkas:** `video/{name}.mp4` ({str(round(TL['total'], 1)).replace('.', ',')} detik, "
           f"1080×1920, bersuara) dan subtitel `video/{name}.srt`.\n\n**Keterangan unggahan (salin):**\n\n```\n{body}\n```\n\n"
           "Semua nama, akun, dan contoh di video ini rekaan.\n")
     open(os.path.join(ROOT, "caption.md"), "w", encoding="utf-8").write(md)
@@ -124,6 +125,9 @@ def kontak(pg, TL, zona):
     d = os.path.join(ROOT, "preview"); os.makedirs(d, exist_ok=True); p = os.path.join(d, "kontak.jpg"); sheet.save(p, quality=85)
     print(f"lembar kontak {len(TL['beats'])} beat × 3 frame (awal 0,6 s, tengah, akhir) -> {p}")
 
+
+if "--caption" in flags:
+    caption_md(E.load_timeline(ROOT, "suara"), f"TikTok_{code}_{E.title_slug(SCRIPT['title'])}"); print("caption.md ditulis"); raise SystemExit(0)
 
 with sync_playwright() as p:
     br = p.chromium.launch(); pg = br.new_page(viewport={"width": 1080, "height": 1920})

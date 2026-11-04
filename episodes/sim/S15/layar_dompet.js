@@ -46,11 +46,11 @@
   // ---------- halaman Keamanan ----------
   // o: notif, limit ("Rp2.000.000"), tfa, dev (jumlah), hl (indeks), mark (array indeks yang diberi bingkai merah)
   D.SEC_ITEMS = (o = {}) => [
-    { label: "Notifikasi transaksi", icon: "bell", value: o.notif ? "Aktif" : "Mati", valueColor: o.notif ? GREEN : RED, arrow: true, hl: o.hl === 0 },
-    { label: "Batas transaksi harian", icon: "calc", value: o.limit || "Rp2.000.000", valueColor: o.limit ? GREEN : RED, arrow: true, hl: o.hl === 1 },
-    { label: "PIN dan biometrik", icon: "lock", arrow: true, hl: o.hl === 2 },
-    { label: "Verifikasi dua langkah", icon: "shield", value: o.tfa ? "Aktif" : "Mati", valueColor: o.tfa ? GREEN : RED, arrow: true, hl: o.hl === 3 },
-    { label: "Perangkat terhubung", icon: "phone", value: (o.dev || 2) + " perangkat", arrow: true, hl: o.hl === 4 }];
+    { label: "Notifikasi transaksi", icon: "bell", sub: o.notif ? "Aktif untuk setiap transaksi" : "Mati", subColor: o.notif ? GREEN : RED, arrow: true, hl: o.hl === 0 },
+    { label: "Batas transaksi harian", icon: "calc", sub: (o.limit || "Rp2.000.000") + " per hari", subColor: o.limit ? GREEN : RED, arrow: true, hl: o.hl === 1 },
+    { label: "PIN dan biometrik", icon: "lock", sub: "PIN enam angka, sidik jari", arrow: true, hl: o.hl === 2 },
+    { label: "Verifikasi dua langkah", icon: "shield", sub: o.tfa ? "Aktif: kode OTP + PIN" : "Mati", subColor: o.tfa ? GREEN : RED, arrow: true, hl: o.hl === 3 },
+    { label: "Perangkat terhubung", icon: "phone", sub: (o.dev || 2) === 1 ? "1 perangkat (HP ini)" : "2 perangkat", arrow: true, hl: o.hl === 4 }];
   D.security = function (ctx, o = {}) { HP.header(ctx, "Keamanan", { back: true }); HP.para(ctx, "Atur cara melindungi saldo dan akunmu.", 20, 132, 16, 320); return HP.list(ctx, D.SEC_ITEMS(o), { y: 152 }); };
   D.SEC_Y = 152;
   // ---------- notifikasi ----------

@@ -389,7 +389,7 @@
       const bg = browser(ctx, "arsipkarya.example/karya/1904", AR.WORKS.kawung.title);
       const onLic = l > span * (3.2 / 5.4);
       AR.workPage(ctx, bg, "kawung", { user: "Dito", free: true, mark: onLic ? "lic" : l > span * 0.2 ? "dl" : null });
-      if (l > span * 0.25 && !onLic) callout(ctx, 980, 790, "Bisa di-download ≠ boleh dipakai", null, null, { color: RED, fill: "#FFFFFF", size: 24 });
+      if (l > span * 0.25 && !onLic) callout(ctx, 830, 768, "Bisa di-download ≠ boleh dipakai", null, null, { color: RED, fill: "#FFFFFF", size: 22 });
       if (onLic) { const y = panelCard(ctx, "YANG BISA KAMU LAKUKAN", 470);
         ["Minta izin tertulis kepada pembuatnya", "Cari karya lain berlisensi CC", "Foto atau buat sendiri"].forEach((s, i) => { const v = ease((l - span * 0.62 - i * 0.6) / 0.4); if (v <= 0) return; ctx.globalAlpha = v;
           ctx.fillStyle = C.goodBg; rr(ctx, PX + 18, y + i * 124, PW - 36, 108, 12); ctx.fill(); text(ctx, String(i + 1), PX + 46, y + i * 124 + 64, 30, { align: "center", weight: 900, color: GREEN });

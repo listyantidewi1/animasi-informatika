@@ -87,6 +87,10 @@
       ctx.save(); ctx.translate(480, A.y + 170); ctx.scale(u, u);
       card(ctx, -150, -150, 300, 300, { fill: rgb(PC), r: 24, stroke: C.kuning, lw: 10 }); ctx.restore();
       text(ctx, "1 piksel", 480, A.y + 380, 44, { align: "center", weight: 800, color: C.ink2 });
+      ["#FF5A5F", "#3BE38A", C.biru].forEach((col, i) => {                 // tiga angka: tiga titik warna muncul satu per satu
+        const k = pop(b, l, (cueTo(b, "tiga") - cueTo(b, 0)) / (b.audio || 1) + i * 0.04, 0.35); if (k <= 0) return;
+        ctx.fillStyle = col; ctx.beginPath(); ctx.arc(700 + i * 70, A.y + 170, 26 * k, 0, Math.PI * 2); ctx.fill();
+      });
       [["Merah", PC[0], "#FF5A5F", "merah"], ["Hijau", PC[1], "#3BE38A", "hijau"], ["Biru", PC[2], C.biru, "biru"]].forEach(([nm, v, col, w], i) => {
         const k = ph(b, l, w, 0.5); if (k <= 0) return;
         const y = A.y + 450 + i * 140;

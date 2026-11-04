@@ -168,6 +168,13 @@
       KT.needs(ctx, PX, WIN.y, PW, { title: page === "bima" ? "BIMA 14" : "NUSA LITE 14", marks: page === "bima" ? needMarks("bima", n) : needMarks("nusa", 4) });
       ptr(ctx, P);
     },
+    // hanya untuk Short: halaman Bima 14, tanda ✓ muncul bertahap
+    spek_bima_short(ctx, b, l) {
+      const a = A(b), n = Math.floor(clamp((l - a * 0.1) / (a * 0.6), 0, 1) * 5);
+      const bg = browser(ctx, "komputerkita.example/laptop/bima-14", "Bima 14 - KomputerKita");
+      KT.detail(ctx, bg, "bima", { marks: n >= 5 ? true : [0, 2, 3, 6, 8][n] });
+      KT.needs(ctx, PX, WIN.y, PW, { title: "BIMA 14", marks: needMarks("bima", n) });
+    },
     spek_kirana(ctx, b, l) {
       const a = A(b);
       const bg = browser(ctx, "komputerkita.example/laptop/kirana-15-gaming", "Kirana 15 Gaming - KomputerKita");

@@ -61,7 +61,7 @@
         const u = clamp((l - t0 - start[i]) / dur[i], 0, 1); if (l - t0 - start[i] < 0) return;
         const seg = Math.min(p.length - 2, Math.floor(u * (p.length - 1))), f = u * (p.length - 1) - seg;
         const [x1, y1] = N[p[seg]], [x2, y2] = N[p[seg + 1]];
-        packet(ctx, i, lerp(x1, x2, f) + (u >= 1 ? (i - 1.5) * 70 : 0), lerp(y1, y2, f) + (u >= 1 ? -85 : 0), 64);
+        packet(ctx, i, lerp(x1, x2, f) + (u >= 1 ? ([1, 3, 0, 2][i] - 1.5) * 70 : 0), lerp(y1, y2, f) + (u >= 1 ? -85 : 0), 64);
       });
     },
     // tiba acak (3, 1, 4, 2), lalu disusun 1, 2, 3, 4 menjadi pesan utuh

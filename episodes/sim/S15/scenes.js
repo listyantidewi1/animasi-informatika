@@ -45,7 +45,7 @@
   const OK = { notif: true, limit: "Rp100.000", tfa: true, dev: 1 };
   const HOME = [{ name: "Dompet Digital", color: P, icon: "Rp" }, { name: "Kamera", color: "#2E7E9A", icon: "camera" }, { name: "Pesan", color: "#7B8B95", icon: "chat" }, { name: "Peta", color: GREEN, icon: "map" }];
   const SEC_ROWS = o => rowsOf(D.SEC_ITEMS(o || {}), { y: D.SEC_Y });
-  const secSrc = i => { const r = SEC_ROWS()[i]; return { u: 0, v: r.y - 40, w: 360, h: 150 }; };
+  const secSrc = i => { const r = SEC_ROWS()[i]; return { u: 0, v: r.y - 14, w: 360, h: 112 }; };
 
   Object.assign(K.SCENES, {
     tujuan(ctx, b, l) {
@@ -74,13 +74,13 @@
       const R = HP.run({ scr: "home" }, [{ wait: 1, d: 0.6 }, { tap: D.TAB.Profil, set: { scr: "prof" }, d: 1 }, { wait: 1, d: 0.6 }, { tap: tapRow(pr, 0), set: { scr: "sec" }, d: 1 }, { wait: 1, d: 2 }], l, span);
       const st = R.st;
       show(ctx, c => { if (st.scr === "home") D.home(c, { tabHl: R.i >= 1 ? "Profil" : null }); else if (st.scr === "prof") D.profile(c, { hl: R.i >= 3 ? 0 : null }); else D.security(c, {}); tapDraw(c, R); },
-        st.scr === "home" ? { u: 0, v: 520, w: 360, h: 210 } : st.scr === "prof" ? { u: 0, v: 110, w: 360, h: 260 } : { u: 0, v: 110, w: 360, h: 420 }, st.scr === "sec" ? NARROW : {});
+        st.scr === "home" ? { u: 0, v: 520, w: 360, h: 210 } : st.scr === "prof" ? { u: 0, v: 110, w: 360, h: 260 } : { u: 0, v: 110, w: 360, h: 460 }, st.scr === "sec" ? NARROW : {});
       const y = steps(ctx, "LANGKAH", ["Tap Profil di kanan bawah.", "Tap Keamanan."], stepAt(l, span, [0.3, 0.62]));
       if (st.scr !== "home") notes(ctx, y, [{ s: "Di aplikasi lain: Akun, lalu Keamanan dan privasi.", fill: "#E7F1FB", color: BLUE }]);
     },
     lihat_keamanan(ctx, b, l) {
       const hl = after(b, l, 0.68) ? 3 : after(b, l, 0.38) ? 1 : after(b, l, 0.12) ? 0 : null;
-      show(ctx, c => D.security(c, { hl }), { u: 0, v: 110, w: 360, h: 420 }, NARROW);
+      show(ctx, c => D.security(c, { hl }), { u: 0, v: 110, w: 360, h: 460 }, NARROW);
       card(ctx, 1450, 122, 370, 70, { fill: "#FFFFFF", stroke: "#D7E2DC", lw: 3, r: 18 }); text(ctx, "MASIH PERLU DIUBAH", 1474, 166, 24, { weight: 900, color: C.accentDark });
       notes(ctx, 186, [after(b, l, 0.12) && { s: "Notifikasi transaksi: Mati", fill: C.badBg, color: RED }, after(b, l, 0.38) && { s: "Batas harian: Rp2.000.000", fill: C.badBg, color: RED },
         after(b, l, 0.68) && { s: "Verifikasi dua langkah: Mati", fill: C.badBg, color: RED }]);
@@ -113,7 +113,7 @@
       const R = HP.run({ scr: "sec", pick: 3 }, [{ wait: 1, d: 0.5 }, { tap: tapRow(sr, 1), set: { scr: "lim" }, d: 1 }, { wait: 1, d: 1.6 }, { tap: tapRow(lr, 1, 100), set: { pick: 1 }, d: 1 }, { wait: 1, d: 1.6 }], l, span);
       const st = R.st;
       show(ctx, c => { if (st.scr === "sec") D.security(c, { notif: true, hl: R.i >= 1 ? 1 : null }); else D.limitPage(c, { pick: st.pick, hl: R.i >= 3 ? 1 : null }); tapDraw(c, R); },
-        st.scr === "sec" ? secSrc(1) : { u: 0, v: 110, w: 360, h: 420 }, st.scr === "sec" ? {} : NARROW);
+        st.scr === "sec" ? secSrc(1) : { u: 0, v: 110, w: 360, h: 460 }, st.scr === "sec" ? {} : NARROW);
       const y = steps(ctx, "LANGKAH", ["Tap Batas transaksi harian.", "Pilih Rp100.000."], stepAt(l, span, [0.3, 0.75]));
       if (st.scr === "lim") notes(ctx, y, [after(b, l, 0.4) && { s: "Pilih secukupnya untuk kebutuhan sehari.", fill: "#E7F1FB", color: BLUE }]);
     },
@@ -126,7 +126,7 @@
         else if (st.scr === "pin") D.pinPad(c, { title: "Konfirmasi dengan PIN", n: (st.n || "").length, press: st.press, pressU: st.pressU });
         else { D.security(c, { notif: true, limit: "Rp100.000", hl: 1 }); HP.toast(c, "Batas harian disimpan.", st.toast || 0, { y: 520 }); }
         tapDraw(c, R);
-      }, st.scr === "lim" ? { u: 0, v: 420, w: 360, h: 170 } : st.scr === "pin" ? { u: 0, v: 140, w: 360, h: 160 } : secSrc(1));
+      }, st.scr === "lim" ? { u: 0, v: 470, w: 360, h: 130 } : st.scr === "pin" ? { u: 0, v: 140, w: 360, h: 160 } : secSrc(1));
       const y = steps(ctx, "LANGKAH", ["Tap Simpan.", "Masukkan PIN."], stepAt(l, span, [0.15, 0.5]));
       card(ctx, 790, 520, 620, 290, { fill: "#FFFFFF", stroke: "#D7E2DC", lw: 3, r: 18 });
       text(ctx, "KALAU AKUN DICURI", 1100, 562, 24, { align: "center", weight: 900, color: C.accentDark });
@@ -253,7 +253,7 @@
       card(ctx, 140, 140, 1640, 680);
       text(ctx, "TANDA PENIPUAN 2: TAUTAN HADIAH", 1290, 210, 30, { align: "center", weight: 900, color: RED });
       phone(ctx, c => HP.chat(c, { size: 21, maxW: 320, name: "Info Hadiah", sub: "nomor tidak dikenal", subColor: RED, color: "#C98A57", warn: after(b, l, 0.3) ? 0 : null,
-        messages: [{ from: "them", text: "SELAMAT! Nomor Kakak menang saldo Rp1.000.000. Klaim sebelum jam 12 malam di dompet-hadiah.example/klaim lalu login dengan PIN.", time: "20.15" }] }), { cx: 470, cy: 478, h: 620 });
+        messages: [{ from: "them", text: "SELAMAT! Nomor Kakak menang saldo Rp1.000.000. Klaim sebelum jam 12 malam di hadiahku.example lalu login dengan PIN.", time: "20.15" }] }), { cx: 470, cy: 478, h: 620 });
       [["hadiah tanpa ikut lomba", 0.2], ["tautan asing, bukan aplikasi resmi", 0.35], ["meminta login dan PIN", 0.5]].forEach(([s, f], i) => { if (after(b, l, f)) badge(ctx, 860, 260 + i * 104, false, s, { w: 620, h: 84, size: 28 }); });
       if (after(b, l, 0.68)) { card(ctx, 860, 590, 860, 110, { fill: C.goodBg, stroke: GREEN, lw: 3, r: 16 }); para(ctx, "Jangan buka tautannya. Hapus pesannya, lalu laporkan.", 890, 636, 30, 800, { weight: 900, color: "#1E6B3E", lh: 1.2 }); }
     },

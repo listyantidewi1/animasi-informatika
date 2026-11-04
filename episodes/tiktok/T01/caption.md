@@ -2,7 +2,7 @@
 
 **Judul/topik:** Kenapa sandi 123456 bisa ketebak dalam sekejap?
 
-**Berkas:** `video/TikTok_T01_Kenapa_sandi_123456_bisa_ketebak_dalam_sekejap.mp4` (48.3 detik, 1080×1920, bersuara) dan subtitel `video/TikTok_T01_Kenapa_sandi_123456_bisa_ketebak_dalam_sekejap.srt`.
+**Berkas:** `video/TikTok_T01_Kenapa_sandi_123456_bisa_ketebak_dalam_sekejap.mp4` (48,3 detik, 1080×1920, bersuara) dan subtitel `video/TikTok_T01_Kenapa_sandi_123456_bisa_ketebak_dalam_sekejap.srt`.
 
 **Keterangan unggahan (salin):**
 
