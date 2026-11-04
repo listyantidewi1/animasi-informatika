@@ -67,11 +67,11 @@
     // bot membuat akun palsu dan spam sangat cepat
     t31_bot(ctx, b, l, t, TL, A) {
       const y = A.y + 20; robot(ctx, 200, y + 180, 260);
-      const k = clamp(cue(b, l, "ribuan") / 2.2, 0, 1), n = Math.round(1000 * k * k);
+      const k = clamp(cue(b, l, "ribuan") / 2.2, 0, 1), n = Math.round(5000 * k * k);
       text(ctx, fmt(n), 650, y + 140, 110, { align: "center", weight: 900, color: C.bad, shadow: true });
       text(ctx, "akun palsu", 650, y + 200, 44, { align: "center", weight: 800, color: C.ink });
       // kartu akun berjatuhan
-      for (let i = 0; i < Math.min(18, Math.floor(n / 50) + (n > 0 ? 1 : 0)); i++) {
+      for (let i = 0; i < Math.min(18, Math.floor(n / 250) + (n > 0 ? 1 : 0)); i++) {
         const x = 110 + (i % 6) * 128, yy = y + 330 + Math.floor(i / 6) * 110;
         card(ctx, x, yy, 112, 92, { fill: C.panel, stroke: C.line, lw: 3, r: 14 }); human(ctx, x + 56, yy + 46, 60, C.mute);
         text(ctx, "user" + (100 + i * 37), x + 56, yy + 84, 18, { align: "center", weight: 700, color: C.ink2 });
@@ -98,6 +98,7 @@
         text(ctx, "Program: \"k?R?? x\"", 250, ry + 82, 48, { weight: 900, color: C.bad, fit: 560 }); cross(ctx, 830, ry + 65, 50, C.bad); ctx.restore(); }
       if (um > 0) { ctx.save(); ctx.globalAlpha = um; card(ctx, 80, ry + 160, 800, 130, { fill: C.goodBg, stroke: C.good, lw: 4, r: 22 }); human(ctx, 160, ry + 230, 100);
         text(ctx, "Manusia: \"k7Rm2x\"", 250, ry + 242, 48, { weight: 900, color: C.good, fit: 560 }); check(ctx, 830, ry + 225, 50, C.good); ctx.restore(); }
+      const by = ry + 320; if (A.bot - by > 140) bip(ctx, 480, (by + A.bot) / 2, Math.min(200, A.bot - by - 10), { mood: um > 0 ? "happy" : "think", t });
     },
 
     // cara menggerakkan kursor: manusia berkelok, bot lurus seketika
@@ -112,9 +113,9 @@
       const hp = u => [lerp(820, 237, u) + Math.sin(u * 9) * 40 * (1 - u), lerp(y + 80, y + 455, u) + Math.sin(u * 5 + 1) * 50 * (1 - u)];
       if (hk > 0) { ctx.save(); ctx.strokeStyle = C.tosca; ctx.lineWidth = 6; ctx.setLineDash([10, 10]); ctx.beginPath(); for (let i = 0; i <= 40; i++) { const u = (i / 40) * hk; const [px, py] = hp(u); i ? ctx.lineTo(px, py) : ctx.moveTo(px, py); } ctx.stroke(); ctx.restore();
         const [cx, cy] = hp(hk); cursorIcon(ctx, cx, cy, 54); text(ctx, "manusia: berkelok, kecepatan berubah", 480, y + 50, 34, { align: "center", weight: 800, color: C.tosca, fit: 780 }); }
-      if (k > 0) { const by = y + 640; ctx.save(); ctx.strokeStyle = C.bad; ctx.lineWidth = 6; ctx.beginPath(); ctx.moveTo(840, by + 160); ctx.lineTo(lerp(840, 300, k > 0.15 ? 1 : k / 0.15), lerp(by + 160, by + 30, k > 0.15 ? 1 : k / 0.15)); ctx.stroke(); ctx.restore();
+      if (k > 0) { const by = y + 640; ctx.save(); ctx.strokeStyle = C.bad; ctx.lineWidth = 6; ctx.beginPath(); ctx.moveTo(840, by + 160); ctx.lineTo(lerp(840, 250, k > 0.15 ? 1 : k / 0.15), lerp(by + 160, y + 500, k > 0.15 ? 1 : k / 0.15)); ctx.stroke(); ctx.restore();
         robot(ctx, 160, by + 120, 140); text(ctx, "bot: lurus dan seketika", 560, by + 240, 36, { align: "center", weight: 800, color: C.bad, fit: 600 });
-        if (k > 0.3) { ctx.fillStyle = C.bad; ctx.beginPath(); ctx.arc(300, by + 30, 30, 0, Math.PI * 2); ctx.fill(); text(ctx, "!", 300, by + 44, 40, { align: "center", weight: 900, color: C.ink }); } }
+        if (k > 0.3) { ctx.fillStyle = C.bad; ctx.beginPath(); ctx.arc(545, by + 30, 30, 0, Math.PI * 2); ctx.fill(); text(ctx, "!", 545, by + 44, 40, { align: "center", weight: 900, color: C.ink }); } }
     }
   });
 })();
