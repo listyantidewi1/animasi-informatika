@@ -52,7 +52,7 @@
          show (tombol Tampilkan disorot). tool(k): k = add (Slide baru), layout (Tata letak), size, bold, color, img, play.
      D.slide(ctx, x, y, w, h, spec, opt) menggambar satu slide di sembarang ukuran; 1 pt = h/540 px. → {title, sub, body, items, img, num}
          spec.layout: "judul" | "isi" | "isi_gambar" | "gambar" | "angka" | "padat" | "akhir" | "kosong"
-         spec.title, sub, bullets [], img {kind, label}, num, cap, para (teks panjang untuk "padat"), colors [warna tiap poin],
+         spec.title, sub, bullets [], img {kind, label}, num, cap, para (teks panjang untuk "padat"), marks [indeks paragraf disorot kuning], colors [warna tiap poin],
          titlePt (40; "judul": 54), bodyPt (28), bg, ink, accent, band (garis aksen, bawaan true), ph (tampilkan placeholder kosong),
          typed {title: n, body: n} (jumlah huruf tampil), caret ("title" | "body"), sel ("title" | "body" | "img")
      D.layoutMenu(ctx, x, y, hi)        pilihan tata letak bergambar (Judul, Judul dan isi, Judul dan gambar, Kosong) → {item(i)}
@@ -60,7 +60,7 @@
    Kanvas infografik
      D.canvasApp(ctx, x, y, w, h, opt) → {page, area, panel(i), swatch(i), tool(k)}
          opt.title ("Desain — Tanpa judul"), menuOn, panelHi (indeks alat kiri tersorot), size, swatches [warna], swatchOn,
-         ratio (tinggi/lebar halaman, bawaan 4/3), els (elemen D.info), sel (id elemen terpilih), guides, margin, bg (warna halaman)
+         ratio (tinggi/lebar halaman, bawaan 4/3), pageW (lebar halaman px = zoom; bawaan muat ke layar), scroll (px), els (elemen D.info), sel (id elemen terpilih), guides, margin, bg (warna halaman)
          Alat kiri: Teks, Bentuk, Ikon, Gambar, Grafik. tool(k): k = size, bold, align.
      D.info(ctx, page, els, opt)        menggambar elemen di halaman berukuran desain 600 × (600·ratio) satuan. → {id: kotak px}
          el: {t: "text", id, x, y (garis dasar), s, size, weight, color, align, maxW (bungkus), lh, typed, alpha}
@@ -447,7 +447,7 @@
       const ts = P(spec.titlePt || 54); const tw = w - P(140);
       const lines = wrapF(ctx, shown(spec.title, ty.title) || " ", ts, 800, tw); const top = y + h * 0.36 - (lines.length - 1) * ts * 0.6;
       titleBlock(x + P(70), top, tw, ts, "center");
-      if (spec.sub != null || ph) { const ss = P(spec.subPt || 28), s = shown(spec.sub, ty.body); const sy = top + lines.length * ts * 1.15 + P(30);
+      if (spec.sub != null || ph) { const ss = P(spec.subPt || 28), s = shown(spec.sub, ty.body); const sy = top + (!shown(spec.title, ty.title) && ph ? ts * 1.7 : lines.length * ts * 1.15) + P(30);
         if (!s && ph) { placeholder(x + P(170), sy, w - P(340), ss * 1.8, "Klik untuk menambah subjudul", P(20)); R.sub = box(x + P(170), sy, w - P(340), ss * 1.8); }
         else { D.txt(ctx, s, x + w / 2, sy + ss, ss, { align: "center", weight: 600, color: spec.subColor || "#4A5A66" }); if (spec.caret === "sub") caretAt([s], x + w / 2, sy + ss, ss, 600, 0, "center"); R.sub = box(x + P(170), sy, w - P(340), ss * 1.4); } }
     } else if (lay === "kosong") { band(); }
@@ -460,7 +460,9 @@
       else if (lay === "angka") { const ns = P(spec.numPt || 120); D.txt(ctx, spec.num || "", x + w / 2, by + ns * 0.9, ns, { align: "center", weight: 900, color: acc }); R.num = box(x + w / 2 - ns * 1.5, by, ns * 3, ns);
         if (spec.cap) D.txt(ctx, spec.cap, x + w / 2, by + ns * 0.9 + P(56), P(spec.bodyPt || 28), { align: "center", weight: 600, color: ink }); }
       else if (lay === "padat") { const size = P(spec.bodyPt || 14); let yy = by; (spec.para || []).forEach((s, i) => { const col = (spec.colors && spec.colors[i % spec.colors.length]) || ink;
-          wrapF(ctx, s, size, 500, w - P(120)).forEach(ln => { D.txt(ctx, ln, x + P(60), yy + size, size, { weight: 500, color: col }); yy += size * 1.3; }); yy += size * 0.3; });
+          const mk = (spec.marks || []).includes(i);
+          wrapF(ctx, s, size, 500, w - P(120)).forEach(ln => { if (mk) { ctx.fillStyle = "rgba(242,177,52,0.4)"; ctx.fillRect(x + P(56), yy + size * 0.1, measure(ctx, ln, size, 500) + P(8), size * 1.15); }
+            D.txt(ctx, ln, x + P(60), yy + size, size, { weight: 500, color: col }); yy += size * 1.3; }); yy += size * 0.3; });
         if (spec.img) img(x + w - P(150), y + P(26), P(110), P(70)); R.body = box(x + P(60), by, w - P(120), yy - by); }
     }
     if (spec.sel && R[spec.sel]) { const q = R[spec.sel]; D.selBox(ctx, q.x - P(8), q.y - P(6), q.w + P(16), q.h + P(12), { handles: spec.sel === "img", hot: spec.hot }); }
@@ -549,6 +551,7 @@
     D.txt(ctx, "Warna", bx, by + 26, 19, { weight: 700, color: UI.ink2 }); bx += 66;
     const sw = opt.swatches || ["#1F2A33", "#2E9E5B", "#F2B134", "#FFFFFF"]; const swR = [];
     sw.forEach((c, i) => { const cx = bx + 18 + i * 44; ctx.fillStyle = c; ctx.beginPath(); ctx.arc(cx, by + 19, 15, 0, Math.PI * 2); ctx.fill(); ctx.strokeStyle = opt.swatchOn === i ? UI.select : "#AEBBC3"; ctx.lineWidth = opt.swatchOn === i ? 4 : 1.5; ctx.stroke(); swR.push(box(cx - 18, by, 36, 38)); });
+    D.txt(ctx, "Zoom: " + (opt.pageW ? Math.round(opt.pageW / 4) + "%" : "muat ke layar"), x + w - 24, by + 26, 19, { align: "right", weight: 700, color: UI.ink2 });
     ctx.fillStyle = UI.line; ctx.fillRect(x + 1, ty + 53, w - 2, 1.5);
     const area = { x: x + 1, y: ty + 54, w: w - 2, h: y + h - ty - 55 };
     ctx.save(); rr(ctx, x + 1, area.y, w - 2, area.h - 1, 14); ctx.clip(); ctx.fillStyle = UI.work; ctx.fillRect(area.x, area.y, area.w, area.h);
@@ -562,8 +565,8 @@
       else if (s === "Bentuk") { ctx.strokeStyle = UI.tool; ctx.lineWidth = 3; ctx.strokeRect(cx - 18, cy - 12, 22, 22); ctx.beginPath(); ctx.arc(cx + 8, cy + 4, 12, 0, Math.PI * 2); ctx.stroke(); }
       else D.icon(ctx, ic, cx, cy, 34, UI.tool);
       D.txt(ctx, s, cx, yy + 72, 18, { align: "center", weight: 700, color: onp ? UI.ink : UI.ink2 }); pr.push(box(area.x + 10, yy, pw - 20, 82)); });
-    const ratio = opt.ratio || 4 / 3; const ph = area.h - 36, pW = ph / ratio;
-    const page = { x: area.x + pw + (area.w - pw - pW) / 2, y: area.y + 18, w: pW, h: ph };
+    const ratio = opt.ratio || 4 / 3; const pW = opt.pageW || (area.h - 36) / ratio, ph = pW * ratio;
+    const page = { x: area.x + pw + (area.w - pw - pW) / 2, y: area.y + 18 - (opt.scroll || 0), w: pW, h: ph };
     ctx.save(); ctx.shadowColor = "rgba(31,42,51,0.18)"; ctx.shadowBlur = 18; ctx.shadowOffsetY = 4; ctx.fillStyle = opt.bg || "#FFFFFF"; ctx.fillRect(page.x, page.y, page.w, page.h); ctx.restore();
     const ids = D.info(ctx, page, opt.els || [], { sel: opt.sel, guides: opt.guides, margin: opt.margin, hot: opt.selHot });
     ctx.restore();

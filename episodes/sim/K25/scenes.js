@@ -9,6 +9,7 @@
   const { rr, text, para, card, kiko, ease, clamp, lerp } = H;
   const X = [1, 2, 3, 4, 5, 6];
   const DATA = { rapat: [20, 24, 25, 28, 33, 35], sebar: [17, 27, 23, 32, 34, 32], pencilan: [20, 24, 25, 28, 33, 56], acak: [31, 24, 23, 35, 30, 25] };
+  const RANGE = { rapat: [10, 40], sebar: [10, 40], acak: [10, 40], pencilan: [10, 60] };
   const UNIT = { rapat: "kg", sebar: "kg", pencilan: "kg", acak: "payung" };
   const NAMA = { rapat: "setoran bank sampah (kg, rekaan)", sebar: "setoran yang lebih menyebar (kg, rekaan)", pencilan: "bulan 6: kerja bakti besar (kg, rekaan)", acak: "payung tertinggal di sekolah (rekaan)" };
   const sse = (Y, a, b) => X.reduce((s, x, i) => s + (Y[i] - a - b * x) ** 2, 0);
@@ -35,9 +36,9 @@
 
   // ---------- diagram titik ----------
   function plot(ctx, G, d, ln, o = {}) {
-    const Y = DATA[d], px = v => G.x + v / 7 * G.w, py = v => G.y + G.h - (v - 10) / 50 * G.h, fs = G.fs || 20;
+    const Y = DATA[d], [y0, y1] = RANGE[d], px = v => G.x + v / 7 * G.w, py = v => G.y + G.h - (v - y0) / (y1 - y0) * G.h, fs = G.fs || 20;
     if (o.frame !== false) card(ctx, G.x - 80, G.y - 40, G.w + 120, G.h + 100, { fill: "#fff", stroke: "#B7C4CC", lw: 3, r: 16 });
-    ctx.strokeStyle = "#E3EAEE"; ctx.lineWidth = 2; for (let v = 10; v <= 60; v += 10) { ctx.beginPath(); ctx.moveTo(G.x, py(v)); ctx.lineTo(G.x + G.w, py(v)); ctx.stroke(); text(ctx, String(v), G.x - 14, py(v) + 7, fs, { align: "right", weight: 700, color: C.ink2 }); }
+    ctx.strokeStyle = "#E3EAEE"; ctx.lineWidth = 2; for (let v = y0; v <= y1; v += 10) { ctx.beginPath(); ctx.moveTo(G.x, py(v)); ctx.lineTo(G.x + G.w, py(v)); ctx.stroke(); text(ctx, String(v), G.x - 14, py(v) + 7, fs, { align: "right", weight: 700, color: C.ink2 }); }
     for (let v = 1; v <= 6; v++) text(ctx, String(v), px(v), G.y + G.h + fs + 10, fs, { align: "center", weight: 700, color: C.ink2 });
     ctx.strokeStyle = "#7B8B95"; ctx.lineWidth = 3; ctx.beginPath(); ctx.moveTo(G.x, G.y); ctx.lineTo(G.x, G.y + G.h); ctx.lineTo(G.x + G.w, G.y + G.h); ctx.stroke();
     text(ctx, "bulan", G.x + G.w, G.y + G.h + fs * 2 + 14, fs, { align: "right", weight: 800, color: C.ink2 }); text(ctx, UNIT[d], G.x + 8, G.y - 12, fs, { weight: 800, color: C.ink2 });
@@ -146,8 +147,8 @@
     },
     k25_tanya(ctx, b, l) {
       const v = b.v, [hd, d, q] = VQ[v]; card(ctx, 120, 150, 1680, 670); heading(ctx, hd);
-      plot(ctx, PG, d, null, { values: true, hl: v === 2 ? 5 : null, ghost: v === 1 ? [] : [] });
-      if (v === 2) { const px = PG.x + 6 / 7 * PG.w, py = vv => PG.y + PG.h - (vv - 10) / 50 * PG.h; ctx.beginPath(); ctx.arc(px, py(35), 11, 0, Math.PI * 2); ctx.strokeStyle = C.muted; ctx.lineWidth = 3; ctx.setLineDash([5, 5]); ctx.stroke(); ctx.setLineDash([]); text(ctx, "tadi 35", px - 20, py(35) + 8, 20, { align: "right", weight: 800, color: C.muted }); }
+      const P = plot(ctx, PG, d, null, { values: true, hl: v === 2 ? 5 : null });
+      if (v === 2) { const px = P.px(6), py = P.py(35); ctx.beginPath(); ctx.arc(px, py, 11, 0, Math.PI * 2); ctx.strokeStyle = C.muted; ctx.lineWidth = 3; ctx.setLineDash([5, 5]); ctx.stroke(); ctx.setLineDash([]); text(ctx, "tadi 35", px + 20, py + 30, 20, { weight: 800, color: C.muted }); }
       card(ctx, 1110, 236, 680, 560, { fill: "#fff", stroke: "#D7E2DC", lw: 3, r: 18 });
       para(ctx, q, 1145, 300, 32, 610, { weight: 900, lh: 1.3 });
       if (b.pilih) { b.pilih.forEach((s, i) => { card(ctx, 1145, 530 + i * 76, 610, 62, { fill: "#fff", stroke: C.kiko, lw: 3, r: 31 }); text(ctx, "ABC"[i] + ". " + s, 1175, 571 + i * 76, 26, { weight: 900, color: C.kikoDark, fit: 560 }); }); thinking(ctx, 1730, 215, l, b.dur); }
@@ -162,8 +163,8 @@
         if (l > A(b) * 0.3) banner(ctx, "keduanya y = 17 + 3x · makin menyebar, makin kurang meyakinkan", 742, 1400);
       } else if (v === 2) {
         heading(ctx, "SATU PENCILAN MENARIK GARIS");
-        plot(ctx, { x: 250, y: 260, w: 640, h: 420, fs: 18 }, "pencilan", { a: 10, b: 6 }, { ghost: [{ a: 17, b: 3 }], values: true, hl: 5, sqLabel: true });
-        text(ctx, "putus-putus: garis lama 17 + 3x", 560, 230, 22, { align: "center", weight: 800, color: C.ink2 });
+        plot(ctx, { x: 250, y: 300, w: 640, h: 380, fs: 18 }, "pencilan", { a: 10, b: 6 }, { ghost: [{ a: 17, b: 3 }], values: true, hl: 5, sqLabel: true });
+        text(ctx, "putus-putus: garis lama 17 + 3x", 570, 252, 22, { align: "center", weight: 800, color: C.ink2 });
         const sq = X.map((x, i) => (DATA.pencilan[i] - 10 - 6 * x) ** 2), n = clamp(Math.floor((l - 0.4) / 0.4) + 1, 0, 6);
         card(ctx, 1040, 236, 750, 470, { fill: "#fff", stroke: "#D7E2DC", lw: 3, r: 18 }); text(ctx, "kuadrat error tiap bulan (garis 10 + 6x)", 1070, 282, 24, { weight: 900, color: C.ink2 });
         sq.slice(0, n).forEach((v2, i) => { const y = 310 + i * 58; text(ctx, "bulan " + (i + 1), 1070, y + 34, 24, { weight: 800 }); rr(ctx, 1200, y + 10, Math.max(8, v2 / 100 * 460), 34, 8); ctx.fillStyle = i === 5 ? C.bad : "#9AAFA6"; ctx.fill(); text(ctx, String(v2), 1215 + Math.max(8, v2 / 100 * 460), y + 36, 24, { weight: 900, color: i === 5 ? C.bad : C.ink }); });
@@ -171,7 +172,7 @@
         if (l > A(b) * 0.55) banner(ctx, "error dikuadratkan → satu titik yang jauh punya pengaruh besar", 742, 1400);
       } else {
         heading(ctx, "GARIS TERBAIK BELUM TENTU BERGUNA");
-        plot(ctx, PG, "acak", { a: 28, b: 0 }, { values: true });
+        plot(ctx, { x: 250, y: 270, w: 750, h: 390 }, "acak", { a: 28, b: 0 }, { values: true });
         card(ctx, 1110, 236, 680, 470, { fill: "#fff", stroke: "#D7E2DC", lw: 3, r: 18 });
         [["garis terbaik", "y = 28", C.accentDark], ["jumlah kuadrat error", "112", C.bad], ["bandingkan data rapat", "4", C.good]].forEach(([s, v2, col], i) => {
           const u = ease((l - 0.5 - i * 0.9) / 0.4); ctx.globalAlpha = Math.max(0, u); text(ctx, s, 1140, 300 + i * 140, 24, { weight: 900, color: C.ink2 }); text(ctx, v2, 1140, 360 + i * 140, 52, { weight: 900, color: col }); ctx.globalAlpha = 1; });
@@ -183,15 +184,15 @@
       const ga = l < t[1] ? 0 : lerp(0, 17, ease((l - t[1]) / (t[2] - t[1] - 0.3))), gb = l < t[2] ? 0 : lerp(0, 3, ease((l - t[2]) / (t[3] - t[2] - 0.3)));
       const done = l >= t[4];
       const pRow = { custom: (ctx, x, y, w) => {
-        ctx.save(); plot(ctx, { x: x + 34, y: y + 14, w: w - 50, h: 150, fs: 10, r: 5 }, "rapat", { a: ga, b: gb }, { frame: false, err: false }); ctx.restore();
+        ctx.save(); plot(ctx, { x: x + 34, y: y + 14, w: w - 50, h: 130, fs: 10, r: 5 }, "rapat", { a: ga, b: gb }, { frame: false, err: false }); ctx.restore();
         const sl = (lab, v, max, yy) => { text(ctx, lab, x, yy + 5, 12, { weight: 800 }); ctx.fillStyle = "#D7E2DC"; rr(ctx, x + 80, yy - 3, w - 140, 8, 4); ctx.fill(); const kx = x + 80 + (w - 140) * clamp(v / max, 0, 1); ctx.fillStyle = C.kiko; ctx.beginPath(); ctx.arc(kx, yy + 1, 9, 0, Math.PI * 2); ctx.fill(); text(ctx, fmt(v), x + w, yy + 5, 12, { align: "right", weight: 900 }); };
-        sl("a (awal)", ga, 60, y + 220); sl("b (miring)", gb, 6, y + 252);
-        ctx.fillStyle = C.bg2; rr(ctx, x, y + 272, w, 34, 8); ctx.fill(); text(ctx, "jumlah kuadrat error", x + 10, y + 294, 12, { weight: 800 }); text(ctx, fmt(sse(DATA.rapat, ga, gb)), x + w - 10, y + 295, 14, { align: "right", weight: 900, color: C.accentDark });
-        return y + 316; } };
-      K.halaman(ctx, 250, 170, 1.15, { url: "belajar-informatika.vercel.app/f123", judul: "Penggeser garis tren, kalkulator prediksi, detektif prediksi",
+        sl("a (awal)", ga, 60, y + 200); sl("b (miring)", gb, 6, y + 230);
+        ctx.fillStyle = C.bg2; rr(ctx, x, y + 250, w, 34, 8); ctx.fill(); text(ctx, "jumlah kuadrat error", x + 10, y + 272, 12, { weight: 800 }); text(ctx, fmt(sse(DATA.rapat, ga, gb)), x + w - 10, y + 273, 14, { align: "right", weight: 900, color: C.accentDark });
+        return y + 292; } };
+      K.halaman(ctx, 260, 175, 1.05, { url: "belajar-informatika.vercel.app/f123", judul: "Penggeser garis tren, kalkulator prediksi, detektif prediksi",
         rows: [{ tabs: ["1 Penggeser garis tren", "2 Kalkulator prediksi", "3 Detektif prediksi"], on: -1 }, pRow, { buttons: ["Periksa garisku"], cols: 1, on: -1 },
           done ? { note: "Tepat. Jumlah kuadrat error-mu 4. Garis regresi: y = 17 + 3x." } : { note: " " }],
-        taps: [[0, 0, t[0]], [2, 0, t[4]]] }, l, { h: 560 });
+        taps: [[0, 0, t[0]], [2, 0, t[4]]] }, l, { h: 575 });
       const n = l < t[0] ? 0 : l < t[1] ? 1 : l < t[4] ? 2 : 3;
       K.halaman.steps(ctx, 840, 170, 880, "DI HALAMAN LATIHAN F12.3", ["Klik 1 Penggeser garis tren.", "Geser a dan b, lihat perseginya mengecil.", "Tekan Periksa garisku."], n);
       card(ctx, 840, 540, 880, 250, { fill: "#FFF9E0", r: 18 }); text(ctx, "Tugas nyata", 870, 585, 26, { weight: 900, color: C.accentDark });
@@ -207,7 +208,7 @@
       plot(ctx, { x: 150, y: 130, w: 850, h: 470, fs: 24, r: 13 }, d, ln, { values: false, sqLabel: d === "pencilan", hl: d === "pencilan" ? 5 : null, err: shown(b, l, "err"), sq: shown(b, l, "sq") });
       card(ctx, 60, 690, 960, 116, { fill: "#fff", stroke: "#D7E2DC", lw: 3, r: 20 });
       text(ctx, eqStr(ln), 90, 764, 44, { weight: 900, color: C.accentDark });
-      text(ctx, "kuadrat error:", 700, 742, 26, { align: "right", weight: 800, color: C.ink2 }); text(ctx, "jumlah", 700, 776, 26, { align: "right", weight: 800, color: C.ink2 });
+      text(ctx, "jumlah", 700, 742, 26, { align: "right", weight: 800, color: C.ink2 }); text(ctx, "kuadrat error", 700, 776, 26, { align: "right", weight: 800, color: C.ink2 });
       text(ctx, fmt(s), 1000, 782, 64, { align: "right", weight: 900, color: s - sb < 0.05 ? C.good : C.ink });
     }
   });
