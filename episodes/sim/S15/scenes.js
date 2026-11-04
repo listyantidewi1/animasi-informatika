@@ -208,8 +208,8 @@
     },
     lapor(ctx, b, l) {
       const span = spanOf(b), hr = rowsOf(D.HIST(), { y: 112 }), dt = measure(m => D.detail(m, {})), rp = measure(m => D.reportPage(m, { pick: 0 }));
-      const R = HP.run({ scr: "hist" }, [{ wait: 1, d: 0.3 }, { tap: tapRow(hr, 1), set: { scr: "det" }, d: 1 }, { wait: 1, d: 0.6 }, { tap: [dt.cx, dt.cy], set: { scr: "rep" }, d: 1 }, { wait: 1, d: 0.3 },
-        { tap: tapRow(rp.rows, 0, 120), set: { pick: 0 }, d: 1 }, { tap: [rp.btn.cx, rp.btn.cy], set: { scr: "done" }, d: 1 }, { wait: 1, d: 2.4 }], l, span);
+      const R = HP.run({ scr: "hist" }, [{ wait: 1, d: 1.0 }, { tap: tapRow(hr, 1), set: { scr: "det" }, d: 1 }, { wait: 1, d: 0.6 }, { tap: [dt.cx, dt.cy], set: { scr: "rep" }, d: 1 }, { wait: 1, d: 0.3 },
+        { tap: tapRow(rp.rows, 0, 120), set: { pick: 0 }, d: 1 }, { tap: [rp.btn.cx, rp.btn.cy], set: { scr: "done" }, d: 1 }, { wait: 1, d: 1.4 }], l, span);
       const st = R.st;
       show(ctx, c => {
         if (st.scr === "hist") D.history(c, { hl: "game" });
@@ -218,7 +218,7 @@
         else D.reported(c);
         tapDraw(c, R);
       }, st.scr === "hist" ? { u: 0, v: 104, w: 360, h: 160 } : st.scr === "det" ? { u: 0, v: 200, w: 360, h: 310 } : st.scr === "rep" ? { u: 0, v: 120, w: 360, h: 360 } : { u: 0, v: 150, w: 360, h: 330 }, st.scr === "hist" ? {} : { mw: 520, mx: 840 });
-      const y = steps(ctx, "LANGKAH", ["Tap transaksi asing.", "Tap Laporkan masalah.", "Pilih alasannya, lalu Kirim."], stepAt(l, span, [0.2, 0.42, 0.72]));
+      const y = steps(ctx, "LANGKAH", ["Tap transaksi asing.", "Tap Laporkan masalah.", "Pilih alasannya, lalu Kirim."], stepAt(l, span, [0.3, 0.5, 0.82]));
       if (st.scr === "done") notes(ctx, y, [{ s: "Simpan nomor laporan, lalu beri tahu orang tua.", fill: C.goodBg, color: GREEN },
         after(b, l, 0.88) && { s: "Pakai nomor resmi di menu Bantuan. Pengaduan konsumen: Kontak OJK 157.", fill: "#E7F1FB", color: BLUE, size: 20 }]);
     },

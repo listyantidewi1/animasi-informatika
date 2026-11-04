@@ -232,7 +232,7 @@
       codes.forEach((s, i) => { const x = 280 + (i % 2) * 320, y = 400 + Math.floor(i / 2) * 58; const hl = i === pick && l >= c[1];
         if (hl) { ctx.fillStyle = used ? "#F1F4F2" : "#FFF3D6"; rr(ctx, x - 12, y - 34, 280, 46, 8); ctx.fill(); }
         text(ctx, (i + 1) + ".  " + s, x, y, 28, { weight: 800, color: hl && used ? C.ink2 : C.ink });
-        if (hl && used) { const u = clamp((l - c[2] - 0.4) / 0.5, 0, 1); ctx.strokeStyle = C.bad; ctx.lineWidth = 5; ctx.beginPath(); ctx.moveTo(x - 6, y - 10); ctx.lineTo(x - 6 + 250 * u, y - 10); ctx.stroke(); if (u >= 1) text(ctx, "terpakai", x + 262, y - 2, 18, { align: "left", weight: 900, color: C.bad }); }
+        if (hl && used) { const u = clamp((l - c[2] - 0.4) / 0.5, 0, 1); ctx.strokeStyle = C.bad; ctx.lineWidth = 5; ctx.beginPath(); ctx.moveTo(x - 6, y - 10); ctx.lineTo(x - 6 + 250 * u, y - 10); ctx.stroke(); if (u >= 1) text(ctx, "terpakai", x + 40, y + 20, 16, { align: "left", weight: 900, color: C.bad }); }
       });
       text(ctx, "Setiap kode hanya bisa dipakai sekali.", 560, 720, 22, { align: "center", weight: 800, color: C.ink2 });
       ctx.restore(); ctx.restore();
