@@ -14,6 +14,28 @@ LINK = f"{AL['situs']}/{E.code_slug(S['episode'])}"   # link pendek; redirect di
 ALAT = [x for k in AL["episode"].get(S["episode"], []) for x in AL["alat"][k]]
 KELAS = {"D7": "Kelas 7", "D8": "Kelas 8", "D9": "Kelas 9", "E": "Kelas 10", "F11": "Kelas 11", "F12": "Kelas 12"}.get(S["episode"].split(".")[0], "")
 def mmss(t): t = int(round(t)); return f"{t // 60}:{t % 60:02d}"
+if "for" in S:
+    # video simulasi: satu video bersuara; judul "Simulasi Informatika Kelas X–Y | <judul>", link ke halaman pemutar simulasi
+    ks = sorted({{"D7": 7, "D8": 8, "D9": 9, "E": 10, "F11": 11, "F12": 12}[c.split(".")[0]] for c in S["for"]})
+    kelas = f"Kelas {ks[0]}" if len(ks) == 1 else f"Kelas {ks[0]}–{ks[-1]}"
+    jenis = "simulasi konsep" if S.get("kind") == "konsep" else "simulasi praktik"
+    TL = E.load_timeline(ROOT, "suara"); title = f"Simulasi Informatika {kelas} | {S['title']}"
+    chapters = [f"{mmss(next(b for b in TL['beats'] if b['seg'] == i)['start'])} {n}" for i, n in enumerate(TL["segments"])]
+    eps = "; ".join(f"{c} {E.load_script(os.path.join(E.EPISODES, c))['title']} ({AL['situs']}/{E.code_slug(c)})" for c in S["for"])
+    desc = [f"{S['title']} — video {jenis} untuk Informatika {kelas.lower()}.", "", Y.get("ringkas", ""), ""]
+    if Y.get("belajar"): desc += ["Setelah menonton, murid bisa:"] + [f"• {x}" for x in Y["belajar"]] + [""]
+    if Y.get("cari"): desc += ["Video ini cocok untuk yang mencari: " + "; ".join(Y["cari"]) + ".", ""]
+    desc += ["Bab:"] + chapters + ["", f"Putar dan kerjakan cek pemahamannya di HP: {LINK}", f"Episode yang dilengkapi: {eps}",
+             f"Semua episode dan latihannya: {AL['situs']}/", (f"Prasyarat: {Y['prasyarat']}." if Y.get("prasyarat") else ""), "",
+             "Seri Animasi Informatika untuk SMP–SMA mengikuti CP 2025 (Keputusan Kepala BSKAP 046/H/KR/2025). Aplikasi di video digambar dengan kode sebagai aplikasi generik; semua nama, akun, dan data fiktif. Tanpa musik latar. Narasi: Kak Ceria (ElevenLabs).",
+             "", " ".join(dict.fromkeys(["#Informatika", "#KurikulumMerdeka", "#" + S["episode"]] + [t for t in Y.get("tagar", []) if t.lower() not in ("#informatika", "#kurikulummerdeka")]))]
+    pin = [f"📌 {S['title']} — {jenis} Informatika {kelas.lower()}."]
+    if S.get("hook"): pin.append("Setelah menonton, kamu bisa " + S["hook"])
+    if Y.get("cari"): pin.append("Kata kunci: " + "; ".join(Y["cari"]) + ".")
+    pin += [f"Putar ulang dan kerjakan cek pemahamannya di HP: {LINK}", "Sudah mencobanya sendiri? Ceritakan hasilnya di komentar."]
+    md = [f"# Judul dan deskripsi YouTube — {S['episode']} {S['title']}", "", f"**Judul** ({len(title)} karakter):", title, "", "**Deskripsi:**", "```"] + desc + \
+         ["```", "", "**Komentar tersemat (pin):**", "", "```", "\n".join(pin), "```", "", f"**Berkas:** `video/Informatika_{S['episode']}_*_suara.mp4` (hanya versi bersuara)", ""]
+    open(os.path.join(ROOT, "youtube.md"), "w", encoding="utf-8").write("\n".join(md)); print(os.path.join(ROOT, "youtube.md")); sys.exit()
 out = [f"# Judul dan deskripsi YouTube — {S['episode']} {S['title']}\n"]
 parts = list(S["parts"].items())
 for variant, label in (("suara", ""), ("teks", " (versi teks, tanpa suara)")):
