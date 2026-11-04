@@ -205,7 +205,7 @@
       keys(ctx, ["Enter"], st.enter);
       const i = st.rows.length - 1;
       if (f > 0.18 && typeof st.rows[i] === "string") { const bx = g.find(i, "Serving HTTP"); LK.focus(ctx, bx, { t: l, color: GREEN });
-        call(ctx, 600, "Server menyala dan menunggu permintaan.", bx.x + bx.w, bx.y + bx.h / 2, { fill: C.goodBg, color: GREEN }); }
+        call(ctx, 700, "Server menyala dan menunggu permintaan.", bx.x + bx.w / 2, bx.y + bx.h, { x: 300, maxW: 600, fill: C.goodBg, color: GREEN }); }
       if (f > 0.5) { card(ctx, 1450, 122, 370, 200, { fill: "#FDECEA", r: 18 }); text(ctx, "JANGAN DITUTUP", 1474, 166, 24, { weight: 900, color: RED });
         para(ctx, "Tidak ada prompt baru: Terminal sedang dipakai server.", 1474, 208, 22, 330, { weight: 700, lh: 1.25 }); }
       if (f > 0.7) { text(ctx, "0.0.0.0 berarti menerima dari", 1474, 380, 20, { weight: 700, color: C.ink2 }); text(ctx, "semua alamat laptop ini.", 1474, 408, 20, { weight: 700, color: C.ink2 }); text(ctx, "Di laptop lain bisa tertulis ::", 1474, 448, 20, { weight: 700, color: C.ink2 }); }
@@ -231,14 +231,14 @@
     },
     buka_localhost(ctx, b, l) {
       const sp = spanOf(b), f = l / sp;
-      const typed = W.typed("localhost:8000", ph(l, sp, 0.08, 0.3));
-      const loaded = f > 0.42, loading = f > 0.33 && !loaded ? (f - 0.33) / 0.09 : 0;
-      const g = browser(ctx, WIN, { tab: loaded ? "Jadwal Piket XI-2" : "Tab baru", url: f < 0.08 ? "" : typed, focus: f < 0.33, loading, draw: loaded ? a => jadwal(ctx, a, 1, (f - 0.42) / 0.06) : null }, l);
-      keys(ctx, ["Enter"], clamp((f - 0.3) / 0.06, 0, 1));
-      if (f > 0.55 && f < 0.8) call(ctx, 520, "localhost = komputer ini sendiri", g.url.x + 300, g.url.cy + 16, { x: 1450 });
+      const typed = W.typed("localhost:8000", ph(l, sp, 0.12, 0.38));
+      const loaded = f > 0.55, loading = f > 0.45 && !loaded ? (f - 0.45) / 0.1 : 0;
+      const g = browser(ctx, WIN, { tab: loaded ? "Jadwal Piket XI-2" : "Tab baru", url: f < 0.12 ? "" : typed, focus: f < 0.45, loading, draw: loaded ? a => jadwal(ctx, a, 1, (f - 0.55) / 0.06) : null }, l);
+      keys(ctx, ["Enter"], clamp((f - 0.39) / 0.07, 0, 1));
+      if (f > 0.5 && f < 0.8) call(ctx, 520, "localhost = komputer ini sendiri", g.url.x + 300, g.url.cy + 16, { x: 1450 });
       if (f > 0.8) call(ctx, 520, "Halaman dari folder halaman-kelas tampil.", g.x + 500, g.y + 140, { x: 1450, fill: C.goodBg, color: GREEN });
-      LK.steps(ctx, "LANGKAH", ["Buka browser.", "Ketik localhost:8000", "Tekan Enter."], stepAt(f, [0.06, 0.3, 0.42]));
-      LK.pointer(ctx, l, sp, [{ at: 0, x: 900, y: 760 }, { at: 0.06, x: g.url.x + 200, y: g.url.cy, click: true, kind: "text" }, { at: 0.5, x: 1200, y: 700 }]);
+      LK.steps(ctx, "LANGKAH", ["Buka browser.", "Ketik localhost:8000", "Tekan Enter."], stepAt(f, [0.1, 0.39, 0.46]));
+      LK.pointer(ctx, l, sp, [{ at: 0, x: 900, y: 760 }, { at: 0.1, x: g.url.x + 200, y: g.url.cy, click: true, kind: "text" }, { at: 0.5, x: 1200, y: 700 }]);
     },
     log_get(ctx, b, l) {
       const sp = spanOf(b), f = l / sp;
@@ -360,14 +360,14 @@
     },
     ctrl_c(ctx, b, l) {
       const sp = spanOf(b), f = l / sp;
-      const stopped = f > 0.42;
+      const stopped = f > 0.55;
       const rows = HIST_SRV.concat(LOGL, LOGS, stopped ? STOP : []);
       const g = term(ctx, { rows, busy: !stopped, prompt: PD }, l, WIN, { size: 24 });
-      keys(ctx, ["Ctrl", "C"], clamp((f - 0.3) / 0.14, 0, 1), 1250, 735);
-      if (f > 0.5) { const i = rows.length - 1; const bx = g.find(i, "Keyboard interrupt received"); if (bx) { LK.focus(ctx, bx, { t: l, color: GREEN }); call(ctx, 520, "Server mati.", bx.x + 120, bx.y + bx.h, { x: 300, fill: C.goodBg, color: GREEN }); } }
-      if (f > 0.7) call(ctx, 620, "Prompt kembali: Terminal siap menerima perintah lagi.", g.x + 22 + PD.length * g.cw + 10, g.y + 18 + (rows.length - g.first + 1) * g.lh - 4, { x: 700, maxW: 560 });
-      LK.steps(ctx, "LANGKAH", ["Klik jendela Terminal server.", "Tekan Ctrl + C.", "Prompt kembali."], stepAt(f, [0.2, 0.44, 0.72]), { y: 590 - 0 });
-      LK.pointer(ctx, l, sp, [{ at: 0, x: 1300, y: 780 }, { at: 0.18, x: 900, y: 600, click: true }, { at: 0.5, x: 1000, y: 760 }]);
+      keys(ctx, ["Ctrl", "C"], clamp((f - 0.42) / 0.14, 0, 1), 1250, 735);
+      if (f > 0.62) { const i = rows.length - 1; const bx = g.find(i, "Keyboard interrupt received"); if (bx) { LK.focus(ctx, bx, { t: l, color: GREEN }); call(ctx, 660, "Server mati.", bx.x + 120, bx.y + bx.h, { x: 200, fill: C.goodBg, color: GREEN }); } }
+      if (f > 0.8) call(ctx, 660, "Prompt kembali: Terminal siap menerima perintah lagi.", g.x + 22 + PD.length * g.cw + 10, g.y + 18 + (rows.length - g.first + 1) * g.lh - 4, { x: 700, maxW: 560 });
+      LK.steps(ctx, "LANGKAH", ["Klik jendela Terminal server.", "Tekan Ctrl + C.", "Prompt kembali."], stepAt(f, [0.26, 0.56, 0.8]), { y: 590 });
+      LK.pointer(ctx, l, sp, [{ at: 0, x: 1300, y: 780 }, { at: 0.24, x: 900, y: 600, click: true }, { at: 0.6, x: 1000, y: 760 }]);
     },
     server_mati(ctx, b, l) {
       const sp = spanOf(b), f = l / sp;

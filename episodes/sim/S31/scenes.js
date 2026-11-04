@@ -81,7 +81,7 @@
     const pub = AR.btn(ctx, 1170, 736, 200, 52, "Terbitkan", { kind: "good", press: st.press, disabled: !st.check });
     return { ...g, lic, cb, pub };
   }
-  const metaDone = { title: SINTA.title, by: SINTA.by, date: "12/10/2026", desc: DESC, tags: TAGS };
+  const metaDone = { title: SINTA.title, by: SINTA.by, date: "12 Okt 2026", desc: DESC, tags: TAGS };
 
   // ---------- panel kanan ----------
   function panelCard(ctx, title, h, y0) { const y = y0 || WIN.y; card(ctx, PX, y, PW, h, { fill: "#FFFFFF", stroke: "#D7E2DC", lw: 3, r: 18 }); text(ctx, title, PX + 24, y + 44, 23, { weight: 900, color: C.accentDark, fit: PW - 48 }); return y + 70; }
@@ -91,7 +91,7 @@
     for (let i = 0; i < 3; i++) { ctx.fillStyle = "#DCE3E8"; rr(ctx, x + 14 * u, y + (50 + i * 22) * u, (150 - i * 20) * u, 9 * u, 4 * u); ctx.fill(); }
     const iw = 90 * u, ih = 120 * u, ix = x + w - iw - 40 * u, iy = y + 14 * u;
     AR.art(ctx, opt.art || "poster", ix, iy, iw, ih);
-    if (caption) { ctx.font = `600 ${11 * u}px Inter`; const lines = H.wrap(ctx, caption, 11 * u, 600, w - 30 * u); lines.slice(0, 2).forEach((ln, i) => text(ctx, ln, x + w / 2, y + h - (lines.length > 1 ? 24 : 10) * u + i * 14 * u, 11 * u, { align: "center", weight: 600, color: opt.capColor || C.ink2 })); }
+    if (caption) { const cs = Math.max(16, 11 * u); ctx.font = `700 ${cs}px Inter`; const lines = H.wrap(ctx, caption, cs, 700, w - 24); lines.slice(0, 2).forEach((ln, i) => text(ctx, ln, x + w / 2, y + h - (lines.length > 1 ? 1.9 : 0.7) * cs + i * cs * 1.25, cs, { align: "center", weight: 700, color: opt.capColor || C.ink2 })); }
     return { x, y, w, h, img: { x: ix, y: iy, w: iw, h: ih } };
   }
   function shirt(ctx, x, y, s) {
@@ -207,11 +207,11 @@
     },
     meta_tanggal(ctx, b, l) {
       const span = SP(b); const c = fieldC("date");
-      const pts = [{ ...fieldC("by"), d: 0.2 }, { ...c, d: 0.9, click: true }, { x: 960 + 230, y: 462 + 94 + 102 + 38 * 2 - 6, d: 1.0, click: true }, { ...fieldC("desc"), d: 0.9, click: true }, { ...fieldC("desc"), d: 3.2 }, { ...fieldC("desc"), d: 0.4 }];
+      const pts = [{ ...fieldC("by"), d: 0.2 }, { ...c, d: 0.9, click: true }, { x: 930, y: 462 + 94 + 102 + 38 * 2 - 6, d: 1.0, click: true }, { ...fieldC("desc"), d: 0.9, click: true }, { ...fieldC("desc"), d: 3.2 }, { ...fieldC("desc"), d: 0.4 }];
       const { S, P } = run(l, span, pts);
       const calOpen = S.i === 2 || (S.i === 1 && S.p(1) > 0.6), picked = S.i > 2 || (S.i === 2 && S.p(2) > 0.7);
       const bg = browser(ctx, "arsipkarya.example/upload", "Upload karya");
-      step2(ctx, bg, { t: l, title: SINTA.title, by: SINTA.by, date: picked ? "12/10/2026" : "", focus: S.i >= 3 && (S.i > 3 || S.p(3) > 0.55) ? "desc" : calOpen ? "date" : null,
+      step2(ctx, bg, { t: l, title: SINTA.title, by: SINTA.by, date: picked ? "12 Okt 2026" : "", focus: S.i >= 3 && (S.i > 3 || S.p(3) > 0.55) ? "desc" : calOpen ? "date" : null,
         desc: S.at(4) ? W.typed(DESC, S.p(4) / 0.95) : "", cal: calOpen ? { hi: 12, sel: picked ? 12 : null } : null });
       AR.steps(ctx, PX, WIN.y, PW, "METADATA", ["Judul", "Pembuat", "Tanggal dibuat", "Deskripsi", "Kata kunci"], 2 + stepN(S, [2, 4]));
       ptr(ctx, P);
@@ -359,14 +359,14 @@
         const bg = browser(ctx, "arsipkarya.example/karya/2187", GUN.title);
         const copied = l > cut * (0.3 + 0.55 * 1 / 2.1) + cut * 0.2;
         const g = AR.workPage(ctx, bg, "gunungan", { user: "Dito", free: true, copied, mark: "attr", press: { attr: P.i === 1 ? P.click : 0 } });
-        if (copied) { ctx.fillStyle = "#26323B"; rr(ctx, 560, 160 + 600, 380, 50, 25); ctx.fill(); text(ctx, "Atribusi disalin", 750, 793, 22, { align: "center", weight: 800, color: "#FFFFFF" }); }
+        if (copied) { ctx.fillStyle = "#26323B"; rr(ctx, g.img.x + 10, g.img.y + g.img.h - 64, g.img.w - 20, 50, 25); ctx.fill(); text(ctx, "✓ Atribusi disalin", g.img.x + g.img.w / 2, g.img.y + g.img.h - 31, 21, { align: "center", weight: 800, color: "#FFFFFF" }); }
         AR.steps(ctx, PX, WIN.y, PW, "LANGKAH", ["Klik Salin atribusi", "Klik di bawah foto", "Tekan Ctrl+V", "Dipotong? Tulis keterangan"], copied ? 1 : 0);
         ptr(ctx, P);
         return;
       }
       const l2 = l - cut, s2 = span - cut;
       const S = W.seq(l2, s2, [0.9, 0.9, 1.4, 1.6]);
-      const P = W.path(l2, s2, [{ x: 1000, y: 712, d: 0.9, click: false }, { x: 1080, y: 650, d: 0.9, click: true }, { x: 1080, y: 650, d: 1.4 }, { x: 1080, y: 650, d: 1.6 }]);
+      const P = W.path(l2, s2, [{ x: 1000, y: 712, d: 0.9, click: false }, { x: 1080, y: 650, d: 0.9, click: true }, { x: 1080, y: 650, d: 1.4 }, { x: 1300, y: 520, d: 1.6 }]);
       const pasted = S.i > 2 || (S.i === 2 && S.p(2) > 0.4), crop = S.i === 3 && S.p(3) > 0.15;
       const cap = AR.attr("gunungan") + (crop ? " · dipotong dari aslinya" : "");
       AR.slideApp(ctx, WIN.x, WIN.y, WIN.w, WIN.h, { caption: pasted ? cap : "", typed: 1, capMark: pasted });

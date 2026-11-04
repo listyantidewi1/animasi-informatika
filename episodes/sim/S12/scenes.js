@@ -54,7 +54,6 @@
   const ALL = ["perpus", "email", "game", "toko", "teman", "sekolah"];
   const HOME = [{ name: "Brankas Sandi", color: V, icon: "lock" }, { name: "Browser", color: "#5B6B76", icon: "globe" }, { name: "Autentikator", color: BLUE, icon: "shield" }, { name: "Catatan", color: "#E0A23B", icon: "folder" },
     { name: "Kamera", color: "#2E7E9A", icon: "camera" }, { name: "Galeri", color: "#5FA8D3", icon: "photo" }, { name: "Obrolan", color: "#4C9BE0", icon: "chat" }, { name: "Pengaturan", color: "#5B6B76", icon: "gear" }];
-  const FP_DLG = { icon: "fingerprint", iconColor: V, title: "Isi dengan Brankas Sandi?", body: "Sentuh sensor sidik jari untuk mengisi akun dito.pratama.", buttons: ["Batal"] };
 
   Object.assign(K.SCENES, {
     tujuan(ctx, b, l) {
@@ -120,7 +119,7 @@
     induk_ketik(ctx, b, l) {
       const span = spanOf(b), ST = [{ tap: [180, 227], set: { kb: true }, d: 0.8 }, { type: B.PHRASE, field: "v", d: 5 }, { wait: 1, d: 0.8 }, { set: { kb: false }, d: 0.1 }, { wait: 1, d: 1.2 }];
       const R = HP.run({ v: "" }, ST, l, span), tp = typing(R, ST);
-      show(ctx, c => { const pr = R.st.kb ? (tp ? (tp.u < 0.6 ? tp.ch : null) : null) : null; B.master(c, { value: R.st.v, kb: R.st.kb, press: pr }); if (R.st.kb) keyTap(c, tp); tapDraw(c, R); }, { u: 0, v: 182, w: 360, h: 196 });
+      show(ctx, c => { const pr = R.st.kb ? (tp ? (tp.u < 0.6 ? tp.ch : null) : null) : null; B.master(c, { value: R.st.v, kb: R.st.kb, press: pr }); if (R.st.kb) keyTap(c, tp); tapDraw(c, R); }, { u: 0, v: 178, w: 360, h: 200 });
       const y = steps(ctx, "LANGKAH", ["Tap kolom Sandi induk.", "Ketik frasa dari beberapa kata acak."], stepAt(l, span, [0.13, 0.8]));
       if (after(b, l, 0.82)) notes(ctx, y, [{ s: "29 karakter: sangat kuat", fill: C.goodBg, color: GREEN }]);
       card(ctx, 790, 520, 620, 290, { fill: "#FFFFFF", stroke: "#D7E2DC", lw: 3, r: 18 });
@@ -136,17 +135,17 @@
       show(ctx, c => { B.confirm(c, { n: R.i >= 1 ? n : 0, kb: R.st.kb, press: typingNow && n - k < 0.6 ? B.PHRASE[k] : null, hl: R.i >= 4 });
         if (typingNow) { const p = B.keyPos(B.PHRASE[k]); HP.tap(c, p.x, p.y, Math.min(0.95, n - k), { r: 16 }); }
         if (R.st.done) HP.toast(c, "Brankas sudah dibuat.", clamp((l - span * 0.62) / (span * 0.4), 0, 0.9), { y: 540 });
-        tapDraw(c, R); }, { u: 0, v: 130, w: 360, h: 310 });
+        tapDraw(c, R); }, { u: 0, v: 118, w: 360, h: 320 });
       const y = steps(ctx, "LANGKAH", ["Ketik ulang frasa yang sama.", "Tap Buat brankas."], stepAt(l, span, [0.55, 0.72]));
       if (after(b, l, 0.5)) notes(ctx, y, [{ s: "Lupa sandi induk: brankas tidak bisa dibuka lagi.", fill: C.badBg, color: RED }]);
     },
     induk_sidik(ctx, b, l) {
       const span = spanOf(b);
-      const R = HP.run({ scr: "bio", fp: 0 }, [{ wait: 1, d: 0.6 }, { tap: [180, 456], set: { scr: "lock" }, d: 1 }, { wait: 1, d: 0.5 }, { anim: "fp", d: 1.6 }, { set: { scr: "vault" }, d: 0.1 }, { wait: 1, d: 1.8 }], l, span);
+      const R = HP.run({ scr: "bio", fp: 0 }, [{ wait: 1, d: 2.0 }, { tap: [180, 456], set: { scr: "lock" }, d: 1 }, { wait: 1, d: 0.4 }, { anim: "fp", d: 1.4 }, { set: { scr: "vault" }, d: 0.1 }, { wait: 1, d: 1.4 }], l, span);
       const dark = R.st.scr === "lock";
       show(ctx, c => { if (R.st.scr === "bio") B.bioOffer(c, { hl: R.i >= 1 }); else if (dark) { B.locked(c, { u: R.i >= 3 ? R.st.fp : 0 }); if (R.i === 3 && R.st.fp < 1) HP.tap(c, 180, 420, 0.3, { r: 40 }); } else B.vault(c, {}); tapDraw(c, R); },
-        R.st.scr === "bio" ? { u: 0, v: 130, w: 360, h: 300 } : dark ? { u: 0, v: 130, w: 360, h: 300 } : { u: 0, v: 104, w: 360, h: 300 }, { dark });
-      const y = steps(ctx, "LANGKAH", ["Tap Nyalakan.", "Buka brankas dengan sidik jari."], stepAt(l, span, [0.3, 0.68]));
+        R.st.scr === "bio" ? { u: 0, v: 130, w: 360, h: 300 } : dark ? { u: 0, v: 300, w: 360, h: 250 } : { u: 0, v: 104, w: 360, h: 300 }, { dark });
+      const y = steps(ctx, "LANGKAH", ["Tap Nyalakan.", "Buka brankas dengan sidik jari."], stepAt(l, span, [0.42, 0.75]));
       if (after(b, l, 0.6)) notes(ctx, y, [{ s: "Sesekali brankas tetap meminta sandi induk.", fill: "#E7F1FB", color: BLUE }]);
     },
     tambah_akun(ctx, b, l) {
@@ -165,10 +164,10 @@
     },
     generator(ctx, b, l) {
       const span = spanOf(b), base = { scr: "form", name: "Perpustakaan Sekolah", site: "perpus.sekolah.example", user: "dito.pratama" };
-      const R = HP.run(base, [{ wait: 1, d: 0.3 }, { tap: [180, 454], set: { genHl: true }, d: 0.9 }, { anim: "gu", d: 0.6 }, { wait: 1, d: 0.5 }, { tap: [B.slideX(12), 455], d: 0.5 }, { anim: "sl", d: 1.4 }, { wait: 1, d: 3 }], l, span);
+      const R = HP.run(base, [{ wait: 1, d: 0.3 }, { tap: [180, 454], set: { genHl: true }, d: 0.9 }, { anim: "gu", d: 0.6 }, { wait: 1, d: 0.5 }, { tap: [B.slideX(12), 458], d: 0.5 }, { anim: "sl", d: 1.4 }, { wait: 1, d: 3 }], l, span);
       const len = R.i >= 5 ? Math.round(12 + 8 * R.st.sl) : 12, gu = R.i >= 2 ? R.st.gu : 0;
       show(ctx, c => { B.addForm(c, { ...base, genHl: R.st.genHl });
-        if (gu > 0) { B.gen(c, { u: gu, len, pass: genPass(len), slideHl: R.i === 4 || (R.i === 5 && R.st.sl < 1) }); if (R.i === 5 && R.st.sl < 1) HP.tap(c, B.slideX(len), 455, 0.3, { r: 18 }); }
+        if (gu > 0) { B.gen(c, { u: gu, len, pass: genPass(len), slideHl: R.i === 4 || (R.i === 5 && R.st.sl < 1) }); if (R.i === 5 && R.st.sl < 1) HP.tap(c, B.slideX(len), 458, 0.3, { r: 16 }); }
         tapDraw(c, R); }, gu > 0.5 ? { u: 0, v: 250, w: 360, h: 225 } : { u: 0, v: 340, w: 360, h: 160 });
       const y = steps(ctx, "LANGKAH", ["Tap Buat sandi acak.", "Geser panjang ke 20 karakter.", "Biarkan angka dan simbol menyala."], stepAt(l, span, [0.2, 0.55, 0.75]));
       if (after(b, l, 0.6)) { card(ctx, 790, 560, 620, 240, { fill: "#FFFFFF", stroke: "#D7E2DC", lw: 3, r: 18 });
@@ -178,30 +177,30 @@
     },
     simpan_akun(ctx, b, l) {
       const span = spanOf(b), base = { name: "Perpustakaan Sekolah", site: "perpus.sekolah.example", user: "dito.pratama" };
-      const R = HP.run({ scr: "gen" }, [{ wait: 1, d: 0.4 }, { tap: [255, 698], set: { useHl: true }, d: 0.9 }, { set: { scr: "form" }, d: 0.1 }, { wait: 1, d: 0.5 }, { tap: B.SAVE, set: { saveHl: true }, d: 0.9 },
+      const R = HP.run({ scr: "gen" }, [{ wait: 1, d: 0.4 }, { tap: [255, 701], set: { useHl: true }, d: 0.9 }, { set: { scr: "form" }, d: 0.1 }, { wait: 1, d: 0.5 }, { tap: B.SAVE, set: { saveHl: true }, d: 0.9 },
         { set: { scr: "vault" }, d: 0.1 }, { anim: "toast", d: 1.5 }, { set: { scr: "signup" }, d: 0.1 }, { wait: 1, d: 3 }], l, span);
       const scr = R.st.scr;
       show(ctx, c => {
         if (scr === "gen") { B.addForm(c, base); B.gen(c, { len: 20, useHl: R.i >= 1 }); }
         else if (scr === "form") B.addForm(c, { ...base, pass: B.PASS[0], saveHl: R.i >= 4 });
-        else if (scr === "vault") { B.vault(c, { items: ["perpus"], hl: "perpus" }); HP.toast(c, "Akun disimpan di brankas.", R.st.toast || 0, { y: 540 }); }
+        else if (scr === "vault") { B.vault(c, { items: ["perpus"], hl: "perpus" }); HP.toast(c, "Akun disimpan di brankas.", R.st.toast || 0, { y: 470 }); }
         else B.login(c, { url: "perpus.sekolah.example/daftar", title: "Daftar akun", user: "dito.pratama", pass: B.PASS[0], filled: true, btnLabel: "Daftar" });
         tapDraw(c, R);
-      }, scr === "gen" ? { u: 0, v: 560, w: 360, h: 180 } : scr === "form" ? { u: 0, v: 40, w: 360, h: 380 } : scr === "vault" ? { u: 0, v: 104, w: 360, h: 200 } : { u: 0, v: 180, w: 360, h: 260 }, { mw: scr === "form" ? 440 : MAG.w });
+      }, scr === "gen" ? { u: 0, v: 560, w: 360, h: 180 } : scr === "form" ? { u: 0, v: 40, w: 360, h: 380 } : scr === "vault" ? { u: 0, v: 104, w: 360, h: 200 } : { u: 0, v: 186, w: 360, h: 260 }, { mw: scr === "form" ? 440 : MAG.w });
       const y = steps(ctx, "LANGKAH", ["Tap Pakai sandi ini.", "Tap Simpan.", "Saat mendaftar, isi sandi dari brankas."], stepAt(l, span, [0.17, 0.4, 0.62]));
       if (scr === "signup") notes(ctx, y, [{ s: "Sandi tidak diketik sendiri: diisi dari brankas.", fill: C.goodBg, color: GREEN }]);
     },
     isi_otomatis(ctx, b, l) {
-      const span = spanOf(b), dl = measure(m => HP.dialog(m, FP_DLG)).box;
-      const R = HP.run({ focus: null }, [{ wait: 1, d: 0.5 }, { tap: [180, 257], set: { focus: "user", kb: true }, d: 1 }, { wait: 1, d: 0.6 }, { tap: [180, 426], set: { sugHl: true }, d: 0.9 }, { set: { dlg: true, kb: false }, d: 0.1 },
-        { anim: "fp", d: 1.6 }, { set: { dlg: false, filled: true, focus: null }, d: 0.1 }, { wait: 1, d: 0.9 }, { tap: [180, 404], set: { hlBtn: true }, d: 0.8 }, { set: { welcome: true }, d: 0.1 }, { wait: 1, d: 1 }], l, span);
+      const span = spanOf(b);
+      const R = HP.run({ focus: null }, [{ wait: 1, d: 0.5 }, { tap: [180, 269], set: { focus: "user", kb: true }, d: 1 }, { wait: 1, d: 0.6 }, { tap: [180, 426], set: { sugHl: true }, d: 0.9 }, { set: { dlg: true, kb: false }, d: 0.1 }, { anim: "su", d: 0.4 },
+        { anim: "fp", d: 1.4 }, { set: { dlg: false, filled: true, focus: null }, d: 0.1 }, { wait: 1, d: 0.9 }, { tap: [180, 410], set: { hlBtn: true }, d: 0.8 }, { set: { welcome: true }, d: 0.1 }, { wait: 1, d: 1 }], l, span);
       const st = R.st;
       const draw = c => {
         B.login(c, { focus: st.focus, kb: st.kb, suggest: { text: "dito.pratama", sub: "Brankas Sandi · perpus.sekolah.example" }, sugHl: st.sugHl && st.kb, user: st.filled ? "dito.pratama" : "", pass: st.filled ? B.PASS[0] : "", filled: st.filled, hlBtn: st.hlBtn, welcome: st.welcome });
-        if (st.dlg) { HP.dialog(c, FP_DLG); const cy = dl.y + 30 + 18; if (st.fp < 1) HP.tap(c, 180, cy, 0.3, { r: 28 }); }
+        if (st.dlg) { B.fpSheet(c, { u: st.su, fp: R.i >= 6 ? st.fp : 0 }); if (R.i >= 6 && st.fp < 1) HP.tap(c, 180, 584, 0.3, { r: 30 }); }
         tapDraw(c, R);
       };
-      show(ctx, draw, st.dlg ? { u: 0, v: dl.y - 10, w: 360, h: dl.h + 20 } : st.welcome ? { u: 0, v: 98, w: 360, h: 300 } : { u: 0, v: 200, w: 360, h: 260 });
+      show(ctx, draw, st.dlg ? { u: 0, v: 440, w: 360, h: 290 } : st.welcome ? { u: 0, v: 98, w: 360, h: 300 } : { u: 0, v: 186, w: 360, h: 270 });
       const y = steps(ctx, "LANGKAH", ["Tap kolom Nama pengguna.", "Tap saran Brankas Sandi.", "Sentuh sensor sidik jari."], stepAt(l, span, [0.2, 0.37, 0.6]));
       if (st.filled) notes(ctx, y, [{ s: "Nama pengguna dan sandi terisi sendiri.", fill: C.goodBg, color: GREEN }]);
     },
@@ -227,14 +226,14 @@
       const R = HP.run({ scr: "vault", sc: 0 }, [{ wait: 1, d: 1.2 }, { tap: B.TAB.Periksa, set: { scr: "rep" }, d: 1 }, { anim: "sc", d: 1.4 }, { wait: 1, d: 3 }], l, span);
       const hl = after(b, l, 0.78) ? "weak" : after(b, l, 0.6) ? "reuse" : null;
       show(ctx, c => { if (R.st.scr === "vault") B.vault(c, { items: ALL, tabHl: R.i >= 1 ? "Periksa" : null }); else B.report(c, { score: 45 * ease(R.st.sc), hl }); tapDraw(c, R); },
-        R.st.scr === "vault" ? { u: 0, v: 104, w: 360, h: 300 } : { u: 0, v: 120, w: 360, h: 430 }, { mw: R.st.scr === "vault" ? MAG.w : 480, mx: R.st.scr === "vault" ? MAG.x : 860 });
+        R.st.scr === "vault" ? { u: 0, v: 540, w: 360, h: 190 } : { u: 0, v: 120, w: 360, h: 430 }, { mw: R.st.scr === "vault" ? MAG.w : 480, mx: R.st.scr === "vault" ? MAG.x : 860 });
       const y = steps(ctx, "LANGKAH", ["Tap Periksa di bawah.", "Baca skor dan daftarnya."], stepAt(l, span, [0.4, 1]));
       if (R.st.scr === "rep") notes(ctx, y, [after(b, l, 0.6) && { s: "Dipakai ulang: 4 akun", fill: C.badBg, color: RED }, after(b, l, 0.78) && { s: "Lemah: 2 sandi", fill: "#FFF3D6", color: ORANGE }]);
     },
     laporan_ganti(ctx, b, l) {
       const span = spanOf(b), rr0 = measure(m => B.report(m, {})).rows, ru = measure(m => B.reused(m, {})), dlg = measure(m => B.change(m, { dialog: 1 })).dlg;
       const R = HP.run({ scr: "rep" }, [{ wait: 1, d: 0.3 }, { tap: tapRow(rr0, 0), set: { scr: "reused" }, d: 1 }, { wait: 1, d: 0.3 }, { tap: [ru.btns.game.x, ru.btns.game.y], set: { scr: "change" }, d: 1 }, { wait: 1, d: 0.3 },
-        { tap: [180, 377], set: { np: true }, d: 1 }, { tap: [180, 444], set: { dialog: 1 }, d: 0.9 }, { wait: 1, d: 0.3 }, { tap: [dlg.buttons[1].cx, dlg.buttons[1].cy], set: { scr: "reused2" }, d: 0.9 }, { anim: "toast", d: 1.8 }], l, span);
+        { tap: [180, 385], set: { np: true }, d: 1 }, { tap: [180, 450], set: { dialog: 1 }, d: 0.9 }, { wait: 1, d: 0.3 }, { tap: [dlg.buttons[1].cx, dlg.buttons[1].cy], set: { scr: "reused2" }, d: 0.9 }, { anim: "toast", d: 1.8 }], l, span);
       const st = R.st;
       show(ctx, c => {
         if (st.scr === "rep") B.report(c, { hl: R.i >= 1 ? "reuse" : null });
@@ -260,8 +259,8 @@
         phone(ctx, draw);
         // HP kedua: aplikasi autentikator memindai kode QR
         const sc = clamp((l - span * 0.78) / (span * 0.2), 0, 1);
-        HP.phone(ctx, 1110, 470, { h: 600, dark: true }, c => { HP.scanner(c, { found: sc >= 1, hint: sc >= 1 ? "Akun ditambahkan" : "Arahkan ke kode QR", inner: (cc, box) => HP.qr(cc, box.x + 20, box.y + 20, box.w - 40, 12) }); });
-        text(ctx, "HP dengan aplikasi autentikator", 1110, 112, 22, { align: "center", weight: 800, color: C.ink2 });
+        HP.phone(ctx, 1110, 505, { h: 580, dark: true }, c => { HP.scanner(c, { found: sc >= 1, hint: sc >= 1 ? "Akun ditambahkan" : "Arahkan ke kode QR", inner: (cc, box) => HP.qr(cc, box.x + 20, box.y + 20, box.w - 40, 12) }); });
+        text(ctx, "HP dengan aplikasi autentikator", 1110, 170, 22, { align: "center", weight: 800, color: C.ink2 });
       } else show(ctx, draw, st.scr === "vault" ? { u: 0, v: 560, w: 360, h: 160 } : st.scr === "set" ? { u: 0, v: 104, w: 360, h: 330 } : { u: 0, v: 130, w: 360, h: 360 }, { mw: st.scr === "vault" ? MAG.w : 520, mx: st.scr === "vault" ? MAG.x : 840 });
       const y = steps(ctx, "LANGKAH", ["Tap Pengaturan.", "Tap Verifikasi dua langkah.", "Tap Mulai, lalu pindai kode QR."], stepAt(l, span, [0.2, 0.45, 0.75]));
       if (st.scr === "qr") notes(ctx, y, [{ s: "Cara memindai kode QR ada di simulasi S11.", fill: "#E7F1FB", color: BLUE }]);
@@ -278,9 +277,9 @@
       };
       if (st.scr === "code") {
         phone(ctx, draw);
-        HP.phone(ctx, 1110, 470, { h: 600 }, c => HP.auth(c, { accounts: [{ issuer: "Brankas Sandi", user: "dito.pratama", code: "482913", secs: HP.totp(l + 9).secs, hl: true }] }));
-        text(ctx, "Aplikasi autentikator", 1110, 112, 22, { align: "center", weight: 800, color: C.ink2 });
-      } else show(ctx, draw, st.scr === "backup" ? { u: 0, v: 120, w: 360, h: 380 } : { u: 0, v: 104, w: 360, h: 330 }, { mw: 500, mx: 860 });
+        HP.phone(ctx, 1110, 505, { h: 580 }, c => HP.auth(c, { accounts: [{ issuer: "Brankas Sandi", user: "dito.pratama", code: "482913", secs: HP.totp(l + 9).secs, hl: true }] }));
+        text(ctx, "Aplikasi autentikator", 1110, 170, 22, { align: "center", weight: 800, color: C.ink2 });
+      } else show(ctx, draw, st.scr === "backup" ? { u: 0, v: 108, w: 360, h: 392 } : { u: 0, v: 104, w: 360, h: 330 }, { mw: 500, mx: 860 });
       const y = steps(ctx, "LANGKAH", ["Ketik kode dari autentikator.", "Tulis kode cadangan di kertas.", "Centang, lalu tap Selesai."], stepAt(l, span, [0.4, 0.62, 0.8]));
       if (st.scr === "set") notes(ctx, y, [{ s: "Verifikasi dua langkah: Aktif", fill: C.goodBg, color: GREEN }]);
       else if (st.scr === "backup") notes(ctx, y, [{ s: "Simpan kertasnya di tempat aman di rumah.", fill: "#E7F1FB", color: BLUE }]);
@@ -311,7 +310,7 @@
       if (after(b, l, 0.12)) badge(ctx, 930, 240, false, "dito123: hanya tujuh karakter, mudah ditebak.", { w: 820, h: 90, size: 26 });
       if (after(b, l, 0.42)) badge(ctx, 930, 344, false, "Tercatat di HP: orang yang memegang HP-mu bisa membacanya.", { w: 820, h: 90, size: 26 });
       if (after(b, l, 0.72)) badge(ctx, 930, 448, true, "Frasa panjang yang hanya ada di ingatanmu.", { w: 820, h: 90, size: 26 });
-      if (after(b, l, 0.2)) HP.magnify(ctx, ph, draw, { u: 0, v: 192, w: 360, h: 52 }, { x: 1010, y: 580, w: 660 });
+      if (after(b, l, 0.2)) HP.magnify(ctx, ph, draw, { u: 0, v: 236, w: 360, h: 46 }, { x: 1010, y: 590, w: 660 });
     },
     salah_ulang(ctx, b, l) {
       card(ctx, 140, 140, 1640, 680, { fill: "#FFFFFF", r: 22 });
@@ -324,12 +323,12 @@
         ctx.strokeStyle = open ? RED : "#C9D4DB"; ctx.lineWidth = 4; ctx.beginPath(); ctx.moveTo(520, 480); ctx.lineTo(700, y + 55); ctx.stroke();
         ctx.fillStyle = open ? C.badBg : "#F4F6F5"; rr(ctx, 700, y, 520, 110, 18); ctx.fill();
         HP.appIcon(ctx, 755, y + 55, 60, acc.app.color, acc.app.letter); text(ctx, acc.label, 805, y + 52, 30, { weight: 800 }); text(ctx, acc.sub, 805, y + 86, 22, { weight: 600, color: C.ink2 });
-        if (open) { HP.icon(ctx, i === 0 ? "warning" : "lock", 1170, y + 55, 34, RED); text(ctx, i === 0 ? "BOCOR" : "terbuka", 1120, y + 66, 24, { align: "right", weight: 900, color: RED }); }
+        if (open) { HP.icon(ctx, "warning", 1170, y + 55, 34, RED); text(ctx, i === 0 ? "BOCOR" : "terbuka", 1120, y + 66, 24, { align: "right", weight: 900, color: RED }); }
       });
       if (after(b, l, 0.72)) { card(ctx, 1280, 300, 460, 380, { fill: C.goodBg, r: 20 });
         text(ctx, "YANG BENAR", 1510, 352, 28, { align: "center", weight: 900, color: GREEN });
         para(ctx, "Tiap akun punya sandi acak sendiri dari generator.", 1510, 410, 30, 400, { align: "center", weight: 800, lh: 1.25 });
-        B.passText(ctx, "Zq3!mW7#cY2e", 1510, 600, 30); text(ctx, "≠", 1510, 646, 30, { align: "center", weight: 900, color: C.ink2 }); }
+        [["Game Seru", "Zq3!mW7#cY2eHs6$"], ["Email", "tR8#qL2!vX9m@Kp4"]].forEach(([n, pw], i) => { const yy = 540 + i * 70; text(ctx, n, 1510, yy, 22, { align: "center", weight: 700, color: C.ink2 }); B.passText(ctx, pw, 1510, yy + 34, 28); }); }
     },
     latihan(ctx, b, l) {
       card(ctx, 160, 150, 1600, 660);

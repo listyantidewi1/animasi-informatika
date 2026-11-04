@@ -348,10 +348,10 @@
       ctx.fillStyle = A.SITE; ctx.beginPath(); ctx.arc(sx + 62, sy + 142 + i * 56, 7, 0, Math.PI * 2); ctx.fill(); text(ctx, s, sx + 82, sy + 150 + i * 56, 25, { weight: 600, color: UI.ink, fit: sw * 0.5 }); });
     const iw = 220, ih = 293, ix = sx + sw - iw - 140, iy = sy + 104;
     A.gunungan(ctx, ix, iy, iw, ih); const geo = { img: { x: ix, y: iy, w: iw, h: ih }, slide: { x: sx, y: sy, w: sw, h: sh } };
-    if (st.caption) { const s = W.typed(st.caption, st.typed == null ? 1 : st.typed); const cw = 470, ccx = ix + iw / 2;
-      ctx.font = F(600, 19); const lines = H.wrap(ctx, s, 19, 600, cw);
-      if (st.capMark) { ctx.fillStyle = "rgba(46,158,91,0.16)"; rr(ctx, ccx - cw / 2 - 10, iy + ih + 8, cw + 20, 2 * 25 + 14, 8); ctx.fill(); }
-      lines.forEach((ln, i) => text(ctx, ln, ccx, iy + ih + 32 + i * 25, 19, { align: "center", weight: 600, color: UI.ink2 })); }
+    if (st.caption) { const s = W.typed(st.caption, st.typed == null ? 1 : st.typed); const cw = 560, ccx = Math.min(ix + iw / 2, sx + sw - cw / 2 - 24);
+      ctx.font = F(600, 20); const lines = H.wrap(ctx, s, 20, 600, cw);
+      if (st.capMark) { ctx.fillStyle = "rgba(46,158,91,0.16)"; rr(ctx, ccx - cw / 2 - 10, iy + ih + 8, cw + 20, lines.length * 27 + 16, 8); ctx.fill(); }
+      lines.forEach((ln, i) => text(ctx, ln, ccx, iy + ih + 34 + i * 27, 20, { align: "center", weight: 600, color: UI.ink })); }
     geo.capY = iy + ih + 20;
     return geo;
   };

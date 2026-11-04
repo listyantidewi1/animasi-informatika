@@ -1,0 +1,1293 @@
+<title>Kiko: Membuat Grafik yang Jujur</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<style>
+/* Inti gaya halaman latihan: satu kolom, pemutar di atas, latihan di bawah; palet kantin sama dengan video. */
+:root {
+  --bg: #EAF2EE; --surface: #FFFFFF; --surface2: #DCE9E2; --ink: #1F2A33; --ink2: #4A5A66; --line: #C9D8D0;
+  --accent: #2E7E9A; --accent-ink: #FFFFFF; --warm: #F2B134; --warm-ink: #5E3E05; --good: #2E9E5B; --good-bg: #DDF3E4; --bad: #D9443B; --bad-bg: #FBE1DF;
+  --font: Inter, "Segoe UI", Roboto, Arial, sans-serif;
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) { --bg: #141C1A; --surface: #1E2926; --surface2: #273532; --ink: #EAF2EE; --ink2: #A9BBB3; --line: #3A4A45; --accent: #5FB3CE; --accent-ink: #0F1D22; --warm: #F2B134; --warm-ink: #2B1C02; --good: #5FCB8A; --good-bg: #1F3A2B; --bad: #F07A72; --bad-bg: #442523; color-scheme: dark } }
+:root[data-theme="dark"] { --bg: #141C1A; --surface: #1E2926; --surface2: #273532; --ink: #EAF2EE; --ink2: #A9BBB3; --line: #3A4A45; --accent: #5FB3CE; --accent-ink: #0F1D22; --warm: #F2B134; --warm-ink: #2B1C02; --good: #5FCB8A; --good-bg: #1F3A2B; --bad: #F07A72; --bad-bg: #442523; color-scheme: dark }
+* { box-sizing: border-box }
+body { background: var(--bg); color: var(--ink); font-family: var(--font); font-size: 17px; line-height: 1.5; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); padding-block: 16px 48px }
+.wrap { max-width: 980px; margin: 0 auto; display: grid; gap: 28px }
+h1 { font-size: clamp(26px, 5vw, 38px); line-height: 1.15; margin: 0; text-wrap: balance; font-weight: 900 }
+h2 { font-size: 22px; margin: 0 0 12px; font-weight: 800 }
+h3 { font-size: 18px; margin: 0 0 8px; font-weight: 800 }
+p { margin: 0 0 10px; max-width: 65ch }
+.eyebrow { font-size: 13px; letter-spacing: .08em; text-transform: uppercase; color: var(--ink2); font-weight: 800; margin-bottom: 6px }
+.card { background: var(--surface); border-radius: 18px; padding: 18px; border: 1px solid var(--line) }
+button { font: inherit; font-weight: 800; border: 0; border-radius: 12px; padding: 12px 16px; cursor: pointer; background: var(--surface2); color: var(--ink); min-height: 48px; touch-action: manipulation }
+button:focus-visible, [tabindex]:focus-visible { outline: 3px solid var(--warm); outline-offset: 2px }
+button.primary { background: var(--accent); color: var(--accent-ink) }
+button.warm { background: var(--warm); color: var(--warm-ink) }
+button[aria-pressed="true"] { box-shadow: inset 0 0 0 3px var(--accent) }
+button:disabled { opacity: .45; cursor: default }
+.row { display: flex; flex-wrap: wrap; gap: 10px; align-items: center }
+/* player */
+.player { display: grid; gap: 12px }
+.stage { position: relative; width: 100%; aspect-ratio: 16 / 9; max-width: 100%; background: #EAF2EE; border-radius: 14px; overflow: hidden; border: 1px solid var(--line) }
+.stage canvas { width: 100%; height: 100%; display: block }
+.bigplay { position: absolute; inset: 0; display: grid; place-items: center; background: rgba(31,42,51,.25); border: 0; border-radius: 0; color: #fff; font-size: 20px; min-height: 0 }
+.bigplay span { background: var(--accent); color: var(--accent-ink); padding: 14px 26px; border-radius: 999px; font-weight: 900 }
+.bar { height: 10px; background: var(--surface2); border-radius: 999px; overflow: hidden; cursor: pointer }
+.bar > i { display: block; height: 100%; width: 0; background: var(--warm) }
+.chapters { display: flex; flex-wrap: wrap; gap: 8px }
+.chapters button { font-size: 14px; padding: 8px 12px; min-height: 40px }
+.chapters button.now { background: var(--warm); color: var(--warm-ink) }
+.hint { color: var(--ink2); font-size: 15px }
+/* exercises (generic parts) */
+.levels { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 12px }
+.levels button { font-size: 14px; padding: 8px 12px; min-height: 40px }
+.levels button.done::after { content: " ✓"; color: var(--good) }
+.task { background: var(--surface2); border-radius: 12px; padding: 12px 14px; margin-bottom: 12px; font-weight: 700 }
+.result { border-radius: 12px; padding: 12px 14px; font-weight: 800; margin-top: 10px }
+.result.good { background: var(--good-bg); color: var(--good) }
+.result.bad { background: var(--bad-bg); color: var(--bad) }
+.result.info { background: var(--surface2); color: var(--ink) }
+/* quiz */
+.quiz { display: grid; gap: 16px }
+.q { border-top: 1px solid var(--line); padding-top: 14px }
+.q:first-child { border-top: 0; padding-top: 0 }
+.opts { display: grid; gap: 8px; margin-top: 8px }
+.opts button { text-align: left; font-weight: 700; background: var(--surface2); display: flex; gap: 10px; align-items: center }
+.opts button b { width: 30px; height: 30px; border-radius: 50%; background: var(--accent); color: var(--accent-ink); display: grid; place-items: center; flex: none }
+.opts button.right { background: var(--good-bg); box-shadow: inset 0 0 0 3px var(--good) }
+.opts button.wrong { background: var(--bad-bg) }
+.fb { margin-top: 8px; font-weight: 700 }
+.fb.good { color: var(--good) } .fb.bad { color: var(--bad) }
+details summary { cursor: pointer; font-weight: 800; font-size: 18px }
+details[open] summary { margin-bottom: 10px }
+ul.plain { padding-left: 20px; margin: 0 0 10px } ul.plain li { margin-bottom: 6px; max-width: 65ch }
+.progress { display: flex; gap: 8px; flex-wrap: wrap } .progress span { background: var(--surface2); border-radius: 999px; padding: 6px 12px; font-size: 14px; font-weight: 700 }
+.progress span.ok { background: var(--good-bg); color: var(--good) }
+@media (prefers-reduced-motion: reduce) { * { transition: none !important } }
+
+/* ajakan ke channel YouTube */
+.yt-ajak { display: flex; gap: 12px; align-items: center; background: var(--surface); border: 1px solid var(--line); border-left: 6px solid #D9443B; border-radius: 14px; padding: 12px 16px; color: var(--ink); text-decoration: none }
+.yt-ajak .yt-ic { flex: none; width: 40px; height: 28px; border-radius: 8px; background: #D9443B; color: #fff; display: grid; place-items: center; font-size: 14px }
+.yt-ajak b { display: block; font-size: 16px } .yt-ajak small { display: block; color: var(--ink2); font-size: 14px; font-weight: 600 }
+.yt-video { display: grid; gap: 10px } .yt-frame { position: relative; width: 100%; aspect-ratio: 16 / 9; border-radius: 14px; overflow: hidden; background: #000 }
+.yt-frame iframe { position: absolute; inset: 0; width: 100%; height: 100%; border: 0 }
+
+/* halaman video simulasi (dibuat build.py dari episodes/_alat/sim-page.html) */
+.links { display: grid; gap: 10px } .links a { display: block; background: var(--surface2); color: var(--ink); text-decoration: none; font-weight: 800; border-radius: 12px; padding: 12px 16px }
+.links a span { display: block; font-weight: 600; color: var(--ink2); font-size: 15px }
+ul.learn { margin: 0; padding-left: 20px } ul.learn li { margin-bottom: 4px }
+</style>
+
+<div class="wrap">
+  <header>
+    <div class="eyebrow">Informatika · Simulasi praktik · S04</div>
+    <h1>Membuat Grafik yang Jujur</h1>
+    <p class="hint">Setelah menonton, kamu bisa membuat grafik di lembar kerja, memilih jenisnya dengan tepat, memberi judul dan label, dan memastikan sumbunya mulai dari nol. Simulasi ini melengkapi episode D8.1, D8.6, F11.5. Hentikan videonya di setiap jeda "Coba sekarang" untuk mencoba sendiri.</p>
+  </header>
+  <section class="card player" aria-label="Pemutar simulasi">
+    <div class="stage">
+      <canvas id="screen" width="1920" height="1080" aria-label="Animasi simulasi"></canvas>
+      <audio id="nar" preload="auto" src="narasi.mp3"></audio>
+      <button class="bigplay" id="bigplay" aria-label="Putar"><span>▶ Putar simulasi</span></button>
+    </div>
+    <div class="bar" id="bar" role="slider" aria-label="Posisi simulasi" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" tabindex="0"><i id="barfill"></i></div>
+    <div class="row">
+      <button class="primary" id="playbtn">▶ Putar</button>
+      <button id="replay">↺ Ulangi bagian ini</button>
+      <button id="voice" aria-pressed="true" hidden>🔊 Suara: nyala</button>
+      <button id="slow" aria-pressed="false">🐢 Mode lambat</button>
+      <span class="hint" id="timelabel">0:00 / 0:00</span>
+    </div>
+    <div>
+      <div class="eyebrow">Bagian</div>
+      <div class="chapters" id="chapters"></div>
+    </div>
+  </section>
+
+  <section class="card" aria-label="Yang dipelajari">
+    <h2>Yang kamu pelajari</h2>
+    <ul class="learn"><li>membuat grafik dari tabel di lembar kerja</li><li>memilih grafik batang, garis, atau lingkaran sesuai datanya</li><li>memberi judul grafik, label sumbu, satuan, dan sumber data</li><li>mengenali grafik yang menipu dan membuat sumbu tegak mulai dari nol</li></ul>
+  </section>
+
+  <section class="card" aria-label="Cek pemahaman">
+    <h2>Cek pemahaman</h2>
+    <p class="hint">Pilih satu jawaban. Kalau salah, kamu dapat petunjuk, lalu coba lagi.</p>
+    <div class="quiz" id="quiz"></div>
+  </section>
+
+  <section class="card" aria-label="Kemajuan">
+    <h2>Kemajuanmu</h2>
+    <div class="progress" id="progress"></div>
+    <p class="hint" style="margin-top:8px">Kemajuan tersimpan di perangkat ini saja.</p>
+  </section>
+
+  <section class="card" aria-label="Halaman latihan">
+    <h2>Lanjut berlatih</h2>
+    <div class="links"><a href="../../D8.1/episode-d81.html">Episode D8.1: Lembar Kerja Pengolah Data<span>Tonton episodenya dan kerjakan latihannya.</span></a><a href="../../D8.6/episode-d86.html">Episode D8.6: Proyek: Cek Data, Cek Fakta<span>Tonton episodenya dan kerjakan latihannya.</span></a><a href="../../F11.5/episode-f115.html">Episode F11.5: Data Terbuka untuk Keputusan<span>Tonton episodenya dan kerjakan latihannya.</span></a><a href="../../../index.html">Daftar semua episode<span>Kembali ke halaman utama.</span></a></div>
+  </section>
+</div>
+
+<script>/* Kiko core: mesin gambar bersama untuk semua episode Fase D.
+   Kiko.draw(ctx, t, TL) menggambar frame pada detik t di kanvas 1920x1080 secara deterministik.
+   Berisi palet, pembantu gambar, tokoh (Kiko, murid), dan adegan umum (judul, kuis, ringkasan, penutup).
+   Setiap episode menambahkan adegannya sendiri di scenes.js: Object.assign(Kiko.SCENES, {...}). */
+(function (global) {
+  const W = 1920, H = 1080;
+  const FONT = "Inter, 'Segoe UI', Roboto, Arial, sans-serif";
+  const C = {
+    bg: "#EAF2EE", bg2: "#DCE9E2", ink: "#1F2A33", ink2: "#4A5A66", panel: "#FFFFFF",
+    tile: "#F7FAF8", tileLine: "#C9D8D0", table: "#A4653A", tableTop: "#C98A57",
+    kiko: "#2E7E9A", kikoDark: "#1F5A6E", kikoLight: "#8FD0E6", eye: "#FFFFFF", pupil: "#1F2A33",
+    accent: "#F2B134", accentDark: "#B57A12", good: "#2E9E5B", bad: "#D9443B", goodBg: "#DDF3E4", badBg: "#FBE1DF",
+    sub: "#1F2A33", subText: "#FFFFFF", star: "#F2B134", skin: "#F1C9A5", skin2: "#C98A57", hair: "#2B2118",
+    uniform: "#FFFFFF", pants: "#2F4E7D", bubble: "#FFFFFF", muted: "#9AAFA6"
+  };
+  const ease = u => u < 0 ? 0 : u > 1 ? 1 : u * u * (3 - 2 * u);
+  const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
+  const lerp = (a, b, u) => a + (b - a) * u;
+
+  // ---------- drawing helpers ----------
+  function rr(ctx, x, y, w, h, r) {
+    ctx.beginPath(); ctx.moveTo(x + r, y); ctx.arcTo(x + w, y, x + w, y + h, r); ctx.arcTo(x + w, y + h, x, y + h, r);
+    ctx.arcTo(x, y + h, x, y, r); ctx.arcTo(x, y, x + w, y, r); ctx.closePath();
+  }
+  function text(ctx, s, x, y, size, opt = {}) {
+    ctx.font = `${opt.weight || 600} ${size}px ${FONT}`;
+    // opt.fit: lebar maksimum; huruf diperkecil hanya bila teks lebih lebar dari itu
+    while (opt.fit && size > 20 && ctx.measureText(s).width > opt.fit) { size -= 2; ctx.font = `${opt.weight || 600} ${size}px ${FONT}`; } ctx.fillStyle = opt.color || C.ink;
+    ctx.textAlign = opt.align || "left"; ctx.textBaseline = opt.base || "alphabetic"; ctx.fillText(s, x, y);
+  }
+  function wrap(ctx, s, size, weight, maxW) {
+    ctx.font = `${weight} ${size}px ${FONT}`;
+    const words = s.split(" "), lines = []; let cur = "";
+    for (const w of words) {
+      const test = cur ? cur + " " + w : w;
+      if (ctx.measureText(test).width > maxW && cur) { lines.push(cur); cur = w; } else cur = test;
+    }
+    if (cur) lines.push(cur);
+    return lines;
+  }
+  function para(ctx, s, x, y, size, maxW, opt = {}) {
+    const lines = wrap(ctx, s, size, opt.weight || 500, maxW); const lh = size * (opt.lh || 1.35);
+    lines.forEach((l, i) => text(ctx, l, x, y + i * lh, size, opt));
+    return lines.length * lh;
+  }
+  function arrowIcon(ctx, kind, cx, cy, s, color) {
+    ctx.save(); ctx.translate(cx, cy); ctx.strokeStyle = color; ctx.fillStyle = color; ctx.lineWidth = s * 0.16; ctx.lineCap = "round"; ctx.lineJoin = "round";
+    if (kind === "up") {
+      ctx.beginPath(); ctx.moveTo(0, s * 0.45); ctx.lineTo(0, -s * 0.3); ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(-s * 0.32, -s * 0.05); ctx.lineTo(0, -s * 0.45); ctx.lineTo(s * 0.32, -s * 0.05); ctx.stroke();
+    } else if (kind === "left" || kind === "right") {
+      const k = kind === "left" ? -1 : 1;
+      ctx.beginPath(); ctx.moveTo(0, s * 0.45); ctx.lineTo(0, -s * 0.05); ctx.quadraticCurveTo(0, -s * 0.32, k * s * 0.28, -s * 0.32); ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(k * s * 0.12, -s * 0.5); ctx.lineTo(k * s * 0.4, -s * 0.32); ctx.lineTo(k * s * 0.12, -s * 0.14); ctx.stroke();
+    } else if (kind === "east") {
+      ctx.beginPath(); ctx.moveTo(-s * 0.4, 0); ctx.lineTo(s * 0.3, 0); ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(s * 0.05, -s * 0.28); ctx.lineTo(s * 0.4, 0); ctx.lineTo(s * 0.05, s * 0.28); ctx.stroke();
+    } else if (kind === "west") {
+      ctx.beginPath(); ctx.moveTo(s * 0.4, 0); ctx.lineTo(-s * 0.3, 0); ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(-s * 0.05, -s * 0.28); ctx.lineTo(-s * 0.4, 0); ctx.lineTo(-s * 0.05, s * 0.28); ctx.stroke();
+    } else if (kind === "grab") {
+      ctx.beginPath(); ctx.arc(0, s * 0.12, s * 0.22, 0, Math.PI * 2); ctx.fill();
+      ctx.beginPath(); ctx.moveTo(-s * 0.4, -s * 0.42); ctx.lineTo(-s * 0.4, -s * 0.12); ctx.moveTo(s * 0.4, -s * 0.42); ctx.lineTo(s * 0.4, -s * 0.12);
+      ctx.moveTo(-s * 0.4, -s * 0.42); ctx.lineTo(s * 0.4, -s * 0.42); ctx.stroke();
+    }
+    ctx.restore();
+  }
+  function bakso(ctx, cx, cy, s, opt = {}) {
+    // a bowl of bakso: the goal
+    ctx.save(); ctx.translate(cx, cy);
+    if (opt.glow) { ctx.beginPath(); ctx.arc(0, 0, s * 0.62, 0, Math.PI * 2); ctx.fillStyle = "rgba(242,177,52,0.22)"; ctx.fill(); }
+    ctx.fillStyle = "#E4EEF5"; ctx.beginPath(); ctx.moveTo(-s * 0.46, -s * 0.05); ctx.quadraticCurveTo(-s * 0.4, s * 0.45, 0, s * 0.45); ctx.quadraticCurveTo(s * 0.4, s * 0.45, s * 0.46, -s * 0.05); ctx.closePath(); ctx.fill();
+    ctx.strokeStyle = "#8FA9BD"; ctx.lineWidth = s * 0.05; ctx.stroke();
+    ctx.fillStyle = "#C8B49A"; ctx.beginPath(); ctx.ellipse(0, -s * 0.05, s * 0.44, s * 0.14, 0, 0, Math.PI * 2); ctx.fill();
+    for (const [dx, dy, r] of [[-0.16, -0.1, 0.13], [0.14, -0.12, 0.13], [0, -0.22, 0.12]]) {
+      ctx.fillStyle = "#9A7B5B"; ctx.beginPath(); ctx.arc(dx * s, dy * s, r * s, 0, Math.PI * 2); ctx.fill();
+      ctx.fillStyle = "#B8977A"; ctx.beginPath(); ctx.arc(dx * s - r * s * 0.3, dy * s - r * s * 0.3, r * s * 0.4, 0, Math.PI * 2); ctx.fill();
+    }
+    ctx.fillStyle = "#4CA64C"; for (const dx of [-0.26, 0.1, 0.26]) { ctx.beginPath(); ctx.arc(dx * s, -s * 0.07, s * 0.045, 0, Math.PI * 2); ctx.fill(); }
+    ctx.restore();
+  }
+  function table(ctx, x, y, w, h) {
+    ctx.fillStyle = C.table; rr(ctx, x + w * 0.1, y + h * 0.3, w * 0.8, h * 0.55, 10); ctx.fill();
+    ctx.fillStyle = C.tableTop; rr(ctx, x + w * 0.06, y + h * 0.18, w * 0.88, h * 0.3, 10); ctx.fill();
+    ctx.fillStyle = "rgba(0,0,0,0.12)"; ctx.fillRect(x + w * 0.16, y + h * 0.5, w * 0.08, h * 0.35); ctx.fillRect(x + w * 0.76, y + h * 0.5, w * 0.08, h * 0.35);
+  }
+  function kiko(ctx, cx, cy, s, ang, opt = {}) {
+    ctx.save(); ctx.translate(cx, cy);
+    // shadow
+    ctx.fillStyle = "rgba(0,0,0,0.12)"; ctx.beginPath(); ctx.ellipse(0, s * 0.42, s * 0.42, s * 0.12, 0, 0, Math.PI * 2); ctx.fill();
+    ctx.rotate(ang);
+    // wheels
+    ctx.fillStyle = C.kikoDark; rr(ctx, -s * 0.46, -s * 0.2, s * 0.12, s * 0.5, 5); ctx.fill(); rr(ctx, s * 0.34, -s * 0.2, s * 0.12, s * 0.5, 5); ctx.fill();
+    // body
+    ctx.fillStyle = opt.flash ? `rgba(217,68,59,${0.5 + 0.5 * opt.flash})` : C.kiko; rr(ctx, -s * 0.38, -s * 0.36, s * 0.76, s * 0.72, s * 0.16); ctx.fill();
+    // visor (front, facing up)
+    ctx.fillStyle = C.kikoLight; rr(ctx, -s * 0.26, -s * 0.33, s * 0.52, s * 0.3, s * 0.1); ctx.fill();
+    // eyes
+    const mood = opt.mood || "happy";
+    ctx.fillStyle = C.pupil;
+    if (mood === "sad") { ctx.beginPath(); ctx.arc(-s * 0.12, -s * 0.18, s * 0.05, 0, Math.PI * 2); ctx.arc(s * 0.12, -s * 0.18, s * 0.05, 0, Math.PI * 2); ctx.fill(); ctx.strokeStyle = C.pupil; ctx.lineWidth = s * 0.03; ctx.beginPath(); ctx.arc(0, -s * 0.03, s * 0.08, Math.PI * 1.15, Math.PI * 1.85); ctx.stroke(); }
+    else if (mood === "confused") { ctx.beginPath(); ctx.arc(-s * 0.12, -s * 0.18, s * 0.05, 0, Math.PI * 2); ctx.arc(s * 0.12, -s * 0.18, s * 0.035, 0, Math.PI * 2); ctx.fill(); ctx.strokeStyle = C.pupil; ctx.lineWidth = s * 0.03; ctx.beginPath(); ctx.moveTo(-s * 0.08, -s * 0.06); ctx.lineTo(s * 0.08, -s * 0.09); ctx.stroke(); }
+    else { ctx.beginPath(); ctx.arc(-s * 0.12, -s * 0.18, s * 0.055, 0, Math.PI * 2); ctx.arc(s * 0.12, -s * 0.18, s * 0.055, 0, Math.PI * 2); ctx.fill(); ctx.strokeStyle = C.pupil; ctx.lineWidth = s * 0.03; ctx.beginPath(); ctx.arc(0, -s * 0.1, s * 0.08, Math.PI * 0.15, Math.PI * 0.85); ctx.stroke(); }
+    // front pointer
+    ctx.fillStyle = C.accent; ctx.beginPath(); ctx.moveTo(-s * 0.1, -s * 0.38); ctx.lineTo(s * 0.1, -s * 0.38); ctx.lineTo(0, -s * 0.5); ctx.closePath(); ctx.fill();
+    // antenna
+    ctx.strokeStyle = C.kikoDark; ctx.lineWidth = s * 0.04; ctx.beginPath(); ctx.moveTo(0, s * 0.36); ctx.lineTo(0, s * 0.5); ctx.stroke();
+    ctx.fillStyle = C.accent; ctx.beginPath(); ctx.arc(0, s * 0.52, s * 0.07, 0, Math.PI * 2); ctx.fill();
+    // tray with bakso when grabbed
+    if (opt.grabbed) bakso(ctx, 0, s * 0.05, s * 0.45);
+    ctx.restore();
+    if (opt.wave !== undefined) { // arm waving (title scene)
+      ctx.save(); ctx.translate(cx + s * 0.42, cy - s * 0.1); ctx.rotate(-0.6 + Math.sin(opt.wave * 6) * 0.4);
+      ctx.strokeStyle = C.kikoDark; ctx.lineWidth = s * 0.08; ctx.lineCap = "round"; ctx.beginPath(); ctx.moveTo(0, 0); ctx.lineTo(s * 0.3, -s * 0.3); ctx.stroke();
+      ctx.fillStyle = C.kikoLight; ctx.beginPath(); ctx.arc(s * 0.32, -s * 0.33, s * 0.09, 0, Math.PI * 2); ctx.fill(); ctx.restore();
+    }
+  }
+  function kid(ctx, cx, cy, s, opt = {}) {
+    // simple student figure, standing, facing viewer
+    ctx.save(); ctx.translate(cx, cy);
+    ctx.fillStyle = "rgba(0,0,0,0.12)"; ctx.beginPath(); ctx.ellipse(0, s * 1.02, s * 0.5, s * 0.1, 0, 0, Math.PI * 2); ctx.fill();
+    ctx.fillStyle = C.pants; rr(ctx, -s * 0.3, s * 0.35, s * 0.6, s * 0.5, s * 0.1); ctx.fill();
+    ctx.fillStyle = C.skin; ctx.fillRect(-s * 0.24, s * 0.8, s * 0.16, s * 0.2); ctx.fillRect(s * 0.08, s * 0.8, s * 0.16, s * 0.2);
+    ctx.fillStyle = C.uniform; rr(ctx, -s * 0.36, -s * 0.12, s * 0.72, s * 0.56, s * 0.12); ctx.fill();
+    ctx.strokeStyle = "#D5DDE2"; ctx.lineWidth = s * 0.025; rr(ctx, -s * 0.36, -s * 0.12, s * 0.72, s * 0.56, s * 0.12); ctx.stroke();
+    ctx.fillStyle = C.skin; ctx.beginPath(); ctx.arc(0, -s * 0.42, s * 0.32, 0, Math.PI * 2); ctx.fill();
+    ctx.fillStyle = opt.hairColor || C.hair; ctx.beginPath(); ctx.arc(0, -s * 0.5, s * 0.33, Math.PI, 0); ctx.fill();
+    if (opt.hair === "long") { ctx.fillRect(-s * 0.33, -s * 0.5, s * 0.12, s * 0.45); ctx.fillRect(s * 0.21, -s * 0.5, s * 0.12, s * 0.45); }
+    ctx.fillStyle = C.pupil; ctx.beginPath(); ctx.arc(-s * 0.11, -s * 0.4, s * 0.035, 0, Math.PI * 2); ctx.arc(s * 0.11, -s * 0.4, s * 0.035, 0, Math.PI * 2); ctx.fill();
+    ctx.strokeStyle = C.pupil; ctx.lineWidth = s * 0.025; ctx.beginPath(); ctx.arc(0, -s * 0.33, s * 0.08, Math.PI * 0.15, Math.PI * 0.85); ctx.stroke();
+    // arms
+    ctx.strokeStyle = C.skin; ctx.lineWidth = s * 0.11; ctx.lineCap = "round"; ctx.beginPath();
+    if (opt.point) { ctx.moveTo(s * 0.32, s * 0.02); ctx.lineTo(s * 0.75, -s * 0.2); } else { ctx.moveTo(s * 0.34, s * 0.02); ctx.lineTo(s * 0.42, s * 0.38); }
+    ctx.moveTo(-s * 0.34, s * 0.02); ctx.lineTo(-s * 0.42, s * 0.38); ctx.stroke();
+    ctx.restore();
+  }
+  function bubble(ctx, x, y, w, s, size, opt = {}) {
+    const lines = wrap(ctx, s, size, 600, w - 48); const h = lines.length * size * 1.3 + 40;
+    ctx.fillStyle = opt.fill || C.bubble; ctx.strokeStyle = opt.stroke || "#B7C7BF"; ctx.lineWidth = 3;
+    rr(ctx, x, y - h, w, h, 22); ctx.fill(); ctx.stroke();
+    const tx = opt.tailX !== undefined ? opt.tailX : x + 60;
+    ctx.beginPath(); ctx.moveTo(tx - 16, y); ctx.lineTo(tx + 16, y); ctx.lineTo(tx + (opt.tailDir || 0), y + 28); ctx.closePath(); ctx.fillStyle = opt.fill || C.bubble; ctx.fill();
+    ctx.strokeStyle = opt.stroke || "#B7C7BF"; ctx.beginPath(); ctx.moveTo(tx - 16, y); ctx.lineTo(tx + (opt.tailDir || 0), y + 28); ctx.lineTo(tx + 16, y); ctx.stroke();
+    lines.forEach((l, i) => text(ctx, l, x + 24, y - h + 24 + size + i * size * 1.3, size, { color: opt.color || C.ink, weight: 600 }));
+    return h;
+  }
+  function card(ctx, x, y, w, h, opt = {}) { ctx.fillStyle = opt.fill || C.panel; rr(ctx, x, y, w, h, opt.r || 26); ctx.fill(); if (opt.stroke) { ctx.strokeStyle = opt.stroke; ctx.lineWidth = opt.lw || 4; ctx.stroke(); } }
+
+  // ---------- adegan umum (semua episode) ----------
+  const SCENES = {
+    title(ctx, b, l, t, TL) {
+      card(ctx, 160, 160, 1600, 700, { fill: C.panel });
+      kiko(ctx, 420, 520, 260, 0, { wave: l, mood: "happy" });
+      text(ctx, TL.label || ("Informatika · Fase " + (TL.episode || "D")[0] + " · Episode " + TL.episode), 720, 330, 34, { color: C.ink2, weight: 700 });  // TL.label: label khusus, mis. video simulasi
+      const ts = TL.title.length > 34 ? 74 : 92; const th = para(ctx, TL.title, 720, 440, ts, 1000, { weight: 900, lh: 1.1 }); const hookLines = TL.hook ? wrap(ctx, TL.hook, 34, 800, 1000).length : 0; const hy = Math.max(hookLines >= 3 ? 600 : 640, 440 + th - ts * 0.35 + 30);
+      if (TL.hook) { text(ctx, "SETELAH MENONTON, KAMU BISA:", 720, hy, 26, { color: C.accentDark, weight: 800 }); para(ctx, TL.hook, 720, hy + 50, 34, 1000, { weight: 800, lh: 1.3 }); const ny = hy + 50 + wrap(ctx, TL.hook, 34, 800, 1000).length * 34 * 1.3 + 12; if (ny <= 830) text(ctx, "Dengarkan, atau baca teksnya pelan-pelan.", 720, Math.max(800, ny), 26, { color: C.ink2, weight: 600 }); }
+      else text(ctx, "Dengarkan, atau baca teksnya pelan-pelan.", 720, 700, 36, { color: C.ink2, weight: 600 });
+      if (!TL.label) { arrowIcon(ctx, "up", 1560, 250, 70, C.kikoLight); arrowIcon(ctx, "right", 1660, 250, 70, C.kikoLight); }  // ikon panah khas episode, tidak untuk simulasi
+    },
+    quiz(ctx, b, l, t, TL, answered) {
+      const q = TL.quizzes[b.quiz]; card(ctx, 200, 150, 1520, 740, { stroke: C.accent, lw: 6 });
+      text(ctx, "CEK PEMAHAMAN", 960, 230, 32, { align: "center", color: C.accentDark, weight: 800 });
+      para(ctx, q.q, 960, 320, 44, 1360, { weight: 800, align: "center", lh: 1.3 });
+      // tata letak pilihan: mulai di bawah pertanyaan dan selesai di atas kartu narasi (narasi panjang = jarak dirapatkan)
+      const qLines = wrap(ctx, q.q, 44, 800, 1360).length, subTop = 1056 - (wrap(ctx, b.text, 44, 700, 1660).length * 44 * 1.3 + 44);
+      let oy = qLines <= 1 ? 420 : 470, gap = 120, oh = 96; const n = q.options.length;
+      if (oy + (n - 1) * gap + oh > subTop - 12) { gap = Math.max(104, Math.floor((subTop - 12 - oh - oy) / Math.max(1, n - 1))); }
+      if (oy + (n - 1) * gap + oh > subTop - 12) { oh = 86; gap = 100; oy = Math.max(320 + (qLines - 1) * 57 + 40, subTop - 12 - oh - (n - 1) * gap); }
+      q.options.forEach((o, i) => {
+        const y = oy + i * gap; const right = answered && i === q.answer;
+        card(ctx, 320, y, 1280, oh, { fill: right ? C.goodBg : answered ? "#F4F6F5" : C.bg2, stroke: right ? C.good : "#CFDCD5", lw: right ? 6 : 3 });
+        ctx.fillStyle = right ? C.good : C.kiko; ctx.beginPath(); ctx.arc(380, y + oh / 2, 30, 0, Math.PI * 2); ctx.fill();
+        text(ctx, "ABC"[i], 380, y + oh / 2 + 13, 34, { align: "center", color: "#fff", weight: 900 });
+        text(ctx, o, 440, y + oh / 2 + 14, 38, { weight: 700, color: answered && !right ? C.muted : C.ink });
+        if (right) text(ctx, "✓", 1540, y + oh / 2 + 18, 54, { align: "center", color: C.good, weight: 900 });
+      });
+      if (!answered) { // thinking timer
+        const frac = clamp(l / b.dur, 0, 1); ctx.strokeStyle = "#D7E2DC"; ctx.lineWidth = 14; ctx.beginPath(); ctx.arc(1640, 230, 40, 0, Math.PI * 2); ctx.stroke();
+        ctx.strokeStyle = C.accent; ctx.beginPath(); ctx.arc(1640, 230, 40, -Math.PI / 2, -Math.PI / 2 + frac * Math.PI * 2); ctx.stroke();
+        // catatan hanya digambar bila tidak tertutup kartu narasi (narasi tiga baris atau lebih menutupinya)
+        const subTop = 1056 - (wrap(ctx, b.text, 44, 700, 1660).length * 44 * 1.3 + 44);
+        if (subTop > 880) text(ctx, "Pikirkan dulu, jangan buru-buru.", 960, 860, 32, { align: "center", color: C.ink2, weight: 600 });
+      }
+    },
+    quiz_answer(ctx, b, l, t, TL) { SCENES.quiz(ctx, b, l, t, TL, true); },
+    recap(ctx, b, l, t, TL) {
+      // TL.recap: tiga kalimat pendek dari script.json
+      card(ctx, 160, 140, 1600, 760);
+      text(ctx, "TIGA HAL UNTUK DIINGAT", 960, 230, 34, { align: "center", color: C.accentDark, weight: 900 });
+      const items = TL.recap || [];
+      const show = clamp(Math.floor((l - 0.6) / 2.2) + 1, 1, Math.max(1, items.length));
+      items.forEach((s, i) => { if (i >= show) return; card(ctx, 300, 290 + i * 180, 1320, 140, { fill: C.bg2 }); ctx.fillStyle = C.kiko; ctx.beginPath(); ctx.arc(380, 360 + i * 180, 40, 0, Math.PI * 2); ctx.fill(); text(ctx, String(i + 1), 380, 376 + i * 180, 40, { align: "center", color: "#fff", weight: 900 }); text(ctx, s, 450, 375 + i * 180, 42, { weight: 800, fit: 1130 }); });
+      kiko(ctx, 1620, 820, 130, 0);
+    },
+    outro(ctx, b, l, t, TL) {
+      // TL.next: {code, title, note} episode berikutnya, dari script.json
+      const n = TL.next || {};
+      card(ctx, 260, 200, 1400, 600);
+      text(ctx, n.heading || "EPISODE BERIKUTNYA", 960, 320, 34, { align: "center", color: C.accentDark, weight: 900 });
+      text(ctx, n.code || "", 960, 440, 60, { align: "center", weight: 900 });
+      text(ctx, n.title || "", 960, 530, 54, { align: "center", weight: 800, color: C.ink2, fit: 1320 });
+      text(ctx, n.note || "", 960, 680, 34, { align: "center", color: C.ink2, weight: 600 });
+      kiko(ctx, 960, 760 + 20, 140, 0, { wave: l });
+    }
+  };
+
+  function beatAt(TL, t) {
+    let b = TL.beats[0];
+    for (const x of TL.beats) { if (t >= x.start) b = x; else break; }
+    return b;
+  }
+  function draw(ctx, t, TL, opt = {}) {
+    const b = beatAt(TL, t); const l = t - b.start;
+    ctx.save(); ctx.setTransform(1, 0, 0, 1, 0, 0);
+    ctx.fillStyle = C.bg; ctx.fillRect(0, 0, W, H);
+    // header
+    text(ctx, TL.episode + " · " + TL.title, 60, 78, 30, { color: C.ink2, weight: 700 });
+    text(ctx, TL.segments[b.seg], 1860, 78, 30, { color: C.accentDark, weight: 800, align: "right" });
+    ctx.fillStyle = C.bg2; ctx.fillRect(0, 100, W, 6); ctx.fillStyle = C.accent; ctx.fillRect(0, 100, W * clamp(t / TL.total, 0, 1), 6);
+    const fn = SCENES[b.scene]; if (fn) fn(ctx, b, l, t, TL);
+    // narration card (burned-in text the student reads)
+    if (opt.subtitles !== false) {
+      const size = 44; const lines = wrap(ctx, b.text, size, 700, 1660);
+      const h = lines.length * size * 1.3 + 44; const y0 = 1056 - h;
+      ctx.fillStyle = "rgba(31,42,51,0.92)"; rr(ctx, 100, y0, 1720, h, 20); ctx.fill();
+      // reading progress (how far along the text the reader should be)
+      const frac = clamp(l / b.audio, 0, 1); ctx.fillStyle = C.accent; rr(ctx, 100, y0 + h - 8, 1720 * frac, 8, 4); ctx.fill();
+      lines.forEach((ln, i) => text(ctx, ln, 960, y0 + 22 + size + i * size * 1.3, size, { align: "center", color: C.subText, weight: 700 }));
+    }
+    ctx.restore();
+    return b;
+  }
+
+  global.Kiko = { draw, beatAt, W, H, C, FONT, SCENES,
+    helpers: { rr, text, wrap, para, arrowIcon, bakso, table, kiko, kid, bubble, card, ease, clamp, lerp } };
+})(typeof window !== "undefined" ? window : globalThis);
+
+/* Layar: pembantu gambar bersama untuk video simulasi (episodes/sim/...).
+   Aplikasi generik digambar dengan kode, tanpa logo atau tampilan merek: jendela aplikasi, lembar kerja (bilah rumus + kisi sel),
+   pointer mouse dengan efek klik, tombol keyboard, label penunjuk, pembesaran, dan penerjemah "aksi" (klik, ketik, tekan tombol)
+   supaya satu adegan bisa memperagakan beberapa langkah berurutan. Muat setelah kiko-core.js. */
+(function (global) {
+  const K = global.Kiko, H = K.helpers, C = K.C;
+  const { rr, text, ease, clamp, lerp } = H;
+  const L = {};
+  const UI = { frame: "#C9D4DB", bar: "#EEF2F5", menuInk: "#3D4B55", grid: "#DDE5EA", head: "#EEF2F5", headInk: "#5B6B76",
+               select: "#1A73C8", selectBg: "rgba(26,115,200,0.10)", formula: "#1F5A6E", window: "#FFFFFF" };
+  L.UI = UI;
+
+  // ---------- jendela aplikasi ----------
+  // opt: title, menus [..], tools (true = deretan ikon sederhana). Mengembalikan area isi {x, y, w, h}.
+  L.window = function (ctx, x, y, w, h, opt = {}) {
+    ctx.save(); ctx.shadowColor = "rgba(31,42,51,0.18)"; ctx.shadowBlur = 30; ctx.shadowOffsetY = 10;
+    ctx.fillStyle = UI.window; rr(ctx, x, y, w, h, 16); ctx.fill(); ctx.restore();
+    ctx.strokeStyle = UI.frame; ctx.lineWidth = 2; rr(ctx, x, y, w, h, 16); ctx.stroke();
+    ctx.save(); rr(ctx, x, y, w, h, 16); ctx.clip();
+    ctx.fillStyle = UI.bar; ctx.fillRect(x, y, w, 46);
+    ["#E5675F", "#F2B134", "#4CB46A"].forEach((c, i) => { ctx.fillStyle = c; ctx.beginPath(); ctx.arc(x + 28 + i * 26, y + 23, 8, 0, Math.PI * 2); ctx.fill(); });
+    text(ctx, opt.title || "Aplikasi", x + w / 2, y + 31, 22, { align: "center", weight: 700, color: UI.menuInk });
+    let cy = y + 46;
+    if (opt.menus) {
+      ctx.fillStyle = "#FFFFFF"; ctx.fillRect(x, cy, w, 40);
+      let mx = x + 24; opt.menus.forEach((m, i) => {
+        const on = opt.menuOn === m; ctx.font = `600 21px Inter`; const mw = ctx.measureText(m).width + 24;
+        if (on) { ctx.fillStyle = "#DCE9F7"; rr(ctx, mx - 8, cy + 5, mw, 30, 6); ctx.fill(); }
+        text(ctx, m, mx + 4, cy + 27, 21, { weight: 600, color: on ? UI.select : UI.menuInk }); mx += mw + 6;
+      });
+      cy += 40;
+    }
+    if (opt.tools) {
+      ctx.fillStyle = "#F7F9FA"; ctx.fillRect(x, cy, w, 44);
+      const icons = opt.tools === true ? ["💾", "↶", "↷", "B", "I", "Σ", "%"] : opt.tools;
+      icons.forEach((ic, i) => { const bx = x + 20 + i * 52; ctx.fillStyle = "#FFFFFF"; rr(ctx, bx, cy + 6, 40, 32, 6); ctx.fill(); ctx.strokeStyle = "#E1E7EB"; ctx.lineWidth = 1.5; rr(ctx, bx, cy + 6, 40, 32, 6); ctx.stroke();
+        text(ctx, ic, bx + 20, cy + 29, ic.length > 1 ? 18 : 20, { align: "center", weight: 800, color: UI.menuInk }); });
+      cy += 44;
+    }
+    ctx.strokeStyle = UI.grid; ctx.lineWidth = 1.5; ctx.beginPath(); ctx.moveTo(x, cy); ctx.lineTo(x + w, cy); ctx.stroke();
+    ctx.restore();
+    return { x, y: cy, w, h: y + h - cy };
+  };
+
+  // ---------- lembar kerja ----------
+  const COLS = "ABCDEFGHIJ";
+  L.col = c => COLS.indexOf(c);
+  // st: { cells: {A1: {v, f?}} | {A1: "teks"}, active: "B3", edit: {addr, text} (sedang diketik), range: ["B2","B6"] (sorotan rentang),
+  //       copy: ["D2","D6"] (bingkai putus-putus), changed: [alamat] (hijau sesaat), cols: 6, rows: 8, cw: 190 | {A: 170, ...}, rh: 50,
+  //       showFormulas: false, handleHover: false }
+  // Mengembalikan geometri: {cell(addr), handle(addr), nameBox, fx, bottom}
+  L.sheet = function (ctx, area, st = {}) {
+    const x = area.x, y = area.y, cols = st.cols || 6, rows = st.rows || 8, rh = st.rh || 50, hw = 60;
+    const cwOf = c => typeof st.cw === "object" ? (st.cw[COLS[c]] || 180) : (st.cw || 180);
+    const colX = c => { let px = x + hw; for (let i = 0; i < c; i++) px += cwOf(i); return px; };
+    const gridW = colX(cols) - x;
+    // bilah rumus
+    const fy = y + 10; const active = st.edit ? st.edit.addr : st.active;
+    const cell0 = active && L.get(st.cells, active);
+    ctx.fillStyle = "#FFFFFF"; rr(ctx, x + 12, fy, 120, 48, 8); ctx.fill(); ctx.strokeStyle = UI.frame; ctx.lineWidth = 2; rr(ctx, x + 12, fy, 120, 48, 8); ctx.stroke();
+    text(ctx, active || "", x + 72, fy + 33, 24, { align: "center", weight: 800, color: UI.menuInk });
+    const fxW = Math.max(400, gridW - 150);
+    ctx.fillStyle = "#FFFFFF"; rr(ctx, x + 144, fy, fxW, 48, 8); ctx.fill(); ctx.strokeStyle = st.fxFocus ? UI.select : UI.frame; ctx.lineWidth = st.fxFocus ? 3 : 2; rr(ctx, x + 144, fy, fxW, 48, 8); ctx.stroke();
+    text(ctx, "fx", x + 162, fy + 32, 21, { weight: 800, color: "#8A99A3" }); ctx.fillStyle = UI.grid; ctx.fillRect(x + 196, fy + 10, 2, 28);
+    const fxText = st.edit ? st.edit.text : (cell0 ? (cell0.f || L.show(cell0.v)) : "");
+    text(ctx, fxText, x + 212, fy + 33, 25, { weight: 700, color: (st.edit ? st.edit.text : cell0 && cell0.f) && String(fxText).startsWith("=") ? UI.formula : C.ink });
+    if (st.edit && st.caret) { ctx.font = "700 25px Inter"; const cw = ctx.measureText(st.edit.text).width; ctx.fillStyle = C.ink; ctx.fillRect(x + 214 + cw, fy + 11, 2.5, 27); }
+    // kisi
+    const gy = fy + 66; const H0 = rh * (rows + 1);
+    ctx.fillStyle = "#FFFFFF"; ctx.fillRect(x, gy, gridW, H0);
+    ctx.fillStyle = UI.head; ctx.fillRect(x, gy, gridW, rh); ctx.fillRect(x, gy, hw, H0);
+    const ac = active ? { c: L.col(active[0]), r: parseInt(active.slice(1)) } : null;
+    for (let c = 0; c < cols; c++) {
+      if (ac && ac.c === c) { ctx.fillStyle = "#D5E3F3"; ctx.fillRect(colX(c), gy, cwOf(c), rh); }
+      text(ctx, COLS[c], colX(c) + cwOf(c) / 2, gy + rh / 2 + 8, 22, { align: "center", weight: 700, color: ac && ac.c === c ? UI.select : UI.headInk });
+    }
+    for (let r = 1; r <= rows; r++) {
+      if (ac && ac.r === r) { ctx.fillStyle = "#D5E3F3"; ctx.fillRect(x, gy + rh * r, hw, rh); }
+      text(ctx, String(r), x + hw / 2, gy + rh * r + rh / 2 + 8, 22, { align: "center", weight: 700, color: ac && ac.r === r ? UI.select : UI.headInk });
+    }
+    const geo = {
+      cell(addr) { const c = L.col(addr[0]), r = parseInt(addr.slice(1)); const cx = colX(c), cy = gy + rh * r; return { x: cx, y: cy, w: cwOf(c), h: rh, cx: cx + cwOf(c) / 2, cy: cy + rh / 2 }; },
+      handle(addr) { const q = this.cell(addr); return { x: q.x + q.w - 1, y: q.y + q.h - 1 }; },
+      colLine(c) { return { x: colX(c), y: gy + rh / 2 }; },
+      nameBox: { x: x + 72, y: fy + 24 }, fx: { x: x + 212, y: fy + 24 }, bottom: gy + H0, right: x + gridW, top: gy
+    };
+    // sorotan rentang
+    if (st.range) { const a = geo.cell(st.range[0]), b = geo.cell(st.range[1]); ctx.fillStyle = UI.selectBg; ctx.fillRect(a.x, a.y, b.x + b.w - a.x, b.y + b.h - a.y); }
+    (st.changed || []).forEach(addr => { const q = geo.cell(addr); ctx.fillStyle = C.goodBg; ctx.fillRect(q.x + 1, q.y + 1, q.w - 2, q.h - 2); });
+    (st.marks || []).forEach(([addr, color]) => { const q = geo.cell(addr); ctx.fillStyle = color; ctx.fillRect(q.x + 1, q.y + 1, q.w - 2, q.h - 2); });
+    // garis kisi
+    ctx.strokeStyle = UI.grid; ctx.lineWidth = 1.5;
+    for (let r = 0; r <= rows + 1; r++) { ctx.beginPath(); ctx.moveTo(x, gy + rh * r); ctx.lineTo(x + gridW, gy + rh * r); ctx.stroke(); }
+    for (let c = 0; c <= cols; c++) { ctx.beginPath(); ctx.moveTo(colX(c), gy); ctx.lineTo(colX(c), gy + H0); ctx.stroke(); }
+    ctx.beginPath(); ctx.moveTo(x, gy); ctx.lineTo(x, gy + H0); ctx.stroke();
+    // isi sel
+    Object.keys(st.cells || {}).forEach(addr => {
+      const c = L.col(addr[0]), r = parseInt(addr.slice(1)); if (c < 0 || c >= cols || r < 1 || r > rows) return;
+      if (st.edit && st.edit.addr === addr) return;
+      const v = L.get(st.cells, addr); const q = geo.cell(addr);
+      const shown = st.showFormulas && v.f ? v.f : L.show(v.v);
+      const isNum = typeof v.v === "number" && !(st.showFormulas && v.f);
+      let shownFit = shown; if (isNum) { ctx.font = "600 25px Inter"; if (ctx.measureText(shown).width > q.w - 20) shownFit = "#".repeat(Math.max(2, Math.floor((q.w - 20) / 16))); }
+      ctx.save(); ctx.beginPath(); ctx.rect(q.x + 2, q.y, q.w - 4, q.h); ctx.clip();
+      text(ctx, shownFit, isNum ? q.x + q.w - 14 : q.x + 12, q.y + q.h / 2 + 9, 25, { align: isNum ? "right" : "left", weight: v.bold ? 800 : 600, color: v.color || ((st.changed || []).includes(addr) ? C.good : C.ink) });
+      ctx.restore();
+    });
+    // sel yang sedang diketik
+    if (st.edit) { const q = geo.cell(st.edit.addr); ctx.fillStyle = "#FFFFFF"; ctx.fillRect(q.x + 2, q.y + 2, q.w - 4, q.h - 4);
+      const isF = String(st.edit.text).startsWith("=");
+      text(ctx, st.edit.text, q.x + 12, q.y + q.h / 2 + 9, 25, { weight: 600, color: isF ? UI.formula : C.ink });
+      if (st.caret) { ctx.font = "600 25px Inter"; const w = ctx.measureText(st.edit.text).width; ctx.fillStyle = C.ink; ctx.fillRect(q.x + 14 + w, q.y + 11, 2.5, q.h - 22); } }
+    // rujukan rumus berwarna saat mengetik rumus
+    (st.refs || []).forEach(([addr, color]) => { const q = geo.cell(addr); ctx.strokeStyle = color; ctx.lineWidth = 3; ctx.setLineDash([]); ctx.strokeRect(q.x + 2, q.y + 2, q.w - 4, q.h - 4); });
+    // bingkai salin putus-putus
+    if (st.copy) { const a = geo.cell(st.copy[0]), b = geo.cell(st.copy[1]); ctx.strokeStyle = UI.select; ctx.lineWidth = 3; ctx.setLineDash([10, 7]); ctx.lineDashOffset = -(st.dash || 0); ctx.strokeRect(a.x + 2, a.y + 2, b.x + b.w - a.x - 4, b.y + b.h - a.y - 4); ctx.setLineDash([]); }
+    // sel aktif + gagang isi
+    if (active && !st.edit) { const q = geo.cell(active); const q2 = st.selTo ? geo.cell(st.selTo) : q;
+      ctx.strokeStyle = UI.select; ctx.lineWidth = 4; ctx.strokeRect(q.x + 1, q.y + 1, q2.x + q2.w - q.x - 2, q2.y + q2.h - q.y - 2);
+      const hx = q2.x + q2.w - 1, hy = q2.y + q2.h - 1; const s = st.handleHover ? 13 : 10;
+      ctx.fillStyle = "#FFFFFF"; ctx.fillRect(hx - s / 2 - 2, hy - s / 2 - 2, s + 4, s + 4); ctx.fillStyle = UI.select; ctx.fillRect(hx - s / 2, hy - s / 2, s, s); }
+    else if (st.edit) { const q = geo.cell(st.edit.addr); ctx.strokeStyle = UI.select; ctx.lineWidth = 4; ctx.strokeRect(q.x + 1, q.y + 1, q.w - 2, q.h - 2); }
+    return geo;
+  };
+  L.get = (cells, addr) => { const v = (cells || {})[addr]; return v == null ? { v: "" } : (typeof v === "object" ? v : { v }); };
+  L.show = v => typeof v === "number" ? (Number.isInteger(v) ? String(v) : v.toLocaleString("id-ID", { maximumFractionDigits: 2 })) : (v == null ? "" : String(v));
+
+  // ---------- pointer mouse ----------
+  // kind: "arrow" | "plus" (tanda tambah tipis gagang isi) | "text"; click: 0..1 (efek denyut), down: tombol ditahan
+  L.cursor = function (ctx, x, y, opt = {}) {
+    const kind = opt.kind || "arrow";
+    if (opt.click > 0 && opt.click < 1) { const u = opt.click; ctx.strokeStyle = `rgba(242,177,52,${1 - u})`; ctx.lineWidth = 5; ctx.beginPath(); ctx.arc(x, y, 12 + u * 34, 0, Math.PI * 2); ctx.stroke(); }
+    if (opt.down) { ctx.fillStyle = "rgba(242,177,52,0.35)"; ctx.beginPath(); ctx.arc(x, y, 18, 0, Math.PI * 2); ctx.fill(); }
+    ctx.save(); ctx.translate(x, y);
+    if (kind === "plus") {
+      ctx.strokeStyle = "#FFFFFF"; ctx.lineWidth = 7; ctx.beginPath(); ctx.moveTo(-16, 0); ctx.lineTo(16, 0); ctx.moveTo(0, -16); ctx.lineTo(0, 16); ctx.stroke();
+      ctx.strokeStyle = C.ink; ctx.lineWidth = 3; ctx.beginPath(); ctx.moveTo(-15, 0); ctx.lineTo(15, 0); ctx.moveTo(0, -15); ctx.lineTo(0, 15); ctx.stroke();
+    } else if (kind === "text") {
+      ctx.strokeStyle = "#FFFFFF"; ctx.lineWidth = 6; ctx.beginPath(); ctx.moveTo(0, -16); ctx.lineTo(0, 16); ctx.stroke();
+      ctx.strokeStyle = C.ink; ctx.lineWidth = 2.5; ctx.beginPath(); ctx.moveTo(-6, -16); ctx.lineTo(6, -16); ctx.moveTo(0, -16); ctx.lineTo(0, 16); ctx.moveTo(-6, 16); ctx.lineTo(6, 16); ctx.stroke();
+    } else {
+      const s = opt.size || 1.25; ctx.scale(s, s);
+      ctx.beginPath(); ctx.moveTo(0, 0); ctx.lineTo(0, 30); ctx.lineTo(8, 23); ctx.lineTo(13, 35); ctx.lineTo(18, 33); ctx.lineTo(13, 21); ctx.lineTo(23, 21); ctx.closePath();
+      ctx.fillStyle = "#FFFFFF"; ctx.fill(); ctx.strokeStyle = C.ink; ctx.lineWidth = 2.2; ctx.lineJoin = "round"; ctx.stroke();
+    }
+    ctx.restore();
+  };
+
+  // ---------- tombol keyboard ----------
+  // keys: ["Enter"] atau ["Ctrl", "S"]; press: 0..1 (tombol tertekan di tengahnya)
+  L.keys = function (ctx, x, y, keys, opt = {}) {
+    const size = opt.size || 30; let px = x;
+    const ws = keys.map(k => { ctx.font = `800 ${size}px Inter`; return Math.max(size * 2.1, ctx.measureText(k).width + size * 1.2); });
+    const total = ws.reduce((a, b) => a + b, 0) + (keys.length - 1) * 46;
+    if (opt.align === "center") px = x - total / 2;
+    const down = opt.press > 0.15 && opt.press < 0.75;
+    keys.forEach((k, i) => {
+      const w = ws[i], h = size * 2.1, dy = down ? 5 : 0;
+      ctx.fillStyle = "#A9B6BE"; rr(ctx, px, y + 6, w, h, 12); ctx.fill();
+      ctx.fillStyle = down ? "#FFF3D6" : "#FFFFFF"; rr(ctx, px, y + dy, w, h, 12); ctx.fill(); ctx.strokeStyle = down ? C.accent : "#9AA8B1"; ctx.lineWidth = 2.5; rr(ctx, px, y + dy, w, h, 12); ctx.stroke();
+      text(ctx, k, px + w / 2, y + dy + h / 2 + size * 0.36, size, { align: "center", weight: 800, color: C.ink });
+      px += w; if (i < keys.length - 1) { text(ctx, "+", px + 23, y + h / 2 + size * 0.36, size, { align: "center", weight: 900, color: C.ink2 }); px += 46; }
+    });
+    return total;
+  };
+
+  // ---------- label penunjuk ----------
+  // label kotak dengan garis ke titik (tx, ty)
+  L.callout = function (ctx, x, y, s, tx, ty, opt = {}) {
+    const size = opt.size || 26; ctx.font = `800 ${size}px Inter`; const lines = H.wrap(ctx, s, size, 800, opt.maxW || 420);
+    const w = Math.max(...lines.map(l => ctx.measureText(l).width)) + 36, h = lines.length * size * 1.25 + 26;
+    if (tx != null) { ctx.strokeStyle = opt.color || C.accentDark; ctx.lineWidth = 3; ctx.beginPath(); ctx.moveTo(x + w / 2, y + h / 2); ctx.lineTo(tx, ty); ctx.stroke(); ctx.fillStyle = opt.color || C.accentDark; ctx.beginPath(); ctx.arc(tx, ty, 7, 0, Math.PI * 2); ctx.fill(); }
+    ctx.fillStyle = opt.fill || "#FFF3D6"; rr(ctx, x, y, w, h, 12); ctx.fill(); ctx.strokeStyle = opt.color || C.accent; ctx.lineWidth = 3; rr(ctx, x, y, w, h, 12); ctx.stroke();
+    lines.forEach((ln, i) => text(ctx, ln, x + 18, y + 13 + size + i * size * 1.25, size, { weight: 800, color: opt.ink || C.ink }));
+    return { w, h };
+  };
+
+  // ---------- pembesaran ----------
+  // zoom(ctx, px, py, s, fn): gambar fn() dengan pembesaran s berpusat di (px, py) yang dipindah ke (qx, qy)
+  L.zoom = function (ctx, px, py, s, fn, qx = px, qy = py) {
+    ctx.save(); ctx.translate(qx, qy); ctx.scale(s, s); ctx.translate(-px, -py); fn(); ctx.restore();
+  };
+
+  // ---------- penerjemah aksi ----------
+  // steps: daftar aksi berurutan, masing-masing punya durasi relatif "d" (dibagi rata ke "span" detik):
+  //   {move: "B3"} pointer bergerak ke tengah sel · {click: "B3"} klik (memilih sel) · {type: "Bakso", to: "A1"} mengetik ke sel
+  //   {key: "Tab"|"Enter", commit: true} tombol: menyimpan ketikan, pilihan pindah · {set: {A1: ...}} ubah isi sel langsung
+  //   {drag: ["D2", "D6"]} drag gagang isi · {wait: 1}
+  // Hasil: state lembar kerja + posisi pointer + tombol yang sedang tampil, untuk waktu lokal l.
+  L.play = function (base, steps, l, span, geoFn) {
+    const st = { cells: { ...(base.cells || {}) }, active: base.active, edit: null, caret: true, copy: null, refs: [], range: null, changed: [] };
+    const total = steps.reduce((a, s) => a + (s.d || 1), 0); const unit = span / total;
+    let t0 = 0, ptr = base.pointer ? { ...base.pointer } : null, key = null, click = 0, kind = "arrow", down = false;
+    for (const s of steps) {
+      const d = (s.d || 1) * unit, u = clamp((l - t0) / d, 0, 1); if (l < t0) break;
+      const target = a => geoFn().cell(a);
+      if (s.move || s.click) { const q = target(s.move || s.click); const to = { x: q.x + q.w * 0.62, y: q.y + q.h * 0.6 }; const from = ptr || to; const m = ease(clamp(u / 0.6, 0, 1)); ptr = { x: lerp(from.x, to.x, m), y: lerp(from.y, to.y, m) }; kind = "arrow";
+        if (s.tap && u >= 0.6 && u < 1) click = clamp((u - 0.6) / 0.4, 0, 0.99);
+        if (s.click && u >= 0.6) { click = clamp((u - 0.6) / 0.4, 0, 0.99); st.active = s.click; if (st.edit) { st.cells[st.edit.addr] = s.editValue || st.edit.text; st.edit = null; } } if (u >= 1) click = 0; }
+      if (s.type != null) { const addr = s.to || st.active; const n = Math.round(s.type.length * clamp(u / 0.9, 0, 1)); st.edit = { addr, text: (s.prefix || "") + s.type.slice(0, n) }; st.active = addr; st.caret = Math.floor(l * 2.2) % 2 === 0 || u < 1;
+        if (s.refs) st.refs = s.refs.filter(r => n >= r[2]).map(r => [r[0], r[1]]); }
+      if (s.key) { key = u < 1 ? { keys: [].concat(s.key), press: u } : null; if (u >= 0.45 && s.commit && st.edit) { st.cells[st.edit.addr] = s.value != null ? s.value : st.edit.text; st.edit = null; st.refs = []; st.active = s.next || st.active; } }
+      if (s.set && u >= 0.5) { Object.assign(st.cells, s.set); if (s.flash) st.changed = Object.keys(s.set); }
+      if (s.drag) { const g = geoFn(); const a = g.handle(s.drag[0]), b = g.handle(s.drag[1]); kind = "plus";
+        const from = ptr || a; const m1 = ease(clamp(u / 0.25, 0, 1)); const m2 = ease(clamp((u - 0.3) / 0.55, 0, 1));
+        ptr = u < 0.3 ? { x: lerp(from.x, a.x, m1), y: lerp(from.y, a.y, m1) } : { x: lerp(a.x, b.x, m2), y: lerp(a.y, b.y, m2) }; down = u >= 0.25 && u < 0.88;
+        st.active = s.drag[0]; if (down) { st.dragTo = u < 0.3 ? s.drag[0] : (m2 > 0.98 ? s.drag[1] : null); st.dragFrac = m2; st.dragSpan = s.drag; }
+        if (u >= 0.88) { Object.assign(st.cells, s.fill || {}); st.selTo = s.drag[1]; st.changed = Object.keys(s.fill || {}); } }
+      if (s.hover) { const g = geoFn(); const h = g.handle(s.hover); const from = ptr || h; const m = ease(clamp(u / 0.7, 0, 1)); ptr = { x: lerp(from.x, h.x, m), y: lerp(from.y, h.y, m) }; kind = u > 0.7 ? "plus" : "arrow"; st.handleHover = u > 0.7; }
+      if (s.select) { st.active = s.select[0]; st.selTo = s.select[1]; }
+      if (s.state) Object.assign(st, s.state);
+      t0 += d;
+    }
+    if (st.selTo && st.selTo === st.active) st.selTo = null;
+    return { st, ptr, key, click, kind, down };
+  };
+
+  K.layar = L;
+})(typeof window !== "undefined" ? window : globalThis);
+
+/* Layar grafik: pembantu gambar grafik generik untuk video simulasi (S04, S06, S32, ...). Muat setelah kiko-core.js dan layar.js:
+     "engine": ["../../_alat/kiko-core.js", "../../_alat/layar.js", "../../_alat/layar_grafik.js", "scenes.js"]
+   Pemilik: kelompok S03/S04. Kelompok lain hanya memakai; tambahan fungsi lewat pemilik.
+
+   API (Kiko.grafik = G):
+   G.chart(ctx, x, y, w, h, spec) -> geo     objek grafik lengkap (kotak putih, judul, subjudul, judul sumbu, plot, legenda)
+     spec.type      "batang" (batang tegak) | "garis" | "lingkaran" | "titik" (sebar)
+     spec.labels    ["Bakso", ...] kategori sumbu datar (batang/garis) atau potongan (lingkaran); untuk "titik": nilai x (angka)
+     spec.series    [{ name, values: [..], color }]  (satu seri cukup: spec.values + spec.color)
+     spec.title, spec.subtitle, spec.xTitle, spec.yTitle   teks; kosong = tidak digambar. spec.ph = {title: "Judul grafik"} teks abu-abu bila kosong
+     spec.yMin, spec.yMax, spec.yStep   sumbu tegak; yMin bawaan = min(0, data) (grafik jujur), yMax/yStep otomatis (G.nice)
+     spec.dataLabels  true = angka di atas batang/titik; spec.dec = jumlah desimal (koma Indonesia); spec.unit = akhiran label data
+     spec.legend    true = legenda (otomatis untuk lingkaran dan >1 seri); spec.percent (lingkaran) = tampilkan persen
+     spec.trend     true = garis tren lurus putus-putus (regresi linear) untuk "garis"/"titik"; spec.trendColor
+     spec.grow      0..1 animasi muncul (batang tumbuh, garis tergambar, lingkaran berputar); spec.hi = indeks yang disorot
+     spec.sel       true = grafik terpilih (bingkai biru + gagang); spec.s = skala huruf (bawaan 1)
+     geo: { box, plot {x,y,w,h}, yOf(v), xOf(i), bar(i, si) {x,y,w,h}, pt(i, si) {x,y}, pie {cx,cy,r}, ticks [..], title {x,y}, yAxis {x,y}, xAxis {x,y} }
+   G.icon(ctx, type, x, y, s, color)          ikon kecil jenis grafik (kotak s×s) untuk menu dan panel
+   G.panel(ctx, x, y, w, h, st) -> geo       panel "Pengaturan grafik": st.tabs ["Penyiapan","Sesuaikan"], st.tab, st.title,
+     st.rows: [{ kind: "dropdown", label, value, icon, open, items: [{label, icon}], hi }, { kind: "field", label, value, focus, caret },
+               { kind: "toggle", label, on }, { kind: "section", label, open }, { kind: "pair", label, a: {label, value, focus}, b: {...} }]
+     geo: { tab(name) {x,y}, row(label) {x,y,w,h, box: {x,y,w,h}, item(i) {x,y}, a, b} } untuk sasaran pointer
+   G.nice(min, max, n) -> {min, max, step}  skala sumbu yang rapi;  G.fmt(v, dec) -> "3,2" (format Indonesia)
+   G.PAL                                     palet seri (batang/lingkaran), sama dengan Kiko.C bila ada */
+(function (global) {
+  const K = global.Kiko, H = K.helpers, C = K.C;
+  const { rr, text, ease, clamp, lerp } = H;
+  const G = {};
+  const BLUE = "#1A73C8", GRID = "#E3E9ED", AXIS = "#8A99A3", INK = C.ink, INK2 = C.ink2;
+  G.PAL = ["#2E7E9A", "#F2B134", "#2E9E5B", "#D9443B", "#7A5AA6", "#5B6B76", "#8FD0E6"];
+
+  G.fmt = (v, dec = 0) => Number(v).toLocaleString("id-ID", { minimumFractionDigits: dec, maximumFractionDigits: dec });
+  G.nice = function (min, max, n = 5) {
+    if (max <= min) max = min + 1;
+    const raw = (max - min) / n, mag = Math.pow(10, Math.floor(Math.log10(raw))), f = raw / mag;
+    const step = (f <= 1 ? 1 : f <= 2 ? 2 : f <= 2.5 ? 2.5 : f <= 5 ? 5 : 10) * mag;
+    return { min: Math.floor(min / step + 1e-9) * step, max: Math.ceil(max / step - 1e-9) * step, step };
+  };
+  const decOf = step => { const s = String(+step.toFixed(6)); return s.includes(".") ? s.split(".")[1].length : 0; };
+
+  // ---------- ikon jenis grafik ----------
+  G.icon = function (ctx, type, x, y, s, color) {
+    const c = color || "#2E7E9A"; ctx.save(); ctx.translate(x, y); const u = s / 24;
+    ctx.strokeStyle = "#9AA8B1"; ctx.lineWidth = 1.5 * u; ctx.beginPath(); ctx.moveTo(3 * u, 3 * u); ctx.lineTo(3 * u, 21 * u); ctx.lineTo(22 * u, 21 * u); ctx.stroke();
+    ctx.fillStyle = c; ctx.strokeStyle = c;
+    if (type === "batang") { [[6, 10], [11, 5], [16, 13]].forEach(([bx, by]) => ctx.fillRect(bx * u, by * u, 4 * u, (20 - by) * u)); }
+    else if (type === "garis") { ctx.lineWidth = 2.5 * u; ctx.lineJoin = "round"; ctx.beginPath(); ctx.moveTo(5 * u, 16 * u); ctx.lineTo(10 * u, 10 * u); ctx.lineTo(15 * u, 13 * u); ctx.lineTo(21 * u, 5 * u); ctx.stroke(); }
+    else if (type === "lingkaran") { ctx.beginPath(); ctx.moveTo(13 * u, 12 * u); ctx.arc(13 * u, 12 * u, 8.5 * u, -Math.PI / 2, Math.PI * 0.75); ctx.closePath(); ctx.fill();
+      ctx.fillStyle = "#F2B134"; ctx.beginPath(); ctx.moveTo(13 * u, 12 * u); ctx.arc(13 * u, 12 * u, 8.5 * u, Math.PI * 0.75, Math.PI * 1.5); ctx.closePath(); ctx.fill(); }
+    else if (type === "titik") { [[7, 16], [10, 12], [14, 13], [17, 8], [20, 6]].forEach(([px, py]) => { ctx.beginPath(); ctx.arc(px * u, py * u, 1.9 * u, 0, Math.PI * 2); ctx.fill(); }); }
+    ctx.restore();
+  };
+
+  // ---------- grafik ----------
+  G.chart = function (ctx, x, y, w, h, spec = {}) {
+    const s = spec.s || 1, type = spec.type || "batang", grow = spec.grow == null ? 1 : clamp(spec.grow, 0, 1);
+    const series = spec.series || [{ name: spec.name || "", values: spec.values || [], color: spec.color }];
+    const labels = spec.labels || [];
+    // kotak
+    ctx.save(); ctx.shadowColor = "rgba(31,42,51,0.12)"; ctx.shadowBlur = 12; ctx.shadowOffsetY = 3; ctx.fillStyle = "#FFFFFF"; ctx.fillRect(x, y, w, h); ctx.restore();
+    ctx.strokeStyle = spec.sel ? BLUE : "#D3DCE2"; ctx.lineWidth = spec.sel ? 3 : 1.5; ctx.strokeRect(x, y, w, h);
+    if (spec.sel) [[0, 0], [0.5, 0], [1, 0], [0, 0.5], [1, 0.5], [0, 1], [0.5, 1], [1, 1]].forEach(([a, b]) => { ctx.fillStyle = "#FFFFFF"; ctx.fillRect(x + a * w - 6, y + b * h - 6, 12, 12); ctx.strokeStyle = BLUE; ctx.lineWidth = 2; ctx.strokeRect(x + a * w - 6, y + b * h - 6, 12, 12); });
+    const geo = { box: { x, y, w, h } };
+    // judul
+    let top = y + 22 * s;
+    const ttl = spec.title || (spec.ph && spec.ph.title), ttlPh = !spec.title && spec.ph && spec.ph.title;
+    if (ttl) { text(ctx, ttl, x + w / 2, top + 26 * s, 28 * s, { align: "center", weight: 800, color: ttlPh ? "#A9B6BE" : INK, fit: w - 40 }); geo.title = { x: x + w / 2, y: top + 14 * s }; top += 40 * s; }
+    if (spec.subtitle) { text(ctx, spec.subtitle, x + w / 2, top + 18 * s, 19 * s, { align: "center", weight: 600, color: INK2, fit: w - 40 }); top += 30 * s; }
+    if (!ttl && !spec.subtitle) top += 6 * s;
+    const pie = type === "lingkaran", showLegend = spec.legend != null ? spec.legend : (pie || series.length > 1);
+    // area legenda (kanan) untuk lingkaran; bawah untuk banyak seri
+    let right = x + w - 24 * s, bottom = y + h - 18 * s;
+    if (showLegend && pie) right = x + w - Math.min(w * 0.42, 230 * s);
+    if (showLegend && !pie) bottom -= 36 * s;
+    if (pie) {
+      const vals = series[0].values, tot = vals.reduce((a, b) => a + b, 0) || 1;
+      const cx = (x + right) / 2 + 6 * s, cy = (top + bottom) / 2, r = Math.max(20, Math.min(right - x - 50 * s, bottom - top - 16 * s) / 2);
+      geo.pie = { cx, cy, r };
+      let a0 = -Math.PI / 2; const end = -Math.PI / 2 + grow * Math.PI * 2;
+      vals.forEach((v, i) => { const a1 = a0 + v / tot * Math.PI * 2, e = Math.min(a1, end); if (e > a0) {
+          const col = (spec.colors && spec.colors[i]) || G.PAL[i % G.PAL.length]; const off = spec.hi === i ? 10 * s : 0, mid = (a0 + e) / 2;
+          ctx.fillStyle = col; ctx.beginPath(); ctx.moveTo(cx + Math.cos(mid) * off, cy + Math.sin(mid) * off); ctx.arc(cx + Math.cos(mid) * off, cy + Math.sin(mid) * off, r, a0, e); ctx.closePath(); ctx.fill();
+          ctx.strokeStyle = "#FFFFFF"; ctx.lineWidth = 3; ctx.stroke();
+          if (e >= a1 - 1e-6 && (spec.percent || spec.dataLabels) && v / tot > 0.04) { const lr = r * 0.64, lx = cx + Math.cos(mid) * (lr + off), ly = cy + Math.sin(mid) * (lr + off);
+            const lab = spec.percent ? G.fmt(Math.round(v / tot * 100)) + "%" : G.fmt(v, spec.dec || 0);
+            text(ctx, lab, lx, ly + 8 * s, 22 * s, { align: "center", weight: 900, color: "#FFFFFF" }); } }
+        a0 = a1; });
+      if (showLegend) { const lx = right + 16 * s; let ly = cy - labels.length * 19 * s;
+        labels.forEach((lab, i) => { ctx.fillStyle = (spec.colors && spec.colors[i]) || G.PAL[i % G.PAL.length]; rr(ctx, lx, ly + 6 * s, 20 * s, 20 * s, 4); ctx.fill();
+          text(ctx, lab, lx + 30 * s, ly + 23 * s, 20 * s, { weight: 700, color: INK, fit: x + w - lx - 40 * s }); ly += 38 * s; }); }
+      return geo;
+    }
+    // sumbu tegak
+    const all = series.flatMap(sr => sr.values).filter(v => v != null);
+    const dMin = Math.min(...all), dMax = Math.max(...all);
+    const lo = spec.yMin != null ? spec.yMin : Math.min(0, dMin);
+    let sc = G.nice(lo, spec.yMax != null ? spec.yMax : dMax + (dMax - lo) * 0.08, spec.ticks || 5);
+    if (spec.yMin != null) sc.min = spec.yMin; if (spec.yMax != null) sc.max = spec.yMax; if (spec.yStep) sc.step = spec.yStep;
+    const dec = spec.tickDec != null ? spec.tickDec : decOf(sc.step);
+    ctx.font = `600 ${19 * s}px Inter`; let tw = 0; for (let v = Math.ceil(sc.min / sc.step - 1e-9) * sc.step; v <= sc.max + 1e-9; v += sc.step) tw = Math.max(tw, ctx.measureText(G.fmt(v, dec)).width);
+    let left = x + 20 * s + tw + 12 * s; if (spec.yTitle) left += 36 * s;
+    const catH = (type === "titik" ? 30 : 36) * s; bottom -= catH; if (spec.xTitle) bottom -= 34 * s;
+    const plot = { x: left, y: top + 10 * s, w: right - left, h: bottom - top - 10 * s }; geo.plot = plot;
+    const yOf = v => plot.y + plot.h - (v - sc.min) / (sc.max - sc.min) * plot.h; geo.yOf = yOf; geo.ticks = [];
+    // garis kisi pada kelipatan step (juga saat yMin dianimasikan), garis dasar tebal di bawah plot
+    for (let v = Math.ceil(sc.min / sc.step - 1e-9) * sc.step; v <= sc.max + 1e-9; v += sc.step) { const yy = yOf(v); geo.ticks.push({ v, y: yy });
+      ctx.strokeStyle = GRID; ctx.lineWidth = 1.2; ctx.beginPath(); ctx.moveTo(plot.x, yy); ctx.lineTo(plot.x + plot.w, yy); ctx.stroke();
+      text(ctx, G.fmt(Math.abs(v) < 1e-9 ? 0 : v, dec), plot.x - 10 * s, yy + 7 * s, 19 * s, { align: "right", weight: 600, color: INK2 }); }
+    ctx.strokeStyle = AXIS; ctx.lineWidth = 2; ctx.beginPath(); ctx.moveTo(plot.x, plot.y + plot.h); ctx.lineTo(plot.x + plot.w, plot.y + plot.h); ctx.stroke();
+    geo.yAxis = { x: plot.x - 10 * s - tw / 2, y: plot.y + plot.h - 10 * s };
+    if (spec.yTitle) { ctx.save(); ctx.translate(x + 26 * s, plot.y + plot.h / 2); ctx.rotate(-Math.PI / 2); text(ctx, spec.yTitle, 0, 0, 20 * s, { align: "center", weight: 800, color: INK, fit: plot.h }); ctx.restore(); }
+    // sumbu datar
+    const n = type === "titik" ? 0 : labels.length;
+    let xOf; if (type === "titik") { const xs = labels.length ? labels : series[0].values.map((_, i) => i + 1); const xsc = G.nice(spec.xMin != null ? spec.xMin : Math.min(...xs), spec.xMax != null ? spec.xMax : Math.max(...xs), 5);
+      xOf = v => plot.x + (v - xsc.min) / (xsc.max - xsc.min) * plot.w; geo.xs = xs;
+      for (let v = xsc.min; v <= xsc.max + 1e-9; v += xsc.step) text(ctx, G.fmt(v, decOf(xsc.step)), xOf(v), plot.y + plot.h + 26 * s, 19 * s, { align: "center", weight: 600, color: INK2 }); }
+    else { const bw = plot.w / Math.max(1, n); xOf = i => plot.x + bw * (i + 0.5);
+      labels.forEach((lab, i) => text(ctx, String(lab), xOf(i), plot.y + plot.h + 28 * s, 20 * s, { align: "center", weight: 700, color: spec.hi === i ? INK : INK2, fit: bw - 6 })); }
+    geo.xOf = xOf; geo.xAxis = { x: plot.x + plot.w / 2, y: plot.y + plot.h + 20 * s };
+    if (spec.xTitle) text(ctx, spec.xTitle, plot.x + plot.w / 2, plot.y + plot.h + catH + 26 * s, 20 * s, { align: "center", weight: 800, color: INK, fit: plot.w });
+    const base = yOf(Math.max(sc.min, Math.min(0, sc.max)));
+    ctx.save(); ctx.beginPath(); ctx.rect(plot.x - 2, plot.y - 30 * s, plot.w + 4, plot.h + 30 * s + 1); ctx.clip();
+    if (type === "batang") {
+      const bw = plot.w / Math.max(1, n), gw = bw * 0.62, k = series.length, one = gw / k;
+      geo.bar = (i, si = 0) => { const v = series[si].values[i]; const bx = xOf(i) - gw / 2 + one * si; const ytop = yOf(v); return { x: bx, y: Math.min(ytop, base), w: one, h: Math.abs(base - ytop) }; };
+      series.forEach((sr, si) => sr.values.forEach((v, i) => { if (v == null) return; const g = ease(clamp(grow * 1.25 - i * 0.06, 0, 1)); const b = geo.bar(i, si);
+        const hh = b.h * g; const col = sr.color || G.PAL[si % G.PAL.length];
+        ctx.fillStyle = spec.hi != null && spec.hi !== i ? "#B9C7CF" : col; ctx.fillRect(b.x + 2, base - hh, b.w - 4, hh);
+        if (spec.dataLabels && g > 0.98) text(ctx, G.fmt(v, spec.dec || 0) + (spec.unit || ""), b.x + b.w / 2, base - hh - 10 * s, 21 * s, { align: "center", weight: 800, color: INK }); }));
+    } else {
+      geo.pt = (i, si = 0) => ({ x: type === "titik" ? xOf(geo.xs[i]) : xOf(i), y: yOf(series[si].values[i]) });
+      series.forEach((sr, si) => { const col = sr.color || G.PAL[si % G.PAL.length]; const pts = sr.values.map((v, i) => geo.pt(i, si));
+        const xmax = plot.x + plot.w * grow;
+        if (type === "garis") { ctx.strokeStyle = col; ctx.lineWidth = 4.5 * s; ctx.lineJoin = "round"; ctx.beginPath();
+          pts.forEach((p, i) => { if (i === 0) { ctx.moveTo(p.x, p.y); return; } const q = pts[i - 1]; if (q.x >= xmax) return; if (p.x <= xmax) ctx.lineTo(p.x, p.y); else { const u = (xmax - q.x) / (p.x - q.x); ctx.lineTo(xmax, lerp(q.y, p.y, u)); } }); ctx.stroke(); }
+        pts.forEach((p, i) => { if (p.x > xmax + 1) return; ctx.fillStyle = "#FFFFFF"; ctx.beginPath(); ctx.arc(p.x, p.y, (type === "titik" ? 8 : 7) * s, 0, Math.PI * 2); ctx.fill();
+          ctx.fillStyle = col; ctx.beginPath(); ctx.arc(p.x, p.y, (type === "titik" ? 6.5 : 5) * s, 0, Math.PI * 2); ctx.fill();
+          if (spec.dataLabels) text(ctx, G.fmt(sr.values[i], spec.dec || 0) + (spec.unit || ""), p.x, p.y - 16 * s, 20 * s, { align: "center", weight: 800, color: INK }); });
+        if (spec.trend && grow >= 1) { const xs = type === "titik" ? geo.xs : sr.values.map((_, i) => i), ys = sr.values, m = xs.length;
+          const mx = xs.reduce((a, b) => a + b, 0) / m, my = ys.reduce((a, b) => a + b, 0) / m;
+          const sl = xs.reduce((a, xv, i) => a + (xv - mx) * (ys[i] - my), 0) / (xs.reduce((a, xv) => a + (xv - mx) * (xv - mx), 0) || 1), ic = my - sl * mx;
+          const X0 = type === "titik" ? Math.min(...xs) : 0, X1 = type === "titik" ? (spec.trendTo != null ? spec.trendTo : Math.max(...xs)) : m - 1;
+          const px = v => type === "titik" ? xOf(v) : xOf(v);
+          geo.trend = { slope: sl, intercept: ic };
+          ctx.strokeStyle = spec.trendColor || "#D9443B"; ctx.lineWidth = 3 * s; ctx.setLineDash([12 * s, 8 * s]); ctx.beginPath(); ctx.moveTo(px(X0), yOf(sl * X0 + ic)); ctx.lineTo(px(X1), yOf(sl * X1 + ic)); ctx.stroke(); ctx.setLineDash([]); } });
+    }
+    ctx.restore();
+    if (showLegend && !pie) { let lx = plot.x; series.forEach((sr, si) => { ctx.fillStyle = sr.color || G.PAL[si % G.PAL.length]; rr(ctx, lx, y + h - 46 * s, 18 * s, 18 * s, 4); ctx.fill();
+      text(ctx, sr.name || "", lx + 26 * s, y + h - 31 * s, 19 * s, { weight: 700, color: INK }); ctx.font = `700 ${19 * s}px Inter`; lx += ctx.measureText(sr.name || "").width + 60 * s; }); }
+    return geo;
+  };
+
+  // ---------- panel pengaturan grafik ----------
+  G.panel = function (ctx, x, y, w, h, st = {}) {
+    ctx.fillStyle = "#FFFFFF"; ctx.fillRect(x, y, w, h); ctx.strokeStyle = "#D3DCE2"; ctx.lineWidth = 1.5; ctx.beginPath(); ctx.moveTo(x, y); ctx.lineTo(x, y + h); ctx.stroke();
+    text(ctx, st.title || "Pengaturan grafik", x + 20, y + 36, 23, { weight: 800, color: INK });
+    const tabs = st.tabs || ["Penyiapan", "Sesuaikan"]; const tabPos = {}; let tx = x + 20;
+    tabs.forEach(t => { ctx.font = "700 21px Inter"; const tw = ctx.measureText(t).width; const on = t === (st.tab || tabs[0]);
+      text(ctx, t, tx, y + 80, 21, { weight: 700, color: on ? BLUE : INK2 }); if (on) { ctx.fillStyle = BLUE; ctx.fillRect(tx, y + 92, tw, 4); }
+      tabPos[t] = { x: tx + tw / 2, y: y + 74 }; tx += tw + 34; });
+    ctx.fillStyle = "#E1E7EB"; ctx.fillRect(x, y + 96, w, 2);
+    const geo = { tab: t => tabPos[t], rows: {} }; geo.row = l => geo.rows[l];
+    let yy = y + 110; const iw = w - 40; let overlay = null;
+    (st.rows || []).forEach(r => {
+      if (r.kind === "section") { ctx.fillStyle = r.on ? "#F2F7FC" : "#F7F9FA"; ctx.fillRect(x + 1, yy - 4, w - 2, 44); text(ctx, (r.open === false ? "▸ " : "▾ ") + r.label, x + 20, yy + 26, 21, { weight: 800, color: INK }); geo.rows[r.label] = { x: x + 20, y: yy, w: iw, h: 40, cx: x + w / 2, cy: yy + 18 }; yy += 46; return; }
+      if (r.kind === "toggle") { const on = !!r.on; text(ctx, r.label, x + 20, yy + 28, 21, { weight: 700, color: INK });
+        const bx = x + w - 76; ctx.fillStyle = on ? BLUE : "#C9D4DB"; rr(ctx, bx, yy + 8, 52, 28, 14); ctx.fill(); ctx.fillStyle = "#FFFFFF"; ctx.beginPath(); ctx.arc(on ? bx + 38 : bx + 14, yy + 22, 11, 0, Math.PI * 2); ctx.fill();
+        if (r.hot) { ctx.strokeStyle = C.accent; ctx.lineWidth = 3; rr(ctx, x + 10, yy - 2, w - 20, 48, 10); ctx.stroke(); }
+        geo.rows[r.label] = { x: x + 20, y: yy, w: iw, h: 44, cx: bx + 26, cy: yy + 22 }; yy += 50; return; }
+      text(ctx, r.label, x + 20, yy + 20, 19, { weight: 700, color: INK2 });
+      if (r.kind === "pair") { const hw = (iw - 16) / 2; const g2 = {};
+        [["a", x + 20], ["b", x + 20 + hw + 16]].forEach(([k, bx]) => { const f = r[k] || {}; text(ctx, f.label || "", bx, yy + 46, 18, { weight: 600, color: INK2 });
+          ctx.fillStyle = "#FFFFFF"; rr(ctx, bx, yy + 54, hw, 46, 8); ctx.fill(); ctx.strokeStyle = f.focus ? BLUE : "#C9D4DB"; ctx.lineWidth = f.focus ? 3 : 2; rr(ctx, bx, yy + 54, hw, 46, 8); ctx.stroke();
+          text(ctx, f.value == null ? "" : String(f.value), bx + 14, yy + 85, 22, { weight: 700, color: f.auto ? "#A9B6BE" : INK });
+          if (f.caret) { ctx.font = "700 22px Inter"; const cw = ctx.measureText(String(f.value || "")).width; ctx.fillStyle = INK; ctx.fillRect(bx + 16 + cw, yy + 64, 2.5, 26); }
+          if (f.hot) { ctx.strokeStyle = C.accent; ctx.lineWidth = 3; rr(ctx, bx - 5, yy + 49, hw + 10, 56, 10); ctx.stroke(); }
+          g2[k] = { x: bx, y: yy + 54, w: hw, h: 46, cx: bx + hw / 2, cy: yy + 77 }; });
+        geo.rows[r.label] = { x: x + 20, y: yy, w: iw, h: 104, ...g2 }; yy += 110; return; }
+      const box = { x: x + 20, y: yy + 28, w: iw, h: 44 };
+      ctx.fillStyle = "#FFFFFF"; rr(ctx, box.x, box.y, box.w, box.h, 8); ctx.fill(); ctx.strokeStyle = r.focus || r.open ? BLUE : "#C9D4DB"; ctx.lineWidth = r.focus || r.open ? 3 : 2; rr(ctx, box.x, box.y, box.w, box.h, 8); ctx.stroke();
+      let vx = box.x + 14; if (r.icon) { G.icon(ctx, r.icon, box.x + 10, box.y + 8, 28); vx += 36; }
+      const val = r.value == null ? "" : String(r.value), ph = !val && r.ph;
+      // isi kotak: teks panjang digeser (yang terlihat ujungnya) saat diketik, dipotong saat tidak aktif
+      const avail = box.x + box.w - (r.kind === "dropdown" ? 40 : 12) - vx; ctx.font = "700 22px Inter"; const tw = ctx.measureText(val || r.ph || "").width;
+      ctx.save(); ctx.beginPath(); ctx.rect(vx - 2, box.y, avail + 4, box.h); ctx.clip();
+      const tx0 = tw > avail && (r.focus || r.caret) ? vx + avail - tw - 4 : vx;
+      text(ctx, val || r.ph || "", tx0, box.y + 30, 22, { weight: 700, color: ph ? "#A9B6BE" : INK });
+      if (r.caret) { const cw = ctx.measureText(val).width; ctx.fillStyle = INK; ctx.fillRect(tx0 + cw + 2, box.y + 8, 2.5, 28); }
+      ctx.restore();
+      if (r.kind === "dropdown") text(ctx, "▾", box.x + box.w - 22, box.y + 30, 22, { align: "center", weight: 800, color: INK2 });
+      if (r.hot) { ctx.strokeStyle = C.accent; ctx.lineWidth = 3; rr(ctx, box.x - 5, box.y - 5, box.w + 10, box.h + 10, 10); ctx.stroke(); }
+      const rowGeo = { x: x + 20, y: yy, w: iw, h: 84, box, cx: box.x + box.w / 2, cy: box.y + box.h / 2 };
+      if (r.kind === "dropdown" && r.items) { rowGeo.item = i => ({ x: box.x + box.w * 0.6, y: box.y + box.h + 8 + i * 50 + 25 }); if (r.open) overlay = { r, box }; }
+      geo.rows[r.label] = rowGeo; yy += 84;
+    });
+    if (overlay) { const { r, box } = overlay; const ih = 50, lh = 16 + r.items.length * ih;
+      ctx.save(); ctx.shadowColor = "rgba(31,42,51,0.22)"; ctx.shadowBlur = 18; ctx.shadowOffsetY = 5; ctx.fillStyle = "#FFFFFF"; rr(ctx, box.x, box.y + box.h + 4, box.w, lh, 10); ctx.fill(); ctx.restore();
+      ctx.strokeStyle = "#C9D4DB"; ctx.lineWidth = 2; rr(ctx, box.x, box.y + box.h + 4, box.w, lh, 10); ctx.stroke();
+      r.items.forEach((it, i) => { const iy = box.y + box.h + 12 + i * ih; const on = r.hi === i || r.hi === it.label;
+        if (on) { ctx.fillStyle = "#DCE9F7"; ctx.fillRect(box.x + 4, iy, box.w - 8, ih - 2); }
+        if (it.icon) G.icon(ctx, it.icon, box.x + 14, iy + 9, 30);
+        text(ctx, it.label, box.x + (it.icon ? 56 : 16), iy + 33, 22, { weight: on ? 800 : 600, color: on ? BLUE : INK }); }); }
+    return geo;
+  };
+
+  K.grafik = G;
+})(typeof window !== "undefined" ? window : globalThis);
+
+/* S04 Simulasi praktik: membuat grafik yang jujur di lembar kerja generik (memilih rentang, Sisipkan → Grafik, jenis grafik,
+   judul/label/satuan, sumbu tegak dari nol). Jendela aplikasi x 80–1440 (y 122–822), panel langkah x 1470–1830.
+   Gambar grafik dan panel pengaturan memakai episodes/_alat/layar_grafik.js (Kiko.grafik). Semua data rekaan. */
+(function (global) {
+  const K = global.Kiko, H = K.helpers, C = K.C, L = K.layar, G = K.grafik;
+  const { rr, text, para, card, kiko, ease, clamp, lerp } = H;
+  const WIN = { x: 80, y: 122, w: 1360, h: 700 };
+  const MENUS = ["File", "Edit", "Tampilan", "Sisipkan", "Format", "Data"];
+  const CW = { A: 180, B: 110, C: 120, D: 120, E: 120, F: 120, G: 120 };
+  const RH = 44, SX = WIN.x + 14, GY = WIN.y + 46 + 40 + 76, HW = 60;
+  const BLUE = "#1A73C8", RED = "#D9443B", GREEN = "#2E9E5B";
+  const PANEL = { x: 1060, y: WIN.y + 86, w: 380, h: WIN.h - 86 };
+  const CH = { x: 466, y: 296, w: 580, h: 480 };            // kotak grafik di atas kisi
+
+  // ---------- data (rekaan) ----------
+  const MENU = [["Bakso", 75], ["Mie ayam", 60], ["Nasi uduk", 45], ["Es teh", 120]];
+  const HARI = [["Senin", 20], ["Selasa", 25], ["Rabu", 18], ["Kamis", 30], ["Jumat", 27]];
+  const BERANGKAT = [["Jalan kaki", 12], ["Angkot", 10], ["Diantar motor", 14], ["Sepeda", 4]];
+  const TELAT = [["Kelas 7", 3.2], ["Kelas 8", 3.5]];
+  const table = (rows, h1, h2, extra) => { const c = { A1: { v: h1, bold: true }, B1: { v: h2, bold: true } }; rows.forEach((r, i) => { c["A" + (i + 2)] = r[0]; c["B" + (i + 2)] = r[1]; }); return Object.assign(c, extra || {}); };
+  const T_MENU = table(MENU, "Menu", "Porsi"), T_HARI = table(HARI, "Hari", "Es teh");
+  const T_BER = table(BERANGKAT, "Berangkat", "Murid", { A6: { v: "Jumlah", bold: true }, B6: { v: 40, bold: true } });
+  const T_TELAT = table(TELAT, "Kelas", "Telat");
+  const S_MENU = { type: "batang", labels: MENU.map(r => r[0]), values: MENU.map(r => r[1]) };
+  const S_TELAT = { type: "batang", labels: TELAT.map(r => r[0]), values: TELAT.map(r => r[1]), color: "#D9443B", dec: 1 };
+  const FULL = { title: "Penjualan Menu Kantin Seminggu", subtitle: "Sumber: catatan kantin, Senin–Jumat", xTitle: "Menu", yTitle: "Jumlah porsi", dataLabels: true };
+
+  // ---------- geometri ----------
+  const COLS = "ABCDEFG";
+  const colX = c => { let x = SX + HW; for (let i = 0; i < COLS.indexOf(c); i++) x += CW[COLS[i]]; return x; };
+  const rowY = r => GY + RH * r;
+  const at = a => { const c = a[0], r = parseInt(a.slice(1)); return [colX(c) + CW[c] * 0.62, rowY(r) + RH * 0.6]; };
+  function menuPos(ctx, name) {
+    let mx = WIN.x + 24; ctx.font = "600 21px Inter";
+    for (const m of MENUS) { const mw = ctx.measureText(m).width + 24; if (m === name) return { x: mx - 8, cx: mx + 4 + (mw - 24) / 2, cy: WIN.y + 46 + 20 }; mx += mw + 6; }
+  }
+
+  // ---------- jendela + lembar kerja + grafik + panel ----------
+  // opt: cells, sel (st lembar kerja), chart (spec, digambar di CH), panel (st G.panel), menuOn, title
+  function app(ctx, opt = {}) {
+    L.window(ctx, WIN.x, WIN.y, WIN.w, WIN.h, { title: opt.title || "Kantin — Lembar Kerja", menus: MENUS, menuOn: opt.menuOn });
+    const geo = L.sheet(ctx, { x: SX, y: WIN.y + 86 }, { cols: 7, rows: 11, rh: RH, cw: CW, cells: opt.cells || {}, ...(opt.sel || {}) });
+    const out = { sheet: geo };
+    if (opt.chart) { const b = opt.chartBox || CH; out.chart = G.chart(ctx, b.x, b.y, b.w, b.h, opt.chart); }
+    if (opt.panel) out.panel = G.panel(ctx, PANEL.x, PANEL.y, PANEL.w, PANEL.h, opt.panel);
+    return out;
+  }
+  // panel tab Penyiapan
+  const TYPES = [{ label: "Garis", icon: "garis" }, { label: "Batang", icon: "batang" }, { label: "Lingkaran", icon: "lingkaran" }, { label: "Titik (sebar)", icon: "titik" }];
+  const TYPE_KEY = { Garis: "garis", Batang: "batang", Lingkaran: "lingkaran" };
+  function setup(type, o = {}) {
+    return { tab: "Penyiapan", rows: [
+      { kind: "dropdown", label: "Jenis grafik", value: type, icon: TYPE_KEY[type], items: TYPES, open: o.open, hi: o.hi, hot: o.hot },
+      { kind: "field", label: "Rentang data", value: o.range || "A1:B5" },
+      { kind: "field", label: "Sumbu datar (kategori)", value: o.x || "Menu" },
+      { kind: "field", label: "Seri (angka)", value: o.y || "Porsi" }] };
+  }
+  // panel tab Sesuaikan: f = {title, sub, xt, yt, labels, min, max, focus, caret, sec}
+  function custom(f = {}) {
+    const fld = (label, key) => ({ kind: "field", label, value: f[key] || "", focus: f.focus === key, caret: f.focus === key && f.caret, hot: f.hot === key });
+    if (f.sec === "sumbu") return { tab: "Sesuaikan", rows: [
+      { kind: "section", label: "Judul dan label", open: false },
+      { kind: "section", label: "Sumbu tegak", on: true },
+      { kind: "pair", label: "Batas sumbu", a: { label: "Minimum", value: f.min, focus: f.focus === "min", caret: f.focus === "min" && f.caret, auto: f.minAuto, hot: f.hot === "min" }, b: { label: "Maksimum", value: f.max || "Otomatis", auto: !f.max } },
+      { kind: "field", label: "Judul sumbu tegak", value: f.yt || "" },
+      { kind: "toggle", label: "Garis kisi", on: true }] };
+    return { tab: "Sesuaikan", rows: [
+      { kind: "section", label: "Judul dan label" },
+      fld("Judul grafik", "title"), fld("Subjudul", "sub"), fld("Judul sumbu datar", "xt"), fld("Judul sumbu tegak", "yt"),
+      { kind: "toggle", label: "Label data", on: !!f.labels, hot: f.hot === "labels" },
+      { kind: "section", label: "Sumbu tegak", open: false }] };
+  }
+  // titik sasaran pointer di panel (dihitung dengan gambar tak terlihat)
+  function panelGeo(ctx, st) { ctx.save(); ctx.globalAlpha = 0; const g = G.panel(ctx, PANEL.x, PANEL.y, PANEL.w, PANEL.h, st); ctx.restore(); return g; }
+
+  // ---------- pointer berdasarkan titik-kunci: [[detik, x, y, klik?, jenis?, tahan?]] ----------
+  function track(l, keys) {
+    if (l <= keys[0][0]) return { x: keys[0][1], y: keys[0][2], click: 0, kind: "arrow" };
+    let i = 0; while (i + 1 < keys.length && l >= keys[i + 1][0]) i++;
+    const k = keys[i], n = keys[i + 1]; let x = k[1], y = k[2], down = !!k[5];
+    if (n) { const mv = Math.min(0.75, (n[0] - k[0]) * 0.8); const u = ease((l - (n[0] - mv)) / mv); x = lerp(k[1], n[1], u); y = lerp(k[2], n[2], u); if (u > 0) down = !!(k[5] && n[5]); }
+    const dt = l - k[0]; return { x, y, click: k[3] && dt < 0.45 ? dt / 0.45 : 0, kind: "arrow", down };
+  }
+  const cur = (ctx, p) => L.cursor(ctx, p.x, p.y, { kind: p.kind, click: p.click, down: p.down });
+  const spanOf = b => Math.max(3, (b.audio || b.dur) * 0.92);
+  const typed = (s, t, t0, t1) => s.slice(0, Math.round(s.length * clamp((t - t0) / (t1 - t0), 0, 1)));
+
+  // ---------- panel langkah (kanan) ----------
+  function steps(ctx, title, items, n, opt = {}) {
+    const x = 1470, y = opt.y || 122, w = 360; let hh = 70;
+    const rows = items.map(s => H.wrap(ctx, s, 23, 700, w - 86)); rows.forEach(lines => hh += lines.length * 30 + 22);
+    card(ctx, x, y, w, hh, { fill: "#FFFFFF", stroke: "#D7E2DC", lw: 3, r: 18 });
+    text(ctx, title, x + 24, y + 44, 24, { weight: 900, color: C.accentDark });
+    let yy = y + 74;
+    rows.forEach((lines, i) => {
+      const done = i < n, now = i === n;
+      if (now) { ctx.fillStyle = "#FFF3D6"; rr(ctx, x + 10, yy - 8, w - 20, lines.length * 30 + 16, 10); ctx.fill(); }
+      ctx.fillStyle = done ? GREEN : now ? C.accent : "#C9D4DB"; ctx.beginPath(); ctx.arc(x + 36, yy + 13, 14, 0, Math.PI * 2); ctx.fill();
+      text(ctx, done ? "✓" : String(i + 1), x + 36, yy + 21, 18, { align: "center", weight: 900, color: "#FFFFFF" });
+      lines.forEach((ln, j) => text(ctx, ln, x + 62, yy + 22 + j * 30, 23, { weight: 700, color: done ? C.ink2 : C.ink }));
+      yy += lines.length * 30 + 22;
+    });
+    return y + hh;
+  }
+  const stepAt = (t, marks) => { let n = 0; marks.forEach((m, i) => { if (t >= m) n = i + 1; }); return n; };
+  const note = (ctx, y, s) => L.callout(ctx, 1470, y, s, null, null, { size: 22, maxW: 320, fill: "#E7F1FB", color: BLUE });
+  const ring = (ctx, x, y, r, col) => { ctx.strokeStyle = col || C.accent; ctx.lineWidth = 4; ctx.beginPath(); ctx.arc(x, y, r, 0, Math.PI * 2); ctx.stroke(); };
+  // kartu grafik mandiri (di luar aplikasi)
+  function chartCard(ctx, x, y, w, h, head, spec, col) {
+    card(ctx, x, y, w, h, { fill: "#FFFFFF", stroke: col || "#D7E2DC", lw: 4, r: 22 });
+    if (head) text(ctx, head, x + w / 2, y + 48, 28, { align: "center", weight: 900, color: col || C.accentDark });
+    return G.chart(ctx, x + 24, y + (head ? 70 : 24), w - 48, h - (head ? 94 : 48), spec);
+  }
+  // HP sederhana dengan pesan grup kelas
+  function phone(ctx, x, y, w, h, fn) {
+    ctx.fillStyle = "#24313A"; rr(ctx, x, y, w, h, 46); ctx.fill(); ctx.fillStyle = "#EEF3F1"; rr(ctx, x + 14, y + 14, w - 28, h - 28, 34); ctx.fill();
+    ctx.fillStyle = "#2E7E9A"; ctx.save(); rr(ctx, x + 14, y + 14, w - 28, h - 28, 34); ctx.clip(); ctx.fillRect(x + 14, y + 14, w - 28, 92); ctx.restore();
+    text(ctx, "Grup Kelas 8A", x + 50, y + 74, 28, { weight: 800, color: "#FFFFFF" }); text(ctx, "32 anggota", x + w - 50, y + 74, 20, { align: "right", weight: 600, color: "#D5ECF3" });
+    fn(x + 14, y + 106, w - 28, h - 120);
+  }
+
+  Object.assign(K.SCENES, {
+    tujuan(ctx, b, l) {
+      card(ctx, 160, 150, 1600, 660);
+      text(ctx, "SETELAH MENONTON, KAMU BISA:", 260, 240, 30, { weight: 900, color: C.accentDark });
+      ["membuat grafik dari tabel", "memilih jenis yang cocok", "memberi judul dan label", "membuat sumbu dari nol"].forEach((s, i) => {
+        const u = ease((l - 0.6 - i * 0.7) / 0.5); if (u <= 0) return; ctx.globalAlpha = u;
+        card(ctx, 260, 280 + i * 104, 760, 84, { fill: C.bg2, r: 16 }); text(ctx, "✓", 300, 336 + i * 104, 36, { weight: 900, color: GREEN }); text(ctx, s, 350, 334 + i * 104, 32, { weight: 800 }); ctx.globalAlpha = 1;
+      });
+      G.chart(ctx, 1110, 270, 560, 420, { ...S_MENU, title: "Penjualan Menu Kantin", yTitle: "Jumlah porsi", grow: clamp(l / 2.5, 0, 1) });
+      text(ctx, "aplikasi lembar kerja apa pun", 1390, 740, 26, { align: "center", weight: 700, color: C.ink2 });
+    },
+    prasyarat(ctx, b, l) {
+      card(ctx, 160, 150, 1600, 660);
+      text(ctx, "EPISODE YANG DILENGKAPI", 960, 230, 32, { align: "center", weight: 900, color: C.accentDark });
+      [["D8.1", "Lembar Kerja Pengolah Data", "grafik batang dan garis"], ["D8.6", "Proyek: Cek Data, Cek Fakta", "menguji klaim dengan data"], ["F11.5", "Data Terbuka untuk Keputusan", "grafik yang jujur"]].forEach(([c, t, s], i) => {
+        const x = 240 + i * 490, u = ease((l - 0.3 - i * 0.6) / 0.5); ctx.globalAlpha = Math.max(0.15, u); card(ctx, x, 280, 460, 320, { fill: i === 0 ? "#FFF3D6" : C.bg2, r: 22 });
+        text(ctx, c, x + 230, 360, 54, { align: "center", weight: 900, color: C.kiko }); para(ctx, t, x + 230, 420, 30, 400, { align: "center", weight: 800, lh: 1.2 });
+        text(ctx, s, x + 230, 560, 25, { align: "center", weight: 600, color: C.ink2 }); ctx.globalAlpha = 1;
+      });
+      card(ctx, 520, 640, 880, 80, { fill: "#E7F1FB", r: 16 }); text(ctx, "Cara membuat tabel: simulasi S02", 960, 692, 30, { align: "center", weight: 800, color: BLUE });
+      kiko(ctx, 1650, 720, 100, 0, { wave: l });
+    },
+    g_tabel(ctx, b, l) {
+      const t = l / spanOf(b); const marks = [];
+      if (t > 0.34 && t < 0.52) for (let r = 1; r <= 5; r++) marks.push(["A" + r, "rgba(242,177,52,0.25)"]);
+      if (t > 0.52 && t < 0.8) for (let r = 1; r <= 5; r++) marks.push(["B" + r, "rgba(242,177,52,0.25)"]);
+      if (t >= 0.8) marks.push(["A2", C.goodBg], ["B2", C.goodBg], ["A5", C.goodBg], ["B5", C.goodBg]);
+      app(ctx, { cells: T_MENU, sel: { marks } });
+      const items = [["A", "Menu"], ["B", "Porsi"]];
+      card(ctx, 1470, 150, 360, 290, { fill: "#FFFFFF", stroke: "#D7E2DC", lw: 3, r: 18 }); text(ctx, "ISI TABEL", 1650, 200, 24, { align: "center", weight: 900, color: C.accentDark });
+      items.forEach(([c, s], i) => { const on = (i === 0 && t > 0.34) || (i === 1 && t > 0.52); const y = 230 + i * 90;
+        ctx.fillStyle = on ? "#FFF3D6" : "#F4F6F5"; rr(ctx, 1490, y, 320, 72, 12); ctx.fill(); ctx.fillStyle = on ? C.kiko : "#C9D4DB"; rr(ctx, 1504, y + 14, 44, 44, 10); ctx.fill();
+        text(ctx, c, 1526, y + 46, 24, { align: "center", weight: 900, color: "#FFFFFF" }); text(ctx, "Kolom " + c + ": " + s, 1564, y + 46, 23, { weight: 800, color: on ? C.ink : C.muted }); });
+      if (t >= 0.8) L.callout(ctx, 1470, 480, "Bakso 75 dan es teh 120: dari simulasi S02", null, null, { size: 22, maxW: 320, fill: C.goodBg, color: GREEN });
+    },
+    g_pilih(ctx, b, l) {
+      const span = spanOf(b), t = l / span; const u = ease(clamp((t - 0.3) / 0.25, 0, 1)); const r = Math.round(lerp(1, 5, u)), c = u > 0.5 ? "B" : "A";
+      const sel = t < 0.2 ? { active: "C7" } : { active: "A1", selTo: c + r, range: ["A1", c + r] };
+      app(ctx, { cells: T_MENU, sel });
+      steps(ctx, "LANGKAH", ["Klik sel A1.", "Drag sampai sel B5.", "Baris judul ikut terpilih."], stepAt(t, [0.2, 0.56, 0.75]));
+      if (t > 0.5) { ctx.strokeStyle = C.accent; ctx.lineWidth = 4; rr(ctx, colX("A") + 2, rowY(1) + 2, CW.A + CW.B - 4, RH - 4, 8); ctx.stroke(); L.callout(ctx, 1470, 420, "Baris judul: nama menu dan satuan", colX("C") - 4, rowY(1) + 22, { size: 22, maxW: 320 }); }
+      const [ax, ay] = at("A1"), [bx, by] = at("B5");
+      cur(ctx, track(l, [[0, 700, 650], [0.18 * span, ax, ay, 1], [0.3 * span, ax, ay, 0, 0, 1], [0.55 * span, bx, by, 0, 0, 1], [0.62 * span, bx + 60, by + 80]]));
+    },
+    g_sisip(ctx, b, l) {
+      const span = spanOf(b), t = l / span; const open = t > 0.06 && t < 0.24; const shown = t >= 0.24;
+      const g = ease(clamp((t - 0.26) / 0.25, 0, 1)), pa = ease(clamp((t - 0.55) / 0.15, 0, 1));
+      app(ctx, { cells: T_MENU, sel: { active: "A1", selTo: "B5", range: ["A1", "B5"] }, menuOn: open ? "Sisipkan" : null,
+        chart: shown ? { type: "garis", labels: S_MENU.labels, values: S_MENU.values, ph: { title: "Porsi" }, grow: g, sel: true } : null });
+      if (pa > 0) { ctx.save(); ctx.globalAlpha = pa; G.panel(ctx, PANEL.x, PANEL.y, PANEL.w, PANEL.h, setup("Garis")); ctx.restore(); }
+      const m = menuPos(ctx, "Sisipkan"); const items = ["Grafik", "Gambar", "Kotak teks", "Komentar"];
+      if (open) { const x = m.x, y = WIN.y + 88; card(ctx, x, y, 280, 16 + items.length * 46, { fill: "#FFFFFF", stroke: "#C9D4DB", lw: 2, r: 10 });
+        items.forEach((s, i) => { const on = s === "Grafik" && t > 0.14; if (on) { ctx.fillStyle = "#DCE9F7"; ctx.fillRect(x + 4, y + 8 + i * 46, 272, 44); }
+          if (i === 0) G.icon(ctx, "batang", x + 16, y + 16, 28); text(ctx, s, x + 56, y + 38 + i * 46, 23, { weight: 600, color: on ? BLUE : C.ink }); }); }
+      steps(ctx, "LANGKAH", ["Klik menu Sisipkan.", "Pilih Grafik.", "Grafik dan panel pengaturan muncul."], stepAt(t, [0.08, 0.24, 0.7]));
+      if (t > 0.72) note(ctx, 470, "Di aplikasi lain: klik dua kali grafik untuk membuka pengaturannya.");
+      cur(ctx, track(l, [[0, 640, 640], [0.05 * span, m.cx, m.cy + 6, 1], [0.15 * span, m.x + 200, WIN.y + 88 + 30], [0.21 * span, m.x + 200, WIN.y + 88 + 30, 1], [0.32 * span, 1200, 760]]));
+    },
+    g_garis(ctx, b, l) {
+      const t = l / spanOf(b);
+      const o = app(ctx, { cells: T_MENU, sel: { active: "A1", selTo: "B5", range: ["A1", "B5"] }, chart: { type: "garis", labels: S_MENU.labels, values: S_MENU.values, ph: { title: "Porsi" }, sel: true },
+        panel: setup("Garis", { hot: t > 0.12 && t < 0.4 }) });
+      if (t > 0.38) { const g = o.chart; const p0 = g.pt(0), p1 = g.pt(1);
+        ctx.strokeStyle = RED; ctx.lineWidth = 7; ctx.globalAlpha = 0.55; ctx.beginPath(); ctx.moveTo(p0.x, p0.y); ctx.lineTo(p1.x, p1.y); ctx.stroke(); ctx.globalAlpha = 1;
+        L.callout(ctx, 104, 600, "Bakso → mie ayam bukan urutan waktu ✗", (p0.x + p1.x) / 2, (p0.y + p1.y) / 2 + 4, { size: 22, maxW: 320, fill: "#FDF1F0", color: RED }); }
+      if (t > 0.84) L.callout(ctx, 1470, 460, "Kita hanya ingin membandingkan.", null, null, { size: 24, maxW: 320 });
+      if (t < 0.4 && t > 0.12) L.callout(ctx, 1470, 300, "Tebakan aplikasi: Garis", PANEL.x + 20, PANEL.y + 170, { size: 24, maxW: 320 });
+    },
+    g_batang(ctx, b, l) {
+      const span = spanOf(b), t = l / span; const open = t > 0.08 && t < 0.3, isBar = t >= 0.3;
+      const g = isBar ? ease(clamp((t - 0.3) / 0.25, 0, 1)) : 1;
+      const st = setup(isBar ? "Batang" : "Garis", { open, hi: t > 0.18 ? 1 : null });
+      const o = app(ctx, { cells: T_MENU, sel: { active: "A1", selTo: "B5", range: ["A1", "B5"] }, chart: { ...(isBar ? S_MENU : { ...S_MENU, type: "garis" }), ph: { title: "Porsi" }, grow: g, sel: true, hi: t > 0.75 ? 3 : null }, panel: st });
+      steps(ctx, "LANGKAH", ["Buka Jenis grafik.", "Pilih Batang."], stepAt(t, [0.1, 0.3]));
+      if (t > 0.75) { const bb = o.chart.bar(3); L.callout(ctx, 104, 600, "Es teh paling laris", bb.x, bb.y + 30, { fill: C.goodBg, color: GREEN }); note(ctx, 450, "Di aplikasi lain, batang tegak disebut Kolom."); }
+      const pg = panelGeo(ctx, setup("Garis", { open: true })), r = pg.row("Jenis grafik");
+      cur(ctx, track(l, [[0, 1250, 700], [0.08 * span, r.box.x + r.box.w - 30, r.cy, 1], [0.2 * span, r.item(1).x, r.item(1).y], [0.28 * span, r.item(1).x, r.item(1).y, 1], [0.4 * span, 1300, 760]]));
+    },
+    jenis_tiga(ctx, b, l) {
+      const t = l / spanOf(b);
+      const cards = [["BATANG", "membandingkan beberapa hal", { ...S_MENU, s: 0.8 }, 0.18], ["GARIS", "perubahan dari waktu ke waktu", { type: "garis", labels: ["Sen", "Sel", "Rab", "Kam", "Jum"], values: HARI.map(r => r[1]), s: 0.8 }, 0.44],
+        ["LINGKARAN", "bagian dari satu keseluruhan", { type: "lingkaran", labels: BERANGKAT.map(r => r[0]), values: BERANGKAT.map(r => r[1]), s: 0.8, percent: true, legend: false }, 0.72]];
+      cards.forEach(([h, s, spec, t0], i) => { const x = 120 + i * 570, on = t > t0; ctx.globalAlpha = on ? 1 : 0.25;
+        card(ctx, x, 140, 540, 680, { fill: "#FFFFFF", stroke: on ? C.accent : "#D7E2DC", lw: on ? 5 : 3, r: 24 });
+        G.icon(ctx, spec.type, x + 30, 168, 48); text(ctx, h, x + 96, 208, 40, { weight: 900, color: C.kikoDark });
+        para(ctx, s, x + 30, 270, 30, 480, { weight: 800, lh: 1.25 });
+        G.chart(ctx, x + 30, 360, 480, 420, { ...spec, grow: on ? clamp((t - t0) / 0.15, 0, 1) : 0 }); ctx.globalAlpha = 1; });
+    },
+    jenis_garis(ctx, b, l) {
+      const t = l / spanOf(b); const g = ease(clamp((t - 0.08) / 0.4, 0, 1));
+      const o = app(ctx, { title: "Es Teh — Lembar Kerja", cells: T_HARI, sel: { active: "A1", selTo: "B6", range: ["A1", "B6"] },
+        chart: { type: "garis", labels: HARI.map(r => r[0]), values: HARI.map(r => r[1]), title: "Penjualan Es Teh per Hari", yTitle: "Porsi", dataLabels: true, grow: g }, panel: setup("Garis", { range: "A1:B6", x: "Hari", y: "Es teh" }) });
+      if (t > 0.78) { const c = o.chart; const p = [0, 1, 2, 3].map(i => c.pt(i));
+        text(ctx, "naik", (p[0].x + p[1].x) / 2 - 10, (p[0].y + p[1].y) / 2 - 22, 22, { align: "center", weight: 900, color: GREEN });
+        text(ctx, "turun", (p[1].x + p[2].x) / 2 + 10, (p[1].y + p[2].y) / 2 + 40, 22, { align: "center", weight: 900, color: RED });
+        text(ctx, "naik", (p[2].x + p[3].x) / 2 + 30, (p[2].y + p[3].y) / 2 + 30, 22, { align: "center", weight: 900, color: GREEN }); }
+      card(ctx, 1470, 150, 360, 210, { fill: "#FFFFFF", stroke: C.accent, lw: 3, r: 18 }); G.icon(ctx, "garis", 1494, 176, 44); text(ctx, "GARIS", 1552, 210, 30, { weight: 900, color: C.kikoDark });
+      para(ctx, "Data berubah dari hari ke hari: naik turunnya terlihat.", 1494, 268, 23, 320, { weight: 700, lh: 1.3 });
+    },
+    jenis_lingkaran(ctx, b, l) {
+      const t = l / spanOf(b); const g = ease(clamp((t - 0.08) / 0.4, 0, 1));
+      app(ctx, { title: "Berangkat Sekolah — Lembar Kerja", cells: T_BER, sel: { active: "A1", selTo: "B5", range: ["A1", "B5"], marks: t > 0.35 ? [["A6", C.goodBg], ["B6", C.goodBg]] : [] },
+        chart: { type: "lingkaran", labels: BERANGKAT.map(r => r[0]), values: BERANGKAT.map(r => r[1]), title: "Cara Berangkat ke Sekolah (40 murid)", percent: true, grow: g },
+        panel: setup("Lingkaran", { x: "Berangkat", y: "Murid" }) });
+      card(ctx, 1470, 150, 360, 210, { fill: "#FFFFFF", stroke: C.accent, lw: 3, r: 18 }); G.icon(ctx, "lingkaran", 1494, 176, 44); text(ctx, "LINGKARAN", 1552, 210, 30, { weight: 900, color: C.kikoDark });
+      para(ctx, "Bagian-bagian dari satu keseluruhan.", 1494, 268, 23, 320, { weight: 700, lh: 1.3 });
+      if (t > 0.5) { card(ctx, 1470, 390, 360, 150, { fill: C.goodBg, r: 18 }); text(ctx, "30% + 25% + 35% + 10%", 1650, 448, 26, { align: "center", weight: 900 }); text(ctx, "= 100% ✓", 1650, 500, 32, { align: "center", weight: 900, color: GREEN }); }
+    },
+    label_judul(ctx, b, l) {
+      const span = spanOf(b), t = l / span; const tab = t > 0.6 ? "Sesuaikan" : "Penyiapan";
+      const title = typed(FULL.title, t, 0.74, 0.98);
+      const st = tab === "Sesuaikan" ? custom({ title, focus: t > 0.68 ? "title" : null, caret: Math.floor(l * 2.4) % 2 === 0 }) : setup("Batang");
+      const o = app(ctx, { cells: T_MENU, chart: { ...S_MENU, title, ph: { title: "Judul grafik" }, sel: true }, panel: st });
+      if (t > 0.25 && t < 0.6) { const c = o.chart; ring(ctx, c.title.x, c.title.y, 60); L.callout(ctx, 104, 600, "Tanpa judul: grafik tentang apa?", c.title.x - 60, c.title.y + 10, { size: 22, maxW: 320, fill: "#FDF1F0", color: RED }); }
+      steps(ctx, "LANGKAH", ["Klik tab Sesuaikan.", "Klik kotak Judul grafik.", "Ketik judulnya."], stepAt(t, [0.62, 0.72, 0.98]));
+      const tb = panelGeo(ctx, setup("Batang")).tab("Sesuaikan"), fr = panelGeo(ctx, custom({})).row("Judul grafik");
+      cur(ctx, track(l, [[0, 1300, 700], [0.6 * span, tb.x, tb.y + 4, 1], [0.7 * span, fr.box.x + fr.box.w - 40, fr.cy, 1], [0.78 * span, 1400, 790]]));
+    },
+    label_sumbu(ctx, b, l) {
+      const span = spanOf(b), t = l / span;
+      const xt = typed("Menu", t, 0.22, 0.34), yt = typed("Jumlah porsi", t, 0.46, 0.64);
+      const focus = t < 0.4 ? "xt" : "yt";
+      const o = app(ctx, { cells: T_MENU, chart: { ...S_MENU, title: FULL.title, xTitle: xt, yTitle: yt, sel: true }, panel: custom({ title: FULL.title, xt, yt, focus: t > 0.16 ? focus : null, caret: Math.floor(l * 2.4) % 2 === 0 }) });
+      steps(ctx, "LANGKAH", ["Judul sumbu datar: Menu.", "Judul sumbu tegak: Jumlah porsi."], stepAt(t, [0.36, 0.66]));
+      if (t > 0.68) { const c = o.chart; ring(ctx, c.box.x + 26, c.plot.y + c.plot.h / 2, 44); L.callout(ctx, 104, 600, "porsi = satuannya", c.box.x + 14, c.plot.y + c.plot.h / 2 + 30, { size: 24, maxW: 320 }); }
+      const pg = panelGeo(ctx, custom({})), rx = pg.row("Judul sumbu datar"), ry = pg.row("Judul sumbu tegak");
+      cur(ctx, track(l, [[0, 1400, 790], [0.16 * span, rx.box.x + rx.box.w - 40, rx.cy, 1], [0.24 * span, 1020, 800], [0.4 * span, ry.box.x + ry.box.w - 40, ry.cy, 1], [0.48 * span, 1020, 800]]));
+    },
+    label_data(ctx, b, l) {
+      const span = spanOf(b), t = l / span; const on = t > 0.12; const sub = typed(FULL.subtitle, t, 0.62, 0.96);
+      const o = app(ctx, { cells: T_MENU, chart: { ...S_MENU, title: FULL.title, xTitle: "Menu", yTitle: "Jumlah porsi", subtitle: sub, dataLabels: on, sel: true },
+        panel: custom({ title: FULL.title, xt: "Menu", yt: "Jumlah porsi", sub, labels: on, hot: t < 0.3 ? "labels" : null, focus: t > 0.5 ? "sub" : null, caret: Math.floor(l * 2.4) % 2 === 0 }) });
+      steps(ctx, "LANGKAH", ["Nyalakan Label data.", "Subjudul: sumber datanya."], stepAt(t, [0.14, 0.96]));
+      if (t > 0.18 && t < 0.5) { const bb = o.chart.bar(0); ring(ctx, bb.x + bb.w / 2, bb.y - 16, 30); }
+      const pg = panelGeo(ctx, custom({})), tg = pg.row("Label data"), sr = pg.row("Subjudul");
+      cur(ctx, track(l, [[0, 1020, 800], [0.1 * span, tg.cx, tg.cy, 1], [0.5 * span, sr.box.x + sr.box.w - 40, sr.cy, 1], [0.6 * span, 1020, 800]]));
+    },
+    tipu_grup(ctx, b, l) {
+      const t = l / spanOf(b);
+      phone(ctx, 300, 128, 640, 690, (x, y, w, h) => {
+        text(ctx, "Rudi", x + 30, y + 40, 22, { weight: 800, color: C.kiko });
+        card(ctx, x + 24, y + 54, w - 80, 420, { fill: "#FFFFFF", r: 20 });
+        text(ctx, "KELAS 8 PALING SERING TELAT!!", x + 48, y + 100, 26, { weight: 900, color: RED });
+        G.chart(ctx, x + 44, y + 120, w - 120, 320, { ...S_TELAT, yMin: 3, yMax: 3.6, yStep: 0.1, title: "Rata-rata murid telat per hari", s: 0.85, grow: clamp(l / 1.5, 0, 1) });
+        text(ctx, "07.15", x + w - 70, y + 464, 18, { align: "right", weight: 600, color: C.muted });
+        if (t > 0.3) { card(ctx, x + 150, y + 492, w - 180, 56, { fill: "#DCF3E4", r: 16 }); text(ctx, "Wah, dua kali lipat!", x + 174, y + 529, 22, { weight: 700 }); text(ctx, "Sinta", x + w - 40, y + 488, 18, { align: "right", weight: 800, color: GREEN }); }
+      });
+      kiko(ctx, 1300, 600, 150, 0, { mood: t > 0.7 ? "confused" : "happy" });
+      if (t > 0.7) { card(ctx, 1110, 220, 520, 180, { fill: "#FFFFFF", stroke: C.accent, lw: 4, r: 24 }); para(ctx, "Benarkah dua kali lebih sering telat?", 1370, 290, 32, 460, { align: "center", weight: 900, lh: 1.25 }); }
+      if (t > 1.02) { const u = clamp((t - 1.02) / 0.3, 0, 1); ctx.strokeStyle = C.accent; ctx.lineWidth = 10; ctx.beginPath(); ctx.arc(1600, 520, 34, -Math.PI / 2, -Math.PI / 2 + u * Math.PI * 2); ctx.stroke(); text(ctx, "Pikirkan dulu", 1600, 595, 24, { align: "center", weight: 800, color: C.ink2 }); }
+    },
+    tipu_sumbu(ctx, b, l) {
+      const t = l / spanOf(b);
+      const c = chartCard(ctx, 140, 140, 820, 680, "GRAFIK DARI GRUP KELAS", { ...S_TELAT, yMin: 3, yMax: 3.6, yStep: 0.1, title: "Rata-rata murid telat per hari" }, RED);
+      if (t > 0.08) { const tk = c.ticks[0]; ring(ctx, c.plot.x - 34, tk.y, 30); }
+      if (t > 0.27) L.callout(ctx, 250, 420, "Mulai dari 3, bukan dari 0!", c.plot.x - 34, c.ticks[0].y - 24, { size: 26, fill: "#FDF1F0", color: RED });
+      // gambaran lengkap dari nol: bagian yang terpotong
+      if (t > 0.58) { const x0 = 1040, y0 = 160, w0 = 760, h0 = 640; card(ctx, x0, y0, w0, h0, { fill: "#FFFFFF", stroke: "#D7E2DC", lw: 3, r: 22 });
+        text(ctx, "BATANG YANG UTUH", x0 + w0 / 2, y0 + 50, 28, { align: "center", weight: 900, color: C.accentDark });
+        const base = y0 + h0 - 70, top = y0 + 110, sc = v => base - v / 3.6 * (base - top), cut = sc(3);
+        [["Kelas 7", 3.2], ["Kelas 8", 3.5]].forEach(([lab, v], i) => { const bx = x0 + 170 + i * 280, bw = 150;
+          ctx.fillStyle = "#E8EDF0"; ctx.fillRect(bx, cut, bw, base - cut); ctx.strokeStyle = "#B9C7CF"; ctx.setLineDash([8, 6]); ctx.lineWidth = 2; ctx.strokeRect(bx, cut, bw, base - cut); ctx.setLineDash([]);
+          ctx.fillStyle = RED; ctx.fillRect(bx, sc(v), bw, cut - sc(v)); text(ctx, lab, bx + bw / 2, base + 40, 24, { align: "center", weight: 800 }); text(ctx, G.fmt(v, 1), bx + bw / 2, sc(v) - 12, 24, { align: "center", weight: 900 }); });
+        ctx.strokeStyle = RED; ctx.lineWidth = 3; ctx.setLineDash([12, 8]); ctx.beginPath(); ctx.moveTo(x0 + 120, cut); ctx.lineTo(x0 + w0 - 40, cut); ctx.stroke(); ctx.setLineDash([]);
+        text(ctx, "3", x0 + 100, cut + 8, 24, { align: "right", weight: 800, color: RED }); text(ctx, "0", x0 + 100, base + 8, 24, { align: "right", weight: 800 });
+        ctx.fillStyle = C.ink2; ctx.fillRect(x0 + 120, base, w0 - 160, 3);
+        if (t > 0.7) { card(ctx, x0 + 200, cut + 120, 360, 110, { fill: "#FFFFFF", stroke: "#9AA8B1", lw: 2, r: 14 }); para(ctx, "bagian ini dipotong dan tidak terlihat", x0 + 380, cut + 162, 23, 320, { align: "center", weight: 800, color: C.ink2, lh: 1.25 }); } }
+    },
+    tipu_angka(ctx, b, l) {
+      const t = l / spanOf(b);
+      card(ctx, 160, 150, 1600, 660);
+      text(ctx, "ANGKA ASLINYA", 960, 230, 32, { align: "center", weight: 900, color: C.accentDark });
+      [["Kelas 7", "3,2", 0.08], ["Kelas 8", "3,5", 0.45]].forEach(([k, v, t0], i) => { if (t < t0) return; const x = 300 + i * 460;
+        card(ctx, x, 290, 400, 280, { fill: C.bg2, r: 22 }); text(ctx, k, x + 200, 350, 34, { align: "center", weight: 800, color: C.ink2 });
+        text(ctx, v, x + 200, 470, 110, { align: "center", weight: 900 }); text(ctx, "murid telat per hari", x + 200, 535, 24, { align: "center", weight: 700, color: C.ink2 }); });
+      if (t > 0.72) { card(ctx, 1220, 290, 420, 280, { fill: C.goodBg, stroke: GREEN, lw: 4, r: 22 }); text(ctx, "Selisih", 1430, 350, 34, { align: "center", weight: 800, color: GREEN });
+        text(ctx, "0,3", 1430, 470, 110, { align: "center", weight: 900, color: GREEN }); text(ctx, "murid per hari", 1430, 535, 24, { align: "center", weight: 700, color: C.ink2 }); }
+      if (t > 0.85) text(ctx, "3,5 jauh dari dua kali 3,2.", 960, 680, 34, { align: "center", weight: 900, color: RED });
+    },
+    tipu_perbaiki(ctx, b, l) {
+      const span = spanOf(b), t = l / span;
+      const tabS = t > 0.3, secS = t > 0.5; const typing = t > 0.74 && t < 0.88; const done = t >= 0.88;
+      const yMin = done ? lerp(3, 0, ease(clamp((t - 0.88) / 0.12, 0, 1))) : 3;
+      const st = !tabS ? setup("Batang", { range: "A1:B3", x: "Kelas", y: "Telat" }) : !secS ? custom({ title: "Rata-rata murid telat per hari" })
+        : custom({ sec: "sumbu", min: done ? "0" : typing ? "" : "3", focus: t > 0.68 ? "min" : null, caret: Math.floor(l * 2.4) % 2 === 0, hot: t > 0.6 && t < 0.74 ? "min" : null, yt: "Murid" });
+      const o = app(ctx, { title: "Data Telat — Lembar Kerja", cells: T_TELAT, chart: { ...S_TELAT, yMin, yMax: done && yMin < 2.9 ? 4 : 3.6, yStep: yMin < 2.9 ? 0.5 : 0.1, title: "Rata-rata murid telat per hari", yTitle: "Murid", sel: true }, panel: st });
+      if (!done && t > 0.05) ring(ctx, o.chart.plot.x - 30, o.chart.ticks[0].y, 28);
+      steps(ctx, "LANGKAH", ["Klik tab Sesuaikan.", "Buka Sumbu tegak.", "Minimum: ganti 3 menjadi 0."], stepAt(t, [0.32, 0.52, 0.9]));
+      const tb = panelGeo(ctx, setup("Batang")).tab("Sesuaikan"), sc = panelGeo(ctx, custom({})).row("Sumbu tegak"), mn = panelGeo(ctx, custom({ sec: "sumbu" })).row("Batas sumbu").a;
+      cur(ctx, track(l, [[0, 900, 760], [0.3 * span, tb.x, tb.y + 4, 1], [0.5 * span, sc.cx, sc.cy, 1], [0.68 * span, mn.x + mn.w - 30, mn.cy, 1], [0.82 * span, 1020, 800]]));
+    },
+    tipu_jujur(ctx, b, l) {
+      const t = l / spanOf(b);
+      chartCard(ctx, 140, 136, 780, 600, "SEBELUM: MENIPU ✗", { ...S_TELAT, yMin: 3, yMax: 3.6, yStep: 0.1, title: "Rata-rata murid telat per hari", dataLabels: true, s: 0.9 }, RED);
+      chartCard(ctx, 1000, 136, 780, 600, "SESUDAH: JUJUR ✓", { ...S_TELAT, color: GREEN, yMin: 0, yMax: 4, yStep: 0.5, title: "Rata-rata murid telat per hari", dataLabels: true, s: 0.9, grow: clamp(l / 1.2, 0, 1) }, GREEN);
+      if (t > 0.45) { const s2 = t > 0.72 ? "Klaim di grup kelas: tidak terbukti." : "Selisih kecil tampak kecil."; card(ctx, 560, 752, 800, 66, { fill: t > 0.72 ? C.ink : GREEN, r: 18 }); text(ctx, s2, 960, 796, 30, { align: "center", weight: 900, color: "#FFFFFF" }); }
+    },
+    tipu_otomatis(ctx, b, l) {
+      const t = l / spanOf(b);
+      const o = app(ctx, { title: "Data Telat — Lembar Kerja", cells: T_TELAT, chart: { ...S_TELAT, yMin: 3, yMax: 3.6, yStep: 0.1, title: "Rata-rata murid telat per hari", yTitle: "Murid", sel: true },
+        panel: custom({ sec: "sumbu", min: "Otomatis", minAuto: true, hot: t > 0.1 && t < 0.6 ? "min" : null, yt: "Murid" }) });
+      if (t > 0.1) L.callout(ctx, 1470, 200, "Otomatis bisa memilih 3, bukan 0.", null, null, { size: 24, maxW: 320, fill: "#FDF1F0", color: RED });
+      if (t > 0.62) { ring(ctx, o.chart.plot.x - 30, o.chart.ticks[0].y, 30); card(ctx, 1470, 340, 360, 230, { fill: "#FFFFFF", stroke: C.accent, lw: 4, r: 18 });
+        text(ctx, "SEBELUM DIBAGIKAN", 1650, 388, 24, { align: "center", weight: 900, color: C.accentDark }); para(ctx, "Periksa angka paling bawah di sumbu tegak: harus 0.", 1650, 440, 26, 310, { align: "center", weight: 800, lh: 1.3 }); }
+    },
+    coba(ctx, b, l, t, TL) {
+      card(ctx, 160, 140, 1600, 680, { stroke: C.accent, lw: 6 });
+      ctx.fillStyle = C.accent; ctx.beginPath(); ctx.arc(330, 270, 66, 0, Math.PI * 2); ctx.fill();
+      ctx.fillStyle = "#FFFFFF"; rr(ctx, 302, 238, 19, 64, 6); ctx.fill(); rr(ctx, 339, 238, 19, 64, 6); ctx.fill();
+      text(ctx, "COBA SEKARANG", 430, 260, 44, { weight: 900, color: C.accentDark }); text(ctx, "Hentikan video, kerjakan, lalu putar lagi.", 430, 306, 28, { weight: 700, color: C.ink2 });
+      (b.coba || []).forEach((s, i) => { card(ctx, 220, 370 + i * 104, 780, 86, { fill: C.bg2, r: 16 }); text(ctx, String(i + 1), 266, 424 + i * 104, 34, { align: "center", weight: 900, color: C.kiko }); text(ctx, s, 306, 423 + i * 104, 27, { weight: 700, fit: 680 }); });
+      text(ctx, "Hasil yang dituju", 1060, 214, 24, { weight: 900, color: C.ink2 });
+      G.chart(ctx, 1060, 236, 640, 540, { ...S_MENU, ...FULL });
+    },
+    masalah_label(ctx, b, l) {
+      const t = l / spanOf(b);
+      chartCard(ctx, 140, 140, 800, 680, "✗ HANYA B1:B5 DIPILIH", { type: "batang", labels: ["1", "2", "3", "4"], values: S_MENU.values, title: "Porsi", grow: clamp((t - 0.3) / 0.2, 0, 1) }, RED);
+      if (t > 0.6) L.callout(ctx, 330, 300, "Ini menu apa?", 540, 740, { size: 26, fill: "#FDF1F0", color: RED });
+      if (t > 0.86) chartCard(ctx, 980, 140, 800, 680, "✓ A1:B5 DIPILIH", { ...S_MENU, title: "Porsi", grow: clamp((t - 0.86) / 0.15, 0, 1) }, GREEN);
+      else { card(ctx, 980, 140, 800, 680, { fill: "#F7FAF8", stroke: "#D7E2DC", lw: 3, r: 22 }); text(ctx, "Pilih juga kolom nama menunya.", 1380, 480, 30, { align: "center", weight: 800, color: C.muted }); }
+    },
+    periksa(ctx, b, l) {
+      const t = l / spanOf(b);
+      app(ctx, { cells: T_MENU, chart: { ...S_MENU, ...FULL } });
+      const items = ["Jenis cocok", "Ada judul", "Label sumbu + satuan", "Sumbu tegak dari 0", "Sumber ditulis"], marks = [0.3, 0.41, 0.5, 0.74, 0.94];
+      card(ctx, 1470, 150, 360, 110 + items.length * 84, { fill: "#FFFFFF", stroke: "#D7E2DC", lw: 3, r: 18 });
+      text(ctx, "PERIKSA 5 HAL", 1650, 200, 24, { align: "center", weight: 900, color: C.accentDark });
+      items.forEach((s, i) => { const on = t > marks[i]; const y = 228 + i * 84;
+        ctx.fillStyle = on ? C.goodBg : "#F4F6F5"; rr(ctx, 1490, y, 320, 70, 12); ctx.fill();
+        text(ctx, s, 1508, y + 44, 23, { weight: 800, color: on ? C.ink : C.ink2 }); if (on) text(ctx, "✓", 1790, y + 46, 30, { align: "right", weight: 900, color: GREEN }); });
+      // penanda pada grafik
+      const g = { x: CH.x, y: CH.y, w: CH.w, h: CH.h }; const mk = [[0.41, g.x + g.w / 2, g.y + 34, 200], [0.5, g.x + 24, g.y + g.h / 2, 30], [0.74, g.x + 72, g.y + g.h - 108, 26], [0.94, g.x + g.w / 2, g.y + 82, 170]];
+      mk.forEach(([t0, x, y, r]) => { if (t > t0 && t < t0 + 0.2) { ctx.strokeStyle = C.accent; ctx.lineWidth = 4; ctx.beginPath(); ctx.ellipse(x, y, r, 26, 0, 0, Math.PI * 2); ctx.stroke(); } });
+    },
+    latihan(ctx, b, l) {
+      card(ctx, 160, 150, 1600, 660);
+      text(ctx, "BERLATIH LAGI", 960, 230, 32, { align: "center", weight: 900, color: C.accentDark });
+      card(ctx, 300, 290, 640, 400, { fill: C.bg2, r: 22 }); text(ctx, "Halaman latihan D8.1", 620, 360, 34, { align: "center", weight: 900 });
+      text(ctx, "lembar kerja mini", 620, 410, 28, { align: "center", weight: 700, color: C.ink2 });
+      card(ctx, 360, 450, 520, 70, { fill: "#FFFFFF", r: 12 }); text(ctx, "belajar-informatika.vercel.app/d81", 620, 496, 26, { align: "center", weight: 800, color: C.kikoDark });
+      text(ctx, "pilih grafik yang tepat", 620, 600, 26, { align: "center", weight: 700, color: C.ink2 });
+      card(ctx, 1000, 290, 620, 400, { fill: "#FFF9E0", r: 22 }); text(ctx, "Tugas nyata", 1310, 360, 34, { align: "center", weight: 900 });
+      para(ctx, "Buat grafik dari data kelasmu sendiri, lalu periksa lima hal: jenis, judul, label dan satuan, sumbu dari 0, sumber.", 1310, 420, 28, 540, { align: "center", weight: 700, lh: 1.3 });
+      kiko(ctx, 1650, 720, 100, 0, { wave: l });
+    }
+  });
+})(typeof window !== "undefined" ? window : globalThis);
+</script>
+<script>window.__YT = [];
+const YT_CHANNEL = "https://www.youtube.com/@iteachswe";   // channel YouTube Bu Dewi (video lengkap seri ini)
+/* Inti halaman latihan: pemutar (kanvas + narasi), tombol suara nyala/mati (berpindah antara timeline suara dan teks),
+   kuis dengan petunjuk, dan kemajuan di localStorage (perangkat ini saja).
+   Pakai:  const P = PageCore({ suara: TIMELINE_SUARA_atau_null, teks: TIMELINE_TEKS });
+   Episode menambahkan latihannya sendiri lewat P.$, P.K, P.H, P.progress, P.save(), P.speed(), P.onProgress(fn). */
+function PageCore(TLS, opt = {}) {
+  const $ = id => document.getElementById(id);
+  const K = Kiko, H = K.helpers;
+  let voice = !!TLS.suara; let TL = voice ? TLS.suara : TLS.teks;
+  // ---------- progress storage (per device only) ----------
+  const KEY = opt.key || TL.episode.replace(/\./g, "").toLowerCase() + "-progress";   // D7.5 -> "d75-progress"
+  let progress = { quiz: {} };
+  try { const s = localStorage.getItem(KEY); if (s) progress = { quiz: {}, ...JSON.parse(s) }; } catch (e) {}
+  const extras = [];
+  function renderProgress() {
+    const el = $("progress"); if (!el) return; el.innerHTML = "";
+    Object.keys(TL.quizzes).forEach((id, i) => { const s = document.createElement("span"); s.textContent = "Cek " + (i + 1); s.className = progress.quiz[id] ? "ok" : ""; el.appendChild(s); });
+    extras.forEach(f => f(el));
+  }
+  function save() { try { localStorage.setItem(KEY, JSON.stringify(progress)); } catch (e) {} renderProgress(); }
+
+  // ---------- player ----------
+  const cv = $("screen"), ctx = cv.getContext("2d");
+  let t = 0, playing = false, last = 0, speed = 1, hasAudio = false;
+  const nar = $("nar"); nar.addEventListener("canplay", () => { hasAudio = true; }); nar.addEventListener("error", () => { hasAudio = false; });
+  function fmt(s) { s = Math.max(0, Math.floor(s)); return Math.floor(s / 60) + ":" + String(s % 60).padStart(2, "0"); }
+  function segStart(i) { return TL.beats.find(b => b.seg === i).start; }
+  function syncAudio() { if (voice && hasAudio) { try { nar.currentTime = t; } catch (e) {} } }
+  function drawNow() {
+    const b = K.draw(ctx, Math.min(t, TL.total - 0.01), TL);
+    $("barfill").style.width = (t / TL.total * 100) + "%"; $("bar").setAttribute("aria-valuenow", Math.round(t / TL.total * 100));
+    $("timelabel").textContent = fmt(t) + " / " + fmt(TL.total);
+    [...$("chapters").children].forEach((c, i) => c.classList.toggle("now", i === b.seg));
+    return b;
+  }
+  function loop(now) {
+    if (!playing) return;
+    const dt = Math.min(0.1, (now - last) / 1000); last = now; if (voice && hasAudio && !nar.paused) t = nar.currentTime; else t += dt * speed;
+    if (t >= TL.total) { t = TL.total - 0.01; setPlaying(false); }
+    drawNow(); requestAnimationFrame(loop);
+  }
+  function setPlaying(p) {
+    playing = p; $("bigplay").hidden = p; $("playbtn").textContent = p ? "❚❚ Jeda" : "▶ Putar";
+    if (p) { last = performance.now(); if (voice && hasAudio) { try { nar.currentTime = t; nar.playbackRate = speed; nar.play().catch(() => {}); } catch (e) {} } requestAnimationFrame(loop); } else nar.pause();
+  }
+  $("bigplay").addEventListener("click", () => setPlaying(true));
+  $("playbtn").addEventListener("click", () => setPlaying(!playing));
+  $("replay").addEventListener("click", () => { const b = K.beatAt(TL, t); t = segStart(b.seg); syncAudio(); drawNow(); setPlaying(true); });
+  $("slow").addEventListener("click", e => { speed = speed === 1 ? 0.8 : 1; nar.playbackRate = speed; e.currentTarget.setAttribute("aria-pressed", speed !== 1); });
+  function seekFromBar(ev) { const r = $("bar").getBoundingClientRect(); const x = (ev.touches ? ev.touches[0].clientX : ev.clientX) - r.left; t = Math.max(0, Math.min(TL.total - 0.01, x / r.width * TL.total)); syncAudio(); drawNow(); }
+  $("bar").addEventListener("click", seekFromBar);
+  $("bar").addEventListener("keydown", e => { if (e.key === "ArrowRight") { t = Math.min(TL.total - 0.01, t + 5); syncAudio(); drawNow(); } if (e.key === "ArrowLeft") { t = Math.max(0, t - 5); syncAudio(); drawNow(); } });
+  TL.segments.forEach((name, i) => { const b = document.createElement("button"); b.textContent = (i + 1) + ". " + name; b.addEventListener("click", () => { t = segStart(i); syncAudio(); drawNow(); setPlaying(true); }); $("chapters").appendChild(b); });
+  // voice on/off: switches between the narrated timeline and the reading-paced one, staying on the same beat
+  const vb = $("voice");
+  function setVoice(on) {
+    const cur = K.beatAt(TL, t);
+    voice = on && !!TLS.suara; TL = voice ? TLS.suara : TLS.teks;
+    const nb = TL.beats.find(b => b.id === cur.id) || TL.beats[0]; t = nb.start;
+    if (vb) { vb.setAttribute("aria-pressed", voice); vb.textContent = voice ? "🔊 Suara: nyala" : "🔇 Suara: mati"; }
+    if (playing) { if (voice && hasAudio) { try { nar.currentTime = t; nar.playbackRate = speed; nar.play().catch(() => {}); } catch (e) {} } else nar.pause(); }
+    drawNow();
+  }
+  if (vb) { if (!TLS.suara || !TLS.teks) vb.hidden = true; else { vb.addEventListener("click", () => setVoice(!voice)); vb.setAttribute("aria-pressed", voice); vb.textContent = voice ? "🔊 Suara: nyala" : "🔇 Suara: mati"; } }
+  drawNow();
+
+  // ---------- quiz ----------
+  const quizEl = $("quiz");
+  if (quizEl) Object.entries(TL.quizzes).forEach(([id, q], qi) => {
+    const box = document.createElement("div"); box.className = "q";
+    box.innerHTML = `<h3>${qi + 1}. ${q.q}</h3><div class="opts"></div><div class="fb"></div>`;
+    const opts = box.querySelector(".opts"), fb = box.querySelector(".fb");
+    q.options.forEach((o, i) => {
+      const b = document.createElement("button"); b.innerHTML = `<b>${"ABC"[i]}</b><span>${o}</span>`;
+      b.addEventListener("click", () => {
+        [...opts.children].forEach(c => c.classList.remove("wrong"));
+        if (i === q.answer) { b.classList.add("right"); fb.className = "fb good"; fb.textContent = "Benar! " + (q.explain || ""); progress.quiz[id] = true; save(); [...opts.children].forEach(c => c.disabled = true); }
+        else { b.classList.add("wrong"); fb.className = "fb bad"; fb.textContent = "Belum tepat. Petunjuk: " + q.hint; }
+      });
+      opts.appendChild(b);
+    });
+    if (progress.quiz[id]) { opts.children[q.answer].classList.add("right"); [...opts.children].forEach(c => c.disabled = true); fb.className = "fb good"; fb.textContent = "Sudah dijawab benar."; }
+    quizEl.appendChild(box);
+  });
+  renderProgress();
+
+  // video YouTube (bila alamatnya sudah diisi di youtube_id.json): pemutar utama di atas; animasi tetap ada untuk luring
+  try {
+    const YTL = (typeof window !== "undefined" && window.__YT) || [];
+    const pl = document.querySelector("section.player");
+    if (YTL.length && pl && !document.getElementById("yt-video")) {
+      const sec = document.createElement("section"); sec.className = "card yt-video"; sec.id = "yt-video"; sec.setAttribute("aria-label", "Video YouTube");
+      const h = document.createElement("h2"); h.textContent = "Video"; sec.appendChild(h);
+      let row = null;
+      if (YTL.length > 1) { row = document.createElement("div"); row.className = "row"; sec.appendChild(row); }
+      const box = document.createElement("div"); box.className = "yt-frame"; sec.appendChild(box);
+      const show = (i) => {
+        box.innerHTML = "";
+        const f = document.createElement("iframe");
+        f.src = "https://www.youtube-nocookie.com/embed/" + YTL[i].id + "?rel=0";
+        f.title = "Video " + YTL[i].part; f.loading = "lazy"; f.allowFullscreen = true;
+        f.setAttribute("allow", "accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share");
+        box.appendChild(f);
+        if (row) [...row.children].forEach((b, j) => b.setAttribute("aria-pressed", String(j === i)));
+      };
+      if (row) YTL.forEach((x, i) => { const b = document.createElement("button"); b.textContent = "Bagian " + (i + 1); b.addEventListener("click", () => show(i)); row.appendChild(b); });
+      const note = document.createElement("p"); note.className = "hint"; note.textContent = "Tidak ada internet? Putar animasinya di bawah; teksnya sama dan bisa dipakai tanpa internet."; sec.appendChild(note);
+      show(0);
+      pl.insertAdjacentElement("beforebegin", sec);
+      const lab = document.createElement("div"); lab.className = "eyebrow"; lab.textContent = "Animasi interaktif (bisa tanpa internet)"; pl.insertAdjacentElement("afterbegin", lab);
+    }
+  } catch (e) {}
+  // ajakan ke channel YouTube (video lengkap): kartu tepat di bawah pemutar, di semua halaman latihan dan simulasi
+  try {
+    const pl = document.querySelector("section.player");
+    if (pl && !document.getElementById("yt-ajak")) {
+      const a = document.createElement("a"); a.id = "yt-ajak"; a.className = "yt-ajak"; a.href = YT_CHANNEL; a.target = "_blank"; a.rel = "noopener";
+      a.innerHTML = '<span class="yt-ic" aria-hidden="true">▶</span><span><b>Tonton video lengkapnya di YouTube</b><small>Subscribe channel @iteachswe untuk belajar lebih banyak.</small></span>';
+      pl.insertAdjacentElement("afterend", a);
+    }
+  } catch (e) {}
+  return { $, K, H, progress, save, renderProgress, speed: () => speed, timeline: () => TL,
+           onProgress(fn) { extras.push(fn); renderProgress(); } };
+}
+</script>
+<script>
+(function () {
+  const P = PageCore({ suara: {"episode": "S04", "title": "Membuat Grafik yang Jujur", "label": "Simulasi Praktik · S04 · Lembar Kerja", "kind": "praktik", "for": ["D8.1", "D8.6", "F11.5"], "latihan": "D8.1", "hook": "membuat grafik di lembar kerja, memilih jenisnya dengan tepat, memberi judul dan label, dan memastikan sumbunya mulai dari nol.", "engine": ["../../_alat/kiko-core.js", "../../_alat/layar.js", "../../_alat/layar_grafik.js", "scenes.js"], "parts": {"S04": {"segs": [0, 1, 2, 3, 4, 5, 6]}}, "recap": ["Batang membandingkan, garis untuk waktu, lingkaran untuk bagian.", "Beri judul, label sumbu, dan satuan.", "Sumbu tegak grafik batang mulai dari nol."], "next": {"code": "S05", "title": "Membersihkan Data Terbuka dari File CSV", "note": "Simulasi praktik lembar kerja berikutnya.", "heading": "SIMULASI BERIKUTNYA"}, "youtube": {"ringkas": "Simulasi praktik langkah demi langkah di aplikasi lembar kerja: memilih rentang data, menyisipkan grafik, memilih jenis grafik yang cocok (batang, garis, atau lingkaran), memberi judul, label sumbu, dan satuan, lalu membongkar grafik yang menipu karena sumbunya tidak mulai dari nol dan memperbaikinya. Ada jeda untuk mencoba sendiri dan tiga cek pemahaman.", "belajar": ["membuat grafik dari tabel di lembar kerja", "memilih grafik batang, garis, atau lingkaran sesuai datanya", "memberi judul grafik, label sumbu, satuan, dan sumber data", "mengenali grafik yang menipu dan membuat sumbu tegak mulai dari nol"], "cari": ["cara membuat grafik di spreadsheet", "cara membuat diagram batang di lembar kerja", "grafik yang menyesatkan sumbu tidak dari nol", "memilih jenis grafik yang tepat kelas 8", "cara memberi judul dan label sumbu grafik"], "prasyarat": "episode D8.1 Lembar Kerja Pengolah Data dan simulasi S02 Tabel, Alamat Sel, dan Rumus Pertama", "tagar": ["#Grafik", "#Spreadsheet", "#LiterasiData", "#Simulasi", "#Informatika"]}, "segments": ["Pembuka", "Membuat grafik", "Memilih jenis", "Judul dan label", "Sumbu dari nol", "Coba dan periksa", "Penutup"], "quizzes": {"q1": {"q": "Kamu ingin menunjukkan bagian uang saku yang dipakai untuk makan, ongkos angkot, dan tabungan. Grafik apa yang paling tepat?", "options": ["Grafik garis", "Grafik lingkaran", "Grafik batang tanpa judul"], "answer": 1, "hint": "Semua bagiannya membentuk satu keseluruhan: uang saku."}, "q2": {"q": "Grafik batang membandingkan 48 dan 52 porsi, tetapi sumbu tegaknya mulai dari 45. Grafik ini …", "options": ["jujur, karena angkanya benar", "tidak masalah, asal berwarna", "menyesatkan, karena selisihnya tampak besar"], "answer": 2, "hint": "Bandingkan tinggi batang dengan selisih angkanya."}, "q3": {"q": "Grafikmu sudah batang, berjudul, dan sumbunya dari nol, tetapi sumbu tegaknya tanpa nama. Apa yang kurang?", "options": ["Label sumbu dan satuannya", "Warna yang lebih cerah", "Gambar tiga dimensi"], "answer": 0, "hint": "Pembaca perlu tahu apa yang dihitung."}}, "beats": [{"id": "intro1", "seg": 0, "scene": "title", "text": "Halo! Aku Kiko. Di grup kelas beredar grafik yang membuat kelas delapan tampak jauh lebih sering telat. Benarkah begitu? Hari ini kita membuat grafik sendiri, sekaligus memeriksa kejujurannya.", "hold": 0.8, "start": 0.0, "speech": 0.4, "audio": 12.503, "dur": 15.84}, {"id": "intro2", "seg": 0, "scene": "tujuan", "text": "Setelah menonton, kamu bisa membuat grafik di lembar kerja, memilih jenisnya dengan tepat, memberi judul dan label, dan memastikan sumbunya mulai dari nol.", "hold": 0.8, "start": 15.84, "speech": 16.24, "audio": 9.934, "dur": 13.34}, {"id": "intro3", "seg": 0, "scene": "prasyarat", "text": "Simulasi ini melengkapi episode D8.1 tentang grafik, proyek D8.6 tentang cek data dan cek fakta, dan episode F11.5 tentang data terbuka. Cara membuat tabel ada di simulasi S02.", "hold": 0.8, "start": 29.18, "speech": 29.58, "audio": 15.643, "dur": 17.143}, {"id": "s1a", "seg": 1, "scene": "g_tabel", "text": "Kita mulai dari tabel penjualan kantin selama seminggu. Kolom A berisi nama menu, dan kolom B berisi jumlah porsi yang terjual. Bakso dan es teh berasal dari simulasi S02.", "hold": 1.0, "start": 46.323, "speech": 46.723, "audio": 12.554, "dur": 16.54}, {"id": "s1b", "seg": 1, "scene": "g_pilih", "text": "Pilih datanya dulu. Klik sel A1, lalu drag sampai sel B5. Baris judul ikut dipilih, supaya grafiknya langsung tahu nama setiap menu.", "hold": 1.0, "start": 62.863, "speech": 63.263, "audio": 10.248, "dur": 13.04}, {"id": "s1c", "seg": 1, "scene": "g_sisip", "text": "Klik menu Sisipkan, lalu pilih Grafik. Sebuah grafik langsung muncul, dan di sebelah kanan terbuka panel pengaturan grafik.", "hold": 1.2, "start": 75.903, "speech": 76.303, "audio": 8.087, "dur": 11.24}, {"id": "s1d", "seg": 1, "scene": "g_garis", "text": "Aplikasi menebak jenisnya, dan kali ini tebakannya grafik garis. Garis ini menghubungkan menu-menu seolah ada perubahan dari bakso ke mie ayam. Padahal kita hanya ingin membandingkannya.", "hold": 1.0, "start": 87.143, "speech": 87.543, "audio": 12.738, "dur": 15.04}, {"id": "s1e", "seg": 1, "scene": "g_batang", "text": "Buka pilihan Jenis grafik, lalu pilih grafik batang. Sekarang setiap menu punya satu batang, dan es teh langsung terlihat paling laris.", "hold": 1.2, "start": 102.183, "speech": 102.583, "audio": 9.235, "dur": 12.74}, {"id": "s2a", "seg": 2, "scene": "jenis_tiga", "text": "Ingat tiga jenis grafik ini. Batang untuk membandingkan beberapa hal. Garis untuk perubahan dari waktu ke waktu. Lingkaran hanya untuk bagian-bagian dari satu keseluruhan.", "hold": 1.2, "start": 114.923, "speech": 115.323, "audio": 11.555, "dur": 14.24}, {"id": "s2b", "seg": 2, "scene": "jenis_garis", "text": "Contohnya, penjualan es teh dari Senin sampai Jumat berubah setiap hari. Data seperti ini cocok untuk grafik garis, karena naik turunnya langsung terlihat.", "hold": 1.2, "start": 129.163, "speech": 129.563, "audio": 10.671, "dur": 13.74}, {"id": "s2c", "seg": 2, "scene": "jenis_lingkaran", "text": "Lalu cara empat puluh murid berangkat ke sekolah. Kalau semua bagiannya dijumlahkan, hasilnya seratus persen. Inilah data yang cocok untuk grafik lingkaran.", "hold": 1.2, "start": 142.903, "speech": 143.303, "audio": 9.948, "dur": 13.24}, {"id": "q1", "seg": 2, "scene": "quiz", "quiz": "q1", "text": "Cek pemahaman. Kamu ingin menunjukkan bagian uang saku yang dipakai untuk makan, ongkos angkot, dan tabungan. Grafik apa yang paling tepat? Pikirkan dulu.", "hold": 4.0, "start": 156.143, "speech": 156.543, "audio": 10.498, "dur": 16.54}, {"id": "q1a", "seg": 2, "scene": "quiz_answer", "quiz": "q1", "text": "Jawabannya: grafik lingkaran. Makan, ongkos, dan tabungan adalah bagian-bagian dari satu keseluruhan, yaitu uang sakumu.", "hold": 1.0, "start": 172.683, "speech": 173.083, "audio": 9.07, "dur": 10.77}, {"id": "s3a", "seg": 3, "scene": "label_judul", "text": "Kembali ke grafik batang penjualan. Grafik tanpa judul membuat pembaca menebak-nebak. Buka tab Sesuaikan, lalu ketik judulnya: Penjualan Menu Kantin Seminggu.", "hold": 1.0, "start": 183.453, "speech": 183.853, "audio": 10.681, "dur": 12.54}, {"id": "s3b", "seg": 3, "scene": "label_sumbu", "text": "Beri juga nama pada kedua sumbu. Sumbu datar diberi nama Menu, dan sumbu tegak diberi nama Jumlah porsi. Kata porsi adalah satuannya, jadi pembaca tahu apa yang dihitung.", "hold": 1.2, "start": 195.993, "speech": 196.393, "audio": 12.386, "dur": 16.24}, {"id": "s3c", "seg": 3, "scene": "label_data", "text": "Nyalakan label data, supaya angka setiap batang terlihat. Lalu tulis sumber datanya sebagai subjudul: catatan kantin, Senin sampai Jumat.", "hold": 1.2, "start": 212.233, "speech": 212.633, "audio": 9.655, "dur": 11.74}, {"id": "s4a", "seg": 4, "scene": "tipu_grup", "text": "Sekarang kita lihat grafik dari grup kelas tadi. Batang kelas delapan tampak dua kali lebih tinggi daripada kelas tujuh. Menurutmu, apakah kelas delapan memang dua kali lebih sering telat?", "hold": 2.5, "start": 223.973, "speech": 224.373, "audio": 11.637, "dur": 18.04}, {"id": "s4b", "seg": 4, "scene": "tipu_sumbu", "text": "Lihat angka paling bawah di sumbu tegaknya. Sumbu itu tidak mulai dari nol, melainkan dari tiga. Bagian bawah batang terpotong, sehingga selisih yang kecil tampak sangat besar.", "hold": 1.2, "start": 242.013, "speech": 242.413, "audio": 11.957, "dur": 15.74}, {"id": "s4c", "seg": 4, "scene": "tipu_angka", "text": "Angka aslinya: kelas tujuh tiga koma dua murid telat per hari, dan kelas delapan tiga koma lima. Selisihnya hanya nol koma tiga murid per hari.", "hold": 1.2, "start": 257.753, "speech": 258.153, "audio": 9.667, "dur": 14.74}, {"id": "s4d", "seg": 4, "scene": "tipu_perbaiki", "text": "Kita perbaiki di lembar kerja. Buka tab Sesuaikan, pilih bagian Sumbu tegak, lalu ubah Minimum dari tiga menjadi nol.", "hold": 1.0, "start": 272.493, "speech": 272.893, "audio": 8.244, "dur": 11.54}, {"id": "s4e", "seg": 4, "scene": "tipu_jujur", "text": "Sekarang kedua batang hampir sama tinggi. Inilah gambar yang jujur: selisih kecil tampak kecil. Klaim di grup kelas tadi ternyata tidak terbukti.", "hold": 1.5, "start": 284.033, "speech": 284.433, "audio": 10.48, "dur": 13.54}, {"id": "s4f", "seg": 4, "scene": "tipu_otomatis", "text": "Hati-hati, kadang aplikasi sendiri memilih sumbu yang tidak mulai dari nol saat angkanya berdekatan. Jadi, selalu periksa angka paling bawah di sumbu tegak sebelum membagikan grafik.", "hold": 1.2, "start": 297.573, "speech": 297.973, "audio": 12.164, "dur": 15.24}, {"id": "q2", "seg": 4, "scene": "quiz", "quiz": "q2", "text": "Cek pemahaman. Grafik batang membandingkan empat puluh delapan dan lima puluh dua porsi, tetapi sumbu tegaknya mulai dari empat puluh lima. Bagaimana grafik ini? Pikirkan dulu.", "hold": 4.0, "start": 312.813, "speech": 313.213, "audio": 11.812, "dur": 18.04}, {"id": "q2a", "seg": 4, "scene": "quiz_answer", "quiz": "q2", "text": "Jawabannya: menyesatkan. Selisihnya hanya empat porsi, tetapi batang kedua tampak dua kali lebih tinggi. Mulailah sumbu tegak grafik batang dari nol.", "hold": 1.0, "start": 330.853, "speech": 331.253, "audio": 10.596, "dur": 12.54}, {"id": "coba1", "seg": 5, "scene": "coba", "text": "Sekarang giliranmu. Hentikan dulu videonya, buat grafik batang dari tabel penjualan, beri judul dan label sumbu, lalu pastikan sumbunya mulai dari nol. Putar lagi kalau sudah selesai.", "hold": 3.0, "coba": ["Pilih A1:B5, lalu Sisipkan → Grafik.", "Ganti jenisnya menjadi Batang.", "Isi judul, label sumbu, dan satuan.", "Periksa: sumbu tegak mulai dari 0."], "start": 343.393, "speech": 343.793, "audio": 12.59, "dur": 17.54}, {"id": "s5a", "seg": 5, "scene": "masalah_label", "text": "Kesalahan lain yang sering terjadi: hanya kolom angka yang dipilih. Batangnya muncul, tetapi namanya hanya satu, dua, tiga, empat. Pilih juga kolom nama menunya.", "hold": 1.2, "start": 360.933, "speech": 361.333, "audio": 11.894, "dur": 14.24}, {"id": "s5b", "seg": 5, "scene": "periksa", "text": "Sebelum membagikan grafik, periksa lima hal: jenisnya cocok, ada judul, kedua sumbu punya label dan satuan, sumbu tegak mulai dari nol, dan sumbernya ditulis.", "hold": 2.5, "start": 375.173, "speech": 375.573, "audio": 11.822, "dur": 15.54}, {"id": "q3", "seg": 5, "scene": "quiz", "quiz": "q3", "text": "Cek pemahaman. Grafikmu sudah batang, berjudul, dan sumbunya mulai dari nol, tetapi sumbu tegaknya tanpa nama. Apa yang masih kurang? Pikirkan dulu.", "hold": 4.0, "start": 390.713, "speech": 391.113, "audio": 11.76, "dur": 16.46}, {"id": "q3a", "seg": 5, "scene": "quiz_answer", "quiz": "q3", "text": "Jawabannya: label sumbu dan satuannya. Tanpa label, pembaca tidak tahu apakah angkanya porsi, rupiah, atau murid.", "hold": 1.0, "start": 407.173, "speech": 407.573, "audio": 8.886, "dur": 10.586}, {"id": "recap", "seg": 6, "scene": "recap", "text": "Tiga hal untuk diingat. Pilih jenis yang cocok: batang untuk membandingkan, garis untuk waktu, lingkaran untuk bagian. Beri judul, label sumbu, dan satuan. Sumbu tegak grafik batang mulai dari nol.", "hold": 1.5, "start": 417.759, "speech": 418.159, "audio": 14.653, "dur": 17.54}, {"id": "latihan", "seg": 6, "scene": "latihan", "text": "Di halaman latihan episode D8.1 ada latihan memilih grafik yang tepat. Setelah itu, buat grafik dari data kelasmu sendiri, lalu periksa dengan lima hal tadi.", "hold": 1.5, "start": 435.299, "speech": 435.699, "audio": 11.53, "dur": 15.04}, {"id": "outro", "seg": 6, "scene": "outro", "text": "Simulasi berikutnya: membersihkan data terbuka dari file CSV. Sampai jumpa!", "hold": 2.5, "start": 450.339, "speech": 450.739, "audio": 6.466, "dur": 9.666}], "total": 460.005}, teks: null });
+})();
+</script>

@@ -114,12 +114,39 @@
     text(ctx, "Perpustakaan Digital", 66, 131, 20, { weight: 900, color: "#FFFFFF" }); text(ctx, "SMA Harapan (rekaan)", 66, 154, 14, { weight: 600, color: "#D5EFE2" });
     const out = {};
     if (o.welcome) { HP.icon(ctx, "check", W / 2, 260, 60, GREEN); text(ctx, "Selamat datang, Dito!", W / 2, 340, 22, { align: "center", weight: 900 }); text(ctx, "Kamu sudah login.", W / 2, 368, 16, { align: "center", weight: 600, color: INK2 }); return out; }
-    text(ctx, o.title || "Login", 24, 210, 24, { weight: 900 });
-    out.user = B.field(ctx, 24, 226, W - 48, { label: "Nama pengguna", value: o.user, focus: o.focus === "user", caret: o.focus === "user" && !o.user, filledBy: o.filled && o.user });
-    out.pass = B.field(ctx, 24, 300, W - 48, { label: "Kata sandi", value: o.pass, password: true, eye: true, focus: o.focus === "pass", filledBy: o.filled && o.pass });
-    out.btn = HP.button(ctx, 24, 380, W - 48, 48, o.btnLabel || "Masuk", { fill: "#2E7D5B", hl: o.hlBtn, size: 19, r: 12 });
+    text(ctx, o.title || "Login", 24, 206, 24, { weight: 900 });
+    out.user = B.field(ctx, 24, 238, W - 48, { label: "Nama pengguna", value: o.user, focus: o.focus === "user", caret: o.focus === "user" && !o.user, filledBy: o.filled && o.user });
+    out.pass = B.field(ctx, 24, 310, W - 48, { label: "Kata sandi", value: o.pass, password: true, eye: true, focus: o.focus === "pass", filledBy: o.filled && o.pass });
+    out.btn = HP.button(ctx, 24, 386, W - 48, 48, o.btnLabel || "Masuk", { fill: "#2E7D5B", hl: o.hlBtn, size: 19, r: 12 });
     if (o.kb) Object.assign(out, B.kb(ctx, { suggest: o.suggest, sugHl: o.sugHl }));
     return out;
+  };
+
+  // sidik jari (garis lengkung bertumpuk; ikon HP.icon terlalu mirip ikon Wi-Fi bila besar)
+  B.finger = function (ctx, cx, cy, s, color) {
+    ctx.save(); ctx.strokeStyle = color; ctx.lineWidth = Math.max(2, s * 0.055); ctx.lineCap = "round";
+    const P = Math.PI;
+    [[0.1, 0.13, 1.0, 2.0], [0.2, 0.25, 0.8, 2.15], [0.3, 0.37, 0.95, 2.25], [0.4, 0.48, 1.1, 2.0]].forEach(([rx, ry, a0, a1], i) => {
+      ctx.beginPath(); ctx.ellipse(cx, cy + s * 0.06, rx * s, ry * s, 0, P * a0, P * a1); ctx.stroke(); });
+    ctx.beginPath(); ctx.moveTo(cx, cy - s * 0.02); ctx.lineTo(cx, cy + s * 0.3); ctx.stroke();
+    ctx.beginPath(); ctx.ellipse(cx, cy + s * 0.06, 0.2 * s, 0.25 * s, 0, P * 0.15, P * 0.45); ctx.stroke();
+    ctx.restore();
+  };
+  // lembar sidik jari (prompt biometrik dari bawah). u: masuk 0..1, fp: 0..1 pindai
+  B.fpSheet = function (ctx, o = {}) {
+    const u = ease(clamp(o.u == null ? 1 : o.u, 0, 1)); if (u <= 0) return;
+    ctx.fillStyle = `rgba(15,22,28,${0.45 * u})`; ctx.fillRect(0, 0, W, HH);
+    const y0 = lerp(HH, 430, u); ctx.fillStyle = "#FFFFFF"; rr(ctx, 0, y0, W, HH - y0 + 30, 26); ctx.fill();
+    ctx.save(); ctx.translate(0, y0 - 430);
+    text(ctx, o.title || "Isi dengan Brankas Sandi", W / 2, 478, 21, { align: "center", weight: 900 });
+    text(ctx, o.sub || "akun dito.pratama", W / 2, 504, 16, { align: "center", weight: 600, color: INK2 });
+    const fp = o.fp || 0, ok = fp >= 1;
+    ctx.fillStyle = ok ? "#DDF3E4" : VBG; ctx.beginPath(); ctx.arc(180, 584, 46, 0, Math.PI * 2); ctx.fill();
+    if (fp > 0 && fp < 1) { ctx.strokeStyle = V; ctx.lineWidth = 5; ctx.beginPath(); ctx.arc(180, 584, 46, -Math.PI / 2, -Math.PI / 2 + fp * Math.PI * 2); ctx.stroke(); }
+    if (ok) HP.icon(ctx, "check", 180, 584, 44, GREEN); else B.finger(ctx, 180, 580, 70, V);
+    text(ctx, ok ? "Berhasil" : "Sentuh sensor sidik jari", W / 2, 656, 16, { align: "center", weight: 700, color: ok ? GREEN : INK2 });
+    text(ctx, "Batal", W / 2, 700, 17, { align: "center", weight: 800, color: V });
+    ctx.restore();
   };
 
   // ---------- layar Brankas Sandi ----------
@@ -170,7 +197,7 @@
   };
   B.bioOffer = function (ctx, o = {}) {
     ctx.fillStyle = "#FFFFFF"; ctx.fillRect(0, 36, W, HH - 36);
-    ctx.fillStyle = VBG; ctx.beginPath(); ctx.arc(180, 200, 64, 0, Math.PI * 2); ctx.fill(); HP.icon(ctx, "fingerprint", 180, 200, 70, V);
+    ctx.fillStyle = VBG; ctx.beginPath(); ctx.arc(180, 200, 64, 0, Math.PI * 2); ctx.fill(); B.finger(ctx, 180, 196, 96, V);
     text(ctx, "Buka dengan sidik jari?", W / 2, 310, 23, { align: "center", weight: 900 });
     HP.para(ctx, "Kamu tidak perlu mengetik sandi induk setiap kali membuka brankas.", W / 2, 346, 16, 290, { align: "center" });
     const b = HP.button(ctx, 40, 430, 280, 52, "Nyalakan", { fill: V, hl: o.hl, size: 18 }); HP.button(ctx, 40, 494, 280, 48, "Nanti", { outline: true, ink: V, size: 17 });
@@ -182,7 +209,7 @@
     const u = o.u || 0;
     ctx.fillStyle = u >= 1 ? "rgba(46,158,91,0.9)" : "rgba(255,255,255,0.16)"; ctx.beginPath(); ctx.arc(180, 420, 52, 0, Math.PI * 2); ctx.fill();
     if (u > 0 && u < 1) { ctx.strokeStyle = "#FFFFFF"; ctx.lineWidth = 5; ctx.beginPath(); ctx.arc(180, 420, 52, -Math.PI / 2, -Math.PI / 2 + u * Math.PI * 2); ctx.stroke(); }
-    HP.icon(ctx, u >= 1 ? "check" : "fingerprint", 180, 420, 52, "#FFFFFF");
+    if (u >= 1) HP.icon(ctx, "check", 180, 420, 52, "#FFFFFF"); else B.finger(ctx, 180, 416, 76, "#FFFFFF");
     text(ctx, u >= 1 ? "Terbuka" : "Sentuh sensor sidik jari", W / 2, 506, 17, { align: "center", weight: 700, color: "#FFFFFF" });
     text(ctx, "Pakai sandi induk", W / 2, 600, 17, { align: "center", weight: 800, color: "#CFE0FF" });
   };
@@ -226,15 +253,15 @@
     const len = Math.round(o.len || 20), pass = (o.pass || B.PASS[0]).slice(0, len);
     ctx.fillStyle = "#F4F6F8"; rr(ctx, 16, 298, W - 32, 62, 14); ctx.fill();
     B.passText(ctx, pass, W / 2, 337, len > 16 ? 19 : 22);
-    B.meter(ctx, 22, 374, W - 44, B.levelOf(pass));
-    text(ctx, "Panjang", 22, 436, 17, { weight: 800 }); text(ctx, String(len) + " karakter", W - 22, 436, 17, { align: "right", weight: 800, color: V });
+    B.meter(ctx, 22, 374, W - 44, len < 10 ? 1 : len < 14 ? 2 : len < 18 ? 3 : 4);
+    text(ctx, "Panjang", 22, 428, 17, { weight: 800 }); text(ctx, String(len) + " karakter", W - 22, 428, 17, { align: "right", weight: 800, color: V });
     const t = clamp((len - 8) / 24, 0, 1), sx = 26 + t * (W - 52);
-    ctx.fillStyle = "#DDE5EA"; rr(ctx, 26, 452, W - 52, 6, 3); ctx.fill(); ctx.fillStyle = V; rr(ctx, 26, 452, sx - 26, 6, 3); ctx.fill();
-    if (o.slideHl) { ctx.fillStyle = "rgba(242,177,52,0.5)"; ctx.beginPath(); ctx.arc(sx, 455, 20, 0, Math.PI * 2); ctx.fill(); }
-    ctx.fillStyle = V; ctx.beginPath(); ctx.arc(sx, 455, 11, 0, Math.PI * 2); ctx.fill();
-    const rows = HP.list(ctx, [{ label: "Huruf besar dan kecil", toggle: true }, { label: "Angka (0–9)", toggle: true }, { label: "Simbol (!@#$)", toggle: true }], { y: 474, gap: 0 });
-    const again = HP.button(ctx, 16, 676, 140, 44, "Buat lagi", { outline: true, ink: V, hl: o.againHl, size: 16, r: 12 });
-    const use = HP.button(ctx, 166, 676, 178, 44, "Pakai sandi ini", { fill: V, hl: o.useHl, size: 16, r: 12 });
+    ctx.fillStyle = "#DDE5EA"; rr(ctx, 26, 455, W - 52, 6, 3); ctx.fill(); ctx.fillStyle = V; rr(ctx, 26, 455, sx - 26, 6, 3); ctx.fill();
+    if (o.slideHl) { ctx.fillStyle = "rgba(242,177,52,0.5)"; ctx.beginPath(); ctx.arc(sx, 458, 16, 0, Math.PI * 2); ctx.fill(); }
+    ctx.fillStyle = V; ctx.beginPath(); ctx.arc(sx, 458, 11, 0, Math.PI * 2); ctx.fill();
+    const rows = HP.list(ctx, [{ label: "Huruf besar dan kecil", toggle: true }, { label: "Angka (0–9)", toggle: true }, { label: "Simbol (!@#$)", toggle: true }], { y: 478, gap: 0 });
+    const again = HP.button(ctx, 16, 680, 140, 42, "Buat lagi", { outline: true, ink: V, hl: o.againHl, size: 16, r: 12 });
+    const use = HP.button(ctx, 166, 680, 178, 42, "Pakai sandi ini", { fill: V, hl: o.useHl, size: 16, r: 12 });
     ctx.restore();
     return { sx, again, use, rows };
   };
@@ -270,19 +297,19 @@
   B.change = function (ctx, o = {}) {
     B.browser(ctx, "game.example/akun/sandi");
     ctx.fillStyle = "#6E55A8"; ctx.fillRect(0, 98, W, 60); text(ctx, "Game Seru", 24, 136, 21, { weight: 900, color: "#FFFFFF" });
-    text(ctx, "Ganti kata sandi", 24, 196, 22, { weight: 900 });
-    B.field(ctx, 24, 214, W - 48, { label: "Sandi lama", value: "dito123", password: true, filledBy: true });
-    const nf = B.field(ctx, 24, 288, W - 48, { label: "Sandi baru", value: o.newPass ? B.PASS[2] : "", password: true, focus: !o.newPass, filledBy: !!o.newPass });
+    text(ctx, "Ganti kata sandi", 24, 192, 22, { weight: 900 });
+    B.field(ctx, 24, 222, W - 48, { label: "Sandi lama", value: "dito123", password: true, filledBy: true });
+    const nf = B.field(ctx, 24, 296, W - 48, { label: "Sandi baru", value: o.newPass ? B.PASS[2] : "", password: true, focus: !o.newPass, filledBy: !!o.newPass });
     let chip = null;
-    if (!o.newPass) { if (o.chipHl) { ctx.fillStyle = "rgba(242,177,52,0.5)"; rr(ctx, 20, 350, W - 40, 54, 16); ctx.fill(); }
-      ctx.fillStyle = VBG; rr(ctx, 24, 354, W - 48, 46, 14); ctx.fill(); HP.icon(ctx, "key", 48, 377, 18, V);
-      text(ctx, "Pakai sandi kuat dari Brankas Sandi", 68, 383, 15, { weight: 800, color: V, fit: W - 110 }); chip = { x: W / 2, y: 377 }; }
-    const save = HP.button(ctx, 24, 420, W - 48, 48, "Simpan", { fill: "#6E55A8", hl: o.saveHl, size: 18, r: 12 });
+    if (!o.newPass) { if (o.chipHl) { ctx.fillStyle = "rgba(242,177,52,0.5)"; rr(ctx, 20, 358, W - 40, 54, 16); ctx.fill(); }
+      ctx.fillStyle = VBG; rr(ctx, 24, 362, W - 48, 46, 14); ctx.fill(); HP.icon(ctx, "key", 48, 385, 18, V);
+      text(ctx, "Pakai sandi kuat dari Brankas Sandi", 68, 391, 15, { weight: 800, color: V, fit: W - 110 }); chip = { x: W / 2, y: 385 }; }
+    const save = HP.button(ctx, 24, 426, W - 48, 48, "Simpan", { fill: "#6E55A8", hl: o.saveHl, size: 18, r: 12 });
     let dlg = null; if (o.dialog) dlg = HP.dialog(ctx, { icon: "key", iconColor: V, title: "Perbarui sandi Game Seru di brankas?", buttons: ["Nanti", "Perbarui"], hl: o.updHl ? 1 : null, u: o.dialog });
     return { chip, save, dlg, nf };
   };
   // pengaturan brankas. o: tfa (bool), hl (indeks baris), tabHl
-  B.SET_ITEMS = (o = {}) => [{ section: "KEAMANAN BRANKAS" }, { label: "Buka dengan sidik jari", icon: "fingerprint", toggle: true },
+  B.SET_ITEMS = (o = {}) => [{ section: "KEAMANAN BRANKAS" }, { label: "Buka dengan sidik jari", icon: "user", toggle: true },
     { label: "Kunci otomatis", icon: "clock", value: "1 menit", arrow: true },
     { label: "Verifikasi dua langkah", icon: "shield", value: o.tfa ? "Aktif" : "Mati", valueColor: o.tfa ? GREEN : RED, arrow: true, hl: o.hl === 3 },
     { label: "Ganti sandi induk", icon: "lock", arrow: true }, { section: "DATA" }, { label: "Impor sandi", icon: "download", arrow: true }];
