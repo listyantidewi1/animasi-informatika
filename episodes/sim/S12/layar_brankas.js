@@ -243,7 +243,8 @@
   B.report = function (ctx, o = {}) {
     HP.header(ctx, "Periksa keamanan");
     const sc = Math.round(o.score == null ? 45 : o.score), col = sc >= 80 ? GREEN : sc >= 60 ? "#E0A23B" : RED;
-    HP.ring(ctx, 180, 190, 58, sc / 100, col);
+    ctx.lineWidth = 12; ctx.strokeStyle = "#E3E9EE"; ctx.beginPath(); ctx.arc(180, 190, 58, 0, Math.PI * 2); ctx.stroke();
+    ctx.strokeStyle = col; ctx.lineCap = "round"; ctx.beginPath(); ctx.arc(180, 190, 58, -Math.PI / 2, -Math.PI / 2 + Math.PI * 2 * clamp(sc / 100, 0.001, 1)); ctx.stroke(); ctx.lineCap = "butt";
     text(ctx, String(sc), 180, 204, 40, { align: "center", weight: 900, color: col }); text(ctx, "Skor keamanan dari 100", 180, 274, 15, { align: "center", weight: 700, color: INK2 });
     const reuse = o.reuse == null ? 4 : o.reuse, weak = o.weak == null ? 2 : o.weak;
     const rows = HP.list(ctx, [

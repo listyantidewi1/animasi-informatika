@@ -84,6 +84,32 @@ function PageCore(TLS, opt = {}) {
   });
   renderProgress();
 
+  // video YouTube (bila alamatnya sudah diisi di youtube_id.json): pemutar utama di atas; animasi tetap ada untuk luring
+  try {
+    const YTL = (typeof window !== "undefined" && window.__YT) || [];
+    const pl = document.querySelector("section.player");
+    if (YTL.length && pl && !document.getElementById("yt-video")) {
+      const sec = document.createElement("section"); sec.className = "card yt-video"; sec.id = "yt-video"; sec.setAttribute("aria-label", "Video YouTube");
+      const h = document.createElement("h2"); h.textContent = "Video"; sec.appendChild(h);
+      let row = null;
+      if (YTL.length > 1) { row = document.createElement("div"); row.className = "row"; sec.appendChild(row); }
+      const box = document.createElement("div"); box.className = "yt-frame"; sec.appendChild(box);
+      const show = (i) => {
+        box.innerHTML = "";
+        const f = document.createElement("iframe");
+        f.src = "https://www.youtube-nocookie.com/embed/" + YTL[i].id + "?rel=0";
+        f.title = "Video " + YTL[i].part; f.loading = "lazy"; f.allowFullscreen = true;
+        f.setAttribute("allow", "accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share");
+        box.appendChild(f);
+        if (row) [...row.children].forEach((b, j) => b.setAttribute("aria-pressed", String(j === i)));
+      };
+      if (row) YTL.forEach((x, i) => { const b = document.createElement("button"); b.textContent = "Bagian " + (i + 1); b.addEventListener("click", () => show(i)); row.appendChild(b); });
+      const note = document.createElement("p"); note.className = "hint"; note.textContent = "Tidak ada internet? Putar animasinya di bawah; teksnya sama dan bisa dipakai tanpa internet."; sec.appendChild(note);
+      show(0);
+      pl.insertAdjacentElement("beforebegin", sec);
+      const lab = document.createElement("div"); lab.className = "eyebrow"; lab.textContent = "Animasi interaktif (bisa tanpa internet)"; pl.insertAdjacentElement("afterbegin", lab);
+    }
+  } catch (e) {}
   // ajakan ke channel YouTube (video lengkap): kartu tepat di bawah pemutar, di semua halaman latihan dan simulasi
   try {
     const pl = document.querySelector("section.player");

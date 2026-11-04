@@ -135,8 +135,8 @@
       miniPage.ctx = ctx;
       laptop(ctx, 1170, 520, 250, { fn: miniPage, label: "Laptop Dito", sub: "server" });
       laptop(ctx, 1530, 520, 250, { fn: miniPage, label: "Laptop Sinta", sub: "klien" });
-      W.icon(ctx, "wifi", 1350, 300, 60, C.kiko); text(ctx, "Wi-Fi kelas yang sama", 1350, 370, 24, { align: "center", weight: 800, color: C.ink2 });
-      const u = (l * 0.5) % 1; ctx.fillStyle = C.accent; ctx.beginPath(); ctx.arc(lerp(1450, 1250, u), 440, 9, 0, 7); ctx.fill();
+      W.icon(ctx, "wifi", 1350, 230, 60, C.kiko); text(ctx, "Wi-Fi kelas yang sama", 1350, 300, 24, { align: "center", weight: 800, color: C.ink2 });
+      const u = (l * 0.5) % 1; ctx.fillStyle = C.accent; ctx.beginPath(); ctx.arc(lerp(1460, 1240, u), 330, 9, 0, 7); ctx.fill();
     },
     prasyarat(ctx, b, l) {
       card(ctx, 160, 150, 1600, 660);
@@ -183,7 +183,7 @@
       const st = sesi(f, [{ c: "dir", out: DIR, t0: 0.06, t1: 0.2, t2: 0.4 }], [cmd(CD, P0)], PD);
       const g = term(ctx, st, l);
       keys(ctx, ["Enter"], st.enter);
-      if (f > 0.45) { const bx = g.find(6, "index.html"); if (bx) { LK.focus(ctx, bx, { t: l, color: GREEN }); call(ctx, 360, "index.html ada di sini. Folder benar ✓", bx.x + bx.w, bx.y + bx.h / 2, { fill: C.goodBg, color: GREEN }); } }
+      if (f > 0.45) { const bx = g.find(7, "index.html"); if (bx) { LK.focus(ctx, bx, { t: l, color: GREEN }); call(ctx, 360, "index.html ada di sini. Folder benar ✓", bx.x + bx.w, bx.y + bx.h / 2, { fill: C.goodBg, color: GREEN }); } }
       LK.steps(ctx, "LANGKAH", ["Ketik dir, lalu Enter.", "Cari index.html."], stepAt(f, [0.2, 0.5]), { y: 560 });
     },
 
@@ -205,10 +205,10 @@
       keys(ctx, ["Enter"], st.enter);
       const i = st.rows.length - 1;
       if (f > 0.18 && typeof st.rows[i] === "string") { const bx = g.find(i, "Serving HTTP"); LK.focus(ctx, bx, { t: l, color: GREEN });
-        call(ctx, 160, "Server menyala dan menunggu permintaan.", bx.x + bx.w, bx.y + bx.h / 2, { fill: C.goodBg, color: GREEN }); }
-      if (f > 0.5) { card(ctx, 1450, 380, 370, 200, { fill: "#FDECEA", r: 18 }); text(ctx, "JANGAN DITUTUP", 1474, 424, 24, { weight: 900, color: RED });
-        para(ctx, "Tidak ada prompt baru: Terminal sedang dipakai server.", 1474, 466, 22, 330, { weight: 700, lh: 1.25 }); }
-      if (f > 0.7) { text(ctx, "0.0.0.0 berarti menerima dari", 1474, 640, 20, { weight: 700, color: C.ink2 }); text(ctx, "semua alamat laptop ini.", 1474, 668, 20, { weight: 700, color: C.ink2 }); text(ctx, "Di laptop lain bisa tertulis ::", 1474, 708, 20, { weight: 700, color: C.ink2 }); }
+        call(ctx, 600, "Server menyala dan menunggu permintaan.", bx.x + bx.w, bx.y + bx.h / 2, { fill: C.goodBg, color: GREEN }); }
+      if (f > 0.5) { card(ctx, 1450, 122, 370, 200, { fill: "#FDECEA", r: 18 }); text(ctx, "JANGAN DITUTUP", 1474, 166, 24, { weight: 900, color: RED });
+        para(ctx, "Tidak ada prompt baru: Terminal sedang dipakai server.", 1474, 208, 22, 330, { weight: 700, lh: 1.25 }); }
+      if (f > 0.7) { text(ctx, "0.0.0.0 berarti menerima dari", 1474, 380, 20, { weight: 700, color: C.ink2 }); text(ctx, "semua alamat laptop ini.", 1474, 408, 20, { weight: 700, color: C.ink2 }); text(ctx, "Di laptop lain bisa tertulis ::", 1474, 448, 20, { weight: 700, color: C.ink2 }); }
     },
     firewall(ctx, b, l) {
       const sp = spanOf(b), f = l / sp;
@@ -258,7 +258,7 @@
         LK.focus(ctx, box, { t: l, color: AMBER }); call(ctx, 160, "404 favicon.ico: browser mencari ikon kecil. Wajar.", null, null, { x: 1450, maxW: 330 }); }
       else {
         card(ctx, 1450, 122, 370, 380, { fill: "#FFFFFF", stroke: "#D7E2DC", lw: 3, r: 18 }); text(ctx, "DI BILAH ALAMAT", 1474, 166, 24, { weight: 900, color: AMBER });
-        ctx.fillStyle = "#F1F4F6"; rr(ctx, 1470, 196, 330, 52, 26); ctx.fill(); W.icon(ctx, "warn", 1496, 222, 20, RED); text(ctx, "Tidak aman", 1514, 230, 20, { weight: 700, color: RED }); text(ctx, "localhost:8000", 1628, 230, 20, { weight: 600, fit: 160 });
+        ctx.fillStyle = "#F1F4F6"; rr(ctx, 1470, 196, 330, 52, 26); ctx.fill(); W.icon(ctx, "warn", 1496, 222, 20, RED); text(ctx, "Tidak aman", 1514, 230, 20, { weight: 700, color: RED }); text(ctx, "localhost:8000", 1640, 230, 20, { weight: 600, fit: 150 });
         para(ctx, "http tidak dienkripsi. Bagikan hanya isi yang memang boleh dilihat teman, jangan data rahasia.", 1474, 300, 22, 330, { weight: 700, lh: 1.3 });
       }
     },
@@ -364,8 +364,8 @@
       const rows = HIST_SRV.concat(LOGL, LOGS, stopped ? STOP : []);
       const g = term(ctx, { rows, busy: !stopped, prompt: PD }, l, WIN, { size: 24 });
       keys(ctx, ["Ctrl", "C"], clamp((f - 0.3) / 0.14, 0, 1), 1250, 735);
-      if (f > 0.5) { const i = rows.length - 1; const bx = g.find(i, "Keyboard interrupt received"); if (bx) { LK.focus(ctx, bx, { t: l, color: GREEN }); call(ctx, 300, "Server mati.", bx.x + bx.w, bx.y + bx.h / 2, { fill: C.goodBg, color: GREEN }); } }
-      if (f > 0.7) call(ctx, 460, "Prompt kembali: Terminal siap menerima perintah lagi.", g.x + PD.length * g.cw + 30, g.y + 18 + (rows.length - g.first) * g.lh + g.lh / 2);
+      if (f > 0.5) { const i = rows.length - 1; const bx = g.find(i, "Keyboard interrupt received"); if (bx) { LK.focus(ctx, bx, { t: l, color: GREEN }); call(ctx, 520, "Server mati.", bx.x + 120, bx.y + bx.h, { x: 300, fill: C.goodBg, color: GREEN }); } }
+      if (f > 0.7) call(ctx, 620, "Prompt kembali: Terminal siap menerima perintah lagi.", g.x + 22 + PD.length * g.cw + 10, g.y + 18 + (rows.length - g.first + 1) * g.lh - 4, { x: 700, maxW: 560 });
       LK.steps(ctx, "LANGKAH", ["Klik jendela Terminal server.", "Tekan Ctrl + C.", "Prompt kembali."], stepAt(f, [0.2, 0.44, 0.72]), { y: 590 - 0 });
       LK.pointer(ctx, l, sp, [{ at: 0, x: 1300, y: 780 }, { at: 0.18, x: 900, y: 600, click: true }, { at: 0.5, x: 1000, y: 760 }]);
     },
@@ -409,7 +409,7 @@
       const g = term(ctx, { rows: [cmd(SRV, PDOC), SERV, '192.168.1.31 - - [04/Nov/2026 09:30:12] "GET / HTTP/1.1" 200 -'], busy: true, prompt: PDOC }, l, LEFT, { size: SZ2 });
       browser(ctx, RIGHT, { tab: "Directory listing for /", url: "192.168.1.23:8000", draw: a => listing(ctx, a, LIST_DOC, 0.9) }, l);
       if (l > A * 0.55) { const bx = g.find(0, "Documents"); LK.focus(ctx, bx, { t: l, color: RED }); call(ctx, 440, "Prompt: Documents, bukan halaman-kelas.", bx.x + bx.w / 2, bx.y + bx.h, { x: 170, maxW: 600, fill: "#FDECEA", color: RED }); }
-      if (l > A * 0.3) call(ctx, 620, "Daftar file, bukan jadwal piket.", 1250, 360, { x: 1100, maxW: 600, fill: "#FDECEA", color: RED });
+      if (l > A * 0.3) call(ctx, 620, "Daftar file, bukan jadwal piket.", 1250, 296, { x: 1100, maxW: 600, fill: "#FDECEA", color: RED });
     },
     latihan(ctx, b, l) {
       card(ctx, 160, 150, 1600, 660);
@@ -420,7 +420,7 @@
       text(ctx, "ikuti paket dari HP sampai ke server", 620, 600, 23, { align: "center", weight: 700, color: C.ink2 });
       card(ctx, 1000, 290, 620, 400, { fill: "#FFF9E0", r: 22 }); text(ctx, "Tugas nyata", 1310, 360, 34, { align: "center", weight: 900 });
       para(ctx, "Dengan izin guru, bagikan halaman buatanmu ke teman, lalu catat log-nya.", 1310, 420, 29, 540, { align: "center", weight: 700, lh: 1.3 });
-      LK.mono(ctx, 17, 600); ctx.fillStyle = C.ink; LK.monoText(ctx, '192.168.1.31 - - "GET / HTTP/1.1" 200 -', 1060, 600);
+      LK.mono(ctx, 19, 700); ctx.fillStyle = C.ink; LK.monoText(ctx, '192.168.1.31 "GET / HTTP/1.1" 200', 1100, 610);
       kiko(ctx, 1650, 720, 100, 0, { wave: l });
     }
   });

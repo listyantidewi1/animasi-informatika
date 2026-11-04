@@ -11,6 +11,20 @@ suara = E.load_timeline(ROOT, "suara") if E.has_variant(ROOT, "suara") else None
 if not teks and not suara: raise SystemExit("belum ada timeline: jalankan timing.py dan/atau voice.py dulu")
 css = open(os.path.join(E.ALAT, "page-core.css"), encoding="utf-8").read()
 js = open(os.path.join(E.ALAT, "page-core.js"), encoding="utf-8").read()
+
+
+def yt_id(v):
+    """Link YouTube (youtu.be/…, watch?v=…, shorts/…, embed/…) atau ID 11 karakter -> ID; selain itu kosong."""
+    import re
+    m = re.search(r"(?:youtu\.be/|v=|shorts/|embed/|live/)([A-Za-z0-9_-]{11})", v or "") or re.fullmatch(r"([A-Za-z0-9_-]{11})", (v or "").strip())
+    return m.group(1) if m else ""
+
+
+YTMAP = E.load_json(os.path.join(E.ALAT, "youtube_id.json")) if os.path.exists(os.path.join(E.ALAT, "youtube_id.json")) else {}
+_parts = list(script.get("parts", {}).keys()) or [script["episode"]]
+YT = [{"part": k, "id": yt_id(YTMAP.get(k, ""))} for k in _parts]
+YT = [x for x in YT if x["id"]]
+js = "window.__YT = " + json.dumps(YT) + ";\n" + js   # video YouTube halaman ini (kosong = pemutar animasi saja)
 SIM = "for" in script and not os.path.exists(os.path.join(ROOT, "page.html"))   # video simulasi: halaman pemutar bersama
 if SIM: teks = None   # simulasi hanya versi bersuara
 
