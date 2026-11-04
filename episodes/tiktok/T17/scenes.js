@@ -54,7 +54,7 @@
         chunk(ctx, lerp(sx, tx, k), lerp(sy, ty, k) - Math.sin(k * Math.PI) * 80, 76, i);
       }
       const ub = pop(b, l, "buffer");
-      if (ub > 0) { ctx.save(); ctx.translate(bx + bw / 2, by + 230); ctx.scale(ub, ub); pill(ctx, "potongan berikutnya sudah siap", 0, 0, 34, { fill: C.panel2, color: C.ink }); ctx.restore(); }
+      if (ub > 0) { ctx.save(); ctx.translate(480, by + 240); ctx.scale(ub, ub); pill(ctx, "potongan berikutnya sudah siap", 0, 0, 40, { fill: C.panel2, color: C.ink }); ctx.restore(); }
       text(ctx, "potongan video", A.x + 110, A.y + 340, 30, { align: "center", weight: 800, color: C.ink2 });
     },
     // tangki stok: masuk vs ditonton. b.mode "lancar" (penuh) atau "habis" (sinyal melambat, stok turun ke nol)
