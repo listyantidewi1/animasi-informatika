@@ -92,7 +92,7 @@
         text(ctx, "AI", 45, 30, 90, { align: "center", weight: 900, color: C.ink }); ctx.restore();
       }
       // hasil tiruan
-      const ud = pop(b, l, "deepfake");
+      const ud = pop(b, l, 0);
       if (ud > 0 && cue(b, l, "meniru") < 0) { ctx.save(); ctx.translate(480, A.y + 760); ctx.rotate(-0.05); ctx.scale(ud, ud);
         card(ctx, -300, -80, 600, 160, { fill: C.pink, r: 30, glow: "rgba(255,79,154,0.5)" }); text(ctx, "DEEPFAKE", 0, 34, 96, { align: "center", weight: 900, color: C.ink }); ctx.restore(); }
       const um = pop(b, l, "meniru"), oy = ay + 200;

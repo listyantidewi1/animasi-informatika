@@ -47,21 +47,22 @@
     },
     // satelit GPS di atas bumi memancarkan sinyal waktu
     t34_satelit(ctx, b, l, t, TL, A) {
-      const ex = 480, ey = A.bot + 900, er = 1000;
+      const ex = 480, ey = A.bot + 620, er = 820;
+      ctx.save(); ctx.beginPath(); ctx.rect(0, A.y, 1080, A.bot - A.y + 20); ctx.clip();
       const g = ctx.createRadialGradient(ex, ey - er * 0.6, 100, ex, ey, er);
       g.addColorStop(0, "#3FA3FF"); g.addColorStop(1, "#1A4F9C"); ctx.fillStyle = g; ctx.beginPath(); ctx.arc(ex, ey, er, 0, Math.PI * 2); ctx.fill();
-      ctx.fillStyle = "#2E9E6E"; ctx.beginPath(); ctx.ellipse(ex - 200, ey - er + 60, 160, 50, 0.2, 0, Math.PI * 2); ctx.ellipse(ex + 230, ey - er + 90, 120, 60, -0.3, 0, Math.PI * 2); ctx.fill();
-      ctx.strokeStyle = "rgba(184,192,238,0.25)"; ctx.lineWidth = 3; ctx.setLineDash([10, 14]); ctx.beginPath(); ctx.arc(ex, ey, er + 480, Math.PI * 1.25, Math.PI * 1.75); ctx.stroke(); ctx.setLineDash([]);
-      const n = 5, us = pop(b, l, "satelit");
-      for (let i = 0; i < n; i++) {
-        const a = Math.PI * (1.3 + i * 0.1) + l * 0.015, sx = ex + Math.cos(a) * (er + 480), sy = ey + Math.sin(a) * (er + 480);
-        if (us <= 0) continue;
+      ctx.fillStyle = "#2E9E6E"; ctx.beginPath(); ctx.ellipse(ex - 220, ey - er + 70, 150, 45, 0.25, 0, Math.PI * 2); ctx.ellipse(ex + 240, ey - er + 80, 120, 50, -0.3, 0, Math.PI * 2); ctx.fill();
+      ctx.restore();
+      const SP = [[150, A.y + 420], [330, A.y + 330], [560, A.y + 310], [770, A.y + 380], [450, A.y + 500]], us = pop(b, l, "satelit");
+      SP.forEach(([sx0, sy0], i) => {
+        if (us <= 0) return;
+        const sx = sx0 + Math.sin(l * 0.8 + i) * 14, sy = sy0 + Math.cos(l * 0.7 + i * 2) * 10;
         if (cue(b, l, "memancarkan") > 0) for (let k = 0; k < 2; k++) {
           const r = ((l * 140 + k * 110 + i * 37) % 220); ctx.strokeStyle = `rgba(255,210,63,${0.8 * (1 - r / 220)})`; ctx.lineWidth = 5;
           ctx.beginPath(); ctx.arc(sx, sy, r + 30, 0, Math.PI * 2); ctx.stroke();
         }
-        ctx.save(); ctx.globalAlpha = clamp(us, 0, 1); satelit(ctx, sx, sy, 70 * clamp(us, 0, 1.1), a + Math.PI / 2); ctx.restore();
-      }
+        ctx.save(); ctx.globalAlpha = clamp(us, 0, 1); satelit(ctx, sx, sy, 80 * clamp(us, 0, 1.1), (i - 2) * 0.15); ctx.restore();
+      });
       const uk = pop(b, l, "jauh");
       if (uk > 0) { ctx.save(); ctx.translate(480, A.y + 70); ctx.scale(uk, uk); pill(ctx, "±20.000 km di atas bumi", 0, 0, 44, { fill: C.kuning }); ctx.restore(); }
       const uw = pop(b, l, "waktu");
@@ -69,7 +70,7 @@
         card(ctx, -260, -50, 520, 100, { fill: C.panel, stroke: C.kuning, lw: 4, r: 24 });
         const ms = Math.floor((t * 1000) % 1000), ss = Math.floor(t % 60);
         text(ctx, `07.30.${String(15 + ss % 40).padStart(2, "0")},${String(ms).padStart(3, "0")}`, 0, 22, 56, { align: "center", weight: 900, color: C.ink }); ctx.restore(); }
-      hp(ctx, 480, A.bot - 160, 110, C.kuning);
+      hp(ctx, 480, A.bot - 140, 110, C.kuning);
     },
     // lama perjalanan sinyal -> jarak
     t34_jarak(ctx, b, l, t, TL, A) {

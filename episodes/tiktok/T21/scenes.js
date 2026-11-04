@@ -70,10 +70,10 @@
       if (uh > 0) { ctx.save(); ctx.globalAlpha = uh; text(ctx, "1 halaman", 400, y + 140, 50, { weight: 800, color: C.ink2 }); text(ctx, "≈ 2.000 huruf", 400, y + 215, 64, { weight: 900, color: C.ink }); ctx.restore(); }
       // tumpukan buku yang tumbuh
       const k = clamp(cue(b, l, "itu sama") / 1.6, 0, 1), n = Math.round(10 * ease(k)), base = y + 720;
-      for (let i = 0; i < n; i++) book(ctx, 480 - 170 + (rnd(i) - 0.5) * 30, base - (i + 1) * 36, 340, 32, BOOK[i % 5]);
+      for (let i = 0; i < n; i++) book(ctx, 440 - 170 + (rnd(i) - 0.5) * 30, base - (i + 1) * 36, 340, 32, BOOK[i % 5]);
       if (k > 0) {
-        text(ctx, fmt(500 * ease(k)), 760, base - 160, 110, { align: "center", weight: 900, color: C.kuning, shadow: true });
-        text(ctx, "halaman", 760, base - 100, 44, { align: "center", weight: 800, color: C.ink });
+        text(ctx, fmt(500 * ease(k)), 780, base - 160, 100, { align: "center", weight: 900, color: C.kuning, shadow: true });
+        text(ctx, "halaman", 780, base - 100, 44, { align: "center", weight: 800, color: C.ink });
       }
       const ue = pop(b, l, "lima ratus");
       if (ue > 0 && base + 90 < A.bot) { ctx.save(); ctx.translate(480, base + 70); ctx.scale(ue, ue); pill(ctx, "1.000.000 ÷ 2.000 = 500", 0, 0, 44, { fill: C.panel2, color: C.ink }); ctx.restore(); }
