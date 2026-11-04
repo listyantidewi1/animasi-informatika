@@ -20,9 +20,9 @@
     if (s.clock) text(ctx, "pukul " + s.clock, 190, 186, 32, { weight: 900, color: C.ink2 });
     if (s.speed != null) { // meteran kecepatan (variasi RAM penuh)
       text(ctx, "kecepatan:", 190, 186, 28, { weight: 800, color: C.ink2 });
-      ctx.fillStyle = "#DDE5EA"; rr(ctx, 350, 160, 260, 32, 16); ctx.fill();
-      const col = s.speed > 0.6 ? C.good : s.speed > 0.35 ? C.accent : C.bad; ctx.fillStyle = col; rr(ctx, 350, 160, 260 * s.speed, 32, 16); ctx.fill();
-      text(ctx, s.speed > 0.6 ? "cepat" : s.speed > 0.35 ? "mulai berat" : "lambat", 630, 186, 28, { weight: 900, color: col });
+      ctx.fillStyle = "#DDE5EA"; rr(ctx, 360, 160, 180, 32, 16); ctx.fill();
+      const col = s.speed > 0.6 ? C.good : s.speed > 0.35 ? C.accent : C.bad; ctx.fillStyle = col; rr(ctx, 360, 160, Math.max(32, 180 * s.speed), 32, 16); ctx.fill();
+      text(ctx, s.speed > 0.6 ? "cepat" : s.speed > 0.35 ? "berat" : "lambat", 556, 186, 28, { weight: 900, color: col });
     }
     const on = s.power !== false;
     card(ctx, 790, 146, 190, 54, { fill: on ? C.goodBg : C.badBg, stroke: on ? C.good : C.bad, lw: 3, r: 27 });
@@ -67,7 +67,7 @@
     open.forEach((nm, i) => { const ap = APPS.find(a => a[0] === nm); const a = D.windowFrame(ctx, sc.x + 30 + i * 60, sc.y + 24 + i * 42, 470, 230, nm); ctx.fillStyle = ap[2]; ctx.globalAlpha = 0.25; rr(ctx, a.x, a.y, a.w, a.h - 10, 8); ctx.fill(); ctx.globalAlpha = 1; });
     // dok aplikasi di bawah layar
     ctx.fillStyle = "rgba(31,42,51,0.8)"; rr(ctx, sc.x + 60, sc.y + sc.h - 62, sc.w - 120, 52, 14); ctx.fill();
-    APPS.forEach((ap, i) => { const x = sc.x + 100 + i * 130, on = open.includes(ap[0]); ctx.fillStyle = ap[2]; rr(ctx, x - 20, sc.y + sc.h - 54, 40, 36, 8); ctx.fill(); if (on) { ctx.fillStyle = "#fff"; ctx.beginPath(); ctx.arc(x, sc.y + sc.h - 12, 4, 0, Math.PI * 2); ctx.fill(); } text(ctx, ap[0].split(" ")[0], x + 26, sc.y + sc.h - 30, 18, { weight: 800, color: "#fff" }); });
+    APPS.forEach((ap, i) => { const x = sc.x + 100 + i * 130, on = open.includes(ap[0]); ctx.fillStyle = ap[2]; rr(ctx, x - 20, sc.y + sc.h - 54, 40, 36, 8); ctx.fill(); if (on) { ctx.fillStyle = "#fff"; ctx.beginPath(); ctx.arc(x, sc.y + sc.h - 12, 4, 0, Math.PI * 2); ctx.fill(); } text(ctx, ap[0].split(" ")[0], x + 24, sc.y + sc.h - 30, 16, { weight: 800, color: "#fff" }); });
     if (s.slow) { const cx = sc.x + sc.w - 120, cy = sc.y + 150; ctx.save(); ctx.translate(cx, cy); ctx.rotate((s.l || 0) * 4); ctx.strokeStyle = C.accentDark; ctx.lineWidth = 12; ctx.lineCap = "round"; ctx.beginPath(); ctx.arc(0, 0, 40, 0, Math.PI * 1.4); ctx.stroke(); ctx.restore(); text(ctx, "tunggu…", cx, cy + 86, 28, { align: "center", weight: 900, color: C.accentDark }); }
   }
   function ramPanel(ctx, s) {

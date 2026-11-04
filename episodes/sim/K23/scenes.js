@@ -62,9 +62,9 @@
     const h = opt.h || 96, gap = 12;
     for (let i = 0; i < 5; i++) { const by = y + i * (h + gap), on = opt.hl === i; card(ctx, x, by, w, h, { fill: on ? "#FFF3D6" : "#F4F8FB", stroke: on ? C.accent : "#B7C4CC", lw: on ? 5 : 3, r: 12 });
       ctx.fillStyle = on ? C.accent : C.kiko; rr(ctx, x + 10, by + 10, 66, h - 20, 10); ctx.fill(); text(ctx, String(i), x + 43, by + h / 2 + 12, 32, { align: "center", weight: 900, color: "#fff" });
-      let cx = x + 92; (isi[i] || []).forEach(([k, st]) => { const s = opt.keysOnly ? k : k + ": " + ORANG[k]; ctx.font = "900 24px Inter"; const iw = ctx.measureText(s).width + 36;
+      let cx = x + 92; (isi[i] || []).forEach(([k, st]) => { const s = opt.keysOnly ? k : k + ": " + ORANG[k]; const fs = opt.fs || 24; ctx.font = "900 " + fs + "px Inter"; const iw = ctx.measureText(s).width + 36;
         card(ctx, cx, by + 14, iw, h - 28, { fill: st === "bad" ? C.badBg : st === "good" ? C.goodBg : st === "new" ? "#FFF9E0" : "#fff", stroke: st === "bad" ? C.bad : st === "good" ? C.good : st === "new" ? C.accent : "#B7C4CC", lw: 3, r: 10 });
-        text(ctx, s, cx + iw / 2, by + h / 2 + 9, 24, { align: "center", weight: 900 }); cx += iw + 10; }); }
+        text(ctx, s, cx + iw / 2, by + h / 2 + fs * 0.37, fs, { align: "center", weight: 900 }); cx += iw + 10; }); }
     text(ctx, "laci", x + 43, y - 14, 20, { align: "center", weight: 900, color: C.ink2 });
   }
   function hashCalc(ctx, x, y, name, u) {
@@ -251,7 +251,7 @@
         tree(ctx, vals, 7, { box, r, path: path.slice(0, kk + 1), hit: found ? 80 : null });
         card(ctx, 60 + j * 500, 40, 460, 140, { fill: found ? (j ? C.badBg : C.goodBg) : "#FFF3D6", stroke: found ? col : C.accent, lw: 5, r: 18 });
         text(ctx, nm + ": " + (kk + 1), 290 + j * 500, 120, 54, { align: "center", weight: 900, color: found ? col : C.accentDark }); text(ctx, "langkah", 290 + j * 500, 162, 28, { align: "center", weight: 800, color: C.ink2 }); });
-      text(ctx, "cari 80", 540, 240, 44, { align: "center", weight: 900, color: C.ink2 });
+      text(ctx, "cari 80", 290, 260, 44, { align: "center", weight: 900, color: C.ink2 });
     },
     k23s_hash(ctx, b, l) {
       const nm = b.step === "sinta" ? "Sinta" : "Kiko"; const u = prog(l, b, 0.0, b.step === "sinta" ? 0.7 : 0.45);
@@ -262,7 +262,7 @@
       if (b.step === "sinta") isi = u >= 0.85 ? { 0: [["Sinta", "new"]] } : {};
       else { const k = prog(l, b, 0.55, 0.95); isi = { 0: [["Sinta"]], 3: [["Ayu"]], 4: [["Dito", k > 0.4 ? "bad" : ""]] }; if (u >= 0.85) isi[4].push(["Kiko", k > 0.8 ? "good" : "new"]);
         if (l > A(b) * 0.5) text(ctx, "tabrakan di laci 4!", 1000, 300, 40, { align: "right", weight: 900, color: C.accentDark }); }
-      drawers(ctx, 60, 320, 960, isi, { hl, h: 82 });
+      drawers(ctx, 60, 320, 960, isi, { hl, h: 82, fs: 38 });
     }
   });
 })(typeof window !== "undefined" ? window : globalThis);
