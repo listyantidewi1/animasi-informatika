@@ -120,19 +120,19 @@
     },
     // campuran tiga warna cahaya -> lebih dari 16 juta warna
     t02_campur(ctx, b, l, t, TL, A) {
-      const m = 1 - ease(cue(b, l, 0) / 1.2), cx = 480, cy = A.y + 250, r = 170;
+      const m = 1 - ease(cue(b, l, 0) / 1.2), cx = 480, cy = A.y + 220, r = 140;
       ctx.save(); ctx.globalCompositeOperation = "lighter";
       [["#FF2020", -Math.PI / 2], ["#20FF20", Math.PI / 6], ["#2040FF", Math.PI * 5 / 6]].forEach(([col, a]) => {
-        const d = 95 + m * 120; ctx.fillStyle = col; ctx.beginPath(); ctx.arc(cx + Math.cos(a) * d, cy + Math.sin(a) * d, r, 0, Math.PI * 2); ctx.fill();
+        const d = 80 + m * 110; ctx.fillStyle = col; ctx.beginPath(); ctx.arc(cx + Math.cos(a) * d, cy + Math.sin(a) * d, r, 0, Math.PI * 2); ctx.fill();
       });
       ctx.restore();
       const u = pop(b, l, "lebih dari");
       if (u > 0) {
         const k = ease(cue(b, l, "lebih dari") / 1.2);
-        ctx.save(); ctx.translate(540, cy + 400); ctx.scale(0.6 + 0.4 * u, 0.6 + 0.4 * u);
+        ctx.save(); ctx.translate(540, cy + 340); ctx.scale(0.6 + 0.4 * u, 0.6 + 0.4 * u);
         text(ctx, fmt(16777216 * k), 0, 0, 150, { align: "center", weight: 900, color: C.kuning, fit: 960, shadow: true }); ctx.restore();
-        text(ctx, "warna", 480, cy + 480, 56, { align: "center", weight: 900, color: C.ink });
-        text(ctx, "256 × 256 × 256", 480, cy + 560, 44, { align: "center", weight: 700, color: C.ink2 });
+        text(ctx, "warna", 480, cy + 430, 56, { align: "center", weight: 900, color: C.ink });
+        text(ctx, "256 × 256 × 256", 480, cy + 510, 44, { align: "center", weight: 700, color: C.ink2 });
       }
     },
     // foto utuh tersusun dari deretan 0 dan 1
