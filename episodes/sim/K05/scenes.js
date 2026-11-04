@@ -202,7 +202,7 @@
     k5_perintah(ctx, b, l) {
       card(ctx, 120, 130, 1680, 700, { fill: "#FFFFFF" });
       text(ctx, "DUA PERINTAH", 960, 200, 34, { align: "center", weight: 900, color: C.accentDark });
-      const t1 = at(b, "Masuk menambah"), t2 = at(b, "keluar mengeluarkan"), t3 = at(b, "Di komputer");
+      const t1 = Math.min(0.6, at(b, "Masuk menambah")), t2 = Math.min(1.4, at(b, "keluar mengeluarkan")), t3 = at(b, "Di komputer");
       const cmd = (x, w1, col, s, t0, draw) => { if (l < t0) return; const u = ease((l - t0) / 0.5); ctx.save(); ctx.globalAlpha = u; card(ctx, x, 250, 760, 320, { fill: C.bg2, r: 22 }); card(ctx, x + 30, 280, 300, 80, { fill: "#fff", stroke: col, lw: 4, r: 16 }); text(ctx, w1, x + 180, 334, 36, { align: "center", weight: 900, color: col }); text(ctx, s, x + 360, 334, 28, { weight: 800 }); draw(x); ctx.restore(); };
       cmd(160, "MASUK", C.kikoDark, "menambah satu nama", t1, x => { chip(ctx, x + 190, 450, "Dito"); chip(ctx, x + 330, 450, "Sinta"); ctx.save(); ctx.globalAlpha *= 0.5 + 0.5 * Math.sin(l * 4); chip(ctx, x + 520, 450, "Rani", { ring: C.kiko }); ctx.restore(); text(ctx, "+", x + 430, 462, 44, { align: "center", weight: 900, color: C.kiko }); });
       cmd(1000, "KELUAR", C.bad, "mengeluarkan satu nama", t2, x => { chip(ctx, x + 200, 450, "Dito", { ring: C.good }); chip(ctx, x + 340, 450, "Sinta"); chip(ctx, x + 480, 450, "Rani", { ring: C.good }); text(ctx, "yang mana? sesuai aturannya", x + 380, 530, 26, { align: "center", weight: 800, color: C.ink2 }); });
@@ -285,7 +285,7 @@
       const X = [670, 1000, 1560], Wd = [330, 560, 210];
       card(ctx, 670, 214, 1100, 64, { fill: C.bg2, r: 12 });
       ["perintah", "isi antrean (depan → belakang)", "keluar"].forEach((h, i) => text(ctx, h, X[i] + Wd[i] / 2, 256, 26, { align: "center", weight: 900, color: C.ink2 }));
-      const t0 = at(b, "Triknya"), step = Math.max(0.6, ((b.audio || b.dur) * 0.85 - t0) / b.ops.length);
+      const t0 = 0.6, step = Math.max(0.6, ((b.audio || b.dur) * 0.7 - t0) / b.ops.length);
       b.ops.forEach((op, i) => {
         if (l < t0 + i * step) return; const y = 290 + i * 84, s = st[i + 1]; const [w1, nm] = opLabel(op);
         ctx.fillStyle = i % 2 ? "#F7FAF8" : "#FFFFFF"; rr(ctx, 670, y, 1100, 76, 10); ctx.fill();

@@ -77,7 +77,7 @@ episodes/sim/<kode>/short/script.json    # Short; salin juga tts-kit ke short/
 
 ## Kredit ElevenLabs
 **±0,45 kredit per karakter** (terukur dari 29 simulasi gelombang pertama; angka 0,25 dari S02 keliru karena saldo terlambat diperbarui).
-Sisa kredit terbatas. Batas per simulasi gelombang kedua: **narasi video ≤ 4.400 karakter** (±6–7 menit), **Short ≤ 650 karakter**.
+Sisa kredit terbatas. Batas per simulasi gelombang kedua: **narasi video ≤ 4.200 karakter** (±6 menit), **Short ≤ 600 karakter**.
 Hitung dulu dengan `suara_elevenlabs.py sim/<kode> --uji` sebelum membuat suara. Jangan `--ulang` kecuali beat itu memang salah isinya.
 Cek sisa: `curl -s https://api.elevenlabs.io/v1/user/subscription` (kunci disisipkan proxy; jangan pernah menulis atau menampilkan kunci).
 Bila sisa kredit kurang dari 3.000, berhenti sebelum membuat suara dan laporkan.
