@@ -246,12 +246,12 @@
       if (!open) { const g = F.editor(ctx, bg, { title: TITLE, desc: DESC, qs: all, active: null, scroll: 0, eyeHot: S.i === 1 && S.u > 0.5 });
         const p = W.path(l, span * 1.1 / 7.6, [{ x: 900, y: 600, d: 0.3 }, { x: g.eye.cx, y: g.eye.cy + 6, d: 0.8, click: true }], { x: 900, y: 600 }); L.cursor(ctx, p.x, p.y, { click: p.click }); }
       else {
-        const sc = S.at(5) ? 492 * ease(S.p(5)) : 0;
+        const sc = S.at(5) ? lerp(200, 492, ease(S.p(5))) : S.at(3) ? 200 * ease(clamp(S.p(3) / 0.45, 0, 1)) : 0;
         const vals = { 1: S.at(4) && S.p(4) > 0.7 ? "X-3" : null, 2: S.at(6) && S.p(6) > 0.6 ? "Robotik" : null, 3: [...(S.at(7) && S.p(7) > 0.6 ? ["Senin"] : []), ...(S.at(8) && S.p(8) > 0.6 ? ["Jumat"] : [])] };
-        const dropOpen = (S.at(3) && S.p(3) > 0.6) && !(S.at(4) && S.p(4) > 0.7);
+        const dropOpen = (S.at(3) && S.p(3) > 0.75) && !(S.at(4) && S.p(4) > 0.7);
         const st = { title: TITLE, desc: DESC, qs: all, vals, scroll: sc, open: dropOpen ? 1 : null, hi: S.at(4) ? Math.min(2, Math.floor(S.p(4) * 4)) : null };
         F.preview(ctx, bg, st);
-        const g0 = probe(c => F.preview(c, bg, { ...st, scroll: 0, open: 1 }))(ctx), g1 = probe(c => F.preview(c, bg, { ...st, scroll: 492 }))(ctx);
+        const g0 = probe(c => F.preview(c, bg, { ...st, scroll: 200, open: 1 }))(ctx), g1 = probe(c => F.preview(c, bg, { ...st, scroll: 492 }))(ctx);
         const d = g0.q[1].drop, it = d.item[2], ro = g1.q[2].opt[3], c0 = g1.q[3].opt[0], c2 = g1.q[3].opt[2];
         const t0 = span * 1.7 / 7.6, p = W.path(l - t0, span * 5.9 / 7.6, [{ x: d.cx, y: d.cy + 6, d: 0.9, click: true }, { x: it.cx, y: it.cy + 6, d: 0.9, click: true }, { x: 700, y: 520, d: 1 }, { x: ro.cx, y: ro.cy + 6, d: 0.9, click: true }, { x: c0.cx, y: c0.cy + 6, d: 0.8, click: true }, { x: c2.cx, y: c2.cy + 6, d: 0.8, click: true }, { x: c2.cx + 80, y: c2.cy + 60, d: 0.8 }], { x: 900, y: 600 });
         L.cursor(ctx, p.x, p.y, { click: p.click });
@@ -348,7 +348,7 @@
       const st = { qs: qs(6).map((q, i) => i === 2 ? { ...q, other } : q), active: 2, q: { otherHot: S.i === 1 && S.u > 0.3 } };
       const g = editor(ctx, st), g0 = probeEd(ctx, { ...st, qs: qs(6), scroll: F.editorScroll(AREA, { qs: qs(6), active: 2 }) });
       const o = g0.q[2].other;
-      const p = W.path(l, span, [{ x: 900, y: 650, d: 0.4 }, { x: o.cx, y: o.cy + 6, d: 1.2, click: true }, { x: o.cx + 60, y: o.cy + 70, d: 3 }], { x: 900, y: 650 });
+      const p = W.path(l, span, [{ x: 900, y: 650, d: 0.4 }, { x: o.cx, y: o.cy + 6, d: 1.2, click: true }, { x: o.cx + 260, y: o.cy - 90, d: 3 }], { x: 900, y: 650 });
       L.cursor(ctx, p.x, p.y, { click: p.click });
       note(ctx, WIN.y, 250, "KESALAHAN 2", (x, y) => para(ctx, "Pilihan kurang lengkap: ekskul Karate tidak ada.", x + 24, y + 92, 25, PW - 48, { weight: 800, lh: 1.35 }));
       if (other) note(ctx, WIN.y + 270, 250, "MURID MELIHAT", (x, y) => { F.icon(ctx, "radio", x + 46, y + 100, 30, ACC, true); text(ctx, "Lainnya:", x + 74, y + 110, 24, { weight: 800 });

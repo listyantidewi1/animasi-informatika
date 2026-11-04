@@ -15,7 +15,7 @@
 
   // ---------- jendela Pengelola Tugas ----------
   const COL = { name: WIN.x + 30, status: WIN.x + 560, cpu: WIN.x + 1010, mem: WIN.x + 1260 };
-  const HEAD_Y = WIN.y + 46 + 50, ROW0 = HEAD_Y + 84, RH = 50;
+  const HEAD_Y = WIN.y + 46 + 50, ROW0 = HEAD_Y + 84, RH = 44;
   // st: sort ("mem"), sel (nama), ended (Lembar Kerja diakhiri), hl ("cpu"|"mem"|"status"|"name"|"total"), sysHl, btnHl, dlg {name, u, hl}, memHl (judul kolom)
   function rowsOf(st) {
     let apps = APPS.filter(a => !(st.ended && a.hang)); if (st.sort === "mem") apps = apps.slice().sort((a, b) => b.mem - a.mem);
@@ -50,9 +50,9 @@
       if (sel) { ctx.fillStyle = "#DCE9F7"; ctx.fillRect(WIN.x + 1, r.y, WIN.w - 2, RH); }
       else if (sysOn) { ctx.fillStyle = "#FFF6E0"; ctx.fillRect(WIN.x + 1, r.y, WIN.w - 2, RH); }
       ctx.fillStyle = heat(r.cpu, 70); ctx.fillRect(COL.cpu - 150, r.y + 1, 160, RH - 2); ctx.fillStyle = heat(r.mem, 2400); ctx.fillRect(COL.mem - 150, r.y + 1, 160, RH - 2);
-      HP.appIcon(ctx, COL.name + 18, r.y + RH / 2, 30, r.col, r.ic); text(ctx, r.n, COL.name + 46, r.y + 33, 22, { weight: 700 });
-      if (r.hang && !st.ended) text(ctx, "Tidak merespons", COL.status, r.y + 33, 21, { weight: 800, color: RED });
-      text(ctx, r.cpu + "%", COL.cpu, r.y + 33, 22, { align: "right", weight: 700 }); text(ctx, fmtMem(r.mem), COL.mem, r.y + 33, 22, { align: "right", weight: 700 });
+      HP.appIcon(ctx, COL.name + 18, r.y + RH / 2, 30, r.col, r.ic); text(ctx, r.n, COL.name + 46, r.y + RH / 2 + 8, 22, { weight: 700 });
+      if (r.hang && !st.ended) text(ctx, "Tidak merespons", COL.status, r.y + RH / 2 + 8, 21, { weight: 800, color: RED });
+      text(ctx, r.cpu + "%", COL.cpu, r.y + RH / 2 + 8, 22, { align: "right", weight: 700 }); text(ctx, fmtMem(r.mem), COL.mem, r.y + RH / 2 + 8, 22, { align: "right", weight: 700 });
       ctx.fillStyle = "#EEF2F5"; ctx.fillRect(WIN.x, r.y + RH - 1, WIN.w, 1);
     });
     ctx.restore();
@@ -181,7 +181,7 @@
       ctx.strokeStyle = RED; ctx.lineWidth = 4; rr(ctx, WIN.x + 6, y - RH / 2 + 2, WIN.w - 12, RH - 4, 8); ctx.stroke();
       const yy = B.steps(ctx, "SEBELUM MENUTUP", ["Status: Tidak merespons.", "CPU tinggi: 61%.", "Tunggu sekitar satu menit."], wait ? (l > a * 0.92 ? 3 : 2) : l > a * 0.3 ? 1 : 0);
       if (wait) { const u = clamp((l - a * 0.5) / (a * 0.45), 0, 1); ctx.fillStyle = "#FFFFFF"; ctx.beginPath(); ctx.arc(1560, yy + 110, 64, 0, Math.PI * 2); ctx.fill(); HP.ring(ctx, 1560, yy + 110, 54, 1 - u, BLUE);
-        text(ctx, Math.round(60 * (1 - u)) + " dtk", 1560, yy + 120, 26, { align: "center", weight: 900 }); text(ctx, "beri waktu", 1700, yy + 120, 22, { align: "center", weight: 700, color: C.ink2 }); }
+        text(ctx, Math.round(60 * (1 - u)) + " dtk", 1560, yy + 118, 22, { align: "center", weight: 900 }); text(ctx, "beri waktu", 1700, yy + 120, 22, { align: "center", weight: 700, color: C.ink2 }); }
     },
     tm_akhiri(ctx, b, l) {
       const span = B.spanOf(b), y = rowY({ sort: "mem" }, "Lembar Kerja");
