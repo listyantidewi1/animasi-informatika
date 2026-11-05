@@ -1,0 +1,1596 @@
+<title>Kiko: Mencari Lebih Tepat dengan Operator Pencarian</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<style>
+/* Inti gaya halaman latihan: satu kolom, pemutar di atas, latihan di bawah; palet kantin sama dengan video. */
+:root {
+  --bg: #EAF2EE; --surface: #FFFFFF; --surface2: #DCE9E2; --ink: #1F2A33; --ink2: #4A5A66; --line: #C9D8D0;
+  --accent: #2E7E9A; --accent-ink: #FFFFFF; --warm: #F2B134; --warm-ink: #5E3E05; --good: #2E9E5B; --good-bg: #DDF3E4; --bad: #D9443B; --bad-bg: #FBE1DF;
+  --font: Inter, "Segoe UI", Roboto, Arial, sans-serif;
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) { --bg: #141C1A; --surface: #1E2926; --surface2: #273532; --ink: #EAF2EE; --ink2: #A9BBB3; --line: #3A4A45; --accent: #5FB3CE; --accent-ink: #0F1D22; --warm: #F2B134; --warm-ink: #2B1C02; --good: #5FCB8A; --good-bg: #1F3A2B; --bad: #F07A72; --bad-bg: #442523; color-scheme: dark } }
+:root[data-theme="dark"] { --bg: #141C1A; --surface: #1E2926; --surface2: #273532; --ink: #EAF2EE; --ink2: #A9BBB3; --line: #3A4A45; --accent: #5FB3CE; --accent-ink: #0F1D22; --warm: #F2B134; --warm-ink: #2B1C02; --good: #5FCB8A; --good-bg: #1F3A2B; --bad: #F07A72; --bad-bg: #442523; color-scheme: dark }
+* { box-sizing: border-box }
+body { background: var(--bg); color: var(--ink); font-family: var(--font); font-size: 17px; line-height: 1.5; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); padding-block: 16px 48px }
+.wrap { max-width: 980px; margin: 0 auto; display: grid; gap: 28px }
+h1 { font-size: clamp(26px, 5vw, 38px); line-height: 1.15; margin: 0; text-wrap: balance; font-weight: 900 }
+h2 { font-size: 22px; margin: 0 0 12px; font-weight: 800 }
+h3 { font-size: 18px; margin: 0 0 8px; font-weight: 800 }
+p { margin: 0 0 10px; max-width: 65ch }
+.eyebrow { font-size: 13px; letter-spacing: .08em; text-transform: uppercase; color: var(--ink2); font-weight: 800; margin-bottom: 6px }
+.card { background: var(--surface); border-radius: 18px; padding: 18px; border: 1px solid var(--line) }
+button { font: inherit; font-weight: 800; border: 0; border-radius: 12px; padding: 12px 16px; cursor: pointer; background: var(--surface2); color: var(--ink); min-height: 48px; touch-action: manipulation }
+button:focus-visible, [tabindex]:focus-visible { outline: 3px solid var(--warm); outline-offset: 2px }
+button.primary { background: var(--accent); color: var(--accent-ink) }
+button.warm { background: var(--warm); color: var(--warm-ink) }
+button[aria-pressed="true"] { box-shadow: inset 0 0 0 3px var(--accent) }
+button:disabled { opacity: .45; cursor: default }
+.row { display: flex; flex-wrap: wrap; gap: 10px; align-items: center }
+/* player */
+.player { display: grid; gap: 12px }
+.stage { position: relative; width: 100%; aspect-ratio: 16 / 9; max-width: 100%; background: #EAF2EE; border-radius: 14px; overflow: hidden; border: 1px solid var(--line) }
+.stage canvas { width: 100%; height: 100%; display: block }
+.bigplay { position: absolute; inset: 0; display: grid; place-items: center; background: rgba(31,42,51,.25); border: 0; border-radius: 0; color: #fff; font-size: 20px; min-height: 0 }
+.bigplay span { background: var(--accent); color: var(--accent-ink); padding: 14px 26px; border-radius: 999px; font-weight: 900 }
+.bar { height: 10px; background: var(--surface2); border-radius: 999px; overflow: hidden; cursor: pointer }
+.bar > i { display: block; height: 100%; width: 0; background: var(--warm) }
+.chapters { display: flex; flex-wrap: wrap; gap: 8px }
+.chapters button { font-size: 14px; padding: 8px 12px; min-height: 40px }
+.chapters button.now { background: var(--warm); color: var(--warm-ink) }
+.hint { color: var(--ink2); font-size: 15px }
+/* exercises (generic parts) */
+.levels { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 12px }
+.levels button { font-size: 14px; padding: 8px 12px; min-height: 40px }
+.levels button.done::after { content: " ✓"; color: var(--good) }
+.task { background: var(--surface2); border-radius: 12px; padding: 12px 14px; margin-bottom: 12px; font-weight: 700 }
+.result { border-radius: 12px; padding: 12px 14px; font-weight: 800; margin-top: 10px }
+.result.good { background: var(--good-bg); color: var(--good) }
+.result.bad { background: var(--bad-bg); color: var(--bad) }
+.result.info { background: var(--surface2); color: var(--ink) }
+/* quiz */
+.quiz { display: grid; gap: 16px }
+.q { border-top: 1px solid var(--line); padding-top: 14px }
+.q:first-child { border-top: 0; padding-top: 0 }
+.opts { display: grid; gap: 8px; margin-top: 8px }
+.opts button { text-align: left; font-weight: 700; background: var(--surface2); display: flex; gap: 10px; align-items: center }
+.opts button b { width: 30px; height: 30px; border-radius: 50%; background: var(--accent); color: var(--accent-ink); display: grid; place-items: center; flex: none }
+.opts button.right { background: var(--good-bg); box-shadow: inset 0 0 0 3px var(--good) }
+.opts button.wrong { background: var(--bad-bg) }
+.fb { margin-top: 8px; font-weight: 700 }
+.fb.good { color: var(--good) } .fb.bad { color: var(--bad) }
+details summary { cursor: pointer; font-weight: 800; font-size: 18px }
+details[open] summary { margin-bottom: 10px }
+ul.plain { padding-left: 20px; margin: 0 0 10px } ul.plain li { margin-bottom: 6px; max-width: 65ch }
+.progress { display: flex; gap: 8px; flex-wrap: wrap } .progress span { background: var(--surface2); border-radius: 999px; padding: 6px 12px; font-size: 14px; font-weight: 700 }
+.progress span.ok { background: var(--good-bg); color: var(--good) }
+@media (prefers-reduced-motion: reduce) { * { transition: none !important } }
+
+/* ajakan ke channel YouTube */
+.yt-ajak { display: flex; gap: 12px; align-items: center; background: var(--surface); border: 1px solid var(--line); border-left: 6px solid #D9443B; border-radius: 14px; padding: 12px 16px; color: var(--ink); text-decoration: none }
+.yt-ajak .yt-ic { flex: none; width: 40px; height: 28px; border-radius: 8px; background: #D9443B; color: #fff; display: grid; place-items: center; font-size: 14px }
+.yt-ajak b { display: block; font-size: 16px } .yt-ajak small { display: block; color: var(--ink2); font-size: 14px; font-weight: 600 }
+.yt-video { display: grid; gap: 10px } .yt-frame { position: relative; width: 100%; aspect-ratio: 16 / 9; border-radius: 14px; overflow: hidden; background: #000 }
+.yt-frame iframe { position: absolute; inset: 0; width: 100%; height: 100%; border: 0 }
+
+/* halaman video simulasi (dibuat build.py dari episodes/_alat/sim-page.html) */
+.links { display: grid; gap: 10px } .links a { display: block; background: var(--surface2); color: var(--ink); text-decoration: none; font-weight: 800; border-radius: 12px; padding: 12px 16px }
+.links a span { display: block; font-weight: 600; color: var(--ink2); font-size: 15px }
+ul.learn { margin: 0; padding-left: 20px } ul.learn li { margin-bottom: 4px }
+</style>
+
+<div class="wrap">
+  <header>
+    <div class="eyebrow">Informatika · Simulasi praktik · S09</div>
+    <h1>Mencari Lebih Tepat dengan Operator Pencarian</h1>
+    <p class="hint">Setelah menonton, kamu bisa menyaring jutaan hasil pencarian menjadi belasan hasil yang tepat dengan tanda kutip, tanda minus, site:, filetype:, dan rentang waktu. Simulasi ini melengkapi episode D7.4, E.4, F11.4. Hentikan videonya di setiap jeda "Coba sekarang" untuk mencoba sendiri.</p>
+  </header>
+  <section class="card player" aria-label="Pemutar simulasi">
+    <div class="stage">
+      <canvas id="screen" width="1920" height="1080" aria-label="Animasi simulasi"></canvas>
+      <audio id="nar" preload="auto" src="narasi.mp3"></audio>
+      <button class="bigplay" id="bigplay" aria-label="Putar"><span>▶ Putar simulasi</span></button>
+    </div>
+    <div class="bar" id="bar" role="slider" aria-label="Posisi simulasi" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" tabindex="0"><i id="barfill"></i></div>
+    <div class="row">
+      <button class="primary" id="playbtn">▶ Putar</button>
+      <button id="replay">↺ Ulangi bagian ini</button>
+      <button id="voice" aria-pressed="true" hidden>🔊 Suara: nyala</button>
+      <button id="slow" aria-pressed="false">🐢 Mode lambat</button>
+      <span class="hint" id="timelabel">0:00 / 0:00</span>
+    </div>
+    <div>
+      <div class="eyebrow">Bagian</div>
+      <div class="chapters" id="chapters"></div>
+    </div>
+  </section>
+
+  <section class="card" aria-label="Yang dipelajari">
+    <h2>Yang kamu pelajari</h2>
+    <ul class="learn"><li>memakai tanda kutip untuk mencari frasa persis</li><li>membuang kata yang mengganggu dengan tanda minus</li><li>membatasi hasil dengan site: dan filetype:pdf</li><li>memilih rentang waktu lewat menu Alat dan menghindari kesalahan spasi</li></ul>
+  </section>
+
+  <section class="card" aria-label="Cek pemahaman">
+    <h2>Cek pemahaman</h2>
+    <p class="hint">Pilih satu jawaban. Kalau salah, kamu dapat petunjuk, lalu coba lagi.</p>
+    <div class="quiz" id="quiz"></div>
+  </section>
+
+  <section class="card" aria-label="Kemajuan">
+    <h2>Kemajuanmu</h2>
+    <div class="progress" id="progress"></div>
+    <p class="hint" style="margin-top:8px">Kemajuan tersimpan di perangkat ini saja.</p>
+  </section>
+
+  <section class="card" aria-label="Halaman latihan">
+    <h2>Lanjut berlatih</h2>
+    <div class="links"><a href="../../D7.4/episode-d74.html">Episode D7.4: Mesin Pencari: Cara Kerja dan Strategi<span>Tonton episodenya dan kerjakan latihannya.</span></a><a href="../../E.4/episode-e4.html">Episode E.4: Mencari, Memeriksa, Membaca Lateral<span>Tonton episodenya dan kerjakan latihannya.</span></a><a href="../../F11.4/episode-f114.html">Episode F11.4: Riset Digital dan Verifikasi Konten<span>Tonton episodenya dan kerjakan latihannya.</span></a><a href="../../../index.html">Daftar semua episode<span>Kembali ke halaman utama.</span></a></div>
+  </section>
+</div>
+
+<script>/* Kiko core: mesin gambar bersama untuk semua episode Fase D.
+   Kiko.draw(ctx, t, TL) menggambar frame pada detik t di kanvas 1920x1080 secara deterministik.
+   Berisi palet, pembantu gambar, tokoh (Kiko, murid), dan adegan umum (judul, kuis, ringkasan, penutup).
+   Setiap episode menambahkan adegannya sendiri di scenes.js: Object.assign(Kiko.SCENES, {...}). */
+(function (global) {
+  const W = 1920, H = 1080;
+  const FONT = "Inter, 'Segoe UI', Roboto, Arial, sans-serif";
+  const C = {
+    bg: "#EAF2EE", bg2: "#DCE9E2", ink: "#1F2A33", ink2: "#4A5A66", panel: "#FFFFFF",
+    tile: "#F7FAF8", tileLine: "#C9D8D0", table: "#A4653A", tableTop: "#C98A57",
+    kiko: "#2E7E9A", kikoDark: "#1F5A6E", kikoLight: "#8FD0E6", eye: "#FFFFFF", pupil: "#1F2A33",
+    accent: "#F2B134", accentDark: "#B57A12", good: "#2E9E5B", bad: "#D9443B", goodBg: "#DDF3E4", badBg: "#FBE1DF",
+    sub: "#1F2A33", subText: "#FFFFFF", star: "#F2B134", skin: "#F1C9A5", skin2: "#C98A57", hair: "#2B2118",
+    uniform: "#FFFFFF", pants: "#2F4E7D", bubble: "#FFFFFF", muted: "#9AAFA6"
+  };
+  const ease = u => u < 0 ? 0 : u > 1 ? 1 : u * u * (3 - 2 * u);
+  const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
+  const lerp = (a, b, u) => a + (b - a) * u;
+
+  // ---------- drawing helpers ----------
+  function rr(ctx, x, y, w, h, r) {
+    ctx.beginPath(); ctx.moveTo(x + r, y); ctx.arcTo(x + w, y, x + w, y + h, r); ctx.arcTo(x + w, y + h, x, y + h, r);
+    ctx.arcTo(x, y + h, x, y, r); ctx.arcTo(x, y, x + w, y, r); ctx.closePath();
+  }
+  function text(ctx, s, x, y, size, opt = {}) {
+    ctx.font = `${opt.weight || 600} ${size}px ${FONT}`;
+    // opt.fit: lebar maksimum; huruf diperkecil hanya bila teks lebih lebar dari itu
+    while (opt.fit && size > 20 && ctx.measureText(s).width > opt.fit) { size -= 2; ctx.font = `${opt.weight || 600} ${size}px ${FONT}`; } ctx.fillStyle = opt.color || C.ink;
+    ctx.textAlign = opt.align || "left"; ctx.textBaseline = opt.base || "alphabetic"; ctx.fillText(s, x, y);
+  }
+  function wrap(ctx, s, size, weight, maxW) {
+    ctx.font = `${weight} ${size}px ${FONT}`;
+    const words = s.split(" "), lines = []; let cur = "";
+    for (const w of words) {
+      const test = cur ? cur + " " + w : w;
+      if (ctx.measureText(test).width > maxW && cur) { lines.push(cur); cur = w; } else cur = test;
+    }
+    if (cur) lines.push(cur);
+    return lines;
+  }
+  function para(ctx, s, x, y, size, maxW, opt = {}) {
+    const lines = wrap(ctx, s, size, opt.weight || 500, maxW); const lh = size * (opt.lh || 1.35);
+    lines.forEach((l, i) => text(ctx, l, x, y + i * lh, size, opt));
+    return lines.length * lh;
+  }
+  function arrowIcon(ctx, kind, cx, cy, s, color) {
+    ctx.save(); ctx.translate(cx, cy); ctx.strokeStyle = color; ctx.fillStyle = color; ctx.lineWidth = s * 0.16; ctx.lineCap = "round"; ctx.lineJoin = "round";
+    if (kind === "up") {
+      ctx.beginPath(); ctx.moveTo(0, s * 0.45); ctx.lineTo(0, -s * 0.3); ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(-s * 0.32, -s * 0.05); ctx.lineTo(0, -s * 0.45); ctx.lineTo(s * 0.32, -s * 0.05); ctx.stroke();
+    } else if (kind === "left" || kind === "right") {
+      const k = kind === "left" ? -1 : 1;
+      ctx.beginPath(); ctx.moveTo(0, s * 0.45); ctx.lineTo(0, -s * 0.05); ctx.quadraticCurveTo(0, -s * 0.32, k * s * 0.28, -s * 0.32); ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(k * s * 0.12, -s * 0.5); ctx.lineTo(k * s * 0.4, -s * 0.32); ctx.lineTo(k * s * 0.12, -s * 0.14); ctx.stroke();
+    } else if (kind === "east") {
+      ctx.beginPath(); ctx.moveTo(-s * 0.4, 0); ctx.lineTo(s * 0.3, 0); ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(s * 0.05, -s * 0.28); ctx.lineTo(s * 0.4, 0); ctx.lineTo(s * 0.05, s * 0.28); ctx.stroke();
+    } else if (kind === "west") {
+      ctx.beginPath(); ctx.moveTo(s * 0.4, 0); ctx.lineTo(-s * 0.3, 0); ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(-s * 0.05, -s * 0.28); ctx.lineTo(-s * 0.4, 0); ctx.lineTo(-s * 0.05, s * 0.28); ctx.stroke();
+    } else if (kind === "grab") {
+      ctx.beginPath(); ctx.arc(0, s * 0.12, s * 0.22, 0, Math.PI * 2); ctx.fill();
+      ctx.beginPath(); ctx.moveTo(-s * 0.4, -s * 0.42); ctx.lineTo(-s * 0.4, -s * 0.12); ctx.moveTo(s * 0.4, -s * 0.42); ctx.lineTo(s * 0.4, -s * 0.12);
+      ctx.moveTo(-s * 0.4, -s * 0.42); ctx.lineTo(s * 0.4, -s * 0.42); ctx.stroke();
+    }
+    ctx.restore();
+  }
+  function bakso(ctx, cx, cy, s, opt = {}) {
+    // a bowl of bakso: the goal
+    ctx.save(); ctx.translate(cx, cy);
+    if (opt.glow) { ctx.beginPath(); ctx.arc(0, 0, s * 0.62, 0, Math.PI * 2); ctx.fillStyle = "rgba(242,177,52,0.22)"; ctx.fill(); }
+    ctx.fillStyle = "#E4EEF5"; ctx.beginPath(); ctx.moveTo(-s * 0.46, -s * 0.05); ctx.quadraticCurveTo(-s * 0.4, s * 0.45, 0, s * 0.45); ctx.quadraticCurveTo(s * 0.4, s * 0.45, s * 0.46, -s * 0.05); ctx.closePath(); ctx.fill();
+    ctx.strokeStyle = "#8FA9BD"; ctx.lineWidth = s * 0.05; ctx.stroke();
+    ctx.fillStyle = "#C8B49A"; ctx.beginPath(); ctx.ellipse(0, -s * 0.05, s * 0.44, s * 0.14, 0, 0, Math.PI * 2); ctx.fill();
+    for (const [dx, dy, r] of [[-0.16, -0.1, 0.13], [0.14, -0.12, 0.13], [0, -0.22, 0.12]]) {
+      ctx.fillStyle = "#9A7B5B"; ctx.beginPath(); ctx.arc(dx * s, dy * s, r * s, 0, Math.PI * 2); ctx.fill();
+      ctx.fillStyle = "#B8977A"; ctx.beginPath(); ctx.arc(dx * s - r * s * 0.3, dy * s - r * s * 0.3, r * s * 0.4, 0, Math.PI * 2); ctx.fill();
+    }
+    ctx.fillStyle = "#4CA64C"; for (const dx of [-0.26, 0.1, 0.26]) { ctx.beginPath(); ctx.arc(dx * s, -s * 0.07, s * 0.045, 0, Math.PI * 2); ctx.fill(); }
+    ctx.restore();
+  }
+  function table(ctx, x, y, w, h) {
+    ctx.fillStyle = C.table; rr(ctx, x + w * 0.1, y + h * 0.3, w * 0.8, h * 0.55, 10); ctx.fill();
+    ctx.fillStyle = C.tableTop; rr(ctx, x + w * 0.06, y + h * 0.18, w * 0.88, h * 0.3, 10); ctx.fill();
+    ctx.fillStyle = "rgba(0,0,0,0.12)"; ctx.fillRect(x + w * 0.16, y + h * 0.5, w * 0.08, h * 0.35); ctx.fillRect(x + w * 0.76, y + h * 0.5, w * 0.08, h * 0.35);
+  }
+  function kiko(ctx, cx, cy, s, ang, opt = {}) {
+    ctx.save(); ctx.translate(cx, cy);
+    // shadow
+    ctx.fillStyle = "rgba(0,0,0,0.12)"; ctx.beginPath(); ctx.ellipse(0, s * 0.42, s * 0.42, s * 0.12, 0, 0, Math.PI * 2); ctx.fill();
+    ctx.rotate(ang);
+    // wheels
+    ctx.fillStyle = C.kikoDark; rr(ctx, -s * 0.46, -s * 0.2, s * 0.12, s * 0.5, 5); ctx.fill(); rr(ctx, s * 0.34, -s * 0.2, s * 0.12, s * 0.5, 5); ctx.fill();
+    // body
+    ctx.fillStyle = opt.flash ? `rgba(217,68,59,${0.5 + 0.5 * opt.flash})` : C.kiko; rr(ctx, -s * 0.38, -s * 0.36, s * 0.76, s * 0.72, s * 0.16); ctx.fill();
+    // visor (front, facing up)
+    ctx.fillStyle = C.kikoLight; rr(ctx, -s * 0.26, -s * 0.33, s * 0.52, s * 0.3, s * 0.1); ctx.fill();
+    // eyes
+    const mood = opt.mood || "happy";
+    ctx.fillStyle = C.pupil;
+    if (mood === "sad") { ctx.beginPath(); ctx.arc(-s * 0.12, -s * 0.18, s * 0.05, 0, Math.PI * 2); ctx.arc(s * 0.12, -s * 0.18, s * 0.05, 0, Math.PI * 2); ctx.fill(); ctx.strokeStyle = C.pupil; ctx.lineWidth = s * 0.03; ctx.beginPath(); ctx.arc(0, -s * 0.03, s * 0.08, Math.PI * 1.15, Math.PI * 1.85); ctx.stroke(); }
+    else if (mood === "confused") { ctx.beginPath(); ctx.arc(-s * 0.12, -s * 0.18, s * 0.05, 0, Math.PI * 2); ctx.arc(s * 0.12, -s * 0.18, s * 0.035, 0, Math.PI * 2); ctx.fill(); ctx.strokeStyle = C.pupil; ctx.lineWidth = s * 0.03; ctx.beginPath(); ctx.moveTo(-s * 0.08, -s * 0.06); ctx.lineTo(s * 0.08, -s * 0.09); ctx.stroke(); }
+    else { ctx.beginPath(); ctx.arc(-s * 0.12, -s * 0.18, s * 0.055, 0, Math.PI * 2); ctx.arc(s * 0.12, -s * 0.18, s * 0.055, 0, Math.PI * 2); ctx.fill(); ctx.strokeStyle = C.pupil; ctx.lineWidth = s * 0.03; ctx.beginPath(); ctx.arc(0, -s * 0.1, s * 0.08, Math.PI * 0.15, Math.PI * 0.85); ctx.stroke(); }
+    // front pointer
+    ctx.fillStyle = C.accent; ctx.beginPath(); ctx.moveTo(-s * 0.1, -s * 0.38); ctx.lineTo(s * 0.1, -s * 0.38); ctx.lineTo(0, -s * 0.5); ctx.closePath(); ctx.fill();
+    // antenna
+    ctx.strokeStyle = C.kikoDark; ctx.lineWidth = s * 0.04; ctx.beginPath(); ctx.moveTo(0, s * 0.36); ctx.lineTo(0, s * 0.5); ctx.stroke();
+    ctx.fillStyle = C.accent; ctx.beginPath(); ctx.arc(0, s * 0.52, s * 0.07, 0, Math.PI * 2); ctx.fill();
+    // tray with bakso when grabbed
+    if (opt.grabbed) bakso(ctx, 0, s * 0.05, s * 0.45);
+    ctx.restore();
+    if (opt.wave !== undefined) { // arm waving (title scene)
+      ctx.save(); ctx.translate(cx + s * 0.42, cy - s * 0.1); ctx.rotate(-0.6 + Math.sin(opt.wave * 6) * 0.4);
+      ctx.strokeStyle = C.kikoDark; ctx.lineWidth = s * 0.08; ctx.lineCap = "round"; ctx.beginPath(); ctx.moveTo(0, 0); ctx.lineTo(s * 0.3, -s * 0.3); ctx.stroke();
+      ctx.fillStyle = C.kikoLight; ctx.beginPath(); ctx.arc(s * 0.32, -s * 0.33, s * 0.09, 0, Math.PI * 2); ctx.fill(); ctx.restore();
+    }
+  }
+  function kid(ctx, cx, cy, s, opt = {}) {
+    // simple student figure, standing, facing viewer
+    ctx.save(); ctx.translate(cx, cy);
+    ctx.fillStyle = "rgba(0,0,0,0.12)"; ctx.beginPath(); ctx.ellipse(0, s * 1.02, s * 0.5, s * 0.1, 0, 0, Math.PI * 2); ctx.fill();
+    ctx.fillStyle = C.pants; rr(ctx, -s * 0.3, s * 0.35, s * 0.6, s * 0.5, s * 0.1); ctx.fill();
+    ctx.fillStyle = C.skin; ctx.fillRect(-s * 0.24, s * 0.8, s * 0.16, s * 0.2); ctx.fillRect(s * 0.08, s * 0.8, s * 0.16, s * 0.2);
+    ctx.fillStyle = C.uniform; rr(ctx, -s * 0.36, -s * 0.12, s * 0.72, s * 0.56, s * 0.12); ctx.fill();
+    ctx.strokeStyle = "#D5DDE2"; ctx.lineWidth = s * 0.025; rr(ctx, -s * 0.36, -s * 0.12, s * 0.72, s * 0.56, s * 0.12); ctx.stroke();
+    ctx.fillStyle = C.skin; ctx.beginPath(); ctx.arc(0, -s * 0.42, s * 0.32, 0, Math.PI * 2); ctx.fill();
+    ctx.fillStyle = opt.hairColor || C.hair; ctx.beginPath(); ctx.arc(0, -s * 0.5, s * 0.33, Math.PI, 0); ctx.fill();
+    if (opt.hair === "long") { ctx.fillRect(-s * 0.33, -s * 0.5, s * 0.12, s * 0.45); ctx.fillRect(s * 0.21, -s * 0.5, s * 0.12, s * 0.45); }
+    ctx.fillStyle = C.pupil; ctx.beginPath(); ctx.arc(-s * 0.11, -s * 0.4, s * 0.035, 0, Math.PI * 2); ctx.arc(s * 0.11, -s * 0.4, s * 0.035, 0, Math.PI * 2); ctx.fill();
+    ctx.strokeStyle = C.pupil; ctx.lineWidth = s * 0.025; ctx.beginPath(); ctx.arc(0, -s * 0.33, s * 0.08, Math.PI * 0.15, Math.PI * 0.85); ctx.stroke();
+    // arms
+    ctx.strokeStyle = C.skin; ctx.lineWidth = s * 0.11; ctx.lineCap = "round"; ctx.beginPath();
+    if (opt.point) { ctx.moveTo(s * 0.32, s * 0.02); ctx.lineTo(s * 0.75, -s * 0.2); } else { ctx.moveTo(s * 0.34, s * 0.02); ctx.lineTo(s * 0.42, s * 0.38); }
+    ctx.moveTo(-s * 0.34, s * 0.02); ctx.lineTo(-s * 0.42, s * 0.38); ctx.stroke();
+    ctx.restore();
+  }
+  function bubble(ctx, x, y, w, s, size, opt = {}) {
+    const lines = wrap(ctx, s, size, 600, w - 48); const h = lines.length * size * 1.3 + 40;
+    ctx.fillStyle = opt.fill || C.bubble; ctx.strokeStyle = opt.stroke || "#B7C7BF"; ctx.lineWidth = 3;
+    rr(ctx, x, y - h, w, h, 22); ctx.fill(); ctx.stroke();
+    const tx = opt.tailX !== undefined ? opt.tailX : x + 60;
+    ctx.beginPath(); ctx.moveTo(tx - 16, y); ctx.lineTo(tx + 16, y); ctx.lineTo(tx + (opt.tailDir || 0), y + 28); ctx.closePath(); ctx.fillStyle = opt.fill || C.bubble; ctx.fill();
+    ctx.strokeStyle = opt.stroke || "#B7C7BF"; ctx.beginPath(); ctx.moveTo(tx - 16, y); ctx.lineTo(tx + (opt.tailDir || 0), y + 28); ctx.lineTo(tx + 16, y); ctx.stroke();
+    lines.forEach((l, i) => text(ctx, l, x + 24, y - h + 24 + size + i * size * 1.3, size, { color: opt.color || C.ink, weight: 600 }));
+    return h;
+  }
+  function card(ctx, x, y, w, h, opt = {}) { ctx.fillStyle = opt.fill || C.panel; rr(ctx, x, y, w, h, opt.r || 26); ctx.fill(); if (opt.stroke) { ctx.strokeStyle = opt.stroke; ctx.lineWidth = opt.lw || 4; ctx.stroke(); } }
+
+  // ---------- adegan umum (semua episode) ----------
+  const SCENES = {
+    title(ctx, b, l, t, TL) {
+      card(ctx, 160, 160, 1600, 700, { fill: C.panel });
+      kiko(ctx, 420, 520, 260, 0, { wave: l, mood: "happy" });
+      text(ctx, TL.label || ("Informatika · Fase " + (TL.episode || "D")[0] + " · Episode " + TL.episode), 720, 330, 34, { color: C.ink2, weight: 700 });  // TL.label: label khusus, mis. video simulasi
+      const ts = TL.title.length > 34 ? 74 : 92; const th = para(ctx, TL.title, 720, 440, ts, 1000, { weight: 900, lh: 1.1 }); const hookLines = TL.hook ? wrap(ctx, TL.hook, 34, 800, 1000).length : 0; const hy = Math.max(hookLines >= 3 ? 600 : 640, 440 + th - ts * 0.35 + 30);
+      if (TL.hook) { text(ctx, "SETELAH MENONTON, KAMU BISA:", 720, hy, 26, { color: C.accentDark, weight: 800 }); para(ctx, TL.hook, 720, hy + 50, 34, 1000, { weight: 800, lh: 1.3 }); const ny = hy + 50 + wrap(ctx, TL.hook, 34, 800, 1000).length * 34 * 1.3 + 12; if (ny <= 830) text(ctx, "Dengarkan, atau baca teksnya pelan-pelan.", 720, Math.max(800, ny), 26, { color: C.ink2, weight: 600 }); }
+      else text(ctx, "Dengarkan, atau baca teksnya pelan-pelan.", 720, 700, 36, { color: C.ink2, weight: 600 });
+      if (!TL.label) { arrowIcon(ctx, "up", 1560, 250, 70, C.kikoLight); arrowIcon(ctx, "right", 1660, 250, 70, C.kikoLight); }  // ikon panah khas episode, tidak untuk simulasi
+    },
+    quiz(ctx, b, l, t, TL, answered) {
+      const q = TL.quizzes[b.quiz]; card(ctx, 200, 150, 1520, 740, { stroke: C.accent, lw: 6 });
+      text(ctx, "CEK PEMAHAMAN", 960, 230, 32, { align: "center", color: C.accentDark, weight: 800 });
+      para(ctx, q.q, 960, 320, 44, 1360, { weight: 800, align: "center", lh: 1.3 });
+      // tata letak pilihan: mulai di bawah pertanyaan dan selesai di atas kartu narasi (narasi panjang = jarak dirapatkan)
+      const qLines = wrap(ctx, q.q, 44, 800, 1360).length, subTop = 1056 - (wrap(ctx, b.text, 44, 700, 1660).length * 44 * 1.3 + 44);
+      let oy = qLines <= 1 ? 420 : 470, gap = 120, oh = 96; const n = q.options.length;
+      if (oy + (n - 1) * gap + oh > subTop - 12) { gap = Math.max(104, Math.floor((subTop - 12 - oh - oy) / Math.max(1, n - 1))); }
+      if (oy + (n - 1) * gap + oh > subTop - 12) { oh = 86; gap = 100; oy = Math.max(320 + (qLines - 1) * 57 + 40, subTop - 12 - oh - (n - 1) * gap); }
+      q.options.forEach((o, i) => {
+        const y = oy + i * gap; const right = answered && i === q.answer;
+        card(ctx, 320, y, 1280, oh, { fill: right ? C.goodBg : answered ? "#F4F6F5" : C.bg2, stroke: right ? C.good : "#CFDCD5", lw: right ? 6 : 3 });
+        ctx.fillStyle = right ? C.good : C.kiko; ctx.beginPath(); ctx.arc(380, y + oh / 2, 30, 0, Math.PI * 2); ctx.fill();
+        text(ctx, "ABC"[i], 380, y + oh / 2 + 13, 34, { align: "center", color: "#fff", weight: 900 });
+        text(ctx, o, 440, y + oh / 2 + 14, 38, { weight: 700, color: answered && !right ? C.muted : C.ink });
+        if (right) text(ctx, "✓", 1540, y + oh / 2 + 18, 54, { align: "center", color: C.good, weight: 900 });
+      });
+      if (!answered) { // thinking timer
+        const frac = clamp(l / b.dur, 0, 1); ctx.strokeStyle = "#D7E2DC"; ctx.lineWidth = 14; ctx.beginPath(); ctx.arc(1640, 230, 40, 0, Math.PI * 2); ctx.stroke();
+        ctx.strokeStyle = C.accent; ctx.beginPath(); ctx.arc(1640, 230, 40, -Math.PI / 2, -Math.PI / 2 + frac * Math.PI * 2); ctx.stroke();
+        // catatan hanya digambar bila tidak tertutup kartu narasi (narasi tiga baris atau lebih menutupinya)
+        const subTop = 1056 - (wrap(ctx, b.text, 44, 700, 1660).length * 44 * 1.3 + 44);
+        if (subTop > 880) text(ctx, "Pikirkan dulu, jangan buru-buru.", 960, 860, 32, { align: "center", color: C.ink2, weight: 600 });
+      }
+    },
+    quiz_answer(ctx, b, l, t, TL) { SCENES.quiz(ctx, b, l, t, TL, true); },
+    recap(ctx, b, l, t, TL) {
+      // TL.recap: tiga kalimat pendek dari script.json
+      card(ctx, 160, 140, 1600, 760);
+      text(ctx, "TIGA HAL UNTUK DIINGAT", 960, 230, 34, { align: "center", color: C.accentDark, weight: 900 });
+      const items = TL.recap || [];
+      const show = clamp(Math.floor((l - 0.6) / 2.2) + 1, 1, Math.max(1, items.length));
+      items.forEach((s, i) => { if (i >= show) return; card(ctx, 300, 290 + i * 180, 1320, 140, { fill: C.bg2 }); ctx.fillStyle = C.kiko; ctx.beginPath(); ctx.arc(380, 360 + i * 180, 40, 0, Math.PI * 2); ctx.fill(); text(ctx, String(i + 1), 380, 376 + i * 180, 40, { align: "center", color: "#fff", weight: 900 }); text(ctx, s, 450, 375 + i * 180, 42, { weight: 800, fit: 1130 }); });
+      kiko(ctx, 1620, 820, 130, 0);
+    },
+    outro(ctx, b, l, t, TL) {
+      // TL.next: {code, title, note} episode berikutnya, dari script.json
+      const n = TL.next || {};
+      card(ctx, 260, 200, 1400, 600);
+      text(ctx, n.heading || "EPISODE BERIKUTNYA", 960, 320, 34, { align: "center", color: C.accentDark, weight: 900 });
+      text(ctx, n.code || "", 960, 440, 60, { align: "center", weight: 900 });
+      text(ctx, n.title || "", 960, 530, 54, { align: "center", weight: 800, color: C.ink2, fit: 1320 });
+      text(ctx, n.note || "", 960, 680, 34, { align: "center", color: C.ink2, weight: 600 });
+      kiko(ctx, 960, 760 + 20, 140, 0, { wave: l });
+    }
+  };
+
+  function beatAt(TL, t) {
+    let b = TL.beats[0];
+    for (const x of TL.beats) { if (t >= x.start) b = x; else break; }
+    return b;
+  }
+  function draw(ctx, t, TL, opt = {}) {
+    const b = beatAt(TL, t); const l = t - b.start;
+    ctx.save(); ctx.setTransform(1, 0, 0, 1, 0, 0);
+    ctx.fillStyle = C.bg; ctx.fillRect(0, 0, W, H);
+    // header
+    text(ctx, TL.episode + " · " + TL.title, 60, 78, 30, { color: C.ink2, weight: 700 });
+    text(ctx, TL.segments[b.seg], 1860, 78, 30, { color: C.accentDark, weight: 800, align: "right" });
+    ctx.fillStyle = C.bg2; ctx.fillRect(0, 100, W, 6); ctx.fillStyle = C.accent; ctx.fillRect(0, 100, W * clamp(t / TL.total, 0, 1), 6);
+    const fn = SCENES[b.scene]; if (fn) fn(ctx, b, l, t, TL);
+    // narration card (burned-in text the student reads)
+    if (opt.subtitles !== false) {
+      const size = 44; const lines = wrap(ctx, b.text, size, 700, 1660);
+      const h = lines.length * size * 1.3 + 44; const y0 = 1056 - h;
+      ctx.fillStyle = "rgba(31,42,51,0.92)"; rr(ctx, 100, y0, 1720, h, 20); ctx.fill();
+      // reading progress (how far along the text the reader should be)
+      const frac = clamp(l / b.audio, 0, 1); ctx.fillStyle = C.accent; rr(ctx, 100, y0 + h - 8, 1720 * frac, 8, 4); ctx.fill();
+      lines.forEach((ln, i) => text(ctx, ln, 960, y0 + 22 + size + i * size * 1.3, size, { align: "center", color: C.subText, weight: 700 }));
+    }
+    ctx.restore();
+    return b;
+  }
+
+  global.Kiko = { draw, beatAt, W, H, C, FONT, SCENES,
+    helpers: { rr, text, wrap, para, arrowIcon, bakso, table, kiko, kid, bubble, card, ease, clamp, lerp } };
+})(typeof window !== "undefined" ? window : globalThis);
+
+/* Layar: pembantu gambar bersama untuk video simulasi (episodes/sim/...).
+   Aplikasi generik digambar dengan kode, tanpa logo atau tampilan merek: jendela aplikasi, lembar kerja (bilah rumus + kisi sel),
+   pointer mouse dengan efek klik, tombol keyboard, label penunjuk, pembesaran, dan penerjemah "aksi" (klik, ketik, tekan tombol)
+   supaya satu adegan bisa memperagakan beberapa langkah berurutan. Muat setelah kiko-core.js. */
+(function (global) {
+  const K = global.Kiko, H = K.helpers, C = K.C;
+  const { rr, text, ease, clamp, lerp } = H;
+  const L = {};
+  const UI = { frame: "#C9D4DB", bar: "#EEF2F5", menuInk: "#3D4B55", grid: "#DDE5EA", head: "#EEF2F5", headInk: "#5B6B76",
+               select: "#1A73C8", selectBg: "rgba(26,115,200,0.10)", formula: "#1F5A6E", window: "#FFFFFF" };
+  L.UI = UI;
+
+  // ---------- jendela aplikasi ----------
+  // opt: title, menus [..], tools (true = deretan ikon sederhana). Mengembalikan area isi {x, y, w, h}.
+  L.window = function (ctx, x, y, w, h, opt = {}) {
+    ctx.save(); ctx.shadowColor = "rgba(31,42,51,0.18)"; ctx.shadowBlur = 30; ctx.shadowOffsetY = 10;
+    ctx.fillStyle = UI.window; rr(ctx, x, y, w, h, 16); ctx.fill(); ctx.restore();
+    ctx.strokeStyle = UI.frame; ctx.lineWidth = 2; rr(ctx, x, y, w, h, 16); ctx.stroke();
+    ctx.save(); rr(ctx, x, y, w, h, 16); ctx.clip();
+    ctx.fillStyle = UI.bar; ctx.fillRect(x, y, w, 46);
+    ["#E5675F", "#F2B134", "#4CB46A"].forEach((c, i) => { ctx.fillStyle = c; ctx.beginPath(); ctx.arc(x + 28 + i * 26, y + 23, 8, 0, Math.PI * 2); ctx.fill(); });
+    text(ctx, opt.title || "Aplikasi", x + w / 2, y + 31, 22, { align: "center", weight: 700, color: UI.menuInk });
+    let cy = y + 46;
+    if (opt.menus) {
+      ctx.fillStyle = "#FFFFFF"; ctx.fillRect(x, cy, w, 40);
+      let mx = x + 24; opt.menus.forEach((m, i) => {
+        const on = opt.menuOn === m; ctx.font = `600 21px Inter`; const mw = ctx.measureText(m).width + 24;
+        if (on) { ctx.fillStyle = "#DCE9F7"; rr(ctx, mx - 8, cy + 5, mw, 30, 6); ctx.fill(); }
+        text(ctx, m, mx + 4, cy + 27, 21, { weight: 600, color: on ? UI.select : UI.menuInk }); mx += mw + 6;
+      });
+      cy += 40;
+    }
+    if (opt.tools) {
+      ctx.fillStyle = "#F7F9FA"; ctx.fillRect(x, cy, w, 44);
+      const icons = opt.tools === true ? ["💾", "↶", "↷", "B", "I", "Σ", "%"] : opt.tools;
+      icons.forEach((ic, i) => { const bx = x + 20 + i * 52; ctx.fillStyle = "#FFFFFF"; rr(ctx, bx, cy + 6, 40, 32, 6); ctx.fill(); ctx.strokeStyle = "#E1E7EB"; ctx.lineWidth = 1.5; rr(ctx, bx, cy + 6, 40, 32, 6); ctx.stroke();
+        text(ctx, ic, bx + 20, cy + 29, ic.length > 1 ? 18 : 20, { align: "center", weight: 800, color: UI.menuInk }); });
+      cy += 44;
+    }
+    ctx.strokeStyle = UI.grid; ctx.lineWidth = 1.5; ctx.beginPath(); ctx.moveTo(x, cy); ctx.lineTo(x + w, cy); ctx.stroke();
+    ctx.restore();
+    return { x, y: cy, w, h: y + h - cy };
+  };
+
+  // ---------- lembar kerja ----------
+  const COLS = "ABCDEFGHIJ";
+  L.col = c => COLS.indexOf(c);
+  // st: { cells: {A1: {v, f?}} | {A1: "teks"}, active: "B3", edit: {addr, text} (sedang diketik), range: ["B2","B6"] (sorotan rentang),
+  //       copy: ["D2","D6"] (bingkai putus-putus), changed: [alamat] (hijau sesaat), cols: 6, rows: 8, cw: 190 | {A: 170, ...}, rh: 50,
+  //       showFormulas: false, handleHover: false }
+  // Mengembalikan geometri: {cell(addr), handle(addr), nameBox, fx, bottom}
+  L.sheet = function (ctx, area, st = {}) {
+    const x = area.x, y = area.y, cols = st.cols || 6, rows = st.rows || 8, rh = st.rh || 50, hw = 60;
+    const cwOf = c => typeof st.cw === "object" ? (st.cw[COLS[c]] || 180) : (st.cw || 180);
+    const colX = c => { let px = x + hw; for (let i = 0; i < c; i++) px += cwOf(i); return px; };
+    const gridW = colX(cols) - x;
+    // bilah rumus
+    const fy = y + 10; const active = st.edit ? st.edit.addr : st.active;
+    const cell0 = active && L.get(st.cells, active);
+    ctx.fillStyle = "#FFFFFF"; rr(ctx, x + 12, fy, 120, 48, 8); ctx.fill(); ctx.strokeStyle = UI.frame; ctx.lineWidth = 2; rr(ctx, x + 12, fy, 120, 48, 8); ctx.stroke();
+    text(ctx, active || "", x + 72, fy + 33, 24, { align: "center", weight: 800, color: UI.menuInk });
+    const fxW = Math.max(400, gridW - 150);
+    ctx.fillStyle = "#FFFFFF"; rr(ctx, x + 144, fy, fxW, 48, 8); ctx.fill(); ctx.strokeStyle = st.fxFocus ? UI.select : UI.frame; ctx.lineWidth = st.fxFocus ? 3 : 2; rr(ctx, x + 144, fy, fxW, 48, 8); ctx.stroke();
+    text(ctx, "fx", x + 162, fy + 32, 21, { weight: 800, color: "#8A99A3" }); ctx.fillStyle = UI.grid; ctx.fillRect(x + 196, fy + 10, 2, 28);
+    const fxText = st.edit ? st.edit.text : (cell0 ? (cell0.f || L.show(cell0.v)) : "");
+    text(ctx, fxText, x + 212, fy + 33, 25, { weight: 700, color: (st.edit ? st.edit.text : cell0 && cell0.f) && String(fxText).startsWith("=") ? UI.formula : C.ink });
+    if (st.edit && st.caret) { ctx.font = "700 25px Inter"; const cw = ctx.measureText(st.edit.text).width; ctx.fillStyle = C.ink; ctx.fillRect(x + 214 + cw, fy + 11, 2.5, 27); }
+    // kisi
+    const gy = fy + 66; const H0 = rh * (rows + 1);
+    ctx.fillStyle = "#FFFFFF"; ctx.fillRect(x, gy, gridW, H0);
+    ctx.fillStyle = UI.head; ctx.fillRect(x, gy, gridW, rh); ctx.fillRect(x, gy, hw, H0);
+    const ac = active ? { c: L.col(active[0]), r: parseInt(active.slice(1)) } : null;
+    for (let c = 0; c < cols; c++) {
+      if (ac && ac.c === c) { ctx.fillStyle = "#D5E3F3"; ctx.fillRect(colX(c), gy, cwOf(c), rh); }
+      text(ctx, COLS[c], colX(c) + cwOf(c) / 2, gy + rh / 2 + 8, 22, { align: "center", weight: 700, color: ac && ac.c === c ? UI.select : UI.headInk });
+    }
+    for (let r = 1; r <= rows; r++) {
+      if (ac && ac.r === r) { ctx.fillStyle = "#D5E3F3"; ctx.fillRect(x, gy + rh * r, hw, rh); }
+      text(ctx, String(r), x + hw / 2, gy + rh * r + rh / 2 + 8, 22, { align: "center", weight: 700, color: ac && ac.r === r ? UI.select : UI.headInk });
+    }
+    const geo = {
+      cell(addr) { const c = L.col(addr[0]), r = parseInt(addr.slice(1)); const cx = colX(c), cy = gy + rh * r; return { x: cx, y: cy, w: cwOf(c), h: rh, cx: cx + cwOf(c) / 2, cy: cy + rh / 2 }; },
+      handle(addr) { const q = this.cell(addr); return { x: q.x + q.w - 1, y: q.y + q.h - 1 }; },
+      colLine(c) { return { x: colX(c), y: gy + rh / 2 }; },
+      nameBox: { x: x + 72, y: fy + 24 }, fx: { x: x + 212, y: fy + 24 }, bottom: gy + H0, right: x + gridW, top: gy
+    };
+    // sorotan rentang
+    if (st.range) { const a = geo.cell(st.range[0]), b = geo.cell(st.range[1]); ctx.fillStyle = UI.selectBg; ctx.fillRect(a.x, a.y, b.x + b.w - a.x, b.y + b.h - a.y); }
+    (st.changed || []).forEach(addr => { const q = geo.cell(addr); ctx.fillStyle = C.goodBg; ctx.fillRect(q.x + 1, q.y + 1, q.w - 2, q.h - 2); });
+    (st.marks || []).forEach(([addr, color]) => { const q = geo.cell(addr); ctx.fillStyle = color; ctx.fillRect(q.x + 1, q.y + 1, q.w - 2, q.h - 2); });
+    // garis kisi
+    ctx.strokeStyle = UI.grid; ctx.lineWidth = 1.5;
+    for (let r = 0; r <= rows + 1; r++) { ctx.beginPath(); ctx.moveTo(x, gy + rh * r); ctx.lineTo(x + gridW, gy + rh * r); ctx.stroke(); }
+    for (let c = 0; c <= cols; c++) { ctx.beginPath(); ctx.moveTo(colX(c), gy); ctx.lineTo(colX(c), gy + H0); ctx.stroke(); }
+    ctx.beginPath(); ctx.moveTo(x, gy); ctx.lineTo(x, gy + H0); ctx.stroke();
+    // isi sel
+    Object.keys(st.cells || {}).forEach(addr => {
+      const c = L.col(addr[0]), r = parseInt(addr.slice(1)); if (c < 0 || c >= cols || r < 1 || r > rows) return;
+      if (st.edit && st.edit.addr === addr) return;
+      const v = L.get(st.cells, addr); const q = geo.cell(addr);
+      const shown = st.showFormulas && v.f ? v.f : L.show(v.v);
+      const isNum = typeof v.v === "number" && !(st.showFormulas && v.f);
+      let shownFit = shown; if (isNum) { ctx.font = "600 25px Inter"; if (ctx.measureText(shown).width > q.w - 20) shownFit = "#".repeat(Math.max(2, Math.floor((q.w - 20) / 16))); }
+      ctx.save(); ctx.beginPath(); ctx.rect(q.x + 2, q.y, q.w - 4, q.h); ctx.clip();
+      text(ctx, shownFit, isNum ? q.x + q.w - 14 : q.x + 12, q.y + q.h / 2 + 9, 25, { align: isNum ? "right" : "left", weight: v.bold ? 800 : 600, color: v.color || ((st.changed || []).includes(addr) ? C.good : C.ink) });
+      ctx.restore();
+    });
+    // sel yang sedang diketik
+    if (st.edit) { const q = geo.cell(st.edit.addr); ctx.fillStyle = "#FFFFFF"; ctx.fillRect(q.x + 2, q.y + 2, q.w - 4, q.h - 4);
+      const isF = String(st.edit.text).startsWith("=");
+      text(ctx, st.edit.text, q.x + 12, q.y + q.h / 2 + 9, 25, { weight: 600, color: isF ? UI.formula : C.ink });
+      if (st.caret) { ctx.font = "600 25px Inter"; const w = ctx.measureText(st.edit.text).width; ctx.fillStyle = C.ink; ctx.fillRect(q.x + 14 + w, q.y + 11, 2.5, q.h - 22); } }
+    // rujukan rumus berwarna saat mengetik rumus
+    (st.refs || []).forEach(([addr, color]) => { const q = geo.cell(addr); ctx.strokeStyle = color; ctx.lineWidth = 3; ctx.setLineDash([]); ctx.strokeRect(q.x + 2, q.y + 2, q.w - 4, q.h - 4); });
+    // bingkai salin putus-putus
+    if (st.copy) { const a = geo.cell(st.copy[0]), b = geo.cell(st.copy[1]); ctx.strokeStyle = UI.select; ctx.lineWidth = 3; ctx.setLineDash([10, 7]); ctx.lineDashOffset = -(st.dash || 0); ctx.strokeRect(a.x + 2, a.y + 2, b.x + b.w - a.x - 4, b.y + b.h - a.y - 4); ctx.setLineDash([]); }
+    // sel aktif + gagang isi
+    if (active && !st.edit) { const q = geo.cell(active); const q2 = st.selTo ? geo.cell(st.selTo) : q;
+      ctx.strokeStyle = UI.select; ctx.lineWidth = 4; ctx.strokeRect(q.x + 1, q.y + 1, q2.x + q2.w - q.x - 2, q2.y + q2.h - q.y - 2);
+      const hx = q2.x + q2.w - 1, hy = q2.y + q2.h - 1; const s = st.handleHover ? 13 : 10;
+      ctx.fillStyle = "#FFFFFF"; ctx.fillRect(hx - s / 2 - 2, hy - s / 2 - 2, s + 4, s + 4); ctx.fillStyle = UI.select; ctx.fillRect(hx - s / 2, hy - s / 2, s, s); }
+    else if (st.edit) { const q = geo.cell(st.edit.addr); ctx.strokeStyle = UI.select; ctx.lineWidth = 4; ctx.strokeRect(q.x + 1, q.y + 1, q.w - 2, q.h - 2); }
+    return geo;
+  };
+  L.get = (cells, addr) => { const v = (cells || {})[addr]; return v == null ? { v: "" } : (typeof v === "object" ? v : { v }); };
+  L.show = v => typeof v === "number" ? (Number.isInteger(v) ? String(v) : v.toLocaleString("id-ID", { maximumFractionDigits: 2 })) : (v == null ? "" : String(v));
+
+  // ---------- pointer mouse ----------
+  // kind: "arrow" | "plus" (tanda tambah tipis gagang isi) | "text"; click: 0..1 (efek denyut), down: tombol ditahan
+  L.cursor = function (ctx, x, y, opt = {}) {
+    const kind = opt.kind || "arrow";
+    if (opt.click > 0 && opt.click < 1) { const u = opt.click; ctx.strokeStyle = `rgba(242,177,52,${1 - u})`; ctx.lineWidth = 5; ctx.beginPath(); ctx.arc(x, y, 12 + u * 34, 0, Math.PI * 2); ctx.stroke(); }
+    if (opt.down) { ctx.fillStyle = "rgba(242,177,52,0.35)"; ctx.beginPath(); ctx.arc(x, y, 18, 0, Math.PI * 2); ctx.fill(); }
+    ctx.save(); ctx.translate(x, y);
+    if (kind === "plus") {
+      ctx.strokeStyle = "#FFFFFF"; ctx.lineWidth = 7; ctx.beginPath(); ctx.moveTo(-16, 0); ctx.lineTo(16, 0); ctx.moveTo(0, -16); ctx.lineTo(0, 16); ctx.stroke();
+      ctx.strokeStyle = C.ink; ctx.lineWidth = 3; ctx.beginPath(); ctx.moveTo(-15, 0); ctx.lineTo(15, 0); ctx.moveTo(0, -15); ctx.lineTo(0, 15); ctx.stroke();
+    } else if (kind === "text") {
+      ctx.strokeStyle = "#FFFFFF"; ctx.lineWidth = 6; ctx.beginPath(); ctx.moveTo(0, -16); ctx.lineTo(0, 16); ctx.stroke();
+      ctx.strokeStyle = C.ink; ctx.lineWidth = 2.5; ctx.beginPath(); ctx.moveTo(-6, -16); ctx.lineTo(6, -16); ctx.moveTo(0, -16); ctx.lineTo(0, 16); ctx.moveTo(-6, 16); ctx.lineTo(6, 16); ctx.stroke();
+    } else {
+      const s = opt.size || 1.25; ctx.scale(s, s);
+      ctx.beginPath(); ctx.moveTo(0, 0); ctx.lineTo(0, 30); ctx.lineTo(8, 23); ctx.lineTo(13, 35); ctx.lineTo(18, 33); ctx.lineTo(13, 21); ctx.lineTo(23, 21); ctx.closePath();
+      ctx.fillStyle = "#FFFFFF"; ctx.fill(); ctx.strokeStyle = C.ink; ctx.lineWidth = 2.2; ctx.lineJoin = "round"; ctx.stroke();
+    }
+    ctx.restore();
+  };
+
+  // ---------- tombol keyboard ----------
+  // keys: ["Enter"] atau ["Ctrl", "S"]; press: 0..1 (tombol tertekan di tengahnya)
+  L.keys = function (ctx, x, y, keys, opt = {}) {
+    const size = opt.size || 30; let px = x;
+    const ws = keys.map(k => { ctx.font = `800 ${size}px Inter`; return Math.max(size * 2.1, ctx.measureText(k).width + size * 1.2); });
+    const total = ws.reduce((a, b) => a + b, 0) + (keys.length - 1) * 46;
+    if (opt.align === "center") px = x - total / 2;
+    const down = opt.press > 0.15 && opt.press < 0.75;
+    keys.forEach((k, i) => {
+      const w = ws[i], h = size * 2.1, dy = down ? 5 : 0;
+      ctx.fillStyle = "#A9B6BE"; rr(ctx, px, y + 6, w, h, 12); ctx.fill();
+      ctx.fillStyle = down ? "#FFF3D6" : "#FFFFFF"; rr(ctx, px, y + dy, w, h, 12); ctx.fill(); ctx.strokeStyle = down ? C.accent : "#9AA8B1"; ctx.lineWidth = 2.5; rr(ctx, px, y + dy, w, h, 12); ctx.stroke();
+      text(ctx, k, px + w / 2, y + dy + h / 2 + size * 0.36, size, { align: "center", weight: 800, color: C.ink });
+      px += w; if (i < keys.length - 1) { text(ctx, "+", px + 23, y + h / 2 + size * 0.36, size, { align: "center", weight: 900, color: C.ink2 }); px += 46; }
+    });
+    return total;
+  };
+
+  // ---------- label penunjuk ----------
+  // label kotak dengan garis ke titik (tx, ty)
+  L.callout = function (ctx, x, y, s, tx, ty, opt = {}) {
+    const size = opt.size || 26; ctx.font = `800 ${size}px Inter`; const lines = H.wrap(ctx, s, size, 800, opt.maxW || 420);
+    const w = Math.max(...lines.map(l => ctx.measureText(l).width)) + 36, h = lines.length * size * 1.25 + 26;
+    if (tx != null) { ctx.strokeStyle = opt.color || C.accentDark; ctx.lineWidth = 3; ctx.beginPath(); ctx.moveTo(x + w / 2, y + h / 2); ctx.lineTo(tx, ty); ctx.stroke(); ctx.fillStyle = opt.color || C.accentDark; ctx.beginPath(); ctx.arc(tx, ty, 7, 0, Math.PI * 2); ctx.fill(); }
+    ctx.fillStyle = opt.fill || "#FFF3D6"; rr(ctx, x, y, w, h, 12); ctx.fill(); ctx.strokeStyle = opt.color || C.accent; ctx.lineWidth = 3; rr(ctx, x, y, w, h, 12); ctx.stroke();
+    lines.forEach((ln, i) => text(ctx, ln, x + 18, y + 13 + size + i * size * 1.25, size, { weight: 800, color: opt.ink || C.ink }));
+    return { w, h };
+  };
+
+  // ---------- pembesaran ----------
+  // zoom(ctx, px, py, s, fn): gambar fn() dengan pembesaran s berpusat di (px, py) yang dipindah ke (qx, qy)
+  L.zoom = function (ctx, px, py, s, fn, qx = px, qy = py) {
+    ctx.save(); ctx.translate(qx, qy); ctx.scale(s, s); ctx.translate(-px, -py); fn(); ctx.restore();
+  };
+
+  // ---------- penerjemah aksi ----------
+  // steps: daftar aksi berurutan, masing-masing punya durasi relatif "d" (dibagi rata ke "span" detik):
+  //   {move: "B3"} pointer bergerak ke tengah sel · {click: "B3"} klik (memilih sel) · {type: "Bakso", to: "A1"} mengetik ke sel
+  //   {key: "Tab"|"Enter", commit: true} tombol: menyimpan ketikan, pilihan pindah · {set: {A1: ...}} ubah isi sel langsung
+  //   {drag: ["D2", "D6"]} drag gagang isi · {wait: 1}
+  // Hasil: state lembar kerja + posisi pointer + tombol yang sedang tampil, untuk waktu lokal l.
+  L.play = function (base, steps, l, span, geoFn) {
+    const st = { cells: { ...(base.cells || {}) }, active: base.active, edit: null, caret: true, copy: null, refs: [], range: null, changed: [] };
+    const total = steps.reduce((a, s) => a + (s.d || 1), 0); const unit = span / total;
+    let t0 = 0, ptr = base.pointer ? { ...base.pointer } : null, key = null, click = 0, kind = "arrow", down = false;
+    for (const s of steps) {
+      const d = (s.d || 1) * unit, u = clamp((l - t0) / d, 0, 1); if (l < t0) break;
+      const target = a => geoFn().cell(a);
+      if (s.move || s.click) { const q = target(s.move || s.click); const to = { x: q.x + q.w * 0.62, y: q.y + q.h * 0.6 }; const from = ptr || to; const m = ease(clamp(u / 0.6, 0, 1)); ptr = { x: lerp(from.x, to.x, m), y: lerp(from.y, to.y, m) }; kind = "arrow";
+        if (s.tap && u >= 0.6 && u < 1) click = clamp((u - 0.6) / 0.4, 0, 0.99);
+        if (s.click && u >= 0.6) { click = clamp((u - 0.6) / 0.4, 0, 0.99); st.active = s.click; if (st.edit) { st.cells[st.edit.addr] = s.editValue || st.edit.text; st.edit = null; } } if (u >= 1) click = 0; }
+      if (s.type != null) { const addr = s.to || st.active; const n = Math.round(s.type.length * clamp(u / 0.9, 0, 1)); st.edit = { addr, text: (s.prefix || "") + s.type.slice(0, n) }; st.active = addr; st.caret = Math.floor(l * 2.2) % 2 === 0 || u < 1;
+        if (s.refs) st.refs = s.refs.filter(r => n >= r[2]).map(r => [r[0], r[1]]); }
+      if (s.key) { key = u < 1 ? { keys: [].concat(s.key), press: u } : null; if (u >= 0.45 && s.commit && st.edit) { st.cells[st.edit.addr] = s.value != null ? s.value : st.edit.text; st.edit = null; st.refs = []; st.active = s.next || st.active; } }
+      if (s.set && u >= 0.5) { Object.assign(st.cells, s.set); if (s.flash) st.changed = Object.keys(s.set); }
+      if (s.drag) { const g = geoFn(); const a = g.handle(s.drag[0]), b = g.handle(s.drag[1]); kind = "plus";
+        const from = ptr || a; const m1 = ease(clamp(u / 0.25, 0, 1)); const m2 = ease(clamp((u - 0.3) / 0.55, 0, 1));
+        ptr = u < 0.3 ? { x: lerp(from.x, a.x, m1), y: lerp(from.y, a.y, m1) } : { x: lerp(a.x, b.x, m2), y: lerp(a.y, b.y, m2) }; down = u >= 0.25 && u < 0.88;
+        st.active = s.drag[0]; if (down) { st.dragTo = u < 0.3 ? s.drag[0] : (m2 > 0.98 ? s.drag[1] : null); st.dragFrac = m2; st.dragSpan = s.drag; }
+        if (u >= 0.88) { Object.assign(st.cells, s.fill || {}); st.selTo = s.drag[1]; st.changed = Object.keys(s.fill || {}); } }
+      if (s.hover) { const g = geoFn(); const h = g.handle(s.hover); const from = ptr || h; const m = ease(clamp(u / 0.7, 0, 1)); ptr = { x: lerp(from.x, h.x, m), y: lerp(from.y, h.y, m) }; kind = u > 0.7 ? "plus" : "arrow"; st.handleHover = u > 0.7; }
+      if (s.select) { st.active = s.select[0]; st.selTo = s.select[1]; }
+      if (s.state) Object.assign(st, s.state);
+      t0 += d;
+    }
+    if (st.selTo && st.selTo === st.active) st.selTo = null;
+    return { st, ptr, key, click, kind, down };
+  };
+
+  K.layar = L;
+})(typeof window !== "undefined" ? window : globalThis);
+
+/* Layar Web: pembantu gambar bersama untuk simulasi yang memakai browser, halaman web, formulir, dan halaman admin router
+   (S09, S17; dipakai juga S10, S27, S29, S31, S07, S08, S30, S11). Pemilik: kelompok S09/S17.
+   Muat setelah kiko-core.js dan layar.js:
+     "engine": ["../../_alat/kiko-core.js", "../../_alat/layar.js", "../../_alat/layar_web.js", "scenes.js"]
+   Semua tampilan generik: tanpa logo, warna khas, atau tata letak yang meniru merek tertentu. Situs rekaan memakai domain .example,
+   IP memakai 192.168.x.x / 10.x.x.x. Ukuran huruf dirancang untuk kanvas 1920×1080 (terbaca juga saat dipotong untuk Short).
+
+   ===== API: Kiko.web (di adegan: const W = K.web) =====
+   Waktu dan pointer (dipakai di adegan beraksi; l = detik lokal beat, span = lama aksi, biasanya (b.audio || b.dur) * 0.9):
+     W.seq(l, span, ds)            ds = durasi relatif tiap langkah [1, 2, 1]; → {i: langkah sekarang, u: kemajuan langkah itu 0..1,
+                                   p(k): kemajuan langkah k 0..1, at(k): true bila langkah k sudah dimulai, n: jumlah langkah selesai}
+     W.path(l, span, pts, from)    pointer bergerak ke tiap titik berurutan. pts = [{x, y, d, click, down}] (d relatif, bawaan 1;
+                                   click: denyut klik di akhir gerak; down: tombol ditahan selama langkah itu). from = posisi awal.
+                                   → {x, y, click (0..1 atau 0), down, i}. Gambar dengan K.layar.cursor(ctx, p.x, p.y, {click: p.click}).
+     W.typed(s, u)                 potongan s yang sudah "diketik" pada kemajuan u (0..1).
+     W.num(n)                      3120000 → "3.120.000" (format Indonesia).
+   Jendela browser:
+     W.browser(ctx, x, y, w, h, opt) → {x, y, w, h (area isi halaman), url: {x, y, w, h, cx, cy}, tab(i), back, fwd, reload, newTab}
+         opt.tabs: ["Judul", ...] (bawaan ["Tab baru"]), opt.tab: indeks tab aktif, opt.url: "cari.example/…" (tanpa https://),
+         opt.secure: true (gembok, bawaan) | false ("Tidak aman"), opt.urlFocus, opt.caret, opt.urlSel (alamat tersorot),
+         opt.urlMark: [awal, akhir] bagian alamat yang disorot kuning, opt.loading: 0..1 (garis muat di bawah bilah alamat),
+         opt.canBack, opt.canFwd, opt.bg (warna isi, bawaan putih), opt.dim (0..1, isi digelapkan untuk dialog).
+         Isi halaman digambar pemanggil di area yang dikembalikan; pakai W.clip(ctx, area, fn) supaya tidak meluber.
+     W.clip(ctx, area, fn)         gambar fn() terpotong di dalam area {x, y, w, h}.
+   Halaman hasil pencarian (mesin pencari rekaan, nama bawaan "Cari"):
+     W.searchPage(ctx, area, st) → {box (+ box.at(i): x huruf ke-i query, box.end), btn, tabsY, tools, timeBtn, timeItem(i), result(i), count, bottom}
+         st.engine ("Cari"), st.query, st.focus, st.caret, st.caretAt (indeks posisi kursor, bawaan akhir), st.mark [awal, akhir] (sorot kuning di query), st.home (halaman awal: kotak di tengah),
+         st.tab (indeks tab "Semua/Gambar/Berita/Video"), st.tools (bilah alat terbuka), st.time (teks pilihan waktu, bawaan "Kapan saja"),
+         st.timeOpen (menu waktu terbuka), st.timeHi (indeks pilihan yang disorot), st.count (teks jumlah hasil, mis. "Sekitar 3.120.000 hasil (0,41 detik)"),
+         st.countMark (sorot kuning pada baris jumlah), st.results [hasil], st.snipLines (baris cuplikan, bawaan 2), st.empty (pesan bila results kosong), st.scroll (px).
+       hasil = {title, url, snippet ("teks dengan *kata tebal*"), date ("12 Mar 2026"), type ("PDF"), ad (label Iklan),
+                mark ("good" | "bad" | "dim"), alpha (0..1), strike (coret, untuk hasil yang dibuang)}
+     W.result(ctx, x, y, w, r, snipLines) → tinggi satu hasil (dipakai searchPage; bisa dipakai sendiri, mis. kartu perbandingan).
+     W.TIME_ITEMS                  ["Kapan saja", "24 jam terakhir", "Seminggu terakhir", "Sebulan terakhir", "Setahun terakhir"]
+   Halaman web generik:
+     W.page(ctx, area, st) → {head, title, body, bottom}: st.site (nama situs di kepala), st.nav ["Beranda", ...], st.head (warna kepala netral),
+         st.title, st.meta ("Oleh … · 3 Nov 2026"), st.body (["paragraf", ...] atau angka = jumlah baris abu-abu), st.img ({label, h}), st.size.
+   Formulir (semua mengembalikan kotaknya {x, y, w, h, cx, cy}):
+     W.field(ctx, x, y, w, opt)    kolom teks. opt.label (di atas), value, placeholder, password (titik-titik), show (sandi terlihat; ikon mata),
+                                   focus, caret, error (pesan merah), ok (bingkai hijau), hint (teks kecil abu-abu), h (bawaan 56), size (bawaan 24),
+                                   mark [awal, akhir] sorot kuning, disabled.
+     W.button(ctx, x, y, w, h, label, opt)   opt.kind "primary" (bawaan) | "secondary" | "danger" | "good", press (0..1 denyut), disabled, size.
+     W.checkbox(ctx, x, y, label, on, opt)   opt.size (bawaan 24), maxW (label dilipat), focus.
+     W.radio(ctx, x, y, label, on, opt)      sama dengan checkbox.
+     W.toggle(ctx, x, y, on, opt)            sakelar; on boleh pecahan 0..1 untuk animasi; opt.label di kanan.
+     W.select(ctx, x, y, w, value, opt) → {x, y, w, h, cx, cy, item(i)}   pilihan dropdown. opt.label, open, items [...], hi (disorot),
+                                   sel (terpilih, diberi ✓), warn [indeks yang ditandai merah, mis. pilihan tidak aman], h, size.
+     W.banner(ctx, x, y, w, msg, kind) → tinggi   kind "info" | "warn" | "bad" | "good".
+     W.meter(ctx, x, y, w, level)  kekuatan sandi 0..4 → "Sangat lemah", "Lemah", "Sedang", "Kuat", "Sangat kuat".
+     W.progress(ctx, x, y, w, u, opt)        garis kemajuan; opt.label di atasnya.
+     W.rich(ctx, s, x, y, size, maxW, opt) → tinggi   teks berlipat dengan *tebal*; opt.lines (maks baris, sisanya "…"), lh, color, weight, boldColor.
+   Router (halaman admin generik; menu W.ROUTER_MENU = ["Status", "Wi-Fi", "Keamanan", "Jaringan Tamu", "Sistem"]):
+     W.routerLogin(ctx, area, st) → {user, pass, btn}   st.user, st.pass, st.focus ("user" | "pass"), st.caret, st.error, st.name ("Router"), st.press.
+     W.routerAdmin(ctx, area, st) → {menu(nama), content {x, y, w, h}, logout}   st.active (nama menu), st.name, st.warn (pesan peringatan di atas isi),
+                                   st.user ("admin"). Isi halaman digambar pemanggil di content; pakai W.row untuk baris pengaturan.
+     W.row(ctx, c, y, label, opt) → x kontrol   baris pengaturan: label di kiri (lebar opt.lw, bawaan 300), garis pemisah; kontrol digambar pemanggil.
+     W.devices(ctx, x, y, w, list, opt) → tinggi   daftar perangkat tersambung: list [{name, kind: "hp"|"laptop"|"tv"|"printer"|"kamera", ip, on, net}].
+     W.routerBox(ctx, cx, cy, s, opt)        router fisik generik (kotak + dua antena + lampu). opt.lamps [true, ...], opt.blink (detik), opt.flip (sisi bawah + stiker).
+     W.sticker(ctx, x, y, w, rows, opt) → tinggi   stiker label: rows [["Wi-Fi", "RUMAH-KITA-12"], ...]; opt.hi (indeks baris disorot), opt.title, opt.size.
+   Ikon kecil: W.icon(ctx, kind, cx, cy, s, color)  kind "lock" | "unlock" | "search" | "back" | "fwd" | "reload" | "eye" | "eyeOff" | "wifi" |
+                                   "caret" | "check" | "cross" | "warn" | "plus" | "hp" | "laptop" | "tv" | "printer" | "kamera" | "pdf" | "user" | "gear" | "home".
+*/
+(function (global) {
+  const K = global.Kiko, H = K.helpers, C = K.C;
+  const { rr, text, ease, clamp, lerp } = H;
+  const W = {};
+  const UI = {
+    frame: "#C9D4DB", chrome: "#E9EEF2", tabOn: "#FFFFFF", ink: "#26323B", ink2: "#5B6B76", ink3: "#8A99A3", line: "#DDE5EA",
+    link: "#1A56B8", url: "#1E7A3C", focus: "#1A73C8", focusBg: "#E7F1FB", mark: "rgba(242,177,52,0.42)", field: "#FFFFFF",
+    good: "#2E9E5B", bad: "#D9443B", warn: "#C07A0C", warnBg: "#FFF3D6", badBg: "#FBE1DF", goodBg: "#DDF3E4", infoBg: "#E7F1FB",
+    side: "#2F3E48", sideOn: "#46606F", sideInk: "#DCE6EC"
+  };
+  W.UI = UI;
+  const F = (w, s) => `${w} ${s}px ${K.FONT}`;
+  const measure = (ctx, s, size, weight = 600) => { ctx.font = F(weight, size); return ctx.measureText(s).width; };
+
+  // ---------- waktu & pointer ----------
+  W.seq = function (l, span, ds) {
+    const tot = ds.reduce((a, b) => a + b, 0), unit = span / tot; const ends = []; let acc = 0;
+    ds.forEach(d => { acc += d * unit; ends.push(acc); });
+    const p = k => clamp((l - (k ? ends[k - 1] : 0)) / (ds[k] * unit), 0, 1);
+    let i = ends.findIndex(e => l < e); if (i < 0) i = ds.length - 1;
+    return { i, u: p(i), p, at: k => l >= (k ? ends[k - 1] : 0), n: ends.filter(e => l >= e).length };
+  };
+  W.path = function (l, span, pts, from) {
+    const S = W.seq(l, span, pts.map(q => q.d || 1)); let cur = from || { x: pts[0].x, y: pts[0].y };
+    for (let k = 0; k < S.i; k++) cur = { x: pts[k].x, y: pts[k].y };
+    const q = pts[S.i], u = S.u, m = ease(clamp(u / 0.55, 0, 1));
+    const click = q.click && u > 0.55 && u < 1 ? clamp((u - 0.55) / 0.45, 0, 0.99) : 0;
+    return { x: lerp(cur.x, q.x, m), y: lerp(cur.y, q.y, m), click, down: !!q.down && u > 0.1, i: S.i };
+  };
+  W.typed = (s, u) => s.slice(0, Math.round(s.length * clamp(u, 0, 1)));
+  W.num = n => Math.round(n).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+  W.clip = function (ctx, a, fn) { ctx.save(); ctx.beginPath(); ctx.rect(a.x, a.y, a.w, a.h); ctx.clip(); const r = fn(); ctx.restore(); return r; };
+
+  // ---------- ikon ----------
+  W.icon = function (ctx, kind, cx, cy, s, color) {
+    const c = color || UI.ink2; ctx.save(); ctx.translate(cx, cy); ctx.strokeStyle = c; ctx.fillStyle = c; ctx.lineWidth = Math.max(2, s * 0.12); ctx.lineCap = "round"; ctx.lineJoin = "round";
+    const L = (pts, close) => { ctx.beginPath(); pts.forEach(([x, y], i) => i ? ctx.lineTo(x * s, y * s) : ctx.moveTo(x * s, y * s)); if (close) ctx.closePath(); ctx.stroke(); };
+    switch (kind) {
+      case "lock": case "unlock":
+        rr(ctx, -0.38 * s, -0.05 * s, 0.76 * s, 0.55 * s, 0.1 * s); ctx.fill();
+        ctx.beginPath(); if (kind === "lock") ctx.arc(0, -0.08 * s, 0.24 * s, Math.PI, 0); else ctx.arc(0.3 * s, -0.12 * s, 0.24 * s, Math.PI, -0.2);
+        ctx.stroke(); break;
+      case "search": ctx.beginPath(); ctx.arc(-0.08 * s, -0.08 * s, 0.3 * s, 0, Math.PI * 2); ctx.stroke(); L([[0.14, 0.14], [0.42, 0.42]]); break;
+      case "back": L([[0.38, 0], [-0.38, 0]]); L([[-0.05, -0.32], [-0.38, 0], [-0.05, 0.32]]); break;
+      case "fwd": L([[-0.38, 0], [0.38, 0]]); L([[0.05, -0.32], [0.38, 0], [0.05, 0.32]]); break;
+      case "reload": ctx.beginPath(); ctx.arc(0, 0, 0.34 * s, -Math.PI * 0.35, Math.PI * 1.45); ctx.stroke();
+        ctx.beginPath(); ctx.moveTo(0.42 * s, -0.42 * s); ctx.lineTo(0.3 * s, -0.08 * s); ctx.lineTo(0.02 * s, -0.3 * s); ctx.closePath(); ctx.fill(); break;
+      case "eye": case "eyeOff": ctx.beginPath(); ctx.moveTo(-0.45 * s, 0); ctx.quadraticCurveTo(0, -0.42 * s, 0.45 * s, 0); ctx.quadraticCurveTo(0, 0.42 * s, -0.45 * s, 0); ctx.stroke();
+        ctx.beginPath(); ctx.arc(0, 0, 0.12 * s, 0, Math.PI * 2); ctx.fill(); if (kind === "eyeOff") L([[-0.4, 0.36], [0.4, -0.36]]); break;
+      case "wifi": [0.42, 0.28, 0.14].forEach(r => { ctx.beginPath(); ctx.arc(0, 0.3 * s, r * s, -Math.PI * 0.78, -Math.PI * 0.22); ctx.stroke(); });
+        ctx.beginPath(); ctx.arc(0, 0.3 * s, 0.05 * s, 0, Math.PI * 2); ctx.fill(); break;
+      case "caret": ctx.beginPath(); ctx.moveTo(-0.3 * s, -0.12 * s); ctx.lineTo(0.3 * s, -0.12 * s); ctx.lineTo(0, 0.2 * s); ctx.closePath(); ctx.fill(); break;
+      case "check": L([[-0.32, 0.02], [-0.08, 0.26], [0.36, -0.26]]); break;
+      case "cross": L([[-0.28, -0.28], [0.28, 0.28]]); L([[0.28, -0.28], [-0.28, 0.28]]); break;
+      case "plus": L([[-0.3, 0], [0.3, 0]]); L([[0, -0.3], [0, 0.3]]); break;
+      case "warn": ctx.beginPath(); ctx.moveTo(0, -0.42 * s); ctx.lineTo(0.46 * s, 0.38 * s); ctx.lineTo(-0.46 * s, 0.38 * s); ctx.closePath(); ctx.fill();
+        ctx.fillStyle = "#FFFFFF"; ctx.fillRect(-0.04 * s, -0.16 * s, 0.08 * s, 0.32 * s); ctx.fillRect(-0.04 * s, 0.22 * s, 0.08 * s, 0.08 * s); break;
+      case "hp": rr(ctx, -0.22 * s, -0.42 * s, 0.44 * s, 0.84 * s, 0.08 * s); ctx.stroke(); L([[-0.06, 0.32], [0.06, 0.32]]); break;
+      case "laptop": rr(ctx, -0.34 * s, -0.32 * s, 0.68 * s, 0.46 * s, 0.05 * s); ctx.stroke(); L([[-0.46, 0.28], [0.46, 0.28]]); break;
+      case "tv": rr(ctx, -0.44 * s, -0.32 * s, 0.88 * s, 0.56 * s, 0.05 * s); ctx.stroke(); L([[-0.18, 0.38], [0.18, 0.38]]); break;
+      case "printer": rr(ctx, -0.42 * s, -0.12 * s, 0.84 * s, 0.38 * s, 0.06 * s); ctx.stroke(); L([[-0.24, -0.12], [-0.24, -0.4], [0.24, -0.4], [0.24, -0.12]]); L([[-0.24, 0.12], [0.24, 0.12]]); break;
+      case "kamera": ctx.beginPath(); ctx.arc(0, -0.04 * s, 0.3 * s, 0, Math.PI * 2); ctx.stroke(); ctx.beginPath(); ctx.arc(0, -0.04 * s, 0.1 * s, 0, Math.PI * 2); ctx.fill(); L([[-0.24, 0.42], [0.24, 0.42]]); break;
+      case "pdf": rr(ctx, -0.3 * s, -0.4 * s, 0.6 * s, 0.8 * s, 0.06 * s); ctx.stroke(); ctx.restore(); text(ctx, "PDF", cx, cy + s * 0.12, s * 0.3, { align: "center", weight: 900, color: c }); return;
+      case "user": ctx.beginPath(); ctx.arc(0, -0.16 * s, 0.17 * s, 0, Math.PI * 2); ctx.stroke(); ctx.beginPath(); ctx.arc(0, 0.42 * s, 0.32 * s, Math.PI * 1.1, Math.PI * 1.9); ctx.stroke(); break;
+      case "gear": ctx.beginPath(); ctx.arc(0, 0, 0.2 * s, 0, Math.PI * 2); ctx.stroke(); for (let k = 0; k < 8; k++) { const a = k * Math.PI / 4; L([[0.26 * Math.cos(a), 0.26 * Math.sin(a)], [0.4 * Math.cos(a), 0.4 * Math.sin(a)]]); } break;
+      case "home": L([[-0.4, 0], [0, -0.36], [0.4, 0]]); L([[-0.28, -0.08], [-0.28, 0.36], [0.28, 0.36], [0.28, -0.08]]); break;
+    }
+    ctx.restore();
+  };
+
+  // ---------- teks berlipat dengan *tebal* ----------
+  W.rich = function (ctx, s, x, y, size, maxW, opt = {}) {
+    const weight = opt.weight || 500, bw = opt.boldWeight || 800, lh = size * (opt.lh || 1.35);
+    const toks = []; String(s).split(/(\*[^*]+\*)/).forEach(part => { if (!part) return; const bold = part.startsWith("*") && part.endsWith("*") && part.length > 2;
+      (bold ? part.slice(1, -1) : part).split(/(\s+)/).forEach(w => { if (w) toks.push({ w, bold }); }); });
+    const lines = [[]]; let lw = 0;
+    toks.forEach(t => { const tw = measure(ctx, t.w, size, t.bold ? bw : weight); const sp = /^\s+$/.test(t.w);
+      if (!sp && lw + tw > maxW && lines[lines.length - 1].length) { lines.push([]); lw = 0; }
+      if (sp && lw === 0) return; lines[lines.length - 1].push({ ...t, tw }); lw += tw; });
+    const max = opt.lines || 99; const shown = lines.slice(0, max);
+    shown.forEach((ln, i) => { let px = x; const last = i === max - 1 && lines.length > max;
+      ln.forEach((t, j) => { if (last && px + t.tw > x + maxW - 30) return; ctx.font = F(t.bold ? bw : weight, size); ctx.fillStyle = t.bold ? (opt.boldColor || opt.color || UI.ink) : (opt.color || UI.ink2);
+        ctx.textAlign = "left"; ctx.textBaseline = "alphabetic"; ctx.fillText(t.w, px, y + i * lh); px += t.tw; });
+      if (last) text(ctx, "…", px, y + i * lh, size, { weight, color: opt.color || UI.ink2 }); });
+    return shown.length * lh;
+  };
+
+  // sorotan kuning di bawah sebagian teks satu baris
+  function markRange(ctx, s, x, y, size, weight, range) {
+    if (!range) return; const a = measure(ctx, s.slice(0, range[0]), size, weight), b = measure(ctx, s.slice(0, range[1]), size, weight);
+    if (b > a) { ctx.fillStyle = UI.mark; rr(ctx, x + a - 3, y - size * 0.95, b - a + 6, size * 1.3, 5); ctx.fill(); }
+  }
+
+  // ---------- jendela browser ----------
+  W.browser = function (ctx, x, y, w, h, opt = {}) {
+    const TAB = 50, BAR = 58;
+    ctx.save(); ctx.shadowColor = "rgba(31,42,51,0.18)"; ctx.shadowBlur = 30; ctx.shadowOffsetY = 10;
+    ctx.fillStyle = opt.bg || "#FFFFFF"; rr(ctx, x, y, w, h, 16); ctx.fill(); ctx.restore();
+    ctx.save(); rr(ctx, x, y, w, h, 16); ctx.clip();
+    ctx.fillStyle = UI.chrome; ctx.fillRect(x, y, w, TAB);
+    ["#E5675F", "#F2B134", "#4CB46A"].forEach((c, i) => { ctx.fillStyle = c; ctx.beginPath(); ctx.arc(x + 26 + i * 24, y + TAB / 2, 7.5, 0, Math.PI * 2); ctx.fill(); });
+    const tabs = (opt.tabs || ["Tab baru"]).map(t => typeof t === "string" ? { title: t } : t), on = opt.tab || 0;
+    const tw = Math.min(300, (w - 180) / Math.max(1, tabs.length)); const tabRects = [];
+    tabs.forEach((t, i) => { const tx = x + 108 + i * tw; tabRects.push({ x: tx, y: y + 8, w: tw - 6, h: TAB - 8, cx: tx + tw / 2, cy: y + TAB / 2 + 4 });
+      if (i === on) { ctx.fillStyle = UI.tabOn; rr(ctx, tx, y + 8, tw - 6, TAB, 12); ctx.fill(); }
+      else if (i !== on - 1) { ctx.fillStyle = "#C9D4DB"; ctx.fillRect(tx + tw - 7, y + 18, 2, TAB - 26); }
+      W.icon(ctx, t.icon || "search", tx + 22, y + TAB / 2 + 4, 18, i === on ? UI.ink2 : UI.ink3);
+      ctx.save(); ctx.beginPath(); ctx.rect(tx + 38, y, tw - 76, TAB); ctx.clip();
+      text(ctx, t.title, tx + 40, y + TAB / 2 + 11, 19, { weight: i === on ? 700 : 600, color: i === on ? UI.ink : UI.ink2 }); ctx.restore();
+      W.icon(ctx, "cross", tx + tw - 28, y + TAB / 2 + 4, 14, UI.ink3); });
+    const nt = { x: x + 108 + tabs.length * tw + 6, y: y + 12, w: 32, h: 32 }; nt.cx = nt.x + 16; nt.cy = nt.y + 18;
+    W.icon(ctx, "plus", nt.cx, nt.cy, 22, UI.ink2);
+    // bilah alat
+    const by = y + TAB; ctx.fillStyle = UI.tabOn; ctx.fillRect(x, by, w, BAR);
+    const btn = (k, i, en) => { const cx = x + 32 + i * 46, cy = by + BAR / 2; W.icon(ctx, k, cx, cy, 24, en ? UI.ink2 : "#BFCAD1"); return { x: cx - 18, y: cy - 18, w: 36, h: 36, cx, cy }; };
+    const back = btn("back", 0, opt.canBack !== false), fwd = btn("fwd", 1, !!opt.canFwd), reload = btn("reload", 2, true);
+    const ux = x + 160, uw = w - 190, uy = by + 9, uh = BAR - 18;
+    ctx.fillStyle = opt.urlFocus ? "#FFFFFF" : "#F1F4F6"; rr(ctx, ux, uy, uw, uh, uh / 2); ctx.fill();
+    if (opt.urlFocus) { ctx.strokeStyle = UI.focus; ctx.lineWidth = 3; rr(ctx, ux, uy, uw, uh, uh / 2); ctx.stroke(); }
+    const secure = opt.secure !== false; let tx0 = ux + 22;
+    if (!opt.urlFocus || !opt.url) {
+      if (secure) { W.icon(ctx, "lock", ux + 26, uy + uh / 2, 20, UI.ink2); tx0 = ux + 46; }
+      else { W.icon(ctx, "warn", ux + 26, uy + uh / 2, 20, UI.bad); text(ctx, "Tidak aman", ux + 44, uy + uh / 2 + 7, 19, { weight: 700, color: UI.bad }); tx0 = ux + 44 + measure(ctx, "Tidak aman", 19, 700) + 14; }
+    }
+    const url = opt.url || ""; const us = 22;
+    if (opt.urlSel && url) { ctx.fillStyle = "#BFD8F3"; ctx.fillRect(tx0 - 2, uy + 7, measure(ctx, url, us, 600) + 4, uh - 14); }
+    markRange(ctx, url, tx0, uy + uh / 2 + 8, us, 600, opt.urlMark);
+    ctx.save(); ctx.beginPath(); ctx.rect(tx0 - 4, uy, uw - (tx0 - ux) - 10, uh); ctx.clip();
+    if (url) text(ctx, url, tx0, uy + uh / 2 + 8, us, { weight: 600, color: UI.ink });
+    else if (opt.urlFocus) text(ctx, "Cari atau ketik alamat", tx0, uy + uh / 2 + 8, us, { weight: 500, color: UI.ink3 });
+    if (opt.urlFocus && opt.caret) { const cw = url ? measure(ctx, url, us, 600) : 0; ctx.fillStyle = UI.ink; ctx.fillRect(tx0 + cw + 2, uy + 8, 2.5, uh - 16); }
+    ctx.restore();
+    if (opt.loading > 0 && opt.loading < 1) { ctx.fillStyle = UI.focus; ctx.fillRect(x, by + BAR - 3, w * opt.loading, 3); }
+    ctx.strokeStyle = UI.line; ctx.lineWidth = 1.5; ctx.beginPath(); ctx.moveTo(x, by + BAR); ctx.lineTo(x + w, by + BAR); ctx.stroke();
+    ctx.restore();
+    ctx.strokeStyle = UI.frame; ctx.lineWidth = 2; rr(ctx, x, y, w, h, 16); ctx.stroke();
+    const area = { x, y: by + BAR, w, h: y + h - by - BAR };
+    if (opt.dim) { ctx.save(); rr(ctx, x, y, w, h, 16); ctx.clip(); ctx.fillStyle = `rgba(31,42,51,${0.3 * opt.dim})`; ctx.fillRect(x, y, w, h); ctx.restore(); }
+    return { ...area, url: { x: ux, y: uy, w: uw, h: uh, cx: ux + uw / 2, cy: uy + uh / 2, tx: tx0 }, tab: i => tabRects[i], back, fwd, reload, newTab: nt };
+  };
+
+  // ---------- hasil pencarian ----------
+  W.TIME_ITEMS = ["Kapan saja", "24 jam terakhir", "Seminggu terakhir", "Sebulan terakhir", "Setahun terakhir"];
+  W.result = function (ctx, x, y, w, r, snipLines) {
+    ctx.save(); ctx.globalAlpha *= r.alpha == null ? 1 : r.alpha;
+    if (r.mark === "dim") ctx.globalAlpha *= 0.35;
+    let hh = 0;
+    const ts = 27; let tx = x;
+    if (r.ad) { ctx.font = F(800, 17); const aw = ctx.measureText("Iklan").width + 16; ctx.strokeStyle = UI.ink; ctx.lineWidth = 1.5; rr(ctx, x, y + 2, aw, 24, 5); ctx.stroke(); text(ctx, "Iklan", x + 8, y + 20, 17, { weight: 800, color: UI.ink }); tx = x + aw + 10; }
+    if (r.type) { ctx.fillStyle = "#EEF2F5"; ctx.font = F(800, 16); const pw = ctx.measureText(r.type).width + 14; rr(ctx, tx, y + 3, pw, 22, 5); ctx.fill(); text(ctx, r.type, tx + 7, y + 20, 16, { weight: 800, color: UI.ink2 }); tx += pw + 10; }
+    ctx.save(); ctx.beginPath(); ctx.rect(x, y - 6, w, 40); ctx.clip();
+    let tt = r.title; if (measure(ctx, tt, ts, 700) > w - (tx - x)) { while (tt.length > 4 && measure(ctx, tt + "…", ts, 700) > w - (tx - x)) tt = tt.slice(0, -1); tt = tt.trimEnd() + "…"; }
+    text(ctx, tt, tx, y + 23, ts, { weight: 700, color: UI.link }); ctx.restore();
+    hh += 35;
+    text(ctx, r.url, x, y + hh + 19, 20, { weight: 600, color: UI.url }); hh += 30;
+    if (r.snippet) hh += W.rich(ctx, r.snippet, x, y + hh + 19, 21, w, { lines: snipLines || 2, lh: 1.38, color: UI.ink2, boldColor: UI.ink });
+    ctx.restore();
+    if (r.strike) { ctx.strokeStyle = UI.bad; ctx.lineWidth = 4; ctx.beginPath(); ctx.moveTo(x - 6, y + 18); ctx.lineTo(x + Math.min(w, measure(ctx, r.title, ts, 700) + (tx - x)) + 6, y + 18); ctx.stroke(); }
+    if (r.mark === "good" || r.mark === "bad") { const c = r.mark === "good" ? UI.good : UI.bad; ctx.fillStyle = c; ctx.fillRect(x - 22, y, 6, hh + 8); }
+    return hh + 22;
+  };
+  // tanggal sebagai bagian cuplikan: "12 Mar 2026 — teks…" (tanggal abu-abu tebal)
+  function withDate(r) { return r.date ? { ...r, snippet: `${r.date} — ${r.snippet || ""}` } : r; }
+
+  W.searchPage = function (ctx, area, st = {}) {
+    const x = area.x, y = area.y, w = area.w; const name = st.engine || "Cari";
+    return W.clip(ctx, area, () => {
+      const geo = {};
+      if (st.home) { // halaman awal: nama + kotak di tengah
+        const cy = y + area.h * 0.38; text(ctx, name, x + w / 2, cy - 60, 64, { align: "center", weight: 900, color: UI.ink });
+        const bw = Math.min(760, w - 160), bx = x + (w - bw) / 2; geo.box = box(ctx, bx, cy - 10, bw, 60, st); geo.btn = { cx: bx + bw - 30, cy: cy + 20 }; return geo;
+      }
+      // kepala: nama mesin + kotak pencarian
+      const hy = y + 18; text(ctx, name, x + 36, hy + 39, 36, { weight: 900, color: UI.ink });
+      const bx = x + 150, bw = Math.min(820, w - 200); geo.box = box(ctx, bx, hy, bw, 54, st); geo.btn = { cx: bx + bw - 30, cy: hy + 27, x: bx + bw - 56, y: hy, w: 56, h: 54 };
+      // tab + Alat
+      const ty = hy + 88; let px = bx + 6; geo.tabsY = ty;
+      ["Semua", "Gambar", "Berita", "Video"].forEach((t, i) => { const on = (st.tab || 0) === i; text(ctx, t, px, ty, 20, { weight: on ? 800 : 600, color: on ? UI.focus : UI.ink2 });
+        const tw = measure(ctx, t, 20, on ? 800 : 600); if (on) { ctx.fillStyle = UI.focus; ctx.fillRect(px, ty + 10, tw, 3); } px += tw + 34; });
+      const toolsX = px + 20; text(ctx, "Alat", toolsX, ty, 20, { weight: st.tools ? 800 : 600, color: st.tools ? UI.ink : UI.ink2 });
+      geo.tools = { x: toolsX - 10, y: ty - 26, w: 64, h: 38, cx: toolsX + 20, cy: ty - 7 };
+      ctx.strokeStyle = UI.line; ctx.lineWidth = 1.5; ctx.beginPath(); ctx.moveTo(x, ty + 14); ctx.lineTo(x + w, ty + 14); ctx.stroke();
+      let ry = ty + 42;
+      if (st.tools) { // bilah alat: pilihan waktu
+        const tl = "Waktu: " + (st.time || "Kapan saja"); const tw = measure(ctx, tl, 20, 700) + 48; const on = (st.time || "Kapan saja") !== "Kapan saja";
+        ctx.fillStyle = on ? UI.focusBg : "#F1F4F6"; rr(ctx, bx, ty + 24, tw, 38, 19); ctx.fill(); if (on) { ctx.strokeStyle = UI.focus; ctx.lineWidth = 2; rr(ctx, bx, ty + 24, tw, 38, 19); ctx.stroke(); }
+        text(ctx, tl, bx + 16, ty + 50, 20, { weight: 700, color: on ? UI.focus : UI.ink }); W.icon(ctx, "caret", bx + tw - 20, ty + 44, 18, on ? UI.focus : UI.ink2);
+        geo.timeBtn = { x: bx, y: ty + 24, w: tw, h: 38, cx: bx + tw / 2, cy: ty + 43 };
+        ry += 50;
+      }
+      // jumlah hasil
+      if (st.count) { if (st.countMark) { ctx.fillStyle = UI.mark; rr(ctx, bx - 6, ry - 24, measure(ctx, st.count, 19, 600) + 12, 32, 6); ctx.fill(); }
+        text(ctx, st.count, bx, ry, 19, { weight: 600, color: UI.ink2 }); geo.count = { x: bx, y: ry - 20, cx: bx + measure(ctx, st.count, 19, 600) / 2, cy: ry - 6 }; }
+      ry += 20 - (st.scroll || 0);
+      const rs = st.results || []; const rw = Math.min(860, w - bx + x - 60); const rects = [];
+      if (!rs.length && st.empty) { text(ctx, st.empty, bx, ry + 40, 24, { weight: 700, color: UI.ink }); text(ctx, "Coba kata kunci lain atau kurangi operatornya.", bx, ry + 80, 20, { weight: 500, color: UI.ink2 }); }
+      rs.forEach(r => { const h = W.result(ctx, bx, ry + 12, rw, withDate(r), st.snipLines); rects.push({ x: bx, y: ry + 12, w: rw, h, cx: bx + 120, cy: ry + 30 }); ry += h; });
+      geo.result = i => rects[i]; geo.bottom = ry;
+      // menu waktu (di atas segalanya)
+      if (st.tools && st.timeOpen && geo.timeBtn) { const mx = bx, my = geo.timeBtn.y + 46, mw = 300, ih = 46;
+        ctx.save(); ctx.shadowColor = "rgba(31,42,51,0.2)"; ctx.shadowBlur = 18; ctx.shadowOffsetY = 6; ctx.fillStyle = "#FFFFFF"; rr(ctx, mx, my, mw, W.TIME_ITEMS.length * ih + 16, 10); ctx.fill(); ctx.restore();
+        ctx.strokeStyle = UI.frame; ctx.lineWidth = 1.5; rr(ctx, mx, my, mw, W.TIME_ITEMS.length * ih + 16, 10); ctx.stroke();
+        const items = []; W.TIME_ITEMS.forEach((t, i) => { const iy = my + 8 + i * ih; const hi = st.timeHi === i, sel = (st.time || "Kapan saja") === t;
+          if (hi) { ctx.fillStyle = "#DCE9F7"; ctx.fillRect(mx + 4, iy, mw - 8, ih); }
+          if (sel) W.icon(ctx, "check", mx + 26, iy + ih / 2, 20, UI.focus);
+          text(ctx, t, mx + 48, iy + ih / 2 + 7, 20, { weight: hi || sel ? 700 : 600, color: hi ? UI.focus : UI.ink }); items.push({ x: mx, y: iy, w: mw, h: ih, cx: mx + 140, cy: iy + ih / 2 }); });
+        geo.timeItem = i => items[i]; }
+      return geo;
+    });
+  };
+  // kotak pencarian dengan sorotan bagian query
+  function box(ctx, bx, by, bw, bh, st) {
+    ctx.fillStyle = "#FFFFFF"; rr(ctx, bx, by, bw, bh, bh / 2); ctx.fill();
+    ctx.strokeStyle = st.focus ? UI.focus : UI.frame; ctx.lineWidth = st.focus ? 3 : 2; rr(ctx, bx, by, bw, bh, bh / 2); ctx.stroke();
+    const q = st.query || "", size = 24, tx = bx + 26, ty = by + bh / 2 + 9;
+    ctx.save(); ctx.beginPath(); ctx.rect(bx + 12, by, bw - 76, bh); ctx.clip();
+    markRange(ctx, q, tx, ty, size, 600, st.mark);
+    if (q) text(ctx, q, tx, ty, size, { weight: 600, color: UI.ink }); else if (!st.focus) text(ctx, "Ketik kata kunci", tx, ty, size, { weight: 500, color: UI.ink3 });
+    if (st.focus && st.caret) { const cw = measure(ctx, st.caretAt == null ? q : q.slice(0, st.caretAt), size, 600); ctx.fillStyle = UI.ink; ctx.fillRect(tx + cw + (st.caretAt === 0 ? -3 : 2), by + 12, 2.5, bh - 24); }
+    ctx.restore();
+    ctx.fillStyle = UI.line; ctx.fillRect(bx + bw - 62, by + 12, 2, bh - 24);
+    W.icon(ctx, "search", bx + bw - 30, by + bh / 2, 26, UI.focus);
+    return { x: bx, y: by, w: bw, h: bh, cx: bx + bw / 2, cy: by + bh / 2, tx, ty, end: tx + measure(ctx, q, size, 600), at: i => tx + measure(ctx, q.slice(0, i), size, 600) };
+  }
+
+  // ---------- halaman web generik ----------
+  W.page = function (ctx, area, st = {}) {
+    return W.clip(ctx, area, () => {
+      const x = area.x, y = area.y, w = area.w, size = st.size || 22; const geo = {};
+      ctx.fillStyle = st.head || "#3D5361"; ctx.fillRect(x, y, w, 64); geo.head = { x, y, w, h: 64 };
+      text(ctx, st.site || "situs.example", x + 36, y + 42, 26, { weight: 900, color: "#FFFFFF" });
+      let nx = x + w - 36; (st.nav || []).slice().reverse().forEach(n => { const nw = measure(ctx, n, 19, 700); nx -= nw; text(ctx, n, nx, y + 40, 19, { weight: 700, color: "#E3EBF0" }); nx -= 28; });
+      let cy = y + 116; const cx = x + 60, cw = Math.min(w - 120, 980);
+      if (st.title) { ctx.font = F(900, 36); const lines = H.wrap(ctx, st.title, 36, 900, cw); lines.forEach((ln, i) => text(ctx, ln, cx, cy + i * 44, 36, { weight: 900, color: UI.ink })); geo.title = { x: cx, y: cy - 36, w: cw, h: lines.length * 44 }; cy += lines.length * 44 + 4; }
+      if (st.meta) { text(ctx, st.meta, cx, cy + 6, 19, { weight: 600, color: UI.ink3 }); cy += 40; }
+      if (st.img) { const ih = st.img.h || 180; ctx.fillStyle = "#E3EBF0"; rr(ctx, cx, cy, cw, ih, 12); ctx.fill();
+        ctx.fillStyle = "#C9D6DE"; ctx.beginPath(); ctx.moveTo(cx + 40, cy + ih - 20); ctx.lineTo(cx + 200, cy + 50); ctx.lineTo(cx + 330, cy + ih - 20); ctx.fill();
+        ctx.beginPath(); ctx.arc(cx + cw - 90, cy + 60, 30, 0, Math.PI * 2); ctx.fill();
+        if (st.img.label) text(ctx, st.img.label, cx + cw / 2, cy + ih / 2 + 8, 22, { align: "center", weight: 700, color: UI.ink2 }); cy += ih + 24; }
+      geo.body = { x: cx, y: cy, w: cw };
+      if (Array.isArray(st.body)) st.body.forEach(p => { cy += W.rich(ctx, p, cx, cy + size, size, cw, { lh: 1.45, color: UI.ink2, boldColor: UI.ink }) + size * 0.6; });
+      else for (let i = 0; i < (st.body || 6); i++) { ctx.fillStyle = "#DCE3E8"; rr(ctx, cx, cy + i * 30, cw * (i % 4 === 3 ? 0.55 : 0.92 - (i % 3) * 0.06), 12, 6); ctx.fill(); }
+      geo.bottom = cy; return geo;
+    });
+  };
+
+  // ---------- formulir ----------
+  W.field = function (ctx, x, y, w, opt = {}) {
+    const h = opt.h || 56, size = opt.size || 24; let fy = y;
+    if (opt.label) { text(ctx, opt.label, x, y + 20, 20, { weight: 700, color: UI.ink2 }); fy = y + 32; }
+    ctx.fillStyle = opt.disabled ? "#F1F4F6" : UI.field; rr(ctx, x, fy, w, h, 10); ctx.fill();
+    const stroke = opt.error ? UI.bad : opt.ok ? UI.good : opt.focus ? UI.focus : UI.frame;
+    ctx.strokeStyle = stroke; ctx.lineWidth = opt.focus || opt.error || opt.ok ? 3 : 2; rr(ctx, x, fy, w, h, 10); ctx.stroke();
+    const v = opt.value || ""; const hide = opt.password && !opt.show; const shown = hide ? "•".repeat(v.length) : v;
+    const tx = x + 18, ty = fy + h / 2 + size * 0.36;
+    ctx.save(); ctx.beginPath(); ctx.rect(x + 8, fy, w - (opt.password ? 60 : 16), h); ctx.clip();
+    if (!hide) markRange(ctx, shown, tx, ty, size, 600, opt.mark);
+    if (v) text(ctx, shown, tx, ty, hide ? size + 4 : size, { weight: 600, color: opt.disabled ? UI.ink3 : UI.ink });
+    else if (opt.placeholder) text(ctx, opt.placeholder, tx, ty, size, { weight: 500, color: UI.ink3 });
+    const cw = v ? measure(ctx, shown, hide ? size + 4 : size, 600) : 0;
+    if (opt.focus && opt.caret) { ctx.fillStyle = UI.ink; ctx.fillRect(tx + cw + 2, fy + 12, 2.5, h - 24); }
+    ctx.restore();
+    if (opt.password) W.icon(ctx, opt.show ? "eye" : "eyeOff", x + w - 30, fy + h / 2, 24, UI.ink2);
+    let by = fy + h;
+    if (opt.error) { W.icon(ctx, "warn", x + 12, by + 22, 18, UI.bad); text(ctx, opt.error, x + 30, by + 29, 19, { weight: 700, color: UI.bad }); by += 36; }
+    else if (opt.hint) { text(ctx, opt.hint, x, by + 28, 18, { weight: 500, color: UI.ink3 }); by += 34; }
+    return { x, y: fy, w, h, cx: x + w / 2, cy: fy + h / 2, end: tx + cw, bottom: by, eye: { cx: x + w - 30, cy: fy + h / 2 } };
+  };
+  W.button = function (ctx, x, y, w, h, label, opt = {}) {
+    const kind = opt.kind || "primary", size = opt.size || 22;
+    const pal = { primary: [UI.focus, "#FFFFFF", null], secondary: ["#FFFFFF", UI.ink, UI.frame], danger: [UI.bad, "#FFFFFF", null], good: [UI.good, "#FFFFFF", null] }[kind];
+    const p = opt.press > 0 && opt.press < 1 ? Math.sin(opt.press * Math.PI) : 0;
+    ctx.save(); if (opt.disabled) ctx.globalAlpha *= 0.45;
+    ctx.fillStyle = pal[0]; rr(ctx, x, y + p * 2, w, h, 10); ctx.fill(); if (p) { ctx.fillStyle = "rgba(0,0,0,0.12)"; rr(ctx, x, y + p * 2, w, h, 10); ctx.fill(); }
+    if (pal[2]) { ctx.strokeStyle = pal[2]; ctx.lineWidth = 2; rr(ctx, x, y + p * 2, w, h, 10); ctx.stroke(); }
+    text(ctx, label, x + w / 2, y + p * 2 + h / 2 + size * 0.36, size, { align: "center", weight: 800, color: pal[1], fit: w - 16 });
+    ctx.restore();
+    return { x, y, w, h, cx: x + w / 2, cy: y + h / 2 };
+  };
+  function choice(ctx, x, y, label, on, opt, round) {
+    const s = opt.size || 24; const u = typeof on === "number" ? on : on ? 1 : 0;
+    ctx.fillStyle = "#FFFFFF"; ctx.strokeStyle = u > 0.5 ? UI.focus : "#8A99A3"; ctx.lineWidth = 2.5;
+    if (round) { ctx.beginPath(); ctx.arc(x + s / 2, y + s / 2, s / 2, 0, Math.PI * 2); ctx.fill(); ctx.stroke(); if (u > 0) { ctx.fillStyle = UI.focus; ctx.beginPath(); ctx.arc(x + s / 2, y + s / 2, s * 0.26 * u, 0, Math.PI * 2); ctx.fill(); } }
+    else { if (u > 0.5) ctx.fillStyle = UI.focus; rr(ctx, x, y, s, s, 5); ctx.fill(); ctx.stroke(); if (u > 0.5) W.icon(ctx, "check", x + s / 2, y + s / 2, s * 0.9, "#FFFFFF"); }
+    if (opt.focus) { ctx.strokeStyle = "rgba(26,115,200,0.35)"; ctx.lineWidth = 6; ctx.beginPath(); ctx.arc(x + s / 2, y + s / 2, s * 0.85, 0, Math.PI * 2); ctx.stroke(); }
+    let lh = s; if (label) { const lines = opt.maxW ? H.wrap(ctx, label, s * 0.9, 600, opt.maxW) : [label]; lines.forEach((ln, i) => text(ctx, ln, x + s + 14, y + s * 0.8 + i * s * 1.15, s * 0.9, { weight: 600, color: UI.ink })); lh = Math.max(s, lines.length * s * 1.15); }
+    return { x, y, w: s + 14 + (label ? measure(ctx, label, s * 0.9, 600) : 0), h: lh, cx: x + s / 2, cy: y + s / 2 };
+  }
+  W.checkbox = (ctx, x, y, label, on, opt = {}) => choice(ctx, x, y, label, on, opt, false);
+  W.radio = (ctx, x, y, label, on, opt = {}) => choice(ctx, x, y, label, on, opt, true);
+  W.toggle = function (ctx, x, y, on, opt = {}) {
+    const u = typeof on === "number" ? clamp(on, 0, 1) : on ? 1 : 0, w = 64, h = 34;
+    ctx.fillStyle = u > 0.5 ? UI.good : "#B7C4CC"; rr(ctx, x, y, w, h, h / 2); ctx.fill();
+    ctx.fillStyle = "#FFFFFF"; ctx.beginPath(); ctx.arc(x + h / 2 + (w - h) * u, y + h / 2, h / 2 - 4, 0, Math.PI * 2); ctx.fill();
+    if (opt.label) text(ctx, opt.label, x + w + 14, y + h / 2 + 8, 22, { weight: 700, color: u > 0.5 ? UI.good : UI.ink2 });
+    return { x, y, w, h, cx: x + w / 2, cy: y + h / 2 };
+  };
+  W.select = function (ctx, x, y, w, value, opt = {}) {
+    const h = opt.h || 54, size = opt.size || 22; let fy = y;
+    if (opt.label) { text(ctx, opt.label, x, y + 20, 20, { weight: 700, color: UI.ink2 }); fy = y + 32; }
+    ctx.fillStyle = "#FFFFFF"; rr(ctx, x, fy, w, h, 10); ctx.fill(); ctx.strokeStyle = opt.open || opt.focus ? UI.focus : opt.bad ? UI.bad : UI.frame; ctx.lineWidth = opt.open || opt.focus || opt.bad ? 3 : 2; rr(ctx, x, fy, w, h, 10); ctx.stroke();
+    text(ctx, value || "", x + 18, fy + h / 2 + size * 0.36, size, { weight: 700, color: opt.bad ? UI.bad : UI.ink, fit: w - 70 });
+    W.icon(ctx, "caret", x + w - 28, fy + h / 2 + 2, 20, UI.ink2);
+    const items = [];
+    if (opt.open && opt.items) { const ih = 50, my = fy + h + 6, mh = opt.items.length * ih + 12;
+      ctx.save(); ctx.shadowColor = "rgba(31,42,51,0.22)"; ctx.shadowBlur = 18; ctx.shadowOffsetY = 6; ctx.fillStyle = "#FFFFFF"; rr(ctx, x, my, w, mh, 10); ctx.fill(); ctx.restore();
+      ctx.strokeStyle = UI.frame; ctx.lineWidth = 1.5; rr(ctx, x, my, w, mh, 10); ctx.stroke();
+      opt.items.forEach((it, i) => { const iy = my + 6 + i * ih; const hi = opt.hi === i, warn = (opt.warn || []).includes(i);
+        if (hi) { ctx.fillStyle = "#DCE9F7"; ctx.fillRect(x + 4, iy, w - 8, ih); }
+        if (opt.sel === i) W.icon(ctx, "check", x + 24, iy + ih / 2, 20, UI.focus);
+        text(ctx, it, x + 46, iy + ih / 2 + size * 0.36, size, { weight: hi ? 800 : 600, color: warn ? UI.bad : hi ? UI.focus : UI.ink, fit: w - 60 });
+        items.push({ x, y: iy, w, h: ih, cx: x + Math.min(w / 2, 200), cy: iy + ih / 2 }); }); }
+    return { x, y: fy, w, h, cx: x + w / 2, cy: fy + h / 2, item: i => items[i] };
+  };
+  W.banner = function (ctx, x, y, w, msg, kind = "info") {
+    const pal = { info: [UI.infoBg, UI.focus, "check"], warn: [UI.warnBg, UI.warn, "warn"], bad: [UI.badBg, UI.bad, "warn"], good: [UI.goodBg, UI.good, "check"] }[kind];
+    ctx.font = F(700, 21); const lines = H.wrap(ctx, msg, 21, 700, w - 76); const h = lines.length * 28 + 26;
+    ctx.fillStyle = pal[0]; rr(ctx, x, y, w, h, 10); ctx.fill(); ctx.fillStyle = pal[1]; rr(ctx, x, y, 6, h, 3); ctx.fill();
+    W.icon(ctx, pal[2], x + 32, y + h / 2, 24, pal[1]);
+    lines.forEach((ln, i) => text(ctx, ln, x + 58, y + 34 + i * 28, 21, { weight: 700, color: UI.ink }));
+    return h;
+  };
+  W.METER = ["Sangat lemah", "Lemah", "Sedang", "Kuat", "Sangat kuat"];
+  W.meter = function (ctx, x, y, w, level) {
+    const lv = clamp(Math.round(level), 0, 4), cols = [UI.bad, UI.bad, "#E0A21B", UI.good, UI.good], seg = (w - 4 * 8) / 5;
+    for (let i = 0; i < 5; i++) { ctx.fillStyle = i <= lv ? cols[lv] : "#DDE5EA"; rr(ctx, x + i * (seg + 8), y, seg, 10, 5); ctx.fill(); }
+    text(ctx, "Kekuatan sandi: " + W.METER[lv], x, y + 38, 19, { weight: 800, color: cols[lv] });
+  };
+  W.progress = function (ctx, x, y, w, u, opt = {}) {
+    if (opt.label) text(ctx, opt.label, x, y - 12, 20, { weight: 700, color: UI.ink2 });
+    ctx.fillStyle = "#DDE5EA"; rr(ctx, x, y, w, 14, 7); ctx.fill(); ctx.fillStyle = opt.color || UI.focus; rr(ctx, x, y, Math.max(14, w * clamp(u, 0, 1)), 14, 7); ctx.fill();
+  };
+
+  // ---------- router ----------
+  W.ROUTER_MENU = ["Status", "Wi-Fi", "Keamanan", "Jaringan Tamu", "Sistem"];
+  const MENU_ICON = { "Status": "home", "Wi-Fi": "wifi", "Keamanan": "lock", "Jaringan Tamu": "user", "Sistem": "gear" };
+  W.routerLogin = function (ctx, area, st = {}) {
+    return W.clip(ctx, area, () => {
+      ctx.fillStyle = "#EEF2F5"; ctx.fillRect(area.x, area.y, area.w, area.h);
+      const cw = 520, ch = 420, cx = area.x + (area.w - cw) / 2, cy = area.y + (area.h - ch) / 2;
+      ctx.save(); ctx.shadowColor = "rgba(31,42,51,0.14)"; ctx.shadowBlur = 20; ctx.shadowOffsetY = 6; ctx.fillStyle = "#FFFFFF"; rr(ctx, cx, cy, cw, ch, 16); ctx.fill(); ctx.restore();
+      W.icon(ctx, "wifi", cx + 50, cy + 52, 40, UI.side); text(ctx, st.name || "Router", cx + 84, cy + 62, 30, { weight: 900, color: UI.ink });
+      text(ctx, "Masuk ke halaman admin", cx + 40, cy + 108, 21, { weight: 600, color: UI.ink2 });
+      const user = W.field(ctx, cx + 40, cy + 124, cw - 80, { label: "Nama pengguna", value: st.user, focus: st.focus === "user", caret: st.caret, h: 52 });
+      const pass = W.field(ctx, cx + 40, cy + 214, cw - 80, { label: "Sandi", value: st.pass, password: true, focus: st.focus === "pass", caret: st.caret, h: 52, error: st.error });
+      const btn = W.button(ctx, cx + 40, cy + ch - 84, cw - 80, 54, "Masuk", { press: st.press });
+      return { user, pass, btn };
+    });
+  };
+  W.routerAdmin = function (ctx, area, st = {}) {
+    return W.clip(ctx, area, () => {
+      const x = area.x, y = area.y, sw = 270, act = st.active || "Status";
+      ctx.fillStyle = "#F4F7F9"; ctx.fillRect(x, y, area.w, area.h);
+      ctx.fillStyle = UI.side; ctx.fillRect(x, y, sw, area.h);
+      W.icon(ctx, "wifi", x + 40, y + 42, 32, "#FFFFFF"); text(ctx, st.name || "Router", x + 66, y + 50, 26, { weight: 900, color: "#FFFFFF" });
+      const items = {};
+      W.ROUTER_MENU.forEach((m, i) => { const iy = y + 92 + i * 62, on = m === act;
+        if (on) { ctx.fillStyle = UI.sideOn; ctx.fillRect(x, iy, sw, 56); ctx.fillStyle = "#F2B134"; ctx.fillRect(x, iy, 6, 56); }
+        W.icon(ctx, MENU_ICON[m], x + 40, iy + 28, 24, on ? "#FFFFFF" : UI.sideInk);
+        text(ctx, m, x + 70, iy + 36, 22, { weight: on ? 800 : 600, color: on ? "#FFFFFF" : UI.sideInk }); items[m] = { x, y: iy, w: sw, h: 56, cx: x + 130, cy: iy + 28 }; });
+      // kepala isi
+      ctx.fillStyle = "#FFFFFF"; ctx.fillRect(x + sw, y, area.w - sw, 64); ctx.strokeStyle = UI.line; ctx.lineWidth = 1.5; ctx.beginPath(); ctx.moveTo(x + sw, y + 64); ctx.lineTo(x + area.w, y + 64); ctx.stroke();
+      text(ctx, act, x + sw + 36, y + 43, 28, { weight: 900, color: UI.ink });
+      const uw = measure(ctx, "Keluar", 20, 700); text(ctx, "Keluar", x + area.w - 30 - uw, y + 41, 20, { weight: 700, color: UI.focus });
+      W.icon(ctx, "user", x + area.w - 60 - uw, y + 34, 24, UI.ink2); text(ctx, st.user || "admin", x + area.w - 76 - uw, y + 41, 20, { align: "right", weight: 600, color: UI.ink2 });
+      let cy = y + 84;
+      if (st.warn) cy += W.banner(ctx, x + sw + 30, cy, area.w - sw - 60, st.warn, st.warnKind || "warn") + 16;
+      return { menu: m => items[m], content: { x: x + sw + 36, y: cy, w: area.w - sw - 72, h: y + area.h - cy }, logout: { cx: x + area.w - 30 - uw / 2, cy: y + 34 } };
+    });
+  };
+  W.row = function (ctx, c, y, label, opt = {}) {
+    const lw = opt.lw || 300; text(ctx, label, c.x, y + (opt.dy || 36), 22, { weight: 700, color: UI.ink });
+    if (opt.sub) text(ctx, opt.sub, c.x, y + (opt.dy || 36) + 26, 17, { weight: 500, color: UI.ink3 });
+    if (opt.line !== false) { ctx.strokeStyle = UI.line; ctx.lineWidth = 1.5; ctx.beginPath(); ctx.moveTo(c.x, y + (opt.h || 76)); ctx.lineTo(c.x + c.w, y + (opt.h || 76)); ctx.stroke(); }
+    return c.x + lw;
+  };
+  W.devices = function (ctx, x, y, w, list, opt = {}) {
+    const rh = opt.rh || 58;
+    text(ctx, "Perangkat", x + 64, y + 22, 18, { weight: 800, color: UI.ink3 }); text(ctx, "Alamat IP", x + w * 0.52, y + 22, 18, { weight: 800, color: UI.ink3 }); text(ctx, "Status", x + w - 20, y + 22, 18, { align: "right", weight: 800, color: UI.ink3 });
+    list.forEach((d, i) => { const ry = y + 36 + i * rh; ctx.save(); ctx.globalAlpha *= d.alpha == null ? 1 : d.alpha;
+      if (d.hi) { ctx.fillStyle = d.hi === "bad" ? UI.badBg : UI.goodBg; rr(ctx, x, ry + 4, w, rh - 8, 10); ctx.fill(); }
+      W.icon(ctx, d.kind || "hp", x + 32, ry + rh / 2, 30, UI.ink2);
+      text(ctx, d.name, x + 64, ry + rh / 2 + 8, 22, { weight: 700, color: UI.ink, fit: w * 0.5 - 70 });
+      text(ctx, d.ip || "—", x + w * 0.52, ry + rh / 2 + 8, 21, { weight: 600, color: UI.ink2 });
+      const on = d.on !== false, st = on ? (d.net || "Tersambung") : (d.net || "Terputus"); ctx.fillStyle = on ? UI.good : "#B7C4CC"; ctx.beginPath(); ctx.arc(x + w - 36 - measure(ctx, st, 20, 700), ry + rh / 2, 7, 0, Math.PI * 2); ctx.fill();
+      text(ctx, st, x + w - 20, ry + rh / 2 + 8, 20, { align: "right", weight: 700, color: on ? UI.good : UI.ink3 });
+      ctx.strokeStyle = UI.line; ctx.lineWidth = 1; ctx.beginPath(); ctx.moveTo(x, ry + rh); ctx.lineTo(x + w, ry + rh); ctx.stroke(); ctx.restore(); });
+    return 36 + list.length * rh;
+  };
+  W.routerBox = function (ctx, cx, cy, s, opt = {}) {
+    const w = s * 2.2, h = s * 0.62;
+    ctx.save();
+    if (!opt.flip) { ctx.strokeStyle = "#3B4A54"; ctx.lineWidth = s * 0.07; ctx.lineCap = "round";
+      [[-0.75, -0.25], [0.75, 0.25]].forEach(([dx, tilt]) => { ctx.beginPath(); ctx.moveTo(cx + dx * s, cy - h / 2); ctx.lineTo(cx + dx * s + tilt * s, cy - h / 2 - s * 0.85); ctx.stroke(); }); }
+    ctx.fillStyle = opt.flip ? "#D5DDE2" : "#F4F6F7"; rr(ctx, cx - w / 2, cy - h / 2, w, h, s * 0.12); ctx.fill(); ctx.strokeStyle = "#9AA8B1"; ctx.lineWidth = 3; rr(ctx, cx - w / 2, cy - h / 2, w, h, s * 0.12); ctx.stroke();
+    if (!opt.flip) { const lamps = opt.lamps || [true, true, true, true]; const labels = ["Daya", "Internet", "Wi-Fi", "LAN"];
+      lamps.forEach((on, i) => { const lx = cx - w / 2 + s * 0.4 + i * (w - s * 0.8) / (lamps.length - 1), ly = cy - h * 0.08;
+        const blink = opt.blink != null && i === 2 ? (Math.floor(opt.blink * 4) % 2 === 0) : true;
+        ctx.fillStyle = on && blink ? "#3CCB6B" : "#B7C4CC"; ctx.beginPath(); ctx.arc(lx, ly, s * 0.07, 0, Math.PI * 2); ctx.fill();
+        if (opt.labels !== false) text(ctx, labels[i] || "", lx, ly + s * 0.25, Math.max(14, s * 0.13), { align: "center", weight: 700, color: UI.ink2 }); }); }
+    else { for (let i = 0; i < 6; i++) { ctx.fillStyle = "#B9C5CC"; rr(ctx, cx - w / 2 + s * 0.15, cy - h / 2 + s * 0.08 + i * s * 0.08, s * 0.35, s * 0.03, 2); ctx.fill(); } }
+    ctx.restore();
+    return { w, h };
+  };
+  W.sticker = function (ctx, x, y, w, rows, opt = {}) {
+    const size = opt.size || 24, rh = size * 1.75, top = opt.title ? size * 2.1 : size * 0.7, h = top + rows.length * rh + size * 0.5;
+    ctx.fillStyle = "#FFFDF4"; rr(ctx, x, y, w, h, 10); ctx.fill(); ctx.strokeStyle = "#C9B98A"; ctx.lineWidth = 2.5; rr(ctx, x, y, w, h, 10); ctx.stroke();
+    if (opt.title) { text(ctx, opt.title, x + 20, y + size * 1.45, size * 0.85, { weight: 900, color: UI.ink2 }); ctx.strokeStyle = "#E3D9B5"; ctx.lineWidth = 2; ctx.beginPath(); ctx.moveTo(x + 14, y + top - size * 0.2); ctx.lineTo(x + w - 14, y + top - size * 0.2); ctx.stroke(); }
+    rows.forEach(([k, v], i) => { const ry = y + top + i * rh; const hi = opt.hi === i || (Array.isArray(opt.hi) && opt.hi.includes(i));
+      if (hi) { ctx.fillStyle = UI.mark; rr(ctx, x + 8, ry + 2, w - 16, rh - 4, 6); ctx.fill(); }
+      text(ctx, k, x + 20, ry + rh * 0.66, size * 0.8, { weight: 700, color: UI.ink2 }); text(ctx, v, x + (opt.kw || w * 0.42), ry + rh * 0.66, size, { weight: 800, color: UI.ink, fit: w - (opt.kw || w * 0.42) - 16 }); });
+    return h;
+  };
+
+  K.web = W;
+})(typeof window !== "undefined" ? window : globalThis);
+
+/* S09 Simulasi praktik: mencari lebih tepat dengan operator pencarian di browser generik (mesin pencari rekaan "Cari").
+   Jendela browser di kiri (x 110–1410, y 122–822), panel kanan (x 1450–1820): jumlah hasil di atas, langkah di bawahnya.
+   Semua situs, judul, dan angka rekaan; domain .example atau pola contoh (kota-contoh.go.id). Memakai layar.js + layar_web.js. */
+(function (global) {
+  const K = global.Kiko, H = K.helpers, C = K.C, L = K.layar, W = K.web;
+  const { rr, text, para, card, kiko, ease, clamp, lerp } = H;
+  const WIN = { x: 110, y: 122, w: 1300, h: 700 };
+  const BLUE = "#1A73C8", RED = "#D9443B", GREEN = "#2E9E5B";
+  const PX = 1450, PW = 370;
+  // Short: adegan digambar di kanvas tak terlihat lalu dipotong; garis penunjuk dari panel kanan tidak ikut digambar supaya tidak memotong gambar
+  const inShort = ctx => !!(ctx.canvas && ctx.canvas.isConnected === false);
+  const callout = (ctx, x, y, s, tx, ty, o) => L.callout(ctx, x, y, s, inShort(ctx) ? null : tx, inShort(ctx) ? null : ty, o);
+
+  // ---------- hasil pencarian rekaan ----------
+  const R = {
+    toko: { title: "Jual Plastik Kemasan Kantin Murah, Bebas Ongkir", url: "tokokemasan.example › plastik-kantin", snippet: "Plastik kemasan untuk *kantin* dan warung. Gratis ongkir, *bebas* pilih ukuran, stok *plastik* selalu ada." },
+    resep: { title: "Resep Jajanan Kantin yang Laris Dijual", url: "dapurrumah.example › resep › jajanan", snippet: "Lima resep jajanan *kantin* yang dibungkus *plastik* supaya awet dan *bebas* repot saat dijual." },
+    berita: { title: "Sekolah Kami Memulai Kantin Bebas Plastik", url: "kabarsekolah.example › 2026 › kantin", date: "14 Feb 2026", snippet: "Sejak Januari, *kantin bebas plastik* meminta murid membawa wadah dan botol minum sendiri." },
+    toko2: { title: "Jual Paket Kantin Bebas Plastik: Sedotan Bambu dan Wadah", url: "tokohijau.example › paket-kantin", snippet: "Perlengkapan *kantin bebas plastik* harga grosir. Kami jual sedotan bambu, wadah, dan gelas." },
+    video: { title: "Video: Lima Langkah Menuju Kantin Bebas Plastik", url: "videoku.example › tonton", date: "3 Sep 2025", snippet: "Tips memulai *kantin bebas plastik* bersama pedagang dan murid, dari wadah sampai tempat sampah." },
+    pemkot: { title: "Empat Puluh Sekolah Mulai Menerapkan Kantin Bebas Plastik", url: "kota-contoh.go.id › berita", date: "2 Okt 2026", snippet: "Dinas lingkungan hidup mendampingi empat puluh sekolah menerapkan *kantin bebas plastik*." },
+    lama: { title: "Program Kantin Bebas Plastik Tahun 2018", type: "PDF", url: "kota-contoh.go.id › arsip › program-2018.pdf", date: "9 Jul 2018", snippet: "Dokumen program *kantin bebas plastik* tahun 2018 untuk sekolah dasar." },
+    panduan: { title: "Panduan Kantin Bebas Plastik untuk Sekolah", type: "PDF", url: "dlh.kota-contoh.go.id › panduan-kantin.pdf", date: "20 Agu 2026", snippet: "Langkah menerapkan *kantin bebas plastik*: wadah sendiri, isi ulang air minum, dan pemilahan sampah." },
+    laporan: { title: "Laporan Sampah Plastik Kantin Sekolah 2026", type: "PDF", url: "kab-contoh.go.id › laporan-2026.pdf", date: "11 Mar 2026", snippet: "Hasil enam bulan *kantin bebas plastik*: sampah plastik kantin turun hampir separuhnya." },
+    lembar: { title: "Lembar Kerja Murid: Audit Sampah Kantin", type: "PDF", url: "dlh.kab-contoh.go.id › audit-kantin.pdf", date: "5 Des 2025", snippet: "Formulir untuk menghitung sampah di *kantin bebas plastik* selama satu minggu." }
+  };
+  const PH = '"kantin bebas plastik"';
+  const ST = [
+    { q: "kantin bebas plastik", n: 3120000, s: "0,41", res: [R.toko, R.resep, R.berita, R.toko2], add: "kata kunci biasa" },
+    { q: PH, n: 48600, s: "0,38", res: [R.toko2, R.berita, R.video], add: "+ tanda kutip" },
+    { q: PH + " -jual", n: 21300, s: "0,36", res: [R.berita, R.pemkot, R.video], add: "+ -jual" },
+    { q: PH + " -jual site:go.id", n: 1240, s: "0,31", res: [R.pemkot, R.lama, R.panduan], add: "+ site:go.id" },
+    { q: PH + " -jual site:go.id filetype:pdf", n: 86, s: "0,27", res: [R.lama, R.panduan, R.laporan], add: "+ filetype:pdf" },
+    { q: PH + " -jual site:go.id filetype:pdf", n: 12, s: "0,22", res: [R.panduan, R.laporan, R.lembar], add: "+ Setahun terakhir", time: "Setahun terakhir" }
+  ];
+  const countText = k => (ST[k].n >= 100 ? "Sekitar " : "") + `${W.num(ST[k].n)} hasil (${ST[k].s} detik)`;
+  const stage = (k, extra = {}) => ({ query: ST[k].q, count: countText(k), results: ST[k].res, tools: k >= 5, time: ST[k].time, snipLines: k >= 5 ? 1 : 2, ...extra });
+
+  // ---------- bingkai: browser + halaman hasil ----------
+  function app(ctx, st = {}, bopt = {}) {
+    const q = st.query || "";
+    const bg = W.browser(ctx, WIN.x, WIN.y, WIN.w, WIN.h, {
+      tabs: [st.home || !q ? "Cari" : q + " - Cari"], url: st.home ? "cari.example" : "cari.example/search?q=" + (st.urlQ != null ? st.urlQ : q).replace(/ /g, "+"),
+      loading: st.loading, canBack: !st.home, ...bopt });
+    const g = W.searchPage(ctx, bg, { engine: "Cari", ...st });
+    g.browser = bg; return g;
+  }
+  function probe(ctx, st) { ctx.save(); ctx.globalAlpha = 0; const g = app(ctx, st); ctx.restore(); return g; }
+  // jumlah hasil (panel kanan atas), dengan animasi turun secara logaritmik
+  function counter(ctx, n, opt = {}) {
+    const y = WIN.y; card(ctx, PX, y, PW, 196, { fill: "#FFFFFF", stroke: opt.hot ? C.accent : "#D7E2DC", lw: 3, r: 18 });
+    text(ctx, "JUMLAH HASIL", PX + 24, y + 42, 22, { weight: 900, color: C.accentDark });
+    text(ctx, W.num(n), PX + PW / 2, y + 122, 64, { align: "center", weight: 900, color: opt.hot ? C.accentDark : C.ink, fit: PW - 40 });
+    text(ctx, opt.note || "hasil", PX + PW / 2, y + 166, 22, { align: "center", weight: 700, color: C.ink2 });
+  }
+  const logLerp = (a, b, u) => Math.exp(lerp(Math.log(a), Math.log(b), ease(clamp(u, 0, 1))));
+  // panel langkah (sama dengan S02): judul + daftar langkah, langkah ke-n sedang dikerjakan
+  function steps(ctx, title, items, n, y0) {
+    const x = PX, y = y0 || WIN.y + 220, w = PW; let hh = 70;
+    const rows = items.map(s => H.wrap(ctx, s, 23, 700, w - 86)); rows.forEach(lines => hh += lines.length * 30 + 22);
+    card(ctx, x, y, w, hh, { fill: "#FFFFFF", stroke: "#D7E2DC", lw: 3, r: 18 });
+    text(ctx, title, x + 24, y + 44, 24, { weight: 900, color: C.accentDark });
+    let yy = y + 74;
+    rows.forEach((lines, i) => {
+      const done = i < n, now = i === n;
+      if (now) { ctx.fillStyle = "#FFF3D6"; rr(ctx, x + 10, yy - 8, w - 20, lines.length * 30 + 16, 10); ctx.fill(); }
+      ctx.fillStyle = done ? GREEN : now ? C.accent : "#C9D4DB"; ctx.beginPath(); ctx.arc(x + 36, yy + 13, 14, 0, Math.PI * 2); ctx.fill();
+      text(ctx, done ? "✓" : String(i + 1), x + 36, yy + 21, 18, { align: "center", weight: 900, color: "#FFFFFF" });
+      lines.forEach((ln, j) => text(ctx, ln, x + 62, yy + 22 + j * 30, 23, { weight: 700, color: done ? C.ink2 : C.ink }));
+      yy += lines.length * 30 + 22;
+    });
+    return y + hh;
+  }
+  const stepAt = (l, span, marks) => { let n = 0; marks.forEach((m, i) => { if (l >= m * span) n = i + 1; }); return n; };
+
+  // ---------- penerjemah langkah di kotak pencarian ----------
+  // plan: [{click: "start" | "end" | "box" | {x, y}}, {type: "teks"} (disisipkan di posisi kursor), {key: "Enter", enter: k}, {pt: {x, y}}, {wait}]
+  function run(ctx, b, l, k0, plan, o = {}) {
+    const span = Math.max(3, (b.audio || b.dur) * (o.speed || 0.9));
+    const ds = plan.map(p => p.d || 1), unit = span / ds.reduce((a, c) => a + c, 0);
+    const S = W.seq(l, span, ds);
+    let q = o.q0 != null ? o.q0 : ST[k0].q, caretAt = null, focus = false, mark = o.mark0 || null, stg = k0, key = null, since = -1, ptr = o.from || { x: 1000, y: 640 }, click = 0;
+    for (let i = 0; i <= S.i; i++) {
+      const p = plan[i], u = S.p(i);
+      if (since >= 0) since += u * ds[i] * unit;
+      if (p.click || p.pt) {
+        const gq = probe(ctx, stage(stg, { query: q })).box;
+        const tg = p.pt || p.click;
+        const to = tg === "start" ? { x: gq.at(0) - 2, y: gq.cy + 4 } : tg === "end" ? { x: gq.end + 8, y: gq.cy + 4 } : tg === "box" ? { x: gq.x + gq.w * 0.55, y: gq.cy + 4 } : tg;
+        const m = ease(clamp(u / 0.6, 0, 1)); ptr = { x: lerp(ptr.x, to.x, m), y: lerp(ptr.y, to.y, m) };
+        if (p.click && u >= 0.6) { focus = true; caretAt = tg === "start" ? 0 : null; click = u < 1 ? (u - 0.6) / 0.4 : 0; }
+      }
+      if (p.type != null) {
+        const n = Math.round(p.type.length * clamp(u / 0.9, 0, 1)), part = p.type.slice(0, n), at = caretAt == null ? q.length : caretAt;
+        q = q.slice(0, at) + part + q.slice(at); if (caretAt != null) caretAt += n;
+        const skip = p.type.startsWith(" ") && n > 0 ? 1 : 0; mark = n > skip ? [at + skip, at + n] : mark;
+        if (o.keepMarks && mark) o.marks = (o.marks || []).concat([mark]);
+      }
+      if (p.key) { key = u < 1 ? { keys: [p.key], press: u } : null; if (p.enter != null && u >= 0.45) { stg = p.enter; focus = false; caretAt = null; since = (u - 0.45) * ds[i] * unit; } }
+    }
+    const st = stage(stg, { query: q, focus, caret: focus && (Math.floor(l * 2.2) % 2 === 0 || true), caretAt, mark });
+    if (stg !== k0) { // hasil baru dimuat
+      st.loading = since < 0.5 ? since / 0.5 : 0;
+      if (since < 0.4) Object.assign(st, { results: ST[k0].res, count: countText(k0), tools: k0 >= 5, time: ST[k0].time, snipLines: k0 >= 5 ? 1 : 2 });
+      else st.results = st.results.map(r => ({ ...r, alpha: ease((since - 0.4) / 0.4) }));
+    }
+    if (!plan.some(p => p.click || p.pt)) ptr = null;
+    return { st, ptr, click, key, stg, since, span };
+  }
+  function show(ctx, P, opt = {}) {
+    if (P.ptr) L.cursor(ctx, P.ptr.x, P.ptr.y, { kind: opt.kind || (P.st && P.st.focus ? "text" : "arrow"), click: P.click });
+    if (P.key) L.keys(ctx, PX + PW / 2, 700, P.key.keys, { press: P.key.press, align: "center", size: 30 });
+  }
+  // adegan mengetik: kotak pencarian + panel jumlah + langkah
+  function act(ctx, b, l, k0, plan, panel, o = {}) {
+    const P = run(ctx, b, l, k0, plan, o);
+    const g = app(ctx, P.st);
+    const n = P.stg !== k0 && P.since >= 0.4 ? logLerp(ST[k0].n, ST[P.stg].n, (P.since - 0.4) / 1.2) : ST[k0].n;
+    counter(ctx, n, { hot: P.stg !== k0 });
+    if (panel) steps(ctx, panel.title || "LANGKAH", panel.items, stepAt(l, P.span, panel.marks));
+    if (o.after) o.after(ctx, g, P, l);
+    show(ctx, P, o);
+    return { g, P };
+  }
+  // halaman hasil diam + panel jumlah beranimasi dari tahap sebelumnya
+  function resultScene(ctx, b, l, k, extra = {}, o = {}) {
+    const g = app(ctx, stage(k, extra));
+    const n = o.from != null ? logLerp(ST[o.from].n, ST[k].n, l / 1.4) : ST[k].n;
+    counter(ctx, n, { hot: (o.from != null || o.hot) && l < 2.5 });
+    return g;
+  }
+  const A = b => b.audio || b.dur;
+  const qEnd = k => [ST[k - 1].q.length + 1, ST[k].q.length];  // bagian query yang baru ditambahkan
+
+  // kartu kecil kotak pencarian (untuk perbandingan benar/salah)
+  function miniBox(ctx, x, y, w, q, opt = {}) {
+    ctx.fillStyle = "#FFFFFF"; rr(ctx, x, y, w, 60, 30); ctx.fill(); ctx.strokeStyle = opt.color || "#C9D4DB"; ctx.lineWidth = 3; rr(ctx, x, y, w, 60, 30); ctx.stroke();
+    const size = opt.size || 25; ctx.font = `600 ${size}px Inter`;
+    if (opt.hl) { const a = ctx.measureText(q.slice(0, opt.hl[0])).width, c = ctx.measureText(q.slice(0, opt.hl[1])).width; const hx = x + 24 + (a + c) / 2; ctx.fillStyle = opt.hlColor || "rgba(217,68,59,0.35)"; rr(ctx, hx - 11, y + 10, 22, 40, 6); ctx.fill();
+      ctx.fillStyle = RED; ctx.beginPath(); ctx.moveTo(hx, y + 52); ctx.lineTo(hx - 9, y + 66); ctx.lineTo(hx + 9, y + 66); ctx.closePath(); ctx.fill(); text(ctx, "spasi", hx, y + 90, 22, { align: "center", weight: 900, color: RED }); }
+    text(ctx, q, x + 24, y + 39, size, { weight: 600, color: C.ink, fit: w - 48 });
+    W.icon(ctx, "search", x + w - 32, y + 30, 24, BLUE);
+  }
+
+  Object.assign(K.SCENES, {
+    tujuan(ctx, b, l) {
+      card(ctx, 160, 150, 1600, 660);
+      text(ctx, "SETELAH MENONTON, KAMU BISA MEMAKAI:", 260, 240, 30, { weight: 900, color: C.accentDark });
+      [['"…"', "tanda kutip: frasa persis"], ["-kata", "tanda minus: buang kata"], ["site:", "batasi jenis situs"], ["filetype:", "batasi jenis file"], ["Alat", "pilih rentang waktu"]].forEach(([op, s], i) => {
+        const u = ease((l - 0.6 - i * 0.6) / 0.5); if (u <= 0) return; ctx.globalAlpha = u;
+        card(ctx, 260, 280 + i * 96, 820, 80, { fill: C.bg2, r: 16 });
+        ctx.fillStyle = "#FFFFFF"; rr(ctx, 280, 292 + i * 96, 170, 56, 10); ctx.fill(); text(ctx, op, 365, 330 + i * 96, 28, { align: "center", weight: 900, color: BLUE });
+        text(ctx, s, 480, 331 + i * 96, 30, { weight: 800 }); ctx.globalAlpha = 1;
+      });
+      // corong: jutaan → belasan
+      const u = ease((l - 1.5) / 2.5);
+      ctx.fillStyle = "#E7F1FB"; ctx.beginPath(); ctx.moveTo(1200, 300); ctx.lineTo(1640, 300); ctx.lineTo(1470, 600); ctx.lineTo(1370, 600); ctx.closePath(); ctx.fill();
+      ctx.strokeStyle = "#9CC2EA"; ctx.lineWidth = 3; ctx.stroke();
+      text(ctx, "3.120.000", 1420, 280, 40, { align: "center", weight: 900, color: C.ink2 });
+      for (let i = 0; i < 30; i++) { const keep = i % 6 === 0, x0 = 1230 + ((i * 53) % 380), y0 = 318 + ((i * 29) % 90);
+        const x1 = keep ? 1380 + (i / 6) * 16 : lerp(x0, 1420, 0.6), y1 = keep ? 572 : lerp(y0, 560, 0.6);
+        ctx.globalAlpha = keep ? 1 : 1 - clamp(u * 1.6, 0, 1); ctx.fillStyle = keep ? GREEN : "#B7C4CC";
+        ctx.beginPath(); ctx.arc(lerp(x0, x1, u), lerp(y0, y1, u), 8, 0, Math.PI * 2); ctx.fill(); ctx.globalAlpha = 1; }
+      if (u > 0.9) { text(ctx, "12 hasil yang tepat", 1420, 660, 36, { align: "center", weight: 900, color: GREEN }); }
+    },
+    prasyarat(ctx, b, l) {
+      card(ctx, 160, 150, 1600, 660);
+      text(ctx, "EPISODE YANG DILENGKAPI", 960, 235, 32, { align: "center", weight: 900, color: C.accentDark });
+      [["D7.4", "Mesin Pencari", "kata kunci dan tanda kutip"], ["E.4", "Mencari, Memeriksa, Membaca Lateral", "operator pencarian"], ["F11.4", "Riset Digital dan Verifikasi Konten", "query untuk riset"]].forEach(([c, t, s], i) => {
+        const x = 230 + i * 500; card(ctx, x, 290, 460, 300, { fill: C.bg2, r: 22 });
+        text(ctx, c, x + 230, 370, 54, { align: "center", weight: 900, color: C.kiko }); para(ctx, t, x + 230, 430, 30, 400, { align: "center", weight: 800, lh: 1.2 });
+        text(ctx, s, x + 230, 560, 24, { align: "center", weight: 600, color: C.ink2 });
+      });
+      if (l > A(b) * 0.6) { card(ctx, 420, 630, 1080, 70, { fill: "#FFF3D6", r: 14 }); text(ctx, "Semua situs dan angka di video ini hanyalah contoh rekaan.", 960, 676, 28, { align: "center", weight: 800, color: C.accentDark }); }
+      kiko(ctx, 1660, 730, 90, 0, { wave: l });
+    },
+    cari_awal(ctx, b, l) {
+      const span = A(b) * 0.9, S = W.seq(l, span, [0.4, 1, 2.2, 0.9, 1.2]);
+      const q = W.typed(ST[0].q, S.p(2) / 0.92), entered = S.at(3) && S.p(3) >= 0.45;
+      const since = entered ? (S.p(3) - 0.45) * span * 0.9 / 5.7 + S.p(4) * span * 1.2 / 5.7 : -1;
+      let g;
+      if (!entered || since < 0.35) g = app(ctx, { home: true, query: q, focus: S.at(1) && S.p(1) > 0.6, caret: true, loading: entered ? since / 0.5 : 0 });
+      else g = app(ctx, stage(0, { results: ST[0].res.map(r => ({ ...r, alpha: ease((since - 0.35) / 0.4) })), loading: since < 0.5 ? since / 0.5 : 0 }));
+      const shown = entered && since >= 0.35; counter(ctx, shown ? ST[0].n : 0, { note: shown ? "hasil" : "belum mencari", hot: shown });
+      steps(ctx, "LANGKAH", ["Klik kotak pencarian.", "Ketik: kantin bebas plastik", "Tekan Enter."], S.n >= 4 ? 3 : S.i <= 1 ? 0 : S.i === 2 ? 1 : 2);
+      const box = { x: WIN.x + 270 + 380 * 0.5, y: WIN.y + 108 + 592 * 0.38 + 26 };
+      const p = W.path(l, span, [{ x: 1000, y: 680, d: 0.4 }, { x: box.x, y: box.y, d: 1, click: true }, { x: box.x, y: box.y, d: 4.3 }], { x: 1000, y: 680 });
+      if (!entered) L.cursor(ctx, p.x, p.y, { click: p.click });
+      if (S.i === 3 && S.p(3) < 1) L.keys(ctx, PX + PW / 2, 700, ["Enter"], { press: S.p(3), align: "center", size: 30 });
+    },
+    hasil_awal(ctx, b, l) {
+      const a = A(b), g = resultScene(ctx, b, l, 0, { countMark: l > a * 0.15 });
+      if (l > a * 0.15) callout(ctx, PX, 420, "Sekitar tiga juta hasil", g.count.cx + 160, g.count.cy, {});
+      if (l > a * 0.5) {
+        card(ctx, PX, 540, PW, 250, { fill: "#FFFFFF", stroke: "#D7E2DC", lw: 3, r: 16 });
+        text(ctx, "Tanpa operator:", PX + 24, 584, 24, { weight: 900, color: C.ink2 });
+        ["kantin", "bebas", "plastik"].forEach((w, i) => { ctx.fillStyle = "#E7F1FB"; rr(ctx, PX + 24 + i * 112, 606, 102, 44, 10); ctx.fill(); text(ctx, w, PX + 75 + i * 112, 636, 22, { align: "center", weight: 800, color: BLUE }); });
+        para(ctx, "Halaman yang memuat sebagian kata juga ikut muncul.", PX + 24, 694, 22, PW - 48, { weight: 700, lh: 1.3 });
+      }
+    },
+    hasil_campur(ctx, b, l) {
+      const a = A(b), marks = [l > a * 0.12 ? "bad" : null, l > a * 0.3 ? "bad" : null, l > a * 0.55 ? "good" : null];
+      const g = resultScene(ctx, b, l, 0, { results: ST[0].res.map((r, i) => ({ ...r, mark: marks[i] })) });
+      if (marks[0]) callout(ctx, PX, 360, "Toko plastik kemasan", g.result(0).x + 700, g.result(0).y + 14, { color: RED, fill: "#FBE1DF" });
+      if (marks[1]) callout(ctx, PX, 480, "Resep jajanan", g.result(1).x + 560, g.result(1).y + 14, { color: RED, fill: "#FBE1DF" });
+      if (marks[2]) callout(ctx, PX, 600, "✓ Yang dicari Sinta", g.result(2).x + 620, g.result(2).y + 14, { color: GREEN, fill: C.goodBg });
+    },
+    operator_kenal(ctx, b, l) {
+      const a = A(b); card(ctx, 160, 140, 1600, 680);
+      text(ctx, "OPERATOR PENCARIAN", 960, 215, 34, { align: "center", weight: 900, color: C.accentDark });
+      text(ctx, "ditulis di kotak pencarian, bersama kata kuncinya", 960, 262, 26, { align: "center", weight: 700, color: C.ink2 });
+      const rows = [['"kantin bebas plastik"', "frasa persis, berurutan"], ["-jual", "buang halaman yang memuat kata ini"], ["site:go.id", "hanya dari jenis situs tertentu"], ["filetype:pdf", "hanya file jenis tertentu"], ["Alat → Waktu", "hanya terbitan rentang waktu tertentu"]];
+      rows.forEach(([op, s], i) => { const u = ease((l - a * 0.25 - i * a * 0.12) / 0.4); if (u <= 0) return; ctx.globalAlpha = u; const y = 300 + i * 98;
+        card(ctx, 260, y, 1400, 82, { fill: C.bg2, r: 16 }); ctx.fillStyle = "#FFFFFF"; rr(ctx, 280, y + 12, 470, 58, 10); ctx.fill();
+        text(ctx, op, 515, y + 51, 30, { align: "center", weight: 900, color: BLUE }); text(ctx, s, 790, y + 52, 30, { weight: 800 }); ctx.globalAlpha = 1; });
+    },
+    kutip_ketik(ctx, b, l) {
+      act(ctx, b, l, 0, [{ wait: 1, d: 0.3 }, { click: "start", d: 1.1 }, { type: '"', d: 0.5 }, { click: "end", d: 1.1 }, { type: '"', d: 0.5 }, { key: "Enter", enter: 1, d: 0.8 }, { wait: 1, d: 1.2 }],
+        { items: ["Klik di depan kata kantin.", "Ketik tanda kutip.", "Klik di akhir, ketik tanda kutip.", "Tekan Enter."], marks: [0.26, 0.33, 0.62, 0.8] });
+    },
+    kutip_hasil(ctx, b, l) {
+      const a = A(b), g = resultScene(ctx, b, l, 1, { mark: [0, PH.length], countMark: l < a * 0.45 }, { hot: true });
+      if (l > a * 0.12) callout(ctx, PX, 330, "3.120.000 → 48.600", g.count.cx + 150, g.count.cy);
+      if (l > a * 0.5) { const r = g.result(1); ctx.strokeStyle = C.accent; ctx.lineWidth = 4; rr(ctx, r.x - 10, r.y + 60, 820, 64, 10); ctx.stroke(); callout(ctx, PX, 520, "Frasanya persis berurutan dan ditebalkan", r.x + 820, r.y + 92, { maxW: 320 }); }
+    },
+    kutip_toko(ctx, b, l) {
+      const a = A(b), g = resultScene(ctx, b, l, 1, { results: ST[1].res.map((r, i) => ({ ...r, mark: i === 0 && l > a * 0.1 ? "bad" : null })) });
+      if (l > a * 0.1) { const r = g.result(0); ctx.fillStyle = "rgba(217,68,59,0.18)"; rr(ctx, r.x + 2, r.y + 2, 60, 28, 6); ctx.fill(); callout(ctx, PX, 340, "Masih ada toko: kata jual", r.x + 30, r.y + 18, { color: RED, fill: "#FBE1DF", maxW: 320 }); }
+      if (l > a * 0.55) callout(ctx, PX, 520, "Tidak diperlukan untuk tugas", null, null, { fill: "#F4F6F5", color: "#9AAFA6", maxW: 320 });
+    },
+    minus_ketik(ctx, b, l) {
+      act(ctx, b, l, 1, [{ wait: 1, d: 0.4 }, { click: "end", d: 1.2 }, { type: " -jual", d: 1.6 }, { wait: 1, d: 2 }],
+        { items: ["Klik di akhir query.", "Ketik spasi, lalu -jual.", "Minus menempel pada kata."], marks: [0.3, 0.65, 1] },
+        { after: (ctx, g, P, ll) => { if (ll > P.span * 0.68) { const x0 = g.box.at(PH.length + 1), x1 = g.box.at(PH.length + 6);
+            const zx = 1000, zy = 450; L.zoom(ctx, (x0 + x1) / 2, g.box.cy, 2.4, () => { ctx.fillStyle = "#FFFFFF"; rr(ctx, x0 - 20, g.box.y + 6, x1 - x0 + 40, g.box.h - 12, 10); ctx.fill(); text(ctx, "-jual", x0, g.box.ty, 24, { weight: 600, color: C.ink }); }, zx, zy);
+            ctx.strokeStyle = C.accent; ctx.lineWidth = 4; rr(ctx, zx - (x1 - x0) * 1.2 - 48, zy - 70, (x1 - x0) * 2.4 + 96, 140, 18); ctx.stroke();
+            callout(ctx, PX, 610, "Tanpa spasi antara - dan jual", zx + (x1 - x0) * 1.2 + 48, zy, { maxW: 320 }); } } });
+    },
+    minus_hasil(ctx, b, l) {
+      const a = A(b);
+      if (l < a * 0.4) { // Enter, lalu toko dicoret
+        act(ctx, b, l, 1, [{ key: "Enter", enter: 1, d: 0.8 }, { wait: 1, d: 1.6 }], null, { q0: ST[2].q, mark0: qEnd(2), speed: 0.4,
+          after: (ctx, g, P, ll) => { const r = g.result(0); const u = ease((ll - a * 0.1) / (a * 0.2)); if (u > 0) { ctx.strokeStyle = RED; ctx.lineWidth = 5; ctx.beginPath(); ctx.moveTo(r.x - 8, r.y + 18); ctx.lineTo(r.x - 8 + 790 * u, r.y + 18); ctx.stroke(); callout(ctx, PX, 340, "Memuat kata jual: dibuang", r.x + 400, r.y + 18, { color: RED, fill: "#FBE1DF", maxW: 320 }); } } });
+        return;
+      }
+      const g = resultScene(ctx, b, l, 2, { mark: qEnd(2), countMark: true }, { from: 1 });
+      callout(ctx, PX, 330, "48.600 → 21.300", g.count.cx + 150, g.count.cy);
+      callout(ctx, PX, 470, "Artikel dan berita naik ke atas", g.result(0).x + 600, g.result(0).y + 14, { color: GREEN, fill: C.goodBg, maxW: 320 });
+    },
+    site_ketik(ctx, b, l) {
+      act(ctx, b, l, 2, [{ wait: 1, d: 0.3 }, { click: "end", d: 1 }, { type: " site:go.id", d: 2.4 }, { wait: 1, d: 1.6 }],
+        { items: ["Klik di akhir query.", "Ketik spasi, lalu site:go.id", "Tanpa spasi setelah titik dua."], marks: [0.25, 0.72, 1] },
+        { after: (ctx, g, P, ll) => { if (ll > P.span * 0.72) callout(ctx, PX, 610, "site:go.id menempel, tanpa spasi", g.box.end - 60, g.box.y + g.box.h, { maxW: 320 }); } });
+    },
+    site_hasil(ctx, b, l) {
+      const a = A(b);
+      if (l < a * 0.2) { act(ctx, b, l, 2, [{ key: "Enter", enter: 3, d: 0.8 }, { wait: 1, d: 0.6 }], null, { q0: ST[3].q, mark0: qEnd(3), speed: 0.2 }); return; }
+      const g = resultScene(ctx, b, l, 3, { mark: qEnd(3), countMark: l < a * 0.5 }, { from: 2 });
+      callout(ctx, PX, 330, "21.300 → 1.240", g.count.cx + 150, g.count.cy);
+      if (l > a * 0.35) [0, 1, 2].forEach(i => { const r = g.result(i); if (!r || r.y + 50 > 820) return; ctx.font = "600 19px Inter"; const uw = ctx.measureText(ST[3].res[i].url.split(" ›")[0]).width; ctx.strokeStyle = GREEN; ctx.lineWidth = 3; rr(ctx, r.x - 6, r.y + 34, uw + 12, 30, 6); ctx.stroke(); });
+      if (l > a * 0.35) callout(ctx, PX, 450, "Semua berakhiran go.id: situs pemerintah", g.result(0).x + 260, g.result(0).y + 50, { color: GREEN, fill: C.goodBg, maxW: 320 });
+      if (l > a * 0.7) callout(ctx, PX, 610, "site:sch.id → situs sekolah", null, null, { fill: "#E7F1FB", color: BLUE, maxW: 320 });
+    },
+    file_ketik(ctx, b, l) {
+      act(ctx, b, l, 3, [{ wait: 1, d: 0.3 }, { click: "end", d: 1 }, { type: " filetype:pdf", d: 2.6 }, { wait: 1, d: 1.8 }],
+        { items: ["Klik di akhir query.", "Ketik spasi, lalu filetype:pdf", "Tanpa spasi setelah titik dua."], marks: [0.22, 0.7, 1] });
+    },
+    file_hasil(ctx, b, l) {
+      const a = A(b);
+      if (l < a * 0.2) { act(ctx, b, l, 3, [{ key: "Enter", enter: 4, d: 0.8 }, { wait: 1, d: 0.6 }], null, { q0: ST[4].q, mark0: qEnd(4), speed: 0.2 }); return; }
+      const g = resultScene(ctx, b, l, 4, { mark: qEnd(4), countMark: l < a * 0.5 }, { from: 3 });
+      callout(ctx, PX, 330, "1.240 → 86", g.count.cx + 150, g.count.cy);
+      if (l > a * 0.35) { [0, 1, 2].forEach(i => { const r = g.result(i); if (!r || r.y + 30 > 820) return; ctx.strokeStyle = C.accent; ctx.lineWidth = 3; rr(ctx, r.x - 4, r.y, 58, 30, 6); ctx.stroke(); });
+        callout(ctx, PX, 450, "Setiap hasil bertanda PDF", g.result(1).x + 30, g.result(1).y + 2, { maxW: 320 }); }
+      if (l > a * 0.65) callout(ctx, PX, 570, "Klik untuk membaca atau download", null, null, { fill: "#E7F1FB", color: BLUE, maxW: 320 });
+    },
+    waktu_buka(ctx, b, l) {
+      const a = A(b), span = a * 0.9, S = W.seq(l, span, [1.6, 1.1, 1.3, 1.6]);
+      const g0 = probe(ctx, stage(4, { tools: true, time: "Kapan saja" }));
+      const tools = S.at(1) && S.p(1) > 0.6, open = S.at(2) && S.p(2) > 0.6;
+      const st = stage(4, { tools, time: "Kapan saja", timeOpen: open, results: ST[4].res.map((r, i) => ({ ...r, mark: i === 0 ? "bad" : null })), snipLines: tools ? 1 : 2 });
+      const g = app(ctx, st); counter(ctx, ST[4].n);
+      steps(ctx, "LANGKAH", ["Klik Alat.", "Klik Waktu: Kapan saja.", "Daftar pilihan waktu muncul."], S.i === 0 ? 0 : S.i === 1 ? 0 : S.i === 2 ? 1 : 3);
+      if (S.i === 0) { const r = g.result(0); callout(ctx, PX, 450, "Masih ada terbitan 2018", r.x + 30, r.y + 80, { color: RED, fill: "#FBE1DF", maxW: 320 }); }
+      if (open) callout(ctx, PX, 600, "Di aplikasi lain, menu ini bernama Filter atau Tanggal.", null, null, { size: 22, fill: "#F4F6F5", color: "#9AAFA6", maxW: 320 });
+      const p = W.path(l, span, [{ x: 1000, y: 700, d: 1.6 }, { x: g0.tools.cx, y: g0.tools.cy + 6, d: 1.1, click: true }, { x: g0.timeBtn.cx, y: g0.timeBtn.cy + 6, d: 1.3, click: true }, { x: g0.timeBtn.cx + 30, y: g0.timeBtn.cy + 60, d: 1.6 }], { x: 1000, y: 700 });
+      L.cursor(ctx, p.x, p.y, { click: p.click });
+    },
+    waktu_pilih(ctx, b, l) {
+      const a = A(b), span = a * 0.9, S = W.seq(l, span, [1.2, 1.2, 3]);
+      const g0 = probe(ctx, stage(4, { tools: true, time: "Kapan saja", timeOpen: true }));
+      const picked = S.at(1) && S.p(1) > 0.6, since = picked ? (S.p(1) - 0.6) * span * 1.2 / 5.4 + S.p(2) * span * 3 / 5.4 : -1;
+      let st;
+      if (!picked) st = stage(4, { tools: true, time: "Kapan saja", timeOpen: true, timeHi: S.i === 1 || S.p(0) > 0.6 ? 4 : null, snipLines: 1 });
+      else if (since < 0.4) st = stage(4, { tools: true, time: "Setahun terakhir", snipLines: 1, loading: since / 0.5 });
+      else st = stage(5, { results: ST[5].res.map(r => ({ ...r, alpha: ease((since - 0.4) / 0.4) })), loading: since < 0.5 ? since / 0.5 : 0 });
+      const g = app(ctx, st);
+      counter(ctx, picked && since >= 0.4 ? logLerp(ST[4].n, ST[5].n, (since - 0.4) / 1.2) : ST[4].n, { hot: picked });
+      steps(ctx, "LANGKAH", ["Pilih Setahun terakhir.", "Hasil lama hilang."], picked ? (since > 1.5 ? 2 : 1) : 0);
+      if (picked && since > 1.6) { callout(ctx, PX, 600, "86 → 12, semuanya terbit setahun ini", g.count.cx + 120, g.count.cy, { maxW: 320 }); }
+      const it = g0.timeItem(4);
+      const p = W.path(l, span, [{ x: g0.timeBtn.cx + 30, y: g0.timeBtn.cy + 60, d: 0.3 }, { x: it.cx, y: it.cy + 6, d: 0.9 }, { x: it.cx, y: it.cy + 6, d: 1.2, click: true }, { x: 1000, y: 720, d: 3 }]);
+      L.cursor(ctx, p.x, p.y, { click: p.click });
+    },
+    bandingkan(ctx, b, l) {
+      const a = A(b); card(ctx, 160, 140, 1600, 680);
+      text(ctx, "SETIAP OPERATOR MENYARING LAGI", 960, 210, 34, { align: "center", weight: 900, color: C.accentDark });
+      const max = Math.log10(ST[0].n);
+      ST.forEach((s, i) => { const u = ease((l - 0.5 - i * a * 0.09) / 0.6); if (u <= 0) return; const y = 260 + i * 88;
+        ctx.globalAlpha = u; text(ctx, s.add, 230, y + 46, 30, { weight: 800, color: i === 0 ? C.ink2 : BLUE });
+        const bw = 820 * Math.max(0.06, Math.log10(s.n) / max) * u; ctx.fillStyle = i === ST.length - 1 ? GREEN : i === 0 ? "#B7C4CC" : "#9CC2EA"; rr(ctx, 560, y + 14, bw, 46, 10); ctx.fill();
+        text(ctx, W.num(s.n), 560 + bw + 20, y + 48, 32, { weight: 900, color: i === ST.length - 1 ? GREEN : C.ink }); ctx.globalAlpha = 1; });
+      text(ctx, "panjang batang: skala logaritmik", 1700, 790, 20, { align: "right", weight: 600, color: C.ink2 });
+      kiko(ctx, 1640, 700, 80, 0, { wave: l });
+    },
+    coba(ctx, b, l) {
+      card(ctx, 160, 140, 1600, 680, { stroke: C.accent, lw: 6 });
+      ctx.fillStyle = C.accent; ctx.beginPath(); ctx.arc(320, 280, 70, 0, Math.PI * 2); ctx.fill();
+      ctx.fillStyle = "#FFFFFF"; rr(ctx, 290, 245, 20, 70, 6); ctx.fill(); rr(ctx, 330, 245, 20, 70, 6); ctx.fill();
+      text(ctx, "COBA SEKARANG", 430, 268, 44, { weight: 900, color: C.accentDark }); text(ctx, "Hentikan video, kerjakan, lalu putar lagi.", 430, 316, 30, { weight: 700, color: C.ink2 });
+      (b.coba || []).forEach((s, i) => { card(ctx, 230, 380 + i * 104, 900, 88, { fill: C.bg2, r: 16 }); text(ctx, String(i + 1), 276, 436 + i * 104, 34, { align: "center", weight: 900, color: C.kiko }); text(ctx, s, 320, 435 + i * 104, 27, { weight: 700, fit: 790 }); });
+      card(ctx, 1170, 380, 540, 400, { fill: "#FFFFFF", stroke: "#D7E2DC", lw: 3, r: 16 });
+      text(ctx, "Catat seperti ini", 1200, 424, 24, { weight: 900, color: C.ink2 });
+      [["kata kunci biasa", "3.120.000"], ["+ tanda kutip", "48.600"], ["+ -jual", "21.300"], ["+ site:go.id", "1.240"], ["+ filetype:pdf", "86"], ["+ Setahun terakhir", "12"]].forEach(([k, v], i) => {
+        const y = 450 + i * 52; ctx.strokeStyle = "#DDE5EA"; ctx.lineWidth = 2; ctx.strokeRect(1200, y, 480, 52);
+        text(ctx, k, 1216, y + 34, 23, { weight: 700, color: i ? BLUE : C.ink }); text(ctx, v, 1664, y + 34, 23, { align: "right", weight: 800 }); });
+    },
+    salah_site(ctx, b, l) {
+      const a = A(b); card(ctx, 160, 140, 1600, 680);
+      text(ctx, "KESALAHAN 1: SPASI SETELAH TITIK DUA", 960, 210, 32, { align: "center", weight: 900, color: C.accentDark });
+      const wrong = PH + " site: go.id", right = PH + " site:go.id";
+      card(ctx, 220, 250, 720, 540, { fill: "#FDF1F0", stroke: RED, lw: 4, r: 20 }); text(ctx, "✗ dengan spasi", 580, 300, 30, { align: "center", weight: 900, color: RED });
+      miniBox(ctx, 250, 330, 660, wrong, { color: RED, hl: [wrong.indexOf(":") + 1, wrong.indexOf(":") + 2], size: 24 });
+      text(ctx, "Sekitar 51.200 hasil", 690, 430, 22, { weight: 700, color: C.ink2 });
+      W.result(ctx, 270, 460, 620, { ...R.toko2, mark: "bad" }, 1); W.result(ctx, 270, 590, 620, R.video, 1);
+      callout(ctx, 330, 700, "site dianggap kata biasa", null, null, { color: RED, fill: "#FFFFFF", size: 24 });
+      if (l > a * 0.5) {
+        card(ctx, 980, 250, 720, 540, { fill: "#F2FAF4", stroke: GREEN, lw: 4, r: 20 }); text(ctx, "✓ tanpa spasi", 1340, 300, 30, { align: "center", weight: 900, color: GREEN });
+        miniBox(ctx, 1010, 330, 660, right, { color: GREEN, size: 24 });
+        text(ctx, "Sekitar 1.300 hasil", 1030, 430, 22, { weight: 700, color: C.ink2 });
+        W.result(ctx, 1030, 460, 620, { ...R.pemkot, mark: "good" }, 1); W.result(ctx, 1030, 590, 620, R.panduan, 1);
+        callout(ctx, 1090, 700, "semua dari situs go.id", null, null, { color: GREEN, fill: "#FFFFFF", size: 24 });
+      }
+    },
+    salah_minus(ctx, b, l) {
+      const a = A(b); card(ctx, 160, 140, 1600, 680);
+      text(ctx, "KESALAHAN 2: TANDA MINUS BERSPASI", 960, 210, 32, { align: "center", weight: 900, color: C.accentDark });
+      const wrong = PH + " - jual", right = PH + " -jual";
+      card(ctx, 220, 250, 720, 540, { fill: "#FDF1F0", stroke: RED, lw: 4, r: 20 }); text(ctx, "✗ minus berspasi", 580, 300, 30, { align: "center", weight: 900, color: RED });
+      miniBox(ctx, 250, 330, 660, wrong, { color: RED, hl: [wrong.indexOf("- ") + 1, wrong.indexOf("- ") + 2] });
+      text(ctx, "Sekitar 48.600 hasil", 690, 430, 22, { weight: 700, color: C.ink2 });
+      W.result(ctx, 270, 460, 620, { ...R.toko2, mark: "bad" }, 1); W.result(ctx, 270, 590, 620, R.berita, 1);
+      callout(ctx, 330, 700, "minus diabaikan: toko muncul", null, null, { color: RED, fill: "#FFFFFF", size: 24 });
+      if (l > a * 0.5) {
+        card(ctx, 980, 250, 720, 540, { fill: "#F2FAF4", stroke: GREEN, lw: 4, r: 20 }); text(ctx, "✓ minus menempel", 1340, 300, 30, { align: "center", weight: 900, color: GREEN });
+        miniBox(ctx, 1010, 330, 660, right, { color: GREEN });
+        text(ctx, "Sekitar 21.300 hasil", 1030, 430, 22, { weight: 700, color: C.ink2 });
+        W.result(ctx, 1030, 460, 620, { ...R.berita, mark: "good" }, 1); W.result(ctx, 1030, 590, 620, R.pemkot, 1);
+        callout(ctx, 1090, 700, "toko hilang dari daftar", null, null, { color: GREEN, fill: "#FFFFFF", size: 24 });
+      }
+    },
+    kosong(ctx, b, l) {
+      const a = A(b), span = a * 0.9, S = W.seq(l, span, [1.6, 1, 1, 2.4]);
+      const g0 = probe(ctx, stage(5, { time: "24 jam terakhir", timeOpen: true }));
+      const fixed = S.at(2) && S.p(2) > 0.6;
+      const since = fixed ? (S.p(2) - 0.6) * span / 6 + S.p(3) * span * 2.4 / 6 : -1;
+      let st;
+      if (!fixed) st = stage(5, { time: "24 jam terakhir", results: [], count: "0 hasil", empty: "Tidak ada hasil yang cocok.", timeOpen: S.at(1) && S.p(1) > 0.6, timeHi: 4 });
+      else st = stage(5, { results: ST[5].res.map(r => ({ ...r, alpha: ease((since - 0.3) / 0.4) })), loading: since < 0.5 ? since / 0.5 : 0 });
+      const g = app(ctx, st);
+      counter(ctx, fixed && since > 0.3 ? 12 : 0, { hot: fixed });
+      steps(ctx, "JIKA HASIL KOSONG", ["Cari operator yang terlalu ketat.", "Longgarkan atau hapus satu.", "Cari lagi."], S.i === 0 ? 0 : S.i < 3 ? 1 : 3);
+      if (S.i === 0) callout(ctx, PX, 640, "Terlalu ketat: 24 jam terakhir", g0.timeBtn.x + g0.timeBtn.w, g0.timeBtn.cy, { color: RED, fill: "#FBE1DF", maxW: 320 });
+      const it = g0.timeItem(4);
+      const p = W.path(l, span, [{ x: 1000, y: 700, d: 1.6 }, { x: g0.timeBtn.cx, y: g0.timeBtn.cy + 6, d: 1, click: true }, { x: it.cx, y: it.cy + 6, d: 1, click: true }, { x: 1000, y: 720, d: 2.4 }]);
+      L.cursor(ctx, p.x, p.y, { click: p.click });
+    },
+    periksa(ctx, b, l) {
+      const a = A(b), items = ["Frasa muncul persis", "Tidak ada kata jual", "Alamat go.id, file PDF", "Terbit setahun terakhir"];
+      const on = i => l > a * (0.2 + i * 0.16);
+      const g = app(ctx, stage(5, { mark: on(0) ? [0, PH.length] : null, results: ST[5].res.map(r => ({ ...r, mark: on(3) ? "good" : null })) }));
+      counter(ctx, 12, { note: "hasil yang tepat" });
+      const y0 = WIN.y + 220; card(ctx, PX, y0, PW, 90 + items.length * 88, { fill: "#FFFFFF", stroke: "#D7E2DC", lw: 3, r: 18 });
+      text(ctx, "PERIKSA HASILMU", PX + PW / 2, y0 + 48, 24, { align: "center", weight: 900, color: C.accentDark });
+      items.forEach((k, i) => { const y = y0 + 74 + i * 88, ok = on(i); ctx.fillStyle = ok ? C.goodBg : "#F4F6F5"; rr(ctx, PX + 18, y, PW - 36, 72, 12); ctx.fill();
+        text(ctx, k, PX + 36, y + 45, 23, { weight: 700, fit: PW - 110 }); text(ctx, ok ? "✓" : "?", PX + PW - 40, y + 47, 30, { align: "center", weight: 900, color: ok ? GREEN : C.ink2 }); });
+    },
+    latihan(ctx, b, l) {
+      card(ctx, 160, 150, 1600, 660);
+      text(ctx, "BERLATIH LAGI", 960, 230, 32, { align: "center", weight: 900, color: C.accentDark });
+      card(ctx, 300, 290, 640, 400, { fill: C.bg2, r: 22 }); text(ctx, "Halaman latihan D7.4", 620, 360, 34, { align: "center", weight: 900 });
+      text(ctx, "Susun kata kunci", 620, 410, 28, { align: "center", weight: 700, color: C.ink2 });
+      card(ctx, 360, 450, 520, 70, { fill: "#FFFFFF", r: 12 }); text(ctx, "belajar-informatika.vercel.app/d74", 620, 496, 26, { align: "center", weight: 800, color: C.kikoDark });
+      text(ctx, "pilih kata yang spesifik, lalu periksa", 620, 600, 26, { align: "center", weight: 700, color: C.ink2 });
+      card(ctx, 1000, 290, 620, 400, { fill: "#FFF9E0", r: 22 }); text(ctx, "Tugas nyata", 1310, 360, 34, { align: "center", weight: 900 });
+      para(ctx, "Cari satu sumber untuk tugas sekolahmu dengan minimal dua operator. Catat query dan alamatnya.", 1310, 420, 30, 520, { align: "center", weight: 700, lh: 1.3 });
+      kiko(ctx, 1650, 720, 100, 0, { wave: l });
+    }
+  });
+})(typeof window !== "undefined" ? window : globalThis);
+</script>
+<script>window.__YT = [];
+const YT_CHANNEL = "https://www.youtube.com/@iteachswe";   // channel YouTube Bu Dewi (video lengkap seri ini)
+/* Inti halaman latihan: pemutar (kanvas + narasi), tombol suara nyala/mati (berpindah antara timeline suara dan teks),
+   kuis dengan petunjuk, dan kemajuan di localStorage (perangkat ini saja).
+   Pakai:  const P = PageCore({ suara: TIMELINE_SUARA_atau_null, teks: TIMELINE_TEKS });
+   Episode menambahkan latihannya sendiri lewat P.$, P.K, P.H, P.progress, P.save(), P.speed(), P.onProgress(fn). */
+function PageCore(TLS, opt = {}) {
+  const $ = id => document.getElementById(id);
+  const K = Kiko, H = K.helpers;
+  let voice = !!TLS.suara; let TL = voice ? TLS.suara : TLS.teks;
+  // ---------- progress storage (per device only) ----------
+  const KEY = opt.key || TL.episode.replace(/\./g, "").toLowerCase() + "-progress";   // D7.5 -> "d75-progress"
+  let progress = { quiz: {} };
+  try { const s = localStorage.getItem(KEY); if (s) progress = { quiz: {}, ...JSON.parse(s) }; } catch (e) {}
+  const extras = [];
+  function renderProgress() {
+    const el = $("progress"); if (!el) return; el.innerHTML = "";
+    Object.keys(TL.quizzes).forEach((id, i) => { const s = document.createElement("span"); s.textContent = "Cek " + (i + 1); s.className = progress.quiz[id] ? "ok" : ""; el.appendChild(s); });
+    extras.forEach(f => f(el));
+  }
+  function save() { try { localStorage.setItem(KEY, JSON.stringify(progress)); } catch (e) {} renderProgress(); }
+
+  // ---------- player ----------
+  const cv = $("screen"), ctx = cv.getContext("2d");
+  let t = 0, playing = false, last = 0, speed = 1, hasAudio = false;
+  const nar = $("nar"); nar.addEventListener("canplay", () => { hasAudio = true; }); nar.addEventListener("error", () => { hasAudio = false; });
+  function fmt(s) { s = Math.max(0, Math.floor(s)); return Math.floor(s / 60) + ":" + String(s % 60).padStart(2, "0"); }
+  function segStart(i) { return TL.beats.find(b => b.seg === i).start; }
+  function syncAudio() { if (voice && hasAudio) { try { nar.currentTime = t; } catch (e) {} } }
+  function drawNow() {
+    const b = K.draw(ctx, Math.min(t, TL.total - 0.01), TL);
+    $("barfill").style.width = (t / TL.total * 100) + "%"; $("bar").setAttribute("aria-valuenow", Math.round(t / TL.total * 100));
+    $("timelabel").textContent = fmt(t) + " / " + fmt(TL.total);
+    [...$("chapters").children].forEach((c, i) => c.classList.toggle("now", i === b.seg));
+    return b;
+  }
+  function loop(now) {
+    if (!playing) return;
+    const dt = Math.min(0.1, (now - last) / 1000); last = now; if (voice && hasAudio && !nar.paused) t = nar.currentTime; else t += dt * speed;
+    if (t >= TL.total) { t = TL.total - 0.01; setPlaying(false); }
+    drawNow(); requestAnimationFrame(loop);
+  }
+  function setPlaying(p) {
+    playing = p; $("bigplay").hidden = p; $("playbtn").textContent = p ? "❚❚ Jeda" : "▶ Putar";
+    if (p) { last = performance.now(); if (voice && hasAudio) { try { nar.currentTime = t; nar.playbackRate = speed; nar.play().catch(() => {}); } catch (e) {} } requestAnimationFrame(loop); } else nar.pause();
+  }
+  $("bigplay").addEventListener("click", () => setPlaying(true));
+  $("playbtn").addEventListener("click", () => setPlaying(!playing));
+  $("replay").addEventListener("click", () => { const b = K.beatAt(TL, t); t = segStart(b.seg); syncAudio(); drawNow(); setPlaying(true); });
+  $("slow").addEventListener("click", e => { speed = speed === 1 ? 0.8 : 1; nar.playbackRate = speed; e.currentTarget.setAttribute("aria-pressed", speed !== 1); });
+  function seekFromBar(ev) { const r = $("bar").getBoundingClientRect(); const x = (ev.touches ? ev.touches[0].clientX : ev.clientX) - r.left; t = Math.max(0, Math.min(TL.total - 0.01, x / r.width * TL.total)); syncAudio(); drawNow(); }
+  $("bar").addEventListener("click", seekFromBar);
+  $("bar").addEventListener("keydown", e => { if (e.key === "ArrowRight") { t = Math.min(TL.total - 0.01, t + 5); syncAudio(); drawNow(); } if (e.key === "ArrowLeft") { t = Math.max(0, t - 5); syncAudio(); drawNow(); } });
+  TL.segments.forEach((name, i) => { const b = document.createElement("button"); b.textContent = (i + 1) + ". " + name; b.addEventListener("click", () => { t = segStart(i); syncAudio(); drawNow(); setPlaying(true); }); $("chapters").appendChild(b); });
+  // voice on/off: switches between the narrated timeline and the reading-paced one, staying on the same beat
+  const vb = $("voice");
+  function setVoice(on) {
+    const cur = K.beatAt(TL, t);
+    voice = on && !!TLS.suara; TL = voice ? TLS.suara : TLS.teks;
+    const nb = TL.beats.find(b => b.id === cur.id) || TL.beats[0]; t = nb.start;
+    if (vb) { vb.setAttribute("aria-pressed", voice); vb.textContent = voice ? "🔊 Suara: nyala" : "🔇 Suara: mati"; }
+    if (playing) { if (voice && hasAudio) { try { nar.currentTime = t; nar.playbackRate = speed; nar.play().catch(() => {}); } catch (e) {} } else nar.pause(); }
+    drawNow();
+  }
+  if (vb) { if (!TLS.suara || !TLS.teks) vb.hidden = true; else { vb.addEventListener("click", () => setVoice(!voice)); vb.setAttribute("aria-pressed", voice); vb.textContent = voice ? "🔊 Suara: nyala" : "🔇 Suara: mati"; } }
+  drawNow();
+
+  // ---------- quiz ----------
+  const quizEl = $("quiz");
+  if (quizEl) Object.entries(TL.quizzes).forEach(([id, q], qi) => {
+    const box = document.createElement("div"); box.className = "q";
+    box.innerHTML = `<h3>${qi + 1}. ${q.q}</h3><div class="opts"></div><div class="fb"></div>`;
+    const opts = box.querySelector(".opts"), fb = box.querySelector(".fb");
+    q.options.forEach((o, i) => {
+      const b = document.createElement("button"); b.innerHTML = `<b>${"ABC"[i]}</b><span>${o}</span>`;
+      b.addEventListener("click", () => {
+        [...opts.children].forEach(c => c.classList.remove("wrong"));
+        if (i === q.answer) { b.classList.add("right"); fb.className = "fb good"; fb.textContent = "Benar! " + (q.explain || ""); progress.quiz[id] = true; save(); [...opts.children].forEach(c => c.disabled = true); }
+        else { b.classList.add("wrong"); fb.className = "fb bad"; fb.textContent = "Belum tepat. Petunjuk: " + q.hint; }
+      });
+      opts.appendChild(b);
+    });
+    if (progress.quiz[id]) { opts.children[q.answer].classList.add("right"); [...opts.children].forEach(c => c.disabled = true); fb.className = "fb good"; fb.textContent = "Sudah dijawab benar."; }
+    quizEl.appendChild(box);
+  });
+  renderProgress();
+
+  // video YouTube (bila alamatnya sudah diisi di youtube_id.json): pemutar utama di atas; animasi tetap ada untuk luring
+  try {
+    const YTL = (typeof window !== "undefined" && window.__YT) || [];
+    const pl = document.querySelector("section.player");
+    if (YTL.length && pl && !document.getElementById("yt-video")) {
+      const sec = document.createElement("section"); sec.className = "card yt-video"; sec.id = "yt-video"; sec.setAttribute("aria-label", "Video YouTube");
+      const h = document.createElement("h2"); h.textContent = "Video"; sec.appendChild(h);
+      let row = null;
+      if (YTL.length > 1) { row = document.createElement("div"); row.className = "row"; sec.appendChild(row); }
+      const box = document.createElement("div"); box.className = "yt-frame"; sec.appendChild(box);
+      const show = (i) => {
+        box.innerHTML = "";
+        const f = document.createElement("iframe");
+        f.src = "https://www.youtube-nocookie.com/embed/" + YTL[i].id + "?rel=0";
+        f.title = "Video " + YTL[i].part; f.loading = "lazy"; f.allowFullscreen = true;
+        f.setAttribute("allow", "accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share");
+        box.appendChild(f);
+        if (row) [...row.children].forEach((b, j) => b.setAttribute("aria-pressed", String(j === i)));
+      };
+      if (row) YTL.forEach((x, i) => { const b = document.createElement("button"); b.textContent = "Bagian " + (i + 1); b.addEventListener("click", () => show(i)); row.appendChild(b); });
+      const note = document.createElement("p"); note.className = "hint"; note.textContent = "Tidak ada internet? Putar animasinya di bawah; teksnya sama dan bisa dipakai tanpa internet."; sec.appendChild(note);
+      show(0);
+      pl.insertAdjacentElement("beforebegin", sec);
+      const lab = document.createElement("div"); lab.className = "eyebrow"; lab.textContent = "Animasi interaktif (bisa tanpa internet)"; pl.insertAdjacentElement("afterbegin", lab);
+    }
+  } catch (e) {}
+  // ajakan ke channel YouTube (video lengkap): kartu tepat di bawah pemutar, di semua halaman latihan dan simulasi
+  try {
+    const pl = document.querySelector("section.player");
+    if (pl && !document.getElementById("yt-ajak")) {
+      const a = document.createElement("a"); a.id = "yt-ajak"; a.className = "yt-ajak"; a.href = YT_CHANNEL; a.target = "_blank"; a.rel = "noopener";
+      a.innerHTML = '<span class="yt-ic" aria-hidden="true">▶</span><span><b>Tonton video lengkapnya di YouTube</b><small>Subscribe channel @iteachswe untuk belajar lebih banyak.</small></span>';
+      pl.insertAdjacentElement("afterend", a);
+    }
+  } catch (e) {}
+  return { $, K, H, progress, save, renderProgress, speed: () => speed, timeline: () => TL,
+           onProgress(fn) { extras.push(fn); renderProgress(); } };
+}
+</script>
+<script>
+(function () {
+  const P = PageCore({ suara: {"episode": "S09", "title": "Mencari Lebih Tepat dengan Operator Pencarian", "label": "Simulasi Praktik · S09 · Browser", "kind": "praktik", "for": ["D7.4", "E.4", "F11.4"], "latihan": "D7.4", "hook": "menyaring jutaan hasil pencarian menjadi belasan hasil yang tepat dengan tanda kutip, tanda minus, site:, filetype:, dan rentang waktu.", "engine": ["../../_alat/kiko-core.js", "../../_alat/layar.js", "../../_alat/layar_web.js", "scenes.js"], "parts": {"S09": {"segs": [0, 1, 2, 3, 4, 5, 6, 7]}}, "recap": ["Tanda kutip = frasa persis; minus menempel = buang kata.", "site: dan filetype: ditulis tanpa spasi setelah titik dua.", "Alat → Setahun terakhir untuk informasi yang baru."], "next": {"code": "S10", "title": "Membaca Lateral dan Pencarian Gambar Terbalik", "note": "Simulasi praktik browser berikutnya.", "heading": "SIMULASI BERIKUTNYA"}, "youtube": {"ringkas": "Simulasi praktik langkah demi langkah di browser: Sinta mencari bahan tugas tentang kantin bebas plastik. Hasil pencarian menyusut dari jutaan menjadi belasan setiap kali satu operator ditambah: tanda kutip untuk frasa persis, tanda minus untuk membuang kata, site: untuk membatasi situs, filetype:pdf untuk mencari file PDF, dan alat rentang waktu. Ada jeda untuk mencoba sendiri, kesalahan yang paling sering terjadi, dan tiga cek pemahaman. Semua situs di video ini rekaan.", "belajar": ["memakai tanda kutip untuk mencari frasa persis", "membuang kata yang mengganggu dengan tanda minus", "membatasi hasil dengan site: dan filetype:pdf", "memilih rentang waktu lewat menu Alat dan menghindari kesalahan spasi"], "cari": ["cara mencari di google lebih tepat", "operator pencarian site filetype", "cara mencari file pdf di internet", "cara memakai tanda kutip saat mencari", "operator pencarian kelas 7"], "prasyarat": "episode D7.4 Mesin Pencari: Cara Kerja dan Strategi", "tagar": ["#MesinPencari", "#OperatorPencarian", "#Simulasi", "#Informatika", "#SMP"]}, "segments": ["Pembuka", "Pencarian pertama", "Tanda kutip", "Tanda minus", "site: dan filetype:", "Rentang waktu", "Kesalahan dan periksa", "Penutup"], "quizzes": {"q1": {"q": "Mana yang hanya menampilkan halaman berisi frasa kantin sehat persis berurutan?", "options": ["kantin sehat", "\"kantin sehat\"", "kantin -sehat"], "answer": 1, "hint": "Tanda kutip mengunci kata-kata supaya dicari persis seperti urutannya."}, "q2": {"q": "Kamu butuh panduan resmi berbentuk PDF dari situs pemerintah. Query mana yang tepat?", "options": ["panduan sampah site:go.id filetype:pdf", "panduan sampah pdf go.id", "panduan sampah -pdf -go.id"], "answer": 0, "hint": "site: membatasi situs, filetype: membatasi jenis file. Keduanya ditulis menempel."}, "q3": {"q": "Kenapa hasil query site: go.id kantin tidak hanya dari situs pemerintah?", "options": ["Ada spasi setelah titik dua", "site harus ditulis huruf kapital", "site: hanya bisa untuk sekolah"], "answer": 0, "hint": "Operator site: dan alamatnya harus menempel, tanpa spasi."}}, "beats": [{"id": "intro1", "seg": 0, "scene": "title", "hold": 0.8, "text": "Halo! Aku Kiko. Sinta mendapat tugas menulis tentang kantin bebas plastik. Ia mencari di internet, tetapi hasilnya jutaan, dan banyak yang tidak nyambung.", "start": 0.0, "speech": 0.4, "audio": 10.744, "dur": 13.34}, {"id": "intro2", "seg": 0, "scene": "tujuan", "hold": 0.8, "text": "Setelah menonton, kamu bisa menyaring jutaan hasil pencarian menjadi belasan hasil yang tepat dengan operator pencarian. Siapkan HP atau laptop, lalu buka browser apa pun.", "start": 13.34, "speech": 13.74, "audio": 11.068, "dur": 14.34}, {"id": "intro3", "seg": 0, "scene": "prasyarat", "hold": 0.8, "text": "Simulasi ini melengkapi episode D7.4 tentang mesin pencari, serta E.4 dan F11.4 tentang pencarian dan riset. Semua situs di video ini hanyalah contoh rekaan.", "start": 27.68, "speech": 28.08, "audio": 13.396, "dur": 14.896}, {"id": "s1a", "seg": 1, "scene": "cari_awal", "hold": 1.0, "text": "Buka browser, lalu klik kotak pencarian. Sinta mengetik kantin bebas plastik, lalu menekan Enter.", "start": 42.576, "speech": 42.976, "audio": 7.153, "dur": 9.04}, {"id": "s1b", "seg": 1, "scene": "hasil_awal", "hold": 1.0, "text": "Lihat tulisan kecil di bawah kotak pencarian. Ada sekitar tiga juta hasil, karena mesin pencari juga menampilkan halaman yang hanya memuat sebagian katanya.", "start": 51.616, "speech": 52.016, "audio": 9.944, "dur": 13.54}, {"id": "s1c", "seg": 1, "scene": "hasil_campur", "hold": 1.2, "text": "Hasilnya campur aduk. Ada toko plastik kemasan yang bebas ongkir, ada resep jajanan, dan hanya satu hasil yang benar-benar membahas kantin bebas plastik.", "start": 65.156, "speech": 65.556, "audio": 10.093, "dur": 13.74}, {"id": "s1d", "seg": 1, "scene": "operator_kenal", "hold": 1.2, "text": "Untuk menyaringnya, kita memakai operator pencarian. Operator adalah tanda atau kata khusus yang ditulis di kotak pencarian bersama kata kuncinya.", "start": 78.896, "speech": 79.296, "audio": 9.529, "dur": 12.24}, {"id": "s2a", "seg": 2, "scene": "kutip_ketik", "hold": 1.0, "text": "Operator pertama adalah tanda kutip. Klik kotak pencarian, lalu tambahkan tanda kutip di awal dan di akhir kata kantin bebas plastik. Tekan Enter.", "start": 91.136, "speech": 91.536, "audio": 10.525, "dur": 13.54}, {"id": "s2b", "seg": 2, "scene": "kutip_hasil", "hold": 1.2, "text": "Hasilnya tinggal sekitar empat puluh delapan ribu. Setiap halaman memuat ketiga kata itu persis berurutan, dan frasa yang cocok ditebalkan di cuplikannya.", "start": 104.676, "speech": 105.076, "audio": 10.16, "dur": 13.24}, {"id": "s2c", "seg": 2, "scene": "kutip_toko", "hold": 1.0, "text": "Tetapi toko masih muncul di urutan pertama. Toko ini menjual perlengkapan kantin bebas plastik. Untuk tugas Sinta, halaman toko tidak diperlukan.", "start": 117.916, "speech": 118.316, "audio": 9.924, "dur": 12.54}, {"id": "q1", "seg": 2, "scene": "quiz", "quiz": "q1", "hold": 4.0, "text": "Cek pemahaman. Mana yang hanya menampilkan halaman berisi frasa kantin sehat persis berurutan? Pikirkan dulu.", "start": 130.456, "speech": 130.856, "audio": 7.998, "dur": 12.698}, {"id": "q1a", "seg": 2, "scene": "quiz_answer", "quiz": "q1", "hold": 1.0, "text": "Jawabannya: kantin sehat di dalam tanda kutip. Tanpa tanda kutip, halaman yang hanya memuat kata kantin atau kata sehat juga ikut muncul.", "start": 143.154, "speech": 143.554, "audio": 9.394, "dur": 13.04}, {"id": "s3a", "seg": 3, "scene": "minus_ketik", "hold": 1.0, "text": "Operator kedua adalah tanda minus untuk membuang kata. Ketik spasi, lalu tanda minus yang langsung menempel pada kata jual, tanpa spasi di antaranya.", "start": 156.194, "speech": 156.594, "audio": 10.243, "dur": 13.54}, {"id": "s3b", "seg": 3, "scene": "minus_hasil", "hold": 1.2, "text": "Tekan Enter. Halaman yang memuat kata jual hilang dari daftar, dan hasilnya tinggal sekitar dua puluh satu ribu. Artikel dan berita naik ke atas.", "start": 169.734, "speech": 170.134, "audio": 10.489, "dur": 14.24}, {"id": "s4a", "seg": 4, "scene": "site_ketik", "hold": 1.0, "text": "Operator ketiga adalah site, untuk membatasi hasil dari jenis situs tertentu. Ketik site, titik dua, lalu go titik id, semuanya tanpa spasi.", "start": 183.974, "speech": 184.374, "audio": 11.096, "dur": 13.04}, {"id": "s4b", "seg": 4, "scene": "site_hasil", "hold": 1.2, "text": "Tekan Enter. Hasilnya tinggal sekitar seribu dua ratus, dan semua alamatnya berakhiran go titik id, akhiran situs pemerintah. Untuk situs sekolah, akhirannya sch titik id.", "start": 197.014, "speech": 197.414, "audio": 14.127, "dur": 16.027}, {"id": "s4c", "seg": 4, "scene": "file_ketik", "hold": 1.0, "text": "Operator keempat adalah filetype, untuk mencari jenis file tertentu. Ketik filetype, titik dua, lalu pdf. Panduan dan laporan resmi sering dibagikan sebagai file PDF.", "start": 213.041, "speech": 213.441, "audio": 12.727, "dur": 14.427}, {"id": "s4d", "seg": 4, "scene": "file_hasil", "hold": 1.2, "text": "Tekan Enter. Tinggal delapan puluh enam hasil, dan setiap hasil bertanda PDF. Kalau diklik, file itu bisa dibaca langsung atau di-download.", "start": 227.468, "speech": 227.868, "audio": 10.078, "dur": 12.74}, {"id": "q2", "seg": 4, "scene": "quiz", "quiz": "q2", "hold": 4.0, "text": "Cek pemahaman. Kamu butuh panduan resmi berbentuk PDF dari situs pemerintah. Query mana yang tepat? Pikirkan dulu.", "start": 240.208, "speech": 240.608, "audio": 8.16, "dur": 13.54}, {"id": "q2a", "seg": 4, "scene": "quiz_answer", "quiz": "q2", "hold": 1.0, "text": "Jawabannya: yang pertama. Operator site membatasi situsnya, dan operator filetype membatasi jenis filenya. Keduanya ditulis menempel, tanpa spasi.", "start": 253.748, "speech": 254.148, "audio": 10.742, "dur": 12.442}, {"id": "s5a", "seg": 5, "scene": "waktu_buka", "hold": 1.0, "text": "Masih ada panduan lama dari tahun dua ribu delapan belas. Klik Alat di bawah kotak pencarian, lalu klik tombol Waktu. Muncul daftar pilihan waktu.", "start": 266.19, "speech": 266.59, "audio": 9.515, "dur": 14.04}, {"id": "s5b", "seg": 5, "scene": "waktu_pilih", "hold": 1.2, "text": "Pilih Setahun terakhir. Hasilnya tinggal dua belas, dan semuanya terbit dalam setahun ini. Untuk aturan dan data, informasi yang baru biasanya lebih tepat.", "start": 280.23, "speech": 280.63, "audio": 10.302, "dur": 13.74}, {"id": "s5c", "seg": 5, "scene": "bandingkan", "hold": 1.5, "text": "Bandingkan dengan pencarian pertama. Dari tiga juta hasil yang campur aduk, kini tinggal dua belas hasil yang memang dibutuhkan Sinta untuk tugasnya.", "start": 293.97, "speech": 294.37, "audio": 8.819, "dur": 13.54}, {"id": "coba1", "seg": 5, "scene": "coba", "hold": 3.0, "text": "Sekarang giliranmu. Hentikan dulu videonya, lalu cari bahan tugasmu sendiri. Tambahkan satu operator setiap kali, dan perhatikan jumlah hasilnya. Kalau sudah, putar lagi videonya.", "coba": ["Ketik kata kunci biasa, catat jumlah hasilnya.", "Tambahkan tanda kutip, lalu satu kata dengan minus.", "Tambahkan site:go.id atau filetype:pdf.", "Klik Alat, lalu pilih Setahun terakhir."], "start": 307.51, "speech": 307.91, "audio": 12.1, "dur": 16.04}, {"id": "s6a", "seg": 6, "scene": "salah_site", "hold": 1.2, "text": "Ada dua kesalahan yang sering terjadi. Pertama, spasi setelah titik dua. Kalau ditulis site titik dua, spasi, go titik id, kata site dianggap kata biasa.", "start": 323.55, "speech": 323.95, "audio": 12.88, "dur": 14.78}, {"id": "s6b", "seg": 6, "scene": "salah_minus", "hold": 1.2, "text": "Kedua, tanda minus yang berspasi. Kalau ada spasi di antara tanda minus dan kata jual, tanda minusnya diabaikan, dan toko muncul lagi.", "start": 338.33, "speech": 338.73, "audio": 9.753, "dur": 13.24}, {"id": "q3", "seg": 6, "scene": "quiz", "quiz": "q3", "hold": 4.0, "text": "Cek pemahaman. Kenapa hasil query ini tidak hanya berasal dari situs pemerintah? Pikirkan dulu.", "start": 351.57, "speech": 351.97, "audio": 6.376, "dur": 12.04}, {"id": "q3a", "seg": 6, "scene": "quiz_answer", "quiz": "q3", "hold": 1.0, "text": "Jawabannya: ada spasi setelah titik dua. Hapus spasinya, sehingga tertulis site titik dua go titik id, lalu cari lagi.", "start": 363.61, "speech": 364.01, "audio": 10.311, "dur": 12.011}, {"id": "s6c", "seg": 6, "scene": "kosong", "hold": 1.2, "text": "Kalau hasilnya terlalu sedikit atau kosong, hapus operator yang paling ketat, lalu cari lagi. Operator tidak harus dipakai semuanya sekaligus.", "start": 375.621, "speech": 376.021, "audio": 9.203, "dur": 12.24}, {"id": "s6d", "seg": 6, "scene": "periksa", "hold": 2.5, "text": "Sekarang periksa hasil pencarianmu. Apakah frasanya muncul persis? Apakah kata yang dibuang sudah hilang? Apakah alamat, jenis file, dan tanggalnya sesuai?", "start": 387.861, "speech": 388.261, "audio": 10.433, "dur": 14.04}, {"id": "recap", "seg": 7, "scene": "recap", "hold": 1.5, "text": "Tiga hal untuk diingat. Tanda kutip untuk frasa persis, dan tanda minus yang menempel untuk membuang kata. Site dan filetype ditulis tanpa spasi. Menu Alat memilih rentang waktu.", "start": 401.901, "speech": 402.301, "audio": 12.585, "dur": 16.54}, {"id": "latihan", "seg": 7, "scene": "latihan", "hold": 1.5, "text": "Di halaman latihan episode D7.4, susun lagi kata kunci yang jitu. Setelah itu, cari satu sumber untuk tugas sekolahmu dengan minimal dua operator, lalu catat query dan alamatnya.", "start": 418.441, "speech": 418.841, "audio": 13.456, "dur": 16.54}, {"id": "outro", "seg": 7, "scene": "outro", "hold": 2.5, "text": "Simulasi berikutnya: membaca lateral dan pencarian gambar terbalik, untuk memeriksa siapa di balik sebuah situs. Sampai jumpa!", "start": 434.981, "speech": 435.381, "audio": 8.523, "dur": 12.04}], "total": 447.021}, teks: null });
+})();
+</script>
