@@ -22,7 +22,7 @@ Situs latihan: **https://belajar-informatika.vercel.app/** (Vercel, terhubung ke
 ## Status
 Semua 52 episode sudah final setelah revisi istilah dan tata letak (render ulang selesai 4 Nov 2026), dan 52 YouTube Short (`<kode>/short/`, vertikal, versi suara + teks) selesai 3 Nov 2026.
 
-**Video simulasi** (`episodes/sim/`, panduan `episodes/_alat/SIMULASI.md`, daftar `episodes/sim/daftar.json`): 56 dari 58 selesai per 5 Nov 2026, masing-masing hanya versi bersuara, dengan satu Short, halaman pemutar `simulasi-<kode>.html`, dan tombol "Video simulasi" di halaman latihan episode pemakainya. Belum: K11 (menunggu keputusan Bu Dewi; topiknya sudah dibahas di D9.3).
+**Video simulasi** (`episodes/sim/`, panduan `episodes/_alat/SIMULASI.md`, daftar `episodes/sim/daftar.json`): 58 dari 58 selesai per 5 Nov 2026, masing-masing hanya versi bersuara, dengan satu Short, halaman pemutar `simulasi-<kode>.html`, dan tombol "Video simulasi" di halaman latihan episode pemakainya. K11 dibuat ulang sebagai versi pertahanan ("Melindungi HP dari Aplikasi Berbahaya", keputusan Bu Dewi 5 Nov 2026).
 
 **Seri TikTok** (`episodes/tiktok/`, panduan `episodes/tiktok/PANDUAN.md`): 45 video T01–T45 (vertikal, ±45 detik, maskot Bip, ajakan subscribe ke youtube.com/@iteachswe), terlepas dari kurikulum; dirender `episodes/_alat/render_tiktok.py`.
 
