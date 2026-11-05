@@ -1,0 +1,1862 @@
+<title>Kiko: Menyalakan Verifikasi Dua Langkah</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<style>
+/* Inti gaya halaman latihan: satu kolom, pemutar di atas, latihan di bawah; palet kantin sama dengan video. */
+:root {
+  --bg: #EAF2EE; --surface: #FFFFFF; --surface2: #DCE9E2; --ink: #1F2A33; --ink2: #4A5A66; --line: #C9D8D0;
+  --accent: #2E7E9A; --accent-ink: #FFFFFF; --warm: #F2B134; --warm-ink: #5E3E05; --good: #2E9E5B; --good-bg: #DDF3E4; --bad: #D9443B; --bad-bg: #FBE1DF;
+  --font: Inter, "Segoe UI", Roboto, Arial, sans-serif;
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) { --bg: #141C1A; --surface: #1E2926; --surface2: #273532; --ink: #EAF2EE; --ink2: #A9BBB3; --line: #3A4A45; --accent: #5FB3CE; --accent-ink: #0F1D22; --warm: #F2B134; --warm-ink: #2B1C02; --good: #5FCB8A; --good-bg: #1F3A2B; --bad: #F07A72; --bad-bg: #442523; color-scheme: dark } }
+:root[data-theme="dark"] { --bg: #141C1A; --surface: #1E2926; --surface2: #273532; --ink: #EAF2EE; --ink2: #A9BBB3; --line: #3A4A45; --accent: #5FB3CE; --accent-ink: #0F1D22; --warm: #F2B134; --warm-ink: #2B1C02; --good: #5FCB8A; --good-bg: #1F3A2B; --bad: #F07A72; --bad-bg: #442523; color-scheme: dark }
+* { box-sizing: border-box }
+body { background: var(--bg); color: var(--ink); font-family: var(--font); font-size: 17px; line-height: 1.5; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); padding-block: 16px 48px }
+.wrap { max-width: 980px; margin: 0 auto; display: grid; gap: 28px }
+h1 { font-size: clamp(26px, 5vw, 38px); line-height: 1.15; margin: 0; text-wrap: balance; font-weight: 900 }
+h2 { font-size: 22px; margin: 0 0 12px; font-weight: 800 }
+h3 { font-size: 18px; margin: 0 0 8px; font-weight: 800 }
+p { margin: 0 0 10px; max-width: 65ch }
+.eyebrow { font-size: 13px; letter-spacing: .08em; text-transform: uppercase; color: var(--ink2); font-weight: 800; margin-bottom: 6px }
+.card { background: var(--surface); border-radius: 18px; padding: 18px; border: 1px solid var(--line) }
+button { font: inherit; font-weight: 800; border: 0; border-radius: 12px; padding: 12px 16px; cursor: pointer; background: var(--surface2); color: var(--ink); min-height: 48px; touch-action: manipulation }
+button:focus-visible, [tabindex]:focus-visible { outline: 3px solid var(--warm); outline-offset: 2px }
+button.primary { background: var(--accent); color: var(--accent-ink) }
+button.warm { background: var(--warm); color: var(--warm-ink) }
+button[aria-pressed="true"] { box-shadow: inset 0 0 0 3px var(--accent) }
+button:disabled { opacity: .45; cursor: default }
+.row { display: flex; flex-wrap: wrap; gap: 10px; align-items: center }
+/* player */
+.player { display: grid; gap: 12px }
+.stage { position: relative; width: 100%; aspect-ratio: 16 / 9; max-width: 100%; background: #EAF2EE; border-radius: 14px; overflow: hidden; border: 1px solid var(--line) }
+.stage canvas { width: 100%; height: 100%; display: block }
+.bigplay { position: absolute; inset: 0; display: grid; place-items: center; background: rgba(31,42,51,.25); border: 0; border-radius: 0; color: #fff; font-size: 20px; min-height: 0 }
+.bigplay span { background: var(--accent); color: var(--accent-ink); padding: 14px 26px; border-radius: 999px; font-weight: 900 }
+.bar { height: 10px; background: var(--surface2); border-radius: 999px; overflow: hidden; cursor: pointer }
+.bar > i { display: block; height: 100%; width: 0; background: var(--warm) }
+.chapters { display: flex; flex-wrap: wrap; gap: 8px }
+.chapters button { font-size: 14px; padding: 8px 12px; min-height: 40px }
+.chapters button.now { background: var(--warm); color: var(--warm-ink) }
+.hint { color: var(--ink2); font-size: 15px }
+/* exercises (generic parts) */
+.levels { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 12px }
+.levels button { font-size: 14px; padding: 8px 12px; min-height: 40px }
+.levels button.done::after { content: " ✓"; color: var(--good) }
+.task { background: var(--surface2); border-radius: 12px; padding: 12px 14px; margin-bottom: 12px; font-weight: 700 }
+.result { border-radius: 12px; padding: 12px 14px; font-weight: 800; margin-top: 10px }
+.result.good { background: var(--good-bg); color: var(--good) }
+.result.bad { background: var(--bad-bg); color: var(--bad) }
+.result.info { background: var(--surface2); color: var(--ink) }
+/* quiz */
+.quiz { display: grid; gap: 16px }
+.q { border-top: 1px solid var(--line); padding-top: 14px }
+.q:first-child { border-top: 0; padding-top: 0 }
+.opts { display: grid; gap: 8px; margin-top: 8px }
+.opts button { text-align: left; font-weight: 700; background: var(--surface2); display: flex; gap: 10px; align-items: center }
+.opts button b { width: 30px; height: 30px; border-radius: 50%; background: var(--accent); color: var(--accent-ink); display: grid; place-items: center; flex: none }
+.opts button.right { background: var(--good-bg); box-shadow: inset 0 0 0 3px var(--good) }
+.opts button.wrong { background: var(--bad-bg) }
+.fb { margin-top: 8px; font-weight: 700 }
+.fb.good { color: var(--good) } .fb.bad { color: var(--bad) }
+details summary { cursor: pointer; font-weight: 800; font-size: 18px }
+details[open] summary { margin-bottom: 10px }
+ul.plain { padding-left: 20px; margin: 0 0 10px } ul.plain li { margin-bottom: 6px; max-width: 65ch }
+.progress { display: flex; gap: 8px; flex-wrap: wrap } .progress span { background: var(--surface2); border-radius: 999px; padding: 6px 12px; font-size: 14px; font-weight: 700 }
+.progress span.ok { background: var(--good-bg); color: var(--good) }
+@media (prefers-reduced-motion: reduce) { * { transition: none !important } }
+
+/* ajakan ke channel YouTube */
+.yt-ajak { display: flex; gap: 12px; align-items: center; background: var(--surface); border: 1px solid var(--line); border-left: 6px solid #D9443B; border-radius: 14px; padding: 12px 16px; color: var(--ink); text-decoration: none }
+.yt-ajak .yt-ic { flex: none; width: 40px; height: 28px; border-radius: 8px; background: #D9443B; color: #fff; display: grid; place-items: center; font-size: 14px }
+.yt-ajak b { display: block; font-size: 16px } .yt-ajak small { display: block; color: var(--ink2); font-size: 14px; font-weight: 600 }
+.yt-video { display: grid; gap: 10px } .yt-frame { position: relative; width: 100%; aspect-ratio: 16 / 9; border-radius: 14px; overflow: hidden; background: #000 }
+.yt-frame iframe { position: absolute; inset: 0; width: 100%; height: 100%; border: 0 }
+
+/* halaman video simulasi (dibuat build.py dari episodes/_alat/sim-page.html) */
+.links { display: grid; gap: 10px } .links a { display: block; background: var(--surface2); color: var(--ink); text-decoration: none; font-weight: 800; border-radius: 12px; padding: 12px 16px }
+.links a span { display: block; font-weight: 600; color: var(--ink2); font-size: 15px }
+ul.learn { margin: 0; padding-left: 20px } ul.learn li { margin-bottom: 4px }
+</style>
+
+<div class="wrap">
+  <header>
+    <div class="eyebrow">Informatika · Simulasi praktik · S11</div>
+    <h1>Menyalakan Verifikasi Dua Langkah</h1>
+    <p class="hint">Setelah menonton, kamu bisa menyalakan verifikasi dua langkah dengan aplikasi autentikator, menyimpan kode cadangan, dan mengeluarkan perangkat asing dari akunmu. Simulasi ini melengkapi episode D7.3, E.3, F12.5. Hentikan videonya di setiap jeda "Coba sekarang" untuk mencoba sendiri.</p>
+  </header>
+  <section class="card player" aria-label="Pemutar simulasi">
+    <div class="stage">
+      <canvas id="screen" width="1920" height="1080" aria-label="Animasi simulasi"></canvas>
+      <audio id="nar" preload="auto" src="narasi.mp3"></audio>
+      <button class="bigplay" id="bigplay" aria-label="Putar"><span>▶ Putar simulasi</span></button>
+    </div>
+    <div class="bar" id="bar" role="slider" aria-label="Posisi simulasi" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" tabindex="0"><i id="barfill"></i></div>
+    <div class="row">
+      <button class="primary" id="playbtn">▶ Putar</button>
+      <button id="replay">↺ Ulangi bagian ini</button>
+      <button id="voice" aria-pressed="true" hidden>🔊 Suara: nyala</button>
+      <button id="slow" aria-pressed="false">🐢 Mode lambat</button>
+      <span class="hint" id="timelabel">0:00 / 0:00</span>
+    </div>
+    <div>
+      <div class="eyebrow">Bagian</div>
+      <div class="chapters" id="chapters"></div>
+    </div>
+  </section>
+
+  <section class="card" aria-label="Yang dipelajari">
+    <h2>Yang kamu pelajari</h2>
+    <ul class="learn"><li>menyalakan verifikasi dua langkah di pengaturan keamanan akun</li><li>memakai aplikasi autentikator dan kode enam angka yang berganti tiap tiga puluh detik</li><li>menyimpan kode cadangan di tempat yang aman</li><li>memeriksa perangkat yang login dan mengeluarkan perangkat asing</li></ul>
+  </section>
+
+  <section class="card" aria-label="Cek pemahaman">
+    <h2>Cek pemahaman</h2>
+    <p class="hint">Pilih satu jawaban. Kalau salah, kamu dapat petunjuk, lalu coba lagi.</p>
+    <div class="quiz" id="quiz"></div>
+  </section>
+
+  <section class="card" aria-label="Kemajuan">
+    <h2>Kemajuanmu</h2>
+    <div class="progress" id="progress"></div>
+    <p class="hint" style="margin-top:8px">Kemajuan tersimpan di perangkat ini saja.</p>
+  </section>
+
+  <section class="card" aria-label="Halaman latihan">
+    <h2>Lanjut berlatih</h2>
+    <div class="links"><a href="../../D7.3/episode-d73.html">Episode D7.3: Kata Sandi Aman dan Rekam Jejak Digital<span>Tonton episodenya dan kerjakan latihannya.</span></a><a href="../../E.3/episode-e3.html">Episode E.3: Keamanan Akun dan Jaringan Dasar<span>Tonton episodenya dan kerjakan latihannya.</span></a><a href="../../F12.5/episode-f125.html">Episode F12.5: Transaksi Digital yang Aman<span>Tonton episodenya dan kerjakan latihannya.</span></a><a href="../../../index.html">Daftar semua episode<span>Kembali ke halaman utama.</span></a></div>
+  </section>
+</div>
+
+<script>/* Kiko core: mesin gambar bersama untuk semua episode Fase D.
+   Kiko.draw(ctx, t, TL) menggambar frame pada detik t di kanvas 1920x1080 secara deterministik.
+   Berisi palet, pembantu gambar, tokoh (Kiko, murid), dan adegan umum (judul, kuis, ringkasan, penutup).
+   Setiap episode menambahkan adegannya sendiri di scenes.js: Object.assign(Kiko.SCENES, {...}). */
+(function (global) {
+  const W = 1920, H = 1080;
+  const FONT = "Inter, 'Segoe UI', Roboto, Arial, sans-serif";
+  const C = {
+    bg: "#EAF2EE", bg2: "#DCE9E2", ink: "#1F2A33", ink2: "#4A5A66", panel: "#FFFFFF",
+    tile: "#F7FAF8", tileLine: "#C9D8D0", table: "#A4653A", tableTop: "#C98A57",
+    kiko: "#2E7E9A", kikoDark: "#1F5A6E", kikoLight: "#8FD0E6", eye: "#FFFFFF", pupil: "#1F2A33",
+    accent: "#F2B134", accentDark: "#B57A12", good: "#2E9E5B", bad: "#D9443B", goodBg: "#DDF3E4", badBg: "#FBE1DF",
+    sub: "#1F2A33", subText: "#FFFFFF", star: "#F2B134", skin: "#F1C9A5", skin2: "#C98A57", hair: "#2B2118",
+    uniform: "#FFFFFF", pants: "#2F4E7D", bubble: "#FFFFFF", muted: "#9AAFA6"
+  };
+  const ease = u => u < 0 ? 0 : u > 1 ? 1 : u * u * (3 - 2 * u);
+  const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
+  const lerp = (a, b, u) => a + (b - a) * u;
+
+  // ---------- drawing helpers ----------
+  function rr(ctx, x, y, w, h, r) {
+    ctx.beginPath(); ctx.moveTo(x + r, y); ctx.arcTo(x + w, y, x + w, y + h, r); ctx.arcTo(x + w, y + h, x, y + h, r);
+    ctx.arcTo(x, y + h, x, y, r); ctx.arcTo(x, y, x + w, y, r); ctx.closePath();
+  }
+  function text(ctx, s, x, y, size, opt = {}) {
+    ctx.font = `${opt.weight || 600} ${size}px ${FONT}`;
+    // opt.fit: lebar maksimum; huruf diperkecil hanya bila teks lebih lebar dari itu
+    while (opt.fit && size > 20 && ctx.measureText(s).width > opt.fit) { size -= 2; ctx.font = `${opt.weight || 600} ${size}px ${FONT}`; } ctx.fillStyle = opt.color || C.ink;
+    ctx.textAlign = opt.align || "left"; ctx.textBaseline = opt.base || "alphabetic"; ctx.fillText(s, x, y);
+  }
+  function wrap(ctx, s, size, weight, maxW) {
+    ctx.font = `${weight} ${size}px ${FONT}`;
+    const words = s.split(" "), lines = []; let cur = "";
+    for (const w of words) {
+      const test = cur ? cur + " " + w : w;
+      if (ctx.measureText(test).width > maxW && cur) { lines.push(cur); cur = w; } else cur = test;
+    }
+    if (cur) lines.push(cur);
+    return lines;
+  }
+  function para(ctx, s, x, y, size, maxW, opt = {}) {
+    const lines = wrap(ctx, s, size, opt.weight || 500, maxW); const lh = size * (opt.lh || 1.35);
+    lines.forEach((l, i) => text(ctx, l, x, y + i * lh, size, opt));
+    return lines.length * lh;
+  }
+  function arrowIcon(ctx, kind, cx, cy, s, color) {
+    ctx.save(); ctx.translate(cx, cy); ctx.strokeStyle = color; ctx.fillStyle = color; ctx.lineWidth = s * 0.16; ctx.lineCap = "round"; ctx.lineJoin = "round";
+    if (kind === "up") {
+      ctx.beginPath(); ctx.moveTo(0, s * 0.45); ctx.lineTo(0, -s * 0.3); ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(-s * 0.32, -s * 0.05); ctx.lineTo(0, -s * 0.45); ctx.lineTo(s * 0.32, -s * 0.05); ctx.stroke();
+    } else if (kind === "left" || kind === "right") {
+      const k = kind === "left" ? -1 : 1;
+      ctx.beginPath(); ctx.moveTo(0, s * 0.45); ctx.lineTo(0, -s * 0.05); ctx.quadraticCurveTo(0, -s * 0.32, k * s * 0.28, -s * 0.32); ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(k * s * 0.12, -s * 0.5); ctx.lineTo(k * s * 0.4, -s * 0.32); ctx.lineTo(k * s * 0.12, -s * 0.14); ctx.stroke();
+    } else if (kind === "east") {
+      ctx.beginPath(); ctx.moveTo(-s * 0.4, 0); ctx.lineTo(s * 0.3, 0); ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(s * 0.05, -s * 0.28); ctx.lineTo(s * 0.4, 0); ctx.lineTo(s * 0.05, s * 0.28); ctx.stroke();
+    } else if (kind === "west") {
+      ctx.beginPath(); ctx.moveTo(s * 0.4, 0); ctx.lineTo(-s * 0.3, 0); ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(-s * 0.05, -s * 0.28); ctx.lineTo(-s * 0.4, 0); ctx.lineTo(-s * 0.05, s * 0.28); ctx.stroke();
+    } else if (kind === "grab") {
+      ctx.beginPath(); ctx.arc(0, s * 0.12, s * 0.22, 0, Math.PI * 2); ctx.fill();
+      ctx.beginPath(); ctx.moveTo(-s * 0.4, -s * 0.42); ctx.lineTo(-s * 0.4, -s * 0.12); ctx.moveTo(s * 0.4, -s * 0.42); ctx.lineTo(s * 0.4, -s * 0.12);
+      ctx.moveTo(-s * 0.4, -s * 0.42); ctx.lineTo(s * 0.4, -s * 0.42); ctx.stroke();
+    }
+    ctx.restore();
+  }
+  function bakso(ctx, cx, cy, s, opt = {}) {
+    // a bowl of bakso: the goal
+    ctx.save(); ctx.translate(cx, cy);
+    if (opt.glow) { ctx.beginPath(); ctx.arc(0, 0, s * 0.62, 0, Math.PI * 2); ctx.fillStyle = "rgba(242,177,52,0.22)"; ctx.fill(); }
+    ctx.fillStyle = "#E4EEF5"; ctx.beginPath(); ctx.moveTo(-s * 0.46, -s * 0.05); ctx.quadraticCurveTo(-s * 0.4, s * 0.45, 0, s * 0.45); ctx.quadraticCurveTo(s * 0.4, s * 0.45, s * 0.46, -s * 0.05); ctx.closePath(); ctx.fill();
+    ctx.strokeStyle = "#8FA9BD"; ctx.lineWidth = s * 0.05; ctx.stroke();
+    ctx.fillStyle = "#C8B49A"; ctx.beginPath(); ctx.ellipse(0, -s * 0.05, s * 0.44, s * 0.14, 0, 0, Math.PI * 2); ctx.fill();
+    for (const [dx, dy, r] of [[-0.16, -0.1, 0.13], [0.14, -0.12, 0.13], [0, -0.22, 0.12]]) {
+      ctx.fillStyle = "#9A7B5B"; ctx.beginPath(); ctx.arc(dx * s, dy * s, r * s, 0, Math.PI * 2); ctx.fill();
+      ctx.fillStyle = "#B8977A"; ctx.beginPath(); ctx.arc(dx * s - r * s * 0.3, dy * s - r * s * 0.3, r * s * 0.4, 0, Math.PI * 2); ctx.fill();
+    }
+    ctx.fillStyle = "#4CA64C"; for (const dx of [-0.26, 0.1, 0.26]) { ctx.beginPath(); ctx.arc(dx * s, -s * 0.07, s * 0.045, 0, Math.PI * 2); ctx.fill(); }
+    ctx.restore();
+  }
+  function table(ctx, x, y, w, h) {
+    ctx.fillStyle = C.table; rr(ctx, x + w * 0.1, y + h * 0.3, w * 0.8, h * 0.55, 10); ctx.fill();
+    ctx.fillStyle = C.tableTop; rr(ctx, x + w * 0.06, y + h * 0.18, w * 0.88, h * 0.3, 10); ctx.fill();
+    ctx.fillStyle = "rgba(0,0,0,0.12)"; ctx.fillRect(x + w * 0.16, y + h * 0.5, w * 0.08, h * 0.35); ctx.fillRect(x + w * 0.76, y + h * 0.5, w * 0.08, h * 0.35);
+  }
+  function kiko(ctx, cx, cy, s, ang, opt = {}) {
+    ctx.save(); ctx.translate(cx, cy);
+    // shadow
+    ctx.fillStyle = "rgba(0,0,0,0.12)"; ctx.beginPath(); ctx.ellipse(0, s * 0.42, s * 0.42, s * 0.12, 0, 0, Math.PI * 2); ctx.fill();
+    ctx.rotate(ang);
+    // wheels
+    ctx.fillStyle = C.kikoDark; rr(ctx, -s * 0.46, -s * 0.2, s * 0.12, s * 0.5, 5); ctx.fill(); rr(ctx, s * 0.34, -s * 0.2, s * 0.12, s * 0.5, 5); ctx.fill();
+    // body
+    ctx.fillStyle = opt.flash ? `rgba(217,68,59,${0.5 + 0.5 * opt.flash})` : C.kiko; rr(ctx, -s * 0.38, -s * 0.36, s * 0.76, s * 0.72, s * 0.16); ctx.fill();
+    // visor (front, facing up)
+    ctx.fillStyle = C.kikoLight; rr(ctx, -s * 0.26, -s * 0.33, s * 0.52, s * 0.3, s * 0.1); ctx.fill();
+    // eyes
+    const mood = opt.mood || "happy";
+    ctx.fillStyle = C.pupil;
+    if (mood === "sad") { ctx.beginPath(); ctx.arc(-s * 0.12, -s * 0.18, s * 0.05, 0, Math.PI * 2); ctx.arc(s * 0.12, -s * 0.18, s * 0.05, 0, Math.PI * 2); ctx.fill(); ctx.strokeStyle = C.pupil; ctx.lineWidth = s * 0.03; ctx.beginPath(); ctx.arc(0, -s * 0.03, s * 0.08, Math.PI * 1.15, Math.PI * 1.85); ctx.stroke(); }
+    else if (mood === "confused") { ctx.beginPath(); ctx.arc(-s * 0.12, -s * 0.18, s * 0.05, 0, Math.PI * 2); ctx.arc(s * 0.12, -s * 0.18, s * 0.035, 0, Math.PI * 2); ctx.fill(); ctx.strokeStyle = C.pupil; ctx.lineWidth = s * 0.03; ctx.beginPath(); ctx.moveTo(-s * 0.08, -s * 0.06); ctx.lineTo(s * 0.08, -s * 0.09); ctx.stroke(); }
+    else { ctx.beginPath(); ctx.arc(-s * 0.12, -s * 0.18, s * 0.055, 0, Math.PI * 2); ctx.arc(s * 0.12, -s * 0.18, s * 0.055, 0, Math.PI * 2); ctx.fill(); ctx.strokeStyle = C.pupil; ctx.lineWidth = s * 0.03; ctx.beginPath(); ctx.arc(0, -s * 0.1, s * 0.08, Math.PI * 0.15, Math.PI * 0.85); ctx.stroke(); }
+    // front pointer
+    ctx.fillStyle = C.accent; ctx.beginPath(); ctx.moveTo(-s * 0.1, -s * 0.38); ctx.lineTo(s * 0.1, -s * 0.38); ctx.lineTo(0, -s * 0.5); ctx.closePath(); ctx.fill();
+    // antenna
+    ctx.strokeStyle = C.kikoDark; ctx.lineWidth = s * 0.04; ctx.beginPath(); ctx.moveTo(0, s * 0.36); ctx.lineTo(0, s * 0.5); ctx.stroke();
+    ctx.fillStyle = C.accent; ctx.beginPath(); ctx.arc(0, s * 0.52, s * 0.07, 0, Math.PI * 2); ctx.fill();
+    // tray with bakso when grabbed
+    if (opt.grabbed) bakso(ctx, 0, s * 0.05, s * 0.45);
+    ctx.restore();
+    if (opt.wave !== undefined) { // arm waving (title scene)
+      ctx.save(); ctx.translate(cx + s * 0.42, cy - s * 0.1); ctx.rotate(-0.6 + Math.sin(opt.wave * 6) * 0.4);
+      ctx.strokeStyle = C.kikoDark; ctx.lineWidth = s * 0.08; ctx.lineCap = "round"; ctx.beginPath(); ctx.moveTo(0, 0); ctx.lineTo(s * 0.3, -s * 0.3); ctx.stroke();
+      ctx.fillStyle = C.kikoLight; ctx.beginPath(); ctx.arc(s * 0.32, -s * 0.33, s * 0.09, 0, Math.PI * 2); ctx.fill(); ctx.restore();
+    }
+  }
+  function kid(ctx, cx, cy, s, opt = {}) {
+    // simple student figure, standing, facing viewer
+    ctx.save(); ctx.translate(cx, cy);
+    ctx.fillStyle = "rgba(0,0,0,0.12)"; ctx.beginPath(); ctx.ellipse(0, s * 1.02, s * 0.5, s * 0.1, 0, 0, Math.PI * 2); ctx.fill();
+    ctx.fillStyle = C.pants; rr(ctx, -s * 0.3, s * 0.35, s * 0.6, s * 0.5, s * 0.1); ctx.fill();
+    ctx.fillStyle = C.skin; ctx.fillRect(-s * 0.24, s * 0.8, s * 0.16, s * 0.2); ctx.fillRect(s * 0.08, s * 0.8, s * 0.16, s * 0.2);
+    ctx.fillStyle = C.uniform; rr(ctx, -s * 0.36, -s * 0.12, s * 0.72, s * 0.56, s * 0.12); ctx.fill();
+    ctx.strokeStyle = "#D5DDE2"; ctx.lineWidth = s * 0.025; rr(ctx, -s * 0.36, -s * 0.12, s * 0.72, s * 0.56, s * 0.12); ctx.stroke();
+    ctx.fillStyle = C.skin; ctx.beginPath(); ctx.arc(0, -s * 0.42, s * 0.32, 0, Math.PI * 2); ctx.fill();
+    ctx.fillStyle = opt.hairColor || C.hair; ctx.beginPath(); ctx.arc(0, -s * 0.5, s * 0.33, Math.PI, 0); ctx.fill();
+    if (opt.hair === "long") { ctx.fillRect(-s * 0.33, -s * 0.5, s * 0.12, s * 0.45); ctx.fillRect(s * 0.21, -s * 0.5, s * 0.12, s * 0.45); }
+    ctx.fillStyle = C.pupil; ctx.beginPath(); ctx.arc(-s * 0.11, -s * 0.4, s * 0.035, 0, Math.PI * 2); ctx.arc(s * 0.11, -s * 0.4, s * 0.035, 0, Math.PI * 2); ctx.fill();
+    ctx.strokeStyle = C.pupil; ctx.lineWidth = s * 0.025; ctx.beginPath(); ctx.arc(0, -s * 0.33, s * 0.08, Math.PI * 0.15, Math.PI * 0.85); ctx.stroke();
+    // arms
+    ctx.strokeStyle = C.skin; ctx.lineWidth = s * 0.11; ctx.lineCap = "round"; ctx.beginPath();
+    if (opt.point) { ctx.moveTo(s * 0.32, s * 0.02); ctx.lineTo(s * 0.75, -s * 0.2); } else { ctx.moveTo(s * 0.34, s * 0.02); ctx.lineTo(s * 0.42, s * 0.38); }
+    ctx.moveTo(-s * 0.34, s * 0.02); ctx.lineTo(-s * 0.42, s * 0.38); ctx.stroke();
+    ctx.restore();
+  }
+  function bubble(ctx, x, y, w, s, size, opt = {}) {
+    const lines = wrap(ctx, s, size, 600, w - 48); const h = lines.length * size * 1.3 + 40;
+    ctx.fillStyle = opt.fill || C.bubble; ctx.strokeStyle = opt.stroke || "#B7C7BF"; ctx.lineWidth = 3;
+    rr(ctx, x, y - h, w, h, 22); ctx.fill(); ctx.stroke();
+    const tx = opt.tailX !== undefined ? opt.tailX : x + 60;
+    ctx.beginPath(); ctx.moveTo(tx - 16, y); ctx.lineTo(tx + 16, y); ctx.lineTo(tx + (opt.tailDir || 0), y + 28); ctx.closePath(); ctx.fillStyle = opt.fill || C.bubble; ctx.fill();
+    ctx.strokeStyle = opt.stroke || "#B7C7BF"; ctx.beginPath(); ctx.moveTo(tx - 16, y); ctx.lineTo(tx + (opt.tailDir || 0), y + 28); ctx.lineTo(tx + 16, y); ctx.stroke();
+    lines.forEach((l, i) => text(ctx, l, x + 24, y - h + 24 + size + i * size * 1.3, size, { color: opt.color || C.ink, weight: 600 }));
+    return h;
+  }
+  function card(ctx, x, y, w, h, opt = {}) { ctx.fillStyle = opt.fill || C.panel; rr(ctx, x, y, w, h, opt.r || 26); ctx.fill(); if (opt.stroke) { ctx.strokeStyle = opt.stroke; ctx.lineWidth = opt.lw || 4; ctx.stroke(); } }
+
+  // ---------- adegan umum (semua episode) ----------
+  const SCENES = {
+    title(ctx, b, l, t, TL) {
+      card(ctx, 160, 160, 1600, 700, { fill: C.panel });
+      kiko(ctx, 420, 520, 260, 0, { wave: l, mood: "happy" });
+      text(ctx, TL.label || ("Informatika · Fase " + (TL.episode || "D")[0] + " · Episode " + TL.episode), 720, 330, 34, { color: C.ink2, weight: 700 });  // TL.label: label khusus, mis. video simulasi
+      const ts = TL.title.length > 34 ? 74 : 92; const th = para(ctx, TL.title, 720, 440, ts, 1000, { weight: 900, lh: 1.1 }); const hookLines = TL.hook ? wrap(ctx, TL.hook, 34, 800, 1000).length : 0; const hy = Math.max(hookLines >= 3 ? 600 : 640, 440 + th - ts * 0.35 + 30);
+      if (TL.hook) { text(ctx, "SETELAH MENONTON, KAMU BISA:", 720, hy, 26, { color: C.accentDark, weight: 800 }); para(ctx, TL.hook, 720, hy + 50, 34, 1000, { weight: 800, lh: 1.3 }); const ny = hy + 50 + wrap(ctx, TL.hook, 34, 800, 1000).length * 34 * 1.3 + 12; if (ny <= 830) text(ctx, "Dengarkan, atau baca teksnya pelan-pelan.", 720, Math.max(800, ny), 26, { color: C.ink2, weight: 600 }); }
+      else text(ctx, "Dengarkan, atau baca teksnya pelan-pelan.", 720, 700, 36, { color: C.ink2, weight: 600 });
+      if (!TL.label) { arrowIcon(ctx, "up", 1560, 250, 70, C.kikoLight); arrowIcon(ctx, "right", 1660, 250, 70, C.kikoLight); }  // ikon panah khas episode, tidak untuk simulasi
+    },
+    quiz(ctx, b, l, t, TL, answered) {
+      const q = TL.quizzes[b.quiz]; card(ctx, 200, 150, 1520, 740, { stroke: C.accent, lw: 6 });
+      text(ctx, "CEK PEMAHAMAN", 960, 230, 32, { align: "center", color: C.accentDark, weight: 800 });
+      para(ctx, q.q, 960, 320, 44, 1360, { weight: 800, align: "center", lh: 1.3 });
+      // tata letak pilihan: mulai di bawah pertanyaan dan selesai di atas kartu narasi (narasi panjang = jarak dirapatkan)
+      const qLines = wrap(ctx, q.q, 44, 800, 1360).length, subTop = 1056 - (wrap(ctx, b.text, 44, 700, 1660).length * 44 * 1.3 + 44);
+      let oy = qLines <= 1 ? 420 : 470, gap = 120, oh = 96; const n = q.options.length;
+      if (oy + (n - 1) * gap + oh > subTop - 12) { gap = Math.max(104, Math.floor((subTop - 12 - oh - oy) / Math.max(1, n - 1))); }
+      if (oy + (n - 1) * gap + oh > subTop - 12) { oh = 86; gap = 100; oy = Math.max(320 + (qLines - 1) * 57 + 40, subTop - 12 - oh - (n - 1) * gap); }
+      q.options.forEach((o, i) => {
+        const y = oy + i * gap; const right = answered && i === q.answer;
+        card(ctx, 320, y, 1280, oh, { fill: right ? C.goodBg : answered ? "#F4F6F5" : C.bg2, stroke: right ? C.good : "#CFDCD5", lw: right ? 6 : 3 });
+        ctx.fillStyle = right ? C.good : C.kiko; ctx.beginPath(); ctx.arc(380, y + oh / 2, 30, 0, Math.PI * 2); ctx.fill();
+        text(ctx, "ABC"[i], 380, y + oh / 2 + 13, 34, { align: "center", color: "#fff", weight: 900 });
+        text(ctx, o, 440, y + oh / 2 + 14, 38, { weight: 700, color: answered && !right ? C.muted : C.ink });
+        if (right) text(ctx, "✓", 1540, y + oh / 2 + 18, 54, { align: "center", color: C.good, weight: 900 });
+      });
+      if (!answered) { // thinking timer
+        const frac = clamp(l / b.dur, 0, 1); ctx.strokeStyle = "#D7E2DC"; ctx.lineWidth = 14; ctx.beginPath(); ctx.arc(1640, 230, 40, 0, Math.PI * 2); ctx.stroke();
+        ctx.strokeStyle = C.accent; ctx.beginPath(); ctx.arc(1640, 230, 40, -Math.PI / 2, -Math.PI / 2 + frac * Math.PI * 2); ctx.stroke();
+        // catatan hanya digambar bila tidak tertutup kartu narasi (narasi tiga baris atau lebih menutupinya)
+        const subTop = 1056 - (wrap(ctx, b.text, 44, 700, 1660).length * 44 * 1.3 + 44);
+        if (subTop > 880) text(ctx, "Pikirkan dulu, jangan buru-buru.", 960, 860, 32, { align: "center", color: C.ink2, weight: 600 });
+      }
+    },
+    quiz_answer(ctx, b, l, t, TL) { SCENES.quiz(ctx, b, l, t, TL, true); },
+    recap(ctx, b, l, t, TL) {
+      // TL.recap: tiga kalimat pendek dari script.json
+      card(ctx, 160, 140, 1600, 760);
+      text(ctx, "TIGA HAL UNTUK DIINGAT", 960, 230, 34, { align: "center", color: C.accentDark, weight: 900 });
+      const items = TL.recap || [];
+      const show = clamp(Math.floor((l - 0.6) / 2.2) + 1, 1, Math.max(1, items.length));
+      items.forEach((s, i) => { if (i >= show) return; card(ctx, 300, 290 + i * 180, 1320, 140, { fill: C.bg2 }); ctx.fillStyle = C.kiko; ctx.beginPath(); ctx.arc(380, 360 + i * 180, 40, 0, Math.PI * 2); ctx.fill(); text(ctx, String(i + 1), 380, 376 + i * 180, 40, { align: "center", color: "#fff", weight: 900 }); text(ctx, s, 450, 375 + i * 180, 42, { weight: 800, fit: 1130 }); });
+      kiko(ctx, 1620, 820, 130, 0);
+    },
+    outro(ctx, b, l, t, TL) {
+      // TL.next: {code, title, note} episode berikutnya, dari script.json
+      const n = TL.next || {};
+      card(ctx, 260, 200, 1400, 600);
+      text(ctx, n.heading || "EPISODE BERIKUTNYA", 960, 320, 34, { align: "center", color: C.accentDark, weight: 900 });
+      text(ctx, n.code || "", 960, 440, 60, { align: "center", weight: 900 });
+      text(ctx, n.title || "", 960, 530, 54, { align: "center", weight: 800, color: C.ink2, fit: 1320 });
+      text(ctx, n.note || "", 960, 680, 34, { align: "center", color: C.ink2, weight: 600 });
+      kiko(ctx, 960, 760 + 20, 140, 0, { wave: l });
+    }
+  };
+
+  function beatAt(TL, t) {
+    let b = TL.beats[0];
+    for (const x of TL.beats) { if (t >= x.start) b = x; else break; }
+    return b;
+  }
+  function draw(ctx, t, TL, opt = {}) {
+    const b = beatAt(TL, t); const l = t - b.start;
+    ctx.save(); ctx.setTransform(1, 0, 0, 1, 0, 0);
+    ctx.fillStyle = C.bg; ctx.fillRect(0, 0, W, H);
+    // header
+    text(ctx, TL.episode + " · " + TL.title, 60, 78, 30, { color: C.ink2, weight: 700 });
+    text(ctx, TL.segments[b.seg], 1860, 78, 30, { color: C.accentDark, weight: 800, align: "right" });
+    ctx.fillStyle = C.bg2; ctx.fillRect(0, 100, W, 6); ctx.fillStyle = C.accent; ctx.fillRect(0, 100, W * clamp(t / TL.total, 0, 1), 6);
+    const fn = SCENES[b.scene]; if (fn) fn(ctx, b, l, t, TL);
+    // narration card (burned-in text the student reads)
+    if (opt.subtitles !== false) {
+      const size = 44; const lines = wrap(ctx, b.text, size, 700, 1660);
+      const h = lines.length * size * 1.3 + 44; const y0 = 1056 - h;
+      ctx.fillStyle = "rgba(31,42,51,0.92)"; rr(ctx, 100, y0, 1720, h, 20); ctx.fill();
+      // reading progress (how far along the text the reader should be)
+      const frac = clamp(l / b.audio, 0, 1); ctx.fillStyle = C.accent; rr(ctx, 100, y0 + h - 8, 1720 * frac, 8, 4); ctx.fill();
+      lines.forEach((ln, i) => text(ctx, ln, 960, y0 + 22 + size + i * size * 1.3, size, { align: "center", color: C.subText, weight: 700 }));
+    }
+    ctx.restore();
+    return b;
+  }
+
+  global.Kiko = { draw, beatAt, W, H, C, FONT, SCENES,
+    helpers: { rr, text, wrap, para, arrowIcon, bakso, table, kiko, kid, bubble, card, ease, clamp, lerp } };
+})(typeof window !== "undefined" ? window : globalThis);
+
+/* Layar: pembantu gambar bersama untuk video simulasi (episodes/sim/...).
+   Aplikasi generik digambar dengan kode, tanpa logo atau tampilan merek: jendela aplikasi, lembar kerja (bilah rumus + kisi sel),
+   pointer mouse dengan efek klik, tombol keyboard, label penunjuk, pembesaran, dan penerjemah "aksi" (klik, ketik, tekan tombol)
+   supaya satu adegan bisa memperagakan beberapa langkah berurutan. Muat setelah kiko-core.js. */
+(function (global) {
+  const K = global.Kiko, H = K.helpers, C = K.C;
+  const { rr, text, ease, clamp, lerp } = H;
+  const L = {};
+  const UI = { frame: "#C9D4DB", bar: "#EEF2F5", menuInk: "#3D4B55", grid: "#DDE5EA", head: "#EEF2F5", headInk: "#5B6B76",
+               select: "#1A73C8", selectBg: "rgba(26,115,200,0.10)", formula: "#1F5A6E", window: "#FFFFFF" };
+  L.UI = UI;
+
+  // ---------- jendela aplikasi ----------
+  // opt: title, menus [..], tools (true = deretan ikon sederhana). Mengembalikan area isi {x, y, w, h}.
+  L.window = function (ctx, x, y, w, h, opt = {}) {
+    ctx.save(); ctx.shadowColor = "rgba(31,42,51,0.18)"; ctx.shadowBlur = 30; ctx.shadowOffsetY = 10;
+    ctx.fillStyle = UI.window; rr(ctx, x, y, w, h, 16); ctx.fill(); ctx.restore();
+    ctx.strokeStyle = UI.frame; ctx.lineWidth = 2; rr(ctx, x, y, w, h, 16); ctx.stroke();
+    ctx.save(); rr(ctx, x, y, w, h, 16); ctx.clip();
+    ctx.fillStyle = UI.bar; ctx.fillRect(x, y, w, 46);
+    ["#E5675F", "#F2B134", "#4CB46A"].forEach((c, i) => { ctx.fillStyle = c; ctx.beginPath(); ctx.arc(x + 28 + i * 26, y + 23, 8, 0, Math.PI * 2); ctx.fill(); });
+    text(ctx, opt.title || "Aplikasi", x + w / 2, y + 31, 22, { align: "center", weight: 700, color: UI.menuInk });
+    let cy = y + 46;
+    if (opt.menus) {
+      ctx.fillStyle = "#FFFFFF"; ctx.fillRect(x, cy, w, 40);
+      let mx = x + 24; opt.menus.forEach((m, i) => {
+        const on = opt.menuOn === m; ctx.font = `600 21px Inter`; const mw = ctx.measureText(m).width + 24;
+        if (on) { ctx.fillStyle = "#DCE9F7"; rr(ctx, mx - 8, cy + 5, mw, 30, 6); ctx.fill(); }
+        text(ctx, m, mx + 4, cy + 27, 21, { weight: 600, color: on ? UI.select : UI.menuInk }); mx += mw + 6;
+      });
+      cy += 40;
+    }
+    if (opt.tools) {
+      ctx.fillStyle = "#F7F9FA"; ctx.fillRect(x, cy, w, 44);
+      const icons = opt.tools === true ? ["💾", "↶", "↷", "B", "I", "Σ", "%"] : opt.tools;
+      icons.forEach((ic, i) => { const bx = x + 20 + i * 52; ctx.fillStyle = "#FFFFFF"; rr(ctx, bx, cy + 6, 40, 32, 6); ctx.fill(); ctx.strokeStyle = "#E1E7EB"; ctx.lineWidth = 1.5; rr(ctx, bx, cy + 6, 40, 32, 6); ctx.stroke();
+        text(ctx, ic, bx + 20, cy + 29, ic.length > 1 ? 18 : 20, { align: "center", weight: 800, color: UI.menuInk }); });
+      cy += 44;
+    }
+    ctx.strokeStyle = UI.grid; ctx.lineWidth = 1.5; ctx.beginPath(); ctx.moveTo(x, cy); ctx.lineTo(x + w, cy); ctx.stroke();
+    ctx.restore();
+    return { x, y: cy, w, h: y + h - cy };
+  };
+
+  // ---------- lembar kerja ----------
+  const COLS = "ABCDEFGHIJ";
+  L.col = c => COLS.indexOf(c);
+  // st: { cells: {A1: {v, f?}} | {A1: "teks"}, active: "B3", edit: {addr, text} (sedang diketik), range: ["B2","B6"] (sorotan rentang),
+  //       copy: ["D2","D6"] (bingkai putus-putus), changed: [alamat] (hijau sesaat), cols: 6, rows: 8, cw: 190 | {A: 170, ...}, rh: 50,
+  //       showFormulas: false, handleHover: false }
+  // Mengembalikan geometri: {cell(addr), handle(addr), nameBox, fx, bottom}
+  L.sheet = function (ctx, area, st = {}) {
+    const x = area.x, y = area.y, cols = st.cols || 6, rows = st.rows || 8, rh = st.rh || 50, hw = 60;
+    const cwOf = c => typeof st.cw === "object" ? (st.cw[COLS[c]] || 180) : (st.cw || 180);
+    const colX = c => { let px = x + hw; for (let i = 0; i < c; i++) px += cwOf(i); return px; };
+    const gridW = colX(cols) - x;
+    // bilah rumus
+    const fy = y + 10; const active = st.edit ? st.edit.addr : st.active;
+    const cell0 = active && L.get(st.cells, active);
+    ctx.fillStyle = "#FFFFFF"; rr(ctx, x + 12, fy, 120, 48, 8); ctx.fill(); ctx.strokeStyle = UI.frame; ctx.lineWidth = 2; rr(ctx, x + 12, fy, 120, 48, 8); ctx.stroke();
+    text(ctx, active || "", x + 72, fy + 33, 24, { align: "center", weight: 800, color: UI.menuInk });
+    const fxW = Math.max(400, gridW - 150);
+    ctx.fillStyle = "#FFFFFF"; rr(ctx, x + 144, fy, fxW, 48, 8); ctx.fill(); ctx.strokeStyle = st.fxFocus ? UI.select : UI.frame; ctx.lineWidth = st.fxFocus ? 3 : 2; rr(ctx, x + 144, fy, fxW, 48, 8); ctx.stroke();
+    text(ctx, "fx", x + 162, fy + 32, 21, { weight: 800, color: "#8A99A3" }); ctx.fillStyle = UI.grid; ctx.fillRect(x + 196, fy + 10, 2, 28);
+    const fxText = st.edit ? st.edit.text : (cell0 ? (cell0.f || L.show(cell0.v)) : "");
+    text(ctx, fxText, x + 212, fy + 33, 25, { weight: 700, color: (st.edit ? st.edit.text : cell0 && cell0.f) && String(fxText).startsWith("=") ? UI.formula : C.ink });
+    if (st.edit && st.caret) { ctx.font = "700 25px Inter"; const cw = ctx.measureText(st.edit.text).width; ctx.fillStyle = C.ink; ctx.fillRect(x + 214 + cw, fy + 11, 2.5, 27); }
+    // kisi
+    const gy = fy + 66; const H0 = rh * (rows + 1);
+    ctx.fillStyle = "#FFFFFF"; ctx.fillRect(x, gy, gridW, H0);
+    ctx.fillStyle = UI.head; ctx.fillRect(x, gy, gridW, rh); ctx.fillRect(x, gy, hw, H0);
+    const ac = active ? { c: L.col(active[0]), r: parseInt(active.slice(1)) } : null;
+    for (let c = 0; c < cols; c++) {
+      if (ac && ac.c === c) { ctx.fillStyle = "#D5E3F3"; ctx.fillRect(colX(c), gy, cwOf(c), rh); }
+      text(ctx, COLS[c], colX(c) + cwOf(c) / 2, gy + rh / 2 + 8, 22, { align: "center", weight: 700, color: ac && ac.c === c ? UI.select : UI.headInk });
+    }
+    for (let r = 1; r <= rows; r++) {
+      if (ac && ac.r === r) { ctx.fillStyle = "#D5E3F3"; ctx.fillRect(x, gy + rh * r, hw, rh); }
+      text(ctx, String(r), x + hw / 2, gy + rh * r + rh / 2 + 8, 22, { align: "center", weight: 700, color: ac && ac.r === r ? UI.select : UI.headInk });
+    }
+    const geo = {
+      cell(addr) { const c = L.col(addr[0]), r = parseInt(addr.slice(1)); const cx = colX(c), cy = gy + rh * r; return { x: cx, y: cy, w: cwOf(c), h: rh, cx: cx + cwOf(c) / 2, cy: cy + rh / 2 }; },
+      handle(addr) { const q = this.cell(addr); return { x: q.x + q.w - 1, y: q.y + q.h - 1 }; },
+      colLine(c) { return { x: colX(c), y: gy + rh / 2 }; },
+      nameBox: { x: x + 72, y: fy + 24 }, fx: { x: x + 212, y: fy + 24 }, bottom: gy + H0, right: x + gridW, top: gy
+    };
+    // sorotan rentang
+    if (st.range) { const a = geo.cell(st.range[0]), b = geo.cell(st.range[1]); ctx.fillStyle = UI.selectBg; ctx.fillRect(a.x, a.y, b.x + b.w - a.x, b.y + b.h - a.y); }
+    (st.changed || []).forEach(addr => { const q = geo.cell(addr); ctx.fillStyle = C.goodBg; ctx.fillRect(q.x + 1, q.y + 1, q.w - 2, q.h - 2); });
+    (st.marks || []).forEach(([addr, color]) => { const q = geo.cell(addr); ctx.fillStyle = color; ctx.fillRect(q.x + 1, q.y + 1, q.w - 2, q.h - 2); });
+    // garis kisi
+    ctx.strokeStyle = UI.grid; ctx.lineWidth = 1.5;
+    for (let r = 0; r <= rows + 1; r++) { ctx.beginPath(); ctx.moveTo(x, gy + rh * r); ctx.lineTo(x + gridW, gy + rh * r); ctx.stroke(); }
+    for (let c = 0; c <= cols; c++) { ctx.beginPath(); ctx.moveTo(colX(c), gy); ctx.lineTo(colX(c), gy + H0); ctx.stroke(); }
+    ctx.beginPath(); ctx.moveTo(x, gy); ctx.lineTo(x, gy + H0); ctx.stroke();
+    // isi sel
+    Object.keys(st.cells || {}).forEach(addr => {
+      const c = L.col(addr[0]), r = parseInt(addr.slice(1)); if (c < 0 || c >= cols || r < 1 || r > rows) return;
+      if (st.edit && st.edit.addr === addr) return;
+      const v = L.get(st.cells, addr); const q = geo.cell(addr);
+      const shown = st.showFormulas && v.f ? v.f : L.show(v.v);
+      const isNum = typeof v.v === "number" && !(st.showFormulas && v.f);
+      let shownFit = shown; if (isNum) { ctx.font = "600 25px Inter"; if (ctx.measureText(shown).width > q.w - 20) shownFit = "#".repeat(Math.max(2, Math.floor((q.w - 20) / 16))); }
+      ctx.save(); ctx.beginPath(); ctx.rect(q.x + 2, q.y, q.w - 4, q.h); ctx.clip();
+      text(ctx, shownFit, isNum ? q.x + q.w - 14 : q.x + 12, q.y + q.h / 2 + 9, 25, { align: isNum ? "right" : "left", weight: v.bold ? 800 : 600, color: v.color || ((st.changed || []).includes(addr) ? C.good : C.ink) });
+      ctx.restore();
+    });
+    // sel yang sedang diketik
+    if (st.edit) { const q = geo.cell(st.edit.addr); ctx.fillStyle = "#FFFFFF"; ctx.fillRect(q.x + 2, q.y + 2, q.w - 4, q.h - 4);
+      const isF = String(st.edit.text).startsWith("=");
+      text(ctx, st.edit.text, q.x + 12, q.y + q.h / 2 + 9, 25, { weight: 600, color: isF ? UI.formula : C.ink });
+      if (st.caret) { ctx.font = "600 25px Inter"; const w = ctx.measureText(st.edit.text).width; ctx.fillStyle = C.ink; ctx.fillRect(q.x + 14 + w, q.y + 11, 2.5, q.h - 22); } }
+    // rujukan rumus berwarna saat mengetik rumus
+    (st.refs || []).forEach(([addr, color]) => { const q = geo.cell(addr); ctx.strokeStyle = color; ctx.lineWidth = 3; ctx.setLineDash([]); ctx.strokeRect(q.x + 2, q.y + 2, q.w - 4, q.h - 4); });
+    // bingkai salin putus-putus
+    if (st.copy) { const a = geo.cell(st.copy[0]), b = geo.cell(st.copy[1]); ctx.strokeStyle = UI.select; ctx.lineWidth = 3; ctx.setLineDash([10, 7]); ctx.lineDashOffset = -(st.dash || 0); ctx.strokeRect(a.x + 2, a.y + 2, b.x + b.w - a.x - 4, b.y + b.h - a.y - 4); ctx.setLineDash([]); }
+    // sel aktif + gagang isi
+    if (active && !st.edit) { const q = geo.cell(active); const q2 = st.selTo ? geo.cell(st.selTo) : q;
+      ctx.strokeStyle = UI.select; ctx.lineWidth = 4; ctx.strokeRect(q.x + 1, q.y + 1, q2.x + q2.w - q.x - 2, q2.y + q2.h - q.y - 2);
+      const hx = q2.x + q2.w - 1, hy = q2.y + q2.h - 1; const s = st.handleHover ? 13 : 10;
+      ctx.fillStyle = "#FFFFFF"; ctx.fillRect(hx - s / 2 - 2, hy - s / 2 - 2, s + 4, s + 4); ctx.fillStyle = UI.select; ctx.fillRect(hx - s / 2, hy - s / 2, s, s); }
+    else if (st.edit) { const q = geo.cell(st.edit.addr); ctx.strokeStyle = UI.select; ctx.lineWidth = 4; ctx.strokeRect(q.x + 1, q.y + 1, q.w - 2, q.h - 2); }
+    return geo;
+  };
+  L.get = (cells, addr) => { const v = (cells || {})[addr]; return v == null ? { v: "" } : (typeof v === "object" ? v : { v }); };
+  L.show = v => typeof v === "number" ? (Number.isInteger(v) ? String(v) : v.toLocaleString("id-ID", { maximumFractionDigits: 2 })) : (v == null ? "" : String(v));
+
+  // ---------- pointer mouse ----------
+  // kind: "arrow" | "plus" (tanda tambah tipis gagang isi) | "text"; click: 0..1 (efek denyut), down: tombol ditahan
+  L.cursor = function (ctx, x, y, opt = {}) {
+    const kind = opt.kind || "arrow";
+    if (opt.click > 0 && opt.click < 1) { const u = opt.click; ctx.strokeStyle = `rgba(242,177,52,${1 - u})`; ctx.lineWidth = 5; ctx.beginPath(); ctx.arc(x, y, 12 + u * 34, 0, Math.PI * 2); ctx.stroke(); }
+    if (opt.down) { ctx.fillStyle = "rgba(242,177,52,0.35)"; ctx.beginPath(); ctx.arc(x, y, 18, 0, Math.PI * 2); ctx.fill(); }
+    ctx.save(); ctx.translate(x, y);
+    if (kind === "plus") {
+      ctx.strokeStyle = "#FFFFFF"; ctx.lineWidth = 7; ctx.beginPath(); ctx.moveTo(-16, 0); ctx.lineTo(16, 0); ctx.moveTo(0, -16); ctx.lineTo(0, 16); ctx.stroke();
+      ctx.strokeStyle = C.ink; ctx.lineWidth = 3; ctx.beginPath(); ctx.moveTo(-15, 0); ctx.lineTo(15, 0); ctx.moveTo(0, -15); ctx.lineTo(0, 15); ctx.stroke();
+    } else if (kind === "text") {
+      ctx.strokeStyle = "#FFFFFF"; ctx.lineWidth = 6; ctx.beginPath(); ctx.moveTo(0, -16); ctx.lineTo(0, 16); ctx.stroke();
+      ctx.strokeStyle = C.ink; ctx.lineWidth = 2.5; ctx.beginPath(); ctx.moveTo(-6, -16); ctx.lineTo(6, -16); ctx.moveTo(0, -16); ctx.lineTo(0, 16); ctx.moveTo(-6, 16); ctx.lineTo(6, 16); ctx.stroke();
+    } else {
+      const s = opt.size || 1.25; ctx.scale(s, s);
+      ctx.beginPath(); ctx.moveTo(0, 0); ctx.lineTo(0, 30); ctx.lineTo(8, 23); ctx.lineTo(13, 35); ctx.lineTo(18, 33); ctx.lineTo(13, 21); ctx.lineTo(23, 21); ctx.closePath();
+      ctx.fillStyle = "#FFFFFF"; ctx.fill(); ctx.strokeStyle = C.ink; ctx.lineWidth = 2.2; ctx.lineJoin = "round"; ctx.stroke();
+    }
+    ctx.restore();
+  };
+
+  // ---------- tombol keyboard ----------
+  // keys: ["Enter"] atau ["Ctrl", "S"]; press: 0..1 (tombol tertekan di tengahnya)
+  L.keys = function (ctx, x, y, keys, opt = {}) {
+    const size = opt.size || 30; let px = x;
+    const ws = keys.map(k => { ctx.font = `800 ${size}px Inter`; return Math.max(size * 2.1, ctx.measureText(k).width + size * 1.2); });
+    const total = ws.reduce((a, b) => a + b, 0) + (keys.length - 1) * 46;
+    if (opt.align === "center") px = x - total / 2;
+    const down = opt.press > 0.15 && opt.press < 0.75;
+    keys.forEach((k, i) => {
+      const w = ws[i], h = size * 2.1, dy = down ? 5 : 0;
+      ctx.fillStyle = "#A9B6BE"; rr(ctx, px, y + 6, w, h, 12); ctx.fill();
+      ctx.fillStyle = down ? "#FFF3D6" : "#FFFFFF"; rr(ctx, px, y + dy, w, h, 12); ctx.fill(); ctx.strokeStyle = down ? C.accent : "#9AA8B1"; ctx.lineWidth = 2.5; rr(ctx, px, y + dy, w, h, 12); ctx.stroke();
+      text(ctx, k, px + w / 2, y + dy + h / 2 + size * 0.36, size, { align: "center", weight: 800, color: C.ink });
+      px += w; if (i < keys.length - 1) { text(ctx, "+", px + 23, y + h / 2 + size * 0.36, size, { align: "center", weight: 900, color: C.ink2 }); px += 46; }
+    });
+    return total;
+  };
+
+  // ---------- label penunjuk ----------
+  // label kotak dengan garis ke titik (tx, ty)
+  L.callout = function (ctx, x, y, s, tx, ty, opt = {}) {
+    const size = opt.size || 26; ctx.font = `800 ${size}px Inter`; const lines = H.wrap(ctx, s, size, 800, opt.maxW || 420);
+    const w = Math.max(...lines.map(l => ctx.measureText(l).width)) + 36, h = lines.length * size * 1.25 + 26;
+    if (tx != null) { ctx.strokeStyle = opt.color || C.accentDark; ctx.lineWidth = 3; ctx.beginPath(); ctx.moveTo(x + w / 2, y + h / 2); ctx.lineTo(tx, ty); ctx.stroke(); ctx.fillStyle = opt.color || C.accentDark; ctx.beginPath(); ctx.arc(tx, ty, 7, 0, Math.PI * 2); ctx.fill(); }
+    ctx.fillStyle = opt.fill || "#FFF3D6"; rr(ctx, x, y, w, h, 12); ctx.fill(); ctx.strokeStyle = opt.color || C.accent; ctx.lineWidth = 3; rr(ctx, x, y, w, h, 12); ctx.stroke();
+    lines.forEach((ln, i) => text(ctx, ln, x + 18, y + 13 + size + i * size * 1.25, size, { weight: 800, color: opt.ink || C.ink }));
+    return { w, h };
+  };
+
+  // ---------- pembesaran ----------
+  // zoom(ctx, px, py, s, fn): gambar fn() dengan pembesaran s berpusat di (px, py) yang dipindah ke (qx, qy)
+  L.zoom = function (ctx, px, py, s, fn, qx = px, qy = py) {
+    ctx.save(); ctx.translate(qx, qy); ctx.scale(s, s); ctx.translate(-px, -py); fn(); ctx.restore();
+  };
+
+  // ---------- penerjemah aksi ----------
+  // steps: daftar aksi berurutan, masing-masing punya durasi relatif "d" (dibagi rata ke "span" detik):
+  //   {move: "B3"} pointer bergerak ke tengah sel · {click: "B3"} klik (memilih sel) · {type: "Bakso", to: "A1"} mengetik ke sel
+  //   {key: "Tab"|"Enter", commit: true} tombol: menyimpan ketikan, pilihan pindah · {set: {A1: ...}} ubah isi sel langsung
+  //   {drag: ["D2", "D6"]} drag gagang isi · {wait: 1}
+  // Hasil: state lembar kerja + posisi pointer + tombol yang sedang tampil, untuk waktu lokal l.
+  L.play = function (base, steps, l, span, geoFn) {
+    const st = { cells: { ...(base.cells || {}) }, active: base.active, edit: null, caret: true, copy: null, refs: [], range: null, changed: [] };
+    const total = steps.reduce((a, s) => a + (s.d || 1), 0); const unit = span / total;
+    let t0 = 0, ptr = base.pointer ? { ...base.pointer } : null, key = null, click = 0, kind = "arrow", down = false;
+    for (const s of steps) {
+      const d = (s.d || 1) * unit, u = clamp((l - t0) / d, 0, 1); if (l < t0) break;
+      const target = a => geoFn().cell(a);
+      if (s.move || s.click) { const q = target(s.move || s.click); const to = { x: q.x + q.w * 0.62, y: q.y + q.h * 0.6 }; const from = ptr || to; const m = ease(clamp(u / 0.6, 0, 1)); ptr = { x: lerp(from.x, to.x, m), y: lerp(from.y, to.y, m) }; kind = "arrow";
+        if (s.tap && u >= 0.6 && u < 1) click = clamp((u - 0.6) / 0.4, 0, 0.99);
+        if (s.click && u >= 0.6) { click = clamp((u - 0.6) / 0.4, 0, 0.99); st.active = s.click; if (st.edit) { st.cells[st.edit.addr] = s.editValue || st.edit.text; st.edit = null; } } if (u >= 1) click = 0; }
+      if (s.type != null) { const addr = s.to || st.active; const n = Math.round(s.type.length * clamp(u / 0.9, 0, 1)); st.edit = { addr, text: (s.prefix || "") + s.type.slice(0, n) }; st.active = addr; st.caret = Math.floor(l * 2.2) % 2 === 0 || u < 1;
+        if (s.refs) st.refs = s.refs.filter(r => n >= r[2]).map(r => [r[0], r[1]]); }
+      if (s.key) { key = u < 1 ? { keys: [].concat(s.key), press: u } : null; if (u >= 0.45 && s.commit && st.edit) { st.cells[st.edit.addr] = s.value != null ? s.value : st.edit.text; st.edit = null; st.refs = []; st.active = s.next || st.active; } }
+      if (s.set && u >= 0.5) { Object.assign(st.cells, s.set); if (s.flash) st.changed = Object.keys(s.set); }
+      if (s.drag) { const g = geoFn(); const a = g.handle(s.drag[0]), b = g.handle(s.drag[1]); kind = "plus";
+        const from = ptr || a; const m1 = ease(clamp(u / 0.25, 0, 1)); const m2 = ease(clamp((u - 0.3) / 0.55, 0, 1));
+        ptr = u < 0.3 ? { x: lerp(from.x, a.x, m1), y: lerp(from.y, a.y, m1) } : { x: lerp(a.x, b.x, m2), y: lerp(a.y, b.y, m2) }; down = u >= 0.25 && u < 0.88;
+        st.active = s.drag[0]; if (down) { st.dragTo = u < 0.3 ? s.drag[0] : (m2 > 0.98 ? s.drag[1] : null); st.dragFrac = m2; st.dragSpan = s.drag; }
+        if (u >= 0.88) { Object.assign(st.cells, s.fill || {}); st.selTo = s.drag[1]; st.changed = Object.keys(s.fill || {}); } }
+      if (s.hover) { const g = geoFn(); const h = g.handle(s.hover); const from = ptr || h; const m = ease(clamp(u / 0.7, 0, 1)); ptr = { x: lerp(from.x, h.x, m), y: lerp(from.y, h.y, m) }; kind = u > 0.7 ? "plus" : "arrow"; st.handleHover = u > 0.7; }
+      if (s.select) { st.active = s.select[0]; st.selTo = s.select[1]; }
+      if (s.state) Object.assign(st, s.state);
+      t0 += d;
+    }
+    if (st.selTo && st.selTo === st.active) st.selTo = null;
+    return { st, ptr, key, click, kind, down };
+  };
+
+  K.layar = L;
+})(typeof window !== "undefined" ? window : globalThis);
+
+/* Layar HP: pembantu gambar bersama untuk video simulasi yang memperagakan HP (S01, S11, S12, S13, S14, S15, S16, S28, …).
+   Muat setelah kiko-core.js dan layar.js:  "engine": ["../../_alat/kiko-core.js", "../../_alat/layar.js", "../../_alat/layar_hp.js", "scenes.js"]
+   Semua tampilan generik dan digambar dengan kode: tanpa logo, tanpa tata letak sistem operasi atau merek HP tertentu.
+
+   ===== KOORDINAT =====
+   Isi layar digambar dalam SATUAN LOKAL: lebar HP.W = 360, tinggi HP.H = 740 (bilah status y 0–36, isi y 36–712, garis navigasi di bawah).
+   HP.phone() menskalakan satuan itu ke ukuran HP di kanvas 1920×1080. Huruf 24 satuan ≈ 22 px pada tinggi layar bawaan 680 px.
+
+   ===== API =====
+   const HP = Kiko.hp;
+   const ph = HP.phone(ctx, cx, cy, opt, draw)
+       Bingkai HP tegak berpusat di (cx, cy). draw(ctx, ph) dipanggil dalam satuan lokal, terpotong di layar.
+       opt: h (tinggi layar px, bawaan 680), time ("07.15"), battery (0..1), dark (bilah status putih untuk layar gelap),
+            bg (warna latar layar), status (false = tanpa bilah status), nav (false = tanpa garis navigasi), shadow (bawaan true).
+       Hasil ph: { x, y, w, h, s, at(u, v) → {x, y} titik kanvas, rect(u, v, w, h) → {x, y, w, h} kotak kanvas }.
+       Contoh: const p = ph.at(300, 640); L.callout(ctx, 1450, 500, "Tombol tambah", p.x, p.y);
+   — Semua fungsi di bawah dipanggil DI DALAM draw (satuan lokal). —
+   HP.header(ctx, title, {back, backHl, action: "more"|"search"|null, bg})  bilah judul y 36–104, panah kembali. Hasil: {bottom, back: {x, y}}
+   HP.search(ctx, y, text, {focus, caret})  kolom "Cari pengaturan". Hasil: {x, y, w, h, cx, cy}
+   HP.list(ctx, items, {y, scroll, gap})  daftar menu Pengaturan. items: [{ section: "JUDUL" } | {
+        label, sub, icon: "update"|… (ikon bulat) | app: {color, icon|letter} (ikon aplikasi), color,
+        toggle: true|false|0..1 (sakelar, angka = animasi), value: "teks kanan", arrow: true, radio: true|false,
+        hl: true (sorot kuning), dim: true, danger: true (merah), badge: "1" }]
+       Hasil: array baris {x, y, w, h, cx, cy, toggle: {x, y}} (urutan sama dengan items, section = null).
+   HP.toggle(ctx, cx, cy, on)  sakelar nyala/mati (on 0..1).   HP.radio(ctx, cx, cy, on)
+   HP.icon(ctx, kind, cx, cy, s, color)  ikon garis sederhana. kind: update, shield, lock, apps, location, camera, mic, contacts, bell,
+        wifi, battery, key, trash, flashlight, info, gear, download, warning, check, close, sun, chat, game, globe, folder, search,
+        back, chevron, plus, more, qr, eye, eyeOff, fingerprint, phone, calc, map, store, clock, user, cloud, mail, school, photo, music
+   HP.appIcon(ctx, cx, cy, size, color, iconOrLetter)  ikon aplikasi persegi membulat.
+   HP.button(ctx, x, y, w, h, label, {fill, ink, outline, hl, size, r})  Hasil: {cx, cy}
+   HP.notif(ctx, {app, icon, color, title, body, time}, u)  notifikasi turun dari atas (u 0..1 masuk). Hasil: kotaknya.
+   HP.dialog(ctx, {icon, iconColor, title, body, buttons: [..], stack: true, hl: i, danger: i, u})  dialog di tengah, latar digelapkan.
+        stack = tombol bertumpuk penuh (dialog izin); tanpa stack = tombol teks di kanan bawah. Hasil: {box, buttons: [{x, y, w, h, cx, cy}]}
+   HP.permission(ctx, {app, color, appIcon, perm: "lokasi"|…, icon, question, hl, u})  dialog izin standar: "Izinkan X mengakses lokasi?"
+        tombol: Saat aplikasi digunakan / Hanya kali ini / Jangan izinkan. Hasil sama dengan dialog.
+   HP.numpad(ctx, {y, press, pressU, done})  keyboard angka di bawah layar (1–9, hapus, 0, selesai). Hasil: {key(ch) → {x, y}}.
+   HP.numpadKey(ch, y)  posisi tombol tanpa menggambar (untuk HP.run).
+   HP.codeBoxes(ctx, cx, y, value, {n, size, error, active})  kotak kode 6 digit.   HP.pinDots(ctx, cx, y, n, filled)
+   HP.auth(ctx, {title, accounts: [{issuer, user, code, secs, period, hl}], empty, fabHl, menu: true, menuHl})  aplikasi autentikator:
+        kode 6 digit + lingkaran sisa waktu 30 detik; kode memerah 5 detik terakhir. Hasil: {fab, cards, menu: {scan, key}}
+   HP.totp(t, period)  → {secs: sisa detik, frac, idx}: untuk lingkaran waktu yang berjalan nyata.   HP.ring(ctx, cx, cy, r, frac, color)
+   HP.scanner(ctx, {found, hint, inner(ctx, box)})  kamera pemindai kode QR (layar gelap + bingkai bidik). Hasil: kotak bidik.
+   HP.qr(ctx, x, y, size, seed)  pola kotak acak mirip kode QR (BUKAN kode QR sungguhan; tidak bisa dipindai ke situs mana pun).
+   HP.chat(ctx, {name, sub, color, messages: [{from: "them"|"me", text, time}], input, warn: i, size: 18, maxW: 250})  layar obrolan generik (gelembung pesan).
+        warn = indeks pesan yang diberi bingkai merah. Hasil: kotak tiap gelembung.
+   HP.home(ctx, apps, {clock, hl, cols})  layar utama dengan kisi aplikasi [{name, color, icon}]. Hasil: posisi tiap ikon {name, x, y}.
+   HP.progress(ctx, x, y, w, frac, {color, h})   HP.spinner(ctx, cx, cy, r, t)   HP.toast(ctx, msg, u, {y})
+   HP.para(ctx, s, x, y, size, maxW, opt)  paragraf (pembungkus H.para).
+   HP.magnify(ctx, ph, draw, {u, v, w, h}, {x, y, w | k}, {bg, color})  lup: bagian layar HP (satuan lokal) digambar ulang besar di kanvas,
+        dengan bingkai di HP dan garis penghubung. draw = fungsi gambar yang sama dengan HP.phone. Hasil: {x, y, w, h, k, at(u, v) → titik kanvas}.
+   HP.tap(ctx, x, y, u, {r})  efek tap jari: lingkaran tekan lalu riak (u 0..1). Bisa di satuan lokal atau kanvas.
+   HP.run(base, steps, l, span)  penerjemah langkah berurutan (durasi relatif d dibagi rata ke span detik):
+        {tap: [u, v], set: {...}}  tap di HP (satuan lokal); set berlaku setelah setengah langkah
+        {to: [x, y], click: true, set}  pointer mouse bergerak ke titik kanvas (lalu klik)   ·  {key: ["Enter"]}  tombol keyboard tampil
+        {type: "teks", field: "nama"}  mengetik bertahap ke st[field]   ·  {numpad: "482913", field: "code", y}  tap tombol angka satu per satu
+        {anim: "nama"}  st[nama] = 0..1 selama langkah (sakelar, progress)   ·  {set: {...}}  ubah state langsung   ·  {wait: 1}
+        Hasil: {st, tap: {x, y, u}|null, ptr: {x, y}|null, click, key: {keys, press}|null, i (langkah ke-), u (0..1 dalam langkah)}
+        Gambar hasilnya: HP.tap(ctx, r.tap.x, r.tap.y, r.tap.u) di dalam draw; L.cursor(ctx, r.ptr.x, r.ptr.y, {click: r.click}) di luar.
+   TIPS: letak baris untuk target tap diukur dulu dengan HP.list di kanvas tak terlihat (lihat rowsOf di S13/scenes.js).
+   Huruf di HP kecil di video; pakai HP.magnify (lup) untuk bagian yang sedang dibahas. Contoh lengkap: episodes/sim/S13/scenes.js
+   (fungsi show = HP + lup, notes = keterangan di bawah panel langkah) dan episodes/sim/S11/scenes.js (browser + HP). */
+(function (global) {
+  const K = global.Kiko, H = K.helpers, C = K.C;
+  const { rr,  wrap, ease, clamp, lerp } = H;
+  // text dengan opt.fit yang juga mengecilkan huruf kecil (H.text hanya mengecilkan sampai 20 px)
+  const text = (ctx, s, x, y, size, opt = {}) => {
+    if (opt.fit) { const f = `${opt.weight || 600} `; ctx.font = f + size + "px Inter"; while (size > 11 && ctx.measureText(s).width > opt.fit) { size -= 1; ctx.font = f + size + "px Inter"; } }
+    H.text(ctx, s, x, y, size, { ...opt, fit: undefined });
+  };
+  const HP = {};
+  const W = 360, HH = 740, TOP = 36;
+  const UI = { bezel: "#2B3A46", bezel2: "#1A262F", bg: "#F1F4F7", surface: "#FFFFFF", line: "#E3E9EE", ink: C.ink, ink2: "#5B6B76",
+               primary: "#1A73C8", primaryBg: "#E3EEFA", off: "#B9C4CC", good: C.good, bad: C.bad, hl: "#FFF3D6", hlLine: C.accent };
+  HP.W = W; HP.H = HH; HP.TOP = TOP; HP.UI = UI;
+
+  // ---------- bingkai HP ----------
+  HP.phone = function (ctx, cx, cy, opt = {}, draw) {
+    const h = opt.h || 680, s = h / HH, w = W * s, x = cx - w / 2, y = cy - h / 2, pad = Math.max(10, 16 * s);
+    const ph = { x, y, w, h, s, at: (u, v) => ({ x: x + u * s, y: y + v * s }), rect: (u, v, ww, hh) => ({ x: x + u * s, y: y + v * s, w: ww * s, h: hh * s }) };
+    ctx.save();
+    if (opt.shadow !== false) { ctx.shadowColor = "rgba(31,42,51,0.25)"; ctx.shadowBlur = 34; ctx.shadowOffsetY = 12; }
+    ctx.fillStyle = UI.bezel; rr(ctx, x - pad, y - pad, w + pad * 2, h + pad * 2, 50 * s); ctx.fill(); ctx.restore();
+    ctx.fillStyle = UI.bezel2; rr(ctx, x + w + pad - 3, y + 120 * s, 6, 70 * s, 3); ctx.fill(); rr(ctx, x + w + pad - 3, y + 210 * s, 6, 46 * s, 3); ctx.fill();
+    ctx.save(); rr(ctx, x, y, w, h, 34 * s); ctx.clip(); ctx.translate(x, y); ctx.scale(s, s);
+    ctx.fillStyle = opt.bg || UI.bg; ctx.fillRect(0, 0, W, HH);
+    if (draw) draw(ctx, ph);
+    if (opt.status !== false) HP.statusBar(ctx, opt);
+    if (opt.nav !== false) { ctx.fillStyle = opt.dark ? "rgba(255,255,255,0.7)" : "rgba(31,42,51,0.55)"; rr(ctx, W / 2 - 60, HH - 16, 120, 6, 3); ctx.fill(); }
+    ctx.restore();
+    // kamera depan (lubang kecil)
+    ctx.fillStyle = UI.bezel2; ctx.beginPath(); ctx.arc(cx, y + 18 * s, 7 * s, 0, Math.PI * 2); ctx.fill();
+    return ph;
+  };
+  HP.statusBar = function (ctx, opt = {}) {
+    const ink = opt.dark ? "#FFFFFF" : UI.ink;
+    text(ctx, opt.time || "07.15", 26, 26, 17, { weight: 700, color: ink });
+    // sinyal
+    for (let i = 0; i < 4; i++) { ctx.fillStyle = ink; ctx.fillRect(250 + i * 6, 23 - i * 3.5, 4, 4 + i * 3.5); }
+    // wifi
+    ctx.strokeStyle = ink; ctx.lineWidth = 2.2; ctx.lineCap = "round";
+    for (let i = 1; i <= 3; i++) { ctx.beginPath(); ctx.arc(288, 26, i * 4.5, Math.PI * 1.25, Math.PI * 1.75); ctx.stroke(); }
+    // baterai
+    const bt = opt.battery == null ? 0.76 : opt.battery;
+    ctx.lineWidth = 1.8; rr(ctx, 304, 13, 30, 15, 4); ctx.stroke(); ctx.fillStyle = ink; ctx.fillRect(335, 17, 3, 7);
+    ctx.fillStyle = bt < 0.2 ? UI.bad : ink; rr(ctx, 306.5, 15.5, 25 * clamp(bt, 0, 1), 10, 2); ctx.fill();
+  };
+
+  // ---------- ikon garis ----------
+  HP.icon = function (ctx, kind, cx, cy, s = 26, color = UI.ink) {
+    ctx.save(); ctx.translate(cx, cy); ctx.strokeStyle = color; ctx.fillStyle = color; ctx.lineWidth = Math.max(1.6, s * 0.1); ctx.lineCap = "round"; ctx.lineJoin = "round";
+    const r = s / 2, P = Math.PI;
+    const line = (...pts) => { ctx.beginPath(); ctx.moveTo(pts[0] * r, pts[1] * r); for (let i = 2; i < pts.length; i += 2) ctx.lineTo(pts[i] * r, pts[i + 1] * r); ctx.stroke(); };
+    const circ = (x, y, rad, fill) => { ctx.beginPath(); ctx.arc(x * r, y * r, rad * r, 0, P * 2); fill ? ctx.fill() : ctx.stroke(); };
+    const box = (x, y, w, h, rad, fill) => { rr(ctx, x * r, y * r, w * r, h * r, rad * r); fill ? ctx.fill() : ctx.stroke(); };
+    switch (kind) {
+      case "update": ctx.beginPath(); ctx.arc(0, 0, r * 0.72, P * 0.15, P * 1.05); ctx.stroke(); ctx.beginPath(); ctx.arc(0, 0, r * 0.72, P * 1.15, P * 2.05); ctx.stroke();
+        line(-0.72, -0.05, -0.68, 0.32, -0.36, 0.18); line(0.72, 0.05, 0.68, -0.32, 0.36, -0.18); break;
+      case "shield": ctx.beginPath(); ctx.moveTo(0, -r * 0.85); ctx.lineTo(r * 0.72, -r * 0.55); ctx.quadraticCurveTo(r * 0.72, r * 0.5, 0, r * 0.9); ctx.quadraticCurveTo(-r * 0.72, r * 0.5, -r * 0.72, -r * 0.55); ctx.closePath(); ctx.stroke();
+        line(-0.3, 0.02, -0.06, 0.28, 0.34, -0.2); break;
+      case "lock": box(-0.62, -0.1, 1.24, 0.95, 0.18); ctx.beginPath(); ctx.arc(0, -r * 0.1, r * 0.4, P, 0); ctx.stroke(); line(-0.4, -0.1, -0.4, -0.1); circ(0, 0.33, 0.12, true); break;
+      case "apps": [[-0.75, -0.75], [0.1, -0.75], [-0.75, 0.1], [0.1, 0.1]].forEach(([a, b]) => box(a, b, 0.65, 0.65, 0.16)); break;
+      case "location": ctx.beginPath(); ctx.moveTo(0, r * 0.9); ctx.bezierCurveTo(-r * 0.95, -r * 0.05, -r * 0.6, -r * 0.92, 0, -r * 0.9); ctx.bezierCurveTo(r * 0.6, -r * 0.92, r * 0.95, -r * 0.05, 0, r * 0.9); ctx.stroke(); circ(0, -0.25, 0.24); break;
+      case "camera": box(-0.85, -0.45, 1.7, 1.2, 0.2); line(-0.35, -0.45, -0.2, -0.7, 0.2, -0.7, 0.35, -0.45); circ(0, 0.12, 0.32); break;
+      case "mic": box(-0.3, -0.9, 0.6, 1.1, 0.3); ctx.beginPath(); ctx.arc(0, -r * 0.05, r * 0.6, 0, P); ctx.stroke(); line(0, 0.55, 0, 0.88); line(-0.32, 0.88, 0.32, 0.88); break;
+      case "contacts": case "user": circ(0, -0.38, 0.34); ctx.beginPath(); ctx.arc(0, r * 0.82, r * 0.72, P * 1.08, P * 1.92); ctx.stroke(); break;
+      case "bell": ctx.beginPath(); ctx.moveTo(-r * 0.7, r * 0.45); ctx.lineTo(-r * 0.55, r * 0.25); ctx.lineTo(-r * 0.55, -r * 0.15); ctx.quadraticCurveTo(-r * 0.55, -r * 0.75, 0, -r * 0.75); ctx.quadraticCurveTo(r * 0.55, -r * 0.75, r * 0.55, -r * 0.15); ctx.lineTo(r * 0.55, r * 0.25); ctx.lineTo(r * 0.7, r * 0.45); ctx.closePath(); ctx.stroke(); line(-0.18, 0.7, 0.18, 0.7); break;
+      case "wifi": for (let i = 1; i <= 3; i++) { ctx.beginPath(); ctx.arc(0, r * 0.6, r * 0.42 * i, P * 1.25, P * 1.75); ctx.stroke(); } circ(0, 0.6, 0.1, true); break;
+      case "battery": box(-0.8, -0.42, 1.45, 0.84, 0.15); box(0.7, -0.18, 0.15, 0.36, 0.05, true); box(-0.65, -0.27, 0.8, 0.54, 0.06, true); break;
+      case "key": circ(-0.42, 0, 0.32); line(-0.1, 0, 0.85, 0); line(0.55, 0, 0.55, 0.32); line(0.8, 0, 0.8, 0.26); break;
+      case "trash": line(-0.75, -0.55, 0.75, -0.55); line(-0.25, -0.55, -0.2, -0.8, 0.2, -0.8, 0.25, -0.55); ctx.beginPath(); ctx.moveTo(-r * 0.55, -r * 0.45); ctx.lineTo(-r * 0.45, r * 0.85); ctx.lineTo(r * 0.45, r * 0.85); ctx.lineTo(r * 0.55, -r * 0.45); ctx.stroke(); line(-0.15, -0.2, -0.12, 0.55); line(0.15, -0.2, 0.12, 0.55); break;
+      case "flashlight": ctx.beginPath(); ctx.moveTo(-r * 0.55, -r * 0.85); ctx.lineTo(r * 0.55, -r * 0.85); ctx.lineTo(r * 0.55, -r * 0.5); ctx.lineTo(r * 0.28, -r * 0.15); ctx.lineTo(r * 0.28, r * 0.88); ctx.lineTo(-r * 0.28, r * 0.88); ctx.lineTo(-r * 0.28, -r * 0.15); ctx.lineTo(-r * 0.55, -r * 0.5); ctx.closePath(); ctx.stroke(); circ(0, 0.25, 0.1, true); break;
+      case "info": circ(0, 0, 0.85); line(0, -0.05, 0, 0.45); circ(0, -0.38, 0.08, true); break;
+      case "gear": { const n = 8; ctx.beginPath(); for (let i = 0; i < n * 2; i++) { const a = i * P / n, rad = (i % 2 ? 0.62 : 0.86) * r; ctx.lineTo(Math.cos(a) * rad, Math.sin(a) * rad); } ctx.closePath(); ctx.stroke(); circ(0, 0, 0.28); break; }
+      case "download": line(0, -0.85, 0, 0.3); line(-0.38, -0.08, 0, 0.3, 0.38, -0.08); line(-0.8, 0.45, -0.8, 0.8, 0.8, 0.8, 0.8, 0.45); break;
+      case "warning": ctx.beginPath(); ctx.moveTo(0, -r * 0.85); ctx.lineTo(r * 0.92, r * 0.75); ctx.lineTo(-r * 0.92, r * 0.75); ctx.closePath(); ctx.stroke(); line(0, -0.3, 0, 0.2); circ(0, 0.46, 0.08, true); break;
+      case "check": ctx.lineWidth = s * 0.14; line(-0.62, 0.02, -0.18, 0.46, 0.66, -0.4); break;
+      case "close": ctx.lineWidth = s * 0.13; line(-0.55, -0.55, 0.55, 0.55); line(0.55, -0.55, -0.55, 0.55); break;
+      case "sun": circ(0, 0, 0.36); for (let i = 0; i < 8; i++) { const a = i * P / 4; line(Math.cos(a) * 0.6, Math.sin(a) * 0.6, Math.cos(a) * 0.85, Math.sin(a) * 0.85); } break;
+      case "chat": ctx.beginPath(); rr(ctx, -r * 0.85, -r * 0.7, r * 1.7, r * 1.15, r * 0.3); ctx.stroke(); line(-0.35, 0.45, -0.5, 0.85, 0.05, 0.45); [-0.4, 0, 0.4].forEach(a => circ(a, -0.12, 0.09, true)); break;
+      case "game": box(-0.9, -0.42, 1.8, 0.95, 0.42); line(-0.52, 0.05, -0.18, 0.05); line(-0.35, -0.12, -0.35, 0.22); circ(0.32, -0.06, 0.09, true); circ(0.55, 0.16, 0.09, true); break;
+      case "globe": circ(0, 0, 0.85); ctx.beginPath(); ctx.ellipse(0, 0, r * 0.36, r * 0.85, 0, 0, P * 2); ctx.stroke(); line(-0.85, 0, 0.85, 0); line(-0.72, -0.42, 0.72, -0.42); line(-0.72, 0.42, 0.72, 0.42); break;
+      case "folder": ctx.beginPath(); ctx.moveTo(-r * 0.85, r * 0.7); ctx.lineTo(-r * 0.85, -r * 0.65); ctx.lineTo(-r * 0.3, -r * 0.65); ctx.lineTo(-r * 0.15, -r * 0.45); ctx.lineTo(r * 0.85, -r * 0.45); ctx.lineTo(r * 0.85, r * 0.7); ctx.closePath(); ctx.stroke(); break;
+      case "search": circ(-0.15, -0.15, 0.55); line(0.25, 0.25, 0.8, 0.8); break;
+      case "back": ctx.lineWidth = s * 0.12; line(0.75, 0, -0.7, 0); line(-0.15, -0.55, -0.72, 0, -0.15, 0.55); break;
+      case "chevron": ctx.lineWidth = s * 0.12; line(-0.25, -0.55, 0.3, 0, -0.25, 0.55); break;
+      case "plus": ctx.lineWidth = s * 0.13; line(-0.65, 0, 0.65, 0); line(0, -0.65, 0, 0.65); break;
+      case "more": [-0.6, 0, 0.6].forEach(b => circ(0, b, 0.12, true)); break;
+      case "qr": [[-0.85, -0.85], [0.25, -0.85], [-0.85, 0.25]].forEach(([a, b]) => { box(a, b, 0.6, 0.6, 0.08); box(a + 0.18, b + 0.18, 0.24, 0.24, 0.03, true); }); [[0.3, 0.3], [0.62, 0.62], [0.62, 0.3], [0.3, 0.62]].forEach(([a, b], i) => i % 3 === 0 && box(a, b, 0.22, 0.22, 0.03, true)); break;
+      case "eye": case "eyeOff": ctx.beginPath(); ctx.moveTo(-r * 0.9, 0); ctx.quadraticCurveTo(0, -r * 0.85, r * 0.9, 0); ctx.quadraticCurveTo(0, r * 0.85, -r * 0.9, 0); ctx.stroke(); circ(0, 0, 0.25); if (kind === "eyeOff") line(-0.75, -0.75, 0.75, 0.75); break;
+      case "fingerprint": for (let i = 1; i <= 3; i++) { ctx.beginPath(); ctx.arc(0, r * 0.1, r * 0.27 * i, P * 1.05, P * 1.95 + (i === 1 ? P * 0.9 : 0)); ctx.stroke(); } line(0, 0.1, 0, 0.75); break;
+      case "phone": box(-0.48, -0.88, 0.96, 1.76, 0.2); line(-0.12, 0.66, 0.12, 0.66); break;
+      case "calc": box(-0.65, -0.85, 1.3, 1.7, 0.16); box(-0.42, -0.62, 0.84, 0.36, 0.05); [[-0.32, 0.1], [0, 0.1], [0.32, 0.1], [-0.32, 0.45], [0, 0.45], [0.32, 0.45]].forEach(([a, b]) => circ(a, b, 0.08, true)); break;
+      case "map": ctx.beginPath(); ctx.moveTo(-r * 0.85, -r * 0.6); ctx.lineTo(-r * 0.3, -r * 0.8); ctx.lineTo(r * 0.3, -r * 0.6); ctx.lineTo(r * 0.85, -r * 0.8); ctx.lineTo(r * 0.85, r * 0.6); ctx.lineTo(r * 0.3, r * 0.8); ctx.lineTo(-r * 0.3, r * 0.6); ctx.lineTo(-r * 0.85, r * 0.8); ctx.closePath(); ctx.stroke(); line(-0.3, -0.8, -0.3, 0.6); line(0.3, -0.6, 0.3, 0.8); break;
+      case "store": ctx.beginPath(); ctx.moveTo(-r * 0.75, -r * 0.3); ctx.lineTo(r * 0.75, -r * 0.3); ctx.lineTo(r * 0.62, r * 0.85); ctx.lineTo(-r * 0.62, r * 0.85); ctx.closePath(); ctx.stroke(); ctx.beginPath(); ctx.arc(0, -r * 0.3, r * 0.38, P, 0); ctx.stroke(); break;
+      case "clock": circ(0, 0, 0.85); line(0, -0.5, 0, 0, 0.36, 0.22); break;
+      case "cloud": ctx.beginPath(); ctx.arc(-r * 0.35, r * 0.1, r * 0.38, P * 0.5, P * 1.5); ctx.arc(r * 0.05, -r * 0.2, r * 0.45, P * 1.1, P * 1.9); ctx.arc(r * 0.45, r * 0.15, r * 0.33, P * 1.5, P * 0.5); ctx.closePath(); ctx.stroke(); break;
+      case "mail": box(-0.85, -0.6, 1.7, 1.2, 0.12); line(-0.8, -0.5, 0, 0.12, 0.8, -0.5); break;
+      case "school": ctx.beginPath(); ctx.moveTo(0, -r * 0.8); ctx.lineTo(r * 0.9, -r * 0.3); ctx.lineTo(-r * 0.9, -r * 0.3); ctx.closePath(); ctx.stroke(); line(-0.75, 0.75, 0.75, 0.75); [-0.5, 0, 0.5].forEach(a => line(a, -0.15, a, 0.6)); break;
+      case "photo": box(-0.85, -0.65, 1.7, 1.3, 0.15); line(-0.7, 0.5, -0.2, -0.05, 0.15, 0.3, 0.4, 0.05, 0.7, 0.5); circ(0.35, -0.3, 0.13, true); break;
+      case "music": line(-0.3, 0.55, -0.3, -0.7, 0.6, -0.85, 0.6, 0.4); circ(-0.5, 0.55, 0.22, true); circ(0.4, 0.4, 0.22, true); break;
+      default: circ(0, 0, 0.6);
+    }
+    ctx.restore();
+  };
+  const ICONS = "update shield lock apps location camera mic contacts bell wifi battery key trash flashlight info gear download warning check close sun chat game globe folder search back chevron plus more qr eye eyeOff fingerprint phone calc map store clock user cloud mail school photo music".split(" ");
+  HP.ICONS = ICONS;
+  HP.appIcon = function (ctx, cx, cy, size, color, ic) {
+    ctx.fillStyle = color || UI.primary; rr(ctx, cx - size / 2, cy - size / 2, size, size, size * 0.26); ctx.fill();
+    if (!ic) return;
+    if (ICONS.includes(ic)) HP.icon(ctx, ic, cx, cy, size * 0.58, "#FFFFFF");
+    else text(ctx, ic, cx, cy + size * 0.18, size * 0.5, { align: "center", weight: 900, color: "#FFFFFF" });
+  };
+
+  // ---------- bagian layar ----------
+  HP.header = function (ctx, title, opt = {}) {
+    ctx.fillStyle = opt.bg || UI.surface; ctx.fillRect(0, TOP, W, 68);
+    ctx.fillStyle = UI.line; ctx.fillRect(0, TOP + 67, W, 1.5);
+    let tx = 24;
+    if (opt.back) {
+      if (opt.backHl) { ctx.fillStyle = UI.hl; ctx.beginPath(); ctx.arc(32, TOP + 34, 22, 0, Math.PI * 2); ctx.fill(); }
+      HP.icon(ctx, "back", 32, TOP + 34, 26, UI.ink); tx = 62;
+    }
+    text(ctx, title, tx, TOP + 43, 25, { weight: 800, color: UI.ink, fit: W - tx - (opt.action ? 52 : 18) });
+    if (opt.action) HP.icon(ctx, opt.action, W - 30, TOP + 34, 24, UI.ink);
+    return { bottom: TOP + 68, back: { x: 32, y: TOP + 34 } };
+  };
+  HP.search = function (ctx, y, s, opt = {}) {
+    const x = 16, w = W - 32, h = 50;
+    ctx.fillStyle = UI.surface; rr(ctx, x, y, w, h, 25); ctx.fill(); ctx.strokeStyle = opt.focus ? UI.primary : UI.line; ctx.lineWidth = opt.focus ? 2.5 : 1.5; rr(ctx, x, y, w, h, 25); ctx.stroke();
+    HP.icon(ctx, "search", x + 30, y + 25, 22, UI.ink2);
+    const has = s && s.length; text(ctx, has ? s : (opt.placeholder || "Cari pengaturan"), x + 54, y + 33, 20, { weight: has ? 700 : 500, color: has ? UI.ink : "#8A99A3" });
+    if (opt.caret) { ctx.font = "700 20px Inter"; const cw = has ? ctx.measureText(s).width : 0; ctx.fillStyle = UI.ink; ctx.fillRect(x + 56 + cw, y + 13, 2, 24); }
+    return { x, y, w, h, cx: x + w / 2, cy: y + h / 2 };
+  };
+  HP.toggle = function (ctx, cx, cy, on) {
+    const u = on === true ? 1 : on === false || on == null ? 0 : clamp(on, 0, 1), w = 50, h = 28;
+    ctx.fillStyle = u > 0.5 ? UI.primary : UI.off; ctx.globalAlpha = 1; rr(ctx, cx - w / 2, cy - h / 2, w, h, h / 2); ctx.fill();
+    const kx = lerp(cx - w / 2 + h / 2, cx + w / 2 - h / 2, ease(u));
+    ctx.fillStyle = "#FFFFFF"; ctx.beginPath(); ctx.arc(kx, cy, h / 2 - 3.5, 0, Math.PI * 2); ctx.fill();
+  };
+  HP.radio = function (ctx, cx, cy, on) {
+    ctx.strokeStyle = on ? UI.primary : UI.off; ctx.lineWidth = 2.5; ctx.beginPath(); ctx.arc(cx, cy, 11, 0, Math.PI * 2); ctx.stroke();
+    if (on) { ctx.fillStyle = UI.primary; ctx.beginPath(); ctx.arc(cx, cy, 6, 0, Math.PI * 2); ctx.fill(); }
+  };
+  HP.list = function (ctx, items, opt = {}) {
+    let y = (opt.y || TOP + 80) - (opt.scroll || 0); const x = 12, w = W - 24, out = [];
+    // kelompokkan baris berurutan menjadi satu kartu
+    const groups = []; let g = null;
+    items.forEach((it, i) => { if (it.section != null) { groups.push({ section: it.section, rows: [] }); g = groups[groups.length - 1]; out[i] = null; return; } if (!g) { g = { rows: [] }; groups.push(g); } g.rows.push(i); });
+    groups.forEach((gr, gi) => {
+      if (gr.section != null) { if (gr.section) { text(ctx, gr.section, x + 10, y + 22, 16, { weight: 800, color: UI.ink2 }); y += 34; } else y += 6; }
+      const hs = gr.rows.map(i => items[i].sub ? 82 : 64); const total = hs.reduce((a, b) => a + b, 0);
+      if (!gr.rows.length) return;
+      ctx.fillStyle = UI.surface; rr(ctx, x, y, w, total, 18); ctx.fill();
+      gr.rows.forEach((i, k) => {
+        const it = items[i], rh = hs[k], ry = y;
+        ctx.save(); if (it.dim) ctx.globalAlpha = 0.42;
+        if (it.hl) { ctx.fillStyle = UI.hl; rr(ctx, x + 2, ry + 2, w - 4, rh - 4, 16); ctx.fill(); ctx.strokeStyle = UI.hlLine; ctx.lineWidth = 2.5; rr(ctx, x + 2, ry + 2, w - 4, rh - 4, 16); ctx.stroke(); }
+        let lx = x + 18;
+        const iconCol = it.danger ? UI.bad : (it.color || UI.primary);
+        if (it.app) { HP.appIcon(ctx, x + 38, ry + rh / 2, 40, it.app.color, it.app.icon || it.app.letter); lx = x + 70; }
+        else if (it.icon) { ctx.fillStyle = it.danger ? C.badBg : (it.iconBg || UI.primaryBg); ctx.beginPath(); ctx.arc(x + 36, ry + rh / 2, 20, 0, Math.PI * 2); ctx.fill(); HP.icon(ctx, it.icon, x + 36, ry + rh / 2, 22, iconCol); lx = x + 68; }
+        let right = x + w - 16;
+        if (it.toggle != null && it.toggle !== undefined) { HP.toggle(ctx, x + w - 42, ry + rh / 2, it.toggle); right = x + w - 76; }
+        else if (it.radio != null) { HP.radio(ctx, x + w - 30, ry + rh / 2, it.radio); right = x + w - 54; }
+        else if (it.arrow) { HP.icon(ctx, "chevron", x + w - 22, ry + rh / 2, 16, "#8A99A3"); right = x + w - 38; }
+        if (it.value) { ctx.font = "600 17px Inter"; const vw = Math.min(130, ctx.measureText(it.value).width); text(ctx, it.value, right, ry + rh / 2 + 6, 17, { align: "right", weight: 700, color: it.valueColor || UI.ink2, fit: 130 }); right -= vw + 10; }
+        if (it.badge) { ctx.fillStyle = UI.bad; ctx.beginPath(); ctx.arc(right - 10, ry + rh / 2, 11, 0, Math.PI * 2); ctx.fill(); text(ctx, it.badge, right - 10, ry + rh / 2 + 5, 14, { align: "center", weight: 900, color: "#FFFFFF" }); right -= 28; }
+        const lw = right - lx - 6;
+        if (it.sub) { text(ctx, it.label, lx, ry + 35, 21, { weight: 700, color: it.danger ? UI.bad : UI.ink, fit: lw }); text(ctx, it.sub, lx, ry + 61, 16, { weight: 600, color: it.subColor || UI.ink2, fit: lw }); }
+        else text(ctx, it.label, lx, ry + rh / 2 + 7, 21, { weight: 700, color: it.danger ? UI.bad : UI.ink, fit: lw });
+        ctx.restore();
+        if (k < gr.rows.length - 1) { ctx.fillStyle = UI.line; ctx.fillRect(lx, ry + rh - 1, x + w - lx - 12, 1.5); }
+        out[i] = { x, y: ry, w, h: rh, cx: x + w / 2, cy: ry + rh / 2, toggle: { x: x + w - 42, y: ry + rh / 2 } };
+        y += rh;
+      });
+      y += opt.gap == null ? 14 : opt.gap;
+    });
+    out.bottom = y;
+    return out;
+  };
+  HP.button = function (ctx, x, y, w, h, label, opt = {}) {
+    const fill = opt.outline ? UI.surface : (opt.fill || UI.primary);
+    if (opt.hl) { ctx.fillStyle = "rgba(242,177,52,0.45)"; rr(ctx, x - 5, y - 5, w + 10, h + 10, (opt.r || h / 2) + 5); ctx.fill(); }
+    ctx.fillStyle = fill; rr(ctx, x, y, w, h, opt.r || h / 2); ctx.fill();
+    if (opt.outline) { ctx.strokeStyle = opt.ink || UI.primary; ctx.lineWidth = 2; rr(ctx, x, y, w, h, opt.r || h / 2); ctx.stroke(); }
+    text(ctx, label, x + w / 2, y + h / 2 + (opt.size || 20) * 0.36, opt.size || 20, { align: "center", weight: 800, color: opt.ink || (opt.outline ? UI.primary : "#FFFFFF"), fit: w - 16 });
+    return { x, y, w, h, cx: x + w / 2, cy: y + h / 2 };
+  };
+  HP.para = function (ctx, s, x, y, size, maxW, opt = {}) { return H.para(ctx, s, x, y, size, maxW, { weight: 600, color: UI.ink2, lh: 1.3, ...opt }); };
+
+  // ---------- notifikasi, dialog, izin ----------
+  HP.notif = function (ctx, n, u = 1) {
+    const e = ease(clamp(u, 0, 1)), h = n.body ? 104 : 80, y = lerp(-h - 10, TOP + 8, e), x = 12, w = W - 24;
+    ctx.save(); ctx.shadowColor = "rgba(31,42,51,0.25)"; ctx.shadowBlur = 18; ctx.shadowOffsetY = 6; ctx.fillStyle = UI.surface; rr(ctx, x, y, w, h, 20); ctx.fill(); ctx.restore();
+    HP.appIcon(ctx, x + 30, y + 30, 28, n.color || UI.primary, n.icon || "bell");
+    text(ctx, n.app || "Sistem", x + 54, y + 36, 16, { weight: 700, color: UI.ink2 }); text(ctx, n.time || "sekarang", x + w - 16, y + 36, 15, { align: "right", weight: 600, color: "#8A99A3" });
+    text(ctx, n.title || "", x + 18, y + 66, 19, { weight: 800, color: UI.ink, fit: w - 36 });
+    if (n.body) text(ctx, n.body, x + 18, y + 92, 17, { weight: 600, color: UI.ink2, fit: w - 36 });
+    return { x, y, w, h };
+  };
+  HP.dialog = function (ctx, d) {
+    const u = d.u == null ? 1 : ease(clamp(d.u, 0, 1)); if (u <= 0) return { box: null, buttons: [] };
+    ctx.save(); ctx.globalAlpha = u; ctx.fillStyle = "rgba(15,22,28,0.5)"; ctx.fillRect(0, 0, W, HH);
+    const x = 22, w = W - 44; ctx.font = "600 19px Inter";
+    const bodyLines = d.body ? wrap(ctx, d.body, 19, 600, w - 48) : [], titleLines = wrap(ctx, d.title || "", 23, 800, w - 48);
+    const bh = d.stack ? 56 : 50, btnBlock = d.stack ? (d.buttons || []).length * (bh + 10) + 6 : bh + 10;
+    const h = 30 + (d.icon ? 54 : 0) + titleLines.length * 30 + (bodyLines.length ? 12 + bodyLines.length * 26 : 0) + 24 + btnBlock;
+    const y = d.y != null ? d.y : (HH - h) / 2 + 10;
+    ctx.fillStyle = UI.surface; rr(ctx, x, y, w, h, 26); ctx.fill();
+    let yy = y + 30;
+    if (d.icon) { HP.icon(ctx, d.icon, W / 2, yy + 18, 34, d.iconColor || UI.primary); yy += 54; }
+    titleLines.forEach((ln, i) => text(ctx, ln, W / 2, yy + 20 + i * 30, 23, { align: "center", weight: 800, color: UI.ink })); yy += titleLines.length * 30;
+    if (bodyLines.length) { yy += 12; bodyLines.forEach((ln, i) => text(ctx, ln, W / 2, yy + 18 + i * 26, 19, { align: "center", weight: 600, color: UI.ink2 })); yy += bodyLines.length * 26; }
+    yy += 24; const out = [];
+    (d.buttons || []).forEach((b, i) => {
+      if (d.stack) { const by = yy + i * (bh + 10), hl = d.hl === i;
+        const r = HP.button(ctx, x + 20, by, w - 40, bh, b, { fill: hl ? UI.primary : UI.primaryBg, ink: hl ? "#FFFFFF" : (d.danger === i ? UI.bad : UI.primary), hl, size: 19, r: 16 }); out.push(r); }
+      else { const n = d.buttons.length, bw = 120, bx = x + w - 20 - (n - i) * (bw + 8), hl = d.hl === i;
+        const r = HP.button(ctx, bx, yy, bw, bh - 4, b, { fill: hl ? (d.danger === i ? UI.bad : UI.primary) : UI.surface, ink: hl ? "#FFFFFF" : (d.danger === i ? UI.bad : UI.primary), hl, size: 19, r: 14 }); out.push(r); }
+    });
+    ctx.restore();
+    return { box: { x, y, w, h }, buttons: out };
+  };
+  HP.permission = function (ctx, p) {
+    const app = p.app || "Aplikasi", perm = p.perm || "lokasi";
+    const icons = { lokasi: "location", kamera: "camera", mikrofon: "mic", kontak: "contacts", notifikasi: "bell", foto: "photo", file: "folder" };
+    return HP.dialog(ctx, { icon: p.icon || icons[perm] || "info", iconColor: p.color || UI.primary, title: p.question || `Izinkan ${app} mengakses ${perm}?`,
+      buttons: p.buttons || ["Saat aplikasi digunakan", "Hanya kali ini", "Jangan izinkan"], stack: true, hl: p.hl, u: p.u, y: p.y });
+  };
+  HP.toast = function (ctx, msg, u = 1, opt = {}) {
+    const a = clamp(u < 0.15 ? u / 0.15 : u > 0.85 ? (1 - u) / 0.15 : 1, 0, 1); if (a <= 0) return;
+    ctx.save(); ctx.globalAlpha = a; ctx.font = "700 18px Inter"; const w = Math.min(W - 40, ctx.measureText(msg).width + 44), y = opt.y || HH - 110;
+    ctx.fillStyle = "rgba(31,42,51,0.92)"; rr(ctx, (W - w) / 2, y, w, 46, 23); ctx.fill(); text(ctx, msg, W / 2, y + 30, 18, { align: "center", weight: 700, color: "#FFFFFF", fit: w - 30 }); ctx.restore();
+  };
+
+  // ---------- keyboard angka, kode, PIN ----------
+  const PAD_KEYS = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "⌫", "0", "✓"];
+  HP.numpadKey = function (ch, y0 = 452) { const i = PAD_KEYS.indexOf(ch); const c = i % 3, r = Math.floor(i / 3); return { x: 16 + c * 110 + 54, y: y0 + 12 + r * 62 + 28 }; };
+  HP.numpad = function (ctx, opt = {}) {
+    const y0 = opt.y || 452; ctx.fillStyle = "#DDE3E8"; ctx.fillRect(0, y0, W, HH - y0);
+    PAD_KEYS.forEach((k, i) => {
+      const c = i % 3, r = Math.floor(i / 3), x = 16 + c * 110, y = y0 + 12 + r * 62, on = opt.press === k && (opt.pressU == null || (opt.pressU > 0.1 && opt.pressU < 0.8));
+      const special = k === "⌫" || k === "✓";
+      ctx.fillStyle = on ? "#FFE7A8" : k === "✓" ? (opt.done === false ? "#9FB6CC" : UI.primary) : special ? "#C7D0D7" : "#FFFFFF"; rr(ctx, x, y, 108, 56, 12); ctx.fill();
+      if (k === "⌫") HP.icon(ctx, "back", x + 54, y + 28, 24, UI.ink);
+      else if (k === "✓") HP.icon(ctx, "check", x + 54, y + 28, 26, "#FFFFFF");
+      else text(ctx, k, x + 54, y + 38, 28, { align: "center", weight: 700, color: UI.ink });
+    });
+    return { key: ch => HP.numpadKey(ch, y0) };
+  };
+  HP.codeBoxes = function (ctx, cx, y, value = "", opt = {}) {
+    const n = opt.n || 6, bw = opt.size || 42, gap = 8, total = n * bw + (n - 1) * gap + (n === 6 ? 14 : 0); let x = cx - total / 2;
+    for (let i = 0; i < n; i++) {
+      if (n === 6 && i === 3) x += 14;
+      const ch = value[i] || "", act = opt.active !== false && i === value.length;
+      ctx.fillStyle = "#FFFFFF"; rr(ctx, x, y, bw, bw * 1.25, 10); ctx.fill();
+      ctx.strokeStyle = opt.error ? UI.bad : act ? UI.primary : "#B9C4CC"; ctx.lineWidth = act || opt.error ? 2.5 : 1.8; rr(ctx, x, y, bw, bw * 1.25, 10); ctx.stroke();
+      if (ch) text(ctx, ch, x + bw / 2, y + bw * 0.85, bw * 0.62, { align: "center", weight: 800, color: opt.error ? UI.bad : UI.ink });
+      x += bw + gap;
+    }
+    return { x: cx - total / 2, y, w: total, h: bw * 1.25 };
+  };
+  HP.pinDots = function (ctx, cx, y, n, filled) {
+    const gap = 30; const x0 = cx - (n - 1) * gap / 2;
+    for (let i = 0; i < n; i++) { ctx.beginPath(); ctx.arc(x0 + i * gap, y, 8, 0, Math.PI * 2); if (i < filled) { ctx.fillStyle = UI.ink; ctx.fill(); } else { ctx.strokeStyle = UI.ink2; ctx.lineWidth = 2; ctx.stroke(); } }
+  };
+
+  // ---------- autentikator ----------
+  HP.totp = function (t, period = 30) { const p = ((t % period) + period) % period; return { secs: Math.ceil(period - p), frac: 1 - p / period, idx: Math.floor(t / period) }; };
+  HP.ring = function (ctx, cx, cy, r, frac, color) {
+    ctx.fillStyle = "#E3E9EE"; ctx.beginPath(); ctx.arc(cx, cy, r, 0, Math.PI * 2); ctx.fill();
+    ctx.fillStyle = color || UI.primary; ctx.beginPath(); ctx.moveTo(cx, cy); ctx.arc(cx, cy, r, -Math.PI / 2, -Math.PI / 2 + Math.PI * 2 * clamp(frac, 0, 1)); ctx.closePath(); ctx.fill();
+  };
+  HP.auth = function (ctx, opt = {}) {
+    HP.header(ctx, opt.title || "Autentikator", { action: "more" });
+    const cards = [];
+    if (opt.empty || !(opt.accounts || []).length) {
+      HP.icon(ctx, "shield", W / 2, 300, 90, "#9FB6CC");
+      HP.para(ctx, "Belum ada akun. Tap tanda tambah untuk menambah akun.", W / 2, 400, 20, 280, { align: "center" });
+    }
+    (opt.accounts || []).forEach((a, i) => {
+      const y = 124 + i * 150, x = 12, w = W - 24;
+      ctx.fillStyle = UI.surface; rr(ctx, x, y, w, 136, 18); ctx.fill();
+      if (a.hl) { ctx.strokeStyle = UI.hlLine; ctx.lineWidth = 3; rr(ctx, x, y, w, 136, 18); ctx.stroke(); }
+      text(ctx, a.issuer, x + 20, y + 34, 19, { weight: 800, color: UI.ink, fit: w - 40 });
+      text(ctx, a.user || "", x + 20, y + 58, 16, { weight: 600, color: UI.ink2, fit: w - 40 });
+      const code = String(a.code || "000000"), red = a.secs != null && a.secs <= 5;
+      text(ctx, code.slice(0, 3) + " " + code.slice(3), x + 20, y + 112, 44, { weight: 800, color: red ? UI.bad : UI.primary });
+      if (a.secs != null) { const per = a.period || 30; HP.ring(ctx, x + w - 38, y + 96, 18, a.secs / per, red ? UI.bad : UI.primary); }
+      cards.push({ x, y, w, h: 136, code: { x: x + 20, y: y + 96 }, ring: { x: x + w - 38, y: y + 96 } });
+    });
+    let menu = null;
+    if (opt.menu) {
+      ctx.fillStyle = "rgba(15,22,28,0.35)"; ctx.fillRect(0, 0, W, HH);
+      const items = [["qr", "Pindai kode QR"], ["key", "Ketik kunci penyiapan"]];
+      menu = {};
+      items.forEach(([ic, s], i) => { const y = 520 + i * 66, hl = opt.menuHl === i;
+        ctx.fillStyle = hl ? UI.hl : UI.surface; rr(ctx, 60, y, 270, 54, 16); ctx.fill(); if (hl) { ctx.strokeStyle = UI.hlLine; ctx.lineWidth = 2.5; rr(ctx, 60, y, 270, 54, 16); ctx.stroke(); }
+        HP.icon(ctx, ic, 90, y + 27, 22, UI.primary); text(ctx, s, 114, y + 34, 18, { weight: 700, color: UI.ink, fit: 205 });
+        menu[i === 0 ? "scan" : "key"] = { x: 195, y: y + 27 }; });
+    }
+    const fab = { x: W - 56, y: HH - 84 };
+    if (opt.fabHl) { ctx.fillStyle = "rgba(242,177,52,0.45)"; ctx.beginPath(); ctx.arc(fab.x, fab.y, 38, 0, Math.PI * 2); ctx.fill(); }
+    ctx.fillStyle = UI.primary; rr(ctx, fab.x - 30, fab.y - 30, 60, 60, 20); ctx.fill(); HP.icon(ctx, opt.menu ? "close" : "plus", fab.x, fab.y, 26, "#FFFFFF");
+    return { fab, cards, menu };
+  };
+
+  // ---------- kamera pemindai & pola QR ----------
+  HP.scanner = function (ctx, opt = {}) {
+    ctx.fillStyle = "#11181D"; ctx.fillRect(0, 0, W, HH);
+    const bx = 50, by = 220, bs = 260, box = { x: bx, y: by, w: bs, h: bs };
+    if (opt.inner) { ctx.save(); ctx.beginPath(); ctx.rect(0, TOP, W, HH - TOP); ctx.clip(); opt.inner(ctx, box); ctx.restore(); }
+    // gelapkan di luar bingkai bidik
+    ctx.fillStyle = "rgba(10,14,18,0.55)"; ctx.fillRect(0, 0, W, by); ctx.fillRect(0, by + bs, W, HH - by - bs); ctx.fillRect(0, by, bx, bs); ctx.fillRect(bx + bs, by, W - bx - bs, bs);
+    const col = opt.found ? "#4CD07D" : "#FFFFFF"; ctx.strokeStyle = col; ctx.lineWidth = 6; ctx.lineCap = "round"; const k = 40;
+    [[bx, by, 1, 1], [bx + bs, by, -1, 1], [bx, by + bs, 1, -1], [bx + bs, by + bs, -1, -1]].forEach(([x, y, sx, sy]) => { ctx.beginPath(); ctx.moveTo(x, y + sy * k); ctx.lineTo(x, y); ctx.lineTo(x + sx * k, y); ctx.stroke(); });
+    text(ctx, opt.title || "Pindai kode QR", W / 2, TOP + 52, 22, { align: "center", weight: 800, color: "#FFFFFF" });
+    HP.para(ctx, opt.found ? (opt.foundText || "Kode ditemukan") : (opt.hint || "Arahkan kamera ke kode QR"), W / 2, by + bs + 60, 20, 300, { align: "center", color: opt.found ? "#4CD07D" : "#DDE5EA", weight: 700 });
+    return box;
+  };
+  HP.qr = function (ctx, x, y, size, seed = 7) {
+    const n = 25, m = size / n; let s = seed * 9301 + 49297;
+    const rnd = () => { s = (s * 9301 + 49297) % 233280; return s / 233280; };
+    ctx.fillStyle = "#FFFFFF"; ctx.fillRect(x - m * 2, y - m * 2, size + m * 4, size + m * 4); ctx.fillStyle = "#1F2A33";
+    const finder = (r, c) => r < 8 && c < 8 || r < 8 && c >= n - 8 || r >= n - 8 && c < 8;
+    for (let r = 0; r < n; r++) for (let c = 0; c < n; c++) { const v = rnd(); if (!finder(r, c) && v > 0.52) ctx.fillRect(x + c * m, y + r * m, m + 0.5, m + 0.5); }
+    [[0, 0], [0, n - 7], [n - 7, 0]].forEach(([r, c]) => { const fx = x + c * m, fy = y + r * m;
+      ctx.fillRect(fx, fy, 7 * m, 7 * m); ctx.fillStyle = "#FFFFFF"; ctx.fillRect(fx + m, fy + m, 5 * m, 5 * m); ctx.fillStyle = "#1F2A33"; ctx.fillRect(fx + 2 * m, fy + 2 * m, 3 * m, 3 * m); });
+  };
+
+  // ---------- obrolan ----------
+  HP.chat = function (ctx, opt = {}) {
+    ctx.fillStyle = "#E9EEF0"; ctx.fillRect(0, TOP, W, HH - TOP);
+    ctx.fillStyle = UI.surface; ctx.fillRect(0, TOP, W, 72); ctx.fillStyle = UI.line; ctx.fillRect(0, TOP + 71, W, 1.5);
+    HP.icon(ctx, "back", 26, TOP + 36, 22, UI.ink);
+    ctx.fillStyle = opt.color || "#7B8B95"; ctx.beginPath(); ctx.arc(70, TOP + 36, 20, 0, Math.PI * 2); ctx.fill();
+    text(ctx, (opt.name || "?").slice(0, 1), 70, TOP + 43, 20, { align: "center", weight: 900, color: "#FFFFFF" });
+    text(ctx, opt.name || "", 100, TOP + 32, 19, { weight: 800, color: UI.ink, fit: 240 });
+    if (opt.sub) text(ctx, opt.sub, 100, TOP + 54, 15, { weight: 600, color: opt.subColor || UI.ink2, fit: 240 });
+    let y = TOP + 92; const out = [];
+    (opt.messages || []).forEach((m, i) => {
+      const me = m.from === "me", maxW = opt.maxW || 250, fs = opt.size || 18, lh = Math.round(fs * 1.33); ctx.font = `600 ${fs}px Inter`; const lines = wrap(ctx, m.text, fs, 600, maxW - 28);
+      const bw = Math.max(90, Math.min(maxW, Math.max(...lines.map(l => ctx.measureText(l).width)) + 30)), bh = lines.length * lh + 36;
+      const bx = me ? W - 14 - bw : 14;
+      ctx.fillStyle = me ? "#D7F0DC" : UI.surface; rr(ctx, bx, y, bw, bh, 16); ctx.fill();
+      if (opt.warn === i) { ctx.strokeStyle = UI.bad; ctx.lineWidth = 3; rr(ctx, bx, y, bw, bh, 16); ctx.stroke(); }
+      lines.forEach((ln, k) => text(ctx, ln, bx + 14, y + 8 + fs + k * lh, fs, { weight: 600, color: UI.ink }));
+      if (m.time) text(ctx, m.time, bx + bw - 12, y + bh - 9, 13, { align: "right", weight: 600, color: "#8A99A3" });
+      out.push({ x: bx, y, w: bw, h: bh }); y += bh + 12;
+    });
+    if (opt.input !== false) { ctx.fillStyle = UI.surface; rr(ctx, 12, HH - 84, W - 84, 50, 25); ctx.fill(); text(ctx, opt.input || "Ketik pesan", 34, HH - 52, 17, { weight: 600, color: opt.input ? UI.ink : "#8A99A3", fit: W - 130 });
+      ctx.fillStyle = UI.good; ctx.beginPath(); ctx.arc(W - 42, HH - 59, 25, 0, Math.PI * 2); ctx.fill(); HP.icon(ctx, "chevron", W - 40, HH - 59, 18, "#FFFFFF"); }
+    return out;
+  };
+
+  // ---------- layar utama ----------
+  HP.home = function (ctx, apps, opt = {}) {
+    const g = ctx.createLinearGradient(0, 0, 0, HH); g.addColorStop(0, "#CFE6EE"); g.addColorStop(1, "#E9F1E4"); ctx.fillStyle = g; ctx.fillRect(0, 0, W, HH);
+    text(ctx, opt.clock || "07.15", W / 2, 140, 64, { align: "center", weight: 800, color: UI.ink });
+    text(ctx, opt.date || "Rabu, 4 November", W / 2, 176, 19, { align: "center", weight: 600, color: UI.ink2 });
+    const cols = opt.cols || 4, cw = (W - 24) / cols, out = [];
+    apps.forEach((a, i) => { const c = i % cols, r = Math.floor(i / cols), x = 12 + cw * c + cw / 2, y = 250 + r * 104;
+      if (opt.hl === a.name) { ctx.fillStyle = "rgba(242,177,52,0.5)"; rr(ctx, x - 38, y - 38, 76, 76, 22); ctx.fill(); }
+      HP.appIcon(ctx, x, y, 58, a.color, a.icon || a.name.slice(0, 1));
+      text(ctx, a.name, x, y + 50, 15, { align: "center", weight: 700, color: UI.ink, fit: cw - 6 }); out.push({ name: a.name, x, y }); });
+    return out;
+  };
+  HP.progress = function (ctx, x, y, w, frac, opt = {}) {
+    const h = opt.h || 10; ctx.fillStyle = "#DDE5EA"; rr(ctx, x, y, w, h, h / 2); ctx.fill();
+    ctx.fillStyle = opt.color || UI.primary; rr(ctx, x, y, Math.max(h, w * clamp(frac, 0, 1)), h, h / 2); ctx.fill();
+  };
+  HP.spinner = function (ctx, cx, cy, r, t) {
+    ctx.strokeStyle = "#DDE5EA"; ctx.lineWidth = 6; ctx.beginPath(); ctx.arc(cx, cy, r, 0, Math.PI * 2); ctx.stroke();
+    ctx.strokeStyle = UI.primary; ctx.lineCap = "round"; ctx.beginPath(); const a = t * 5; ctx.arc(cx, cy, r, a, a + Math.PI * 0.6); ctx.stroke();
+  };
+
+  // ---------- lup ----------
+  HP.magnify = function (ctx, ph, draw, src, dst, opt = {}) {
+    const k = dst.k || (dst.w ? dst.w / src.w : 2), w = src.w * k, h = src.h * k, a = ph.rect(src.u, src.v, src.w, src.h), col = opt.color || C.accent;
+    ctx.save(); ctx.strokeStyle = col; ctx.lineWidth = 3; ctx.globalAlpha = 0.9;
+    ctx.beginPath(); ctx.moveTo(a.x + a.w, a.y); ctx.lineTo(dst.x, dst.y + 10); ctx.moveTo(a.x + a.w, a.y + a.h); ctx.lineTo(dst.x, dst.y + h - 10); ctx.stroke();
+    ctx.globalAlpha = 1; ctx.lineWidth = 3.5; rr(ctx, a.x, a.y, a.w, a.h, 8); ctx.stroke(); ctx.restore();
+    ctx.save(); ctx.shadowColor = "rgba(31,42,51,0.22)"; ctx.shadowBlur = 26; ctx.shadowOffsetY = 8; ctx.fillStyle = opt.bg || UI.bg; rr(ctx, dst.x, dst.y, w, h, 20); ctx.fill(); ctx.restore();
+    ctx.save(); rr(ctx, dst.x, dst.y, w, h, 20); ctx.clip(); ctx.translate(dst.x - src.u * k, dst.y - src.v * k); ctx.scale(k, k);
+    ctx.fillStyle = opt.bg || UI.bg; ctx.fillRect(src.u, src.v, src.w, src.h); if (draw) draw(ctx, ph); ctx.restore();
+    ctx.strokeStyle = col; ctx.lineWidth = 4; rr(ctx, dst.x, dst.y, w, h, 20); ctx.stroke();
+    return { x: dst.x, y: dst.y, w, h, k, at: (u, v) => ({ x: dst.x + (u - src.u) * k, y: dst.y + (v - src.v) * k }) };
+  };
+
+  // ---------- efek tap ----------
+  HP.tap = function (ctx, x, y, u, opt = {}) {
+    if (u == null || u <= 0 || u >= 1) return; const r = opt.r || 24;
+    if (u < 0.45) { const a = ease(u / 0.2); ctx.fillStyle = `rgba(242,177,52,${0.45 * a})`; ctx.beginPath(); ctx.arc(x, y, r * (0.7 + 0.3 * a), 0, Math.PI * 2); ctx.fill();
+      ctx.strokeStyle = `rgba(181,122,18,${0.9 * a})`; ctx.lineWidth = 3; ctx.stroke(); }
+    else { const v = (u - 0.45) / 0.55; ctx.strokeStyle = `rgba(242,177,52,${1 - v})`; ctx.lineWidth = 4; ctx.beginPath(); ctx.arc(x, y, r + v * r * 1.3, 0, Math.PI * 2); ctx.stroke();
+      ctx.fillStyle = `rgba(242,177,52,${0.35 * (1 - v)})`; ctx.beginPath(); ctx.arc(x, y, r, 0, Math.PI * 2); ctx.fill(); }
+  };
+
+  // ---------- penerjemah langkah ----------
+  HP.run = function (base, steps, l, span) {
+    const st = { ...(base || {}) }; delete st.pointer;
+    const total = steps.reduce((a, s) => a + (s.d || 1), 0), unit = span / total;
+    let t0 = 0, tap = null, ptr = base && base.pointer ? { ...base.pointer } : null, click = 0, key = null, cur = 0, cu = 0;
+    for (let i = 0; i < steps.length; i++) {
+      const s = steps[i], d = (s.d || 1) * unit; if (l < t0) break;
+      const u = clamp((l - t0) / d, 0, 1); cur = i; cu = u;
+      if (s.tap) { if (u < 1) tap = { x: s.tap[0], y: s.tap[1], u }; else tap = null; if (u >= 0.5 && s.set) Object.assign(st, s.set); }
+      else if (s.to) { const from = ptr || { x: s.to[0], y: s.to[1] }, m = ease(clamp(u / 0.6, 0, 1)); ptr = { x: lerp(from.x, s.to[0], m), y: lerp(from.y, s.to[1], m) };
+        if (u >= 1) ptr = { x: s.to[0], y: s.to[1] };
+        click = s.click && u >= 0.6 && u < 1 ? (u - 0.6) / 0.4 : 0; if (s.set && (!s.click || u >= 0.65)) Object.assign(st, s.set); }
+      else if (s.set) Object.assign(st, s.set);
+      if (s.type != null) { const n = Math.round(s.type.length * clamp(u / 0.9, 0, 1)); st[s.field || "typed"] = (s.prefix || "") + s.type.slice(0, n); st.caret = true; }
+      if (s.numpad != null) { const n = s.numpad.length, k = Math.min(n - 1, Math.floor(u * n)), su = u * n - k, ch = s.numpad[k];
+        const p = HP.numpadKey(ch, s.y); tap = u < 1 ? { x: p.x, y: p.y, u: su } : null; st.press = u < 1 ? ch : null; st.pressU = su;
+        st[s.field || "typed"] = (s.prefix || "") + s.numpad.slice(0, k + (su >= 0.5 ? 1 : 0)); if (u >= 1) st[s.field || "typed"] = (s.prefix || "") + s.numpad; }
+      if (s.key) key = u < 1 ? { keys: [].concat(s.key), press: u } : null;
+      if (s.anim) st[s.anim] = u;
+      t0 += d;
+    }
+    return { st, tap, ptr, click, key, i: cur, u: cu };
+  };
+
+  K.hp = HP;
+})(typeof window !== "undefined" ? window : globalThis);
+
+/* S11 pembantu: jendela browser generik dan halaman akun sekolah rekaan (akun.example).
+   Tanpa logo atau tampilan browser merek tertentu. Semua nama, akun, kode, dan lokasi adalah contoh.
+   Halaman digambar oleh W.page(ctx, area, name, st) dan mengembalikan titik-titik penting (koordinat kanvas) untuk pointer. */
+(function (global) {
+  const K = global.Kiko, H = K.helpers, C = K.C, HP = K.hp;
+  const { rr,  wrap, para, card, ease, clamp, lerp } = H;
+  // text dengan opt.fit yang juga mengecilkan huruf kecil (H.text hanya mengecilkan sampai 20 px)
+  const text = (ctx, s, x, y, size, opt = {}) => {
+    if (opt.fit) { const f = `${opt.weight || 600} `; ctx.font = f + size + "px Inter"; while (size > 11 && ctx.measureText(s).width > opt.fit) { size -= 1; ctx.font = f + size + "px Inter"; } }
+    H.text(ctx, s, x, y, size, { ...opt, fit: undefined });
+  };
+  const Wb = {};
+  const BLUE = "#1A73C8", INK2 = "#5B6B76", LINE = "#E1E7EB", GREEN = "#2E9E5B", RED = "#D9443B", SOFT = "#F4F7F9";
+  Wb.BLUE = BLUE; Wb.GREEN = GREEN; Wb.RED = RED;
+
+  // ---------- jendela browser ----------
+  Wb.browser = function (ctx, x, y, w, h, opt = {}) {
+    ctx.save(); ctx.shadowColor = "rgba(31,42,51,0.18)"; ctx.shadowBlur = 30; ctx.shadowOffsetY = 10; ctx.fillStyle = "#FFFFFF"; rr(ctx, x, y, w, h, 16); ctx.fill(); ctx.restore();
+    ctx.save(); rr(ctx, x, y, w, h, 16); ctx.clip();
+    ctx.fillStyle = "#DDE5EA"; ctx.fillRect(x, y, w, 46);
+    // tab
+    const tw = Math.min(330, w * 0.4); ctx.fillStyle = "#FFFFFF"; rr(ctx, x + 14, y + 8, tw, 44, 12); ctx.fill();
+    ctx.fillStyle = BLUE; ctx.beginPath(); ctx.arc(x + 38, y + 29, 9, 0, Math.PI * 2); ctx.fill();
+    text(ctx, opt.tab || "Akun Sekolah", x + 56, y + 36, 19, { weight: 700, color: C.ink, fit: tw - 80 });
+    HP.icon(ctx, "close", x + tw - 6, y + 29, 14, INK2);
+    HP.icon(ctx, "plus", x + tw + 40, y + 27, 16, INK2);
+    // bilah alamat
+    ctx.fillStyle = "#FFFFFF"; ctx.fillRect(x, y + 46, w, 54);
+    HP.icon(ctx, "back", x + 32, y + 73, 22, INK2);
+    ctx.save(); ctx.translate(x + 72, y + 73); ctx.scale(-1, 1); HP.icon(ctx, "back", 0, 0, 22, "#B9C4CC"); ctx.restore();
+    HP.icon(ctx, "update", x + 112, y + 73, 22, INK2);
+    const ax = x + 142, aw = w - 170; ctx.fillStyle = "#EEF2F5"; rr(ctx, ax, y + 54, aw, 38, 19); ctx.fill();
+    HP.icon(ctx, "lock", ax + 24, y + 73, 16, INK2);
+    const url = opt.url || "akun.example"; const n = opt.typed != null ? opt.typed : url.length;
+    text(ctx, url.slice(0, n), ax + 44, y + 80, 20, { weight: 600, color: C.ink });
+    if (opt.urlFocus) { ctx.strokeStyle = BLUE; ctx.lineWidth = 2.5; rr(ctx, ax, y + 54, aw, 38, 19); ctx.stroke(); }
+    ctx.fillStyle = LINE; ctx.fillRect(x, y + 99, w, 1.5);
+    ctx.restore();
+    ctx.strokeStyle = "#C9D4DB"; ctx.lineWidth = 2; rr(ctx, x, y, w, h, 16); ctx.stroke();
+    return { x, y: y + 101, w, h: h - 101, url: { x: ax + 140, y: y + 73 } };
+  };
+
+  // ---------- kerangka situs ----------
+  const NAV = [["Beranda", "user"], ["Info pribadi", "contacts"], ["Keamanan", "shield"], ["Perangkat", "phone"]];
+  function site(ctx, A, st) {
+    ctx.save(); ctx.beginPath(); ctx.rect(A.x, A.y, A.w, A.h); ctx.clip();
+    ctx.fillStyle = SOFT; ctx.fillRect(A.x, A.y, A.w, A.h);
+    ctx.fillStyle = "#FFFFFF"; ctx.fillRect(A.x, A.y, A.w, 62); ctx.fillStyle = LINE; ctx.fillRect(A.x, A.y + 61, A.w, 1.5);
+    ctx.fillStyle = "#E3EEFA"; ctx.beginPath(); ctx.arc(A.x + 40, A.y + 31, 19, 0, Math.PI * 2); ctx.fill(); HP.icon(ctx, "school", A.x + 40, A.y + 31, 22, BLUE);
+    text(ctx, "Akun Sekolah", A.x + 70, A.y + 39, 23, { weight: 800, color: C.ink });
+    if (st.logged !== false) { ctx.fillStyle = "#2E7E9A"; ctx.beginPath(); ctx.arc(A.x + A.w - 40, A.y + 31, 19, 0, Math.PI * 2); ctx.fill(); text(ctx, "D", A.x + A.w - 40, A.y + 39, 20, { align: "center", weight: 900, color: "#FFFFFF" });
+      text(ctx, "dito@sekolah.example", A.x + A.w - 70, A.y + 38, 18, { align: "right", weight: 600, color: INK2 }); }
+    const navW = st.logged === false ? 0 : (A.w > 1000 ? 240 : 200), geo = { nav: {} };
+    if (navW) {
+      ctx.fillStyle = "#FFFFFF"; ctx.fillRect(A.x, A.y + 62, navW, A.h - 62); ctx.fillStyle = LINE; ctx.fillRect(A.x + navW - 1, A.y + 62, 1.5, A.h - 62);
+      NAV.forEach(([s, ic], i) => { const y = A.y + 84 + i * 56, on = st.nav === s;
+        if (on) { ctx.fillStyle = "#E3EEFA"; rr(ctx, A.x + 10, y, navW - 20, 46, 23); ctx.fill(); }
+        if (st.navHl === s) { ctx.strokeStyle = C.accent; ctx.lineWidth = 3; rr(ctx, A.x + 10, y, navW - 20, 46, 23); ctx.stroke(); }
+        HP.icon(ctx, ic, A.x + 38, y + 23, 20, on ? BLUE : INK2); text(ctx, s, A.x + 62, y + 30, 19, { weight: on ? 800 : 600, color: on ? BLUE : C.ink });
+        geo.nav[s] = { x: A.x + 90, y: y + 23 }; });
+    }
+    geo.c = { x: A.x + navW + 34, y: A.y + 62 + 26, w: A.w - navW - 68 };
+    return geo;
+  }
+  Wb.btn = function (ctx, x, y, w, h, label, opt = {}) {
+    if (opt.hl) { ctx.fillStyle = "rgba(242,177,52,0.45)"; rr(ctx, x - 5, y - 5, w + 10, h + 10, 14); ctx.fill(); }
+    ctx.fillStyle = opt.outline ? "#FFFFFF" : (opt.fill || BLUE); rr(ctx, x, y, w, h, 10); ctx.fill();
+    if (opt.outline) { ctx.strokeStyle = opt.ink || BLUE; ctx.lineWidth = 2; rr(ctx, x, y, w, h, 10); ctx.stroke(); }
+    text(ctx, label, x + w / 2, y + h / 2 + 7, opt.size || 20, { align: "center", weight: 800, color: opt.outline ? (opt.ink || BLUE) : "#FFFFFF", fit: w - 16 });
+    return { x: x + w / 2, y: y + h / 2 };
+  };
+  function field(ctx, x, y, w, label, value, opt = {}) {
+    if (label) text(ctx, label, x, y - 10, 17, { weight: 700, color: INK2 });
+    ctx.fillStyle = "#FFFFFF"; rr(ctx, x, y, w, 48, 10); ctx.fill(); ctx.strokeStyle = opt.focus ? BLUE : "#C9D4DB"; ctx.lineWidth = opt.focus ? 2.5 : 1.8; rr(ctx, x, y, w, 48, 10); ctx.stroke();
+    const shown = opt.secret ? "•".repeat(value.length) : value; text(ctx, shown, x + 16, y + 32, opt.secret ? 24 : 20, { weight: 700, color: C.ink, fit: w - 30 });
+    if (opt.focus && opt.caret) { ctx.font = `700 ${opt.secret ? 24 : 20}px Inter`; const cw = ctx.measureText(shown).width; ctx.fillStyle = C.ink; ctx.fillRect(x + 18 + cw, y + 12, 2, 24); }
+    return { x: x + w / 2, y: y + 24 };
+  }
+  function box(ctx, x, y, w, h, opt = {}) { ctx.fillStyle = opt.fill || "#FFFFFF"; rr(ctx, x, y, w, h, 16); ctx.fill(); ctx.strokeStyle = opt.stroke || LINE; ctx.lineWidth = opt.lw || 1.5; rr(ctx, x, y, w, h, 16); ctx.stroke(); }
+  function row(ctx, x, y, w, icon, label, sub, value, opt = {}) {
+    if (opt.hl) { ctx.fillStyle = "#FFF3D6"; rr(ctx, x + 4, y + 4, w - 8, 72, 12); ctx.fill(); ctx.strokeStyle = C.accent; ctx.lineWidth = 3; rr(ctx, x + 4, y + 4, w - 8, 72, 12); ctx.stroke(); }
+    ctx.fillStyle = opt.iconBg || "#E3EEFA"; ctx.beginPath(); ctx.arc(x + 40, y + 40, 21, 0, Math.PI * 2); ctx.fill(); HP.icon(ctx, icon, x + 40, y + 40, 22, opt.iconColor || BLUE);
+    text(ctx, label, x + 76, y + 36, 21, { weight: 800, color: C.ink, fit: w - 300 }); if (sub) text(ctx, sub, x + 76, y + 61, 16, { weight: 600, color: INK2, fit: w - 300 });
+    if (value) { ctx.font = "800 19px Inter"; const vw = ctx.measureText(value).width + 28; ctx.fillStyle = opt.valueBg || "#EEF2F5"; rr(ctx, x + w - 58 - vw, y + 24, vw, 34, 17); ctx.fill(); text(ctx, value, x + w - 58 - vw / 2, y + 47, 19, { align: "center", weight: 800, color: opt.valueColor || INK2 }); }
+    HP.icon(ctx, "chevron", x + w - 30, y + 40, 16, "#8A99A3");
+    return { x: x + w * 0.5, y: y + 40 };
+  }
+
+  // ---------- halaman ----------
+  // st: halaman tertentu memakai st.* (lihat masing-masing). Hasil: titik untuk pointer + geo situs.
+  // zoom: perbesaran isi halaman (seperti zoom browser), supaya huruf tetap terbaca di layar kecil. Titik hasil sudah dalam koordinat kanvas.
+  Wb.page = function (ctx, A, name, st = {}, zoom = Wb.ZOOM) {
+    const z = zoom || 1, V = { x: 0, y: 0, w: A.w / z, h: A.h / z };
+    ctx.save(); ctx.translate(A.x, A.y); ctx.scale(z, z);
+    const P = PAGES[name]; const geo = site(ctx, V, { ...st, logged: name !== "login", nav: st.nav || (name === "beranda" ? "Beranda" : name === "login" ? null : "Keamanan") });
+    const out = P ? P(ctx, geo.c, st, V) || {} : {};
+    out.nav = geo.nav; ctx.restore(); ctx.restore();
+    const map = o => { if (Array.isArray(o)) return o.map(map); if (o && typeof o === "object") { const r = {}; for (const k in o) r[k] = map(o[k]);
+      if (typeof o.x === "number" && typeof o.y === "number") { r.x = A.x + o.x * z; r.y = A.y + o.y * z; if (typeof o.s === "number") r.s = o.s * z; } return r; } return o; };
+    return map(out);
+  };
+  Wb.ZOOM = 1.15;
+  const PAGES = {
+    login(ctx, c, st, A) {
+      const w = 470, x = A.x + A.w / 2 - w / 2, y = A.y + 110;
+      box(ctx, x, y, w, 430);
+      text(ctx, "Login ke Akun Sekolah", x + w / 2, y + 62, 27, { align: "center", weight: 900 });
+      const e = field(ctx, x + 40, y + 130, w - 80, "Email", st.email || "", { focus: st.focus === "email", caret: true });
+      const p = field(ctx, x + 40, y + 230, w - 80, "Kata sandi", st.pw || "", { secret: true, focus: st.focus === "pw", caret: true });
+      const b = Wb.btn(ctx, x + 40, y + 320, w - 80, 54, "Login", { hl: st.hl === "login" });
+      return { email: e, pw: p, login: b };
+    },
+    beranda(ctx, c, st) {
+      text(ctx, "Halo, Dito!", c.x, c.y + 26, 30, { weight: 900 });
+      para(ctx, "Kelola info, privasi, dan keamanan akun sekolahmu.", c.x, c.y + 66, 19, c.w, { weight: 600, color: INK2 });
+      [["contacts", "Info pribadi", "Nama, foto, dan kelas"], ["shield", "Keamanan", "Kata sandi dan cara login"]].forEach(([ic, a, s], i) => {
+        const x = c.x + i * (c.w / 2 + 6), w = c.w / 2 - 6, y = c.y + 100; box(ctx, x, y, w, 150);
+        ctx.fillStyle = "#E3EEFA"; ctx.beginPath(); ctx.arc(x + 46, y + 50, 24, 0, Math.PI * 2); ctx.fill(); HP.icon(ctx, ic, x + 46, y + 50, 26, BLUE);
+        text(ctx, a, x + 24, y + 110, 21, { weight: 800 }); text(ctx, s, x + 24, y + 136, 16, { weight: 600, color: INK2, fit: w - 40 }); });
+      return {};
+    },
+    keamanan(ctx, c, st) {
+      text(ctx, "Keamanan", c.x, c.y + 26, 30, { weight: 900 });
+      let y = c.y + 46;
+      if (!st.on) { ctx.fillStyle = "#FFF6E0"; rr(ctx, c.x, y, c.w, 58, 12); ctx.fill(); HP.icon(ctx, "warning", c.x + 30, y + 29, 22, "#B57A12"); text(ctx, "Saran: nyalakan verifikasi dua langkah supaya akunmu lebih aman.", c.x + 56, y + 36, 17, { weight: 700, color: "#7A5208", fit: c.w - 70 }); y += 66; }
+      else y += 8;
+      box(ctx, c.x, y, c.w, 194); text(ctx, "Cara kamu login", c.x + 24, y + 38, 20, { weight: 900, color: INK2 });
+      const r1 = row(ctx, c.x, y + 44, c.w, "key", "Kata sandi", st.pwNew ? "Diubah baru saja" : "Diubah 3 bulan lalu", null, {});
+      ctx.fillStyle = LINE; ctx.fillRect(c.x + 76, y + 120, c.w - 96, 1.5);
+      const r2 = row(ctx, c.x, y + 114, c.w, "phone", "Verifikasi dua langkah", st.on ? "Kode dari aplikasi autentikator" : "Hanya kata sandi", st.on ? "Aktif" : "Mati",
+        { hl: st.hl === "2fa", valueBg: st.on ? "#DDF3E4" : "#FBE1DF", valueColor: st.on ? GREEN : RED });
+      y += 206;
+      box(ctx, c.x, y, c.w, 120); text(ctx, "Perangkatmu", c.x + 24, y + 34, 20, { weight: 900, color: INK2 });
+      const r3 = row(ctx, c.x, y + 38, c.w, "apps", "Kelola perangkat", (st.devices || 3) + " perangkat sedang login", null, { hl: st.hl === "devices" });
+      return { pw: r1, twofa: r2, devices: r3 };
+    },
+    v2_intro(ctx, c, st) {
+      text(ctx, "Verifikasi dua langkah", c.x, c.y + 26, 30, { weight: 900 });
+      box(ctx, c.x, c.y + 52, c.w, 400);
+      para(ctx, "Selain kata sandi, kamu memasukkan kode dari HP setiap login di perangkat baru. Orang yang tahu kata sandimu tetap tidak bisa masuk.", c.x + 30, c.y + 100, 20, c.w - 60, { weight: 600, color: C.ink, lh: 1.35 });
+      // ilustrasi: kata sandi + HP
+      const iy = c.y + 230; ctx.fillStyle = "#EEF2F5"; rr(ctx, c.x + 30, iy, 230, 80, 14); ctx.fill(); text(ctx, "••••••••", c.x + 145, iy + 52, 30, { align: "center", weight: 900, color: INK2 });
+      text(ctx, "+", c.x + 300, iy + 52, 40, { align: "center", weight: 900, color: INK2 });
+      ctx.fillStyle = "#EEF2F5"; rr(ctx, c.x + 340, iy, 230, 80, 14); ctx.fill(); HP.icon(ctx, "phone", c.x + 380, iy + 40, 36, BLUE); text(ctx, "482 913", c.x + 485, iy + 50, 26, { align: "center", weight: 900, color: BLUE });
+      const b = Wb.btn(ctx, c.x + 30, c.y + 360, 170, 54, "Mulai", { hl: st.hl === "mulai" });
+      return { mulai: b };
+    },
+    v2_sandi(ctx, c, st) {
+      text(ctx, "Pastikan ini kamu", c.x, c.y + 26, 30, { weight: 900 });
+      box(ctx, c.x, c.y + 52, c.w, 330);
+      para(ctx, "Untuk melanjutkan, ketik ulang kata sandimu.", c.x + 30, c.y + 100, 20, c.w - 60, { weight: 600, color: C.ink });
+      const f = field(ctx, c.x + 30, c.y + 170, Math.min(460, c.w - 60), "Kata sandi", st.pw || "", { secret: true, focus: true, caret: true });
+      const b = Wb.btn(ctx, c.x + 30, c.y + 280, 170, 54, "Lanjut", { hl: st.hl === "lanjut" });
+      return { pw: f, lanjut: b };
+    },
+    v2_cara(ctx, c, st) {
+      text(ctx, "Pilih cara menerima kode", c.x, c.y + 26, 30, { weight: 900, fit: c.w });
+      const opts = [["phone", "Aplikasi autentikator", "Kode dibuat di HP-mu. Disarankan."], ["chat", "SMS ke nomor HP", "Kode dikirim lewat SMS."]];
+      const out = {};
+      opts.forEach(([ic, a, s], i) => { const y = c.y + 56 + i * 112, on = st.pick === i;
+        box(ctx, c.x, y, c.w, 96, { stroke: on ? BLUE : LINE, lw: on ? 3 : 1.5, fill: on ? "#F2F7FD" : "#FFFFFF" });
+        HP.radio(ctx, c.x + 34, y + 48, on); HP.icon(ctx, ic, c.x + 80, y + 48, 28, on ? BLUE : INK2);
+        text(ctx, a, c.x + 112, y + 42, 22, { weight: 800 }); text(ctx, s, c.x + 112, y + 70, 17, { weight: 600, color: INK2, fit: c.w - 130 });
+        out["opt" + i] = { x: c.x + 34, y: y + 48 }; });
+      out.lanjut = Wb.btn(ctx, c.x, c.y + 300, 170, 54, "Lanjut", { hl: st.hl === "lanjut" });
+      return out;
+    },
+    v2_qr(ctx, c, st) {
+      text(ctx, "Pindai kode QR", c.x, c.y + 26, 30, { weight: 900 });
+      box(ctx, c.x, c.y + 52, c.w, 470);
+      const qs = 230, qx = c.x + 34, qy = c.y + 92;
+      HP.qr(ctx, qx, qy, qs, 11);
+      if (st.qrHl) { ctx.strokeStyle = C.accent; ctx.lineWidth = 5; rr(ctx, qx - 18, qy - 18, qs + 36, qs + 36, 12); ctx.stroke(); }
+      const tx = qx + qs + 40, tw = c.w - (tx - c.x) - 24;
+      ["Buka aplikasi autentikator di HP.", "Tap tanda tambah.", "Pilih Pindai kode QR."].forEach((s, i) => {
+        ctx.fillStyle = BLUE; ctx.beginPath(); ctx.arc(tx + 14, qy + 20 + i * 70, 14, 0, Math.PI * 2); ctx.fill(); text(ctx, String(i + 1), tx + 14, qy + 26 + i * 70, 16, { align: "center", weight: 900, color: "#FFFFFF" });
+        para(ctx, s, tx + 40, qy + 27 + i * 70, 19, tw - 40, { weight: 700, color: C.ink, lh: 1.25 }); });
+      text(ctx, "Tidak bisa memindai? Ketik kunci ini:", c.x + 34, qy + qs + 56, 16, { weight: 600, color: INK2 });
+      text(ctx, "KIKO 7DSA 2QXM 4PLT", c.x + 34, qy + qs + 84, 19, { weight: 800, color: C.ink });
+      const b = Wb.btn(ctx, c.x + c.w - 200, c.y + 452, 170, 52, "Lanjut", { hl: st.hl === "lanjut" });
+      return { qr: { x: qx + qs / 2, y: qy + qs / 2, s: qs }, lanjut: b };
+    },
+    v2_kode(ctx, c, st) {
+      text(ctx, "Masukkan kode", c.x, c.y + 26, 30, { weight: 900 });
+      box(ctx, c.x, c.y + 52, c.w, 360);
+      para(ctx, "Ketik kode enam angka yang tampil di aplikasi autentikator.", c.x + 30, c.y + 100, 20, c.w - 60, { weight: 600, color: C.ink });
+      const v = st.code || "", n = 6, bw = 56, gap = 12; let x = c.x + 30; const y = c.y + 150; const out = {};
+      for (let i = 0; i < n; i++) { if (i === 3) x += 18; const act = i === v.length && !st.err;
+        ctx.fillStyle = "#FFFFFF"; rr(ctx, x, y, bw, 70, 10); ctx.fill(); ctx.strokeStyle = st.err ? RED : act ? BLUE : "#B9C4CC"; ctx.lineWidth = act || st.err ? 3 : 2; rr(ctx, x, y, bw, 70, 10); ctx.stroke();
+        if (v[i]) text(ctx, v[i], x + bw / 2, y + 48, 36, { align: "center", weight: 800, color: st.err ? RED : C.ink }); x += bw + gap; }
+      out.boxes = { x: c.x + 30 + 200, y: y + 35 };
+      if (st.err) { HP.icon(ctx, "warning", c.x + 42, y + 104, 20, RED); text(ctx, "Kode salah atau sudah kedaluwarsa. Coba kode yang baru.", c.x + 64, y + 111, 18, { weight: 700, color: RED, fit: c.w - 90 }); }
+      if (st.checking) { HP.spinner(ctx, c.x + 240, c.y + 357, 14, st.checking); text(ctx, "Memeriksa kode…", c.x + 266, c.y + 364, 18, { weight: 700, color: INK2 }); }
+      out.verif = Wb.btn(ctx, c.x + 30, c.y + 330, 190, 54, "Verifikasi", { hl: st.hl === "verif", fill: v.length === 6 ? BLUE : "#9FB6CC" });
+      return out;
+    },
+    v2_aktif(ctx, c, st) {
+      box(ctx, c.x, c.y, c.w, 420, { fill: "#F2FAF4", stroke: GREEN, lw: 3 });
+      ctx.fillStyle = GREEN; ctx.beginPath(); ctx.arc(c.x + c.w / 2, c.y + 90, 46, 0, Math.PI * 2); ctx.fill(); HP.icon(ctx, "check", c.x + c.w / 2, c.y + 90, 50, "#FFFFFF");
+      text(ctx, "Verifikasi dua langkah aktif", c.x + c.w / 2, c.y + 180, 30, { align: "center", weight: 900, color: GREEN, fit: c.w - 40 });
+      para(ctx, "Saat login di perangkat baru, kamu memasukkan kata sandi, lalu kode dari aplikasi autentikator.", c.x + c.w / 2, c.y + 230, 20, c.w - 120, { align: "center", weight: 600, color: C.ink, lh: 1.35 });
+      const b = Wb.btn(ctx, c.x + c.w / 2 - 140, c.y + 330, 280, 54, "Lanjut: kode cadangan", { hl: st.hl === "lanjut" });
+      return { lanjut: b };
+    },
+    cadangan(ctx, c, st) {
+      text(ctx, "Kode cadangan", c.x, c.y + 26, 30, { weight: 900 });
+      box(ctx, c.x, c.y + 44, c.w, 380);
+      text(ctx, "Pakai kode ini kalau HP-mu hilang. Setiap kode hanya berlaku satu kali.", c.x + 26, c.y + 82, 18, { weight: 600, color: C.ink, fit: c.w - 52 });
+      const codes = Wb.BACKUP, gx = c.x + 26, gy = c.y + 104, cw = Math.min(210, (c.w - 240) / 2);
+      ctx.fillStyle = "#F4F7F9"; rr(ctx, gx, gy, cw * 2, 5 * 40 + 18, 12); ctx.fill(); if (st.codesHl) { ctx.strokeStyle = C.accent; ctx.lineWidth = 4; rr(ctx, gx, gy, cw * 2, 5 * 40 + 18, 12); ctx.stroke(); }
+      codes.forEach((s, i) => { const col = i % 2, r = Math.floor(i / 2); text(ctx, s, gx + 24 + col * cw, gy + 38 + r * 40, 22, { weight: 800, color: C.ink }); });
+      const bx = gx + cw * 2 + 24;
+      const pr = Wb.btn(ctx, bx, gy + 10, 150, 46, "Cetak", { outline: true, size: 18 }); const dl = Wb.btn(ctx, bx, gy + 68, 150, 46, "Download", { outline: true, size: 18 });
+      const cy = gy + 5 * 40 + 60; ctx.fillStyle = st.check ? BLUE : "#FFFFFF"; rr(ctx, gx, cy - 15, 30, 30, 6); ctx.fill(); ctx.strokeStyle = st.check ? BLUE : "#8A99A3"; ctx.lineWidth = 2; rr(ctx, gx, cy - 15, 30, 30, 6); ctx.stroke();
+      if (st.check) HP.icon(ctx, "check", gx + 15, cy, 22, "#FFFFFF");
+      text(ctx, "Saya sudah menyimpan kode ini di tempat aman.", gx + 44, cy + 7, 18, { weight: 700, color: C.ink, fit: c.w - 250 });
+      const done = Wb.btn(ctx, c.x + c.w - 156, cy - 26, 132, 50, "Selesai", { hl: st.hl === "selesai", fill: st.check ? BLUE : "#9FB6CC" });
+      return { check: { x: gx + 15, y: cy }, selesai: done, print: pr, download: dl, codes: { x: gx + cw * 2, y: gy + 100 } };
+    },
+    perangkat(ctx, c, st) {
+      text(ctx, "Perangkat yang login", c.x, c.y + 26, 30, { weight: 900 });
+      const rows = Wb.DEVICES.filter((d, i) => !(st.removed && i === 2));
+      box(ctx, c.x, c.y + 52, c.w, 96 * rows.length + 20);
+      const out = { rows: [] };
+      rows.forEach((d, i) => { const y = c.y + 62 + i * 96, bad = d.bad, hl = st.hlRow === i;
+        if (hl) { ctx.fillStyle = bad ? "#FDF1F0" : "#FFF3D6"; rr(ctx, c.x + 6, y, c.w - 12, 88, 12); ctx.fill(); ctx.strokeStyle = bad ? RED : C.accent; ctx.lineWidth = 3; rr(ctx, c.x + 6, y, c.w - 12, 88, 12); ctx.stroke(); }
+        ctx.fillStyle = bad ? "#FBE1DF" : "#E3EEFA"; ctx.beginPath(); ctx.arc(c.x + 46, y + 44, 24, 0, Math.PI * 2); ctx.fill(); HP.icon(ctx, d.icon, c.x + 46, y + 44, 26, bad ? RED : BLUE);
+        text(ctx, d.name, c.x + 86, y + 38, 21, { weight: 800, color: C.ink, fit: c.w - 320 });
+        text(ctx, d.where, c.x + 86, y + 66, 16, { weight: 600, color: bad ? RED : INK2, fit: c.w - 320 });
+        if (d.self) { ctx.fillStyle = "#DDF3E4"; rr(ctx, c.x + c.w - 196, y + 28, 170, 34, 17); ctx.fill(); text(ctx, "Perangkat ini", c.x + c.w - 111, y + 51, 17, { align: "center", weight: 800, color: GREEN }); out.rows.push(null); }
+        else { const b = Wb.btn(ctx, c.x + c.w - 170, y + 22, 144, 44, "Keluarkan", { outline: true, ink: RED, size: 18, hl: st.hl === "keluar" && bad }); out.rows.push(b); }
+        if (i < rows.length - 1) { ctx.fillStyle = LINE; ctx.fillRect(c.x + 86, y + 92, c.w - 110, 1.5); }
+      });
+      if (st.dialog) { const u = ease(clamp(st.dialog, 0, 1)); ctx.save(); ctx.globalAlpha = u; ctx.fillStyle = "rgba(15,22,28,0.35)"; ctx.fillRect(c.x - 400, c.y - 200, c.w + 800, 1200);
+        const dw = Math.min(520, c.w - 20), dx = c.x + (c.w - dw) / 2, dy = c.y + 120; box(ctx, dx, dy, dw, 250);
+        text(ctx, "Keluarkan perangkat ini?", dx + 30, dy + 52, 25, { weight: 900 });
+        para(ctx, "Komputer itu harus login lagi dengan kata sandi dan kode dari HP-mu.", dx + 30, dy + 96, 18, dw - 60, { weight: 600, color: INK2 });
+        Wb.btn(ctx, dx + dw - 330, dy + 172, 140, 50, "Batal", { outline: true, size: 18 });
+        out.ok = Wb.btn(ctx, dx + dw - 176, dy + 172, 150, 50, "Keluarkan", { fill: RED, size: 18, hl: st.hl === "ok" }); ctx.restore(); }
+      if (st.toast) { const w = 340, x = c.x + (c.w - w) / 2, y = c.y + 310; ctx.save(); ctx.globalAlpha = clamp(st.toast, 0, 1); ctx.fillStyle = "rgba(31,42,51,0.92)"; rr(ctx, x, y, w, 50, 25); ctx.fill(); text(ctx, "Perangkat dikeluarkan.", x + w / 2, y + 32, 19, { align: "center", weight: 700, color: "#FFFFFF" }); ctx.restore(); }
+      return out;
+    },
+    ganti_sandi(ctx, c, st) {
+      text(ctx, "Ganti kata sandi", c.x, c.y + 26, 30, { weight: 900 });
+      box(ctx, c.x, c.y + 52, c.w, 400);
+      const fw = Math.min(480, c.w - 60);
+      const a = field(ctx, c.x + 30, c.y + 120, fw, "Kata sandi lama", st.old || "", { secret: true, focus: st.focus === "old", caret: true });
+      const b = field(ctx, c.x + 30, c.y + 220, fw, "Kata sandi baru (frasa panjang)", st.neu || "", { secret: true, focus: st.focus === "neu", caret: true });
+      const s = Wb.btn(ctx, c.x + 30, c.y + 320, 170, 54, "Simpan", { hl: st.hl === "simpan" });
+      if (st.saved) { ctx.fillStyle = "#DDF3E4"; rr(ctx, c.x + 220, c.y + 322, Math.min(330, c.w - 250), 50, 12); ctx.fill(); HP.icon(ctx, "check", c.x + 246, c.y + 347, 22, GREEN); text(ctx, "Kata sandi diganti.", c.x + 268, c.y + 354, 19, { weight: 800, color: GREEN }); }
+      return { old: a, neu: b, simpan: s };
+    }
+  };
+  Wb.BACKUP = ["4821 7730", "9064 1258", "3317 8842", "7740 2196", "5583 6021", "1209 4475", "6638 9150", "2975 3304", "8412 6687", "0356 7719"];
+  Wb.DEVICES = [
+    { icon: "globe", name: "Laptop · Browser", where: "Semarang · aktif sekarang", self: true },
+    { icon: "phone", name: "HP Dito", where: "Semarang · 2 jam lalu" },
+    { icon: "apps", name: "Komputer tidak dikenal", where: "Kota lain, ±900 km · kemarin, 23.10", bad: true }
+  ];
+
+  K.web11 = Wb;
+})(typeof window !== "undefined" ? window : globalThis);
+
+/* S11 Simulasi praktik: menyalakan verifikasi dua langkah (browser + HP).
+   Tata letak: browser penuh x 90–1420, atau browser x 70–1060 + HP di x≈1250; panel langkah di kanan (x 1450–1820).
+   Semua gambar penting di atas y≈830 (kartu narasi). Akun, kode, dan lokasi rekaan. */
+(function (global) {
+  const K = global.Kiko, H = K.helpers, C = K.C, L = K.layar, HP = K.hp, Wb = K.web11;
+  const { rr, text, para, card, kiko, kid, ease, clamp, lerp } = H;
+  const BF = { x: 90, y: 122, w: 1330, h: 700 }, BH = { x: 70, y: 122, w: 990, h: 700 }, PH = { cx: 1250, cy: 474, h: 630 };
+  const BLUE = "#1A73C8", RED = "#D9443B", GREEN = "#2E9E5B";
+  const ACC = { issuer: "akun.example", user: "dito@sekolah.example" };
+
+  // ---------- pembantu ----------
+  let MC = null;  // kanvas tak terlihat untuk mengukur letak tombol sebelum menggambar
+  function measure(fn) { if (!MC) MC = document.createElement("canvas"); MC.width = 1920; MC.height = 1080; return fn(MC.getContext("2d")); }
+  function browser(ctx, B, page, st = {}, opt = {}) { const A = Wb.browser(ctx, B.x, B.y, B.w, B.h, { url: opt.url || URLS[page] || "akun.example", typed: opt.typed, urlFocus: opt.urlFocus, tab: opt.tab }); return Wb.page(ctx, A, page, st); }
+  const geo = (B, page, st = {}) => measure(m => browser(m, B, page, st));
+  const URLS = { login: "akun.example/login", beranda: "akun.example", keamanan: "akun.example/keamanan", v2_intro: "akun.example/keamanan/dua-langkah", v2_sandi: "akun.example/keamanan/dua-langkah",
+    v2_cara: "akun.example/keamanan/dua-langkah", v2_qr: "akun.example/keamanan/dua-langkah", v2_kode: "akun.example/keamanan/dua-langkah", v2_aktif: "akun.example/keamanan/dua-langkah",
+    cadangan: "akun.example/keamanan/kode-cadangan", perangkat: "akun.example/keamanan/perangkat", ganti_sandi: "akun.example/keamanan/kata-sandi" };
+  const pt = p => [p.x, p.y];
+  function phone(ctx, draw, opt = {}) { return HP.phone(ctx, opt.cx || PH.cx, opt.cy || PH.cy, { h: opt.h || PH.h, ...opt }, draw); }
+  // panel langkah di kanan (sama dengan S02)
+  function steps(ctx, title, items, n, opt = {}) {
+    const x = opt.x || 1450, y = opt.y || 122, w = opt.w || 370; let hh = 70;
+    const rows = items.map(s => H.wrap(ctx, s, 23, 700, w - 86)); rows.forEach(lines => hh += lines.length * 30 + 22);
+    card(ctx, x, y, w, hh, { fill: "#FFFFFF", stroke: "#D7E2DC", lw: 3, r: 18 });
+    text(ctx, title, x + 24, y + 44, 24, { weight: 900, color: C.accentDark });
+    let yy = y + 74;
+    rows.forEach((lines, i) => {
+      const done = i < n, now = i === n;
+      if (now) { ctx.fillStyle = "#FFF3D6"; rr(ctx, x + 10, yy - 8, w - 20, lines.length * 30 + 16, 10); ctx.fill(); }
+      ctx.fillStyle = done ? GREEN : now ? C.accent : "#C9D4DB"; ctx.beginPath(); ctx.arc(x + 36, yy + 13, 14, 0, Math.PI * 2); ctx.fill();
+      text(ctx, done ? "✓" : String(i + 1), x + 36, yy + 21, 18, { align: "center", weight: 900, color: "#FFFFFF" });
+      lines.forEach((ln, j) => text(ctx, ln, x + 62, yy + 22 + j * 30, 23, { weight: 700, color: done ? C.ink2 : C.ink }));
+      yy += lines.length * 30 + 22;
+    });
+    return y + hh;
+  }
+  const stepAt = (l, span, marks) => { let n = 0; marks.forEach((m, i) => { if (l >= m * span) n = i + 1; }); return n; };
+  const spanOf = (b, k = 0.9) => Math.max(3, (b.audio || b.dur) * k);
+  const after = (b, l, f) => l > (b.audio || b.dur) * f;
+  function pointer(ctx, R) { if (R.ptr) L.cursor(ctx, R.ptr.x, R.ptr.y, { click: R.click }); if (R.key) L.keys(ctx, 1635, 720, R.key.keys, { press: R.key.press, align: "center", size: 28 }); }
+  function note(ctx, x, y, s, opt = {}) { return L.callout(ctx, x, y, s, opt.tx, opt.ty, { size: opt.size || 24, maxW: opt.maxW || 330, ...opt }); }
+  function badge(ctx, x, y, ok, s, opt = {}) {  // baris tanda ✓/✗ dengan teks
+    ctx.fillStyle = ok ? C.goodBg : C.badBg; rr(ctx, x, y, opt.w || 370, opt.h || 64, 14); ctx.fill();
+    ctx.fillStyle = ok ? GREEN : RED; ctx.beginPath(); ctx.arc(x + 32, y + (opt.h || 64) / 2, 18, 0, Math.PI * 2); ctx.fill();
+    HP.icon(ctx, ok ? "check" : "close", x + 32, y + (opt.h || 64) / 2, 18, "#FFFFFF");
+    para(ctx, s, x + 62, y + (opt.h || 64) / 2 + 8 - (opt.lines2 ? 14 : 0), opt.size || 22, (opt.w || 370) - 76, { weight: 800, color: C.ink, lh: 1.2 });
+  }
+  function hypo(ctx, s) { ctx.fillStyle = "#FFF3D6"; rr(ctx, 1450, 122, 370, 60, 14); ctx.fill(); ctx.strokeStyle = C.accent; ctx.lineWidth = 3; rr(ctx, 1450, 122, 370, 60, 14); ctx.stroke(); text(ctx, s, 1635, 162, 23, { align: "center", weight: 900, color: C.accentDark }); }
+  // kode TOTP rekaan: daftar kode berurutan
+  const CODES = ["482913", "075264", "315806", "629471", "908152"];
+
+  const { wrap, arrowIcon } = H;
+  Object.assign(K.SCENES, {
+    // kartu judul: sama dengan kiko-core.js, tetapi ukuran judul dikecilkan bila perlu supaya muat dua baris (kait tiga baris tidak menabrak kartu narasi)
+    title(ctx, b, l, t, TL) {
+      card(ctx, 160, 160, 1600, 700, { fill: C.panel });
+      kiko(ctx, 420, 520, 260, 0, { wave: l, mood: "happy" });
+      text(ctx, TL.label, 720, 330, 34, { color: C.ink2, weight: 700 });
+      let ts = 92; while (ts > 64 && wrap(ctx, TL.title, ts, 900, 1000).length > 2) ts -= 4;
+      const th = para(ctx, TL.title, 720, 440, ts, 1000, { weight: 900, lh: 1.1 }); const hookLines = wrap(ctx, TL.hook, 34, 800, 1000).length;
+      const hy = Math.max(hookLines >= 3 ? 600 : 640, 440 + th - ts * 0.35 + 30);
+      text(ctx, "SETELAH MENONTON, KAMU BISA:", 720, hy, 26, { color: C.accentDark, weight: 800 }); para(ctx, TL.hook, 720, hy + 50, 34, 1000, { weight: 800, lh: 1.3 });
+      const ny = hy + 50 + hookLines * 34 * 1.3 + 12; if (ny <= 830) text(ctx, "Dengarkan, atau baca teksnya pelan-pelan.", 720, Math.max(800, ny), 26, { color: C.ink2, weight: 600 });
+    },
+    tujuan(ctx, b, l) {
+      card(ctx, 160, 150, 1600, 660);
+      text(ctx, "SETELAH MENONTON, KAMU BISA:", 260, 240, 30, { weight: 900, color: C.accentDark });
+      ["menyalakan verifikasi dua langkah", "memindai kode QR dengan HP", "menyimpan kode cadangan", "mengeluarkan perangkat asing"].forEach((s, i) => {
+        const u = ease((l - 0.6 - i * 0.8) / 0.5); if (u <= 0) return; ctx.globalAlpha = u;
+        card(ctx, 260, 280 + i * 104, 800, 84, { fill: C.bg2, r: 16 }); text(ctx, "✓", 300, 336 + i * 104, 36, { weight: 900, color: GREEN }); text(ctx, s, 350, 334 + i * 104, 32, { weight: 800 }); ctx.globalAlpha = 1;
+      });
+      // laptop kecil + HP
+      ctx.fillStyle = "#2B3A44"; rr(ctx, 1110, 320, 420, 270, 16); ctx.fill(); ctx.fillStyle = "#FFFFFF"; rr(ctx, 1126, 336, 388, 238, 8); ctx.fill();
+      ctx.fillStyle = "#5B6B76"; rr(ctx, 1076, 590, 488, 22, 10); ctx.fill();
+      HP.qr(ctx, 1240, 380, 150, 11);
+      phone(ctx, c => HP.auth(c, { accounts: [{ ...ACC, code: CODES[0], secs: 30 - (l % 30) }] }), { cx: 1600, cy: 520, h: 360, shadow: true });
+      text(ctx, "laptop + HP", 1340, 700, 26, { align: "center", weight: 700, color: C.ink2 });
+    },
+    prasyarat(ctx, b, l) {
+      card(ctx, 160, 150, 1600, 660);
+      text(ctx, "EPISODE YANG DILENGKAPI", 960, 240, 32, { align: "center", weight: 900, color: C.accentDark });
+      [["D7.3", "Kata Sandi Aman", "kata sandi panjang dan rahasia"], ["E.3", "Keamanan Akun", "kode dua langkah, sesi aktif"], ["F12.5", "Transaksi Digital", "OTP tidak dibagikan"]].forEach(([c, t, s], i) => {
+        const x = 230 + i * 500, u = ease((l - 0.4 - i * 0.9) / 0.5); ctx.globalAlpha = Math.max(0.15, u);
+        card(ctx, x, 300, 460, 300, { fill: C.bg2, r: 22 });
+        text(ctx, c, x + 230, 380, 56, { align: "center", weight: 900, color: C.kiko }); text(ctx, t, x + 230, 450, 32, { align: "center", weight: 800, fit: 420 });
+        text(ctx, s, x + 230, 540, 24, { align: "center", weight: 600, color: C.ink2, fit: 420 }); ctx.globalAlpha = 1;
+      });
+      card(ctx, 560, 650, 800, 64, { fill: "#FFF3D6", r: 14 }); text(ctx, "Semua akun dan kode di video ini hanya contoh.", 960, 692, 26, { align: "center", weight: 800, color: C.accentDark });
+    },
+    dua_kunci(ctx, b, l) {
+      card(ctx, 140, 140, 1640, 680);
+      const a = b.audio || b.dur;
+      const door = (x, title, locks, thief, ok) => {
+        text(ctx, title, x + 330, 210, 32, { align: "center", weight: 900, color: ok ? GREEN : C.ink });
+        card(ctx, x, 240, 660, 520, { fill: ok ? "#F2FAF4" : "#F7F9FA", stroke: ok ? GREEN : "#D7E2DC", lw: 3, r: 22 });
+        // pintu akun
+        ctx.fillStyle = "#A4653A"; rr(ctx, x + 430, 300, 170, 300, 12); ctx.fill(); ctx.fillStyle = "#C98A57"; rr(ctx, x + 446, 316, 138, 268, 8); ctx.fill();
+        text(ctx, "AKUN", x + 515, 640, 26, { align: "center", weight: 900, color: C.ink2 });
+        locks.forEach((lk, i) => { const ly = 380 + i * 110; ctx.fillStyle = "#FFFFFF"; ctx.beginPath(); ctx.arc(x + 515, ly, 42, 0, Math.PI * 2); ctx.fill(); HP.icon(ctx, lk.icon, x + 515, ly, 44, lk.color);
+          text(ctx, lk.label, x + 400, ly + 9, 24, { align: "right", weight: 800, color: lk.color }); });
+        // pencuri: hanya tahu kata sandi
+        if (thief) {
+          kid(ctx, x + 120, 520, 90, { hairColor: "#555" });
+          ctx.fillStyle = "#FFFFFF"; rr(ctx, x + 170, 420, 150, 56, 12); ctx.fill(); ctx.strokeStyle = "#B7C4CC"; ctx.lineWidth = 2; rr(ctx, x + 170, 420, 150, 56, 12); ctx.stroke();
+          text(ctx, "••••••", x + 245, 458, 26, { align: "center", weight: 900, color: C.ink });
+          ctx.strokeStyle = RED; ctx.lineWidth = 6; ctx.setLineDash([14, 10]); ctx.beginPath(); ctx.moveTo(x + 330, 448); ctx.lineTo(ok ? x + 385 : x + 415, 448); ctx.stroke(); ctx.setLineDash([]);
+          if (ok) { ctx.fillStyle = RED; ctx.beginPath(); ctx.arc(x + 412, 448, 24, 0, Math.PI * 2); ctx.fill(); HP.icon(ctx, "close", x + 412, 448, 26, "#FFFFFF"); }
+          else { ctx.fillStyle = RED; ctx.beginPath(); ctx.moveTo(x + 428, 448); ctx.lineTo(x + 406, 434); ctx.lineTo(x + 406, 462); ctx.closePath(); ctx.fill(); }
+          text(ctx, "pencuri tahu", x + 120, 680, 22, { align: "center", weight: 800, color: C.ink2 }); text(ctx, "kata sandimu", x + 120, 708, 22, { align: "center", weight: 800, color: C.ink2 });
+          text(ctx, ok ? "TERTAHAN" : "MASUK!", x + 330, 740, 34, { align: "center", weight: 900, color: ok ? GREEN : RED });
+        }
+      };
+      door(200, "Hanya kata sandi", [{ icon: "key", label: "kata sandi", color: C.ink }], after(b, l, 0.15), false);
+      if (after(b, l, 0.3)) door(1060, "Verifikasi dua langkah", [{ icon: "key", label: "kata sandi", color: C.ink }, { icon: "phone", label: "kode dari HP", color: BLUE }], after(b, l, 0.65), true);
+    },
+    siapkan(ctx, b, l) {
+      card(ctx, 140, 140, 1640, 680);
+      text(ctx, "YANG PERLU DISIAPKAN", 960, 210, 32, { align: "center", weight: 900, color: C.accentDark });
+      // laptop
+      ctx.fillStyle = "#2B3A44"; rr(ctx, 230, 280, 520, 330, 18); ctx.fill(); ctx.fillStyle = "#FFFFFF"; rr(ctx, 248, 298, 484, 294, 8); ctx.fill(); ctx.fillStyle = "#5B6B76"; rr(ctx, 190, 610, 600, 26, 10); ctx.fill();
+      ctx.fillStyle = "#DDE5EA"; ctx.fillRect(248, 298, 484, 36); ctx.fillStyle = "#EEF2F5"; rr(ctx, 300, 304, 380, 24, 12); ctx.fill(); text(ctx, "akun.example", 316, 322, 16, { weight: 700 });
+      text(ctx, "Akun Sekolah", 490, 420, 30, { align: "center", weight: 900, color: BLUE }); text(ctx, "Keamanan", 490, 470, 24, { align: "center", weight: 700, color: C.ink2 });
+      text(ctx, "Laptop atau komputer", 490, 690, 28, { align: "center", weight: 900 }); text(ctx, "untuk membuka akun", 490, 728, 24, { align: "center", weight: 700, color: C.ink2 });
+      if (after(b, l, 0.3)) {
+        phone(ctx, c => HP.home(c, [{ name: "Autentikator", color: BLUE, icon: "shield" }, { name: "Kamera", color: "#2E7E9A", icon: "camera" }, { name: "Toko Aplikasi", color: GREEN, icon: "store" }, { name: "Pesan", color: "#7B8B95", icon: "chat" }], { hl: "Autentikator" }), { cx: 1010, cy: 478, h: 420 });
+        text(ctx, "HP + aplikasi autentikator", 1010, 742, 28, { align: "center", weight: 900 }); text(ctx, "dari toko aplikasi resmi", 1010, 778, 24, { align: "center", weight: 700, color: C.ink2 });
+      }
+      if (after(b, l, 0.75)) { kid(ctx, 1460, 470, 80, { hair: "long" }); kiko(ctx, 1620, 520, 110, 0, { wave: l }); text(ctx, "Ditemani orang tua", 1540, 690, 26, { align: "center", weight: 900 }); text(ctx, "atau guru", 1540, 726, 24, { align: "center", weight: 700, color: C.ink2 }); }
+    },
+    buka_keamanan(ctx, b, l) {
+      const span = spanOf(b), gL = geo(BF, "login", {}), gB = geo(BF, "beranda", {});
+      const R = HP.run({ page: "beranda0", typed: 0, pointer: { x: 700, y: 500 } }, [
+        { to: [600, 195], click: true, set: { urlFocus: true }, d: 0.7 }, { anim: "typed", d: 1.1 }, { key: "Enter", set: { page: "login", urlFocus: false }, d: 0.6 },
+        { to: pt(gL.email), click: true, set: { focus: "email" }, d: 0.6 }, { type: "dito@sekolah.example", field: "email", d: 1.1 },
+        { to: pt(gL.pw), click: true, set: { focus: "pw" }, d: 0.5 }, { type: "kucing-angkot-hujan", field: "pw", d: 0.9 },
+        { to: pt(gL.login), click: true, set: { page: "beranda", focus: null }, d: 0.7 }, { wait: 1, d: 0.4 },
+        { to: pt(gB.nav["Keamanan"]), click: true, set: { page: "keamanan" }, d: 0.9 }, { wait: 1, d: 0.5 }], l, span);
+      const st = R.st;
+      if (st.page === "beranda0") { const A = Wb.browser(ctx, BF.x, BF.y, BF.w, BF.h, { url: "akun.example", typed: Math.round(12 * (st.typed || 0)), urlFocus: st.urlFocus, tab: "Tab baru" }); ctx.fillStyle = "#F4F7F9"; ctx.fillRect(A.x, A.y, A.w, A.h - 16); text(ctx, "Tab baru", A.x + A.w / 2, A.y + 280, 30, { align: "center", weight: 700, color: "#9AAFA6" }); }
+      else browser(ctx, BF, st.page, { email: st.email, pw: st.pw, focus: st.focus, navHl: st.page === "beranda" ? "Keamanan" : null });
+      steps(ctx, "LANGKAH", ["Ketik alamat akun sekolah.", "Login dengan email dan kata sandi.", "Klik menu Keamanan."], stepAt(l, span, [0.27, 0.76, 1]));
+      pointer(ctx, R);
+    },
+    lihat_keamanan(ctx, b, l) {
+      const span = spanOf(b), g = geo(BF, "keamanan", {});
+      const R = HP.run({ hl: null, pointer: { x: 400, y: 330 } }, [{ wait: 1, d: 0.5 }, { to: pt(g.twofa), set: { hl: "2fa" }, d: 1.2 }, { wait: 1, d: 2.2 }, { to: pt(g.twofa), click: true, d: 0.8 }, { wait: 1, d: 0.6 }], l, span);
+      browser(ctx, BF, "keamanan", { hl: R.st.hl });
+      steps(ctx, "LANGKAH", ["Cari Verifikasi dua langkah.", "Lihat statusnya: Mati.", "Klik baris itu."], stepAt(l, span, [0.3, 0.75, 1]));
+      if (after(b, l, 0.3)) note(ctx, 1450, 420, "Status: Mati", { tx: g.twofa.x + 520, ty: g.twofa.y - 10, fill: C.badBg, color: RED });
+      if (after(b, l, 0.62)) note(ctx, 1450, 560, "Di aplikasi lain: Autentikasi dua faktor atau 2FA.", { fill: "#E7F1FB", color: BLUE, size: 22 });
+      pointer(ctx, R);
+    },
+    ulang_sandi(ctx, b, l) {
+      const span = spanOf(b), g1 = geo(BF, "v2_intro", {}), g2 = geo(BF, "v2_sandi", {});
+      const R = HP.run({ page: "v2_intro", pointer: { x: 700, y: 400 } }, [{ to: pt(g1.mulai), click: true, set: { page: "v2_sandi" }, d: 1.2 }, { wait: 1, d: 0.8 },
+        { to: pt(g2.pw), click: true, d: 0.7 }, { type: "kucing-angkot-hujan", field: "pw", d: 1.6 }, { to: pt(g2.lanjut), set: { hl: "lanjut" }, d: 1 }, { wait: 1, d: 1.2 }], l, span);
+      browser(ctx, BF, R.st.page, { pw: R.st.pw, hl: R.st.hl });
+      steps(ctx, "LANGKAH", ["Klik Mulai.", "Ketik ulang kata sandimu.", "Klik Lanjut."], stepAt(l, span, [0.18, 0.66, 1]));
+      if (after(b, l, 0.6)) note(ctx, 1450, 420, "Wajar: supaya orang yang meminjam laptopmu tidak bisa mengubah pengaturan.", { fill: "#E7F1FB", color: BLUE, size: 22 });
+      pointer(ctx, R);
+    },
+    pilih_cara(ctx, b, l) {
+      const span = spanOf(b), g = geo(BF, "v2_cara", {});
+      const R = HP.run({ page: "v2_cara", pick: null, pointer: { x: 900, y: 650 } }, [{ wait: 1, d: 0.6 }, { to: pt(g.opt0), click: true, set: { pick: 0 }, d: 1.2 }, { wait: 1, d: 2 }, { to: pt(g.lanjut), click: true, set: { hl: "lanjut" }, d: 1 }, { wait: 1, d: 0.5 }], l, span);
+      browser(ctx, BF, "v2_cara", { pick: R.st.pick, hl: R.st.hl });
+      steps(ctx, "LANGKAH", ["Pilih Aplikasi autentikator.", "Klik Lanjut."], stepAt(l, span, [0.4, 1]));
+      if (after(b, l, 0.35)) note(ctx, 1450, 340, "Kode dibuat di HP-mu sendiri, tidak lewat SMS.", { tx: g.opt0.x + 560, ty: g.opt0.y, fill: C.goodBg, color: GREEN, size: 22 });
+      pointer(ctx, R);
+    },
+    qr_tampil(ctx, b, l) {
+      const g = browser(ctx, BF, "v2_qr", { qrHl: after(b, l, 0.15) });
+      card(ctx, 1450, 122, 370, 420, { fill: "#FFFFFF", stroke: RED, lw: 3, r: 18 });
+      text(ctx, "KODE QR INI RAHASIA", 1635, 172, 24, { align: "center", weight: 900, color: RED });
+      [["jangan dipotret", 0.35], ["jangan dibagikan", 0.5], ["jangan tutup halaman ini dulu", 0.65]].forEach(([s, f], i) => { if (after(b, l, f)) badge(ctx, 1470, 200 + i * 106, false, s, { w: 330, h: 88, size: 22 }); });
+      if (after(b, l, 0.15)) note(ctx, 1450, 600, "Khusus untuk akunmu", { tx: g.qr.x + g.qr.s / 2 + 20, ty: g.qr.y, size: 22 });
+    },
+    hp_tambah(ctx, b, l) {
+      const span = spanOf(b);
+      const R = HP.run({ scr: "empty" }, [{ wait: 1, d: 0.8 }, { tap: [304, 656], set: { scr: "menu" }, d: 1.2 }, { wait: 1, d: 0.6 }, { tap: [195, 547], set: { scr: "scan" }, d: 1.2 }, { wait: 1, d: 1.4 }], l, span);
+      browser(ctx, BH, "v2_qr", {});
+      const s = R.st.scr;
+      phone(ctx, c => {
+        if (s === "scan") HP.scanner(c, {});
+        else HP.auth(c, { empty: true, menu: s === "menu", menuHl: s === "menu" && R.i >= 3 ? 0 : null, fabHl: s === "empty" && R.i >= 1 });
+        if (R.tap) HP.tap(c, R.tap.x, R.tap.y, R.tap.u);
+      }, { dark: s === "scan" });
+      steps(ctx, "LANGKAH", ["Buka aplikasi autentikator.", "Tap tanda tambah.", "Pilih Pindai kode QR."], stepAt(l, span, [0.15, 0.45, 0.8]));
+    },
+    hp_pindai(ctx, b, l) {
+      const span = spanOf(b), a = b.audio || b.dur;
+      const g = browser(ctx, BH, "v2_qr", { qrHl: true });
+      const found = l > span * 0.35, list = l > span * 0.55;
+      const ph = phone(ctx, c => {
+        if (!list) HP.scanner(c, { found, foundText: "Akun ditambahkan", inner: (cc, bx) => { const sh = Math.sin(l * 2.2) * 6 * (found ? 0 : 1); cc.fillStyle = "#EEF2F5"; cc.fillRect(bx.x - 30, bx.y - 30, bx.w + 60, bx.h + 60); HP.qr(cc, bx.x + 40 + sh, bx.y + 40, 180, 11); } });
+        else { HP.auth(c, { accounts: [{ ...ACC, code: CODES[0], secs: 24 - (l - span * 0.55), hl: true }] }); }
+      }, { dark: !list });
+      if (!list) { // garis bidik dari kamera HP ke kode QR di laptop
+        ctx.save(); ctx.setLineDash([12, 10]); ctx.strokeStyle = "rgba(242,177,52,0.9)"; ctx.lineWidth = 4; ctx.beginPath(); ctx.moveTo(ph.x + 10, ph.y + ph.h * 0.42); ctx.lineTo(g.qr.x + g.qr.s / 2 + 10, g.qr.y); ctx.stroke(); ctx.restore(); }
+      steps(ctx, "LANGKAH", ["Arahkan kamera ke kode QR.", "Akun muncul dengan kode enam angka."], stepAt(l, span, [0.4, 1]));
+      if (list) { const p = ph.at(20, 212); note(ctx, 1450, 420, "akun.example ditambahkan", { tx: ph.x + ph.w - 20, ty: p.y - 30, fill: C.goodBg, color: GREEN, size: 22 }); }
+    },
+    hp_kode(ctx, b, l) {
+      const a = b.audio || b.dur, chg = Math.min(12, a * 0.62);  // kode berganti di tengah beat
+      const rem = l < chg ? chg - l : 30 - (l - chg), code = l < chg ? CODES[0] : CODES[1];
+      card(ctx, 140, 140, 1640, 680);
+      const ph = phone(ctx, c => HP.auth(c, { accounts: [{ ...ACC, code, secs: rem, hl: true }] }), { cx: 460, cy: 478, h: 620 });
+      // pembesaran kode + lingkaran
+      const zx = 760, zy = 230; card(ctx, zx, zy, 700, 250, { fill: "#FFFFFF", stroke: "#D7E2DC", lw: 3, r: 22 });
+      const red = rem <= 5; text(ctx, code.slice(0, 3) + " " + code.slice(3), zx + 40, zy + 160, 100, { weight: 800, color: red ? RED : BLUE });
+      HP.ring(ctx, zx + 610, zy + 125, 60, rem / 30, red ? RED : BLUE); ctx.fillStyle = "#FFFFFF"; ctx.beginPath(); ctx.arc(zx + 610, zy + 125, 34, 0, Math.PI * 2); ctx.fill();
+      text(ctx, String(Math.ceil(rem)), zx + 610, zy + 138, 34, { align: "center", weight: 900, color: red ? RED : C.ink });
+      const p = ph.at(320, 220); ctx.strokeStyle = C.accent; ctx.lineWidth = 3; ctx.setLineDash([8, 8]); ctx.beginPath(); ctx.moveTo(p.x, p.y); ctx.lineTo(zx, zy + 125); ctx.stroke(); ctx.setLineDash([]);
+      if (after(b, l, 0.18)) note(ctx, 1490, 300, "Lingkaran = sisa waktu", { tx: zx + 672, ty: zy + 125, size: 24, maxW: 240 });
+      if (after(b, l, 0.45)) {
+        card(ctx, 760, 520, 960, 120, { fill: C.bg2, r: 18 });
+        text(ctx, "Setiap 30 detik:", 790, 592, 28, { weight: 900 });
+        text(ctx, "482 913", 1070, 592, 34, { weight: 900, color: l >= chg ? "#9AAFA6" : BLUE }); if (l >= chg) { ctx.strokeStyle = RED; ctx.lineWidth = 4; ctx.beginPath(); ctx.moveTo(1066, 582); ctx.lineTo(1215, 582); ctx.stroke(); }
+        text(ctx, "→", 1270, 594, 36, { align: "center", weight: 900, color: C.ink2 }); if (l >= chg) text(ctx, "075 264", 1320, 592, 34, { weight: 900, color: BLUE });
+        if (l >= chg) text(ctx, "kode lama hangus", 1070, 628, 20, { weight: 700, color: RED });
+      }
+    },
+    ketik_kode(ctx, b, l) {
+      const span = spanOf(b), gq = geo(BH, "v2_qr", {}), gk = geo(BH, "v2_kode", {});
+      const R = HP.run({ page: "v2_qr", code: "", pointer: { x: 700, y: 600 } }, [{ to: pt(gq.lanjut), click: true, set: { page: "v2_kode" }, d: 1.1 }, { to: pt(gk.boxes), click: true, d: 0.7 },
+        { type: CODES[0], field: "code", d: 2.4 }, { to: pt(gk.verif), click: true, set: { hl: "verif", checking: 0.01 }, d: 1 }, { anim: "spin", d: 1.4 }], l, span);
+      browser(ctx, BH, R.st.page, { code: R.st.code, hl: R.st.hl, checking: R.st.checking ? 1 + (R.st.spin || 0) * 3 : 0 });
+      const rem = 27 - l;
+      phone(ctx, c => HP.auth(c, { accounts: [{ ...ACC, code: CODES[0], secs: rem, hl: true }] }));
+      steps(ctx, "LANGKAH", ["Klik Lanjut di laptop.", "Ketik enam angka dari HP.", "Klik Verifikasi."], stepAt(l, span, [0.15, 0.68, 0.84]));
+      pointer(ctx, R);
+    },
+    kode_hangus(ctx, b, l) {
+      const span = spanOf(b), gk = geo(BH, "v2_kode", {}), chg = span * 0.28;
+      const R = HP.run({ code: "", pointer: { x: pt(gk.boxes)[0], y: pt(gk.boxes)[1] + 40 } }, [{ type: CODES[2], field: "code", d: 2.2 }, { to: pt(gk.verif), click: true, set: { err: true }, d: 0.9 }, { wait: 1, d: 0.9 },
+        { to: pt(gk.boxes), click: true, d: 0.6 }, { key: "⌫", set: { code: "", err: false }, d: 0.6 }, { type: CODES[3], field: "code", d: 2.2 }, { wait: 1, d: 0.5 }], l, span);
+      browser(ctx, BH, "v2_kode", { code: R.st.code, err: R.st.err });
+      const rem = l < chg ? 30 * 0 + (chg - l) + 0.0 : 30 - (l - chg), code = l < chg ? CODES[2] : CODES[3];
+      phone(ctx, c => HP.auth(c, { accounts: [{ ...ACC, code, secs: rem, hl: true }] }));
+      hypo(ctx, "KALAU KODENYA HANGUS");
+      steps(ctx, "LANGKAH", ["Kode lama ditolak.", "Hapus angkanya.", "Ketik kode yang baru."], stepAt(l, span, [0.45, 0.62, 1]), { y: 200 });
+      if (R.st.err) note(ctx, 1450, 560, "Jangan panik: tunggu kode baru.", { fill: "#E7F1FB", color: BLUE, size: 22 });
+      pointer(ctx, R);
+    },
+    aktif(ctx, b, l) {
+      browser(ctx, BF, "v2_aktif", {});
+      card(ctx, 1450, 122, 370, 420, { fill: "#FFFFFF", stroke: "#D7E2DC", lw: 3, r: 18 });
+      text(ctx, "LOGIN BERIKUTNYA", 1635, 172, 24, { align: "center", weight: 900, color: C.accentDark });
+      [["key", "1. Kata sandi", C.ink, 0.3], ["phone", "2. Kode dari HP", BLUE, 0.5]].forEach(([ic, s, col, f], i) => { if (!after(b, l, f)) return; const y = 210 + i * 130;
+        ctx.fillStyle = C.bg2; rr(ctx, 1475, y, 320, 110, 16); ctx.fill(); HP.icon(ctx, ic, 1530, y + 55, 44, col); text(ctx, s, 1570, y + 64, 26, { weight: 900, color: col }); });
+      if (after(b, l, 0.5)) text(ctx, "di perangkat baru", 1635, 500, 22, { align: "center", weight: 700, color: C.ink2 });
+    },
+    cadangan_tampil(ctx, b, l) {
+      const g = browser(ctx, BF, "cadangan", { codesHl: after(b, l, 0.1) });
+      if (after(b, l, 0.3)) note(ctx, 1450, 200, "Untuk saat HP hilang atau rusak", { tx: g.codes.x + 10, ty: g.codes.y - 60, size: 24 });
+      if (after(b, l, 0.6)) note(ctx, 1450, 380, "Satu kode hanya untuk satu kali login", { fill: "#E7F1FB", color: BLUE, size: 24 });
+    },
+    cadangan_tulis(ctx, b, l) {
+      card(ctx, 140, 140, 1640, 680);
+      text(ctx, "SIMPAN DI KERTAS, DI TEMPAT AMAN", 960, 210, 32, { align: "center", weight: 900, color: GREEN });
+      // kertas bertulisan tangan
+      ctx.save(); ctx.translate(560, 490); ctx.rotate(-0.04);
+      ctx.fillStyle = "#FFFDF4"; rr(ctx, -300, -240, 600, 470, 10); ctx.fill(); ctx.strokeStyle = "#E3D9B8"; ctx.lineWidth = 2; rr(ctx, -300, -240, 600, 470, 10); ctx.stroke();
+      ctx.strokeStyle = "#E8E1C9"; for (let i = 0; i < 9; i++) { ctx.beginPath(); ctx.moveTo(-270, -160 + i * 44); ctx.lineTo(270, -160 + i * 44); ctx.stroke(); }
+      text(ctx, "Kode cadangan akun sekolah", -260, -190, 26, { weight: 800, color: "#3A4A8A" });
+      const n = Math.round(10 * clamp(l / ((b.audio || b.dur) * 0.45), 0, 1));
+      Wb.BACKUP.slice(0, n).forEach((s, i) => { const x = -250 + (i % 2) * 270, y = -128 + Math.floor(i / 2) * 44 * 1.0; text(ctx, s, x, y + 12, 28, { weight: 700, color: "#3A4A8A" });
+        if (i === 0 && after(b, l, 0.8)) { ctx.strokeStyle = RED; ctx.lineWidth = 4; ctx.beginPath(); ctx.moveTo(x - 6, y + 2); ctx.lineTo(x + 150, y + 2); ctx.stroke(); } });
+      ctx.restore();
+      if (after(b, l, 0.45)) { // map dokumen keluarga
+        const x = 1100, y = 300; ctx.fillStyle = "#E0A23B"; rr(ctx, x, y + 30, 460, 300, 18); ctx.fill(); ctx.fillStyle = "#F2B134"; rr(ctx, x, y + 70, 460, 260, 18); ctx.fill(); ctx.fillStyle = "#E0A23B"; rr(ctx, x, y, 180, 60, 14); ctx.fill();
+        text(ctx, "Dokumen Keluarga", x + 230, y + 210, 34, { align: "center", weight: 900, color: "#6B4A10" });
+        badge(ctx, x + 20, y + 360, true, "di rumah, di tempat aman", { w: 420 });
+      }
+      if (after(b, l, 0.8)) note(ctx, 860, 690, "Coret kode yang sudah terpakai", { size: 22, fill: C.badBg, color: RED });
+    },
+    cadangan_salah(ctx, b, l) {
+      card(ctx, 140, 140, 1640, 680);
+      text(ctx, "JANGAN SIMPAN SEBAGAI FOTO DI GALERI", 1280, 230, 32, { align: "center", weight: 900, color: RED });
+      phone(ctx, c => { HP.header(c, "Galeri", { back: true });
+        const tiles = ["#CFE6EE", "#F2D6A2", "#BFE3C6", "#E8C4C0", null, "#D5D0EE"];
+        tiles.forEach((col, i) => { const x = 8 + (i % 3) * 116, y = 112 + Math.floor(i / 3) * 116; if (col) { c.fillStyle = col; c.fillRect(x, y, 112, 112); HP.icon(c, "photo", x + 56, y + 56, 40, "rgba(31,42,51,0.35)"); }
+          else { c.fillStyle = "#FFFDF4"; c.fillRect(x, y, 112, 112); for (let k = 0; k < 5; k++) { c.fillStyle = "#3A4A8A"; c.fillRect(x + 14, y + 20 + k * 17, 84 - (k % 2) * 20, 6); } c.strokeStyle = RED; c.lineWidth = 5; c.strokeRect(x + 2, y + 2, 108, 108); } });
+      }, { cx: 520, cy: 478, h: 600 });
+      const a = b.audio || b.dur;
+      ctx.strokeStyle = RED; ctx.lineWidth = 12; ctx.beginPath(); ctx.arc(520, 478, 250, 0, Math.PI * 2); ctx.stroke(); ctx.beginPath(); ctx.moveTo(343, 301); ctx.lineTo(697, 655); ctx.stroke();
+      if (after(b, l, 0.3)) badge(ctx, 900, 300, false, "HP hilang: fotonya ikut hilang", { w: 760, h: 100, size: 30 });
+      if (after(b, l, 0.6)) badge(ctx, 900, 440, false, "Orang yang memegang HP-mu bisa melihatnya", { w: 760, h: 100, size: 30 });
+      if (after(b, l, 0.8)) badge(ctx, 900, 580, true, "Simpan di kertas, di tempat aman", { w: 760, h: 100, size: 30 });
+    },
+    cadangan_selesai(ctx, b, l) {
+      const span = spanOf(b), g = geo(BF, "cadangan", {}), gk = geo(BF, "keamanan", { on: true });
+      const R = HP.run({ page: "cadangan", check: false, pointer: { x: 700, y: 560 } }, [{ to: pt(g.check), click: true, set: { check: true }, d: 1.2 }, { to: pt(g.selesai), click: true, set: { page: "keamanan" }, d: 1.2 }, { wait: 1, d: 0.4 }, { to: [gk.twofa.x + 300, gk.twofa.y + 50], set: { hl: "2fa" }, d: 1 }, { wait: 1, d: 1.6 }], l, span);
+      browser(ctx, BF, R.st.page, { check: R.st.check, on: true, hl: R.st.hl, codesHl: false });
+      steps(ctx, "LANGKAH", ["Centang kotak.", "Klik Selesai.", "Status: Aktif."], stepAt(l, span, [0.24, 0.45, 0.7]));
+      if (R.st.page === "keamanan" && R.i >= 3) note(ctx, 1450, 420, "Verifikasi dua langkah: Aktif", { tx: gk.twofa.x + 520, ty: gk.twofa.y - 10, fill: C.goodBg, color: GREEN });
+      pointer(ctx, R);
+    },
+    perangkat_buka(ctx, b, l) {
+      const span = spanOf(b), g = geo(BF, "keamanan", { on: true });
+      const R = HP.run({ page: "keamanan", pointer: { x: 900, y: 420 } }, [{ wait: 1, d: 0.6 }, { to: pt(g.devices), set: { hl: "devices" }, d: 1.2 }, { wait: 1, d: 0.5 }, { to: pt(g.devices), click: true, set: { page: "perangkat", hl: null }, d: 0.8 }, { wait: 1, d: 2 }], l, span);
+      browser(ctx, BF, R.st.page, { on: true, hl: R.st.hl });
+      steps(ctx, "LANGKAH", ["Klik Kelola perangkat.", "Lihat semua perangkat yang login."], stepAt(l, span, [0.5, 1]));
+      pointer(ctx, R);
+    },
+    perangkat_baca(ctx, b, l) {
+      const a = b.audio || b.dur; const n = l < a * 0.15 ? -1 : l < a * 0.3 ? 0 : l < a * 0.45 ? 1 : 2;
+      const g = browser(ctx, BF, "perangkat", { hlRow: n });
+      const items = [[true, "Laptop ini: milik Dito"], [true, "HP Dito: milik Dito"], [false, "Komputer di kota lain: bukan milik Dito!"]];
+      items.forEach(([ok, s], i) => { if (i <= n) badge(ctx, 1450, 150 + i * 130, ok, s, { w: 370, h: 110, size: 23 }); });
+    },
+    perangkat_keluar(ctx, b, l) {
+      const span = spanOf(b), g = geo(BF, "perangkat", {}), gd = geo(BF, "perangkat", { dialog: 1 });
+      const R = HP.run({ pointer: { x: 900, y: 600 }, hlRow: 2 }, [{ to: pt(g.rows[2]), click: true, set: { hl: "keluar", dialog: 1 }, d: 1.3 }, { wait: 1, d: 0.6 }, { to: pt(gd.ok), click: true, set: { hl: "ok" }, d: 1.1 },
+        { set: { dialog: 0, removed: true, hlRow: -1, toast: 1, hl: null }, d: 0.1 }, { wait: 1, d: 2 }], l, span);
+      browser(ctx, BF, "perangkat", R.st);
+      steps(ctx, "LANGKAH", ["Klik Keluarkan.", "Klik Keluarkan sekali lagi.", "Komputer itu terputus."], stepAt(l, span, [0.25, 0.55, 1]));
+      pointer(ctx, R);
+    },
+    ganti_sandi(ctx, b, l) {
+      const span = spanOf(b), g = geo(BF, "ganti_sandi", {});
+      const R = HP.run({ pointer: { x: 800, y: 500 } }, [{ to: pt(g.old), click: true, set: { focus: "old" }, d: 0.8 }, { type: "kucing-angkot-hujan", field: "old", d: 1.2 },
+        { to: pt(g.neu), click: true, set: { focus: "neu" }, d: 0.7 }, { type: "sepeda-kantin-biru-pagi", field: "neu", d: 1.5 }, { to: pt(g.simpan), click: true, set: { saved: true, focus: null, hl: "simpan" }, d: 1 }, { wait: 1, d: 1.5 }], l, span);
+      browser(ctx, BF, "ganti_sandi", R.st);
+      card(ctx, 1450, 122, 370, 470, { fill: "#FFFFFF", stroke: "#D7E2DC", lw: 3, r: 18 });
+      text(ctx, "ORANG ITU SEKARANG", 1635, 170, 23, { align: "center", weight: 900, color: C.accentDark });
+      badge(ctx, 1470, 200, false, "kata sandi lama tidak berlaku", { w: 330, h: 100, size: 22 });
+      if (after(b, l, 0.55)) badge(ctx, 1470, 320, false, "tidak punya kode dari HP Dito", { w: 330, h: 100, size: 22 });
+      if (after(b, l, 0.75)) { ctx.fillStyle = C.goodBg; rr(ctx, 1470, 450, 330, 110, 14); ctx.fill(); text(ctx, "TERTAHAN", 1635, 522, 40, { align: "center", weight: 900, color: GREEN }); }
+      pointer(ctx, R);
+    },
+    coba(ctx, b, l) {
+      card(ctx, 160, 140, 1600, 680, { stroke: C.accent, lw: 6 });
+      ctx.fillStyle = C.accent; ctx.beginPath(); ctx.arc(330, 290, 70, 0, Math.PI * 2); ctx.fill();
+      ctx.fillStyle = "#FFFFFF"; rr(ctx, 300, 255, 20, 70, 6); ctx.fill(); rr(ctx, 340, 255, 20, 70, 6); ctx.fill();
+      text(ctx, "COBA SEKARANG", 450, 275, 44, { weight: 900, color: C.accentDark }); text(ctx, "Hentikan video, kerjakan, lalu putar lagi.", 450, 322, 30, { weight: 700, color: C.ink2 });
+      (b.coba || []).forEach((s, i) => { card(ctx, 230, 390 + i * 100, 930, 84, { fill: C.bg2, r: 16 }); text(ctx, String(i + 1), 276, 444 + i * 100, 34, { align: "center", weight: 900, color: C.kiko }); text(ctx, s, 320, 443 + i * 100, 27, { weight: 700, fit: 820 }); });
+      phone(ctx, c => HP.auth(c, { accounts: [{ ...ACC, code: CODES[0], secs: 30 - (l % 30) }] }), { cx: 1480, cy: 520, h: 520 });
+      text(ctx, "dengan akunmu sendiri", 1480, 220, 24, { align: "center", weight: 800, color: C.ink2 });
+    },
+    periksa(ctx, b, l) {
+      browser(ctx, BF, "keamanan", { on: true, devices: 2 });
+      const items = [["Verifikasi dua langkah", "Aktif"], ["Kode cadangan", "di kertas"], ["Perangkat asing", "tidak ada"]];
+      card(ctx, 1450, 122, 370, 120 + items.length * 110, { fill: "#FFFFFF", stroke: "#D7E2DC", lw: 3, r: 18 });
+      text(ctx, "PERIKSA HASILMU", 1635, 172, 24, { align: "center", weight: 900, color: C.accentDark });
+      const a = b.audio || b.dur;
+      items.forEach(([k, v], i) => { const on = l > a * (0.2 + i * 0.2); const y = 205 + i * 110;
+        ctx.fillStyle = on ? C.goodBg : "#F4F6F5"; rr(ctx, 1470, y, 330, 94, 12); ctx.fill();
+        text(ctx, k, 1490, y + 38, 22, { weight: 800 }); text(ctx, v + (on ? " ✓" : ""), 1490, y + 74, 24, { weight: 900, color: on ? GREEN : C.ink2 }); });
+    },
+    salah_otp(ctx, b, l) {
+      card(ctx, 140, 140, 1640, 680);
+      text(ctx, "KESALAHAN 1: MEMBERIKAN KODE", 1290, 210, 30, { align: "center", weight: 900, color: RED });
+      const ph = phone(ctx, c => HP.chat(c, { size: 22, maxW: 320, name: "Admin Akun Sekolah", sub: "nomor tidak dikenal", subColor: RED, color: "#7B8B95", warn: after(b, l, 0.3) ? 0 : null,
+        messages: [{ from: "them", text: "Halo, saya petugas akun.example. Kode verifikasi sudah kami kirim ke HP-mu. Kirim kode itu ke sini supaya akunmu tidak diblokir hari ini!", time: "19.42" }] }), { cx: 470, cy: 478, h: 620 });
+      if (after(b, l, 0.3)) { ctx.save(); ctx.translate(470, 570); ctx.rotate(-0.18); ctx.strokeStyle = RED; ctx.lineWidth = 7; rr(ctx, -170, -44, 340, 88, 12); ctx.stroke(); text(ctx, "PENIPUAN", 0, 20, 52, { align: "center", weight: 900, color: RED }); ctx.restore(); }
+      const pts = [["minta kode", 0.4], ["mendesak: hari ini!", 0.5], ["mengaku petugas", 0.6]];
+      pts.forEach(([s, f], i) => { if (after(b, l, f)) badge(ctx, 860, 260 + i * 104, false, s, { w: 620, h: 84, size: 28 }); });
+      if (after(b, l, 0.72)) { card(ctx, 860, 590, 860, 110, { fill: "#E7F1FB", stroke: BLUE, lw: 3, r: 16 }); para(ctx, "Tidak ada petugas resmi yang meminta kode verifikasimu.", 890, 636, 30, 800, { weight: 900, color: C.kikoDark, lh: 1.2 }); }
+    },
+    salah_otp2(ctx, b, l) {
+      card(ctx, 140, 140, 1640, 680);
+      text(ctx, "YANG HARUS DILAKUKAN", 1290, 210, 30, { align: "center", weight: 900, color: GREEN });
+      const a = b.audio || b.dur, u = clamp((l - a * 0.3) / 0.6, 0, 1);
+      phone(ctx, c => { HP.home(c, [{ name: "Autentikator", color: BLUE, icon: "shield" }, { name: "Pesan", color: "#7B8B95", icon: "chat" }, { name: "Kamera", color: "#2E7E9A", icon: "camera" }, { name: "Pengaturan", color: "#5B6B76", icon: "gear" }]);
+        if (u > 0) HP.notif(c, { app: "akun.example", icon: "school", color: BLUE, title: "Upaya login baru di Komputer", body: "Kota lain · 21.05. Apakah ini kamu?" }, u); }, { cx: 470, cy: 478, h: 620 });
+      [["close", "Jangan balas pesannya", RED, 0.05], ["close", "Jangan kirim kodenya", RED, 0.15], ["key", "Ada upaya login asing? Ganti kata sandi.", BLUE, 0.55]].forEach(([ic, s, col, f], i) => {
+        if (!after(b, l, f)) return; const y = 260 + i * 140; ctx.fillStyle = col === RED ? C.badBg : "#E7F1FB"; rr(ctx, 860, y, 860, 116, 18); ctx.fill();
+        ctx.fillStyle = col; ctx.beginPath(); ctx.arc(920, y + 58, 32, 0, Math.PI * 2); ctx.fill(); HP.icon(ctx, ic, 920, y + 58, 32, "#FFFFFF"); para(ctx, s, 980, y + 68 - (s.length > 34 ? 18 : 0), 32, 720, { weight: 900, color: C.ink, lh: 1.15 }); });
+    },
+    salah_jam(ctx, b, l) {
+      const span = spanOf(b);
+      const R = HP.run({ auto: 0, time: "07.09" }, [{ wait: 1, d: 1.6 }, { tap: [306, 198], d: 0.9 }, { anim: "auto", d: 0.5 }, { set: { time: "07.15" }, d: 0.1 }, { wait: 1, d: 1.6 }], l, span);
+      card(ctx, 140, 140, 1640, 680);
+      text(ctx, "KESALAHAN 2: KODE TERUS DITOLAK", 1290, 210, 30, { align: "center", weight: 900, color: RED });
+      const on = R.st.auto;
+      phone(ctx, c => { HP.header(c, "Tanggal dan waktu", { back: true });
+        const rows = HP.list(c, [{ label: "Waktu otomatis", sub: "Pakai waktu dari jaringan", toggle: on, hl: R.i >= 1 && R.i <= 2 }, { label: "Zona waktu", sub: "WIB (GMT+7)", arrow: true }, { label: "Jam", value: R.st.time, valueColor: on >= 1 ? GREEN : RED, dim: on >= 1 }], { y: 120 });
+        if (R.tap) HP.tap(c, R.tap.x, R.tap.y, R.tap.u); }, { cx: 470, cy: 478, h: 620, time: R.st.time });
+      badge(ctx, 860, 270, false, "Jam di HP terlambat 6 menit: kode tidak cocok.", { w: 860, h: 104, size: 28 });
+      if (after(b, l, 0.5)) badge(ctx, 860, 400, true, "Nyalakan Waktu otomatis di pengaturan tanggal dan waktu.", { w: 860, h: 120, size: 28, lines2: true });
+      if (on >= 1) badge(ctx, 860, 550, true, "Jam tepat: kodenya diterima.", { w: 860, h: 104, size: 28 });
+    },
+    latihan(ctx, b, l) {
+      card(ctx, 160, 150, 1600, 660);
+      text(ctx, "BERLATIH LAGI", 960, 230, 32, { align: "center", weight: 900, color: C.accentDark });
+      card(ctx, 300, 290, 640, 400, { fill: C.bg2, r: 22 }); text(ctx, "Halaman latihan D7.3", 620, 360, 34, { align: "center", weight: 900 });
+      text(ctx, "Latihan 1: Pengukur sandi", 620, 410, 28, { align: "center", weight: 700, color: C.ink2 });
+      card(ctx, 360, 450, 520, 70, { fill: "#FFFFFF", r: 12 }); text(ctx, "belajar-informatika.vercel.app/d73", 620, 496, 26, { align: "center", weight: 800, color: C.kikoDark });
+      text(ctx, "pakai contoh kata sandi rekaan saja", 620, 600, 26, { align: "center", weight: 700, color: C.ink2 });
+      card(ctx, 1000, 290, 620, 400, { fill: "#FFF9E0", r: 22 }); text(ctx, "Tugas nyata", 1310, 360, 34, { align: "center", weight: 900 });
+      para(ctx, "Nyalakan verifikasi dua langkah di akun emailmu bersama orang tua, lalu simpan kode cadangannya di kertas.", 1310, 420, 30, 520, { align: "center", weight: 700, lh: 1.3 });
+      kiko(ctx, 1650, 720, 100, 0, { wave: l });
+    }
+  });
+})(typeof window !== "undefined" ? window : globalThis);
+</script>
+<script>window.__YT = [];
+const YT_CHANNEL = "https://www.youtube.com/@iteachswe";   // channel YouTube Bu Dewi (video lengkap seri ini)
+/* Inti halaman latihan: pemutar (kanvas + narasi), tombol suara nyala/mati (berpindah antara timeline suara dan teks),
+   kuis dengan petunjuk, dan kemajuan di localStorage (perangkat ini saja).
+   Pakai:  const P = PageCore({ suara: TIMELINE_SUARA_atau_null, teks: TIMELINE_TEKS });
+   Episode menambahkan latihannya sendiri lewat P.$, P.K, P.H, P.progress, P.save(), P.speed(), P.onProgress(fn). */
+function PageCore(TLS, opt = {}) {
+  const $ = id => document.getElementById(id);
+  const K = Kiko, H = K.helpers;
+  let voice = !!TLS.suara; let TL = voice ? TLS.suara : TLS.teks;
+  // ---------- progress storage (per device only) ----------
+  const KEY = opt.key || TL.episode.replace(/\./g, "").toLowerCase() + "-progress";   // D7.5 -> "d75-progress"
+  let progress = { quiz: {} };
+  try { const s = localStorage.getItem(KEY); if (s) progress = { quiz: {}, ...JSON.parse(s) }; } catch (e) {}
+  const extras = [];
+  function renderProgress() {
+    const el = $("progress"); if (!el) return; el.innerHTML = "";
+    Object.keys(TL.quizzes).forEach((id, i) => { const s = document.createElement("span"); s.textContent = "Cek " + (i + 1); s.className = progress.quiz[id] ? "ok" : ""; el.appendChild(s); });
+    extras.forEach(f => f(el));
+  }
+  function save() { try { localStorage.setItem(KEY, JSON.stringify(progress)); } catch (e) {} renderProgress(); }
+
+  // ---------- player ----------
+  const cv = $("screen"), ctx = cv.getContext("2d");
+  let t = 0, playing = false, last = 0, speed = 1, hasAudio = false;
+  const nar = $("nar"); nar.addEventListener("canplay", () => { hasAudio = true; }); nar.addEventListener("error", () => { hasAudio = false; });
+  function fmt(s) { s = Math.max(0, Math.floor(s)); return Math.floor(s / 60) + ":" + String(s % 60).padStart(2, "0"); }
+  function segStart(i) { return TL.beats.find(b => b.seg === i).start; }
+  function syncAudio() { if (voice && hasAudio) { try { nar.currentTime = t; } catch (e) {} } }
+  function drawNow() {
+    const b = K.draw(ctx, Math.min(t, TL.total - 0.01), TL);
+    $("barfill").style.width = (t / TL.total * 100) + "%"; $("bar").setAttribute("aria-valuenow", Math.round(t / TL.total * 100));
+    $("timelabel").textContent = fmt(t) + " / " + fmt(TL.total);
+    [...$("chapters").children].forEach((c, i) => c.classList.toggle("now", i === b.seg));
+    return b;
+  }
+  function loop(now) {
+    if (!playing) return;
+    const dt = Math.min(0.1, (now - last) / 1000); last = now; if (voice && hasAudio && !nar.paused) t = nar.currentTime; else t += dt * speed;
+    if (t >= TL.total) { t = TL.total - 0.01; setPlaying(false); }
+    drawNow(); requestAnimationFrame(loop);
+  }
+  function setPlaying(p) {
+    playing = p; $("bigplay").hidden = p; $("playbtn").textContent = p ? "❚❚ Jeda" : "▶ Putar";
+    if (p) { last = performance.now(); if (voice && hasAudio) { try { nar.currentTime = t; nar.playbackRate = speed; nar.play().catch(() => {}); } catch (e) {} } requestAnimationFrame(loop); } else nar.pause();
+  }
+  $("bigplay").addEventListener("click", () => setPlaying(true));
+  $("playbtn").addEventListener("click", () => setPlaying(!playing));
+  $("replay").addEventListener("click", () => { const b = K.beatAt(TL, t); t = segStart(b.seg); syncAudio(); drawNow(); setPlaying(true); });
+  $("slow").addEventListener("click", e => { speed = speed === 1 ? 0.8 : 1; nar.playbackRate = speed; e.currentTarget.setAttribute("aria-pressed", speed !== 1); });
+  function seekFromBar(ev) { const r = $("bar").getBoundingClientRect(); const x = (ev.touches ? ev.touches[0].clientX : ev.clientX) - r.left; t = Math.max(0, Math.min(TL.total - 0.01, x / r.width * TL.total)); syncAudio(); drawNow(); }
+  $("bar").addEventListener("click", seekFromBar);
+  $("bar").addEventListener("keydown", e => { if (e.key === "ArrowRight") { t = Math.min(TL.total - 0.01, t + 5); syncAudio(); drawNow(); } if (e.key === "ArrowLeft") { t = Math.max(0, t - 5); syncAudio(); drawNow(); } });
+  TL.segments.forEach((name, i) => { const b = document.createElement("button"); b.textContent = (i + 1) + ". " + name; b.addEventListener("click", () => { t = segStart(i); syncAudio(); drawNow(); setPlaying(true); }); $("chapters").appendChild(b); });
+  // voice on/off: switches between the narrated timeline and the reading-paced one, staying on the same beat
+  const vb = $("voice");
+  function setVoice(on) {
+    const cur = K.beatAt(TL, t);
+    voice = on && !!TLS.suara; TL = voice ? TLS.suara : TLS.teks;
+    const nb = TL.beats.find(b => b.id === cur.id) || TL.beats[0]; t = nb.start;
+    if (vb) { vb.setAttribute("aria-pressed", voice); vb.textContent = voice ? "🔊 Suara: nyala" : "🔇 Suara: mati"; }
+    if (playing) { if (voice && hasAudio) { try { nar.currentTime = t; nar.playbackRate = speed; nar.play().catch(() => {}); } catch (e) {} } else nar.pause(); }
+    drawNow();
+  }
+  if (vb) { if (!TLS.suara || !TLS.teks) vb.hidden = true; else { vb.addEventListener("click", () => setVoice(!voice)); vb.setAttribute("aria-pressed", voice); vb.textContent = voice ? "🔊 Suara: nyala" : "🔇 Suara: mati"; } }
+  drawNow();
+
+  // ---------- quiz ----------
+  const quizEl = $("quiz");
+  if (quizEl) Object.entries(TL.quizzes).forEach(([id, q], qi) => {
+    const box = document.createElement("div"); box.className = "q";
+    box.innerHTML = `<h3>${qi + 1}. ${q.q}</h3><div class="opts"></div><div class="fb"></div>`;
+    const opts = box.querySelector(".opts"), fb = box.querySelector(".fb");
+    q.options.forEach((o, i) => {
+      const b = document.createElement("button"); b.innerHTML = `<b>${"ABC"[i]}</b><span>${o}</span>`;
+      b.addEventListener("click", () => {
+        [...opts.children].forEach(c => c.classList.remove("wrong"));
+        if (i === q.answer) { b.classList.add("right"); fb.className = "fb good"; fb.textContent = "Benar! " + (q.explain || ""); progress.quiz[id] = true; save(); [...opts.children].forEach(c => c.disabled = true); }
+        else { b.classList.add("wrong"); fb.className = "fb bad"; fb.textContent = "Belum tepat. Petunjuk: " + q.hint; }
+      });
+      opts.appendChild(b);
+    });
+    if (progress.quiz[id]) { opts.children[q.answer].classList.add("right"); [...opts.children].forEach(c => c.disabled = true); fb.className = "fb good"; fb.textContent = "Sudah dijawab benar."; }
+    quizEl.appendChild(box);
+  });
+  renderProgress();
+
+  // video YouTube (bila alamatnya sudah diisi di youtube_id.json): pemutar utama di atas; animasi tetap ada untuk luring
+  try {
+    const YTL = (typeof window !== "undefined" && window.__YT) || [];
+    const pl = document.querySelector("section.player");
+    if (YTL.length && pl && !document.getElementById("yt-video")) {
+      const sec = document.createElement("section"); sec.className = "card yt-video"; sec.id = "yt-video"; sec.setAttribute("aria-label", "Video YouTube");
+      const h = document.createElement("h2"); h.textContent = "Video"; sec.appendChild(h);
+      let row = null;
+      if (YTL.length > 1) { row = document.createElement("div"); row.className = "row"; sec.appendChild(row); }
+      const box = document.createElement("div"); box.className = "yt-frame"; sec.appendChild(box);
+      const show = (i) => {
+        box.innerHTML = "";
+        const f = document.createElement("iframe");
+        f.src = "https://www.youtube-nocookie.com/embed/" + YTL[i].id + "?rel=0";
+        f.title = "Video " + YTL[i].part; f.loading = "lazy"; f.allowFullscreen = true;
+        f.setAttribute("allow", "accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share");
+        box.appendChild(f);
+        if (row) [...row.children].forEach((b, j) => b.setAttribute("aria-pressed", String(j === i)));
+      };
+      if (row) YTL.forEach((x, i) => { const b = document.createElement("button"); b.textContent = "Bagian " + (i + 1); b.addEventListener("click", () => show(i)); row.appendChild(b); });
+      const note = document.createElement("p"); note.className = "hint"; note.textContent = "Tidak ada internet? Putar animasinya di bawah; teksnya sama dan bisa dipakai tanpa internet."; sec.appendChild(note);
+      show(0);
+      pl.insertAdjacentElement("beforebegin", sec);
+      const lab = document.createElement("div"); lab.className = "eyebrow"; lab.textContent = "Animasi interaktif (bisa tanpa internet)"; pl.insertAdjacentElement("afterbegin", lab);
+    }
+  } catch (e) {}
+  // ajakan ke channel YouTube (video lengkap): kartu tepat di bawah pemutar, di semua halaman latihan dan simulasi
+  try {
+    const pl = document.querySelector("section.player");
+    if (pl && !document.getElementById("yt-ajak")) {
+      const a = document.createElement("a"); a.id = "yt-ajak"; a.className = "yt-ajak"; a.href = YT_CHANNEL; a.target = "_blank"; a.rel = "noopener";
+      a.innerHTML = '<span class="yt-ic" aria-hidden="true">▶</span><span><b>Tonton video lengkapnya di YouTube</b><small>Subscribe channel @iteachswe untuk belajar lebih banyak.</small></span>';
+      pl.insertAdjacentElement("afterend", a);
+    }
+  } catch (e) {}
+  return { $, K, H, progress, save, renderProgress, speed: () => speed, timeline: () => TL,
+           onProgress(fn) { extras.push(fn); renderProgress(); } };
+}
+</script>
+<script>
+(function () {
+  const P = PageCore({ suara: {"episode": "S11", "title": "Menyalakan Verifikasi Dua Langkah", "label": "Simulasi Praktik · S11 · Browser dan HP", "kind": "praktik", "for": ["D7.3", "E.3", "F12.5"], "latihan": "D7.3", "hook": "menyalakan verifikasi dua langkah dengan aplikasi autentikator, menyimpan kode cadangan, dan mengeluarkan perangkat asing dari akunmu.", "engine": ["../../_alat/kiko-core.js", "../../_alat/layar.js", "../../_alat/layar_hp.js", "web.js", "scenes.js"], "parts": {"S11": {"segs": [0, 1, 2, 3, 4, 5, 6, 7, 8]}}, "recap": ["Dua langkah = kata sandi + kode dari HP.", "Kode cadangan di kertas, di tempat aman.", "Kode tidak pernah diberikan kepada siapa pun."], "next": {"code": "S12", "title": "Memakai Password Manager", "note": "Simulasi praktik keamanan akun berikutnya.", "heading": "SIMULASI BERIKUTNYA"}, "youtube": {"ringkas": "Simulasi praktik langkah demi langkah di browser dan HP: membuka pengaturan keamanan akun sekolah, menyalakan verifikasi dua langkah, memindai kode QR dengan aplikasi autentikator, memasukkan kode enam angka sebelum waktunya habis, menyimpan kode cadangan di tempat aman, lalu memeriksa dan mengeluarkan perangkat yang tidak dikenal. Ada jeda untuk mencoba sendiri dan tiga cek pemahaman.", "belajar": ["menyalakan verifikasi dua langkah di pengaturan keamanan akun", "memakai aplikasi autentikator dan kode enam angka yang berganti tiap tiga puluh detik", "menyimpan kode cadangan di tempat yang aman", "memeriksa perangkat yang login dan mengeluarkan perangkat asing"], "cari": ["cara mengaktifkan verifikasi dua langkah", "cara memakai aplikasi autentikator", "cara mengamankan akun dari hacker", "cara mengeluarkan perangkat lain dari akun", "verifikasi dua langkah kelas 7"], "prasyarat": "episode D7.3 Kata Sandi Aman dan Rekam Jejak Digital", "tagar": ["#VerifikasiDuaLangkah", "#KeamananAkun", "#Simulasi", "#Informatika", "#SMP"]}, "segments": ["Pembuka", "Persiapan", "Buka pengaturan", "Pindai kode QR", "Masukkan kode", "Kode cadangan", "Perangkat yang login", "Periksa", "Penutup"], "quizzes": {"q1": {"q": "Mengapa kode QR saat penyiapan tidak boleh dipotret atau dibagikan?", "options": ["Supaya layar laptop tidak rusak", "Pemindainya bisa membuat kode untuk akunmu", "Kode QR hanya berlaku sekali sehari"], "answer": 1, "hint": "Kode QR itu berisi kunci rahasia akunmu."}, "q2": {"q": "Kode di HP tinggal 2 detik, padahal kamu belum selesai mengetik. Apa yang kamu lakukan?", "options": ["Mengetik secepat mungkin", "Menunggu kode baru, lalu mengetiknya", "Mematikan HP, lalu menyalakannya lagi"], "answer": 1, "hint": "Kode yang hangus akan ditolak."}, "q3": {"q": "Seseorang mengaku admin dan meminta kode 6 angka dari HP-mu. Apa yang kamu lakukan?", "options": ["Mengirim kodenya supaya akun aman", "Tidak mengirim, lalu melapor", "Mengirim kata sandi saja"], "answer": 1, "hint": "Petugas resmi tidak pernah meminta kode."}}, "beats": [{"id": "intro1", "seg": 0, "scene": "title", "text": "Halo! Aku Kiko. Masih ingat Dito yang akun game-nya dibobol orang? Hari ini kita bantu Dito mengunci akun sekolahnya dengan verifikasi dua langkah, langkah demi langkah.", "hold": 0.8, "start": 0.0, "speech": 0.4, "audio": 11.392, "dur": 14.84}, {"id": "intro2", "seg": 0, "scene": "tujuan", "text": "Setelah menonton, kamu bisa menyalakan verifikasi dua langkah dengan aplikasi autentikator, menyimpan kode cadangan, dan mengeluarkan perangkat asing dari akunmu.", "hold": 0.8, "start": 14.84, "speech": 15.24, "audio": 9.826, "dur": 11.84}, {"id": "intro3", "seg": 0, "scene": "prasyarat", "text": "Simulasi ini melengkapi episode D7.3 tentang kata sandi, E.3 tentang keamanan akun, dan F12.5 tentang transaksi digital. Semua akun dan kode di video ini hanya contoh.", "hold": 0.8, "start": 26.68, "speech": 27.08, "audio": 13.959, "dur": 15.459}, {"id": "s1a", "seg": 1, "scene": "dua_kunci", "text": "Dengan kata sandi saja, akunmu hanya punya satu kunci. Verifikasi dua langkah menambah kunci kedua, yaitu kode dari HP-mu. Pencuri yang tahu kata sandimu tetap tertahan.", "hold": 1.0, "start": 42.139, "speech": 42.539, "audio": 11.83, "dur": 15.04}, {"id": "s1b", "seg": 1, "scene": "siapkan", "text": "Siapkan dua alat. Laptop atau komputer dipakai untuk membuka akun. HP dipakai untuk aplikasi autentikator yang dipasang dari toko aplikasi resmi. Ajak orang tua atau gurumu menemani.", "hold": 1.0, "start": 57.179, "speech": 57.579, "audio": 12.687, "dur": 15.54}, {"id": "s2a", "seg": 2, "scene": "buka_keamanan", "text": "Buka browser, ketik alamat akun sekolahmu, lalu login seperti biasa. Setelah masuk, klik menu Keamanan di sebelah kiri.", "hold": 1.2, "start": 72.719, "speech": 73.119, "audio": 8.404, "dur": 11.24}, {"id": "s2b", "seg": 2, "scene": "lihat_keamanan", "text": "Di halaman Keamanan, cari baris Verifikasi dua langkah. Statusnya masih Mati. Klik baris itu. Di aplikasi lain, menu ini bisa bernama Autentikasi dua faktor atau 2FA.", "hold": 1.2, "start": 83.959, "speech": 84.359, "audio": 12.833, "dur": 15.24}, {"id": "s2c", "seg": 2, "scene": "ulang_sandi", "text": "Klik Mulai. Situs meminta kata sandimu sekali lagi. Ini wajar, supaya orang yang meminjam laptopmu tidak bisa mengubah pengaturan keamanan.", "hold": 1.2, "start": 99.199, "speech": 99.599, "audio": 9.317, "dur": 12.24}, {"id": "s2d", "seg": 2, "scene": "pilih_cara", "text": "Lalu pilih cara menerima kode. Pilih Aplikasi autentikator, karena kodenya dibuat di HP-mu sendiri dan tidak dikirim lewat SMS. Klik Lanjut.", "hold": 1.2, "start": 111.439, "speech": 111.839, "audio": 10.207, "dur": 12.74}, {"id": "s3a", "seg": 3, "scene": "qr_tampil", "text": "Sekarang layar laptop menampilkan sebuah kode QR. Kode ini khusus untuk akunmu. Jangan memotretnya, jangan membagikannya, dan jangan menutup halaman ini dulu.", "hold": 1.2, "start": 124.179, "speech": 124.579, "audio": 11.247, "dur": 13.24}, {"id": "s3b", "seg": 3, "scene": "hp_tambah", "text": "Ambil HP-mu, lalu buka aplikasi autentikator. Tap tanda tambah di pojok kanan bawah, lalu pilih Pindai kode QR. Kamera HP akan menyala.", "hold": 1.2, "start": 137.419, "speech": 137.819, "audio": 10.64, "dur": 13.24}, {"id": "s3c", "seg": 3, "scene": "hp_pindai", "text": "Arahkan kamera ke kode QR di layar laptop. Dalam sekejap, akun sekolahmu muncul di aplikasi, lengkap dengan kode enam angka.", "hold": 1.2, "start": 150.659, "speech": 151.059, "audio": 8.992, "dur": 12.24}, {"id": "s3d", "seg": 3, "scene": "hp_kode", "text": "Perhatikan lingkaran kecil di sebelah kode. Lingkaran itu menunjukkan sisa waktu. Setiap tiga puluh detik, kode lama hangus dan kode baru muncul.", "hold": 1.2, "start": 162.899, "speech": 163.299, "audio": 9.538, "dur": 13.24}, {"id": "q1", "seg": 3, "scene": "quiz", "text": "Cek pemahaman. Mengapa kode QR saat penyiapan tidak boleh dipotret atau dibagikan? Pikirkan dulu.", "hold": 4.0, "quiz": "q1", "start": 176.139, "speech": 176.539, "audio": 7.173, "dur": 12.04}, {"id": "q1a", "seg": 3, "scene": "quiz_answer", "text": "Jawabannya: siapa pun yang memindai kode QR itu bisa membuat kode yang sama untuk akunmu. Jadi kode QR itu sama rahasianya dengan kata sandi.", "hold": 1.0, "quiz": "q1", "start": 188.179, "speech": 188.579, "audio": 10.165, "dur": 14.04}, {"id": "s4a", "seg": 4, "scene": "ketik_kode", "text": "Kembali ke laptop, lalu klik Lanjut. Ketik enam angka yang tampil di HP ke dalam kotak, lalu klik Verifikasi. Ketik sebelum lingkarannya habis.", "hold": 1.2, "start": 202.219, "speech": 202.619, "audio": 10.199, "dur": 13.74}, {"id": "s4b", "seg": 4, "scene": "kode_hangus", "text": "Bagaimana kalau lingkarannya habis saat kamu mengetik? Situs menulis bahwa kodenya salah atau kedaluwarsa. Jangan panik. Hapus angkanya, lalu ketik kode baru yang muncul di HP.", "hold": 1.2, "start": 215.959, "speech": 216.359, "audio": 12.24, "dur": 15.24}, {"id": "s4c", "seg": 4, "scene": "aktif", "text": "Berhasil! Verifikasi dua langkah sekarang aktif. Mulai sekarang, setiap login di perangkat baru, kamu memasukkan kata sandi, lalu kode dari HP.", "hold": 1.0, "start": 231.199, "speech": 231.599, "audio": 10.057, "dur": 12.54}, {"id": "q2", "seg": 4, "scene": "quiz", "text": "Cek pemahaman. Kode di HP-mu tinggal dua detik lagi, padahal kamu belum selesai mengetiknya. Apa yang sebaiknya kamu lakukan? Pikirkan dulu.", "hold": 4.0, "quiz": "q2", "start": 243.739, "speech": 244.139, "audio": 9.287, "dur": 15.54}, {"id": "q2a", "seg": 4, "scene": "quiz_answer", "text": "Jawabannya: tunggu kode baru, lalu ketik dengan tenang. Kode yang sudah hangus akan ditolak, dan tiga puluh detik cukup untuk mengetik enam angka.", "hold": 1.0, "quiz": "q2", "start": 259.279, "speech": 259.679, "audio": 9.951, "dur": 13.54}, {"id": "s5a", "seg": 5, "scene": "cadangan_tampil", "text": "Situs lalu menampilkan sepuluh kode cadangan. Kode ini dipakai kalau HP-mu hilang atau rusak. Setiap kode hanya bisa dipakai satu kali.", "hold": 1.2, "start": 272.819, "speech": 273.219, "audio": 9.674, "dur": 12.74}, {"id": "s5b", "seg": 5, "scene": "cadangan_tulis", "text": "Salin kode cadangan di kertas atau cetak, lalu simpan di tempat aman di rumah, misalnya di map dokumen keluarga. Coret kode yang sudah terpakai.", "hold": 1.2, "start": 285.559, "speech": 285.959, "audio": 9.785, "dur": 14.24}, {"id": "s5c", "seg": 5, "scene": "cadangan_salah", "text": "Jangan simpan kode cadangan sebagai foto di galeri HP. Kalau HP-mu hilang, foto itu ikut hilang, dan orang yang memegang HP-mu bisa melihatnya.", "hold": 1.2, "start": 299.799, "speech": 300.199, "audio": 9.944, "dur": 13.74}, {"id": "s5d", "seg": 5, "scene": "cadangan_selesai", "text": "Centang kotak yang menyatakan kamu sudah menyimpan kodenya, lalu klik Selesai. Di halaman Keamanan, status verifikasi dua langkah kini Aktif.", "hold": 1.2, "start": 313.539, "speech": 313.939, "audio": 9.717, "dur": 12.24}, {"id": "s6a", "seg": 6, "scene": "perangkat_buka", "text": "Satu pemeriksaan lagi. Di halaman Keamanan, klik Kelola perangkat. Kamu akan melihat semua perangkat yang sedang login ke akunmu.", "hold": 1.2, "start": 325.779, "speech": 326.179, "audio": 8.483, "dur": 11.74}, {"id": "s6b", "seg": 6, "scene": "perangkat_baca", "text": "Dito mengenali laptop ini dan HP-nya. Tetapi ada komputer dari kota lain yang login kemarin malam. Dito tidak pernah ke sana, jadi komputer itu bukan miliknya.", "hold": 1.2, "start": 337.519, "speech": 337.919, "audio": 10.866, "dur": 15.24}, {"id": "s6c", "seg": 6, "scene": "perangkat_keluar", "text": "Klik Keluarkan di baris komputer itu, lalu klik Keluarkan sekali lagi untuk memastikan. Perangkat itu langsung terputus dari akun Dito.", "hold": 1.2, "start": 352.759, "speech": 353.159, "audio": 8.458, "dur": 12.24}, {"id": "s6d", "seg": 6, "scene": "ganti_sandi", "text": "Orang itu mungkin tahu kata sandi Dito, jadi Dito langsung menggantinya. Berkat verifikasi dua langkah, orang itu juga tidak bisa login tanpa kode dari HP Dito.", "hold": 1.2, "start": 364.999, "speech": 365.399, "audio": 10.8, "dur": 15.24}, {"id": "coba1", "seg": 6, "scene": "coba", "text": "Sekarang giliranmu. Hentikan dulu videonya, lalu kerjakan langkah ini di akunmu sendiri bersama orang tua atau guru. Kalau sudah selesai, putar lagi videonya.", "hold": 3.0, "coba": ["Buka Keamanan, klik Verifikasi dua langkah.", "Pindai kode QR dengan aplikasi autentikator.", "Ketik kodenya, lalu tulis kode cadangan di kertas.", "Periksa perangkat yang login."], "start": 380.239, "speech": 380.639, "audio": 10.364, "dur": 15.54}, {"id": "s7a", "seg": 7, "scene": "periksa", "text": "Periksa hasilmu. Verifikasi dua langkah berstatus Aktif, kode cadangan tersimpan di kertas, dan tidak ada perangkat asing di daftar perangkat.", "hold": 2.0, "start": 395.779, "speech": 396.179, "audio": 8.695, "dur": 13.04}, {"id": "s7b", "seg": 7, "scene": "salah_otp", "text": "Kesalahan pertama yang paling berbahaya adalah memberikan kode kepada orang lain. Pesan seperti ini adalah penipuan. Tidak ada petugas resmi yang meminta kode verifikasimu.", "hold": 1.2, "start": 408.819, "speech": 409.219, "audio": 10.767, "dur": 14.24}, {"id": "s7c", "seg": 7, "scene": "salah_otp2", "text": "Jangan balas dan jangan kirim kodenya. Kalau ada pemberitahuan upaya login padahal kamu tidak sedang login, berarti seseorang tahu kata sandimu. Segera ganti kata sandimu.", "hold": 1.2, "start": 423.059, "speech": 423.459, "audio": 11.391, "dur": 14.74}, {"id": "q3", "seg": 7, "scene": "quiz", "text": "Cek pemahaman. Seseorang mengaku admin akun sekolah dan meminta kode enam angka dari HP-mu supaya akunmu tidak diblokir. Apa yang kamu lakukan? Pikirkan dulu.", "hold": 4.0, "quiz": "q3", "start": 437.799, "speech": 438.199, "audio": 10.938, "dur": 17.04}, {"id": "q3a", "seg": 7, "scene": "quiz_answer", "text": "Jawabannya: jangan kirim kodenya, lalu laporkan kepada orang tua atau guru. Tidak ada petugas resmi yang meminta kode. Siapa pun yang memegang kodemu bisa masuk ke akunmu.", "hold": 1.0, "quiz": "q3", "start": 454.839, "speech": 455.239, "audio": 11.621, "dur": 15.54}, {"id": "s7d", "seg": 7, "scene": "salah_jam", "text": "Kesalahan kedua adalah kode yang terus ditolak padahal belum hangus. Biasanya jam di HP tidak tepat. Buka pengaturan tanggal dan waktu, lalu nyalakan Waktu otomatis.", "hold": 1.2, "start": 470.379, "speech": 470.779, "audio": 12.122, "dur": 14.74}, {"id": "recap", "seg": 8, "scene": "recap", "text": "Tiga hal untuk diingat. Verifikasi dua langkah memakai kata sandi dan kode dari HP. Kode cadangan disimpan di kertas, di tempat aman. Kode verifikasi tidak pernah diberikan kepada siapa pun.", "hold": 1.5, "start": 485.119, "speech": 485.519, "audio": 13.529, "dur": 17.54}, {"id": "latihan", "seg": 8, "scene": "latihan", "text": "Di halaman latihan episode D7.3 ada pengukur kekuatan kata sandi. Setelah berlatih, nyalakan verifikasi dua langkah di akun emailmu bersama orang tua.", "hold": 1.5, "start": 502.659, "speech": 503.059, "audio": 10.72, "dur": 13.54}, {"id": "outro", "seg": 8, "scene": "outro", "text": "Simulasi berikutnya: memakai password manager untuk membuat dan mengingat kata sandi acak. Sampai jumpa!", "hold": 2.5, "start": 516.199, "speech": 516.599, "audio": 7.198, "dur": 10.54}], "total": 526.739}, teks: null });
+})();
+</script>
