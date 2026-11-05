@@ -1,8 +1,8 @@
 /* T24 DNS: buku telepon internet — adegan khusus. Nama situs rekaan; alamat IP dari blok dokumentasi 203.0.113.x dan 198.51.100.x. */
 (function () {
   const T = TikTok, C = T.C, { rr, font, text, card, pill, arrow, check, bip, bubble, rnd, ease, clamp, lerp, back, cue, ph, pop } = T.helpers;
-  const SITE = "kantinsehat.id", IP = "203.0.113.25";
-  const BOOK = [["bukuresep.id", "198.51.100.4"], ["jadwalangkot.id", "198.51.100.17"], [SITE, IP], ["tokobuku.id", "203.0.113.8"], ["warungmaya.id", "203.0.113.41"]];
+  const SITE = "kantinsehat.example", IP = "203.0.113.25";
+  const BOOK = [["bukuresep.example", "198.51.100.4"], ["jadwalangkot.example", "198.51.100.17"], [SITE, IP], ["tokobuku.example", "203.0.113.8"], ["warungmaya.example", "203.0.113.41"]];
 
   // jendela browser generik: bilah alamat + isi
   function browser(ctx, x, y, w, h, url, opt = {}) {
@@ -98,7 +98,7 @@
       text(ctx, "Catatan sementara di HP-mu", 120, y + 66, 40, { weight: 800, color: C.ink2, fit: 720 });
       const us = ph(b, l, "disimpan", 0.5);
       if (us > 0) { ctx.save(); ctx.globalAlpha = us; ctx.translate((1 - us) * 300, 0); card(ctx, 120, y + 100, 720, 100, { fill: C.goodBg, stroke: C.good, lw: 4, r: 18 });
-        text(ctx, SITE, 150, y + 166, 40, { weight: 800, color: C.ink }); text(ctx, IP, 810, y + 166, 40, { align: "right", weight: 900, color: C.kuning }); ctx.restore(); }
+        text(ctx, SITE, 150, y + 166, 34, { weight: 800, color: C.ink }); text(ctx, IP, 810, y + 166, 34, { align: "right", weight: 900, color: C.kuning }); ctx.restore(); }
       // dua jalur: lama (lewat DNS) dan cepat (langsung)
       const ly = y + 330, uk = ph(b, l, "kunjungan", 0.5);
       if (uk > 0) {

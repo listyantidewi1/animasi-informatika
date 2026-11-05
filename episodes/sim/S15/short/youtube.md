@@ -2,12 +2,12 @@
 
 **Judul** (≤100 karakter):
 
-4 pengaturan wajib di dompet digital 🔒 #shorts
+5 pengaturan wajib di dompet digital 🔒 #shorts
 
 **Deskripsi:**
 
 ```
-Empat pengaturan keamanan aplikasi pembayaran: notifikasi setiap transaksi, batas transaksi harian, verifikasi dua langkah, dan memeriksa riwayat. Ingat juga: petugas resmi tidak pernah meminta kode OTP atau PIN.
+Lima pengaturan keamanan aplikasi pembayaran: notifikasi setiap transaksi, batas transaksi harian, verifikasi dua langkah, PIN yang sulit ditebak dengan sidik jari, dan memeriksa riwayat. Ingat juga: petugas resmi tidak pernah meminta kode OTP atau PIN.
 
 Simulasi lengkap: Simulasi Informatika Kelas 12 | Mengamankan Aplikasi Pembayaran (lihat video terkait di atas judul).
 Latihan interaktif: https://belajar-informatika.vercel.app/f125

@@ -84,7 +84,7 @@
         card(ctx, 80, py, 800, 440, { fill: C.panel, stroke: C.pink, lw: 5 });
         eye(ctx, 150, py + 70, 46); text(ctx, "Layar pemilik jaringan", 220, py + 86, 42, { weight: 900, color: C.ink, fit: 620 });
         ctx.restore();
-        ["belajarseru.id", "kantinsehat.id", "videolucu.id", "tokobuku.id"].forEach((s, i) => {
+        ["belajarseru.example", "kantinsehat.example", "videolucu.example", "tokobuku.example"].forEach((s, i) => {
           const u = ph(b, l, "situs", 0.3 + i * 0.25); if (u <= 0) return; const ry = py + 140 + i * 72;
           if (ry + 60 > py + 440) return;
           ctx.save(); ctx.globalAlpha = u; card(ctx, 110, ry, 740, 60, { fill: C.bg2, r: 14 });
@@ -101,7 +101,7 @@
         card(ctx, x, y, w, h, { fill: safe ? C.goodBg : C.badBg, stroke: safe ? C.good : C.bad, lw: 5 });
         card(ctx, x + 30, y + 30, w - 60, 80, { fill: C.bg, r: 40 });
         if (safe) lock(ctx, x + 80, y + 54, 44, 0, C.good); else { ctx.fillStyle = C.bad; ctx.beginPath(); ctx.arc(x + 80, y + 70, 22, 0, Math.PI * 2); ctx.fill(); text(ctx, "!", x + 80, y + 82, 32, { align: "center", weight: 900, color: C.ink }); }
-        text(ctx, safe ? "tokobuku.id" : "situs-lama.id", x + 130, y + 84, 40, { weight: 800, color: C.ink });
+        text(ctx, safe ? "tokobuku.example" : "situs-lama.example", x + 130, y + 84, 40, { weight: 800, color: C.ink });
         text(ctx, "Yang terlihat oleh orang lain:", x + 30, y + 170, 34, { weight: 700, color: C.ink2 });
         const msg = "Halo, ini pesanku untuk Rara";
         const shown = safe ? msg.split("").map((ch, i) => ch === " " ? " " : "#@%&*kQ9xZ!"[Math.floor(rnd(i * 7 + Math.floor(l * 10)) * 11)]).join("") : msg;
