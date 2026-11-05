@@ -63,7 +63,7 @@
     const person = (n, x, y, a = 1) => { ctx.globalAlpha = a; ctx.fillStyle = col[n] || C.ink2; ctx.beginPath(); ctx.arc(x, y - 36, 26, 0, 7); ctx.fill(); rr(ctx, x - 34, y - 6, 68, 64, 18); ctx.fill();
       text(ctx, n, x, y + 96, 22, { align: "center", weight: 800, color: col[n] }); ctx.globalAlpha = 1; };
     const slot = i => PX + 230 + i * 130;
-    (st.names || []).forEach((n, i) => { let x = slot(i); if (st.shift) x = lerp(slot(i + 1), slot(i), ease(st.shift)); person(n, x, by); });
+    (st.names || []).forEach((n, i) => { let x = slot(i); if (st.shift != null) x = lerp(slot(i + 1), slot(i), ease(st.shift)); person(n, x, by); });
     if (st.join) person(st.join.name, lerp(PX + PW + 40, slot(st.join.i), ease(st.join.u)), by, clamp(st.join.u * 3, 0, 1));
     if (st.leave) { const u = ease(st.leave.u); person(st.leave.name, lerp(slot(0), PX + 85, u), by - u * 120, 1 - clamp((st.leave.u - 0.7) / 0.3, 0, 1)); }
     if (st.note) text(ctx, st.note, PX + PW / 2, y0 + 402, 24, { align: "center", weight: 800, color: st.noteColor || C.ink2 });
@@ -174,7 +174,7 @@
       const ran = f > 0.42;
       const [c] = stack(ctx, a, [{ lines: T.lines, caret: ran ? null : T.caret, blink: blinkAt(l), active: true, run: ran ? "done" : f > 0.36 ? "running" : "ready", spin: l, count: 1, out: ran ? A1O : null, hl: ran && f < 0.85 ? [7] : [] }]);
       const lu = clamp((f - 0.48) / 0.25, 0, 1);
-      antre(ctx, ran ? { names: ["Sinta", "Rina"], shift: 1 - clamp((f - 0.62) / 0.12, 0, 1), leave: lu < 1 ? { name: "Dito", u: lu } : null, note: f > 0.75 ? "Yang datang pertama, keluar pertama." : "", noteColor: GREEN } : { names: ["Dito", "Sinta", "Rina"] });
+      antre(ctx, ran ? { names: ["Sinta", "Rina"], shift: clamp((f - 0.62) / 0.12, 0, 1), leave: lu < 1 ? { name: "Dito", u: lu } : null, note: f > 0.75 ? "Yang datang pertama, keluar pertama." : "", noteColor: GREEN } : { names: ["Dito", "Sinta", "Rina"] });
       if (ran && c.out) call(ctx, 660, c.out.lines[1] - 34, "popleft(): ambil dari depan", c.x + 290, c.out.lines[1] - 8, { fill: C.goodBg, color: GREEN });
       LK.pointer(ctx, l, sp, [{ at: 0, x: 700, y: 780 }, play(c, 0.36), { at: 0.6, x: 800, y: 790 }]);
     },
