@@ -21,7 +21,11 @@ CFG = E.load_json(os.path.join(E.ALAT, "alat_luar.json")); SITE = CFG.get("situs
 def kelas_of(c):
     return 7 if c.startswith("D7") else 8 if c.startswith("D8") else 9 if c.startswith("D9") else 10 if c.startswith("E") else 11 if c.startswith("F11") else 12
 code = PARENT["episode"]; SIM = "for" in PARENT    # video simulasi: kelas dan link latihan diambil dari episode pemakainya
-if SIM:
+DOK = PARENT.get("kind") == "dokumenter"   # dokumenter untuk umum: tanpa kelas, ajakan ke channel YouTube
+CHANNEL = "youtube.com/@iTeachSWE"
+if DOK:
+    kelas = ""; LINK = CHANNEL; FULL = PARENT["title"]
+elif SIM:
     ks = sorted({kelas_of(c) for c in PARENT["for"]}); kelas = f"Kelas {ks[0]}" if len(ks) == 1 else f"Kelas {ks[0]}–{ks[-1]}"
     LINK = SITE.replace("https://", "") + "/" + E.code_slug(PARENT.get("latihan", PARENT["for"][0]))
     FULL = f"Simulasi Informatika {kelas} | {PARENT['title']}"
@@ -42,9 +46,9 @@ def timeline(variant):
     TL = E.load_timeline(ROOT, variant)
     src = {b["id"]: b for b in E.load_timeline(EP, variant)["beats"]}
     for b in TL["beats"]:
-        if b.get("src") in src: b["src_dur"] = src[b["src"]]["dur"]; b["src_audio"] = src[b["src"]]["audio"]
-    TL.update(episode=code, label=("Simulasi Informatika " if SIM else "Informatika ") + kelas, full_title=FULL, link=LINK,
-              cta_heading="TONTON SIMULASI LENGKAPNYA" if SIM else "TONTON EPISODE LENGKAPNYA")
+        if b.get("src") in src: s0 = src[b["src"]]; b["src_dur"] = s0["dur"]; b["src_audio"] = s0["audio"]; b["src_text"] = s0["text"]; b["src_lead"] = (s0["speech"] - s0["start"]) if s0.get("speech") is not None else 0.4
+    TL.update(episode=code, label="Dokumenter Animasi" if DOK else ("Simulasi Informatika " if SIM else "Informatika ") + kelas, full_title=FULL, link=LINK,
+              cta_heading="TONTON VIDEO LENGKAPNYA" if DOK else "TONTON SIMULASI LENGKAPNYA" if SIM else "TONTON EPISODE LENGKAPNYA")
     return TL
 
 def page(pg, TL):
@@ -78,12 +82,14 @@ def render(pg, variant):
 def youtube_md():
     yt = SCRIPT.get("youtube", {})
     title = SCRIPT.get("judul_short") or SCRIPT["hook"]
-    desc = "\n".join([SCRIPT.get("ringkas", ""), "", ("Simulasi lengkap: " if SIM else "Episode lengkap: ") + f"{FULL} (lihat video terkait di atas judul).",
+    if DOK: desc = "\n".join([SCRIPT.get("ringkas", ""), "", f"Dokumenter lengkap: {FULL} (lihat video terkait di atas judul).",
+                      f"Subscribe: https://www.{CHANNEL}", f"Belajar informatika gratis: {SITE}/", "", " ".join(yt.get("tagar", ["#shorts", "#AI"]))])
+    else: desc = "\n".join([SCRIPT.get("ringkas", ""), "", ("Simulasi lengkap: " if SIM else "Episode lengkap: ") + f"{FULL} (lihat video terkait di atas judul).",
                       f"Latihan interaktif: https://{LINK}", f"Semua episode: {SITE}/", "",
                       "Semua nama, akun, dan contoh di video ini fiktif.", "", " ".join(yt.get("tagar", ["#shorts", "#informatika"]))])
     md = f"# YouTube Short {code}\n\n**Judul** (≤100 karakter):\n\n{title}\n\n**Deskripsi:**\n\n```\n{desc}\n```\n\n" \
          f"**Video terkait** (fitur \"Related video\" di YouTube Studio): {FULL}\n\n" + \
-         ("**Berkas:** `video/Short_*_suara.mp4` (narasi; simulasi hanya versi bersuara).\n" if SIM else "**Berkas:** `video/Short_*_suara.mp4` (narasi) dan `video/Short_*_teks.mp4` (tanpa suara, waktu baca 1,6 kata/detik).\n")
+         ("**Berkas:** `video/Short_*_suara.mp4` (narasi; hanya versi bersuara).\n" if SIM or DOK else "**Berkas:** `video/Short_*_suara.mp4` (narasi) dan `video/Short_*_teks.mp4` (tanpa suara, waktu baca 1,6 kata/detik).\n")
     open(os.path.join(ROOT, "youtube.md"), "w", encoding="utf-8").write(md)
 
 with sync_playwright() as p:

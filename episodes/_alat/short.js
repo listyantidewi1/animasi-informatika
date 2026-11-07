@@ -87,5 +87,5 @@
     return b;
   }
 
-  K.drawShort = drawShort; K.SW = SW; K.SH = SH;
+  K.drawShort = K.drawShortDok || drawShort; K.SW = SW; K.SH = SH;   // dokumenter: tampilan malam dari short_dok.js (dimuat sebagai mesin induk)
 })(typeof window !== "undefined" ? window : globalThis);

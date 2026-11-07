@@ -17,7 +17,7 @@ if SHORT:
     SR = os.path.join(ROOT, "short"); variant = "suara" if os.path.exists(E.timeline_path(SR, "suara")) else "teks"
     TL = E.load_timeline(SR, variant); src = {b["id"]: b for b in E.load_timeline(ROOT, variant)["beats"]}
     for b in TL["beats"]:
-        if b.get("src") in src: b["src_dur"] = src[b["src"]]["dur"]; b["src_audio"] = src[b["src"]]["audio"]
+        if b.get("src") in src: s0 = src[b["src"]]; b["src_dur"] = s0["dur"]; b["src_audio"] = s0["audio"]; b["src_text"] = s0["text"]; b["src_lead"] = (s0["speech"] - s0["start"]) if s0.get("speech") is not None else 0.4
     TL.update(label="Simulasi", full_title=SCRIPT["title"], link="x")
     ENGINE += "\n" + open(os.path.join(E.ALAT, "short.js"), encoding="utf-8").read()
     DRAW = "const off=document.createElement('canvas');off.width=1920;off.height=1080;cv.width=1080;cv.height=1920;window.__d=t=>Kiko.drawShort(ctx,off,t,TL);"
