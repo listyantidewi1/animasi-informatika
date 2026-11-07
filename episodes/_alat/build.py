@@ -24,6 +24,10 @@ YTMAP = E.load_json(os.path.join(E.ALAT, "youtube_id.json")) if os.path.exists(o
 _parts = list(script.get("parts", {}).keys()) or [script["episode"]]
 YT = [{"part": k, "id": yt_id(YTMAP.get(k, ""))} for k in _parts]
 YT = [x for x in YT if x["id"]]
+# hanya video yang sudah tayang (yt_tayang.py); video terjadwal masih pribadi dan tidak bisa diputar murid
+_TAYANG = os.path.join(E.ALAT, "youtube_tayang.json")
+if os.path.exists(_TAYANG):
+    _t = E.load_json(_TAYANG); YT = [x for x in YT if _t.get(x["part"], {}).get("id") == x["id"]]
 js = "window.__YT = " + json.dumps(YT) + ";\n" + js   # video YouTube halaman ini (kosong = pemutar animasi saja)
 SIM = "for" in script and not os.path.exists(os.path.join(ROOT, "page.html"))   # video simulasi: halaman pemutar bersama
 if SIM: teks = None   # simulasi hanya versi bersuara

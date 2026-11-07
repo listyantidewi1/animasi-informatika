@@ -96,7 +96,13 @@ function PageCore(TLS, opt = {}) {
       const box = document.createElement("div"); box.className = "yt-frame"; sec.appendChild(box);
       const show = (i) => {
         box.innerHTML = "";
-        const f = document.createElement("iframe");
+        if (location.protocol === "file:") {   // dibuka sebagai berkas: YouTube menolak pemutar tanpa alamat asal (Error 153)
+          const a = document.createElement("a"); a.className = "yt-luring"; a.href = "https://www.youtube.com/watch?v=" + YTL[i].id; a.target = "_blank"; a.rel = "noopener";
+          a.textContent = "▶ Tonton " + YTL[i].part + " di YouTube"; box.appendChild(a);
+          if (row) [...row.children].forEach((b, j) => b.setAttribute("aria-pressed", String(j === i)));
+          return;
+        }
+        const f = document.createElement("iframe"); f.referrerPolicy = "strict-origin-when-cross-origin";
         f.src = "https://www.youtube-nocookie.com/embed/" + YTL[i].id + "?rel=0";
         f.title = "Video " + YTL[i].part; f.loading = "lazy"; f.allowFullscreen = true;
         f.setAttribute("allow", "accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share");
