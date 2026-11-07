@@ -532,7 +532,7 @@
       bg(ctx, t, { stars: 0.6 }); glow(ctx, 960, 420, 600, P.violet, 0.3);
       bip(ctx, 960, 360, 260, { mood: "happy", t, wave: l });
       const u = fade(l, at(b, "subscribe"), 0.6);
-      panel(ctx, 560, 560, 800, 120, { stroke: hexA(P.amber, 0.8), lw: 5 }); txt(ctx, "youtube.com/@iteachswe", 960, 638, 54, { align: "center", color: P.amber, weight: 900 });
+      panel(ctx, 560, 560, 800, 120, { stroke: hexA(P.amber, 0.8), lw: 5 }); txt(ctx, "youtube.com/@iTeachSWE", 960, 638, 54, { align: "center", color: P.amber, weight: 900 });
       if (u > 0) { ctx.save(); ctx.globalAlpha = u; ctx.fillStyle = "#E5484D"; H.rr(ctx, 790, 720, 340, 90, 45); ctx.fill(); txt(ctx, "🔔 SUBSCRIBE", 960, 778, 38, { align: "center", color: "#FFFFFF", weight: 900 }); ctx.restore(); }
       txt(ctx, "I Teach Software Engineering", 960, 880, 34, { align: "center", color: P.ink2, weight: 700 });
       const v = fade(l, at(b, "Sampai jumpa"), 0.6); if (v > 0) { ctx.save(); ctx.globalAlpha = v * 0.8; [["Tonton juga", 100], ["Tonton juga", 1420]].forEach(([s, x]) => { ctx.strokeStyle = hexA(P.ink2, 0.5); ctx.lineWidth = 3; ctx.setLineDash([12, 10]); H.rr(ctx, x, 380, 400, 225, 16); ctx.stroke(); ctx.setLineDash([]); txt(ctx, s, x + 200, 500, 30, { align: "center", color: P.ink2 }); }); ctx.restore(); }

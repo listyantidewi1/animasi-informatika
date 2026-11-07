@@ -8,7 +8,7 @@ Proyek terpisah dari seri belajar: **jangan menyebut kelas, kurikulum, episode, 
 - Tokoh **Bip** (makhluk bulat tosca berantena, mata besar) dan palet gelap pekat dengan aksen kuning, pink, tosca, biru (`TikTok.C` di `_alat/tiktok-core.js`). Font Inter. Semua gambar digambar dengan kode; tanpa gambar/musik unduhan, tanpa logo atau tampilan merek; nama, pesan, akun, dan data rekaan.
 - Tata letak: kait sangat besar di beat pertama (tampil penuh < 0,5 detik); chip topik di atas (kunci `topik`); area gambar di tengah; kotak narasi di bawah (x 50–880, dasar y 1590) dengan garis kemajuan; tetap terbaca tanpa suara.
 - Ruang aman TikTok: tidak ada teks penting di x > 900 pada y 900–1500 (tombol), di y > 1600 (keterangan), atau di y < 150. Gambar di bawah y 900 berpusat di x 480, lebar maksimum 820.
-- Penutup selalu adegan `akhir`: kartu "youtube.com/@iteachswe" + tombol SUBSCRIBE yang diketuk, narasi persis: **"Mau belajar lebih banyak? Subscribe channel iteachswe di YouTube, ya!"** (69 karakter, MP3-nya sama untuk semua video tetapi tetap dibuat per video karena alat membuat per folder; hold 1,6).
+- Penutup selalu adegan `akhir`: kartu "youtube.com/@iTeachSWE" + tombol SUBSCRIBE yang diketuk, narasi persis: **"Mau belajar lebih banyak? Subscribe channel iTeachSWE di YouTube, ya!"** (69 karakter, MP3-nya sama untuk semua video tetapi tetap dibuat per video karena alat membuat per folder; hold 1,6).
 
 ## Aturan isi
 - Beat pertama = kait: pertanyaan atau fakta mengejutkan dalam satu-dua kalimat lengkap. Satu konsep per video.
@@ -31,7 +31,7 @@ Proyek terpisah dari seri belajar: **jangan menyebut kelas, kurikulum, episode, 
 | `banding` | `a`, `b` = {`label`, `value`, `note`, `tone`: bad/good/kuning}, `cueA`, `cueB` |
 | `angka` | `label`, `num`, `count` (hitung naik), `cueNum`, `numSize`, `sub`, `cueSub`, `subEm`, `tone`, `mood` (null = tanpa Bip) |
 | `bip` | `say`, `sayEm`, `mood` |
-| `akhir` | `head`, `note` (null = tanpa catatan); alamat dari `channel` (bawaan youtube.com/@iteachswe) |
+| `akhir` | `head`, `note` (null = tanpa catatan); alamat dari `channel` (bawaan youtube.com/@iTeachSWE) |
 
 Semua beat: `cont: true` (tanpa peralihan masuk), `noChip: true` (tanpa chip topik).
 Pembantu: `rr, font, text(opt.fit/shadow), wrap, para, richLine, richLines, emFlags, card(opt.glow/stroke), pill, arrow, check, cross, lock, bip(ctx, x, y, ukuran, {mood: happy|wow|think|sad, t, wave, look, bounce}), bubble, ease, clamp, lerp, back, rnd (acak tetap), fmt (1.000.000), cue/cueAt/ph/pop (isyarat: pecahan 0–1 atau kata dari teks beat)`. Area `A` = {x 60, y, w, h, cx 480, cy, bot}.
@@ -58,4 +58,4 @@ Satu render pada satu waktu, selalu dengan `nice -n 10` (±10–20 menit per vid
 - [ ] Angka/fakta sudah dihitung atau diperiksa; ada kualifikasi bila perkiraan.
 - [ ] Lembar kontak dilihat: kait terbaca di frame pertama, tidak ada tumpang tindih, ada gerakan di tiap beat.
 - [ ] Video jadi diperiksa dengan ffmpeg (frame tiap 4 detik), durasi ±40–50 detik, suara ada.
-- [ ] `caption.md` berisi 1–2 kalimat, 4–6 tagar, dan youtube.com/@iteachswe.
+- [ ] `caption.md` berisi 1–2 kalimat, 4–6 tagar, dan youtube.com/@iTeachSWE.

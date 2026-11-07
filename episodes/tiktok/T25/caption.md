@@ -9,7 +9,7 @@
 ```
 Wi-Fi gratis boleh dipakai, asal tahu batasnya. Jangan login akun penting atau membayar lewat Wi-Fi gratisan!
 
-Belajar lebih banyak di YouTube: youtube.com/@iteachswe
+Belajar lebih banyak di YouTube: youtube.com/@iTeachSWE
 
 #belajarditiktok #informatika #teknologi #keamanandigital #wifi
 ```

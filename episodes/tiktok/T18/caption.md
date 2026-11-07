@@ -9,7 +9,7 @@
 ```
 Situs yang baik tidak tahu sandimu. Yang disimpan hanya hash-nya, dan hash tidak bisa dibalik!
 
-Belajar lebih banyak di YouTube: youtube.com/@iteachswe
+Belajar lebih banyak di YouTube: youtube.com/@iTeachSWE
 
 #belajarditiktok #informatika #teknologi #keamanandigital #katasandi
 ```

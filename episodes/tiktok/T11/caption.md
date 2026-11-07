@@ -9,7 +9,7 @@
 ```
 Dengan enkripsi end-to-end, pesanmu dikunci di HP-mu dan hanya bisa dibuka di HP penerima. Server pun cuma melihat huruf acak.
 
-Belajar lebih banyak di YouTube: youtube.com/@iteachswe
+Belajar lebih banyak di YouTube: youtube.com/@iTeachSWE
 
 #belajarditiktok #informatika #keamanandigital #privasi #teknologi
 ```

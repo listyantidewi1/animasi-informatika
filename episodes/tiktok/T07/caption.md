@@ -9,7 +9,7 @@
 ```
 RAM itu meja kerja HP-mu. Kalau mejanya penuh, aplikasi harus diambil ulang dari lemari, dan HP terasa lemot.
 
-Belajar lebih banyak di YouTube: youtube.com/@iteachswe
+Belajar lebih banyak di YouTube: youtube.com/@iTeachSWE
 
 #belajarditiktok #informatika #teknologi #tipsHP #faktaunik
 ```

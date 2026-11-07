@@ -9,7 +9,7 @@
 ```
 Iklan tidak membaca pikiranmu, tetapi membaca jejakmu. Cek pengaturan iklan di HP-mu, yuk!
 
-Belajar lebih banyak di YouTube: youtube.com/@iteachswe
+Belajar lebih banyak di YouTube: youtube.com/@iTeachSWE
 
 #belajarditiktok #informatika #literasidigital #privasi #teknologi
 ```

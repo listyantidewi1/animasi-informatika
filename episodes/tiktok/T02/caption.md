@@ -9,7 +9,7 @@
 ```
 Foto di HP-mu sebenarnya cuma deretan 0 dan 1. Begini cara komputer menyusunnya!
 
-Belajar lebih banyak di YouTube: youtube.com/@iteachswe
+Belajar lebih banyak di YouTube: youtube.com/@iTeachSWE
 
 #belajarditiktok #informatika #teknologi #faktaunik #komputer
 ```

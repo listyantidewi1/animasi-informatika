@@ -9,7 +9,7 @@
 ```
 AI tidak diberi aturan, tetapi diberi banyak contoh. Makanya AI hanya sebaik contoh yang dipelajarinya!
 
-Belajar lebih banyak di YouTube: youtube.com/@iteachswe
+Belajar lebih banyak di YouTube: youtube.com/@iTeachSWE
 
 #belajarditiktok #informatika #AI #kecerdasanbuatan #teknologi
 ```

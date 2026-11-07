@@ -9,7 +9,7 @@
 ```
 Setiap perangkat di internet punya alamat IP, supaya data tahu harus diantar ke mana. Alamat versi lama ternyata sudah tidak cukup!
 
-Belajar lebih banyak di YouTube: youtube.com/@iteachswe
+Belajar lebih banyak di YouTube: youtube.com/@iTeachSWE
 
 #belajarditiktok #informatika #teknologi #internet #faktaunik
 ```

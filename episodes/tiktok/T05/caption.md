@@ -9,7 +9,7 @@
 ```
 Memasak mi instan juga menjalankan algoritma: langkahnya jelas, urutannya tidak boleh tertukar. Coba tulis algoritma sarapanmu!
 
-Belajar lebih banyak di YouTube: youtube.com/@iteachswe
+Belajar lebih banyak di YouTube: youtube.com/@iTeachSWE
 
 #belajarditiktok #informatika #teknologi #algoritma #coding
 ```

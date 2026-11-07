@@ -9,7 +9,7 @@
 ```
 Komputer membaca kode persis seperti yang ditulis. Satu kutip yang hilang atau satu tanda yang tertukar bisa bikin program kacau!
 
-Belajar lebih banyak di YouTube: youtube.com/@iteachswe
+Belajar lebih banyak di YouTube: youtube.com/@iTeachSWE
 
 #belajarditiktok #informatika #coding #python #programming
 ```

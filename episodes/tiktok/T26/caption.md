@@ -9,7 +9,7 @@
 ```
 Verifikasi dua langkah adalah kunci kedua untuk akunmu. Aktifkan di menu keamanan akun, dan jangan pernah bagikan kodenya!
 
-Belajar lebih banyak di YouTube: youtube.com/@iteachswe
+Belajar lebih banyak di YouTube: youtube.com/@iTeachSWE
 
 #belajarditiktok #informatika #teknologi #keamanandigital #tipsaman
 ```

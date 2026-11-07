@@ -9,7 +9,7 @@
 ```
 File ZIP mengecil karena pola yang berulang dicatat lebih singkat. Saat dibuka, isinya kembali persis sama!
 
-Belajar lebih banyak di YouTube: youtube.com/@iteachswe
+Belajar lebih banyak di YouTube: youtube.com/@iTeachSWE
 
 #belajarditiktok #informatika #teknologi #faktaunik #komputer
 ```

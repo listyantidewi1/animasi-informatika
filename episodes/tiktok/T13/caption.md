@@ -9,7 +9,7 @@
 ```
 Berandamu disusun dari sinyal kecil: lama menonton, mengulang, menyukai, menggeser. Mau lebih beragam? Cari topik baru!
 
-Belajar lebih banyak di YouTube: youtube.com/@iteachswe
+Belajar lebih banyak di YouTube: youtube.com/@iTeachSWE
 
 #belajarditiktok #informatika #literasidigital #algoritma #teknologi
 ```

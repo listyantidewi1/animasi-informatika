@@ -9,7 +9,7 @@
 ```
 Tombol nanti saja itu menggoda, tetapi update menutup celah keamanan di HP-mu. Nyalakan update otomatis, yuk!
 
-Belajar lebih banyak di YouTube: youtube.com/@iteachswe
+Belajar lebih banyak di YouTube: youtube.com/@iTeachSWE
 
 #belajarditiktok #informatika #teknologi #keamanandigital #tipshp
 ```

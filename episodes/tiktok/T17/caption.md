@@ -9,7 +9,7 @@
 ```
 Buffering terjadi saat stok potongan video habis lebih cepat daripada terisi. Sinyal lemah? Turunkan kualitasnya!
 
-Belajar lebih banyak di YouTube: youtube.com/@iteachswe
+Belajar lebih banyak di YouTube: youtube.com/@iTeachSWE
 
 #belajarditiktok #informatika #teknologi #internet #tipsHP
 ```

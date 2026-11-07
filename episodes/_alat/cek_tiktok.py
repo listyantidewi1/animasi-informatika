@@ -3,7 +3,7 @@
   2. jumlah baris kotak narasi tiap beat (paling banyak 4; dihitung dengan mesin gambar yang sama, tiktok-core.js);
   3. teks rusak ("undefined", "NaN", "null", "Infinity", "[object") dan error JavaScript di seluruh timeline (tiap 0,2 detik);
   4. teks di ruang aman TikTok: kolom tombol kanan (x > 900, y 900–1500), keterangan bawah (y > 1600), dan atas (y < 150);
-  5. beat pertama adegan "kait", beat terakhir adegan "akhir" yang menyebut subscribe dan iteachswe.
+  5. beat pertama adegan "kait", beat terakhir adegan "akhir" yang menyebut subscribe dan iTeachSWE.
   python3 episodes/_alat/cek_tiktok.py tiktok/T01            timeline.json bila ada, kalau tidak timeline-teks.json, kalau tidak dibuat sementara
 """
 import json, os, re, sys
@@ -21,7 +21,7 @@ else:   # timeline sementara seperti timing.py
         read = max(3.5, len(b["text"].split()) / 1.6 + 0.8); d = read + 1.0 + b.get("hold", 0.8)
         beats.append({**b, "start": t, "speech": t, "audio": read, "dur": d}); t += d
     TL, src = E.timeline_from(SCRIPT, beats, t), "timeline sementara"
-TL.setdefault("channel", SCRIPT.get("channel", "youtube.com/@iteachswe"))
+TL.setdefault("channel", SCRIPT.get("channel", "youtube.com/@iTeachSWE"))
 problems = []
 
 # 1. karakter
@@ -35,7 +35,7 @@ for b in SCRIPT["beats"]:
 if SCRIPT["beats"][0]["scene"] != "kait": problems.append("beat pertama sebaiknya adegan 'kait'")
 last = SCRIPT["beats"][-1]
 if last["scene"] != "akhir" or "subscribe" not in last["text"].lower() or "iteachswe" not in last["text"].lower():
-    problems.append("beat terakhir harus adegan 'akhir' dengan ajakan subscribe channel iteachswe")
+    problems.append("beat terakhir harus adegan 'akhir' dengan ajakan subscribe channel iTeachSWE")
 
 BAD = r"undefined|NaN|\bnull\b|Infinity|\[object"
 HTML = """<!doctype html><html><head><meta charset="utf-8"></head><body><canvas id="c" width="1080" height="1920"></canvas>

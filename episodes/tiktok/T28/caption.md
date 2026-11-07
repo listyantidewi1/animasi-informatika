@@ -9,7 +9,7 @@
 ```
 Mengurutkan 1.000 kartu bisa butuh hampir setengah juta perbandingan, atau kurang dari 10.000. Kamu biasa pakai cara yang mana?
 
-Belajar lebih banyak di YouTube: youtube.com/@iteachswe
+Belajar lebih banyak di YouTube: youtube.com/@iTeachSWE
 
 #belajarditiktok #informatika #teknologi #algoritma #coding
 ```

@@ -9,7 +9,7 @@
 ```
 Satu rumus, tidak perlu menghitung ulang. Ubah angkanya, totalnya ikut berubah sendiri!
 
-Belajar lebih banyak di YouTube: youtube.com/@iteachswe
+Belajar lebih banyak di YouTube: youtube.com/@iTeachSWE
 
 #belajarditiktok #informatika #teknologi #lembarkerja #tipsbelajar
 ```

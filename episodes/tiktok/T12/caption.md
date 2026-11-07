@@ -9,7 +9,7 @@
 ```
 Aplikasi chat mengecilkan dan mengompresi fotomu supaya hemat kuota. Mau tetap tajam? Kirim sebagai dokumen!
 
-Belajar lebih banyak di YouTube: youtube.com/@iteachswe
+Belajar lebih banyak di YouTube: youtube.com/@iTeachSWE
 
 #belajarditiktok #informatika #teknologi #tipsHP #fotografi
 ```

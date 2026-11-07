@@ -9,7 +9,7 @@
 ```
 File di cloud sebenarnya tersimpan di server, yaitu komputer milik perusahaan penyedia. Jaga akunmu dengan sandi yang kuat!
 
-Belajar lebih banyak di YouTube: youtube.com/@iteachswe
+Belajar lebih banyak di YouTube: youtube.com/@iTeachSWE
 
 #belajarditiktok #informatika #teknologi #cloud #faktaunik
 ```

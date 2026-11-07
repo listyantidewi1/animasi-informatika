@@ -9,7 +9,7 @@
 ```
 Saat kamu menekan Enter, mesin pencari cuma membuka catatan yang sudah dibuat jauh hari. Makanya jawabannya secepat kilat!
 
-Belajar lebih banyak di YouTube: youtube.com/@iteachswe
+Belajar lebih banyak di YouTube: youtube.com/@iTeachSWE
 
 #belajarditiktok #informatika #teknologi #mesinpencari #faktaunik
 ```

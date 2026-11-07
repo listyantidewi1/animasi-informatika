@@ -9,7 +9,7 @@
 ```
 Satu chat bisa dipecah jadi banyak paket yang menempuh jalan berbeda, lalu disusun lagi di tujuan. Semua dalam sekejap!
 
-Belajar lebih banyak di YouTube: youtube.com/@iteachswe
+Belajar lebih banyak di YouTube: youtube.com/@iTeachSWE
 
 #belajarditiktok #informatika #teknologi #internet #faktaunik
 ```

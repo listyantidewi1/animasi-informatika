@@ -9,7 +9,7 @@
 ```
 Rekursi itu seperti membuka boneka di dalam boneka: caranya sama terus, sampai ketemu yang terkecil!
 
-Belajar lebih banyak di YouTube: youtube.com/@iteachswe
+Belajar lebih banyak di YouTube: youtube.com/@iTeachSWE
 
 #belajarditiktok #informatika #teknologi #pemrograman #coding
 ```

@@ -9,7 +9,7 @@
 ```
 Layar HP merasakan listrik kecil dari jarimu. Pantas saja pulpen plastik tidak bisa dipakai!
 
-Belajar lebih banyak di YouTube: youtube.com/@iteachswe
+Belajar lebih banyak di YouTube: youtube.com/@iTeachSWE
 
 #belajarditiktok #informatika #teknologi #faktaunik #tipshp
 ```

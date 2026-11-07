@@ -9,7 +9,7 @@
 ```
 Satu megabyte muat sekitar satu juta huruf, kira-kira 500 halaman buku. Tapi satu foto HP bisa sebesar beberapa megabyte!
 
-Belajar lebih banyak di YouTube: youtube.com/@iteachswe
+Belajar lebih banyak di YouTube: youtube.com/@iTeachSWE
 
 #belajarditiktok #informatika #teknologi #faktaunik #komputer
 ```

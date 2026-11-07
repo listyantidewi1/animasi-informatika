@@ -9,7 +9,7 @@
 ```
 Printer, server tiket, dan kantin punya aturan yang sama: yang datang duluan dilayani duluan!
 
-Belajar lebih banyak di YouTube: youtube.com/@iteachswe
+Belajar lebih banyak di YouTube: youtube.com/@iTeachSWE
 
 #belajarditiktok #informatika #teknologi #strukturdata #belajarcoding
 ```

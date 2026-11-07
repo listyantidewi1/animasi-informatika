@@ -9,7 +9,7 @@
 ```
 Selalu tebak di tengah, dan angka 1 sampai 100 pasti ketemu paling lama dalam 7 tebakan. Coba tantang temanmu!
 
-Belajar lebih banyak di YouTube: youtube.com/@iteachswe
+Belajar lebih banyak di YouTube: youtube.com/@iTeachSWE
 
 #belajarditiktok #informatika #teknologi #matematika #faktaunik
 ```

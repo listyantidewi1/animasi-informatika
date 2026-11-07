@@ -9,7 +9,7 @@
 ```
 Setiap kali kamu mengetik nama situs, browser diam-diam bertanya ke DNS dulu. Begini cara kerjanya!
 
-Belajar lebih banyak di YouTube: youtube.com/@iteachswe
+Belajar lebih banyak di YouTube: youtube.com/@iTeachSWE
 
 #belajarditiktok #informatika #teknologi #internet #faktaunik
 ```

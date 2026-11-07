@@ -22,7 +22,7 @@ ROOT, rest = E.find_root(args[:1]); FRAMES = args[1:]
 SCRIPT = E.load_script(ROOT); code = SCRIPT["episode"]
 ENGINE_FILES = SCRIPT.get("engine", ["../../_alat/tiktok-core.js", "scenes.js"])
 ENGINE = "\n".join(open(os.path.join(ROOT, f), encoding="utf-8").read() for f in ENGINE_FILES)
-CHANNEL = SCRIPT.get("channel", "youtube.com/@iteachswe")
+CHANNEL = SCRIPT.get("channel", "youtube.com/@iTeachSWE")
 FPS = 30
 ZONA = """window.__zona=()=>{ctx.save();ctx.fillStyle='rgba(255,0,0,0.22)';ctx.fillRect(900,900,180,600);ctx.fillRect(0,1600,1080,320);
 ctx.fillRect(0,0,1080,150);ctx.restore();};""" if "--zona" in flags else "window.__zona=()=>{};"

@@ -71,7 +71,7 @@ section {{ scroll-margin-top: 110px }} h2 {{ font-size: 22px; margin: 28px 0 10p
 <div class="eyebrow">Seri Animasi Informatika · SMP–SMA · CP 2025</div>
 <h1>Latihan interaktif per episode</h1>
 <p class="lead">Ketuk judul episode untuk membuka halamannya: video, cek pemahaman dengan petunjuk, dan latihan. Kemajuan tersimpan di perangkat masing-masing. Semua halaman bisa dibuka di HP.</p>
-<a class="yt" href="https://www.youtube.com/@iteachswe" target="_blank" rel="noopener"><span aria-hidden="true">▶</span><span><b>Tonton video lengkapnya di YouTube</b><small>Subscribe channel @iteachswe untuk belajar lebih banyak.</small></span></a>
+<a class="yt" href="https://www.youtube.com/@iTeachSWE" target="_blank" rel="noopener"><span aria-hidden="true">▶</span><span><b>Tonton video lengkapnya di YouTube</b><small>Subscribe channel @iTeachSWE untuk belajar lebih banyak.</small></span></a>
 <nav aria-label="Kelas">{nav}</nav>
 {"".join(sec)}
 <p class="note" style="margin-top:28px">Tokoh: robot Kiko, Dito, dan Sinta. Semua gambar dibuat dengan kode; semua nama, akun, dan data dalam contoh bersifat fiktif. Untuk guru: tiap halaman memuat bagian "Untuk guru" dengan pembagian JP.</p>

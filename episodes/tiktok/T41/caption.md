@@ -9,7 +9,7 @@
 ```
 Jalan terpendek belum tentu tercepat. Aplikasi peta menghitung waktu tempuh setiap jalan, lalu memilih yang paling cepat.
 
-Belajar lebih banyak di YouTube: youtube.com/@iteachswe
+Belajar lebih banyak di YouTube: youtube.com/@iTeachSWE
 
 #belajarditiktok #informatika #teknologi #algoritma #faktaunik
 ```

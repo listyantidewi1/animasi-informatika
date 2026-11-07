@@ -9,7 +9,7 @@
 ```
 Satu pesan yang diteruskan ke lima teman bisa sampai ke hampir 20.000 orang dalam enam putaran. Cek dulu sebelum meneruskan!
 
-Belajar lebih banyak di YouTube: youtube.com/@iteachswe
+Belajar lebih banyak di YouTube: youtube.com/@iTeachSWE
 
 #belajarditiktok #informatika #literasidigital #cekfakta #hoaks
 ```

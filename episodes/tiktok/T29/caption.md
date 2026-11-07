@@ -9,7 +9,7 @@
 ```
 Unggahan yang sudah dihapus bisa saja masih ada di screenshot, grup lain, atau server. Pikir dulu sebelum upload!
 
-Belajar lebih banyak di YouTube: youtube.com/@iteachswe
+Belajar lebih banyak di YouTube: youtube.com/@iTeachSWE
 
 #belajarditiktok #informatika #teknologi #jejakdigital #keamanandigital
 ```

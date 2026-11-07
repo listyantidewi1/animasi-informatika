@@ -9,7 +9,7 @@
 ```
 Semua warna di layarmu cuma campuran lampu merah, hijau, dan biru. Merah tambah hijau jadi kuning!
 
-Belajar lebih banyak di YouTube: youtube.com/@iteachswe
+Belajar lebih banyak di YouTube: youtube.com/@iTeachSWE
 
 #belajarditiktok #informatika #teknologi #faktaunik #warna
 ```

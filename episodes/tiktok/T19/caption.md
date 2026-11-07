@@ -9,7 +9,7 @@
 ```
 Link palsu sering cuma beda satu huruf. Baca ujung alamatnya sebelum garis miring pertama!
 
-Belajar lebih banyak di YouTube: youtube.com/@iteachswe
+Belajar lebih banyak di YouTube: youtube.com/@iTeachSWE
 
 #belajarditiktok #informatika #teknologi #keamanandigital #antipenipuan
 ```

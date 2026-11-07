@@ -9,7 +9,7 @@
 ```
 Sinyal dari satelit yang jaraknya sekitar 20.000 km bisa menunjukkan posisimu sampai beberapa meter. Keren, kan?
 
-Belajar lebih banyak di YouTube: youtube.com/@iteachswe
+Belajar lebih banyak di YouTube: youtube.com/@iTeachSWE
 
 #belajarditiktok #informatika #teknologi #gps #faktaunik
 ```

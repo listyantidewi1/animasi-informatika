@@ -9,7 +9,7 @@
 ```
 Wajah dan suara bisa ditiru AI. Kalau ada pesan aneh yang minta uang, cek dulu lewat nomor yang kamu simpan sendiri.
 
-Belajar lebih banyak di YouTube: youtube.com/@iteachswe
+Belajar lebih banyak di YouTube: youtube.com/@iTeachSWE
 
 #belajarditiktok #informatika #teknologi #literasidigital #ai
 ```

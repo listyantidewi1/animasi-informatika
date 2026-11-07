@@ -1,6 +1,6 @@
 # Apakah AI Benar-benar Berpikir?
 
-Dokumenter animasi ±11 menit untuk penonton umum (remaja sampai dewasa), channel I Teach Software Engineering (@iteachswe).
+Dokumenter animasi ±11 menit untuk penonton umum (remaja sampai dewasa), channel I Teach Software Engineering (@iTeachSWE).
 Naskah final (revisi Bu Dewi, 7 Nov 2026). Teks bercetak biasa adalah narasi yang dibacakan. Teks *[Visual: …]* adalah catatan gambar, tidak dibacakan.
 
 Gaya: dokumenter ilustrasi datar dengan kamera yang terus bergerak (zoom, geser, "masuk ke dalam"), palet malam yang hangat, dan Bip sebagai pemandu yang muncul sesekali.
@@ -127,7 +127,7 @@ Karena delapan puluh enam miliar neuron itu, yang bekerja hanya dengan dua puluh
 ## 9. Penutup (±0:20)
 
 Kalau kamu ingin memahami cara kerja teknologi di sekitarmu, mulai dari jaringan, data, sampai AI, subscribe channel I Teach Software Engineering. Sampai jumpa di cerita berikutnya.
-*[Visual: kartu akhir dengan Bip, alamat youtube.com/@iteachswe, dan dua video yang disarankan.]*
+*[Visual: kartu akhir dengan Bip, alamat youtube.com/@iTeachSWE, dan dua video yang disarankan.]*
 
 ---
 

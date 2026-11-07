@@ -9,7 +9,7 @@
 ```
 Tes "bukan robot" itu namanya CAPTCHA. Gunanya menahan bot yang bisa membuat ribuan akun palsu!
 
-Belajar lebih banyak di YouTube: youtube.com/@iteachswe
+Belajar lebih banyak di YouTube: youtube.com/@iTeachSWE
 
 #belajarditiktok #informatika #teknologi #internet #faktaunik
 ```

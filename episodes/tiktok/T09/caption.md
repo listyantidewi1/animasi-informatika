@@ -9,7 +9,7 @@
 ```
 Kotak hitam berarti 1, kotak putih berarti 0. Kode QR tetap terbaca walau sebagian rusak, tapi cek dulu link-nya sebelum dibuka!
 
-Belajar lebih banyak di YouTube: youtube.com/@iteachswe
+Belajar lebih banyak di YouTube: youtube.com/@iTeachSWE
 
 #belajarditiktok #informatika #teknologi #kodeQR #faktaunik
 ```

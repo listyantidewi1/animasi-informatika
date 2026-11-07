@@ -9,7 +9,7 @@
 ```
 Boleh main kalau PR selesai DAN kamar rapi. Tanpa sadar, kamu sudah berpikir seperti komputer!
 
-Belajar lebih banyak di YouTube: youtube.com/@iteachswe
+Belajar lebih banyak di YouTube: youtube.com/@iTeachSWE
 
 #belajarditiktok #informatika #teknologi #logika #belajarcoding
 ```

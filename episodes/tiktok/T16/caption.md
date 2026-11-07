@@ -9,7 +9,7 @@
 ```
 Undo selalu membatalkan langkah terakhir dulu, persis seperti mengambil piring paling atas. Di komputer, tumpukan ini disebut stack.
 
-Belajar lebih banyak di YouTube: youtube.com/@iteachswe
+Belajar lebih banyak di YouTube: youtube.com/@iTeachSWE
 
 #belajarditiktok #informatika #coding #teknologi #faktaunik
 ```

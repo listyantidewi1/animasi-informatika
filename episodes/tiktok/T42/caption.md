@@ -9,7 +9,7 @@
 ```
 Tugas, tujuan, dan bentuk jawaban. Tiga hal ini membuat jawaban AI jauh lebih pas. Jangan lupa cek isinya, ya!
 
-Belajar lebih banyak di YouTube: youtube.com/@iteachswe
+Belajar lebih banyak di YouTube: youtube.com/@iTeachSWE
 
 #belajarditiktok #informatika #teknologi #ai #tipsbelajar
 ```

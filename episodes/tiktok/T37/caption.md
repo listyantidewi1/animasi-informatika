@@ -9,7 +9,7 @@
 ```
 Kenapa angka bisa berputar balik ke nol? Karena tempat menyimpannya terbatas. Namanya overflow!
 
-Belajar lebih banyak di YouTube: youtube.com/@iteachswe
+Belajar lebih banyak di YouTube: youtube.com/@iTeachSWE
 
 #belajarditiktok #informatika #teknologi #programming #faktaunik
 ```

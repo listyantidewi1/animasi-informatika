@@ -9,7 +9,7 @@
 ```
 Terdengar meyakinkan belum tentu benar. Selalu cek jawaban AI di sumber tepercaya, ya!
 
-Belajar lebih banyak di YouTube: youtube.com/@iteachswe
+Belajar lebih banyak di YouTube: youtube.com/@iTeachSWE
 
 #belajarditiktok #informatika #teknologi #ai #literasidigital
 ```

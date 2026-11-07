@@ -9,7 +9,7 @@
 ```
 Sandi 123456 habis ditebak dalam seperseribu detik. Sandimu sendiri butuh berapa lama, ya?
 
-Belajar lebih banyak di YouTube: youtube.com/@iteachswe
+Belajar lebih banyak di YouTube: youtube.com/@iTeachSWE
 
 #belajarditiktok #informatika #teknologi #keamanandigital #katasandi
 ```

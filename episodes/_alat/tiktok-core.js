@@ -327,9 +327,9 @@
       if (b.say && u > 0) { ctx.save(); ctx.globalAlpha = clamp(u, 0, 1); bubble(ctx, b.say, A.x + 40, A.y + 330, 760, 52, { em: b.sayEm, tailX: A.x + 400 }); ctx.restore(); }
       bip(ctx, 480, A.y + 330 + (A.bot - A.y - 330) / 2, Math.min(420, (A.bot - A.y - 330) * 0.85), { mood: b.mood || "happy", t, bounce: 1 });
     },
-    // akhir: kartu ajakan subscribe. TL.channel (bawaan "youtube.com/@iteachswe"), b.head (bawaan "Mau belajar lebih banyak?")
+    // akhir: kartu ajakan subscribe. TL.channel (bawaan "youtube.com/@iTeachSWE"), b.head (bawaan "Mau belajar lebih banyak?")
     akhir(ctx, b, l, t, TL, A) {
-      const url = TL.channel || "youtube.com/@iteachswe";
+      const url = TL.channel || "youtube.com/@iTeachSWE";
       text(ctx, b.head || "Mau belajar lebih banyak?", SW / 2, A.y + 80, 64, { align: "center", weight: 900, color: C.ink, fit: 960 });
       bip(ctx, SW / 2, A.y + 330, 300, { mood: "happy", t, wave: l });
       const u = pop(b, l, 0.05);
@@ -350,7 +350,7 @@
         if (tap > 0 && tap < 0.9) { ctx.save(); ctx.strokeStyle = C.ink; ctx.globalAlpha = 1 - tap / 0.9; ctx.lineWidth = 8; ctx.beginPath(); ctx.arc(620, by + 20, 30 + tap * 120, 0, Math.PI * 2); ctx.stroke(); ctx.restore(); }
         if (tap > -0.6 && tap < 1.2) { ctx.fillStyle = "rgba(255,255,255,0.9)"; ctx.beginPath(); ctx.arc(620 + Math.max(0, -tap) * 120, by + 20 + Math.max(0, -tap) * 160, 26, 0, Math.PI * 2); ctx.fill(); }
       }
-      if (b.note !== null) { const un = ph(b, l, "youtube", 0.5); if (un > 0) { ctx.save(); ctx.globalAlpha = un; text(ctx, b.note || "Channel iteachswe di YouTube", 480, by + 130, 40, { align: "center", weight: 700, color: C.ink2, fit: 780 }); ctx.restore(); } }
+      if (b.note !== null) { const un = ph(b, l, "youtube", 0.5); if (un > 0) { ctx.save(); ctx.globalAlpha = un; text(ctx, b.note || "Channel iTeachSWE di YouTube", 480, by + 130, 40, { align: "center", weight: 700, color: C.ink2, fit: 780 }); ctx.restore(); } }
     }
   };
 
