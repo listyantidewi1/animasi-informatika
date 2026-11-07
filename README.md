@@ -24,6 +24,8 @@ Semua 52 episode sudah final setelah revisi istilah dan tata letak (render ulang
 
 **Video simulasi** (`episodes/sim/`, panduan `episodes/_alat/SIMULASI.md`, daftar `episodes/sim/daftar.json`): 58 dari 58 selesai per 5 Nov 2026, masing-masing hanya versi bersuara, dengan satu Short, halaman pemutar `simulasi-<kode>.html`, dan tombol "Video simulasi" di halaman latihan episode pemakainya. K11 dibuat ulang sebagai versi pertahanan ("Melindungi HP dari Aplikasi Berbahaya", keputusan Bu Dewi 5 Nov 2026).
 
+**Dokumenter** (`episodes/dok/`, untuk penonton umum, gaya dokumenter ilustrasi): D01 "Apakah AI Benar-benar Berpikir?" selesai 7 Nov 2026 (10:36, narator Bian dari ElevenLabs, musik latar dibuat dengan kode oleh `episodes/_alat/musik_dok.py`, mesin kamera dan cahaya di `episodes/dok/D01/sinema.js`). Bahan unggah ada di `episodes/dok/D01/youtube.md` dan `thumbnail.jpg`. Urutan render: `voice.py` → `musik_dok.py` → `render.py --suara`.
+
 **Seri TikTok** (`episodes/tiktok/`, panduan `episodes/tiktok/PANDUAN.md`): 45 video T01–T45 (vertikal, ±45 detik, maskot Bip, ajakan subscribe ke youtube.com/@iteachswe), terlepas dari kurikulum; dirender `episodes/_alat/render_tiktok.py`.
 
 | Episode | Naskah | Suara | Video | Halaman |
