@@ -261,6 +261,281 @@
         net(ctx, 1 - eio((l - tG) / 2.5), (i, j) => 0.5 + 0.5 * Math.sin(t * 3 - i + j)); });
       const tP = at(b, "Parameternya"); if (l > tP) { ctx.save(); ctx.globalAlpha = fade(l, tP, 0.6); panel(ctx, 560, 820, 800, 150, { fill: "rgba(10,16,48,0.88)", stroke: hexA(P.amber, 0.6) }); txt(ctx, "ratusan miliar parameter", 960, 912, 52, { align: "center", color: P.amber, weight: 900 }); ctx.restore(); }
       const u = fade(l, at(b, "AI chatbot"), 0.6); if (u > 0) { ctx.save(); ctx.globalAlpha = u * (1 - fade(l, tG + 2, 1)); bubble(ctx, "AI chatbot", 1700, 120, 300, true, 30); ctx.restore(); }
+    },
+    // ===== 4. Mesin penebak kata =====
+    d01_b4(ctx, b, l, t) {
+      bg(ctx, t, { stars: 0.35 });
+      if (b.id === "b4_1") {
+        txt(ctx, "Nasi goreng paling enak dimakan saat", 1180, 430, 54, { align: "right", weight: 800 });
+        const blink = (l * 2) % 1 < 0.6; ctx.strokeStyle = P.amber; ctx.lineWidth = 5; ctx.setLineDash([14, 10]); H.rr(ctx, 1210, 370, 260, 80, 14); ctx.stroke(); ctx.setLineDash([]); if (blink) txt(ctx, "?", 1340, 430, 56, { align: "center", color: P.amber });
+        const C4 = [["malam", 46], ["lapar", 28], ["hujan", 14], ["pagi", 9]];
+        C4.forEach(([w, p], i) => { const u = fade(l, 1.0 + i * 0.35, 0.4); if (u <= 0) return; const y = 560 + i * 90; ctx.save(); ctx.globalAlpha = u;
+          txt(ctx, w, 1180, y + 18, 42, { align: "right", weight: 800, color: i ? P.ink2 : P.ink }); ctx.fillStyle = i ? hexA(P.violet, 0.7) : P.amber; H.rr(ctx, 1210, y - 18, 9 * p * eout(u), 44, 10); ctx.fill(); txt(ctx, p + "%", 1230 + 9 * p, y + 16, 34, { color: P.ink2, weight: 800 }); ctx.restore(); });
+        return;
+      }
+      if (b.id === "b4_2") {
+        const tR = at(b, "Model bahasa"), tG = at(b, "menebak potongan"), tC = at(b, "lalu memeriksa"), tS = at(b, "Kalau salah"), tL = at(b, "Lalu diulang");
+        if (l < tL) {
+          txt(ctx, "Ibu pergi ke pasar untuk membeli", 1000, 380, 54, { align: "right" });
+          const g = fade(l, tG, 0.4), c = fade(l, tC, 0.4);
+          ctx.strokeStyle = l > tC ? (c > 0 ? P.red : P.amber) : P.amber; ctx.lineWidth = 5; H.rr(ctx, 1030, 322, 300, 80, 14); ctx.stroke();
+          if (g > 0) { ctx.save(); ctx.globalAlpha = g; txt(ctx, "sepatu", 1180, 380, 52, { align: "center", color: l > tC ? P.red : P.amber }); ctx.restore(); }
+          if (c > 0) { ctx.save(); ctx.globalAlpha = c; txt(ctx, "jawaban di teks: sayur", 1180, 470, 34, { align: "center", color: P.green }); txt(ctx, "✕", 1380, 385, 64, { align: "center", color: P.red, weight: 900 }); ctx.restore(); }
+          // kenop parameter bergeser sedikit
+          for (let k = 0; k < 8; k++) { const x = 560 + k * 115, y = 690, a = -1.6 + Math.sin(k * 2.1) * 0.8 + (l > tS ? 0.35 * pr(l, tS + k * 0.08, 0.6) * (k % 2 ? 1 : -1) : 0);
+            ctx.fillStyle = "#24336B"; ctx.beginPath(); ctx.arc(x, y, 42, 0, 6.283); ctx.fill(); ctx.strokeStyle = l > tS ? P.amber : P.violet; ctx.lineWidth = 5; ctx.stroke(); ctx.beginPath(); ctx.moveTo(x, y); ctx.lineTo(x + Math.cos(a) * 34, y + Math.sin(a) * 34); ctx.stroke(); }
+          txt(ctx, "parameter", 960, 790, 30, { align: "center", color: P.ink2, weight: 700 });
+          if (l > tS) txt(ctx, "digeser sedikit", 960, 610, 34, { align: "center", color: P.amber });
+        } else {
+          // diulang: kalimat-kalimat berkelebat cepat, penghitung tebakan naik
+          const S = ["Matahari terbit dari sebelah …", "Ayo kita belajar …", "Kucing itu sedang …", "Hari ini cuacanya sangat …", "Dua tambah dua sama dengan …", "Buku itu ada di atas …"];
+          const k = Math.floor((l - tL) * 3.2); for (let i = 0; i < 6; i++) { const j = (k + i) % S.length, a = Math.max(0, 1 - i * 0.18); ctx.save(); ctx.globalAlpha = a; txt(ctx, S[j], 960, 300 + i * 90, 46 - i * 3, { align: "center", color: i ? P.ink2 : P.ink, weight: 800 }); ctx.restore(); }
+          counter(ctx, Math.pow(10, 3 + (l - tL) * 2.4), 960, 900, 70); txt(ctx, "tebakan", 960, 950, 30, { align: "center", color: P.ink2, weight: 700 });
+        }
+        return;
+      }
+      if (b.id === "b4_3") {
+        const tN = at(b, "lima belas triliun"), tH = at(b, "Kalau seseorang"), tY = at(b, "puluhan ribu");
+        // menara buku menjulang melewati awan; kamera naik
+        const grow = eout((l - 0.3) / (tH - 0.3)), camY = lerp(540, -1400, eio((l - 0.6) / (tH - 0.2)));
+        cam(ctx, { x: 960, y: camY, z: 1 }, () => {
+          const top = lerp(940, -3400, grow); for (let y = 940; y > top; y -= 46) { const i = Math.round((940 - y) / 46); ctx.fillStyle = [P.pink, P.teal, P.violet, P.amber, P.blue][i % 5]; H.rr(ctx, 1260 + ((i * 37) % 30) - 15, y - 40, 200, 40, 6); ctx.fill(); ctx.fillStyle = "rgba(255,255,255,0.35)"; ctx.fillRect(1270 + ((i * 37) % 30) - 15, y - 26, 180, 4); }
+          for (let c = 0; c < 6; c++) { const cy = -600 - c * 450, cx = 400 + (c % 2) * 1100; ctx.fillStyle = "rgba(220,230,255,0.18)"; [[0, 0, 140], [110, 20, 110], [-110, 25, 100]].forEach(([dx, dy, r]) => { ctx.beginPath(); ctx.arc(cx + dx, cy + dy, r, 0, 6.283); ctx.fill(); }); }
+          ctx.fillStyle = "#0E1638"; ctx.fillRect(-500, 940, 2920, 800);
+        });
+        if (l > tN) { ctx.save(); ctx.globalAlpha = fade(l, tN, 0.5); panel(ctx, 80, 90, 640, 200, { fill: "rgba(10,16,48,0.88)", stroke: hexA(P.amber, 0.6) }); counter(ctx, 15e12 * eout((l - tN) / 2), 400, 190, 54); txt(ctx, "potongan kata", 400, 250, 30, { align: "center", color: P.ink2, weight: 700 }); ctx.restore(); }
+        const u = fade(l, tH, 0.7); if (u > 0) { ctx.save(); ctx.globalAlpha = u; panel(ctx, 80, 640, 800, 330, { fill: "rgba(10,16,48,0.9)", stroke: hexA(P.violet, 0.6) });
+          // manusia kecil membaca + jam pasir
+          ctx.fillStyle = P.ink2; ctx.beginPath(); ctx.arc(230, 760, 30, 0, 6.283); ctx.fill(); H.rr(ctx, 195, 795, 70, 100, 20); ctx.fill(); ctx.fillStyle = P.amber; ctx.fillRect(250, 810, 70, 50);
+          const hg = (l * 0.6) % 1; ctx.strokeStyle = P.ink; ctx.lineWidth = 5; ctx.beginPath(); ctx.moveTo(350, 730); ctx.lineTo(430, 730); ctx.lineTo(350, 880); ctx.lineTo(430, 880); ctx.closePath(); ctx.stroke(); ctx.fillStyle = P.amber; ctx.beginPath(); ctx.moveTo(360 + 30 * hg, 740 + 60 * hg); ctx.lineTo(420 - 30 * hg, 740 + 60 * hg); ctx.lineTo(390, 800); ctx.fill(); ctx.beginPath(); ctx.moveTo(390, 880 - 70 * hg); ctx.lineTo(360, 872); ctx.lineTo(420, 872); ctx.fill();
+          txt(ctx, "membaca tanpa henti", 660, 780, 30, { align: "center", color: P.ink2, weight: 700 }); if (l > tY) txt(ctx, "± 84.000 tahun", 660, 860, 50, { align: "center", color: P.amber, weight: 900 }); ctx.restore(); }
+        return;
+      }
+      if (b.id === "b4_4") {
+        const tS = at(b, "terjadi sesuatu"), ks = ["tata bahasa", "fakta", "gaya bercerita", "langkah-langkah"];
+        cam(ctx, { x: 0, y: 0, z: 0.8 }, () => netCity(ctx, t, 1, 0.6 + 0.4 * fade(l, tS, 1)));
+        const lab = ["tata bahasa", "fakta", "gaya bercerita", "memecahkan soal"], pos = [[480, 300], [1440, 300], [480, 760], [1440, 760]], col = [P.teal, P.amber, P.pink, P.violet];
+        ks.forEach((k, i) => { const u = fade(l, at(b, k), 0.6); if (u <= 0) return; const [x, y] = pos[i]; ctx.save(); ctx.globalAlpha = u; glow(ctx, x, y, 220, col[i], 0.35); panel(ctx, x - 230, y - 60, 460, 120, { fill: "rgba(10,16,48,0.88)", stroke: col[i], lw: 4 }); txt(ctx, lab[i], x, y + 16, 44, { align: "center", color: col[i] }); ctx.restore(); });
+        if (l > tS && l < at(b, ks[0])) txt(ctx, "!", 960, 580, 200, { align: "center", color: P.amber, weight: 900 });
+        return;
+      }
+      // b4_5: jawaban terbentuk satu potongan kata demi satu
+      const ANS = ["Langit", " tampak", " biru", " karena", " cahaya", " biru", " paling", " banyak", " tersebar", "."], tT = at(b, "menebak potongan"), n = clamp(Math.floor((l - 0.4) / 0.62), 0, ANS.length);
+      phone(ctx, 600, 540, 800, (c2, w, h) => { txt(c2, "Asisten AI", w / 2, 62, 24, { align: "center", color: P.ink2 }); bubble(c2, ANS.slice(0, n).join("") + (n < ANS.length ? " ▍" : ""), 20, 120, 360, false, 28); });
+      if (n < ANS.length) { const opts = [[ANS[n].trim() || ".", 0.62], ["dan", 0.21], ["yang", 0.11]]; panel(ctx, 1040, 330, 700, 360, { fill: "rgba(10,16,48,0.9)" }); txt(ctx, "potongan kata berikutnya:", 1390, 395, 30, { align: "center", color: P.ink2, weight: 700 });
+        opts.forEach(([w, p], i) => { const y = 470 + i * 75; txt(ctx, w, 1260, y, 40, { align: "right", color: i ? P.ink2 : P.amber }); ctx.fillStyle = i ? hexA(P.violet, 0.6) : P.amber; H.rr(ctx, 1290, y - 32, 400 * p, 40, 10); ctx.fill(); }); }
+      else { panel(ctx, 1040, 420, 700, 160, { fill: "rgba(10,16,48,0.9)", stroke: hexA(P.amber, 0.6) }); txt(ctx, "satu demi satu", 1390, 520, 52, { align: "center", color: P.amber }); }
+    },
+
+    // ===== 5. Burung beo atau pembuat peta? =====
+    d01_b5(ctx, b, l, t) {
+      bg(ctx, t, { stars: 0.35, top: "#0A1030", bot: "#122A3E" });
+      if (b.id === "b5_1") {
+        const u = fade(l, 0.3, 0.6);
+        [[560, P.pink, "?"], [1360, P.teal, "!"]].forEach(([x, col, s], i) => { ctx.save(); ctx.globalAlpha = sm(fade(l, 0.3 + i * 0.5, 0.6));
+          for (let k = -1; k <= 1; k++) { ctx.fillStyle = hexA(col, 0.85); ctx.beginPath(); ctx.arc(x + k * 120, 560, 42, 0, 6.283); ctx.fill(); H.rr(ctx, x + k * 120 - 50, 610, 100, 160, 40); ctx.fill(); }
+          panel(ctx, x - 90, 340, 180, 130, { stroke: col, lw: 4 }); txt(ctx, s, x, 432, 84, { align: "center", color: col, weight: 900 }); ctx.restore(); });
+        txt(ctx, "VS", 960, 640, 70, { align: "center", color: P.ink2, weight: 900 });
+        return;
+      }
+      if (b.id === "b5_2") {
+        const tP = at(b, "beo stokastik"), tW = at(b, "seperti burung");
+        // burung beo geometris
+        const u = fade(l, 0.3, 0.8); ctx.save(); ctx.globalAlpha = sm(u); const bx = 700, by = 520;
+        ctx.fillStyle = "#2BB673"; ctx.beginPath(); ctx.ellipse(bx, by, 150, 200, -0.2, 0, 6.283); ctx.fill(); ctx.fillStyle = "#E64545"; ctx.beginPath(); ctx.arc(bx + 40, by - 210, 110, 0, 6.283); ctx.fill();
+        ctx.fillStyle = "#FFC94A"; ctx.beginPath(); ctx.moveTo(bx + 130, by - 230); ctx.quadraticCurveTo(bx + 230, by - 210, bx + 170, by - 140); ctx.lineTo(bx + 120, by - 180); ctx.closePath(); ctx.fill();
+        ctx.fillStyle = "#fff"; ctx.beginPath(); ctx.arc(bx + 70, by - 240, 26, 0, 6.283); ctx.fill(); ctx.fillStyle = "#111"; ctx.beginPath(); ctx.arc(bx + 76, by - 240, 12, 0, 6.283); ctx.fill();
+        ctx.fillStyle = "#1E7FCB"; ctx.beginPath(); ctx.moveTo(bx - 60, by + 150); ctx.lineTo(bx - 140, by + 380); ctx.lineTo(bx + 20, by + 180); ctx.fill();
+        ctx.fillStyle = "#3A2F25"; ctx.fillRect(bx - 260, by + 190, 520, 26); ctx.restore();
+        // kata keluar dari paruh tanpa makna yang tersambung
+        const W8 = ["kopi", "pelangi", "jika", "melompat", "biru", "karena", "angka", "sepatu", "terbang", "maka"];
+        for (let i = 0; i < 10; i++) { const s0 = tW + i * 0.45, uu = clamp((l - s0) / 2.4); if (uu <= 0 || uu >= 1) continue; ctx.save(); ctx.globalAlpha = Math.min(1, (1 - uu) * 2.5); txt(ctx, W8[i], bx + 200 + uu * 900, by - 200 + Math.sin(i * 2.3) * 160 * uu, 40, { color: [P.amber, P.teal, P.pink][i % 3] }); ctx.restore(); }
+        if (l > tP) { ctx.save(); ctx.globalAlpha = fade(l, tP, 0.5); pill(ctx, "\"beo stokastik\"", 1400, 860, { size: 44, stroke: hexA(P.amber, 0.6), color: P.amber }); ctx.restore(); }
+        return;
+      }
+      // papan Othello
+      function board(ctx, x, y, s, st, a = 1, hl = null) {
+        ctx.save(); ctx.globalAlpha = a; ctx.fillStyle = "#1F7A55"; H.rr(ctx, x, y, s, s, 10); ctx.fill(); const c = s / 8; ctx.strokeStyle = "rgba(0,0,0,0.35)"; ctx.lineWidth = 2;
+        for (let i = 1; i < 8; i++) { ctx.beginPath(); ctx.moveTo(x + i * c, y); ctx.lineTo(x + i * c, y + s); ctx.moveTo(x, y + i * c); ctx.lineTo(x + s, y + i * c); ctx.stroke(); }
+        st.forEach(([r, k, w]) => { ctx.fillStyle = w ? "#F2F4F8" : "#141820"; ctx.beginPath(); ctx.arc(x + (k + 0.5) * c, y + (r + 0.5) * c, c * 0.38, 0, 6.283); ctx.fill(); });
+        if (hl) { ctx.strokeStyle = P.amber; ctx.lineWidth = 6; ctx.strokeRect(x + hl[1] * c + 3, y + hl[0] * c + 3, c - 6, c - 6); glow(ctx, x + (hl[1] + 0.5) * c, y + (hl[0] + 0.5) * c, c, P.amber, 0.6); }
+        ctx.restore();
+      }
+      const ST = [[3, 3, 1], [3, 4, 0], [4, 3, 0], [4, 4, 1], [2, 3, 0], [2, 2, 1], [5, 4, 0], [4, 5, 1], [3, 5, 0]];
+      if (b.id === "b5_3") {
+        year(ctx, "2023", 960, 230, fade(l, at(b, "Pada tahun"), 0.6));
+        const tM = at(b, "daftar langkah"), tN = at(b, "tidak pernah diberi");
+        const mv = ["C4", "D3", "E6", "F5", "C5", "B4", "D6", "E3", "F4", "C6", "B5", "A4"]; const k = Math.floor(clamp((l - tM) * 2.2, 0, 99));
+        if (l > tM) { panel(ctx, 160, 340, 700, 120, { fill: "rgba(10,16,48,0.9)" }); txt(ctx, mv.slice(Math.max(0, k - 6), k).join(", ") + (k ? " …" : ""), 510, 415, 42, { align: "center", color: P.amber, font: "mono" }); }
+        board(ctx, 1160, 340, 520, ST, 0.18 + 0.08 * Math.sin(t * 2));
+        ctx.save(); ctx.fillStyle = "rgba(20,30,70,0.55)"; for (let i = 0; i < 6; i++) { ctx.beginPath(); ctx.arc(1180 + i * 100, 400 + (i % 3) * 160, 160, 0, 6.283); ctx.fill(); } ctx.restore();
+        [["tanpa aturan", tN], ["tanpa melihat papan", at(b, "tidak pernah melihat")]].forEach(([s, tt], i) => { const u = fade(l, tt, 0.5); if (u > 0) { ctx.save(); ctx.globalAlpha = u; pill(ctx, "✕ " + s, 510, 580 + i * 110, { size: 36, color: P.pink }); ctx.restore(); } });
+        return;
+      }
+      if (b.id === "b5_4") {
+        const tF = at(b, "menemukan sesuatu"), tC = at(b, "Saat gambar itu"), tM = at(b, "Model itu tampaknya");
+        cam(ctx, { x: 0, y: 0, z: 0.7 }, () => netCity(ctx, t, 0.5, 0.5));
+        // kaca pembesar menampakkan papan di dalam model
+        const u = fade(l, tF - 0.5, 0.8); glow(ctx, 960, 520, 440, P.teal, 0.25 * u); ctx.save(); ctx.globalAlpha = u; ctx.fillStyle = "rgba(10,16,48,0.92)"; ctx.beginPath(); ctx.arc(960, 520, 330, 0, 6.283); ctx.fill(); ctx.strokeStyle = P.ink2; ctx.lineWidth = 18; ctx.stroke();
+        ctx.lineWidth = 34; ctx.beginPath(); ctx.moveTo(1195, 755); ctx.lineTo(1340, 900); ctx.stroke();
+        const flip = l > tC + 0.6; const st = ST.map(([r, k, w]) => (flip && r === 3 && k === 4) ? [r, k, 1] : [r, k, w]);
+        board(ctx, 760, 320, 400, st, 1, flip ? [5, 5] : [2, 4]); ctx.restore();
+        if (l > tC) { ctx.save(); ctx.globalAlpha = fade(l, tC, 0.5); panel(ctx, 1350, 330, 470, 220, { fill: "rgba(10,16,48,0.9)", stroke: hexA(P.amber, 0.6) }); txt(ctx, "gambar diubah", 1585, 410, 36, { align: "center", color: P.ink2 }); txt(ctx, "→ langkah berubah", 1585, 480, 40, { align: "center", color: P.amber }); ctx.restore(); }
+        if (l > tM) { ctx.save(); ctx.globalAlpha = fade(l, tM, 0.5); pill(ctx, "peta dunia di dalam model", 960, 960, { size: 40, color: P.teal, stroke: hexA(P.teal, 0.6) }); ctx.restore(); }
+        return;
+      }
+      if (b.id === "b5_5") {
+        year(ctx, "2025", 960, 230, fade(l, 0.3, 0.6));
+        const tW = at(b, "menulis pantun"), tR = at(b, "Ternyata model");
+        const L1 = "Pagi-pagi minum kopi hangat,", L2a = "Sampai di sekolah tetap ", L2b = "semangat";
+        if (l > 0.8) { ctx.save(); ctx.globalAlpha = fade(l, 0.8, 0.6); panel(ctx, 260, 360, 1400, 360, { fill: "rgba(10,16,48,0.9)" }); txt(ctx, L1, 330, 480, 56, { weight: 800 });
+          const rhyme = fade(l, tR, 0.6), wr = clamp((l - tR - 0.8) / 3.2);
+          ctx.font = `800 56px ${K.FONT}`; const xR = 330 + ctx.measureText(L2a).width;
+          if (rhyme > 0) { glow(ctx, xR + 120, 600, 200, P.amber, 0.7 * rhyme); txt(ctx, L2b, xR, 620, 56, { color: P.amber, weight: 900 }); ctx.save(); ctx.globalAlpha = rhyme; txt(ctx, "kata rima dipilih lebih dulu", xR + 130, 690, 28, { align: "center", color: P.amber, weight: 700 }); ctx.restore(); }
+          txt(ctx, typed(L2a, wr), 330, 620, 56, { weight: 800 }); ctx.restore(); }
+        return;
+      }
+      // b5_6: beo atau pembuat peta?
+      const tQ = at(b, "Tetapi, apakah");
+      panel(ctx, 260, 300, 620, 420, { stroke: hexA(P.pink, 0.6), lw: 3 }); txt(ctx, "🦜", 570, 500, 140, { align: "center" }); txt(ctx, "beo stokastik", 570, 640, 40, { align: "center", color: P.pink });
+      panel(ctx, 1040, 300, 620, 420, { stroke: hexA(P.teal, 0.6), lw: 3 }); board(ctx, 1220, 360, 260, ST, 1); txt(ctx, "pembuat peta", 1350, 680, 40, { align: "center", color: P.teal });
+      if (l > tQ) { ctx.save(); ctx.globalAlpha = fade(l, tQ, 0.6); txt(ctx, "= berpikir?", 960, 880, 80, { align: "center", color: P.amber, weight: 900 }); ctx.restore(); }
+      bip(ctx, 960, 520, 150, { mood: "think", t });
+    },
+
+    // ===== 6. Ruangan berisi buku aturan =====
+    d01_b6(ctx, b, l, t) {
+      bg(ctx, t, { stars: 0.25, top: "#0C0F2A", bot: "#22183C" });
+      if (b.id === "b6_1") {
+        year(ctx, "1950", 960, 200, fade(l, 0.3, 0.6)); const tT = at(b, "Alan Turing"), tC = at(b, "Kalau kamu"), tM = at(b, "mungkin kita");
+        if (l > tT) { ctx.save(); ctx.globalAlpha = fade(l, tT, 0.5); pill(ctx, "Alan Turing · Uji Turing", 960, 300, { size: 34, stroke: hexA(P.amber, 0.6) }); ctx.restore(); }
+        [[560, "A"], [1360, "B"]].forEach(([x, s], i) => { ctx.fillStyle = "#3A2A1E"; H.rr(ctx, x - 140, 380, 280, 460, 10); ctx.fill(); ctx.fillStyle = "#5A4230"; H.rr(ctx, x - 120, 400, 240, 420, 8); ctx.fill(); ctx.fillStyle = P.amber; ctx.beginPath(); ctx.arc(x + 90, 620, 10, 0, 6.283); ctx.fill(); txt(ctx, s, x, 470, 60, { align: "center", color: "#E8D2B8" });
+          const u = clamp((l - tC - i * 0.6) / 1.4); if (u > 0) { ctx.save(); ctx.translate(x + (i ? -1 : 1) * 200 * eout(u), 700); ctx.rotate((i ? 1 : -1) * 0.1); panel(ctx, -90, -55, 180, 110, { fill: "#F2E9D8", stroke: false, r: 8 }); txt(ctx, "Halo!", 0, 12, 34, { align: "center", color: "#5A4630" }); ctx.restore(); } });
+        // penanya di tengah
+        ctx.fillStyle = P.ink2; ctx.beginPath(); ctx.arc(960, 650, 46, 0, 6.283); ctx.fill(); H.rr(ctx, 905, 705, 110, 150, 40); ctx.fill();
+        if (l > tC + 1) txt(ctx, "?", 960, 580, 80, { align: "center", color: P.amber, weight: 900 });
+        if (l > tM) { ctx.save(); ctx.globalAlpha = fade(l, tM, 0.5); pill(ctx, "manusia atau mesin?", 960, 950, { size: 40, color: P.amber }); ctx.restore(); }
+        return;
+      }
+      // ruangan Searle (dipakai b6_2–b6_4)
+      function room(ctx, l, step) {
+        ctx.fillStyle = "#1A2350"; H.rr(ctx, 360, 260, 1200, 620, 18); ctx.fill(); ctx.strokeStyle = "#3A4C90"; ctx.lineWidth = 10; ctx.stroke();
+        ctx.fillStyle = "#0A0E25"; ctx.fillRect(1548, 520, 24, 110); // celah pintu
+        for (let i = 0; i < 9; i++) { ctx.fillStyle = [P.pink, P.teal, P.violet, P.amber][i % 4]; H.rr(ctx, 420 + (i % 3) * 70, 720 - Math.floor(i / 3) * 70, 60, 64, 6); ctx.fill(); }
+        ctx.fillStyle = "#F2E9D8"; H.rr(ctx, 700, 640, 300, 180, 8); ctx.fill(); txt(ctx, "BUKU ATURAN", 850, 700, 26, { align: "center", color: "#5A4630" }); ctx.fillStyle = "#C9B998"; for (let k = 0; k < 3; k++) ctx.fillRect(730, 730 + k * 26, 240, 8);
+        bip(ctx, 1150, 690, 200, { mood: step === 2 ? "think" : "happy", t, look: [0.6, 0.4] });
+      }
+      if (b.id === "b6_2") {
+        year(ctx, "1980", 300, 180, fade(l, 0.3, 0.6)); const tS = at(b, "John Searle"), tR = at(b, "Bayangkan"), tP = at(b, "Lewat celah");
+        if (l > tS) { ctx.save(); ctx.globalAlpha = fade(l, tS, 0.5); pill(ctx, "John Searle · thought experiment", 1160, 180, { size: 32, stroke: hexA(P.amber, 0.6) }); ctx.restore(); }
+        const u = fade(l, tR - 0.4, 0.8); if (u > 0) { ctx.save(); ctx.globalAlpha = sm(u); room(ctx, l, 1); ctx.restore(); }
+        if (l > tP) { const p = eout((l - tP) / 1.6); ctx.save(); ctx.translate(lerp(1760, 1380, p), 575); panel(ctx, -110, -60, 220, 120, { fill: "#F8F3E8", stroke: false, r: 8 }); txt(ctx, "你好吗？", 0, 16, 44, { align: "center", color: "#222", font: "WenQuanYi Zen Hei" }); ctx.restore(); }
+        return;
+      }
+      if (b.id === "b6_3") {
+        room(ctx, l, 2); const tL = at(b, "mencari simbol"), tW = at(b, "lalu menyalin"), tO = at(b, "Dari luar"), tN = at(b, "Tetapi kamu");
+        ctx.save(); ctx.translate(1380, 575); panel(ctx, -110, -60, 220, 120, { fill: "#F8F3E8", stroke: false, r: 8 }); txt(ctx, "你好吗？", 0, 16, 44, { align: "center", color: "#222" }); ctx.restore();
+        if (l > tL) { const u = fade(l, tL, 0.5); ctx.save(); ctx.globalAlpha = u; panel(ctx, 640, 330, 520, 230, { fill: "#F2E9D8", stroke: false, r: 10 }); txt(ctx, "你好吗？", 760, 420, 44, { align: "center", color: "#222" }); txt(ctx, "→", 900, 420, 50, { align: "center", color: "#5A4630" }); txt(ctx, "我很好", 1040, 420, 44, { align: "center", color: "#222" }); txt(ctx, "aturan nomor 4.812", 900, 510, 26, { align: "center", color: "#7A6650", weight: 700 }); ctx.restore(); }
+        if (l > tW) { const p = eout((l - tW - 0.6) / 1.6); ctx.save(); ctx.translate(lerp(1380, 1760, p), 440); panel(ctx, -100, -55, 200, 110, { fill: "#F8F3E8", stroke: false, r: 8 }); txt(ctx, "我很好", 0, 16, 42, { align: "center", color: "#222" }); ctx.restore(); }
+        if (l > tO) { ctx.save(); ctx.globalAlpha = fade(l, tO, 0.5); pill(ctx, "✓ jawaban benar", 1700, 300, { size: 32, color: P.green }); ctx.restore(); }
+        if (l > tN) { ctx.save(); ctx.globalAlpha = fade(l, tN, 0.5); pill(ctx, "Bip tidak mengerti satu kata pun", 960, 960, { size: 38, color: P.pink, stroke: hexA(P.pink, 0.5) }); ctx.restore(); }
+        return;
+      }
+      // b6_4: argumen Searle dan bantahan "seluruh sistem"
+      const c = ["Kata Searle", "Tetapi ada yang", "Satu sel otakmu", "Mungkin begitu pula", "Satu komponen", "Sampai hari ini"].map(s => at(b, s));
+      const st = c.filter(x => l >= x).length;
+      if (st <= 2) { room(ctx, l, 2); ctx.save(); ctx.globalAlpha = fade(l, c[0], 0.5); panel(ctx, 360, 120, 1200, 110, { fill: "rgba(10,16,48,0.92)", stroke: hexA(P.pink, 0.6) }); txt(ctx, "Searle: komputer hanya mencocokkan simbol", 960, 192, 40, { align: "center", color: P.pink }); ctx.restore();
+        if (st === 2) { ctx.save(); ctx.globalAlpha = fade(l, c[1], 0.5); pill(ctx, "Tetapi ada yang membantah …", 960, 960, { size: 40, color: P.teal, stroke: hexA(P.teal, 0.6) }); ctx.restore(); } return; }
+      if (st === 3) { // satu sel vs otak utuh
+        const u = fade(l, c[2], 0.6); ctx.save(); ctx.globalAlpha = u;
+        neuron(ctx, 560, 520, 50, { seed: 4, color: P.teal, fire: 0.2 }); txt(ctx, "1 sel: tidak mengerti bahasa", 560, 820, 36, { align: "center", color: P.ink2 });
+        brain(ctx, 1360, 520, 300, 1); txt(ctx, "otak utuh: mengerti", 1360, 820, 36, { align: "center", color: P.green }); ctx.restore(); return; }
+      if (st === 4) { // seluruh ruangan bersama-sama
+        room(ctx, l, 1); const u = fade(l, c[3] + 0.8, 1.2); glow(ctx, 960, 570, 800, P.teal, 0.35 * u); ctx.save(); ctx.globalAlpha = u; ctx.strokeStyle = P.teal; ctx.lineWidth = 10; ctx.setLineDash([24, 14]); H.rr(ctx, 330, 230, 1260, 680, 26); ctx.stroke(); ctx.setLineDash([]); pill(ctx, "orang + buku + aturan = paham?", 960, 170, { size: 40, color: P.teal }); ctx.restore(); return; }
+      if (st === 5) { // satu komponen vs seluruh sistem komputer
+        const u = fade(l, c[4], 0.6); ctx.save(); ctx.globalAlpha = u;
+        ctx.fillStyle = "#24336B"; H.rr(ctx, 440, 420, 200, 200, 16); ctx.fill(); ctx.strokeStyle = P.ink2; ctx.lineWidth = 4; ctx.stroke(); for (let k = 0; k < 6; k++) { ctx.fillRect(420, 440 + k * 30, 20, 8); ctx.fillRect(640, 440 + k * 30, 20, 8); } txt(ctx, "1 komponen", 540, 700, 36, { align: "center", color: P.ink2 });
+        const u2 = fade(l, at(b, "tapi seluruh"), 0.8); ctx.globalAlpha = u * u2; glow(ctx, 1360, 520, 420, P.teal, 0.4); panel(ctx, 1080, 300, 560, 440, { stroke: P.teal, lw: 5 }); for (let r = 0; r < 3; r++) for (let k = 0; k < 4; k++) { ctx.fillStyle = "#2B3A73"; H.rr(ctx, 1120 + k * 125, 340 + r * 120, 100, 90, 10); ctx.fill(); } txt(ctx, "seluruh sistem", 1360, 800, 40, { align: "center", color: P.teal }); ctx.restore(); return; }
+      // perdebatan: timbangan seimbang bergoyang
+      const sw = Math.sin(t * 1.4) * 0.12; ctx.save(); ctx.translate(960, 420); ctx.strokeStyle = P.ink2; ctx.lineWidth = 10; ctx.beginPath(); ctx.moveTo(0, 0); ctx.lineTo(0, 420); ctx.stroke(); ctx.rotate(sw); ctx.beginPath(); ctx.moveTo(-420, 0); ctx.lineTo(420, 0); ctx.stroke();
+      [[-420, "tidak paham", P.pink], [420, "bisa paham", P.teal]].forEach(([x, s, col]) => { ctx.save(); ctx.translate(x, 0); ctx.rotate(-sw); ctx.strokeStyle = P.ink2; ctx.lineWidth = 4; ctx.beginPath(); ctx.moveTo(0, 0); ctx.lineTo(-90, 160); ctx.moveTo(0, 0); ctx.lineTo(90, 160); ctx.stroke(); panel(ctx, -150, 160, 300, 90, { stroke: col, lw: 4 }); txt(ctx, s, 0, 218, 34, { align: "center", color: col }); ctx.restore(); });
+      ctx.restore(); txt(ctx, "perdebatan belum selesai", 960, 960, 44, { align: "center", color: P.amber });
+    },
+
+    // ===== 7. Yang belum dimiliki AI =====
+    d01_b7(ctx, b, l, t) {
+      bg(ctx, t, { stars: 0.3 });
+      if (b.id === "b7_1") { ["?", "?", "?"].forEach((s, i) => { const u = fade(l, 0.3 + i * 0.4, 0.5); ctx.save(); ctx.globalAlpha = u; panel(ctx, 380 + i * 420, 360, 320, 320, { stroke: hexA(P.violet, 0.6), lw: 4 }); txt(ctx, s, 540 + i * 420, 560, 140, { align: "center", color: P.ink2, weight: 900 }); ctx.restore(); }); return; }
+      if (b.id === "b7_2") {
+        const tB = at(b, "Ia bisa menyebut"), tD = at(b, "Kesalahan ini");
+        for (let r = 0; r < 3; r++) { ctx.fillStyle = "#3A2A1E"; ctx.fillRect(260, 330 + r * 210, 1400, 20); for (let k = 0; k < 16; k++) { const h = 150 + ((k * 7 + r) % 4) * 12; ctx.fillStyle = [P.pink, P.teal, P.violet, P.blue, P.amber][(k + r) % 5]; ctx.globalAlpha = 0.55; ctx.fillRect(280 + k * 86, 330 + r * 210 - h, 70, h); } ctx.globalAlpha = 1; }
+        const u = fade(l, tB, 0.6), dust = fade(l, tD - 0.6, 1.6);
+        if (u > 0) { ctx.save(); ctx.globalAlpha = u * (1 - dust); glow(ctx, 1500, 520, 300, P.amber, 0.7); panel(ctx, 1330, 300, 340, 440, { fill: "#2B2060", stroke: P.amber, lw: 5, r: 12 }); txt(ctx, "Sejarah Robot", 1500, 430, 34, { align: "center", color: P.amber }); txt(ctx, "Nusantara", 1500, 475, 34, { align: "center", color: P.amber }); txt(ctx, "Prof. R. Nusantoro", 1500, 560, 24, { align: "center", color: P.ink2, weight: 700 }); txt(ctx, "1987", 1500, 640, 34, { align: "center", color: P.ink2 }); ctx.restore();
+          if (dust > 0) { const r = rng(3); for (let k = 0; k < 120; k++) { const x = 1340 + r() * 320, y = 310 + r() * 420; ctx.fillStyle = hexA(P.amber, 0.8 * (1 - dust)); ctx.fillRect(x + dust * (r() - 0.3) * 300, y - dust * r() * 300, 5, 5); } } }
+        if (l > tD) { ctx.save(); ctx.globalAlpha = fade(l, tD, 0.5); pill(ctx, "halusinasi", 1500, 860, { size: 48, color: P.pink, stroke: hexA(P.pink, 0.6) }); pill(ctx, "buku ini tidak pernah ada", 700, 860, { size: 34, color: P.ink2 }); ctx.restore(); }
+        return;
+      }
+      if (b.id === "b7_3") {
+        const tN = at(b, "panasnya nasi"), tH = at(b, "dinginnya hujan"), tW = at(b, "Ia mengenal");
+        // kiri: AI hanya kata-kata; kanan: manusia merasakan
+        panel(ctx, 160, 220, 760, 640, { stroke: hexA(P.violet, 0.5) }); panel(ctx, 1000, 220, 760, 640, { stroke: hexA(P.amber, 0.5) });
+        txt(ctx, "AI", 540, 300, 44, { align: "center", color: P.violet }); txt(ctx, "kamu", 1380, 300, 44, { align: "center", color: P.amber });
+        if (l > tW) { const r = rng(8); for (let k = 0; k < 18; k++) { ctx.save(); ctx.globalAlpha = fade(l, tW + k * 0.12, 0.4) * 0.85; txt(ctx, "hujan", 220 + r() * 600, 380 + r() * 440, 22 + r() * 22, { color: P.violet, weight: 700 }); ctx.restore(); } }
+        else txt(ctx, "…", 540, 560, 90, { align: "center", color: P.ink2 });
+        if (l > tN) { ctx.save(); ctx.globalAlpha = fade(l, tN, 0.5); ctx.fillStyle = "#F4F1E8"; ctx.beginPath(); ctx.ellipse(1240, 520, 150, 70, 0, 0, 6.283); ctx.fill(); ctx.fillStyle = "#8A6A4A"; ctx.fillRect(1100, 520, 280, 60); for (let k = 0; k < 3; k++) { ctx.strokeStyle = hexA("#FFFFFF", 0.6); ctx.lineWidth = 5; ctx.beginPath(); const x = 1190 + k * 50; ctx.moveTo(x, 430); ctx.bezierCurveTo(x - 20, 400 - (l * 30) % 20, x + 20, 380, x, 350); ctx.stroke(); } txt(ctx, "panas", 1240, 640, 30, { align: "center", color: P.amber }); ctx.restore(); }
+        if (l > tH) { ctx.save(); ctx.globalAlpha = fade(l, tH, 0.5); for (let k = 0; k < 24; k++) { const x = 1460 + (k * 53) % 260, y = 380 + ((k * 97 + l * 400) % 380); ctx.strokeStyle = P.blue; ctx.lineWidth = 4; ctx.beginPath(); ctx.moveTo(x, y); ctx.lineTo(x - 8, y + 26); ctx.stroke(); } txt(ctx, "dingin", 1590, 800, 30, { align: "center", color: P.blue }); ctx.restore(); }
+        return;
+      }
+      // b7_4: AI diam menunggu; pikiran manusia terus bergerak
+      const tH = at(b, "Sementara itu");
+      phone(ctx, 560, 540, 700, (c2, w, h) => { txt(c2, "menunggu pertanyaan…", w / 2, h / 2, 26, { align: "center", color: P.dim }); if ((l * 1.5) % 1 < 0.5) { c2.fillStyle = P.dim; c2.fillRect(w / 2 - 4, h / 2 + 30, 8, 36); } }, { glow: "#334" });
+      if (l > tH - 0.3) { const u = fade(l, tH - 0.3, 0.8); ctx.save(); ctx.globalAlpha = u; head(ctx, 1320, 600, 600, { fill: "#1B2B5E", stroke: hexA(P.amber, 0.5) });
+        [["mimpi", "☁", 0], ["khawatir", "〰", 1], ["penasaran", "?", 2]].forEach(([s, ic, i]) => { const a = t * 0.8 + i * 2.1, x = 1360 + Math.cos(a) * 230, y = 360 + Math.sin(a) * 120; const uu = fade(l, at(b, s === "mimpi" ? "bermimpi" : s), 0.5); if (uu <= 0) return; ctx.save(); ctx.globalAlpha = uu; panel(ctx, x - 110, y - 50, 220, 100, { stroke: hexA(P.amber, 0.6), lw: 3 }); txt(ctx, ic + " " + s, x, y + 12, 28, { align: "center", color: P.amber }); ctx.restore(); });
+        ctx.restore(); }
+    },
+
+    // ===== 8. Jadi, apakah AI berpikir? =====
+    d01_b8(ctx, b, l, t) {
+      bg(ctx, t, { stars: 0.5 });
+      if (b.id === "b8_1") {
+        const u = fade(l, 0.2, 0.8); glow(ctx, 960, 480, 420, P.violet, 0.4 * u); ctx.save(); ctx.globalAlpha = u; txt(ctx, "?", 960, 600, 360, { align: "center", color: P.amber, weight: 900 }); ctx.restore();
+        const tD = at(b, "Kita bahkan"); if (l > tD) { const D8 = ["mengingat?", "memahami?", "merasakan?", "merencanakan?", "menyadari?"]; D8.forEach((s, i) => { const a = i / 5 * 6.283 + t * 0.2; ctx.save(); ctx.globalAlpha = fade(l, tD + i * 0.25, 0.5) * 0.85; txt(ctx, s, 960 + Math.cos(a) * 560, 520 + Math.sin(a) * 300, 36, { align: "center", color: P.ink2 }); ctx.restore(); }); }
+        return;
+      }
+      if (b.id === "b8_2") {
+        // kemampuan berpikir sebagai pulau; sebagian diterangi cahaya AI
+        const IS = [["mengenali pola", 420, 420, 1, "Mengenali pola"], ["merencanakan", 900, 330, 1, "merencanakan"], ["memahami", 1400, 430, 0.45, "memahami"], ["merasakan", 650, 760, 0, "merasakan"], ["menyadari diri", 1230, 770, 0, "menyadari diri"]];
+        const tL = at(b, "AI hari ini");
+        IS.forEach(([s, x, y, lit, cue], i) => { const u = 0.3 + 0.7 * fade(l, at(b, cue), 0.6); ctx.save(); ctx.globalAlpha = u * fade(l, 0.2, 0.8);
+          const L = lit * fade(l, tL + i * 0.3, 1); if (L > 0) glow(ctx, x, y, 260, P.amber, 0.55 * L);
+          ctx.fillStyle = L > 0.5 ? "#3D8A62" : L > 0.2 ? "#2C5C4E" : "#1E3040"; ctx.beginPath(); ctx.ellipse(x, y, 190, 90, 0, 0, 6.283); ctx.fill(); ctx.fillStyle = hexA("#0A1030", 0.6 * (1 - L)); ctx.beginPath(); ctx.ellipse(x, y, 190, 90, 0, 0, 6.283); ctx.fill();
+          txt(ctx, s, x, y + 12, 34, { align: "center", color: L > 0.2 ? P.ink : P.dim }); ctx.restore(); });
+        if (l > tL) { ctx.save(); ctx.globalAlpha = fade(l, tL, 0.6); pill(ctx, "☀ cahaya = kemampuan AI hari ini", 960, 990, { size: 32, color: P.amber }); ctx.restore(); }
+        return;
+      }
+      if (b.id === "b8_3") {
+        const tF = at(b, "teman berpikir"), T3 = [["Periksa jawabannya", "Periksa", "🔍"], ["Tanyakan alasannya", "tanyakan", "💬"], ["Keputusan akhir: kamu", "biarkan", "🧠"]];
+        ctx.fillStyle = P.ink2; ctx.beginPath(); ctx.arc(420, 420, 70, 0, 6.283); ctx.fill(); H.rr(ctx, 340, 500, 160, 240, 60); ctx.fill(); bip(ctx, 640, 640, 220, { mood: "happy", t, wave: l > tF ? l : undefined });
+        if (l > tF) { ctx.save(); ctx.globalAlpha = fade(l, tF, 0.5); pill(ctx, "teman berpikir", 530, 860, { size: 38, color: P.teal, stroke: hexA(P.teal, 0.6) }); ctx.restore(); }
+        T3.forEach(([s, cue, ic], i) => { const u = fade(l, at(b, cue), 0.5); if (u <= 0) return; ctx.save(); ctx.globalAlpha = u; ctx.translate((1 - eout(u)) * 60, 0); panel(ctx, 980, 250 + i * 190, 780, 150, { stroke: hexA(P.amber, 0.6), lw: 3 }); txt(ctx, ic, 1070, 345 + i * 190, 60, { align: "center" }); txt(ctx, s, 1140, 342 + i * 190, 44, { color: P.ink }); ctx.restore(); });
+        return;
+      }
+      // b8_4: kembali ke kepala manusia yang bercahaya, lalu langit malam
+      const z = Math.exp(lerp(Math.log(1.6), Math.log(0.8), eio(l / (A(b) + 4))));
+      cam(ctx, { x: 960, y: 560, z }, () => { head(ctx, 960, 600, 760, { fill: "#16275A", stroke: hexA(P.amber, 0.5) }); ctx.save(); ctx.beginPath(); ctx.ellipse(1000, 480, 230, 170, 0, 0, 6.283); ctx.clip(); ctx.translate(1000, 480); ctx.scale(0.2, 0.2); netCity(ctx, t, 1, 1); ctx.restore(); });
+      const u = fade(l, at(b, "yang bekerja"), 0.6); if (u > 0) { ctx.save(); ctx.globalAlpha = u; pill(ctx, "86 miliar neuron · 20 watt", 960, 960, { size: 40, color: P.amber, stroke: hexA(P.amber, 0.5) }); ctx.restore(); }
+      bip(ctx, 1600, 860, 130, { mood: "happy", t, look: [-0.8, -0.6] });
+    },
+
+    // ===== 9. Penutup =====
+    d01_b9(ctx, b, l, t) {
+      bg(ctx, t, { stars: 0.6 }); glow(ctx, 960, 420, 600, P.violet, 0.3);
+      bip(ctx, 960, 360, 260, { mood: "happy", t, wave: l });
+      const u = fade(l, at(b, "subscribe"), 0.6);
+      panel(ctx, 560, 560, 800, 120, { stroke: hexA(P.amber, 0.8), lw: 5 }); txt(ctx, "youtube.com/@iteachswe", 960, 638, 54, { align: "center", color: P.amber, weight: 900 });
+      if (u > 0) { ctx.save(); ctx.globalAlpha = u; ctx.fillStyle = "#E5484D"; H.rr(ctx, 790, 720, 340, 90, 45); ctx.fill(); txt(ctx, "🔔 SUBSCRIBE", 960, 778, 38, { align: "center", color: "#FFFFFF", weight: 900 }); ctx.restore(); }
+      txt(ctx, "I Teach Software Engineering", 960, 880, 34, { align: "center", color: P.ink2, weight: 700 });
+      const v = fade(l, at(b, "Sampai jumpa"), 0.6); if (v > 0) { ctx.save(); ctx.globalAlpha = v * 0.8; [["Tonton juga", 100], ["Tonton juga", 1420]].forEach(([s, x]) => { ctx.strokeStyle = hexA(P.ink2, 0.5); ctx.lineWidth = 3; ctx.setLineDash([12, 10]); H.rr(ctx, x, 380, 400, 225, 16); ctx.stroke(); ctx.setLineDash([]); txt(ctx, s, x + 200, 500, 30, { align: "center", color: P.ink2 }); }); ctx.restore(); }
     }
   });
 })(typeof window !== "undefined" ? window : globalThis);
