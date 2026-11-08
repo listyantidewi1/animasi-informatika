@@ -219,7 +219,7 @@
         ctx.save(); ctx.globalAlpha *= la;
         // garis penunjuk: dari tepi titik ke tepi label terdekat
         const ex = D.clamp(x, lx - pw / 2 + ph / 2, lx + pw / 2 - ph / 2), ey = ly + (y > ly ? ph / 2 : -ph / 2);
-        const ang = Math.atan2(ey - y, ex - x), r0 = (opt.style === "pin" ? 0 : 20) * s, sx = x + Math.cos(ang) * r0, sy = (opt.style === "pin" ? y - 70 * s : y + Math.sin(ang) * r0);
+        const pin = opt.style === "pin", oy = pin ? y - 44 * s : y, ang = Math.atan2(ey - oy, ex - x), r0 = (pin ? 26 : 20) * s, sx = x + Math.cos(ang) * r0, sy = oy + Math.sin(ang) * r0;
         const L = D.eout(la); ctx.strokeStyle = col; ctx.lineWidth = 4; ctx.lineCap = "round"; ctx.beginPath(); ctx.moveTo(sx, sy); ctx.lineTo(D.lerp(sx, ex, L), D.lerp(sy, ey, L)); ctx.stroke();
         ctx.translate(lx, ly); ctx.scale(ls, ls);
         ctx.fillStyle = "rgba(8,12,40,0.30)"; K.helpers.rr(ctx, -pw / 2, -ph / 2 + 7, pw, ph, ph / 2); ctx.fill();
@@ -272,7 +272,7 @@
       const pth = paths[d.tone][li]; pth.moveTo(x + r, y); pth.arc(x, y, r, 0, TAU);
       for (let q = 0; q < hl.length; q++) { const h = hl[q]; if (!h.area && !h.reg) continue;
         let lvl = -1; if (h.area) { const dd = Math.hypot(d.lon - h.lon, d.lat - h.lat) / h.area; if (dd < 1) lvl = Math.min(2, Math.floor(dd * 3)); }
-        if (lvl < 0 && h.reg && inside(h.reg, d.lon, d.lat)) lvl = 1;
+        if (lvl < 0 && h.reg && inside(h.reg, d.lon, d.lat)) lvl = 0;
         if (lvl >= 0) { const hp = hPaths[q][lvl]; hp.moveTo(x + r, y); hp.arc(x, y, r, 0, TAU); } }
     }
     if (opt.shadow !== false) { ctx.fillStyle = "rgba(10,16,52,0.32)"; ctx.fill(shadow); }
@@ -293,7 +293,8 @@
     const W = 1920, HH = 1080;
     const gr = ctx.createLinearGradient(0, 0, 0, HH); gr.addColorStop(0, "#2B3F86"); gr.addColorStop(1, "#4C63B4"); ctx.fillStyle = gr; ctx.fillRect(0, 0, W, HH);
     D.glow(ctx, 520, 360, 760, P.violet, 0.22); D.glow(ctx, 1500, 900, 600, P.teal, 0.10);
-    const cap = (s, x, y, size = 24, col = P.ink2, al = "left") => D.txt(ctx, s, x, y, size, { align: al, weight: 700, color: col });
+    const cap = (s, x, y, size = 24, col = P.ink2, al = "left") => { ctx.font = `700 ${size}px ${K.FONT}`; const tw = ctx.measureText(s).width;
+      ctx.fillStyle = "rgba(14,22,62,0.7)"; K.helpers.rr(ctx, x - 10, y - size * 1.05, tw + 20, size * 1.5, 10); ctx.fill(); D.txt(ctx, s, x, y, size, { align: al, weight: 700, color: col }); };
     D.txt(ctx, "K.kit.peta", 40, 50, 34, { weight: 900 }); cap("indonesia(ctx, cx, cy, w, opt) · peta titik · highlight ring/pin + area · reveal barat→timur · zoom", 250, 50);
     // utama
     indonesia(ctx, 690, 410, 1300, { t, highlight: [
@@ -307,12 +308,12 @@
     // bawah: varian warna + titik laut, dan zoom
     ctx.save(); K.helpers.rr(ctx, 40, 760, 900, 300, 26); ctx.fillStyle = "rgba(14,22,62,0.35)"; ctx.fill(); ctx.clip();
     indonesia(ctx, 490, 905, 860, { t, color: P.teal, dimColor: "#5C74B8", sea: 0.12, neighbours: false, highlight: [{ at: "makassar", color: P.pink }, { at: "jayapura", color: P.amber, style: "pin" }] });
-    ctx.restore(); cap("color teal · sea 0.12 · neighbours:false · marker tanpa label", 60, 1050, 22);
+    ctx.restore(); cap("color teal · sea 0.12 · neighbours:false · marker tanpa label", 66, 796, 22);
     ctx.save(); K.helpers.rr(ctx, 980, 760, 900, 300, 26); ctx.fillStyle = "rgba(14,22,62,0.35)"; ctx.fill(); ctx.clip();
     const z = 1 + 0.06 * Math.sin(t * 0.5);
     const pj = proj(0, 0, 4200 * z); const [mx, my] = pj(110.6, -0.2);
-    indonesia(ctx, 1430 - mx, 905 - my, 4200 * z, { t, step: 0.2, highlight: [{ at: "mempawah", label: "Mempawah", color: P.amber, area: 0.8, dx: -250, dy: 50 }] });
-    ctx.restore(); cap("zoom: w=4200, step 0.2, area 0.8°, clip — Kalimantan Barat", 1000, 1050, 22);
+    indonesia(ctx, 1430 - mx, 905 - my, 4200 * z, { t, step: 0.2, highlight: [{ at: "mempawah", label: "Mempawah", color: P.amber, area: 0.8, dx: -120, dy: 120 }] });
+    ctx.restore(); cap("zoom: w=4200, step 0.2, area 0.8°, clip", 1006, 796, 22);
   }
 
   K.kit.peta = { indonesia, proj, marker, ANCHORS, REGIONS, BOUNDS, POLY, showcase };
