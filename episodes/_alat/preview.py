@@ -19,7 +19,7 @@ OUT = os.path.join(ROOT, "preview"); os.makedirs(OUT, exist_ok=True)
 beats = {b["id"]: b for b in TL["beats"]}
 want = want or list(beats)
 with sync_playwright() as p:
-    br = p.chromium.launch(); pg = br.new_page(viewport={"width": 1920, "height": 1080})
+    br = p.chromium.launch(args=E.browser_args(SCRIPT)); pg = br.new_page(viewport={"width": 1920, "height": 1080})
     errs = []; pg.on("pageerror", lambda e: errs.append(str(e)))
     pg.goto("file://" + BUILT); pg.wait_for_function("window.__ready")
     for w in want:

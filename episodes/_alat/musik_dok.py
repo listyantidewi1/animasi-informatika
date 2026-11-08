@@ -9,13 +9,17 @@ salinan itu diperbarui dulu. Isi musik:
   - denting bel jarang seperti bintang,
   - desir naik + dentum rendah pada kartu judul bab, dan tutup yang hangat.
 Volume musik turun otomatis saat narator bicara (ducking) dan naik di jeda antarbab.
+Opsional per episode:
+  - script.json "musik": {"mood": {"0": "misteri", ...}} mengganti suasana per bab (kagum, misteri, renung, hangat);
+  - sfx.json (dibuat sfx_dok.py dari Kiko.sfx di scenes.js): efek suara [detik, jenis, kekuatan] dengan jenis
+    whoosh (desir), clack (ketuk mendarat), shimmer (denting berkilau), riser (naik), boom (dentum), pop (letup kecil).
 """
 import json, os, sys, wave, shutil
 import numpy as np
 import episode as E
 
 ROOT, _ = E.find_root([a for a in sys.argv[1:] if not a.startswith("--")])
-TL = E.load_timeline(ROOT, "suara")
+TL = E.load_timeline(ROOT, "suara"); SCRIPT = E.load_script(ROOT)
 AUD = os.path.join(ROOT, "audio"); NAR = os.path.join(AUD, "narration.wav"); VO = os.path.join(AUD, "narration_vo.wav")
 if not os.path.exists(VO) or os.path.getmtime(E.timeline_path(ROOT, "suara")) > os.path.getmtime(VO): shutil.copyfile(NAR, VO)
 SR = 44100
@@ -46,6 +50,7 @@ PROG = {
     "hangat":  [[48, 55, 64, 67], [53, 60, 65, 69], [57, 64, 67, 72], [55, 62, 67, 71]],   # C – F – Am – G
 }
 MOOD = {0: "kagum", 1: "kagum", 2: "kagum", 3: "kagum", 4: "misteri", 5: "misteri", 6: "renung", 7: "renung", 8: "hangat", 9: "hangat"}
+MOOD.update({int(k): v for k, v in SCRIPT.get("musik", {}).get("mood", {}).items()})
 segs = {}
 for b in TL["beats"]: s = b["seg"]; segs.setdefault(s, [b["start"], b["start"] + b["dur"]]); segs[s][1] = b["start"] + b["dur"]
 
@@ -82,6 +87,30 @@ for i, b in enumerate(beats[:-1]):
     j1 = int(s0 * SR); L2 = int(2.8 * SR)
     if j1 + L2 < N: tb = np.arange(L2) / SR; fx[j1:j1 + L2] += 0.35 * np.sin(2 * np.pi * (55 - 12 * tb) * tb) * np.exp(-tb * 1.8)
 
+# ---------- efek suara dari sfx.json (waktu sama dengan gambar) ----------
+SFX = os.path.join(ROOT, "sfx.json")
+def put(start, sig):
+    i = int(start * SR); j = min(N, i + len(sig))
+    if 0 <= i < N and j > i: fx[i:j] += sig[: j - i].astype(np.float32)
+def sfx(start, kind, amp):
+    if kind == "whoosh":
+        L = int(1.3 * SR); n = rng.standard_normal(L).astype(np.float32); env = np.sin(np.pi * np.linspace(0, 1, L)) ** 2
+        lo, hi = lp(n, 500), lp(n, 2600); u = np.linspace(0, 1, L); put(start - 0.6, amp * 0.3 * ((1 - u) * lo + u * hi) * env * 3)
+    elif kind == "clack":
+        L = int(0.5 * SR); tt = np.arange(L) / SR; p = 1 + (start * 7.3 % 1) * 0.3
+        put(start, amp * (np.sin(2 * np.pi * 150 * p * tt) * np.exp(-tt * 18) + 0.5 * np.sin(2 * np.pi * 420 * p * tt) * np.exp(-tt * 30) + rng.standard_normal(L) * np.exp(-tt * 120) * 0.4))
+    elif kind == "shimmer":
+        for i, m in enumerate([86, 90, 93, 98, 102]): L = int(2.0 * SR); tt = np.arange(L) / SR; put(start + i * 0.07, amp * 0.12 * np.sin(2 * np.pi * midi(m) * tt) * np.exp(-tt * 2.5))
+    elif kind == "riser":
+        d = 1.6; L = int(d * SR); tt = np.arange(L) / SR; f = 80 + 600 * (tt / d) ** 2
+        put(start - d, amp * 0.18 * (np.sin(2 * np.pi * np.cumsum(f) / SR) * (tt / d) ** 2 + 0.4 * lp(rng.standard_normal(L).astype(np.float32), 1500) * (tt / d) ** 3))
+    elif kind == "boom":
+        L = int(3.0 * SR); tt = np.arange(L) / SR; put(start, amp * 0.6 * np.sin(2 * np.pi * (48 - 10 * tt) * tt) * np.exp(-tt * 1.4))
+    elif kind == "pop":
+        L = int(0.35 * SR); tt = np.arange(L) / SR; f = 520 + 380 * np.exp(-tt * 30); put(start, amp * 0.28 * np.sin(2 * np.pi * np.cumsum(f) / SR) * np.exp(-tt * 14))
+if os.path.exists(SFX):
+    ev = json.load(open(SFX)); [sfx(a, k, g) for a, k, g in ev]; print(f"{len(ev)} efek suara dari {SFX}")
+
 # ---------- ducking menurut kerasnya suara narator ----------
 win = int(0.03 * SR); en = np.sqrt(np.convolve(vo ** 2, np.ones(win) / win, mode="same"))
 speech = (en > 0.02).astype(np.float32)
@@ -90,7 +119,7 @@ from itertools import accumulate
 duck = np.fromiter(accumulate(speech, lambda p, v: v + (p - v) * (att if v > p else rel)), dtype=np.float32, count=N)
 gain = 0.60 - 0.42 * duck          # di bawah narasi ±15 dB lebih pelan dari suara, di jeda lebih penuh
 fade = np.clip(t / 3.0, 0, 1) * np.clip((TL["total"] + 0.5 - t) / 4.0, 0, 1)
-bed = (music * gain + fx * 0.8) * fade
+bed = (music * gain + fx * 0.8 * (1 - 0.45 * duck)) * fade   # efek suara ikut sedikit merunduk di bawah narasi
 mix = vo * 0.95 + bed
 peak = np.max(np.abs(mix)); mix = mix / peak * 0.95 if peak > 0.98 else mix
 

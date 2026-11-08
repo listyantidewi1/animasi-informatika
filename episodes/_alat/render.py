@@ -3,6 +3,8 @@
   python3 episodes/_alat/render.py D7.0                 semua bagian, semua versi yang bahannya ada
   python3 episodes/_alat/render.py D7.0 D7.0a --suara   satu bagian, satu versi
   ... --mux   hanya suara/subtitel yang berubah: berkas segmen di video/ dipakai ulang, gambar tidak dirender ulang.
+  ... --seg=2,3 hanya merender berkas segmen itu (tanpa menggabung), untuk render paralel di beberapa proses;
+              sesudah semua selesai, jalankan sekali lagi dengan --lanjut untuk menggabung.
   ... --lanjut lanjutkan render yang terputus: segmen yang sudah ada dan lebih baru dari semua sumbernya
               (timeline, script.json, berkas engine, render.html) tidak dirender ulang.
 Dari dalam folder episode kodenya boleh dihilangkan: python3 ../_alat/render.py D7.0a
@@ -12,6 +14,7 @@ from playwright.sync_api import sync_playwright
 import episode as E
 
 flags = [a for a in sys.argv[1:] if a.startswith("--")]; MUX = "--mux" in flags; LANJUT = "--lanjut" in flags
+SEGS = {int(x) for f in flags if f.startswith("--seg=") for x in f[6:].split(",")}
 ROOT, only = E.find_root([a for a in sys.argv[1:] if not a.startswith("--")])
 OUT = os.path.join(ROOT, "video"); os.makedirs(OUT, exist_ok=True)
 FPS = 30
@@ -65,6 +68,7 @@ def render_variant(pg, variant):
         if pre:
             final = os.path.join(OUT, f"{tag}_pre.mp4"); still(pg, pre[0], p["segs"][0], final, pre[1], variant); files.append(final); offset += pre[1]
         for seg in p["segs"]:  # one file per segment
+            if SEGS and seg not in SEGS: continue
             sb = [b for b in beats if b["seg"] == seg]
             t0, t1 = sb[0]["start"], sb[-1]["start"] + sb[-1]["dur"]
             n = int(round((t1 - t0) * FPS))
@@ -85,6 +89,7 @@ def render_variant(pg, variant):
                 srt.append(f"{len(srt) + 1}\n{srt_time(s)} --> {srt_time(e)}\n{b['text']}\n")
             offset += n / FPS
             print(f"{tag} seg{seg} done ({n} frames)", flush=True)
+        if SEGS: continue  # render sebagian: penggabungan dilakukan oleh proses --lanjut sesudahnya
         if post:
             final = os.path.join(OUT, f"{tag}_post.mp4"); still(pg, post[0], p["segs"][-1], final, post[1], variant); files.append(final)
         # join, then audio track: narration (suara) or silence (teks)
@@ -104,6 +109,6 @@ def render_variant(pg, variant):
         print("DONE", out, flush=True)
 
 with sync_playwright() as p:
-    br = p.chromium.launch(); pg = br.new_page(viewport={"width": 1920, "height": 1080})
+    br = p.chromium.launch(args=E.browser_args(SCRIPT)); pg = br.new_page(viewport={"width": 1920, "height": 1080})
     for v in VARIANTS: render_variant(pg, v)
     br.close()

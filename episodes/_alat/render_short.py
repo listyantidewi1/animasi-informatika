@@ -93,7 +93,7 @@ def youtube_md():
     open(os.path.join(ROOT, "youtube.md"), "w", encoding="utf-8").write(md)
 
 with sync_playwright() as p:
-    br = p.chromium.launch(); pg = br.new_page(viewport={"width": 1080, "height": 1920})
+    br = p.chromium.launch(args=E.browser_args(PARENT)); pg = br.new_page(viewport={"width": 1080, "height": 1920})
     if FRAMES:
         variant = "suara" if E.has_variant(ROOT, "suara") else "teks"; TL = timeline(variant); page(pg, TL)
         d = os.path.join(ROOT, "preview"); os.makedirs(d, exist_ok=True)

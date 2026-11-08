@@ -63,6 +63,14 @@ def pick_variants(root, flags, need_audio=True):
     return want
 
 
+GL_ARGS = ["--use-gl=angle", "--use-angle=swiftshader", "--enable-unsafe-swiftshader", "--ignore-gpu-blocklist"]
+
+
+def browser_args(script):
+    """Argumen Chromium: episode dengan adegan 3D (kunci "webgl": true di script.json) butuh WebGL lewat SwiftShader."""
+    return GL_ARGS if script.get("webgl") else []
+
+
 def engine_js(root, script):
     """Mesin gambar episode = inti bersama + (opsional) modul bersama lain + adegan episode, digabung jadi satu teks."""
     files = script.get("engine", ["../_alat/kiko-core.js", "scenes.js"])
