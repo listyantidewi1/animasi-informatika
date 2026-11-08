@@ -3,7 +3,8 @@
    b5_1 bingkai film (sepia, pita seluloid) + Bip memegang papan klip → "bukan cerita film": papan dikatupkan dan dilempar, peta jadi berwarna;
         kamera menukik ke Mempawah (Kalbar), warga (avatar) melapor polisi (lencana), panggilan video "dari Arab Saudi" tiba sebagai gelembung
         lalu tumbuh menjadi HP besar: wajah bibi berkedip, suaranya tiruan.
-   b5_2 HP yang sama: panggilan berakhir → daftar kontak "Bibi" → busur hijau ke Bibi asli di Arab Saudi (bingung) → perbandingan nomor;
+   b5_2 HP yang sama: panggilan berakhir → daftar kontak, tombol Bibi ditekan → "Memanggil…" → busur hijau ke Bibi asli di Arab Saudi (bingung);
+        kartu "Nomor asli Bibi" lalu "Nomor pelaku" keluar dari HP, digit yang beda menyala merah saat "berbeda";
         gelembung palsu di Mempawah berbalik memperlihatkan pelaku berkerudung; Bip kaget.
    b5_3 kamera mundur ke seluruh Indonesia; laporan berkelip di banyak kota dan terbang sebagai map kecil ke tumpukan di depan gedung
         Indonesia Anti-Scam Center (OJK); angka 1.300+ dihitung tepat saat diucapkan, ±1,5 tahun, lalu map abu-abu "tidak dilaporkan" + korban yang malu.
@@ -166,6 +167,51 @@
     return { ax: x + ax * Math.abs(sx) * (back ? -1 : 1), ay: y + ay, back, k: Math.abs(sx) };
   }
 
+  // layar daftar kontak berhuruf besar (b5_2); dp = detik sejak tombol telepon Bibi ditekan
+  function listScreen(c, w, h, t, dp) {
+    c.save(); c.fillStyle = "#F1F3FC"; c.fillRect(0, 0, w, h);
+    const hh = 112, hg = c.createLinearGradient(0, 0, w, hh); hg.addColorStop(0, "#3FA7C9"); hg.addColorStop(1, "#4D6FD8"); c.fillStyle = hg; c.fillRect(0, 0, w, hh);
+    D.txt(c, "Kontak", 26, 78, 52, { color: "#FFFFFF", weight: 900 });
+    const rows = [["Adik", "#7C8BEA"], ["Bibi", "#2EB89A"], ["Ibu", "#E8739A"], ["Paman", "#F0A04B"], ["Pak RT", "#8E7CF0"]], rh = 112;
+    rows.forEach(([nm, col], i) => {
+      const y = hh + 14 + i * rh, cy = y + rh / 2, on = nm === "Bibi", pulse = 0.5 + 0.5 * Math.sin(t * 3.2);
+      if (on) { c.fillStyle = D.hexA(P.teal, 0.18 + 0.1 * pulse); H.rr(c, 8, y + 6, w - 16, rh - 12, 22); c.fill(); c.fillStyle = "#FFFFFF"; H.rr(c, 13, y + 11, w - 26, rh - 22, 18); c.fill(); }
+      else if (i > 0) { c.fillStyle = "#E1E5F4"; c.fillRect(96, y, w - 110, 2); }
+      c.save(); c.beginPath(); c.arc(54, cy, 30, 0, TAU); c.fillStyle = col; c.fill(); c.clip(); c.fillStyle = "rgba(255,255,255,0.55)";
+      c.beginPath(); c.arc(54, cy - 6, 11, 0, TAU); c.fill(); c.beginPath(); c.ellipse(54, cy + 24, 21, 15, 0, 0, TAU); c.fill(); c.restore();
+      D.txt(c, nm, 100, cy + 18, 50, { color: NAVY, weight: 800 });
+      if (on) {
+        const bx = w - 52, press = dp > 0 ? 1 - 0.18 * Math.sin(Math.PI * clamp(dp / 0.3)) : 1;
+        if (dp > 0) { const u = clamp(dp / 0.6); c.strokeStyle = D.hexA("#22B07D", 0.8 * (1 - u)); c.lineWidth = 5; c.beginPath(); c.arc(bx, cy, 30 + 50 * eout(u), 0, TAU); c.stroke(); }
+        c.fillStyle = D.hexA("#22B07D", 0.3 * pulse); c.beginPath(); c.arc(bx, cy, 30 * (1.2 + 0.25 * pulse), 0, TAU); c.fill();
+        c.fillStyle = "#22B07D"; c.beginPath(); c.arc(bx, cy, 30 * press, 0, TAU); c.fill(); L.ikon(c, "telepon", bx, cy, 26 * press, "#FFFFFF");
+      }
+    });
+    c.restore();
+  }
+  // kartu nomor besar (b5_2): label + 14 digit dalam sel lebar tetap; hi = indeks digit berbeda, hk 0..1 sorotan
+  const NUM_A = "0857-0000-4321", NUM_B = "0812-0000-1234", DIFF = [...NUM_A].map((ch, i) => (ch !== NUM_B[i] ? i : -1)).filter(i => i >= 0);
+  const CARD_W = 540, CARD_H = 150, CELL = 34;
+  function numCard(c, x, y, k, a, label, num, col, red, hk, t) {
+    if (a <= 0 || k <= 0.01) return; c.save(); c.globalAlpha *= a; c.translate(x, y); c.scale(k, k);
+    const w = CARD_W, h = CARD_H;
+    c.fillStyle = "rgba(10,14,50,0.32)"; H.rr(c, -w / 2 + 6, -h / 2 + 10, w, h, 26); c.fill();
+    c.fillStyle = CREAM; H.rr(c, -w / 2, -h / 2, w, h, 26); c.fill();
+    c.fillStyle = col; H.rr(c, -w / 2, -h / 2, 14, h, 7); c.fill();
+    c.fillStyle = col; c.beginPath(); c.arc(-w / 2 + 44, -h / 2 + 40, 14, 0, TAU); c.fill();
+    if (red) { c.fillStyle = "#FFFFFF"; c.fillRect(-w / 2 + 39, -h / 2 + 31, 3, 18); c.beginPath(); c.moveTo(-w / 2 + 42, -h / 2 + 31); c.lineTo(-w / 2 + 53, -h / 2 + 36); c.lineTo(-w / 2 + 42, -h / 2 + 41); c.fill(); }
+    else { c.strokeStyle = "#FFFFFF"; c.lineWidth = 4; c.lineCap = "round"; c.beginPath(); c.moveTo(-w / 2 + 37, -h / 2 + 40); c.lineTo(-w / 2 + 42, -h / 2 + 46); c.lineTo(-w / 2 + 52, -h / 2 + 33); c.stroke(); }
+    D.txt(c, label, -w / 2 + 70, -h / 2 + 56, 44, { color: red ? "#C23A4A" : "#1F8F84", weight: 800 });
+    const x0 = -CELL * num.length / 2 + 6, yb = h / 2 - 26;
+    for (let i = 0; i < num.length; i++) {
+      const cx = x0 + (i + 0.5) * CELL, j = DIFF.indexOf(i), on = j >= 0 ? clamp(hk * 1.8 - j / DIFF.length * 0.8) : 0;
+      if (on > 0 && red) { const sc = Math.min(1.1, spring(on * 1.1, 12, 0.5)); c.save(); c.translate(cx, yb - 17); c.scale(sc, sc); c.fillStyle = P.red; H.rr(c, -CELL * 0.47, -32, CELL * 0.94, 64, 9); c.fill(); c.restore(); }
+      if (on > 0 && !red) { c.fillStyle = D.hexA(P.amber, on); H.rr(c, cx - CELL * 0.4, yb + 8, CELL * 0.8, 6, 3); c.fill(); }
+      D.txt(c, num[i], cx, yb, 48, { align: "center", color: on > 0.5 && red ? "#FFFFFF" : NAVY, weight: 900 });
+    }
+    c.restore();
+  }
+
   // ---------- peta: tampilan kamera per waktu ----------
   const W0 = 1650, W1 = 4300, W2 = 1060;
   const P0 = (() => { const pz = PT.proj(960, 590, W0); return pz(MEMP[0], MEMP[1]); })();
@@ -275,24 +321,28 @@
       if (kb > 0) { ctx.save(); ctx.translate(BA[0], BA[1]); ctx.scale(kb, kb); avatar(ctx, 0, 0, 74, Object.assign({}, BIBI, { face: "bingung" }), out3, P.green, t); ctx.restore(); }
     }
 
-    // ---------- HP besar: panggilan video → kontak → perbandingan nomor (b5_1–b5_2) ----------
-    const grow = eio((t - e.pgl - 0.75) / 0.6), leave = eio((t - e.b5_3 + 0.05) / 0.7);
+    // ---------- HP besar: panggilan video → kontak → menelepon Bibi asli (b5_1–b5_2) ----------
+    const grow = eio((t - e.pgl - 0.75) / 0.6), leave = eio((t - e.b5_3 + 0.05) / 0.6);
     let phoneInfo = null;
     if (grow > 0 && leave < 1) {
-      const H0 = 760, x = lerp(lerp(M[0], 1480, grow), 2300, leave), y = lerp(lerp(M[1] - 110, 478, grow), 520, leave), hh = lerp(150, H0, grow);
-      const scr = t < e.sadar + 0.55 ? "vc" : t < e.ternyata ? "kontak" : "banding";
+      const H0 = 760, x = lerp(M[0], 1480, grow) + 90 * leave, y = lerp(M[1] - 110, 478, grow), hh = lerp(150, H0, grow) * (1 - 0.25 * leave);
+      const scr = t < e.sadar + 0.45 ? "vc" : t < e.hub + 0.45 ? "kontak" : "call";
       const glitch = t < e.sadar ? 0.3 + 0.25 * win(t, e.tiru - 0.05, e.tiru + 0.6, 0.1, 0.3) : 0.3 + 0.5 * clamp((t - e.sadar) / 0.4);
       const kedip = Math.abs(t - e.wajah - 0.08) < 0.12 || Math.abs(t - e.tiru - 0.1) < 0.1;
-      const sw = 1 - (1 - clamp(Math.abs(t - (e.sadar + 0.55)) / 0.18)) * 0.85 - (1 - clamp(Math.abs(t - e.ternyata) / 0.18)) * 0.85;
-      D.glow(ctx, x, y, hh * 0.75, scr === "banding" ? P.red : P.pink, 0.28 * grow);
-      phoneInfo = L.hp(ctx, x, y, hh, { t, tilt: -0.12 * (1 - leave), rot: (1 - grow) * -0.2, ringkas: true, teks: 1.2, lit: Math.max(0.2, sw), glowCol: "#A9D4FF",
+      const sw = 1 - (1 - clamp(Math.abs(t - (e.sadar + 0.45)) / 0.18)) * 0.85 - (1 - clamp(Math.abs(t - (e.hub + 0.45)) / 0.18)) * 0.6;
+      ctx.save(); ctx.globalAlpha *= 1 - leave;
+      D.glow(ctx, x, y, hh * 0.75, scr === "call" ? P.green : P.pink, 0.28 * grow);
+      phoneInfo = L.hp(ctx, x, y, hh, { t, tilt: -0.12, rot: (1 - grow) * -0.2, ringkas: true, teks: 1.2, lit: Math.max(0.2, sw), glowCol: "#A9D4FF",
         screen: (c, w, h, tt) => {
-          if (scr === "vc") return L.videoCall(c, w, h, { t: tt, ringkas: true, teks: 1.2, jam: false, nama: "Bibi", glitch, kedip, durasi: "00:" + String(12 + Math.floor(Math.max(0, t - e.video))).padStart(2, "0") });
-          if (scr === "kontak") return L.kontak(c, w, h, { t: tt, ringkas: true, teks: 1.2, jam: false, judul: "Kontak", sorot: "Bibi", daftar: [{ nama: "Adik" }, { nama: "Bibi", nomor: "0857-0000-4321" }, { nama: "Ibu" }, { nama: "Pak RT" }, { nama: "Paman" }] });
-          return L.kontak(c, w, h, { t: tt, ringkas: true, teks: 1.2, jam: false, banding: { lama: { nama: "Bibi", nomor: "0857-0000-4321" }, baru: { nama: "Penelepon", nomor: "0812-0000-1234" }, labelLama: "Nomor asli", labelBaru: "Nomor pelaku", u: clamp((t - e.nomor2) / (e.beda + 0.5 - e.nomor2)) } });
+          if (scr === "vc") return L.videoCall(c, w, h, { t: tt, ringkas: true, teks: 1.2, jam: false, nama: "Bibi", orang: { hijab: BIBI.hijab, ciput: BIBI.ciput, skin: BIBI.skin }, glitch, kedip, durasi: "00:" + String(12 + Math.floor(Math.max(0, t - e.video))).padStart(2, "0") });
+          if (scr === "kontak") return listScreen(c, w, h, tt, t - e.hub);
+          const on = t >= e.kel;
+          return L.panggilan(c, w, h, { t: tt, ringkas: true, teks: 1.2, jam: false, nama: "Bibi", warna: "#2EB89A", status: on ? undefined : "Memanggil…", suara: 0.8, seed: 7,
+            durasi: "00:" + String(Math.floor(Math.max(0, t - e.kel))).padStart(2, "0") });
         } });
+      ctx.restore();
       // suara keluar dari HP + spektrogram tiruan
-      const sa = win(t, e.suara - 0.05, e.sadar, 0.25, 0.4) * grow;
+      const sa = win(t, e.suara - 0.05, e.sadar, 0.25, 0.4) * grow * (1 - leave);
       if (sa > 0) {
         arcs(ctx, x - hh * 0.27, y - hh * 0.18, 70, t, P.pink, sa, -1);
         const SX = x - hh * 0.25 - 470, SY = 690;
@@ -331,7 +381,8 @@
     else if (!inS3) {
       if (t >= e.beda - 0.05 && t < e.b5_3) bo = { pose: "kaget", k: t - e.beda + 0.05, mood: "wow" };
       else if (t >= e.memp && t < e.pgl + 0.5) bo = { pose: "tunjuk", target: [M[0], M[1]], mood: "wow" };
-      else if (t >= e.asli && t < e.beda) bo = { pose: "tunjuk", target: [BA[0] + 60, BA[1] + 40], mood: "think" };
+      else if (t >= e.ternyata && t < e.beda) bo = { pose: "tunjuk", target: [760, 300], mood: "think" };
+      else if (t >= e.asli && t < e.ternyata) bo = { pose: "tunjuk", target: [BA[0] + 60, BA[1] + 40], mood: "think" };
       else bo = { pose: "diam", mood: "think", look: [1, -0.3] };
     } else {
       if (t >= e.seribu - 0.1 && t < e.besar) bo = { pose: "tunjuk", target: [760, 200], mood: "wow" };
@@ -365,6 +416,18 @@
       if (bA2 > 0) { c.save(); c.globalAlpha *= bA2; PT.tag(c, "Bibi asli", BA[0], BA[1] + 132, { size: 46, color: P.green }); c.restore(); }
       const pA = clamp((t - e.pelaku - 0.3) / 0.3) * out3;
       if (pA > 0) { c.save(); c.globalAlpha *= pA; PT.tag(c, "pelaku", M[0] + 170, M[1] - 120, { size: 46, color: P.red, scale: lerp(0.9, 1, Math.min(1, pop(t, e.pelaku + 0.3))) }); c.restore(); }
+      // kartu nomor keluar dari HP: nomor asli (saat "nomor asli"), nomor pelaku (saat "nomor yang dipakai"), digit beda menyala saat "berbeda"
+      if (phoneInfo) {
+        const lv = 1 - eio((t - e.b5_3 + 0.05) / 0.5), hk = clamp((t - e.beda + 0.15) / 0.8);
+        const fly = (t0, X, Y) => { const u = eio((t - t0) / 0.5); return { u, x: lerp(X + 140, X, u), y: lerp(Y + 30, Y, u), k: lerp(0.9, 0.96, eout(u)) }; };
+        const c1 = fly(e.asli - 0.1, 1012, 170), c2 = fly(e.nomor2 - 0.15, 1012, 340);
+        numCard(c, c1.x, c1.y, c1.k, clamp(c1.u * 2.5) * lv, "Nomor asli Bibi", NUM_A, "#2EB89A", false, hk, t);
+        numCard(c, c2.x, c2.y, c2.k, clamp(c2.u * 2.5) * lv, "Nomor pelaku", NUM_B, P.red, true, hk, t);
+        const ne = clamp((t - e.beda + 0.1) / 0.3) * lv;
+        if (ne > 0) { const r = 30 * Math.min(1.1, pop(t, e.beda - 0.1, 12, 0.5)), nx = 1012 - CARD_W * 0.48 + 6, ny = 255;
+          c.save(); c.globalAlpha *= ne; c.fillStyle = P.red; c.beginPath(); c.arc(nx, ny, r, 0, TAU); c.fill(); c.strokeStyle = "#FFFFFF"; c.lineWidth = r * 0.17; c.lineCap = "round";
+          c.beginPath(); c.moveTo(nx - r * 0.45, ny - r * 0.2); c.lineTo(nx + r * 0.45, ny - r * 0.2); c.moveTo(nx - r * 0.45, ny + r * 0.2); c.lineTo(nx + r * 0.45, ny + r * 0.2); c.moveTo(nx + r * 0.25, ny - r * 0.55); c.lineTo(nx - r * 0.25, ny + r * 0.55); c.stroke(); c.restore(); }
+      }
 
       // ---------- b5_3 ----------
       if (inS3 && fadeOut3 > 0) {
@@ -430,6 +493,14 @@
     });
   }
 
+  // layar mungil HP pegawai (tanpa teks, terlalu kecil untuk dibaca)
+  function tinyCall(c, w, h, t) {
+    const g = c.createLinearGradient(0, 0, 0, h); g.addColorStop(0, "#3E86C9"); g.addColorStop(1, "#4B55B8"); c.fillStyle = g; c.fillRect(0, 0, w, h);
+    c.fillStyle = D.hexA("#FFFFFF", 0.2 + 0.1 * Math.sin(t * 4)); c.beginPath(); c.arc(w / 2, h * 0.3, w * 0.3, 0, TAU); c.fill();
+    c.fillStyle = "#EEF1FA"; c.beginPath(); c.arc(w / 2, h * 0.3, w * 0.2, 0, TAU); c.fill();
+    c.fillStyle = "#FFFFFF"; H.rr(c, w * 0.2, h * 0.5, w * 0.6, h * 0.05, h * 0.025); c.fill();
+    c.fillStyle = P.red; c.beginPath(); c.arc(w / 2, h * 0.85, w * 0.12, 0, TAU); c.fill();
+  }
   // ---------- adegan kantor (b5_4) ----------
   function officeScene(ctx, b, l, t, TL, e) {
     const ring = t < e.misal ? 1 : 0, ans = clamp((t - e.misal + 0.1) / 0.45);
@@ -454,7 +525,7 @@
     // pegawai duduk di kursi kantor, menghadap kiri (ke meja)
     const sit = A.sit || { x: 1468, y: 646 };
     const emp = O.draw(ctx, sit.x + 8, 820, 440, Object.assign({}, PEGAWAI, { pose: ans > 0 ? "telepon" : "duduk", blend: ans > 0 && ans < 1 ? { to: "telepon", k: eio(ans) } : undefined, duduk: true, kursi: false, flip: true, t,
-      face: t > e.trf ? "netral" : ans > 0 ? "netral" : "bingung", look: ans > 0 ? [-0.6, 0] : [-1, 0.1] }));
+      face: t > e.trf ? "netral" : ans > 0 ? "netral" : "bingung", look: ans > 0 ? [-0.6, 0] : [-1, 0.1], layar: tinyCall }));
     if (ring) { const s = A.phoneScreen || A.phone; arcs(ctx, s.x, s.y - 10, 50, t, P.teal, 1, 1); arcs(ctx, s.x, s.y - 10, 50, t, P.teal, 1, -1); }
     LT.depan(ctx, "kantor", t, { px: Math.sin(t * 0.2) * 0.25 });
     ctx.restore();
@@ -480,15 +551,17 @@
     const mny = clamp((t - e.trf + 0.05) / 0.3);
     if (mny > 0) for (let i = 0; i < 7; i++) {
       const ph = (t - e.trf - i * 0.22); if (ph < 0) continue; const u = (ph % 1.1) / 1.1, sx0 = 960 + (860 - fx) * z, sy0 = 540 + (433 - fy) * z;
-      const [x, y] = qpt([sx0, sy0], [700, 120], [CC.x + 60, CC.y], eio(u));
-      ctx.save(); ctx.globalAlpha *= Math.sin(Math.PI * u) * mny; B.ikon(ctx, "uang", x, y, 30 + 10 * Math.sin(Math.PI * u), { color: P.green }); ctx.restore();
+      const [x, y] = qpt([sx0, sy0], [860, 90], [CC.x + CC.w / 2 - 70, CC.y + 10], eio(u));
+      ctx.save(); ctx.globalAlpha *= Math.sin(Math.PI * u) * mny; B.ikon(ctx, "uang", x, y, lerp(38, 22, u) + 8 * Math.sin(Math.PI * u), { color: P.green }); ctx.restore();
     }
     // Bip: menunjuk pelaku, kaget saat transfer
     const bpose = t >= e.trf - 0.05 ? { pose: "kaget", k: t - e.trf + 0.05, mood: "wow" } : t >= e.atasan + 0.2 ? { pose: "tunjuk", target: [card.ax, card.ay], mood: "wow" } : { pose: "diam", mood: "think", look: [1, -0.5] };
     B.draw(ctx, 215, 815, 160, Object.assign({ t, seed: 2 }, bpose));
 
+    const endA = 1 - clamp((l - D.speechEnd(b) - 0.3) / 0.3);   // label hilang di bawah kartu bab berikutnya
     D.post(c => {
-      c.save(); c.globalAlpha *= inA;
+      if (endA <= 0) return;
+      c.save(); c.globalAlpha *= inA * endA;
       const k = card.k, nm = card.back ? "Pelaku" : "Pak Direktur", sub = card.back ? "meniru atasan" : (t < e.misal ? "memanggil…" : "tersambung");
       c.save(); c.translate(CC.x, CC.y); c.scale(Math.max(0.02, k), 1);
       D.txt(c, nm, -CC.w / 2 + CC.h * 0.86, -8, 54, { color: "#FFFFFF", weight: 900 });
@@ -498,7 +571,7 @@
       const lbl = flip < 0.5 ? "suara atasan?" : "suara tiruan";
       if (spA > 0) { c.save(); c.globalAlpha *= spA; PT.tag(c, lbl, CC.x, CC.y + CC.h / 2 + 262, { size: 46, color: P.pink }); c.restore(); }
       const rA = clamp((t - e.trf + 0.05) / 0.3);
-      if (rA > 0) { c.save(); c.globalAlpha *= rA; PT.tag(c, "Rp250 juta", 1060, 640, { size: 48, color: P.red, scale: lerp(0.9, 1, Math.min(1, pop(t, e.trf - 0.05))) }); c.restore(); }
+      if (rA > 0) { c.save(); c.globalAlpha *= rA; PT.tag(c, "transfer uang", 1060, 640, { size: 48, color: P.red, scale: lerp(0.9, 1, Math.min(1, pop(t, e.trf - 0.05))) }); c.restore(); }
       c.restore();
     });
   }
@@ -524,8 +597,9 @@
       r(e.pgl - 0.5, "whoosh", 0.6),            // gelembung panggilan video terbang
       r(e.pgl + 0.8, "shimmer", 0.55),          // HP besar tumbuh
       r(e.tiru, "clack", 0.45),                 // kedip glitch "meniru"
-      r(e.hub, "pop", 0.5),                     // kontak Bibi
-      r(e.kel - 0.1, "shimmer", 0.5),           // Bibi asli muncul
+      r(e.hub, "pop", 0.45),                    // tombol telepon Bibi ditekan
+      r(e.asli - 0.05, "shimmer", 0.5),         // kartu nomor asli + Bibi asli muncul
+      r(e.nomor2 - 0.1, "pop", 0.5),            // kartu nomor pelaku keluar dari HP
       r(e.beda, "boom", 0.8),                   // pelaku terungkap + Bip kaget
       r(e.b5_3 - 0.5, "whoosh", 0.6),           // kamera mundur ke seluruh Indonesia
       r(e.iasc, "pop", 0.6),                    // gedung IASC

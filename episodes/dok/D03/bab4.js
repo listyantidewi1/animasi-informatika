@@ -8,7 +8,8 @@
    - b4_4 toples "rahasia" bergembok; buku menutup dan pergi; HP Bu Rina berdering.
    - b4_4a dialog "Jangan bilang siapa-siapa dulu." tampil sebagai gelembung besar dari HP Bu Rina, kata demi kata.
    - b4_4b gembok dari toples "rahasia" terbang mengunci garis tanya Bu Rina ke Ayah dan Nenek.
-   - b4_5 tiga toples dituang ke panci, uap membentuk tanda seru; Bu Rina masuk "mode darurat" (lampu sirene), ingin segera transfer
+   - b4_5 tiga toples dituang ke panci, uap membentuk tanda seru yang terbang ke kepala Bu Rina dan menjadi lampu sirene tepat pada
+     "mode darurat"; ingin segera transfer
      Rp3.000.000, kepalanya berkabut; pelaku muncul di jendela memegang buku resep, Bip menunjuknya.
    Semua keadaan dihitung dari waktu absolut, kamera sendiri (noCam), sehingga silang-pudar antarbeat tidak terlihat sebagai lompatan. */
 (function (g) {
@@ -33,7 +34,7 @@
   const WIN = { x: 470, y: 150, w: 400, h: 230 };
   const ICONS = [{ x: 330, y: 228, label: "kecelakaan" }, { x: 655, y: 190, label: "polisi" }, { x: 978, y: 228, label: "rumah sakit" }];
   const CLOCK = { x: 960, y: 222, r: 80 }, TUNGGU = { x: 715, y: 250, w: 270 };
-  const AYAH = { x: 1085, y: 255 }, NENEK = { x: 1330, y: 178 }, LOCK = { x: 1555, y: 378 };
+  const AYAH = { x: 1085, y: 255 }, NENEK = { x: 1290, y: 170 }, LOCK = { x: 1555, y: 378 };
   const POUR = { x: 742, y: 318, tilt: -1.85 };
   const CHIP = { x: 420, y: 250 };
 
@@ -76,7 +77,7 @@
       [e.buru, 990, 480, 1.07], [e.tunggu + 0.2, 985, 465, 1.1],
       [e.rahasia, 1060, 480, 1.08], [e.b4_4a + 0.3, 1130, 465, 1.2], [e.b4_4ae, 1135, 462, 1.22],
       [e.korban, 1120, 448, 1.2], [e.lain + 0.25, 1105, 445, 1.19], [e.pour[0].lift, 1080, 450, 1.17], [e.pour[0].at + 0.25, 790, 430, 1.24],
-      [e.fly0, 740, 420, 1.27], [e.fly1, 1209, 470, 1.35], [e.tolong, 1200, 476, 1.33], [e.pelaku - 0.1, 1209, 470, 1.37],
+      [e.fly0, 760, 430, 1.25], [e.fly1, 1150, 468, 1.2], [e.tolong, 1145, 474, 1.19], [e.pelaku - 0.1, 1150, 470, 1.22],
       [e.pelaku + 0.75, 1000, 452, 1.08], [e.b4_5e, 975, 440, 1.12]];
     EVk = TL; EVc = e; return e;
   }
@@ -219,9 +220,10 @@
     const P2 = BANG.map(([px, py, pr, ph, rr], i) => {
       const sx = x + Math.sin(ph + t * 1.3) * h * 0.22 * (0.4 + rr), sy = y - h * (0.15 + ((rr + t * 0.25 + i * 0.03) % 1) * 0.9);
       return [lerp(sx, x + px * h + Math.sin(t * 2 + i) * h * 0.006, f), lerp(sy, y + py * h + Math.cos(t * 1.7 + i) * h * 0.006, f), lerp(h * 0.05, pr * h, f), lerp(0.5, 1, f)]; });
+    c.fillStyle = "#FFF1F4"; P2.forEach(([px, py, pr, al]) => { c.globalAlpha = a * al * 0.55 * f; c.beginPath(); c.arc(px, py, pr * 1.3, 0, TAU); c.fill(); });
     c.fillStyle = "#D9466A"; P2.forEach(([px, py, pr, al]) => { c.globalAlpha = a * al; c.beginPath(); c.arc(px, py + pr * 0.12, pr * 1.05, 0, TAU); c.fill(); });
     c.fillStyle = "#FF8DA2"; P2.forEach(([px, py, pr, al]) => { c.globalAlpha = a * al; c.beginPath(); c.arc(px, py, pr, 0, TAU); c.fill(); });
-    c.fillStyle = "#FFD2DB"; P2.forEach(([px, py, pr, al]) => { c.globalAlpha = a * al * 0.8; c.beginPath(); c.arc(px - pr * 0.3, py - pr * 0.35, pr * 0.35, 0, TAU); c.fill(); });
+    c.fillStyle = "#FFD2DB"; P2.forEach(([px, py, pr, al], i) => { if (i % 5) return; c.globalAlpha = a * al * 0.5; c.beginPath(); c.arc(px - pr * 0.3, py - pr * 0.35, pr * 0.3, 0, TAU); c.fill(); });
     c.restore();
   }
   function bukuKecil(c, x, y, s, rot) {   // buku resep tertutup (tanpa tulisan) di tangan pelaku
@@ -232,6 +234,29 @@
     c.fillStyle = AMB; H.rr(c, -s * 0.16, s * 0.02, s * 0.28, s * 0.14, s * 0.04); c.fill();
     c.restore();
   }
+
+  // layar HP Bu Rina tanpa teks kecil: panggilan masuk / sedang bicara / transfer
+  function layarHP(mode) {
+    return (c, w, h, tt) => {
+      const g = c.createLinearGradient(0, 0, 0, h);
+      if (mode === "transfer") { g.addColorStop(0, "#F4F7FF"); g.addColorStop(1, "#E3E9FA"); c.fillStyle = g; c.fillRect(0, 0, w, h);
+        c.fillStyle = P.teal; c.fillRect(0, 0, w, h * 0.2); c.fillStyle = "#FFFFFF"; c.beginPath(); c.arc(w * 0.5, h * 0.42, w * 0.2, 0, TAU); c.fill();
+        c.fillStyle = "#5BD68A"; H.rr(c, w * 0.34, h * 0.38, w * 0.32, w * 0.16, w * 0.04); c.fill();
+        c.fillStyle = "rgba(60,70,120,0.35)"; H.rr(c, w * 0.2, h * 0.6, w * 0.6, w * 0.07, w * 0.035); c.fill();
+        c.fillStyle = Math.floor(tt * 3) % 2 ? P.pink : "#FF8FB0"; H.rr(c, w * 0.15, h * 0.74, w * 0.7, w * 0.2, w * 0.1); c.fill(); return; }
+      g.addColorStop(0, "#5B6BE0"); g.addColorStop(1, "#8A5FD6"); c.fillStyle = g; c.fillRect(0, 0, w, h);
+      const ax = w * 0.5, ay = h * 0.32, ar = w * 0.24;
+      if (mode === "dering") for (let i = 0; i < 2; i++) { const u = (tt * 0.9 + i * 0.5) % 1; c.strokeStyle = `rgba(255,255,255,${0.5 * (1 - u)})`; c.lineWidth = w * 0.04; c.beginPath(); c.arc(ax, ay, ar * (1 + u * 0.7), 0, TAU); c.stroke(); }
+      c.fillStyle = "#B7C1F2"; c.beginPath(); c.arc(ax, ay, ar, 0, TAU); c.fill();
+      c.save(); c.beginPath(); c.arc(ax, ay, ar, 0, TAU); c.clip(); c.fillStyle = "#8C9AD8"; c.beginPath(); c.arc(ax, ay - ar * 0.2, ar * 0.38, 0, TAU); c.fill();
+      c.beginPath(); c.ellipse(ax, ay + ar * 0.8, ar * 0.65, ar * 0.5, 0, 0, TAU); c.fill(); c.restore();
+      const by = h * 0.8, br = w * 0.13;
+      if (mode === "dering") { const pu = 1 + 0.12 * Math.max(0, Math.sin(tt * 6)); c.fillStyle = "#3FCF7A"; c.beginPath(); c.arc(w * 0.27, by, br * pu, 0, TAU); c.fill(); c.fillStyle = "#FF4D5E"; c.beginPath(); c.arc(w * 0.73, by, br, 0, TAU); c.fill(); }
+      else { for (let i = 0; i < 5; i++) { const hh = h * (0.03 + 0.07 * Math.abs(Math.sin(tt * 7 + i * 1.3))); c.fillStyle = "rgba(255,255,255,0.85)"; H.rr(c, w * (0.24 + i * 0.11), h * 0.58 - hh / 2, w * 0.06, hh, w * 0.03); c.fill(); }
+        c.fillStyle = "#FF4D5E"; c.beginPath(); c.arc(w * 0.5, by, br, 0, TAU); c.fill(); }
+    };
+  }
+  const SCR = { dering: layarHP("dering"), bicara: layarHP("bicara"), transfer: layarHP("transfer") };
 
   // ---------- keadaan toples ----------
   function jarState(e, i, t) {
@@ -292,21 +317,23 @@
     // ===== panci =====
     const formU = clamp((t - e.form0) / (e.form1 - e.form0)), pulse = t > e.manfaat ? 0.5 + 0.5 * Math.sin((t - e.manfaat) * 7) : 0;
     const liquid = t < e.pour[0].pour + 0.2 ? "#9FC8F0" : t < e.pour[1].pour + 0.2 ? "#FF7F92" : t < e.pour[2].pour + 0.2 ? "#FF9A6A" : "#D9669A";
-    B.panci(ctx, POT.x, POT.y, POT.size, { t, liquid, color: "#EE5560", steam: 0.45 + 0.55 * boil, steamShape: "!", form: formU, steamH: lerp(240, 330, formU) * (1 + 0.06 * pulse),
-      steamCol: formU > 0.5 ? "#FFE9EE" : "#F4F1FF", glowCol: RED });
-    if (formU > 0.3) D.glow(ctx, POT.x, POT.y - 330, 230, RED, (0.25 + 0.25 * pulse) * formU);
+    const flyU = clamp((t - e.fly0) / (e.fly1 - e.fly0));
+    B.panci(ctx, POT.x, POT.y, POT.size, { t, liquid, color: "#EE5560", steam: (0.45 + 0.55 * boil) * (formU > 0 && flyU < 1 ? 0.35 : 1), steamH: 240,
+      steamCol: t > e.boil ? "#FFE9EE" : "#F4F1FF", glowCol: RED });
+    if (formU > 0.3 && flyU <= 0) D.glow(ctx, POT.x, POT.y - 300, 230, RED, 0.35 * formU);
 
     // ===== buku resep =====
     if (t < e.away + 0.8) {
       const mv = eio((t - e.toWall) / 0.9), aw = eio((t - e.away) / 0.7);
-      const bx = lerp(BOOK0.x, BOOK1.x, mv) + aw * 420, by = lerp(BOOK0.y, BOOK1.y, mv) - aw * 620, bs = lerp(BOOK0.size, BOOK1.size, mv);
+      const bx = lerp(lerp(BOOK0.x, BOOK1.x, mv), WIN.x + 300, aw), by = lerp(lerp(BOOK0.y, BOOK1.y, mv), WIN.y + 150, aw) - Math.sin(aw * PI) * 120, bs = lerp(BOOK0.size, BOOK1.size, mv) * lerp(1, 0.28, aw);
       let open = eio((t - e.resep + 0.05) / 0.8); if (t > e.close) open = 1 - eio((t - e.close) / 0.45);
       let active = -1;
       if (t > e.bahannya && t < e.perasaan) active = Math.floor((t - e.bahannya) / 0.55) % 3;
       for (let i = 0; i < 3; i++) if (t > e.pop[i] - 1.2 && t < e.pop[i] + 0.6) active = i;
       if (t > e.ketiga && t < e.rahasia) active = 2;
-      ctx.save(); ctx.globalAlpha *= 1 - clamp((t - e.away - 0.35) / 0.3);
-      const bk = B.bukuResep(ctx, bx, by + Math.sin(t * 1.1) * 3 * mv, bs, { open, t, active, slotColors: [RED, AMB, VIO] });
+      ctx.save(); ctx.globalAlpha *= 1 - clamp((t - e.away - 0.45) / 0.3);
+      const hideT = (open > 0.06 && open < 0.94) || aw > 0.02;
+      const bk = B.bukuResep(ctx, bx, by + Math.sin(t * 1.1) * 3 * mv, bs, { open, t, active, slotColors: [RED, AMB, VIO], title: hideT ? "" : undefined });
       // slot yang bahannya sudah keluar: toples mini
       if (open > 0.9) for (let i = 0; i < 3; i++) if (t > e.pop[i] + 0.1) {
         const [sx, sy] = bk.slots[i], rowH = bk.h * 0.72 / 3, pw = bk.w / 2;
@@ -402,13 +429,13 @@
       else if (t < e.bukan) o = Object.assign(o, { pose: "tunjuk", target: [BOOK0.x - 180, BOOK0.y - 40], mood: "happy" });
       else if (t < e.perasaan) o = Object.assign(o, { pose: "tunjuk", target: [CHIP.x, CHIP.y], mood: "think" });
       else if (t < e.panik) o = Object.assign(o, { mood: "wow", look: [-0.3, -0.8] });
-      else if (t < e.panik + 1.4) o = Object.assign(o, { pose: "kaget", k: t - e.panik });
+      else if (t < e.panik + 1.4) o = Object.assign(o, { pose: "kaget", mood: "wow", k: t - e.panik });
       else if (t < e.bahan2) o = Object.assign(o, { mood: "sad", look: [0.1, -0.9] });
       else if (t < e.rahasia) o = Object.assign(o, { mood: t > e.sekarang ? "wow" : "think", look: [0.8, -0.7], sweat: t > e.sekarang });
       else if (t < e.rahasia + 1.2) o = Object.assign(o, { pose: "tunjuk", target: [JARS[2].x, CT - JAR_H * 0.6], mood: "think" });
       else if (t < e.pour[0].lift) o = Object.assign(o, { mood: "sad", look: [1, -0.3] });
       else if (t < e.form1) o = Object.assign(o, { pose: "tunjuk", target: [POT.x - 40, POT.y - 160], mood: "think" });
-      else if (t < e.form1 + 1.4) o = Object.assign(o, { pose: "kaget", k: t - e.form1 });
+      else if (t < e.form1 + 1.4) o = Object.assign(o, { pose: "kaget", mood: "wow", k: t - e.form1, seru: false });
       else if (t < e.pelaku) o = Object.assign(o, { mood: "sad", look: [1, -0.4], sweat: true });
       else o = Object.assign(o, { pose: "tunjuk", target: [WIN.x + 300, WIN.y + 120], mood: "think" });
       B.draw(ctx, bx, by, BIP.s, o);
@@ -425,6 +452,7 @@
       if (t > e.membuat) face = "panik";
       const opt = Object.assign(O.preset("buRina"), { t, flip: true, face, look: t < e.ring ? [-0.2, 0.6] : [-0.6, 0.1], keringat: t > e.korban,
         pose: "pegangHP", dering: ring, glow: true });
+      if (t > e.ring) opt.layar = toHand > 0.3 ? SCR.transfer : (t < e.ear + 0.3 ? SCR.dering : SCR.bicara);
       if (toEar > 0 && toHand <= 0) opt.blend = { to: "telepon", k: toEar };
       else if (toHand > 0) { opt.pose = "telepon"; opt.blend = { to: "pegangHP", k: toHand }; opt.look = [-0.3, 0.6]; }
       rina = O.draw(ctx, RINA.x, FY, RINA.h, opt);
@@ -462,9 +490,11 @@
         ctx.strokeStyle = lk > 0 ? D.hexA("#A9ACBA", 0.9) : D.hexA(CREAM, 0.95); ctx.lineWidth = 7;
         ctx.beginPath(); ctx.moveTo(head[0] - 30, head[1] - 20); ctx.lineTo(lerp(head[0] - 30, F.x, dl), lerp(head[1] - 20, F.y, dl)); ctx.stroke(); ctx.setLineDash([]);
         // tanda tanya berjalan menuju keluarga, lalu terpental di gembok
-        if (t > e.tanya - 0.1) { let u = clamp((t - e.tanya + 0.1) / 0.7); const block = 0.22; if (t > e.lain) u = block * (1 - eio((t - e.lain) / 0.6)); else u = Math.min(u, lk > 0 ? block : 1);
+        if (t > e.tanya - 0.1) { const block = 0.3; let u = Math.min(block, block * eout(clamp((t - e.tanya + 0.1) / 0.45)));
+          if (t > e.lain) u = block * (1 - eio((t - e.lain) / 0.6)); else if (u >= block) u = block - 0.02 * Math.abs(Math.sin((t - e.tanya) * 9));
           const qx = lerp(head[0] - 30, F.x, u), qy = lerp(head[1] - 20, F.y, u), qa = t > e.lain ? 1 - clamp((t - e.lain) / 0.6) : 1;
-          if (qa > 0) B.ikon(ctx, "tanya", qx, qy, 30, { color: AMB }); }
+          if (qa > 0) { ctx.save(); ctx.globalAlpha *= qa; ctx.setLineDash([]); ctx.fillStyle = "rgba(16,20,64,0.25)"; ctx.beginPath(); ctx.arc(qx + 3, qy + 5, 38, 0, TAU); ctx.fill();
+            ctx.fillStyle = AMB; ctx.beginPath(); ctx.arc(qx, qy, 38, 0, TAU); ctx.fill(); D.txt(ctx, "?", qx, qy + 19, 54, { align: "center", color: INK, weight: 900 }); ctx.restore(); } }
         ctx.restore();
         if (k > 0.02) {
           ctx.save(); ctx.translate(F.x, F.y); ctx.scale(k, k);
@@ -485,6 +515,12 @@
       }
     }
 
+    // ===== b4_5: uap tanda seru terbang ke kepala Bu Rina =====
+    if (formU > 0 && flyU < 1) {
+      const u = eio(flyU), P0 = [POT.x, POT.y - POT.size * 0.5], P1 = [rina.top[0] + 6, rina.top[1] - 14];
+      const q = qpt(P0, [lerp(P0[0], P1[0], 0.5), Math.min(P0[1], P1[1]) - 300], P1, u);
+      bang(ctx, q[0], q[1], lerp(310, 90, u), formU, t, 1 - clamp((flyU - 0.8) / 0.2));
+    }
     // ===== b4_5: mode darurat, ingin menolong, kabut =====
     if (t > e.mode - 0.1) {
       const a = clamp((t - e.mode + 0.1) / 0.3) * (1 - 0.6 * clamp((t - e.sulit) / 0.8));
@@ -492,13 +528,13 @@
     }
     const trIn = clamp((t - e.tolong + 0.2) / 0.35);
     if (trIn > 0) {
-      const k = Math.min(1.05, pop(t, e.tolong - 0.2, 11, 0.5)), CX = 1330, CY = 452, ph = rina.phone || rina.hand;
-      ctx.save(); ctx.translate(CX, CY); ctx.scale(k, k);
+      const k0 = Math.min(1.05, pop(t, e.tolong - 0.2, 11, 0.5)), k = lerp(0.72, 1, k0), CX = 1330, CY = 452, ph = rina.phone || rina.hand;
+      ctx.save(); ctx.globalAlpha *= clamp(k0 * 2.5); ctx.translate(CX, CY); ctx.scale(k, k);
       ctx.fillStyle = "rgba(16,20,64,0.25)"; H.rr(ctx, -200 + 5, -128 + 8, 400, 256, 36); ctx.fill();
       ctx.fillStyle = "#FFFFFF"; H.rr(ctx, -200, -128, 400, 256, 36); ctx.fill();
       ctx.beginPath(); ctx.moveTo(150, 90); ctx.lineTo(ph[0] - CX - 20, ph[1] - CY - 10); ctx.lineTo(190, 40); ctx.closePath(); ctx.fill();
       const bl = t > e.manfaat ? 1 : 0.6;
-      B.tombol(ctx, 0, 52, 300, { label: "Transfer", color: P.pink, textSize: 48, blink: bl, t });
+      B.tombol(ctx, 0, 52, 300, { label: "Transfer", color: P.pink, textSize: 52, blink: bl, t });
       ctx.restore();
       labels.push(["Rp3.000.000", CX, CY - 62, { a: k > 0.9 ? 1 : 0, plain: true }]);
     }
