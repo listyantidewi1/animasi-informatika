@@ -48,7 +48,9 @@ PROG = {
     "misteri": [[50, 57, 60, 65], [46, 53, 58, 62], [43, 50, 55, 58], [45, 52, 57, 61]],   # Dm – Bb – Gm – A
     "renung":  [[52, 59, 62, 67], [48, 55, 59, 64], [45, 52, 55, 60], [47, 54, 57, 62]],   # Em – C – Am – Bm
     "hangat":  [[48, 55, 64, 67], [53, 60, 65, 69], [57, 64, 67, 72], [55, 62, 67, 71]],   # C – F – Am – G
+    "tegang":  [[48, 55, 58, 63], [44, 51, 56, 60], [41, 48, 53, 56], [43, 50, 55, 59]],   # Cm – Ab – Fm – G (+ denyut rendah)
 }
+V2 = SCRIPT.get("musik", {}).get("versi", 1) >= 2   # versi 2 (audit D02): stereo, ducking per kalimat utuh, master −14 LUFS/−1 dBTP
 MOOD = {0: "kagum", 1: "kagum", 2: "kagum", 3: "kagum", 4: "misteri", 5: "misteri", 6: "renung", 7: "renung", 8: "hangat", 9: "hangat"}
 MOOD.update({int(k): v for k, v in SCRIPT.get("musik", {}).get("mood", {}).items()})
 segs = {}
@@ -71,6 +73,11 @@ for s, (a, z) in sorted(segs.items()):
         for _ in range(2 if MOOD.get(s) != "renung" else 1):
             bt = c0 + rng.uniform(0.5, CH - 1); m = notes[rng.integers(1, len(notes))] + 24; j0 = int(bt * SR); L = int(3.5 * SR)
             if j0 + L < N: tb = np.arange(L) / SR; music[j0:j0 + L] += 0.10 * np.sin(2 * np.pi * midi(m) * tb) * np.exp(-tb * 1.6) * (1 + 0.3 * np.sin(2 * np.pi * midi(m) * 2.01 * tb) * np.exp(-tb * 3))
+        if V2 and MOOD.get(s) == "tegang":   # denyut jantung rendah, dua ketukan tiap 1,1 detik
+            for hb in np.arange(c0, min(c0 + CH, z), 1.1):
+                for dd, aa in ((0.0, 0.22), (0.24, 0.14)):
+                    j0 = int((hb + dd) * SR); L = int(0.4 * SR)
+                    if j0 + L < N: tb = np.arange(L) / SR; music[j0:j0 + L] += aa * np.sin(2 * np.pi * 52 * tb) * np.exp(-tb * 11)
         c0 += CH; k += 1
 music = lp(music, 2400)
 
@@ -107,13 +114,18 @@ def sfx(start, kind, amp):
     elif kind == "boom":
         L = int(3.0 * SR); tt = np.arange(L) / SR; put(start, amp * 0.6 * np.sin(2 * np.pi * (48 - 10 * tt) * tt) * np.exp(-tt * 1.4))
     elif kind == "pop":
-        L = int(0.35 * SR); tt = np.arange(L) / SR; f = 520 + 380 * np.exp(-tt * 30); put(start, amp * 0.28 * np.sin(2 * np.pi * np.cumsum(f) / SR) * np.exp(-tt * 14))
+        L = int(0.35 * SR); tt = np.arange(L) / SR; f = 520 + 380 * np.exp(-tt * 30); put(start, amp * (0.5 if V2 else 0.28) * np.sin(2 * np.pi * np.cumsum(f) / SR) * np.exp(-tt * 14))
 if os.path.exists(SFX):
     ev = json.load(open(SFX)); [sfx(a, k, g) for a, k, g in ev]; print(f"{len(ev)} efek suara dari {SFX}")
 
 # ---------- ducking menurut kerasnya suara narator ----------
 win = int(0.03 * SR); en = np.sqrt(np.convolve(vo ** 2, np.ones(win) / win, mode="same"))
 speech = (en > 0.02).astype(np.float32)
+if V2:   # jeda pendek di dalam kalimat (<1,2 dtk) dianggap masih bicara, supaya musik tidak naik-turun di setiap koma
+    hold = int(1.2 * SR); idx = np.flatnonzero(speech)
+    if len(idx) > 1:
+        gaps = np.diff(idx)
+        for k in np.flatnonzero((gaps > 1) & (gaps <= hold)): speech[idx[k]:idx[k] + gaps[k]] = 1.0
 att, rel = np.exp(-1 / (0.08 * SR)), np.exp(-1 / (0.9 * SR))
 from itertools import accumulate
 duck = np.fromiter(accumulate(speech, lambda p, v: v + (p - v) * (att if v > p else rel)), dtype=np.float32, count=N)
@@ -122,9 +134,26 @@ fade = np.clip(t / 3.0, 0, 1) * np.clip((TL["total"] + 0.5 - t) / 4.0, 0, 1)
 bed = (music * gain + fx * 0.8 * (1 - 0.45 * duck)) * fade   # efek suara ikut sedikit merunduk di bawah narasi
 mix = vo * 0.95 + bed
 peak = np.max(np.abs(mix)); mix = mix / peak * 0.95 if peak > 0.98 else mix
+if V2:   # stereo: musik sedikit dilebarkan (efek Haas 11 ms ke kanan), narasi dan efek suara di tengah
+    d = int(0.011 * SR); mus = music * gain * fade; musR = np.concatenate([np.zeros(d, np.float32), mus[:-d]])
+    rest = vo * 0.95 + fx * 0.8 * (1 - 0.45 * duck) * fade
+    st = np.stack([rest + mus, rest + musR], 1); pk = np.max(np.abs(st)); st = st / pk * 0.95 if pk > 0.98 else st
 
 def write_wav(p, x):
     w = wave.open(p, "wb"); w.setnchannels(1); w.setsampwidth(2); w.setframerate(SR); w.writeframes((np.clip(x, -1, 1) * 32767).astype(np.int16).tobytes()); w.close()
-write_wav(NAR, mix)
+if V2:
+    import subprocess, json as _json, tempfile
+    tmp = os.path.join(AUD, "_mix_stereo.wav"); w = wave.open(tmp, "wb"); w.setnchannels(2); w.setsampwidth(2); w.setframerate(SR)
+    w.writeframes((np.clip(st, -1, 1) * 32767).astype(np.int16).tobytes()); w.close()
+    # master dua tahap: ukur, lalu normalkan ke −14 LUFS dengan puncak sejati −1 dBTP (standar YouTube)
+    r = subprocess.run(["ffmpeg", "-nostdin", "-hide_banner", "-i", tmp, "-af", "loudnorm=I=-14:TP=-1:LRA=11:print_format=json", "-f", "null", "-"], capture_output=True, text=True)
+    m = _json.loads(r.stderr[r.stderr.rfind("{"):r.stderr.rfind("}") + 1])
+    af = (f"loudnorm=I=-14:TP=-1:LRA=11:measured_I={m['input_i']}:measured_TP={m['input_tp']}:measured_LRA={m['input_lra']}"
+          f":measured_thresh={m['input_thresh']}:offset={m['target_offset']}:linear=true")
+    subprocess.run(["ffmpeg", "-nostdin", "-v", "error", "-y", "-i", tmp, "-af", af, "-ar", str(SR), "-c:a", "pcm_s16le", NAR], check=True); os.remove(tmp)
+    r = subprocess.run(["ffmpeg", "-nostdin", "-hide_banner", "-i", NAR, "-af", "ebur128=peak=true", "-f", "null", "-"], capture_output=True, text=True)
+    I = r.stderr[r.stderr.rfind("I:"):].split("\n")[0]; TPk = r.stderr[r.stderr.rfind("Peak:"):].split("\n")[0]
+    print(f"master: {I.strip()} | puncak sejati {TPk.strip()}")
+else: write_wav(NAR, mix)
 if "--dengar" in sys.argv: write_wav(os.path.join(AUD, "musik.wav"), bed)
 print(f"musik + narasi -> {NAR} ({len(mix) / SR:.1f} s, {SR} Hz); narasi asli: {VO}")

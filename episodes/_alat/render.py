@@ -23,9 +23,37 @@ VARIANTS = E.pick_variants(ROOT, flags)
 for n in only:
     if n not in SCRIPT["parts"]: raise SystemExit(f"bagian {n} tidak ada; yang ada: {', '.join(SCRIPT['parts'])}")
 
+DOK = SCRIPT.get("kind") == "dokumenter"
+# dokumenter: kualitas gambar lebih tinggi (audit D02: 1,96 Mb/s veryfast crf 20 terlalu rendah untuk gradasi gelap dan butir film)
+X264 = ["-preset", "medium", "-crf", "16", "-tune", "animation", "-aq-mode", "3"] if DOK else ["-preset", "veryfast", "-crf", "20"]
 def enc(path):
     return subprocess.Popen(["ffmpeg", "-v", "error", "-y", "-f", "image2pipe", "-framerate", str(FPS), "-c:v", "mjpeg", "-i", "-",
-                             "-c:v", "libx264", "-preset", "veryfast", "-crf", "20", "-pix_fmt", "yuv420p", "-r", str(FPS), path], stdin=subprocess.PIPE)
+                             "-c:v", "libx264", *X264, "-pix_fmt", "yuv420p", "-r", str(FPS), path], stdin=subprocess.PIPE)
+
+def sub_cues(b, s0):
+    """Subtitel dokumenter: potong per kata (waktu dari "words") menjadi ≤2 baris × 42 karakter dan ≤7 detik.
+    b["sub"] (opsional) = teks tampilan dengan angka ditulis sebagai angka; jumlah katanya boleh berbeda, waktunya dibagi proporsional."""
+    words = b.get("words"); text = b.get("sub") or b["text"]; toks = text.split()
+    if not words: return [(s0, s0 + min(b["audio"] + 1.0, b["dur"] - 0.05), text)]
+    t0, t1 = words[0][1], words[-1][2]
+    times = [(w[1], w[2]) for w in words] if len(words) == len(toks) else [(t0 + (t1 - t0) * i / len(toks), t0 + (t1 - t0) * (i + 1) / len(toks)) for i in range(len(toks))]
+    cues, cur = [], []
+    for i, tk in enumerate(toks):
+        cand = " ".join(cur + [tk])
+        if cur and (len(cand) > 84 or times[i][1] - times[cur_i][0] > 7.0): cues.append((cur_i, i - 1)); cur = []
+        if not cur: cur_i = i
+        cur.append(tk)
+        if tk[-1] in ".?!" and len(" ".join(cur)) > 30: cues.append((cur_i, i)); cur = []
+    if cur: cues.append((cur_i, len(toks) - 1))
+    out = []
+    for a, z in cues:
+        line = " ".join(toks[a:z + 1])
+        if len(line) > 42:   # bagi dua baris di spasi terdekat dari tengah
+            mid = len(line) // 2; k = min((i for i, c in enumerate(line) if c == " "), key=lambda i: abs(i - mid)); line = line[:k] + "\n" + line[k + 1:]
+        out.append((s0 + times[a][0], s0 + times[z][1] + 0.25, line))
+    for i in range(len(out) - 1):   # jangan bertumpuk
+        if out[i][1] > out[i + 1][0]: out[i] = (out[i][0], out[i + 1][0] - 0.02, out[i][2])
+    return out
 
 def finish(proc, tmp, final):
     proc.stdin.close(); rc = proc.wait()
@@ -86,7 +114,9 @@ def render_variant(pg, variant):
             files.append(final)
             for b in sb:
                 s = offset + (b["start"] - t0); e = s + min(b["audio"] + 1.0, b["dur"] - 0.05)
-                srt.append(f"{len(srt) + 1}\n{srt_time(s)} --> {srt_time(e)}\n{b['text']}\n")
+                if DOK:
+                    for cs, ce, line in sub_cues(b, s): srt.append(f"{len(srt) + 1}\n{srt_time(cs)} --> {srt_time(ce)}\n{line}\n")
+                else: srt.append(f"{len(srt) + 1}\n{srt_time(s)} --> {srt_time(e)}\n{b['text']}\n")
             offset += n / FPS
             print(f"{tag} seg{seg} done ({n} frames)", flush=True)
         if SEGS: continue  # render sebagian: penggabungan dilakukan oleh proses --lanjut sesudahnya
@@ -101,7 +131,7 @@ def render_variant(pg, variant):
             pre_ms = int((pre[1] if pre else 0) * 1000); nar = os.path.join(ROOT, "audio", "narration.wav")
             subprocess.run(["ffmpeg", "-v", "error", "-y", "-i", joined, "-i", nar, "-filter_complex",
                             f"[1:a]atrim={t_start}:{t_end},asetpts=PTS-STARTPTS,adelay={pre_ms}|{pre_ms},apad,aresample=48000[a]",
-                            "-map", "0:v", "-map", "[a]", "-c:v", "copy", "-c:a", "aac", "-b:a", "96k", "-shortest", "-movflags", "+faststart", out], check=True)
+                            "-map", "0:v", "-map", "[a]", "-c:v", "copy", "-c:a", "aac", "-b:a", "192k" if DOK else "96k", "-shortest", "-movflags", "+faststart", out], check=True)
         else:
             subprocess.run(["ffmpeg", "-v", "error", "-y", "-i", joined, "-f", "lavfi", "-i", "anullsrc=r=48000:cl=mono",
                             "-map", "0:v", "-map", "1:a", "-c:v", "copy", "-c:a", "aac", "-b:a", "48k", "-shortest", "-movflags", "+faststart", out], check=True)
