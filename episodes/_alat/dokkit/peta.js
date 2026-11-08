@@ -4,7 +4,7 @@
    API:
      K.kit.peta.indonesia(ctx, cx, cy, w, opt) -> project(lon, lat) => [x, y]   (project.k = px per derajat, .x0 .y0 .w .h = kotak peta)
        opt: t, step (jarak titik dalam derajat, bawaan 0.3), dot (jari-jari px), color, dimColor, alpha (0..1), reveal (0..1, barat→timur),
-            highlight: [{lon, lat | at:"mempawah", label, color, dx, dy, size, t0, area, style:"ring"|"pin"}], base (alfa siluet, bawaan 0.1),
+            highlight: [{lon, lat | at:"mempawah", label, color, dx, dy, size, t0, area (radius derajat), region ("kalbar" | [lon,lat,...]), scale, style:"ring"|"pin"}], base (alfa siluet, bawaan 0.1),
             sea (alfa titik laut, bawaan 0), neighbours (bawaan true), shimmer (bawaan true), shadow (bawaan true), bounds [lonW, lonE, latS, latN]
      K.kit.peta.proj(cx, cy, w, opt) -> project tanpa menggambar.
      K.kit.peta.marker(ctx, x, y, h, opt) -> gambar penanda (ring/pin + label) di titik layar.
@@ -31,6 +31,10 @@
     bandaAceh: [95.32, 5.55], merauke: [140.40, -8.49]
   };
   const BOUNDS = [94.6, 151.0, -11.1, 7.3];
+  // wilayah (provinsi) kasar untuk highlight.region: titik di dalamnya diwarnai
+  const REGIONS = {
+    kalbar: [108.7,2.2, 109.65,2.08, 109.65,1.6, 110.3,1.05, 111.0,1.0, 111.8,1.2, 112.5,1.45, 113.5,1.3, 114.2,1.5, 114.2,0.9, 113.8,0.2, 113.0,-0.4, 112.1,-0.9, 111.2,-1.6, 110.95,-3.2, 109.5,-3.3, 108.5,-1.0]
+  };
 
   // ---------- garis batas negara ----------
   const BORNEO_BORDER = [[109.6, 2.08], [109.65, 1.6], [110.3, 1.05], [111.0, 1.0], [111.8, 1.2], [112.5, 1.45], [113.5, 1.3], [114.2, 1.5], [114.6, 2.0], [115.1, 2.6], [115.5, 3.4], [115.6, 4.0], [116.1, 4.35], [117.6, 4.17], [119.6, 4.17]];
@@ -234,7 +238,7 @@
     const t = opt.t || 0, step = opt.step || 0.3, G = grid(step), project = proj(cx, cy, w, opt), k = project.k, B = project.bounds;
     const col = opt.color || "#D3E2FF", dimCol = opt.dimColor || "#7486C2", alpha = opt.alpha == null ? 1 : opt.alpha;
     const rDot = opt.dot || step * k * 0.36, reveal = opt.reveal == null ? 1 : D.clamp(opt.reveal), band = 0.12;
-    const shimmer = opt.shimmer !== false, hl = (opt.highlight || []).map(h => { const at = h.at && ANCHORS[h.at]; return Object.assign({}, h, at ? { lon: at[0], lat: at[1] } : {}); });
+    const shimmer = opt.shimmer !== false, hl = (opt.highlight || []).map(h => { const at = h.at && ANCHORS[h.at]; return Object.assign({}, h, at ? { lon: at[0], lat: at[1] } : {}, { reg: typeof h.region === "string" ? REGIONS[h.region] : h.region }); });
     if (alpha <= 0) return project;
     ctx.save(); ctx.globalAlpha *= alpha;
     // titik laut samar
@@ -266,13 +270,16 @@
       if (u < 1) L += 1.5 * (1 - u);
       const li = Math.max(0, Math.min(NL - 1, Math.floor(L)));
       const pth = paths[d.tone][li]; pth.moveTo(x + r, y); pth.arc(x, y, r, 0, TAU);
-      for (let q = 0; q < hl.length; q++) { const h = hl[q]; if (!h.area) continue; const dd = Math.hypot(d.lon - h.lon, d.lat - h.lat) / h.area; if (dd < 1) { const hp = hPaths[q][Math.min(2, Math.floor(dd * 3))]; hp.moveTo(x + r, y); hp.arc(x, y, r, 0, TAU); } }
+      for (let q = 0; q < hl.length; q++) { const h = hl[q]; if (!h.area && !h.reg) continue;
+        let lvl = -1; if (h.area) { const dd = Math.hypot(d.lon - h.lon, d.lat - h.lat) / h.area; if (dd < 1) lvl = Math.min(2, Math.floor(dd * 3)); }
+        if (lvl < 0 && h.reg && inside(h.reg, d.lon, d.lat)) lvl = 1;
+        if (lvl >= 0) { const hp = hPaths[q][lvl]; hp.moveTo(x + r, y); hp.arc(x, y, r, 0, TAU); } }
     }
     if (opt.shadow !== false) { ctx.fillStyle = "rgba(10,16,52,0.32)"; ctx.fill(shadow); }
     for (let tn = 1; tn >= 0; tn--) for (let i = 0; i < NL; i++) { ctx.fillStyle = (tn ? lvD : lv)[i]; ctx.fill(paths[tn][i]); }
     // wilayah yang disorot: titik diwarnai dan berdenyut
     hl.forEach((h, q) => {
-      if (!h.area) return; const c = h.color || P.amber, ap = h.t0 == null ? 1 : D.clamp((t - h.t0) / 0.6), pulse = 0.5 + 0.5 * Math.sin(t * 3.2);
+      if (!h.area && !h.reg) return; const c = h.color || P.amber, ap = h.t0 == null ? 1 : D.clamp((t - h.t0) / 0.6), pulse = 0.5 + 0.5 * Math.sin(t * 3.2);
       [0.95, 0.7, 0.42].forEach((a, i) => { ctx.fillStyle = D.hexA(mix(c, "#FFFFFF", 0.15 * pulse), a * ap * (0.75 + 0.25 * pulse)); ctx.fill(hPaths[q][i]); });
     });
     ctx.restore();
@@ -289,10 +296,10 @@
     const cap = (s, x, y, size = 24, col = P.ink2, al = "left") => D.txt(ctx, s, x, y, size, { align: al, weight: 700, color: col });
     D.txt(ctx, "K.kit.peta", 40, 50, 34, { weight: 900 }); cap("indonesia(ctx, cx, cy, w, opt) · peta titik · highlight ring/pin + area · reveal barat→timur · zoom", 250, 50);
     // utama
-    indonesia(ctx, 700, 440, 1340, { t, highlight: [
-      { at: "mempawah", label: "Mempawah, Kalimantan Barat", color: P.amber, area: 1.6, dx: -40, dy: -190 },
-      { at: "jakarta", label: "Jakarta", color: P.pink, style: "pin", dx: -230, dy: 150, t0: 0.4 }] });
-    cap("utama: w=1340, highlight Mempawah (ring + area 1.6°) dan Jakarta (pin, t0=0.4)", 60, 720);
+    indonesia(ctx, 690, 410, 1300, { t, highlight: [
+      { at: "mempawah", label: "Mempawah, Kalimantan Barat", color: P.amber, region: "kalbar", dx: -20, dy: -190 },
+      { at: "jakarta", label: "Jakarta", color: P.pink, style: "pin", dx: -250, dy: 125, t0: 0.4 }] });
+    cap("utama: w=1300 · Mempawah (ring + region \"kalbar\") · Jakarta (pin, t0=0.4)", 60, 735);
     // kolom kanan: reveal
     const rv = [0.3, 0.65, D.clamp((t % 3.4) / 2.6)];
     rv.forEach((r, i) => { const cy = 160 + i * 205; indonesia(ctx, 1640, cy, 500, { t, reveal: r, step: 0.42 });
@@ -303,10 +310,10 @@
     ctx.restore(); cap("color teal · sea 0.12 · neighbours:false · marker tanpa label", 60, 1050, 22);
     ctx.save(); K.helpers.rr(ctx, 980, 760, 900, 300, 26); ctx.fillStyle = "rgba(14,22,62,0.35)"; ctx.fill(); ctx.clip();
     const z = 1 + 0.06 * Math.sin(t * 0.5);
-    const pj = proj(0, 0, 5200 * z); const [mx, my] = pj(109.6, -0.4);
-    indonesia(ctx, 1430 - mx, 905 - my, 5200 * z, { t, step: 0.2, highlight: [{ at: "mempawah", label: "Mempawah", color: P.amber, area: 0.7, dx: -200, dy: -60 }, { at: "pontianak", color: P.teal }] });
-    ctx.restore(); cap("zoom: w=5200, step 0.2, clip — Kalimantan Barat", 1000, 1050, 22);
+    const pj = proj(0, 0, 4200 * z); const [mx, my] = pj(110.6, -0.2);
+    indonesia(ctx, 1430 - mx, 905 - my, 4200 * z, { t, step: 0.2, highlight: [{ at: "mempawah", label: "Mempawah", color: P.amber, area: 0.8, dx: -250, dy: 50 }] });
+    ctx.restore(); cap("zoom: w=4200, step 0.2, area 0.8°, clip — Kalimantan Barat", 1000, 1050, 22);
   }
 
-  K.kit.peta = { indonesia, proj, marker, ANCHORS, BOUNDS, POLY, showcase };
+  K.kit.peta = { indonesia, proj, marker, ANCHORS, REGIONS, BOUNDS, POLY, showcase };
 })(typeof window !== "undefined" ? window : globalThis);
