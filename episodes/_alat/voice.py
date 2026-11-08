@@ -12,17 +12,19 @@ OUT = os.path.join(ROOT, "audio"); os.makedirs(OUT, exist_ok=True)
 CFG = os.path.join(ROOT, "tts-kit", "suara.json")
 PITCH = float(args[0]) if args else float(E.load_json(CFG).get("pitch", 1.18)) if os.path.exists(CFG) else 1.18
 script = E.load_script(ROOT)
-RATE = 22050; LEAD = 0.4; WPS = 1.6
+RATE = int(script.get("audio_rate", 22050)); LEAD = 0.4; WPS = 1.6
+# efek per beat (kunci "efek" di beat): "telepon" = suara lewat saluran telepon (pita 300–3.400 Hz, kompresi)
+EFEK = {"telepon": "highpass=f=320,lowpass=f=3300,acompressor=threshold=-20dB:ratio=4:attack=5:release=60"}
 
 import numpy as np
 SILENCE_DB, PAD_S, TARGET_RMS_DB, PEAK_DB = -45.0, 0.05, -17.0, -1.5
 
-def prep(src, dst):
+def prep(src, dst, efek=None):
     """(1) ffmpeg: decode + nada -> WAV mono 22,05 kHz 16 bit. (2) numpy: potong hening awal/akhir (< -45 dBFS, sisakan 50 ms)
     dan normalisasi ke RMS -17 dBFS dengan puncak maksimum -1,5 dBFS. Dulu memakai filter silenceremove/areverse/loudnorm
     ffmpeg, tetapi pada beberapa MP3 ElevenLabs rantai itu menggantung dan loudnorm diam-diam mengubah laju sampel ke 192 kHz."""
     subprocess.run(["ffmpeg", "-nostdin", "-v", "error", "-y", "-i", src, "-ac", "1", "-ar", str(RATE), "-c:a", "pcm_s16le",
-                    "-af", f"rubberband=pitch={PITCH}:pitchq=quality", dst], check=True, timeout=120)
+                    "-af", f"rubberband=pitch={PITCH}:pitchq=quality" + ("," + EFEK[efek] if efek else ""), dst], check=True, timeout=120)
     with wave.open(dst) as w:
         if (w.getframerate(), w.getnchannels(), w.getsampwidth()) != (RATE, 1, 2):
             raise SystemExit(f"{dst}: format {w.getframerate()} Hz/{w.getnchannels()} kanal/{w.getsampwidth()*8} bit, seharusnya {RATE} Hz mono 16 bit")
@@ -47,14 +49,15 @@ if missing: raise SystemExit(f"Suara belum ada di {SRC}: {', '.join(missing)}")
 
 t = 0.0; timeline = []; track = bytearray()
 for b in script["beats"]:
-    dst = os.path.join(OUT, b["id"] + ".wav"); dur = prep(src_for(b["id"]), dst)
+    dst = os.path.join(OUT, b["id"] + ".wav"); dur = prep(src_for(b["id"]), dst, b.get("efek"))
+    lead = b.get("lead", LEAD)                   # beat dialog di tengah kalimat boleh menyambung lebih rapat
     words = len(re.findall(r"\S+", b["text"])); read = words / WPS + 0.8
     body = max(dur + 0.3, 0.8 * read)            # narration leads, but a slow reader still gets most of the reading window
-    total = round(LEAD + body + b.get("hold", 0.8), 3)
-    timeline.append({**b, "start": round(t, 3), "speech": round(t + LEAD, 3), "audio": round(dur, 3), "dur": total})
-    track += b"\x00\x00" * int(LEAD * RATE)
+    total = round(lead + body + b.get("hold", 0.8), 3)
+    timeline.append({**b, "start": round(t, 3), "speech": round(t + lead, 3), "audio": round(dur, 3), "dur": total})
+    track += b"\x00\x00" * int(lead * RATE)
     with wave.open(dst) as w: track += w.readframes(w.getnframes())
-    track += b"\x00\x00" * int(round((total - LEAD - dur) * RATE))
+    track += b"\x00\x00" * int(round((total - lead - dur) * RATE))
     t += total
 with wave.open(os.path.join(OUT, "narration.wav"), "wb") as w:
     w.setnchannels(1); w.setsampwidth(2); w.setframerate(RATE); w.writeframes(bytes(track))

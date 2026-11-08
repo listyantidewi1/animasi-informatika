@@ -153,14 +153,25 @@ def main():
     m = pick_model(cfg["model"]); cfg["model"] = m["model_id"]; cfg["model_name"] = m.get("name", "")
     E.save_json(cfg, cfg_path)
     print(f"suara: {v['name']} ({v['voice_id']}), model: {cfg['model_name']} ({cfg['model']}) -> {out_dir}")
+    # suara tokoh per beat: kunci "suara": "<peran>" di beat, peran didefinisikan di tts-kit/suara.json "peran"
+    # ({"anak": {"voice_id": ..., "voice_name": ..., "stability": ..., "style": ...}}); tanpa konteks antarbeat (penuturnya berbeda)
+    roles = {}
+    for r in sorted({b["suara"] for b in todo if b.get("suara")}):
+        rc = (cfg.get("peran") or {}).get(r)
+        if not rc: raise SystemExit(f"peran suara '{r}' belum ada di tts-kit/suara.json (kunci 'peran')")
+        try: rv = pick_voice(rc["voice_id"], auth=True)
+        except SystemExit: rv = add_from_library(rc.get("voice_name") or rc["voice_id"])
+        roles[r] = {**rc, "voice_id": rv["voice_id"]}; print(f"peran {r}: {rc.get('voice_name', '')} ({rv['voice_id']})")
     for b in todo:
-        i = ids.index(b["id"])
+        i = ids.index(b["id"]); rc = roles.get(b.get("suara")) or {}
+        same = lambda j: 0 <= j < len(beats) and beats[j].get("suara") == b.get("suara")
         body = {"text": b["text"], "model_id": cfg["model"],
-                "voice_settings": {"stability": cfg["stability"], "similarity_boost": cfg["similarity"], "style": cfg["style"], "speed": cfg["speed"]},
-                "previous_text": beats[i - 1]["text"] if i > 0 else None, "next_text": beats[i + 1]["text"] if i + 1 < len(beats) else None}
+                "voice_settings": {"stability": rc.get("stability", cfg["stability"]), "similarity_boost": rc.get("similarity", cfg["similarity"]),
+                                   "style": rc.get("style", cfg["style"]), "speed": rc.get("speed", cfg["speed"])},
+                "previous_text": beats[i - 1]["text"] if same(i - 1) else None, "next_text": beats[i + 1]["text"] if same(i + 1) else None}
         if cfg["model"] in LANG_CODE_MODELS: body["language_code"] = "id"
         body = {k: val for k, val in body.items() if val is not None}
-        audio = tts(v["voice_id"], body)
+        audio = tts(rc.get("voice_id") or v["voice_id"], body)
         tmp = os.path.join(out_dir, b["id"] + ".tmp"); open(tmp, "wb").write(audio); os.replace(tmp, os.path.join(out_dir, b["id"] + ".mp3"))
         print(f"  ok {b['id']} ({len(audio) // 1024} KB)", flush=True)
     print(f"Selesai. Lanjut: python3 episodes/_alat/voice.py {script['episode']}  (nada {cfg['pitch']} dari tts-kit/suara.json)")
