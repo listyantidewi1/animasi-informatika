@@ -677,3 +677,6 @@ Files are in /home/user/animasi-informatika/episodes/_alat/dokkit/preview:
 - bipkit_t0.png
 - bipkit_t1.7.png
 - bipkit_t3.4.png
+## Catatan tambahan (penempatan label peta)
+- `indonesia(..., {batas: [x, y, w, h], hindari: [[x, y, w, h], ...], hindariDarat: true})`: label penanda dan label rute otomatis mencoba beberapa posisi dan memilih yang tidak menumpuk label lain/area `hindari`, sesedikit mungkin menutupi daratan, dan tetap di dalam `batas` (bawaan: layar penuh). Gelembung `route()` didaftarkan sebagai area yang dihindari.
+- Label yang panjang (mis. "Mempawah, Kalimantan Barat") tetap butuh ruang laut; bila sempit, pakai teks lebih pendek ("Mempawah, Kalbar") atau perbesar peta. Periksa selalu dengan `cek_dok.py`.

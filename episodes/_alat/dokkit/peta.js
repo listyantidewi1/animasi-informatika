@@ -240,10 +240,21 @@
   }
   function tagSize(ctx, s, size) { ctx.save(); ctx.font = `800 ${size}px ${K.FONT}`; const w = ctx.measureText(s).width + size * 1.55; ctx.restore(); return [w, size * 1.6]; }
   // letak label: geser horizontal ke dalam layar; bila keluar atas/bawah, balik arah dy, lalu jepit
+  // Label yang sudah dipasang di frame ini (direset setiap indonesia() dipanggil) + area yang harus dihindari (opt.hindari
+  // di indonesia(): [[x, y, w, h], ...], misalnya panel atau tokoh). Label baru mencoba beberapa posisi sampai tidak bertumpuk.
+  let USED = [], LAND = null, TCTX = null, BOX = null;   // BOX: batas tempat label boleh diletakkan [x, y, w, h] (opt.batas)
+  const hit = (r, q) => r[0] < q[0] + q[2] && q[0] < r[0] + r[2] && r[1] < q[1] + q[3] && q[1] < r[1] + r[3];
   function placeLabel(x, y, dx, dy, pw, ph) {
-    const M = 24; let lx = D.clamp(x + dx, pw / 2 + M, WW - pw / 2 - M), ly = y + dy;
-    if (ly - ph / 2 < M || ly + ph / 2 > HH - M) { const l2 = y - dy; if (l2 - ph / 2 >= M && l2 + ph / 2 <= HH - M) ly = l2; }
-    ly = D.clamp(ly, ph / 2 + M, HH - ph / 2 - M); return [lx, ly];
+    const M = 24, G = 14;
+    const [bx, by, bw, bh] = BOX || [0, 0, WW, HH];
+    const fit = (ox, oy) => { let lx = D.clamp(x + ox, bx + pw / 2 + M, bx + bw - pw / 2 - M), ly = D.clamp(y + oy, by + ph / 2 + M, by + bh - ph / 2 - M); return [lx, ly, [lx - pw / 2 - G, ly - ph / 2 - G, pw + 2 * G, ph + 2 * G]]; };
+    const ady = Math.abs(dy) || ph * 1.2, adx = Math.abs(dx);
+    const cands = [[dx, dy], [dx, -dy], [-dx, dy], [-dx, -dy], [dx, dy * 1.7], [dx, -dy * 1.7], [dx + (dx >= 0 ? 1 : -1) * pw * 0.6, dy], [0, ady * 2.2], [0, -ady * 2.2], [adx + pw * 0.7, 0], [-(adx + pw * 0.7), 0]];
+    // skor: tumpukan dengan label/area lain (berat) + berapa titik sampel label jatuh di daratan (ringan) + urutan pilihan
+    const land = r => { if (!LAND || !TCTX) return 0; let n = 0; for (let i = 0; i < 5; i++) for (let j = 0; j < 3; j++) if (TCTX.isPointInPath(LAND, r[0] + r[2] * (i + 0.5) / 5, r[1] + r[3] * (j + 0.5) / 3)) n++; return n; };
+    let best = null;
+    cands.forEach(([ox, oy], i) => { const [lx, ly, r] = fit(ox, oy); const sc = USED.filter(q => hit(r, q)).length * 1000 + land(r) * 10 + i; if (!best || sc < best[3]) best = [lx, ly, r, sc]; });
+    USED.push(best[2]); return [best[0], best[1]];
   }
 
   // ---------- penanda: cincin berdenyut / pin, dengan label dan garis penunjuk ----------
@@ -302,6 +313,7 @@
     return [l0, l1, t1, t0];   // lonW, lonE, latS, latN
   }
   function indonesia(ctx, cx, cy, w, opt = {}) {
+    USED = (opt.hindari || []).slice(); LAND = null; BOX = opt.batas || null;
     const t = opt.t || 0, project = proj(cx, cy, w, opt), k = project.k;
     const step = opt.step || autoStep(k), G = grid(step);
     const col = opt.color || "#D3E2FF", dimCol = opt.dimColor || "#7486C2", alpha = opt.alpha == null ? 1 : opt.alpha;
@@ -316,6 +328,9 @@
     if (alpha <= 0) return project;
     ctx.save(); ctx.globalAlpha *= alpha;
     const [vW, vE, vS, vN] = viewLL(ctx, project, opt, rDot * 2.5 + 8);
+    // jalur daratan untuk penempatan label (diuji di kanvas bantu tanpa transformasi)
+    if (opt.hindariDarat !== false) { LAND = new Path2D(); POLY.forEach(p => { if (p[1] !== "nb") polyPath(project, p[2], LAND); });
+      if (!TCTX) { const c = document.createElement("canvas"); c.width = c.height = 1; TCTX = c.getContext("2d"); } }
     // titik laut samar
     if (opt.sea) { ctx.fillStyle = D.hexA(col, opt.sea); ctx.beginPath(); for (const [lo, la] of G.sea) { if (lo < vW || lo > vE || la < vS || la > vN) continue; const [x, y] = project(lo, la); ctx.moveTo(x + rDot * 0.35, y); ctx.arc(x, y, rDot * 0.35, 0, TAU); } ctx.fill(); }
     // siluet daratan samar (membantu pulau kecil dan garis pantai terbaca; lebih tebal saat zoom)
@@ -449,6 +464,7 @@
       ctx.fillStyle = "#FFFFFF"; ctx.beginPath(); ctx.arc(head[0], head[1], 4, 0, TAU); ctx.fill();
       const bob = Math.sin(t * 3) * 4 * (1 - arr * 0.6);
       bubble(ctx, head[0], head[1] - 10 + bob, s * (0.92 + 0.08 * Math.sin(t * 5.2) * (1 - arr)), { t, color: col });
+      { const w = 136 * s, h = 190 * s; USED.push([head[0] - w / 2 - 10, head[1] - 10 + bob - h - 10, w + 20, h + 20]); }   // label lain menghindari gelembung
     }
     // label dekat titik masuk
     if (opt.label) {
@@ -625,7 +641,7 @@
     const box = (x, y, w, h) => { ctx.fillStyle = "rgba(14,22,62,0.30)"; K.helpers.rr(ctx, x, y, w, h, 26); ctx.fill(); };
     D.txt(ctx, "K.kit.peta", 30, 46, 34, { weight: 900 }); cap("indonesia · marker/tag · route · sosial", 230, 46, 24);
     // utama: peta + Mempawah (region, riak) + Jakarta (pin) + rute dari Arab Saudi
-    const pj = indonesia(ctx, 640, 380, 1240, { t, highlight: [
+    const pj = indonesia(ctx, 640, 380, 1240, { t, batas: [0, 70, 1290, 520], hindari: [[20, 590, 980, 40]], highlight: [
       { at: "mempawah", label: "Mempawah, Kalimantan Barat", color: P.amber, region: "kalbar", dx: 330, dy: 150 },
       { at: "jakarta", label: "Jakarta", color: P.pink, style: "pin", dx: -150, dy: 75, t0: 0.4 }] });
     route(ctx, "left", pj.markers[0], { t, progress: D.clamp(0.35 + t / 3.4 * 0.65), label: "dari Arab Saudi", color: P.pink, rise: 290, bend: 0.12, labelSide: "below", labelAt: 0 });
@@ -651,7 +667,7 @@
     const zx = 1260, zy = 650, zw = 640, zh = 372;
     box(zx, zy, zw, zh); ctx.save(); K.helpers.rr(ctx, zx, zy, zw, zh, 26); ctx.clip();
     const z = 1 + 0.05 * Math.sin(t * 0.5), wz = 5600 * z, pz = proj(0, 0, wz); const [mx, my] = pz(110.2, -0.15);
-    indonesia(ctx, zx + zw / 2 - mx, zy + zh / 2 - my, wz, { t, view: [zx, zy, zx + zw, zy + zh], highlight: [
+    indonesia(ctx, zx + zw / 2 - mx, zy + zh / 2 - my, wz, { t, view: [zx, zy, zx + zw, zy + zh], batas: [zx, zy, zw, zh], highlight: [
       { at: "pontianak", label: "Pontianak", color: P.teal, style: "pin", scale: 0.8, size: 40, dx: 150, dy: 70 },
       { at: "mempawah", label: "Mempawah", color: P.amber, region: "kalbar", dx: 200, dy: -78 }] });
     ctx.restore(); cap("zoom w=5600 · step otomatis " + autoStep(wz / (BOUNDS[1] - BOUNDS[0])) + "° · kalbar + Pontianak (pin)", zx + 14, zy + zh + 30, 20);
