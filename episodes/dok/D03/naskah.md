@@ -1,7 +1,7 @@
 # Suara Ibumu Bisa Dipalsukan dalam 3 Detik
 
 Dokumenter animasi ±10 menit untuk penonton umum, channel I Teach Software Engineering (@iTeachSWE).
-Draf 1 (8 Nov 2026), menunggu dibaca Bu Dewi. Teks biasa adalah narasi yang dibacakan; teks *[Visual: …]* adalah catatan gambar dan tidak dibacakan.
+Naskah final (revisi Bu Dewi, 8 Nov 2026). Teks biasa adalah narasi yang dibacakan; teks *[Visual: …]* adalah catatan gambar dan tidak dibacakan.
 Gaya, narator (Bian), musik, dan Bip sama dengan D01–D02. Semua tokoh, nama, nomor telepon, dan percakapan rekaan; tidak ada suara atau wajah orang sungguhan yang ditiru. Video ini menjelaskan cara kerja penipuan supaya penonton bisa melindungi diri, bukan cara membuat suara tiruan.
 
 ---
@@ -16,7 +16,7 @@ Suaranya persis. Cara memanggilnya persis. Bahkan isak tangisnya pun terdengar s
 Padahal, anaknya sedang tidur lelap di kamar sebelah.
 *[Visual: kamera bergeser menembus dinding; anak tertidur memeluk guling; HP-nya diam di meja.]*
 
-Suara di telepon itu dibuat oleh komputer. Dan ada satu hal yang perlu kamu tahu sejak awal: suara narator yang sedang kamu dengar sekarang pun dibuat oleh komputer.
+Suara di telepon itu dibuat oleh komputer. Dan ada satu hal yang perlu kamu tahu sejak awal. Suara narator yang sedang kamu dengar sekarang pun dibuat oleh komputer.
 *[Visual: gelombang suara narator muncul di layar, lalu berubah menjadi deretan angka; judul muncul.]*
 
 Bagaimana mesin bisa meniru suara seseorang, dan bagaimana kita melindungi keluarga kita? Mari kita mulai dari hal yang paling dasar, yaitu suara itu sendiri.
@@ -35,15 +35,15 @@ Selama ribuan tahun, pola ini menjadi cara kita mengenali orang yang kita sayang
 
 ## 2. Mesin yang belajar meniru (±1:15)
 
-Komputer bisa belajar meniru suara dengan cara yang mirip dengan AI belajar menulis. Model AI mendengarkan ratusan ribu jam rekaman dari banyak sekali orang.
+Komputer bisa belajar meniru suara dengan cara yang mirip dengan AI saat belajar menulis. Model AI mendengarkan ratusan ribu jam rekaman suara dari banyak sekali orang.
 *[Visual: ribuan gelombang suara mengalir masuk ke sebuah jaringan neuron bercahaya.]*
 
-Dari rekaman sebanyak itu, model belajar hubungan antara tulisan dan bunyi, juga belajar ciri-ciri yang membuat suara seseorang berbeda dari orang lain.
+Dari rekaman sebanyak itu, model AI belajar hubungan antara tulisan dan bunyi, juga belajar ciri-ciri yang membuat suara seseorang berbeda dari orang lain.
 
-Setelah belajar dari banyak suara, model hanya butuh contoh singkat dari satu orang untuk menebak pola suaranya. Lalu, model bisa membuat suara itu mengucapkan kalimat apa saja yang diketik.
+Setelah belajar dari banyak suara, model AI hanya butuh contoh singkat dari satu orang untuk menebak pola suaranya. Lalu, model AI bisa membuat suara itu mengucapkan kalimat apa saja yang diberikan.
 *[Visual: potongan suara pendek masuk; keluar kalimat baru dengan warna spektrogram yang sama.]*
 
-Seberapa singkat contohnya? Dalam sebuah penelitian perusahaan keamanan McAfee pada tahun dua ribu dua puluh tiga, sebuah alat bisa membuat tiruan dengan kemiripan delapan puluh lima persen dari rekaman yang panjangnya hanya sekitar tiga detik.
+Seberapa akurat hasilnya? Dalam sebuah penelitian perusahaan keamanan McAfee pada tahun dua ribu dua puluh tiga, sebuah alat bisa membuat tiruan dengan kemiripan delapan puluh lima persen dari rekaman yang panjangnya hanya sekitar tiga detik.
 *[Visual: stopwatch tiga detik; meteran kemiripan naik ke 85%.]*
 
 Tiga detik kira-kira sama dengan satu kalimat pendek, misalnya "Halo, iya, siapa ini?"
@@ -55,7 +55,7 @@ Pelaku tidak perlu masuk ke rumahmu untuk merekam suaramu. Banyak suara kita sud
 
 Video ulang tahun yang diunggah ke media sosial, siaran langsung saat berjualan, video tugas sekolah, atau rekaman pesan suara yang diteruskan ke grup, semuanya berisi suara yang jelas.
 
-Kadang pelaku menelepon dulu dari nomor tak dikenal, lalu diam. Orang yang mengangkat biasanya berkata, "Halo? Halo? Siapa ini?" Beberapa detik itu sudah cukup sebagai contoh suara.
+Kadang pelaku menelepon dulu dari nomor tak dikenal, lalu diam. Orang yang mengangkat biasanya berkata, "Halo? Halo? Siapa ini?" Beberapa detik percakapan itu sudah cukup untuk mengambil contoh suara.
 *[Visual: telepon dari nomor asing; percakapan pendek berubah menjadi potongan rekaman yang disimpan.]*
 
 Dari unggahan yang sama, pelaku juga bisa mengetahui nama anggota keluarga, nama panggilan, dan kebiasaan. Detail inilah yang membuat cerita palsunya terdengar meyakinkan.
@@ -67,7 +67,7 @@ Penipuan suara hampir selalu memakai resep yang sama. Bahannya bukan teknologi, 
 
 Bahan pertama adalah panik. Ceritanya selalu darurat, misalnya kecelakaan, ditangkap polisi, atau masuk rumah sakit.
 
-Bahan kedua adalah terburu-buru. Uangnya harus dikirim sekarang, tidak boleh menunggu.
+Bahan kedua adalah terburu-buru. Bahwa uangnya harus dikirim sekarang, tidak boleh menunggu.
 
 Bahan ketiga adalah rahasia. "Jangan bilang siapa-siapa dulu." Kalimat ini membuat korban tidak sempat bertanya kepada orang lain.
 *[Visual: tiga toples dituang ke dalam panci; asap berbentuk tanda seru.]*
@@ -79,9 +79,9 @@ Ketika panik, otak kita bekerja seperti mode darurat. Kita ingin segera menolong
 Penipuan seperti ini bukan cerita film. Pada Mei tahun ini, seorang warga di Mempawah, Kalimantan Barat, melapor ke polisi setelah tertipu panggilan video yang wajah dan suaranya meniru bibinya yang bekerja di Arab Saudi.
 *[Visual: peta Indonesia sederhana; titik di Kalimantan Barat berdenyut; panggilan video bergaya dengan wajah yang sedikit berkedip.]*
 
-Ia baru sadar setelah menghubungi nomor asli keluarganya, dan ternyata nomor yang dipakai pelaku berbeda.
+Ia baru sadar setelah menghubungi nomor asli keluarganya, dan ternyata nomor yang dipakai oleh pelaku berbeda.
 
-Indonesia Anti-Scam Center, pusat pengaduan penipuan keuangan yang dibentuk OJK, mencatat lebih dari seribu tiga ratus laporan penipuan yang diduga memakai AI hanya dalam kurun sekitar satu setengah tahun. Angka sebenarnya kemungkinan lebih besar, karena banyak korban yang malu untuk melapor.
+Indonesia Anti-Scam Center, pusat pengaduan penipuan keuangan yang dibentuk OJK, mencatat lebih dari seribu tiga ratus laporan penipuan yang diduga memakai AI hanya dalam kurun sekitar satu setengah tahun. Angkanya sebenarnya kemungkinan lebih besar, karena banyak korban yang malu untuk melapor.
 *[Visual: tumpukan map laporan bertambah tinggi; sebagian map berwarna abu-abu bertuliskan "tidak dilaporkan".]*
 
 Modus yang sama juga dipakai untuk menipu perusahaan, misalnya dengan meniru suara atasan yang meminta pegawainya mentransfer uang.
@@ -96,7 +96,7 @@ Ada beberapa alasannya. Suara di telepon sudah dipotong dan dikompres, sehingga 
 
 Selain itu, otak kita cenderung mengisi kekosongan. Kalau kita mendengar suara yang mirip dengan anak kita, otak langsung melengkapinya menjadi suara anak kita.
 
-Dan saat panik, kita tidak lagi mendengarkan dengan teliti. Jadi, jangan mengandalkan telinga saja untuk membedakan suara asli dan suara tiruan.
+Dan saat panik, kita tidak lagi bisa mendengarkan dengan teliti. Jadi, jangan mengandalkan telinga saja untuk membedakan suara asli dan suara tiruan.
 
 ## 7. Tanda-tanda yang perlu dicurigai (±0:55)
 
@@ -107,7 +107,7 @@ Telepon datang dari nomor baru dengan alasan HP-nya rusak atau hilang. Penelepon
 
 Penelepon juga menolak ketika kamu ingin menelepon balik, atau tiba-tiba memutus panggilan saat kamu bertanya hal yang hanya diketahui keluarga.
 
-Kalau satu saja tanda ini muncul, berhentilah sejenak. Uang yang sudah terkirim sangat sulit kembali, tetapi bertanya tidak pernah merugikan.
+Kalau satu saja tanda ini muncul, berhentilah sejenak. Uang yang sudah terkirim sangat sulit kembali, tetapi bertanya, tidak pernah merugikan.
 *[Visual: tombol "Transfer" berkedip; jari Bip berhenti di atasnya, lalu menekan tombol "Tunggu".]*
 
 ## 8. Cara melindungi keluarga (±1:20)
@@ -122,7 +122,7 @@ Ketiga, ajukan pertanyaan yang jawabannya tidak ada di internet, misalnya nama h
 Keempat, kurangi rekaman suara dan informasi keluarga yang terbuka untuk umum. Atur akun media sosial menjadi privat, dan pikirkan dulu sebelum mengunggah video yang menyebut nama lengkap atau sekolah.
 *[Visual: gembok kecil menutup ikon-ikon video di peta media sosial dari bab 3.]*
 
-Kelima, kalau sudah terlanjur mentransfer, segera hubungi bank untuk meminta pemblokiran, lalu laporkan ke polisi dan ke Indonesia Anti-Scam Center. Semakin cepat dilaporkan, semakin besar peluang uangnya diselamatkan.
+Kelima, kalau sudah terlanjur mentransfer uang, segera hubungi bank untuk meminta pemblokiran, lalu laporkan ke polisi dan ke Indonesia Anti-Scam Center. Semakin cepat dilaporkan, semakin besar peluang uangnya diselamatkan.
 
 ## 9. Penutup (±0:30)
 
