@@ -1,7 +1,7 @@
 # Kenapa Harga HP Naik? Karena AI Sedang Memakan RAM Dunia
 
 Dokumenter animasi ±10 menit untuk penonton umum, channel I Teach Software Engineering (@iTeachSWE).
-Draf naskah 1 untuk dibaca Bu Dewi. Teks biasa adalah narasi yang dibacakan; teks *[Visual: …]* adalah catatan gambar dan tidak dibacakan.
+Naskah final (revisi Bu Dewi, 8 Nov 2026). Teks biasa adalah narasi yang dibacakan; teks *[Visual: …]* adalah catatan gambar dan tidak dibacakan.
 Gaya, narator (Bian), musik, dan Bip sama dengan D01. Merek HP tidak digambar; HP dan pabrik digambar generik tanpa logo.
 
 ---
@@ -90,26 +90,26 @@ Ketika bahan pokoknya naik dua kali lipat, harga barang jadinya pun ikut naik. B
 Indonesia belum punya pabrik RAM sendiri, jadi semua RAM untuk HP dan laptop didatangkan dari luar negeri. Kenaikan harga di dunia langsung terasa di sini.
 *[Visual: kapal kontainer datang ke pelabuhan; kontainer kecil berlabel "RAM" diturunkan dengan label harga yang terus naik.]*
 
-Pada April tahun ini, banyak HP di Indonesia naik harga, dari sekitar seratus lima puluh ribu sampai satu juta rupiah. Yang paling terasa adalah HP murah, karena porsi RAM dalam harga totalnya cukup besar.
+Pada April tahun ini, banyak handphone di Indonesia naik harga, dari sekitar seratus lima puluh ribu sampai satu juta rupiah. Yang paling terasa adalah handphone murah, karena porsi RAM dalam harga totalnya cukup besar.
 *[Visual: tiga HP generik berjajar (murah, menengah, mahal); balon persentase kenaikan paling besar di HP murah.]*
 
 Untuk laptop, salah satu produsen besar menyebut bahwa porsi memori dalam biaya komponennya naik dari sekitar lima belas persen menjadi sekitar tiga puluh lima persen.
 *[Visual: diagram batang biaya laptop; potongan memori membesar dari 15% ke 35%.]*
 
-Sebagian produsen memilih cara lain, yaitu mengurangi RAM pada model murah, misalnya kembali ke empat atau enam gigabyte, supaya harganya tidak melonjak.
+Sebagian produsen memilih cara lain, yaitu mengurangi RAM pada model handphone yang murah, misalnya kembali ke empat atau enam gigabyte, supaya harganya tidak melonjak.
 *[Visual: meja kerja di dalam HP murah menyusut menjadi lebih kecil.]*
 
 ## 7. Apakah akan berakhir? (±1:00)
 
-Pasar memori punya pola naik dan turun. Ketika harga tinggi, pabrik membangun kapasitas baru. Ketika pabrik baru selesai, pasokan bertambah dan harga perlahan turun. Industri memori sudah beberapa kali mengalami siklus seperti ini: harga melonjak, pabrik berlomba menambah produksi, lalu harga turun lagi.
+Pasar memori memang naik turun. Ketika harga tinggi, pabrik akan membangun kapasitas baru. Pasokan akan bertambah dan harga perlahan turun. Industri memori sudah beberapa kali mengalami siklus seperti ini.
 *[Visual: gelombang naik-turun seperti ombak; pabrik baru tumbuh di puncak gelombang.]*
 
-Tetapi pabrik baru butuh waktu bertahun-tahun. Beberapa lembaga riset memperkirakan kekurangan ini bisa berlanjut sampai tahun dua ribu dua puluh tujuh. Kabar baiknya, menurut TrendForce, kenaikan harga di akhir tahun ini mulai melambat, sekitar sepuluh sampai lima belas persen.
+Tetapi, pembangunan kapasitas pabrik baru butuh waktu bertahun-tahun. Beberapa lembaga riset memperkirakan kekurangan ini bisa berlanjut sampai tahun dua ribu dua puluh tujuh. Kabar baiknya, menurut TrendForce, kenaikan harga di akhir tahun ini mulai melambat, sekitar sepuluh sampai lima belas persen.
 *[Visual: kalender bergulir ke 2027; grafik kenaikan mulai melandai.]*
 
 ## 8. Lalu, apa yang bisa kita lakukan? (±1:10)
 
-Pertama, jangan panik membeli. HP yang masih berfungsi baik bisa dipakai lebih lama dengan merawatnya, menutup aplikasi yang tidak dipakai, dan memasang pembaruan.
+Pertama, jangan membeli dengan panik. Handphone yang masih berfungsi dengan baik bisa dipakai lebih lama jika dirawat, menutup aplikasi yang tidak dipakai, dan terus update.
 *[Visual: HP lama yang dirawat; Bip mengelap layarnya dengan bangga.]*
 
 Kedua, pilih RAM sesuai kebutuhan. Untuk chat, belajar, dan media sosial, kamu tidak selalu butuh RAM terbesar. Bandingkan spesifikasinya, bukan hanya harganya.
@@ -118,10 +118,10 @@ Kedua, pilih RAM sesuai kebutuhan. Untuk chat, belajar, dan media sosial, kamu t
 Ketiga, perhatikan tulisan seperti RAM delapan tambah delapan gigabyte. Angka kedua biasanya adalah RAM virtual, yaitu sebagian memori penyimpanan yang dipinjam sebagai meja tambahan. Itu membantu, tetapi jauh lebih lambat daripada RAM sungguhan.
 *[Visual: label "8 + 8 GB"; meja asli di depan, meja tambahan dari lemari di belakang yang lebih lambat dijangkau.]*
 
-Keempat, ingat bahwa setiap pertanyaan yang kita kirim ke AI dijawab oleh mesin yang memakai memori dan listrik dalam jumlah besar. Teknologi di awan dan HP di saku kita ternyata bersaing memperebutkan silikon yang sama.
+Keempat, ingat bahwa setiap pertanyaan yang kita kirim ke AI dijawab oleh mesin yang memakai memori dan listrik dalam jumlah besar. Teknologi cloud dan HP di saku kita bersaing memperebutkan silikon yang sama.
 *[Visual: awan pusat data dan HP di tangan, dihubungkan oleh satu benang cahaya ke satu wafer kecil.]*
 
-Jadi, lain kali kamu melihat harga HP naik, kamu tahu bahwa ceritanya dimulai jauh dari toko, di sebuah pabrik wafer dan di sebuah pusat data AI.
+Jadi, lain kali kamu melihat harga HP naik, kamu tahu bahwa ceritanya dimulai jauh dari toko, yaitu di sebuah pabrik RAM dan di sebuah pusat data AI.
 
 ## 9. Penutup (±0:20)
 
@@ -145,9 +145,3 @@ Kalau kamu ingin memahami cara kerja teknologi di sekitarmu, subscribe channel I
 - Notebookcheck / HP Inc. (2026). Porsi memori dalam biaya komponen PC naik dari ±15% menjadi ±35%.
 
 Perhitungan sendiri: 13.400 GB ÷ 8 GB ≈ 1.675 HP (dibulatkan "seribu tujuh ratus"). 8 GB = 8 × 2³⁰ × 8 bit ≈ 68,7 miliar bit. Sel DRAM disegarkan (refresh) setiap ±64 milidetik, jadi sekitar 16 kali per detik.
-
-## Catatan untuk Bu Dewi
-
-- **Nama merek:** Samsung, SK hynix, dan Micron disebut sebagai pembuat RAM, karena itu fakta pasar. Logo atau tampilan merek tidak digambar. Contoh harga HP disebut tanpa merek ("salah satu HP murah yang populer").
-- **Durasi:** narasi 6.478 karakter, ditambah jeda dan selingan antarbab, jadi video sekitar 10–10,5 menit. Biaya suara video dan Short sekitar 3.200 kredit, sehingga sisa kredit sekitar 800.
-- **Data harga:** angka harga diambil dari berita April 2026. Bila Ibu punya contoh harga yang lebih baru dari toko, bisa saya ganti.
