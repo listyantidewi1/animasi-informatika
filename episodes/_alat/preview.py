@@ -13,7 +13,7 @@ variant = E.pick_variants(ROOT, flags, need_audio=False)[-1]
 TL = E.load_timeline(ROOT, variant); SCRIPT = E.load_script(ROOT)
 html = (open(os.path.join(E.ALAT, "render.html"), encoding="utf-8").read()
         .replace("__ENGINE__", E.engine_js(ROOT, SCRIPT)).replace("__TIMELINE__", json.dumps(TL, ensure_ascii=False)))
-BUILT = os.path.join(ROOT, f"render-{variant}.built.html"); open(BUILT, "w", encoding="utf-8").write(html)
+BUILT = os.path.join(ROOT, f"render-{variant}-{os.getpid()}.built.html"); open(BUILT, "w", encoding="utf-8").write(html)
 OUT = os.path.join(ROOT, "preview"); os.makedirs(OUT, exist_ok=True)
 
 beats = {b["id"]: b for b in TL["beats"]}
@@ -29,3 +29,4 @@ with sync_playwright() as p:
         open(os.path.join(OUT, f"{w.replace('=', '_at')}.jpg"), "wb").write(base64.b64decode(data.split(",", 1)[1]))
     print(f"[{variant}] {len(want)} frame -> {OUT}; errors: {errs}")
     br.close()
+os.remove(BUILT)

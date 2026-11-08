@@ -31,7 +31,7 @@ HOOK = r"""
 })();"""
 html = (open(os.path.join(E.ALAT, "render.html"), encoding="utf-8").read()
         .replace("__ENGINE__", HOOK + "\n" + E.engine_js(ROOT, SCRIPT)).replace("__TIMELINE__", json.dumps(TL, ensure_ascii=False)))
-built = os.path.join(ROOT, "cek-suara.built.html"); open(built, "w", encoding="utf-8").write(html)
+built = os.path.join(ROOT, f"cek-suara-{os.getpid()}.built.html"); open(built, "w", encoding="utf-8").write(html)
 beats = [b for b in TL["beats"] if not want or b["id"] in want]
 rep = {"kecil": [], "luar": [], "tumpuk": [], "diam": [], "gelap": [], "missing": []}
 def lum(data):
