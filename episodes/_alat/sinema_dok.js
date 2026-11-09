@@ -80,8 +80,8 @@
   // ---------- kartu bab: singkat, gelap penuh, memudar ke adegan baru ----------
   function chapterCard(ctx, num, title, a, t) {
     if (a <= 0) return; ctx.save(); ctx.globalAlpha = a;
-    ctx.fillStyle = P.night; ctx.fillRect(0, 0, W, HH);
-    glow(ctx, W / 2, HH / 2, 640, P.violet, 0.35);
+    { const g = ctx.createLinearGradient(0, 0, 0, HH); g.addColorStop(0, "#1E2C66"); g.addColorStop(1, "#2C3F86"); ctx.fillStyle = g; ctx.fillRect(0, 0, W, HH); }
+    glow(ctx, W / 2, HH / 2, 640, P.violet, 0.4);
     const r = 70; ctx.fillStyle = P.amber; ctx.beginPath(); ctx.arc(W / 2, HH / 2 - 140, r, 0, 6.283); ctx.fill();
     txt(ctx, String(num), W / 2, HH / 2 - 140 + 34, 96, { align: "center", weight: 900, color: "#10142E" });
     txt(ctx, title, W / 2, HH / 2 + 70, 120, { align: "center", weight: 900, fit: 1640 });
