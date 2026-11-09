@@ -1,8 +1,11 @@
 # Buku yang Ditulis Selama 64 Tahun dan Belum Selesai
 
 Dokumenter animasi ±10 menit untuk penonton umum, channel I Teach Software Engineering (@iTeachSWE).
-Naskah revisi 1 (setelah dua pemeriksaan fakta, 9 Nov 2026), untuk dibaca Bu Dewi. Teks biasa adalah narasi yang dibacakan; teks *[Visual: …]* adalah catatan gambar dan tidak dibacakan.
+Naskah final (revisi Bu Dewi, 9 Nov 2026). Teks biasa adalah narasi yang dibacakan; teks *[Visual: …]* adalah catatan gambar dan tidak dibacakan.
 Gaya, narator (Bian), musik, dan Bip sama dengan D01–D03. Orang sungguhan (Donald Knuth, Filip Stappers, Ho Boon Suan, Bill Gates) tidak digambar dan suaranya tidak ditiru: mereka hadir lewat benda (meja, lampu, pensil, surat), tangan tanpa ciri, label nama, dan kutipan yang diketik di layar. Tulisan tangan di layar memakai huruf ilustratif, bukan tulisan asli. Adegan sehari-hari (warung, kelas) dan tokohnya rekaan. AI digambar abstrak (kartu catatan bernomor, garis cahaya), tanpa maskot, wajah robot, atau logo perusahaan; AI dari Anthropic dan dari OpenAI digambar dengan gaya yang setara.
+
+---
+Tempo (permintaan Bu Dewi): visualisasi matematika dan algoritma (bab 3, 4, 7, 8) diberi waktu untuk dilihat dan dipahami; setiap langkah ditahan, ada jeda tayang tanpa narasi sesudah penjelasan penting, dan gambarnya dibuat rinci (angka setiap langkah, penghitung, label).
 
 ---
 
@@ -44,18 +47,18 @@ Knuth memakai kata art, atau seni, karena menurutnya menyusun program bisa teras
 
 Algoritma pertama di buku itu sudah berumur lebih dari dua ribu tahun, yaitu algoritma Euclid untuk mencari FPB.
 
-Bayangkan dua lidi di meja warung. Yang satu panjangnya lima ratus empat puluh empat milimeter, dan yang lain seratus sembilan belas milimeter. Kalau kita terus memotong lidi yang panjang sepanjang lidi yang pendek, setelah delapan kali memotong kita mendapat dua potongan yang sama panjang, yaitu tujuh belas milimeter. Itulah FPB-nya.
-*[Visual: dua lidi berlabel 544 dan 119; Bip memotong dengan penghitung 1 sampai 8 (544→425→306→187→68, 119→51, 68→17, 51→34→17); dua potongan terakhir sama-sama 17.]*
+Bayangkan dua utas tali rafia. Yang satu panjangnya sembilan puluh satu sentimeter, dan yang lain dua puluh satu sentimeter. Kalau kita terus memotong tali yang panjang sepanjang tali yang pendek, setelah enam kali memotong kita mendapat dua potongan yang sama panjang, yaitu tujuh sentimeter. Itulah FPB-nya.
+*[Visual: dua tali rafia berlabel 91 cm dan 21 cm di atas penggaris; tali pendek ditempel di tali panjang lalu dipotong, satu per satu, dengan penghitung potongan 1 sampai 6 (91→70→49→28→7, lalu 21→14→7); setiap potongan jatuh dan diberi label 21 atau 7; dua potongan terakhir sama-sama 7 cm dan disorot "FPB = 7". Setiap langkah ditahan cukup lama supaya bisa diikuti.]*
 
-Cara yang ditulis di buku Knuth lebih cepat. Kita langsung membagi dan memakai sisanya, sampai sisanya nol. Jawabannya tetap tujuh belas, tetapi kali ini hanya butuh empat kali pembagian.
-*[Visual: tangga sisa 544 → 119 → 68 → 51 → 17 → 0; penghitung berhenti di 4, di samping penghitung lama yang berhenti di 8. Tidak ada label "temuan Knuth"; cukup label "cara pembagian".]*
+Cara yang ditulis di buku Knuth lebih cepat. Kita langsung membagi dan memakai sisanya, sampai sisanya nol. Jawabannya tetap tujuh, tetapi kali ini hanya butuh dua kali pembagian.
+*[Visual: tabel pembagian besar: "91 : 21 = 4, sisa 7" lalu "21 : 7 = 3, sisa 0"; panah sisa turun ke baris berikutnya; penghitung berhenti di 2, di samping penghitung cara memotong yang berhenti di 6. Tidak ada label "temuan Knuth"; cukup label "cara pembagian".]*
 
 ## 4. Menghitung langkah (±1:05)
 
 Membandingkan banyaknya langkah seperti ini disebut analisis algoritma, istilah yang dipopulerkan oleh Knuth.
 
 Coba main tebak angka dari satu sampai seribu. Temanmu hanya boleh menjawab "lebih besar" atau "lebih kecil". Menebak satu per satu bisa butuh seribu tebakan. Kalau kamu selalu menebak angka di tengah, setiap jawaban membuang separuh kemungkinan, sehingga sepuluh tebakan sudah cukup.
-*[Visual: dua murid rekaan di kelas; gelembung jawaban "lebih besar" / "lebih kecil"; deretan 1–1000 terlipat dua berulang kali; penghitung tebakan berhenti di 10; Bip bersorak.]*
+*[Visual: dua murid rekaan di kelas; gelembung jawaban "lebih besar" / "lebih kecil"; papan angka 1–1000; setiap tebakan menandai angka tengah (500, 750, …) dan menghapus separuh papan; tabel kecil sisa kemungkinan 1000 → 500 → 250 → … → 1; penghitung tebakan berhenti di 10; Bip bersorak.]*
 
 Jilid ketiga membahas cara mencari seperti ini dengan rinci. Ide yang sama membuat komputer, termasuk HP-mu, bisa menemukan satu nama di antara ribuan nama yang urut dalam sekejap.
 *[Visual: daftar nama urut abjad di layar HP generik (bukan aplikasi kontak bermerek) terbelah dua berulang kali sampai satu nama menyala.]*
@@ -73,51 +76,54 @@ Knuth pernah memperkirakan jilid keempat selesai sekitar tahun dua ribu tiga. Ke
 
 ## 6. Kebiasaan seorang penulis (±0:50)
 
-Supaya bisa fokus, Knuth berhenti memakai email sejak tahun seribu sembilan ratus sembilan puluh. Orang pertama yang menemukan sebuah kesalahan di bukunya mendapat hadiah dua koma lima enam dolar, yang ia sebut satu dolar heksadesimal. Dulu hadiahnya berupa cek, dan banyak penerima memilih membingkainya. Kini hadiahnya berupa sertifikat dari bank khayalan.
+Supaya bisa fokus, Knuth berhenti memakai email sejak tahun seribu sembilan ratus sembilan puluh. Orang pertama yang menemukan sebuah kesalahan di bukunya mendapat hadiah dua koma lima enam dolar, yang ia sebut satu dolar heksadesimal. Dulu, hadiahnya berupa cek, dan banyak penerima hadiah memilih untuk membingkainya. Kini, hadiahnya berupa sertifikat dari bank khayalan.
 *[Visual: kotak masuk email dengan angka 0 membeku di samping tumpukan surat kertas; cek generik "$2.56" (bukan desain asli) dibingkai di dinding; lalu sertifikat generik "0x$1.00" dari "bank di negeri khayalan" (bukan desain asli) masuk ke amplop.]*
 
-Buku ini terkenal sulit. Bill Gates pernah menulis di kolom korannya bahwa ia butuh disiplin dan waktu berbulan-bulan untuk membacanya. Ia juga menulis, kalau kamu bisa membaca semuanya, kirimkan riwayat hidupmu kepadanya.
+Buku ini terkenal sulit. Bill Gates pernah menulis di kolom korannya bahwa ia butuh disiplin dan waktu berbulan-bulan untuk membacanya. Ia juga menulis, bahwa kalau kamu bisa membaca semua isi bukunya, maka kirimkan riwayat hidupmu kepadanya.
 *[Visual: potongan kolom koran generik tanpa foto, tanpa nama koran dan tanpa tanggal; kalimat yang disorot melayang dan menempel di sampul buku bergaya.]*
 
 ## 7. Teka-teki tiga jalan (±1:05)
 
-Kembali ke tahun dua ribu dua puluh enam, Knuth sedang menulis tentang rute yang mengunjungi setiap tempat tepat satu kali, lalu kembali ke tempat awal.
+Kembali ke tahun dua ribu dua puluh enam, Knuth sedang menulis tentang sebuah rute yang mengunjungi setiap tempat tepat satu kali, lalu kembali ke tempat awal.
 
-Bayangkan gedung kubus berisi dua puluh tujuh ruangan, tiga kali tiga kali tiga. Setiap ruangan punya tiga pintu satu arah, yaitu ke kanan, ke belakang, dan ke atas. Pintu di ujung gedung tembus ke sisi seberangnya, seperti di game Pac-Man.
-*[Visual: kubus 3×3×3 transparan dengan 27 titik; panah ke kanan, ke belakang, ke atas; satu titik keluar dari sisi kanan lalu muncul di sisi kiri.]*
+Bayangkan gedung berbentuk kubus yang berisi dua puluh tujuh ruangan, tiga kali tiga kali tiga. Setiap ruangan punya tiga pintu satu arah, yaitu ke kanan, ke belakang, dan ke atas. Pintu di ujung gedung tembus ke sisi seberangnya, seperti di game Pac-Man.
+*[Visual: kubus 3×3×3 transparan dengan 27 titik bernomor; satu ruangan disorot dan ketiga pintunya berkedip bergantian (kanan, belakang, atas) dengan label; satu titik keluar dari sisi kanan lalu muncul di sisi kiri, diulang supaya jelas.]*
 
 Teka-tekinya adalah mewarnai setiap pintu dengan merah, hijau, atau biru, sehingga setiap warna menjadi satu jalan yang melewati semua ruangan tepat satu kali.
-*[Visual: tiga ular cahaya merah, hijau, biru menyusuri kubus; setiap pintu hanya dilewati satu warna.]*
+*[Visual: tiga ular cahaya merah, hijau, biru menyusuri kubus satu per satu (bukan bersamaan); penghitung ruangan yang dilewati naik 1 sampai 27 untuk tiap warna; setiap pintu hanya dilewati satu warna.]*
 
-Knuth bisa memecahkan kubus berukuran tiga, dan temannya, Filip Stappers, memakai komputer untuk menemukan jawaban sampai ukuran enam belas. Tetapi aturan untuk semua ukuran belum ditemukan.
+Knuth bisa memecahkan kubus berukuran tiga, dan temannya, Filip Stappers, memakai komputer untuk menemukan jawaban sampai di ukuran enam belas. Tetapi solusi yang bisa digunakan untuk semua ukuran masih belum ditemukan.
 *[Visual: kubus membesar 3, 5, 16; tanda tanya di atas kubus berukuran tak diketahui; label nama "Filip Stappers" di samping papan ketik, tanpa wajah.]*
 
 ## 8. Tiga puluh satu percobaan (±1:40)
 
 Stappers lalu memberikan soal itu kepada Claude Opus empat koma enam, model AI buatan Anthropic yang baru dirilis tiga minggu sebelumnya.
 
-AI itu mencoba banyak cara dengan menulis program kecil, sementara Stappers terus mendampingi dan mengingatkannya mencatat kemajuan.
-*[Visual: deretan kartu catatan bernomor 1 sampai 31; sebagian besar abu-abu berlabel "terlalu lambat" atau "tidak berhasil"; tangan tanpa ciri menempelkan catatan "perbarui catatan!".]*
+AI itu mencoba banyak cara dengan menulis program kecil, sementara Stappers terus mendampingi dan mengingatkannya untuk mencatat setiap kemajuan.
+*[Visual: deretan kartu catatan bernomor 1 sampai 31; sebagian besar abu-abu berlabel "terlalu lambat" atau "tidak berhasil"; tangan tanpa ciri menempelkan catatan "perbarui catatan!"; label "Claude Opus 4.6 (Anthropic)".]*
 
-Pada percobaan ketiga puluh satu, sekitar satu jam setelah mulai, AI itu menghasilkan program yang berhasil untuk kubus berukuran ganjil. Stappers mengujinya sampai ukuran seratus satu, lalu Knuth menulis sendiri bukti matematikanya.
-*[Visual: kartu nomor 31 menyala; kubus 3, 5, 7 terisi tiga warna; centang hijau sampai 101; pensil menulis bukti di kertas.]*
+Pada percobaan ketiga puluh satu, sekitar satu jam setelah mulai, AI itu menghasilkan program yang berhasil untuk kubus berukuran ganjil. Stappers mengujinya sampai ukuran seratus satu, lalu Knuth menulis sendiri bukti matematikanya. Bukti itu kemudian juga diperiksa ulang oleh Kim Morrison dengan program pemeriksa bukti bernama Lean.
+*[Visual: kartu nomor 31 menyala; kubus 3, 5, 7 terisi tiga warna; centang hijau sampai 101; pensil menulis bukti di kertas; lalu halaman bukti masuk ke mesin pemeriksa bergaya berlabel "Lean" dan keluar dengan centang; label nama "Kim Morrison" tanpa wajah.]*
 
-Untuk ukuran genap, AI itu hanya berhasil pada beberapa ukuran kecil dan tidak menemukan aturan umumnya. Beberapa hari kemudian, Ho Boon Suan dari Singapura meminta model GPT buatan OpenAI menulis program untuk ukuran genap mulai delapan. Ia mengujinya pada banyak ukuran, termasuk kubus berisi jutaan ruangan.
-*[Visual: kubus 4, 6, 8 dengan centang kecil, lalu tanda tanya; garis cahaya bergaya berbeda tetapi setara (pola garis, bukan maskot atau logo) berlabel "GPT (OpenAI)"; label nama "Ho Boon Suan, Singapura"; zoom keluar ke kubus raksasa berlabel "200 × 200 × 200 = 8 juta ruangan".]*
+Untuk ukuran genap, AI itu hanya berhasil pada beberapa ukuran kecil dan tidak menemukan rumus umumnya. Beberapa hari kemudian, Ho Boon Suan dari Singapura meminta model GPT buatan OpenAI menulis program untuk kubus yang berukuran genap mulai delapan. Ia mengujinya pada banyak ukuran, termasuk kubus berisi jutaan ruangan.
+*[Visual: kubus 4, 6, 8 dengan centang kecil, lalu tanda tanya; garis cahaya bergaya berbeda tetapi setara (pola garis, bukan maskot atau logo) berlabel "GPT-5.3-codex (OpenAI)"; label nama "Ho Boon Suan, Singapura"; zoom keluar ke kubus raksasa berlabel "200 × 200 × 200 = 8 juta ruangan".]*
 
 Tidak lama kemudian, model GPT lain menulis bukti empat belas halaman untuk ukuran genap, dan Knuth menyebutnya tampak tanpa cacat.
-*[Visual: tumpukan 14 halaman rapi dengan rumus ilustratif; kaca pembesar menyusuri halaman; label "diperiksa Knuth".]*
+*[Visual: tumpukan 14 halaman rapi dengan rumus ilustratif berlabel "GPT-5.4 Pro (OpenAI)"; kaca pembesar menyusuri halaman; label "diperiksa Knuth".]*
 
-Tiga tahun sebelumnya, Knuth meminta mahasiswanya menguji ChatGPT. Ia heran karena jawaban karangan bisa terdengar sangat meyakinkan, dan ia menyerahkan penelitian AI semacam itu kepada orang lain. Kini ia menulis bahwa sepertinya ia harus merevisi pendapatnya tentang AI generatif. Ia juga menulis "Hats off to Claude!", yang artinya angkat topi untuk Claude.
+Tiga tahun sebelumnya, Knuth meminta mahasiswanya menguji ChatGPT. Ia heran karena jawaban yang sebenarnya hanya karangan bisa terdengar sangat meyakinkan, dan ia menyerahkan penelitian AI semacam itu kepada orang lain. Kini ia menulis bahwa sepertinya ia harus merevisi pendapatnya tentang AI generatif. Ia juga menulis "Hats off to Claude!", yang artinya angkat topi untuk Claude.
 *[Visual: dua kutipan diketik rapi berdampingan, berlabel "2023" dan "2026"; timbangan bergeser pelan tanpa jatuh.]*
 
-## 9. Penutup (±0:45)
+## 9. Penutup (±0:50)
 
 Jadi, apakah buku ini menjadi usang karena ada AI? Jawabannya tidak. AI membantu mencari, mencoba, bahkan menulis sebagian bukti. Tetapi manusialah yang mengajukan pertanyaan, mendampingi, menguji, dan memeriksa apakah jawabannya benar.
 *[Visual: kubus tiga warna mengecil menjadi satu halaman buku; tangan tanpa ciri, kartu catatan AI (dua gaya garis yang setara), dan pensil ada di halaman yang sama.]*
 
 Knuth sudah menulis bukunya selama enam puluh empat tahun. Ia memberi hadiah kepada orang yang menemukan kesalahannya, dan di usia delapan puluh delapan tahun ia masih terbuka untuk memikirkan ulang pendapatnya. Belajar memang tidak harus cepat, asalkan kita tidak berhenti.
 *[Visual: meja malam; kertas 12 bab tumbuh menjadi pohon; cabangnya buku, daunnya ikon aplikasi di HP; cabang yang belum jadi digambar putus-putus, dan sebuah pensil kecil terus menulis.]*
+
+Sebagai catatan, naskah video ini juga disusun dengan bantuan AI, termasuk Claude buatan Anthropic, lalu diperiksa fakta dan disunting oleh manusia.
+*[Visual: kartu kecil "Naskah: disusun dengan bantuan AI, diperiksa dan disunting manusia" dengan ikon pensil dan centang.]*
 
 Kalau kamu ingin memahami cara kerja teknologi di sekitarmu, subscribe channel I Teach Software Engineering. Sampai jumpa di cerita berikutnya.
 *[Visual: kartu akhir dengan Bip dan youtube.com/@iTeachSWE.]*
@@ -148,44 +154,15 @@ Kalimat untuk deskripsi (disarankan): "Naskah video ini disusun dengan bantuan A
 - Wikipedia. The Art of Computer Programming; Donald Knuth; Knuth reward check. https://en.wikipedia.org/wiki/The_Art_of_Computer_Programming , https://en.wikipedia.org/wiki/Donald_Knuth , https://en.wikipedia.org/wiki/Knuth_reward_check (sekunder; tahun terbit jilid, lahir 10 Jan 1938, hadiah hanya untuk pelapor pertama, sertifikat Bank of San Serriffe sejak Oktober 2008). Keyakinan tinggi.
 - Ditlea, S. (1 Sep 1999). Rewriting the Bible in 0's and 1's. MIT Technology Review. https://www.technologyreview.com/1999/09/01/236540/rewriting-the-bible-in-0s-and-1s/ (sekunder). Isi: Gates "in his syndicated newspaper column … once responded to a reader": "It took incredible discipline, and several months, for me to read it", "If you can read the whole thing, send me a resume"; cek hadiah "few are actually cashed"; TeX "nearly nine years". Ini sumber tertua yang ditemukan untuk kutipan Gates; nama koran dan tanggal kolomnya belum ditemukan. Penerbit juga mencetak versi "You should definitely send me a résumé if you can read the whole thing" sebagai pujian Gates untuk Vol. 1 edisi 3 (belum dilihat langsung). Keyakinan sedang–tinggi.
 
-Perhitungan sendiri: FPB(544, 119) = 17; cara pengurangan 8 langkah (544→425→306→187→68; 119→51; 68→17; 51→34→17), cara pembagian 4 langkah (sisa 68, 51, 17, 0) bila mulai dari 544 dan 119 (urutan Knuth 119, 544 butuh satu langkah tukar lebih dulu). Tebak angka dengan jawaban "lebih besar/lebih kecil": 2¹⁰ = 1.024 ≥ 1.000 (10 tebakan). 200³ = 8 juta (ukuran terbesar yang pasti diuji semua, dasar "jutaan ruangan"); 2.000³ = 8 miliar (komentar Knuth, tidak dibacakan). Knuth lahir 10 Jan 1938, jadi berusia 24 pada Jan 1962, 36 pada 1974, dan 88 pada Feb 2026. Al-Khwarizmi (±825 M) → ±1.200 tahun lalu. 1962 → 2026 = 64 tahun; 1962 → 2007 (kertas 12 bab masih disimpan) = 45 tahun, dasar "puluhan tahun kemudian".
+Perhitungan sendiri: FPB(91, 21) = 7; cara memotong 6 langkah (91→70→49→28→7, lalu 21→14→7), cara pembagian 2 langkah (91 : 21 = 4 sisa 7; 21 : 7 = 3 sisa 0). Contoh di buku Knuth memakai 119 dan 544; di video diganti angka kecil atas keputusan Bu Dewi. Tebak angka dengan jawaban "lebih besar/lebih kecil": 2¹⁰ = 1.024 ≥ 1.000 (10 tebakan). 200³ = 8 juta (ukuran terbesar yang pasti diuji semua, dasar "jutaan ruangan"); 2.000³ = 8 miliar (komentar Knuth, tidak dibacakan). Knuth lahir 10 Jan 1938, jadi berusia 24 pada Jan 1962, 36 pada 1974, dan 88 pada Feb 2026. Al-Khwarizmi (±825 M) → ±1.200 tahun lalu. 1962 → 2026 = 64 tahun; 1962 → 2007 (kertas 12 bab masih disimpan) = 45 tahun, dasar "puluhan tahun kemudian".
 
-## Catatan untuk Bu Dewi
+## Catatan untuk produksi (keputusan Bu Dewi, 9 Nov 2026)
 
-- Panjang narasi terukur: **6.889 karakter** (34 paragraf narasi saja, tanpa judul bab dan catatan visual; 6.922 bila antarparagraf dihitung satu spasi). Masih dalam rentang 6.300–6.900, setara D03 (±9,5–10 menit). Perkiraan kredit ElevenLabs: narasi ±3.100–3.800 (0,45–0,55 kredit per karakter), Short ±250, cadangan ulang beat ±250, jadi ±3.600–4.300 kredit.
-- Judul kerja tetap "Buku yang Ditulis Selama 64 Tahun dan Belum Selesai". Alternatif: "Teka-teki Profesor 88 Tahun yang Dipecahkan Bersama AI". Hindari judul "AI memecahkan" saja.
-
-**Yang berubah dari draf (berdasarkan dua pemeriksaan fakta)**
-1. Bagian AI (bab 8–9) diperbarui melewati revisi 4 Maret: ditambah kalimat bahwa model GPT lain kemudian menulis bukti empat belas halaman untuk ukuran genap, yang disebut Knuth tampak tanpa cacat. Penutup kini berbunyi "AI membantu mencari, mencoba, bahkan menulis sebagian bukti. Tetapi manusialah yang mengajukan pertanyaan, mendampingi, menguji, dan memeriksa apakah jawabannya benar." (sebelumnya "manusialah yang … membuktikan", salah untuk kasus genap).
-2. "AI itu macet" diganti: AI hanya berhasil pada beberapa ukuran kecil dan tidak menemukan aturan umumnya.
-3. Ho Boon Suan: kini jelas bahwa ia meminta model GPT buatan OpenAI menulis program untuk ukuran genap mulai delapan; "diuji sampai delapan miliar ruangan" (komentar Knuth, belum tentu diuji) diganti "termasuk kubus berisi jutaan ruangan" (200³ = 8 juta, pasti diuji).
-4. Keseimbangan nama: Claude dan GPT kini sama-sama disebut namanya beserta perusahaannya (Anthropic, OpenAI), dan di visual digambar dengan gaya setara. Kalimat transparansi untuk deskripsi YouTube ditambahkan di bagian Sumber.
-5. ChatGPT 2023: kini "Knuth meminta mahasiswanya menguji ChatGPT"; hubungan "karena" yang merupakan tafsiran dihapus; "penelitian AI bukan untuknya" diganti "menyerahkan penelitian AI semacam itu kepada orang lain" (sesuai "leave such research to others"). "Menutup catatannya dengan Hats off to Claude" diganti "Ia juga menulis …", karena revisi terbaru mungkin punya kalimat penutup lain. Ditambah "tentang AI generatif".
-6. "Masih mau mengubah pendapat" diganti "masih terbuka untuk memikirkan ulang pendapatnya" (Knuth hanya menulis "I'll have to revise my opinions … one of these days").
-7. Hadiah kesalahan: kini hanya untuk orang pertama yang menemukan kesalahan; cek yang dibingkai disebut sebagai cerita lama; sejak 2008 hadiahnya sertifikat dari bank khayalan. Visual dipisah menjadi cek lama yang dibingkai dan sertifikat baru. Bab 9: "membayar" diganti "memberi hadiah".
-8. Bill Gates: "baginya" (pengalaman Gates sendiri, bukan sifat umum buku); "Itu pujian, bukan tawaran kerja" (tafsiran narator) dihapus; "bercanda" juga tidak dipakai, cukup "Ia juga menulis …". Tanpa tahun dan tanpa nama koran, juga di visual. (Catatan draf yang menyebut narasi memuat "tahun sembilan puluhan" keliru; narasi tidak pernah memuatnya.)
-9. Euclid: "Cara di buku Knuth lebih cerdik" diganti "Cara yang ditulis di buku Knuth lebih cepat" supaya tidak terkesan Knuth penemu cara pembagian. Judul bab 3 menjadi "Salah satu algoritma tertua".
-10. Tebak angka: syarat jawaban "lebih besar" atau "lebih kecil" kini disebut. Kalimat jilid ketiga ditulis ulang supaya tidak menyiratkan Knuth penemu pencarian biner, dan tidak lagi mengklaim cara kerja aplikasi kontak tertentu; ditambah syarat "nama yang urut".
-11. "Knuth sendiri yang mengusulkan nama itu" diganti "istilah yang dipopulerkan oleh Knuth" (lebih aman).
-12. Kertas dua belas bab: "masih ia simpan sampai sekarang" diganti "masih ia simpan puluhan tahun kemudian" (bukti terakhir 2007).
-13. Jilid: "masih ada beberapa jilid yang belum ditulis" diganti "beberapa jilid lagi masih dalam pengerjaan"; tahun 1993 dihapus dari narasi (tetap di visual sebagai "target: 2003"). Visual lini waktu: tanda 2025 menjadi "Fasikel 7 (awal 4C)", dan celah 1973–2011 diisi edisi baru jilid 1–3, TeX, dan fasikel.
-14. Pembuka: "buku setua itu" menjadi "ide-ide dari buku setua itu".
-15. Daftar sumber diperbaiki: ulang tahun ke-24 bersumber dari Knuth 1993 (bukan CHM); 3.000 halaman tulisan tangan (2.000 halaman adalah perkiraan penerbit untuk buku cetak); TeX menurut Knuth 11 tahun; tanggal revisi Claude's Cycles (4, 6, dan 16 Maret; tidak ada bukti 14 April).
-16. Dipangkas supaya panjang tetap di bawah 6.900: lelucon "empat bulan kebahagiaan" dihapus (selain soal panjang, waktunya di CHM tidak cocok dengan cerita ulang tahun ke-24, karena Knuth menikah musim panas 1961); kalimat "Hasilnya sama … bedanya bisa sangat jauh" dan "TeX masih dipakai … mendekati angka pi" dihapus dari narasi (nomor versi pi tetap muncul di visual tanpa dibacakan); kalimat Stappers mendampingi dipadatkan ("menjalankannya ulang saat ada kesalahan" tidak dibacakan lagi).
-
-**Yang masih perlu dipastikan sebelum suara dibuat**
-- Kalimat bukti empat belas halaman (bab 8) hanya bersumber primer lewat cuplikan dan sekunder (keyakinan sedang–tinggi). Saya perlu membuka https://cs.stanford.edu/~knuth/papers/claude-cycles.pdf dan even_closed_form_proof_final.pdf langsung. Kalau tidak terkonfirmasi, kalimat itu dihapus (narasi menjadi ±6.730 karakter, masih dalam rentang) dan penutup kembali ke "AI membantu mencari dan mencoba".
-- Pastikan "Hats off to Claude!" dan kalimat "revise my opinions about 'generative AI'" masih ada di revisi terakhir.
-- Tanggal ulang tahun: Knuth 1993 dan CHM ("January of 1962") cocok dengan ulang tahun ke-24 (10 Jan 1962), tetapi cerita "four months of wedded bliss" di CHM memberi waktu lain. Narasi mengikuti versi 1993.
-- Kutipan Gates: isinya cocok dengan MIT Technology Review 1999 (sekunder) dan pujian di sampul buku, tetapi kolom aslinya belum ditemukan. Klaim "1995" yang sering beredar tidak berdasar (tahun itu milik ulasan majalah Byte yang tercetak di sampul yang sama).
-- "Beberapa jilid lagi masih dalam pengerjaan": 4C dan 5 memang dikerjakan (fasikel dan draf); jilid 6–7 baru rencana. Kalimatnya umum, jadi saya anggap aman.
-- Sumber Vol. 2 §4.5.2 dan Vol. 3 §6.2.1 dikutip dari ingatan pemeriksa fakta; belum dilihat langsung. Keduanya hanya dipakai untuk melunakkan klaim, bukan untuk klaim baru.
-- "Penerbit terkejut" (bab 1) tidak ditandai pemeriksa, tetapi kata-kata persisnya belum saya cocokkan.
-
-**Keputusan yang perlu Bu Dewi ambil**
-1. Transparansi: pakai kalimat deskripsi di atas, atau tambahkan juga di narasi akhir bab 8 (±100 karakter; bisa dengan memangkas kalimat lain).
-2. Nama model: narasi menyebut "Claude Opus empat koma enam" dan "model GPT buatan OpenAI". Apakah label di layar perlu menulis nama lengkap GPT-5.3-codex dan GPT-5.4 Pro supaya benar-benar setara?
-3. Angka lidi 544 dan 119 adalah contoh asli buku Knuth, tetapi terdengar panjang. Bisa diganti angka kecil (misalnya 24 dan 18), walaupun kaitannya dengan buku hilang. Kalau ada ruang, bisa ditambah satu kalimat: "Cara memotong ini mirip dengan cara Euclid sendiri menjelaskannya."
-4. Lelucon "empat bulan kebahagiaan" bisa dikembalikan kalau Bu Dewi suka, dengan memangkas bagian lain.
-5. Kutipan bahasa Inggris ("Shock! Shock!", "Hats off to Claude!") perlu dicek di uji suara apakah Bian mengucapkannya dengan wajar.
-6. Tambahan opsional (sekunder, keyakinan sedang): bukti Knuth untuk ukuran ganjil diperiksa ulang dengan program pemeriksa bukti Lean oleh Kim Morrison, dan revisi 16 Maret ditutup dengan "we are living in very interesting times indeed". Keduanya belum dibacakan.
+1. Transparansi: kalimat untuk deskripsi YouTube dipakai, dan kalimat yang sama juga dibacakan di akhir video (sebelum ajakan subscribe).
+2. Label di layar menulis nama model lengkap: "Claude Opus 4.6 (Anthropic)", "GPT-5.3-codex (OpenAI)", "GPT-5.4 Pro (OpenAI)".
+3. Contoh FPB memakai angka kecil 91 dan 21 (tali rafia); konteks tetap algoritma Euclid dari bab pertama buku Knuth.
+4. Lelucon "empat bulan kebahagiaan" tidak dipakai: waktunya di wawancara 2007 tidak cocok dengan cerita ulang tahun ke-24 (Knuth 1993), dan bab 1 sudah cukup padat.
+5. Kutipan bahasa Inggris ("Shock! Shock!", "Hats off to Claude!") diuji di contoh suara Bian.
+6. Ditambahkan: bukti kasus ganjil diperiksa ulang oleh Kim Morrison dengan Lean (primer: repositori KnuthClaudeLean). Kalimat penutup "we are living in very interesting times indeed" tidak dibacakan karena hanya bersumber sekunder.
+7. Tempo: bab 3, 4, 7, 8 diberi jeda tayang sesudah penjelasan (lihat kepala naskah).
+- Masih sekunder (keyakinan sedang–tinggi, beberapa laporan yang saling cocok): bukti 14 halaman GPT-5.4 Pro dan kata "apparently flawless"; "Hats off to Claude!" pada revisi terakhir. Halaman Stanford belum bisa dibuka dari lingkungan ini.
