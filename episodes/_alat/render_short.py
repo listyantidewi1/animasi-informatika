@@ -44,9 +44,11 @@ window.__ready = true;</script></body></html>"""
 
 def timeline(variant):
     TL = E.load_timeline(ROOT, variant)
-    src = {b["id"]: b for b in E.load_timeline(EP, variant)["beats"]}
+    sv = "suara" if (DOK or SIM) and E.has_variant(EP, "suara") else variant   # adegan dokumenter/simulasi selalu memakai waktu kata versi suara
+    PTL = E.load_timeline(EP, sv); src = {b["id"]: b for b in PTL["beats"]}
+    if DOK: TL["parent_beats"] = PTL["beats"]; TL["parent_segments"] = PTL.get("segments")   # adegan dokumenter boleh membaca beat lain di timeline induk
     for b in TL["beats"]:
-        if b.get("src") in src: s0 = src[b["src"]]; b["src_dur"] = s0["dur"]; b["src_audio"] = s0["audio"]; b["src_text"] = s0["text"]; b["src_lead"] = (s0["speech"] - s0["start"]) if s0.get("speech") is not None else 0.4
+        if b.get("src") in src: s0 = src[b["src"]]; b["src_dur"] = s0["dur"]; b["src_audio"] = s0["audio"]; b["src_text"] = s0["text"]; b["src_lead"] = (s0["speech"] - s0["start"]) if s0.get("speech") is not None else 0.4; b["src_words"] = s0.get("words"); b["src_suara"] = s0.get("suara"); b["src_beat"] = s0 if DOK else None
     TL.update(episode=code, label="Dokumenter Animasi" if DOK else ("Simulasi Informatika " if SIM else "Informatika ") + kelas, full_title=FULL, link=LINK,
               cta_heading="TONTON VIDEO LENGKAPNYA" if DOK else "TONTON SIMULASI LENGKAPNYA" if SIM else "TONTON EPISODE LENGKAPNYA")
     return TL
@@ -65,14 +67,14 @@ def render(pg, variant):
     name = f"Short_{code}_{E.title_slug(SCRIPT['title'])}_{variant}"
     tmp = os.path.join(OUT, name + ".video.mp4"); n = int(round(TL["total"] * FPS))
     pr = subprocess.Popen(["ffmpeg", "-v", "error", "-y", "-f", "image2pipe", "-framerate", str(FPS), "-c:v", "mjpeg", "-i", "-",
-                           "-c:v", "libx264", "-preset", "veryfast", "-crf", "20", "-pix_fmt", "yuv420p", "-r", str(FPS), tmp], stdin=subprocess.PIPE)
+                           "-c:v", "libx264", *(["-preset", "medium", "-crf", "17", "-tune", "animation"] if DOK else ["-preset", "veryfast", "-crf", "20"]), "-pix_fmt", "yuv420p", "-r", str(FPS), tmp], stdin=subprocess.PIPE)
     for i in range(n): pr.stdin.write(base64.b64decode(pg.evaluate("t => window.__seek(t)", i / FPS).split(",", 1)[1]))
     pr.stdin.close()
     if pr.wait() != 0: raise SystemExit("ffmpeg gagal")
     out = os.path.join(OUT, name + ".mp4")
     audio = ["-i", os.path.join(ROOT, "audio", "narration.wav")] if variant == "suara" else ["-f", "lavfi", "-i", "anullsrc=r=48000:cl=mono"]
     subprocess.run(["ffmpeg", "-v", "error", "-y", "-i", tmp, *audio, "-map", "0:v", "-map", "1:a", "-c:v", "copy", "-c:a", "aac",
-                    "-b:a", "96k" if variant == "suara" else "48k", "-ar", "48000", "-af", "apad", "-shortest", "-movflags", "+faststart", out], check=True)
+                    "-b:a", ("160k" if DOK else "96k") if variant == "suara" else "48k", "-ar", "48000", "-af", "apad", "-shortest", "-movflags", "+faststart", out], check=True)
     os.remove(tmp)
     srt = [f"{i + 1}\n{srt_time(b['start'])} --> {srt_time(b['start'] + min(b['audio'] + 1.0, b['dur'] - 0.05))}\n{b['text']}\n"
            for i, b in enumerate(TL["beats"])]

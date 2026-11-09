@@ -57,9 +57,14 @@
     const top = Math.max(IMG_TOP, hookBand(ctx, TL, t) + 40), nb = narrationBox(ctx, b), bot = Math.min(IMG_BOT, nb.y0 - 38);
     if (b.scene === "short_cta") cta(ctx, b, l, TL, t);
     else {
+      if (D.flushPost) D.flushPost(null);
       octx.save(); octx.setTransform(1, 0, 0, 1, 0, 0);
-      const sl = l * (b.src_dur ? b.src_dur / b.dur : 1) + (b.at || 0);
-      const fn = K.SCENES[b.scene]; if (fn) fn(octx, { ...b, id: b.src || b.id, text: b.src_text || b.text, audio: b.src_audio || b.audio, dur: b.src_dur || b.dur, start: 0, speech: b.src_lead != null ? b.src_lead : 0.4 }, sl, t, TL); else D.bg(octx, t);
+      const sl = l * (b.src_dur && b.tempo !== "normal" ? b.src_dur / b.dur : 1) + (b.at || 0);   // tempo:"normal" = adegan diputar tanpa dimampatkan (audit D02)
+      const fn = K.SCENES[b.scene];
+      if (fn && b.src_beat && TL.parent_beats) {   // dokumenter v2: beat induk asli + waktu absolut induk, supaya adegan yang membaca beat lain tetap benar
+        const pb = b.src_beat; fn(octx, pb, sl, pb.start + sl, { ...TL, beats: TL.parent_beats, segments: TL.parent_segments || TL.segments });
+      } else if (fn) fn(octx, { ...b, id: b.src || b.id, text: b.src_text || b.text, audio: b.src_audio || b.audio, dur: b.src_dur || b.dur, start: 0, speech: b.src_lead != null ? b.src_lead : 0.4, words: b.src_words, suara: b.src_suara }, sl, t, TL); else D.bg(octx, t);
+      if (D.flushPost) D.flushPost(octx);   // label adegan (D.post) digambar di kanvas sumber sebelum dipotong
       octx.restore();
       crops(ctx, off, b.crops || [[0, 0, 1920, 1080]], top, bot);
     }

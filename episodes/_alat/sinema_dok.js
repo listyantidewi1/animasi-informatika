@@ -76,6 +76,8 @@
   // ---------- lapisan sesudah vignette ----------
   let POST = [];
   const post = fn => POST.push(fn);
+  // untuk pemanggil di luar K.draw (short_dok.js): jalankan lalu kosongkan antrean label; ctx null = buang saja
+  const flushPost = ctx => { const q = POST; POST = []; if (ctx) q.forEach(fn => { ctx.save(); fn(ctx); ctx.restore(); }); };
 
   // ---------- kartu bab: singkat, gelap penuh, memudar ke adegan baru ----------
   function chapterCard(ctx, num, title, a, t) {
@@ -123,6 +125,6 @@
     if (cardBefore && l < 0.6) chapterCard(ctx, b.seg, TL.segments[b.seg], 1 - eio(l / 0.6), t);
     ctx.restore(); return b;
   };
-  K.dok = { P, W, HH, SAFE, clamp, lerp, sm, eio, eout, spring, rng, A, lead, at, atEnd, word, speechEnd, pr, fade, bg, glow, hexA, vignette, txt, cam, path, pill, panel, bip, label, kicker, post, chapterCard,
+  K.dok = { P, W, HH, SAFE, clamp, lerp, sm, eio, eout, spring, rng, A, lead, at, atEnd, word, speechEnd, pr, fade, bg, glow, hexA, vignette, txt, cam, path, pill, panel, bip, label, kicker, post, flushPost, chapterCard,
     neuron: () => {} };
 })(typeof window !== "undefined" ? window : globalThis);
