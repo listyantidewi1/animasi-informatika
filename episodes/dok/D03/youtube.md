@@ -3,7 +3,7 @@
 ## Pengaturan unggah (wajib)
 - Penonton: **Tidak, video ini tidak dibuat untuk anak-anak** (penonton umum/keluarga). Bila ditandai untuk anak, layar akhir, komentar, dan notifikasi mati.
 - Konten diubah atau sintetis: **Ya** (narasi dan suara tokoh dibuat dengan AI; adegan telepon adalah dramatisasi).
-- Layar akhir: 20 detik terakhir (mulai sekitar 9:00) dikosongkan untuk elemen layar akhir; pasang satu video (D02 atau D01) + tombol subscribe.
+- Layar akhir: 20 detik terakhir (mulai sekitar 8:56) dikosongkan untuk elemen layar akhir; pasang satu video (D02 atau D01) + tombol subscribe.
 
 ## Judul
 Suara Ibumu Bisa Dipalsukan dalam 3 Detik | Dokumenter
@@ -15,13 +15,13 @@ Bab:
 0:00 Pembuka
 0:57 Suaramu adalah sidik jari
 1:49 Mesin yang belajar meniru
-3:00 Dari mana suaramu diambil?
-3:53 Resep sebuah penipuan
-4:47 Sudah terjadi di sekitar kita
-5:44 Kenapa telinga kita mudah tertipu?
-6:31 Tanda-tanda yang perlu dicurigai
-7:15 Cara melindungi keluarga
-8:31 Penutup
+2:57 Dari mana suaramu diambil?
+3:50 Resep sebuah penipuan
+4:44 Sudah terjadi di sekitar kita
+5:41 Kenapa telinga kita mudah tertipu?
+6:28 Tanda-tanda yang perlu dicurigai
+7:12 Cara melindungi keluarga
+8:28 Penutup
 
 Kalau sudah terlanjur mentransfer: segera hubungi bank untuk meminta pemblokiran, lalu laporkan ke polisi dan ke Indonesia Anti-Scam Center (IASC) milik OJK:
 - Situs: https://iasc.ojk.go.id

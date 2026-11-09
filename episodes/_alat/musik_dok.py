@@ -105,7 +105,7 @@ def sfx(start, kind, amp):
         lo, hi = lp(n, 500), lp(n, 2600); u = np.linspace(0, 1, L); put(start - 0.6, amp * 0.3 * ((1 - u) * lo + u * hi) * env * 3)
     elif kind == "clack":
         L = int(0.5 * SR); tt = np.arange(L) / SR; p = 1 + (start * 7.3 % 1) * 0.3
-        put(start, amp * (np.sin(2 * np.pi * 150 * p * tt) * np.exp(-tt * 18) + 0.5 * np.sin(2 * np.pi * 420 * p * tt) * np.exp(-tt * 30) + rng.standard_normal(L) * np.exp(-tt * 120) * 0.4))
+        put(start, amp * (0.4 if V2 else 1.0) * (np.sin(2 * np.pi * 150 * p * tt) * np.exp(-tt * 18) + 0.5 * np.sin(2 * np.pi * 420 * p * tt) * np.exp(-tt * 30) + rng.standard_normal(L) * np.exp(-tt * 120) * 0.4))
     elif kind == "shimmer":
         for i, m in enumerate([86, 90, 93, 98, 102]): L = int(2.0 * SR); tt = np.arange(L) / SR; put(start + i * 0.07, amp * 0.12 * np.sin(2 * np.pi * midi(m) * tt) * np.exp(-tt * 2.5))
     elif kind == "riser":
@@ -146,9 +146,9 @@ if V2:
     tmp = os.path.join(AUD, "_mix_stereo.wav"); w = wave.open(tmp, "wb"); w.setnchannels(2); w.setsampwidth(2); w.setframerate(SR)
     w.writeframes((np.clip(st, -1, 1) * 32767).astype(np.int16).tobytes()); w.close()
     # master dua tahap: ukur, lalu normalkan ke −14 LUFS dengan puncak sejati −1 dBTP (standar YouTube)
-    r = subprocess.run(["ffmpeg", "-nostdin", "-hide_banner", "-i", tmp, "-af", "loudnorm=I=-14:TP=-1:LRA=11:print_format=json", "-f", "null", "-"], capture_output=True, text=True)
+    r = subprocess.run(["ffmpeg", "-nostdin", "-hide_banner", "-i", tmp, "-af", "loudnorm=I=-14:TP=-1.5:LRA=11:print_format=json", "-f", "null", "-"], capture_output=True, text=True)
     m = _json.loads(r.stderr[r.stderr.rfind("{"):r.stderr.rfind("}") + 1])
-    af = (f"loudnorm=I=-14:TP=-1:LRA=11:measured_I={m['input_i']}:measured_TP={m['input_tp']}:measured_LRA={m['input_lra']}"
+    af = (f"loudnorm=I=-14:TP=-1.5:LRA=11:measured_I={m['input_i']}:measured_TP={m['input_tp']}:measured_LRA={m['input_lra']}"
           f":measured_thresh={m['input_thresh']}:offset={m['target_offset']}:linear=true")
     subprocess.run(["ffmpeg", "-nostdin", "-v", "error", "-y", "-i", tmp, "-af", af, "-ar", str(SR), "-c:a", "pcm_s16le", NAR], check=True); os.remove(tmp)
     r = subprocess.run(["ffmpeg", "-nostdin", "-hide_banner", "-i", NAR, "-af", "ebur128=peak=true", "-f", "null", "-"], capture_output=True, text=True)
