@@ -117,7 +117,7 @@
     vignette(ctx);
     POST.forEach(fn => { ctx.save(); fn(ctx); ctx.restore(); });
     // label dramatisasi pada beat suara tokoh (dialog dibuat AI)
-    if (b.suara) { const a = Math.min(fade(l, 0, 0.3), 1); ctx.save(); ctx.globalAlpha = a; pill(ctx, "Dramatisasi · suara dibuat AI", W - SAFE.x - 330, 120, { size: 30, fill: "rgba(10,18,52,0.85)", stroke: hexA(P.pink, 0.8) }); ctx.restore(); }
+    if (b.suara) { const a = Math.min(fade(l, 0, 0.3), 1); ctx.save(); ctx.globalAlpha = a; pill(ctx, "Dramatisasi · suara dibuat AI", W - SAFE.x - 400, 118, { size: 40, fill: "rgba(10,18,52,0.85)", stroke: hexA(P.pink, 0.8) }); ctx.restore(); }
     // kartu bab: di ekor beat terakhir bab, lalu memudar di awal beat pertama bab berikutnya
     if (nx && nx.seg !== b.seg && !CARD_SKIP(TL.segments[nx.seg])) { const s0 = speechEnd(b) + 0.3; const a = clamp((l - s0) / 0.35); chapterCard(ctx, nx.seg, TL.segments[nx.seg], a, t); }
     if (cardBefore && l < 0.6) chapterCard(ctx, b.seg, TL.segments[b.seg], 1 - eio(l / 0.6), t);

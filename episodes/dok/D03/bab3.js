@@ -19,15 +19,25 @@
   // ---------- tata letak dunia (px, sebelum kamera) ----------
   const MAP = { cx: 650, cy: 440, s: 0.8 };
   const HOUSE = [MAP.cx + 60 * MAP.s, MAP.cy - 2 * MAP.s];
-  const JAR = { x: 1390, y: 885, size: 320 };
-  const PEL = { x: 1722, y: 885, h: 470 };
+  const JAR = { x: 1275, y: 885, size: 320 };
+  const PEL = { x: 1570, y: 885, h: 430 };   // tudung di bawah motif gelombang studio (x 1660–1810, y 340–400), tidak tampak seperti "antena"
   const BIP = { x: 228, y: 828, s: 150 };
   const RINA = { x: 420, y: 885, h: 540 };
-  const STAGE = [[440, 600], [985, 600]];
+  const STAGE = [[690, 618], [800, 618]];   // kartu di tengah: Bip (x ≤ 300) dan toples (x ≥ 1180) tetap terlihat
   const CARD = { w: 520, h: 382 };
   const SLOTS = [[-50, -52, -0.1], [52, -64, 0.12], [-42, -114, 0.08], [44, -130, -0.1], [0, -186, 0.04]];
   const CLIP = { w: 116, h: 54 };
-  const R1c = [1250 + 180, 215 + 70];
+  const R0 = { x: 1100, y: 205, w: 600, h: 150 }, R1 = { x: JAR.x - 180, y: 215, w: 360, h: 140 };
+  const R1c = [R1.x + R1.w / 2, R1.y + R1.h / 2];
+  // geometri tutup toples (sama dengan B.toples tanpa label)
+  const JW = JAR.size * 0.74, NECKW = JW * 0.72, LIDH = JAR.size * 0.1, LIDX = -NECKW / 2 - JW * 0.04, LIDW = NECKW + JW * 0.08;
+  const MOUTH = [JAR.x, JAR.y - JAR.size - 64];
+  const PILLY = JAR.y - 510;   // label di atas toples, di atas jangkauan tutup yang terbuka
+  // catatan pelaku: muncul di kanan atas, lalu bergeser ke kiri di atas peta yang diredupkan
+  const NOTE = { w: 580, h: 320 }, NC0 = [1330, 255], NC1 = [560, 305], NS1 = 0.92, RY = [122, 198, 274];
+  // cerita palsu: gelembung di kanan atas, ekornya ke HP pelaku
+  const BUB = { x: 1240, y: 245, w: 720, h: 224 };
+  const LIFT = [[JAR.x - 62, 482], [JAR.x + 112, 452]], LIFTED = [0, 2];   // dua klip suara anak (ulang tahun, tugas sekolah)
 
   function iconPos(i, t) {   // rumus posisi ikon sosial() (n = 4, show penuh)
     const ang = -Math.PI / 2 + (i - 1.5) * 0.78, bob = Math.sin(t * 1.8 + i * 1.7) * 7;
@@ -53,14 +63,19 @@
     e.angkat = A("b3_3", "mengangkat"); e.berkata = A("b3_3", "berkata");
     e.h = [Wd("b3_3a", 0), Wd("b3_3a", 1), Wd("b3_3a", 2)]; e.hE = Wd("b3_3a", 3, true);
     e.detik = A("b3_3b", "detik"); e.perc = A("b3_3b", "percakapan"); e.cukup = A("b3_3b", "cukup"); e.ambil = A("b3_3b", "mengambil"); e.contoh = A("b3_3b", "contoh suara");
-    e.ungg = A("b3_4", "unggahan"); e.pel4 = A("b3_4", "pelaku"); e.nama = A("b3_4", "nama anggota"); e.pgl = A("b3_4", "nama panggilan");
+    e.ungg = A("b3_4", "unggahan"); e.pel4 = A("b3_4", "pelaku"); e.nb = A("b3_4", "mengetahui"); e.nama = A("b3_4", "nama anggota"); e.pgl = A("b3_4", "nama panggilan");
     e.bias = A("b3_4", "kebiasaan"); e.detail = A("b3_4", "Detail"); e.cerita = A("b3_4", "cerita palsunya"); e.yakin = A("b3_4", "meyakinkan");
-    // kartu unggahan: muncul (a), salinan suara berangkat (lv), kembali ke ikon (r)
-    e.card = e.v.map((v, i) => { const lv = e.vE[i] + [0.1, 0.25, 0.3, 0.15][i]; return { a: v - 0.12, lv, land: lv + 0.85, r: lv + 0.35 }; });
+    // kartu unggahan: muncul (a), salinan suara berangkat (lv), kembali ke ikon (r, hilang r + 0.4).
+    // Kartu pulang paling lambat 0,75 s sebelum kata kartu berikutnya, salinan berangkat sebelum kartu pulang: satu kartu sekali tampil.
+    e.card = e.v.map((v, i) => { let r, lv;
+      if (i < 3) { r = Math.min(e.vE[i] + 0.45, e.v[i + 1] - 0.75); lv = Math.min(e.vE[i] + 0.1, r - 0.3); }
+      else { lv = Math.max(e.vE[3] - 0.05, e.grup + 1.05); r = lv + 0.35; }
+      return { a: v - 0.12, lv, land: lv + 0.85, r }; });
     e.clip4 = { lv: e.ambil - 0.05, land: e.ambil + 0.7 };
     e.lands = e.card.map(c => c.land).concat([e.clip4.land]);
     e.callIn = e.nomor - 0.3; e.callOut = e.b3_3b + 0.95;
-    e.tags = [{ t: e.nama, src: 0, row: 0 }, { t: e.pgl, src: 3, row: 1 }, { t: e.bias, src: 2, row: 2 }];
+    e.tags = [{ t: e.nama, src: 0, row: 0 }, { t: e.pgl, src: 3, row: 1 }, { t: e.bias, src: 2, row: 2 }].map(x => Object.assign(x, { fly: x.t + 0.3, land: x.t + 0.9 }));
+    e.react = e.lands.concat([e.pel4 + 0.1, e.detail + 0.4]);   // pelaku condong ke toples / ke peta
     // kamera bersambung sepanjang bab: [t, x, y, z]
     e.cam = [[e.b3_1, 960, 540, 1.0], [e.inet + 1.2, 940, 510, 1.045], [e.v[2], 950, 520, 1.04], [e.semua, 975, 535, 1.035],
       [e.b3_3 + 0.6, 960, 540, 1.02], [e.nomor + 0.4, 945, 525, 1.045], [e.berkata, 960, 505, 1.05], [e.hE, 985, 490, 1.06],
@@ -73,6 +88,44 @@
   const pop = (t, t0, k = 11, z = 0.5) => (t <= t0 ? 0 : Math.min(1.08, spring(t - t0, k, z)));
   const qpt = (p0, p1, p2, u) => [(1 - u) * (1 - u) * p0[0] + 2 * (1 - u) * u * p1[0] + u * u * p2[0], (1 - u) * (1 - u) * p0[1] + 2 * (1 - u) * u * p1[1] + u * u * p2[1]];
   const speaking = (TL, t) => { const b = TL.beats.find(x => t >= x.start && t < x.start + x.dur); if (!b || !b.words) return false; const l = t - b.start; return b.words.some(w => l >= w[1] - 0.03 && l <= w[2]); };
+
+  // salinan suara terbang: melengkung ke atas mulut toples (u 0..0.72), lalu turun ke tempatnya di dalam toples
+  function flyPos(s0, slot, u) {
+    const k = 0.72;
+    if (u < k) { const v = eio(u / k); return { x: lerp(s0[0], MOUTH[0], v), y: lerp(s0[1], MOUTH[1], v) - Math.sin(Math.PI * v) * 150, s: v }; }
+    const v = eio((u - k) / (1 - k)); return { x: lerp(MOUTH[0], slot[0], v), y: lerp(MOUTH[1], slot[1], v), s: 1 };
+  }
+  // sudut tutup toples: terbuka ±0,45 s sebelum salinan tiba, tertutup rapat saat mendarat (lalu memantul kecil);
+  // pada "Detail inilah" tutup terlepas ke atas lalu menghilang (klip suara anak diangkat keluar)
+  function lidAngle(t, e) {
+    let a = 0;
+    e.lands.forEach(L => {
+      const o = eout(clamp((t - (L - 0.5)) / 0.2)) * (1 - clamp((t - (L - 0.07)) / 0.08));
+      a = Math.max(a, 0.72 * o);
+      if (t >= L && t < L + 0.5) a = Math.max(a, 0.09 * Math.abs(Math.sin((t - L) * 22)) * Math.exp(-(t - L) * 8));
+    });
+    return a;
+  }
+  function drawLid(c, ang, off) {   // engsel di sudut kiri bawah tutup; stiker mikrofon menempel di tutup; off 0..1 = tutup terlepas
+    if (off >= 1) return;
+    c.save(); c.globalAlpha *= 1 - off; c.translate(JAR.x + LIDX - 40 * off, JAR.y - JAR.size + LIDH - 110 * eout(off)); c.rotate(-ang - 0.5 * off);
+    c.fillStyle = "rgba(10,14,50,0.25)"; H.rr(c, 3, -LIDH + 6, LIDW, LIDH, LIDH * 0.35); c.fill();
+    c.fillStyle = "#4C5286"; H.rr(c, 0, -LIDH, LIDW, LIDH, LIDH * 0.35); c.fill();
+    c.strokeStyle = "#343A6C"; c.lineWidth = 4; H.rr(c, 0, -LIDH, LIDW, LIDH, LIDH * 0.35); c.stroke();
+    c.fillStyle = "#3B4174"; for (let i = 1; i < 12; i++) c.fillRect(LIDW * i / 12 - 2, -LIDH * 0.75, 4, LIDH * 0.6);
+    c.fillStyle = "rgba(255,255,255,0.18)"; H.rr(c, 8, -LIDH + 4, LIDW - 16, 6, 3); c.fill();
+    c.fillStyle = CREAM; c.beginPath(); c.arc(LIDW / 2, -LIDH / 2, 27, 0, TAU); c.fill(); c.strokeStyle = "#4C5286"; c.lineWidth = 3; c.stroke();
+    L.ikon(c, "mik", LIDW / 2, -LIDH / 2, 30, P.violet);
+    c.restore();
+  }
+  // reaksi pelaku: condong ke toples saat tutup terbuka, lalu "mengangguk" (turun-naik) ketika klip mendarat
+  function leanAmt(t, e) {
+    let v = 0;
+    e.react.forEach(R => { const d = t - R;
+      if (d > -0.5 && d < 0) v = Math.max(v, 0.35 * eio(clamp((d + 0.5) / 0.4)));
+      else if (d >= 0) v = Math.max(v, d < 0.12 ? lerp(0.35, 1, d / 0.12) : Math.exp(-(d - 0.12) * 2.2)); });
+    return v;
+  }
 
   // ---------- benda kecil ----------
   function clipCard(c, x, y, w, h, prof, o = {}) {   // potongan pola suara (mini spektrogram berbingkai)
@@ -137,14 +190,21 @@
       const bub = (x, y, s, a) => { c.save(); c.globalAlpha *= a; c.translate(x, y); c.scale(s, s); c.fillStyle = "#FFFFFF"; c.shadowColor = "rgba(30,40,110,0.2)"; c.shadowBlur = 10; c.shadowOffsetY = 4;
         H.rr(c, -130, -36, 260, 72, 30); c.fill(); c.shadowColor = "transparent"; c.fillStyle = P.teal; c.beginPath(); c.arc(-94, 0, 24, 0, TAU); c.fill();
         c.fillStyle = "#FFFFFF"; c.beginPath(); c.moveTo(-102, -12); c.lineTo(-82, 0); c.lineTo(-102, 12); c.closePath(); c.fill(); wave(c, -58, 0, 170, 40, t, "#4B5BB8", 16, 1, 2); c.restore(); };
-      bub(170, 70, 1, 1);
-      // grup: tiga anggota menerima salinannya
-      const gx = [320, 400, 360], gy = [150, 150, 205];
-      for (let i = 0; i < 3; i++) { const u = clamp(gu * 3 - i * 0.8); if (u <= 0) continue;
-        const ox = lerp(170, gx[i], eout(u)), oy = lerp(70, gy[i] - 4, eout(u)); bub(ox - 4, oy - 4, lerp(1, 0.32, eout(u)), 0.95); }
-      for (let i = 0; i < 3; i++) { const a = clamp(gu * 4 - i * 0.6); if (a <= 0) continue; c.save(); c.globalAlpha *= a; c.fillStyle = ["#9584FF", "#FFB547", "#5BD68A"][i]; c.beginPath(); c.arc(gx[i] - 60, gy[i] + 6, 18, 0, TAU); c.fill(); c.restore(); }
-      if (gu > 0) { c.save(); c.globalAlpha *= clamp(gu * 3); c.strokeStyle = "#4B5BB8"; c.lineWidth = 6; c.lineCap = "round"; c.beginPath(); c.moveTo(150, 150); c.quadraticCurveTo(170, 120, 215, 125); c.stroke();
-        c.beginPath(); c.moveTo(203, 112); c.lineTo(218, 125); c.lineTo(202, 138); c.stroke(); c.restore(); }
+      bub(140, 110, 0.9, 1);
+      // grup: tiga anggota keluarga (kanan) masing-masing menerima salinan yang muncul perlahan dari alpha 0
+      const GY = [42, 110, 178], HX = 440, CX = 326, MEM = ["nenek", "kakek", "ayah"], MC = ["#9584FF", "#FFB547", "#5BD68A"];
+      for (let i = 0; i < 3; i++) {
+        const hp = clamp((gu - i * 0.12) / 0.22); if (hp <= 0) continue;
+        const u = clamp((gu - 0.15 - i * 0.22) / 0.4), got = u >= 1;
+        c.save(); c.globalAlpha *= hp; c.translate(HX, GY[i]); c.scale(lerp(0.6, 1, eout(hp)), lerp(0.6, 1, eout(hp)));
+        if (got) D.glow(c, 0, 0, 60, MC[i], 0.5 * Math.exp(-(gu - (0.55 + i * 0.22)) * 6));
+        c.fillStyle = MC[i]; c.beginPath(); c.arc(0, 0, 34, 0, TAU); c.fill();
+        c.save(); c.beginPath(); c.arc(0, 0, 34, 0, TAU); c.clip();
+        O.kepala(c, 0, 6, 25, Object.assign(O.preset(MEM[i]), { face: got ? "senang" : "netral", t, seed: 4 + i, bahu: 0.5 })); c.restore();
+        c.restore();
+        if (u <= 0) continue; const ue = eout(u);
+        bub(lerp(140, CX, ue), lerp(110, GY[i], ue), lerp(0.9, 0.55, ue), clamp(u * 2.5));
+      }
     },
   ];
   let speakingFlag = false, cardTxtA = 1;
@@ -161,7 +221,7 @@
     c.fillStyle = "rgba(10,14,50,0.32)"; H.rr(c, 6, 12, w, h, 28); c.fill();
     c.fillStyle = CREAM; H.rr(c, 0, 0, w, h, 28); c.fill();
     c.save(); H.rr(c, 20, 16, w - 40, 220, 18); c.clip(); c.translate(20, 16);
-    TH[i](c, w - 40, 220, t, i === 3 ? clamp((t - e.grup) / 1.1) : 0); c.restore();
+    TH[i](c, w - 40, 220, t, i === 3 ? clamp((t - e.grup) / 1.0) : 0); c.restore();
     // pita suara di dalam unggahan ini
     const sy = 244; L.spektrogram(c, 20, sy, w - 40, 62, { profil: cd.prof, dur: 3, fmax: 5500, scroll: t * 0.6, frame: true, aksen: cd.col, r: 10 });
     c.fillStyle = cd.col; c.beginPath(); c.arc(46, 350, 11, 0, TAU); c.fill();
@@ -181,17 +241,45 @@
 
   // ---------- catatan pelaku ----------
   const ROWS = [{ s: "Bu Rina, Ayah", ic: "orang" }, { s: "Panggilan: Kakak", ic: "mik" }, { s: "Les tiap Sabtu", ic: "jam" }];
-  const NOTE = { x: 1098, y: 100, w: 548, h: 330 };
-  const rowPos = r => [NOTE.x + 104, NOTE.y + 116 + r * 80];
-  function notebook(c, t, e, u) {
-    if (u <= 0.01) return; const sp = Math.min(1.06, spring(t - e.pel4 + 0.15, 10, 0.55)), k = lerp(0.5, 1, sp);
-    c.save(); c.globalAlpha *= clamp(u * 3); c.translate(NOTE.x + NOTE.w / 2, NOTE.y + NOTE.h / 2); c.scale(k, k); c.rotate(-0.015); c.translate(-NOTE.w / 2, -NOTE.h / 2);
-    c.fillStyle = "rgba(10,14,50,0.35)"; H.rr(c, 8, 14, NOTE.w, NOTE.h, 20); c.fill();
-    c.fillStyle = "#FFFBF2"; H.rr(c, 0, 0, NOTE.w, NOTE.h, 20); c.fill();
-    c.fillStyle = "#3B3F78"; H.rr(c, 0, 0, NOTE.w, 58, 20); c.fill(); c.fillRect(0, 34, NOTE.w, 24);
-    for (let i = 0; i < 8; i++) { const x = 44 + i * 66; c.fillStyle = "#1A1E4A"; c.beginPath(); c.arc(x, 58, 9, 0, TAU); c.fill(); c.strokeStyle = "#C8CCE8"; c.lineWidth = 5; c.beginPath(); c.arc(x, 48, 12, Math.PI * 0.15, Math.PI * 0.85, true); c.stroke(); }
-    c.strokeStyle = "rgba(90,110,190,0.22)"; c.lineWidth = 2; for (let r = 0; r < 3; r++) { const y = 116 + r * 80 + 30; c.beginPath(); c.moveTo(24, y); c.lineTo(NOTE.w - 24, y); c.stroke(); }
-    c.fillStyle = "rgba(255,90,95,0.35)"; c.fillRect(66, 64, 3, NOTE.h - 76);
+  // posisi catatan: keluar dari tangan pelaku pada "mengetahui", lalu pada "Detail inilah" bergeser ke kiri (skala 0.92)
+  function noteXf(t, e, hand) {
+    const sp = Math.min(1.06, spring(t - e.nb + 0.1, 10, 0.55)), mv = eout(clamp((t - e.nb + 0.1) / 0.5));
+    let x = lerp(hand[0], NC0[0], mv), y = lerp(hand[1], NC0[1], mv), s = lerp(0.18, 1, sp);
+    const m = eio(clamp((t - e.detail + 0.05) / 0.7));
+    x = lerp(x, NC1[0], m); y = lerp(y, NC1[1], m) - Math.sin(Math.PI * m) * 40; s = lerp(s, NS1, m);
+    return { x, y, s, rot: lerp(-0.02, 0.025, m) + (1 - clamp(sp)) * 0.3, a: clamp((t - e.nb + 0.1) / 0.18) };
+  }
+  const toW = (X, lx, ly) => { const cs = Math.cos(X.rot), sn = Math.sin(X.rot), px = (lx - NOTE.w / 2) * X.s, py = (ly - NOTE.h / 2) * X.s; return [X.x + px * cs - py * sn, X.y + px * sn + py * cs]; };
+  function scribble(c, x0, x1, y, col) {   // coretan tulisan tangan yang sedang ditulis
+    if (x1 <= x0 + 2) return; c.strokeStyle = col; c.lineWidth = 3.5; c.lineCap = "round"; c.lineJoin = "round"; c.beginPath();
+    for (let s = 0; s <= x1 - x0; s += 3) { const px = x0 + s + 7 * Math.cos(s * 0.33), py = y - 10 * Math.sin(s * 0.33) - 4 * Math.sin(s * 0.07); s ? c.lineTo(px, py) : c.moveTo(px, py); } c.stroke();
+  }
+  function pen(c, x, y, t) {
+    c.save(); c.translate(x, y + Math.sin(t * 21) * 3); c.rotate(1.2);   // pena hampir mendatar ke kanan: tidak menutupi baris di atasnya
+    c.fillStyle = "rgba(10,14,50,0.25)"; H.rr(c, -3, -104, 22, 84, 8); c.fill();
+    c.fillStyle = "#FFB547"; H.rr(c, -9, -108, 18, 82, 8); c.fill(); c.fillStyle = NAVY; H.rr(c, -9, -108, 18, 26, 8); c.fill();
+    c.fillStyle = "#FFE3B0"; c.beginPath(); c.moveTo(-9, -28); c.lineTo(9, -28); c.lineTo(0, 0); c.closePath(); c.fill();
+    c.fillStyle = NAVY; c.beginPath(); c.moveTo(-3, -9); c.lineTo(3, -9); c.lineTo(0, 0); c.closePath(); c.fill(); c.restore();
+  }
+  function notebook(c, t, e, X) {
+    if (X.a <= 0.01) return; const w = NOTE.w, h = NOTE.h;
+    c.save(); c.globalAlpha *= X.a; c.translate(X.x, X.y); c.rotate(X.rot); c.scale(X.s, X.s); c.translate(-w / 2, -h / 2);
+    c.fillStyle = "rgba(10,14,50,0.35)"; H.rr(c, 8, 14, w, h, 20); c.fill();
+    c.fillStyle = "#FFFBF2"; H.rr(c, 0, 0, w, h, 20); c.fill();
+    c.fillStyle = "#3B3F78"; H.rr(c, 0, 0, w, 58, 20); c.fill(); c.fillRect(0, 34, w, 24);
+    for (let i = 0; i < 8; i++) { const x = 44 + i * 70; c.fillStyle = "#1A1E4A"; c.beginPath(); c.arc(x, 58, 9, 0, TAU); c.fill(); c.strokeStyle = "#C8CCE8"; c.lineWidth = 5; c.beginPath(); c.arc(x, 48, 12, Math.PI * 0.15, Math.PI * 0.85, true); c.stroke(); }
+    c.strokeStyle = "rgba(90,110,190,0.22)"; c.lineWidth = 2; for (let r = 0; r < 3; r++) { const y = RY[r] + 34; c.beginPath(); c.moveTo(24, y); c.lineTo(w - 24, y); c.stroke(); }
+    c.fillStyle = "rgba(255,90,95,0.35)"; c.fillRect(92, 64, 3, h - 76);
+    // baris yang sudah tercatat
+    const lit = win(t, e.detail - 0.05, e.yakin + 1.4, 0.2, 0.4);
+    e.tags.forEach((tg, r) => { if (t < tg.land) return; const row = ROWS[r];
+      if (lit > 0.01) D.glow(c, 300, RY[r], 230, P.amber, 0.3 * lit * (0.5 + 0.5 * Math.sin(t * 6 + r)));
+      rowIcon(c, row.ic, 52, RY[r], ICOL[tg.src]); D.txt(c, row.s, 110, RY[r] + 17, 48, { color: NAVY, weight: 800, fit: w - 130 }); });
+    // pena mencoret baris berikutnya sampai label tiba
+    const pa = clamp((t - e.nb - 0.25) / 0.25) * (1 - clamp((t - e.tags[2].land - 0.1) / 0.3));
+    if (pa > 0.01) { const r = Math.min(2, e.tags.filter(x => t >= x.land).length), st = r ? e.tags[r - 1].land : e.nb + 0.3;
+      const p = clamp((t - st) / Math.max(0.3, e.tags[r].land - st)), x1 = 112 + p * 360;
+      c.save(); c.globalAlpha *= pa; if (t < e.tags[r].land) scribble(c, 112, x1, RY[r] + 14, "rgba(30,42,107,0.35)"); pen(c, Math.min(x1, 472) + 7, RY[r] + 14 - 10 * Math.sin((x1 - 112) * 0.33), t); c.restore(); }
     c.restore();
   }
   function rowIcon(c, ic, x, y, col) {
@@ -219,9 +307,21 @@
   }
   function stamp(c, s, x, y, k, a) {
     if (a <= 0.01) return; c.save(); c.globalAlpha *= a; c.translate(x, y); c.rotate(-0.13); c.scale(k, k); c.font = `900 56px ${K.FONT}`; const w = c.measureText(s).width + 70;
-    c.fillStyle = "rgba(255,111,145,0.16)"; H.rr(c, -w / 2, -48, w, 96, 18); c.fill();
-    c.strokeStyle = P.pink; c.lineWidth = 7; H.rr(c, -w / 2, -48, w, 96, 18); c.stroke(); c.lineWidth = 3; H.rr(c, -w / 2 + 9, -39, w - 18, 78, 12); c.stroke();
-    D.txt(c, s, 0, 20, 56, { align: "center", color: "#FFD9E3", weight: 900 }); c.restore();
+    c.fillStyle = "rgba(10,14,50,0.3)"; H.rr(c, -w / 2 + 5, -42, w, 96, 18); c.fill();
+    c.fillStyle = "#E8466E"; H.rr(c, -w / 2, -48, w, 96, 18); c.fill();
+    c.strokeStyle = "#FFD9E3"; c.lineWidth = 4; H.rr(c, -w / 2 + 9, -39, w - 18, 78, 12); c.stroke();
+    D.txt(c, s, 0, 20, 56, { align: "center", color: "#FFFFFF", weight: 900 }); c.restore();
+  }
+
+  // layar panggilan masuk: label tombol digambar ulang (44 px, di tengah bawah tombol 24%/76%) agar "Tolak" dan "Terima" tidak bertabrakan
+  function ringIn(s, w, h, tt) {
+    const u = w / 100, by = h * 0.8, br = u * 12.5, cut = by + br * 1.1;
+    s.save(); s.beginPath(); s.rect(0, 0, w, cut); s.clip();
+    const out = L.panggilanMasuk(s, w, h, { t: tt, nama: "Nomor tidak dikenal", nomor: "0812-0000-1234", teks: 1.12, ringkas: true, jam: false, tanya: false });
+    s.restore();
+    const g = s.createLinearGradient(0, 0, 0, h); g.addColorStop(0, "#5B6BE0"); g.addColorStop(1, "#8A5FD6"); s.fillStyle = g; s.fillRect(0, cut, w, h - cut);
+    [["Tolak", w * 0.24], ["Terima", w * 0.76]].forEach(([lab, x]) => D.txt(s, lab, x, by + br + u * 10.5 + 16, 44, { align: "center", color: "#FFFFFF", weight: 800, fit: w * 0.44 }));
+    return out;
   }
 
   // =====================================================================================
@@ -229,7 +329,6 @@
   // =====================================================================================
   function scene(ctx, b, l, t, TL) {
     const e = EV(TL), cp = D.path(e.cam, t), cm = mkCam(cp.x, cp.y, cp.z);
-    const inCall = t >= e.b3_3 - 0.01 && t < e.b3_4 + 1.6;
     // ---------- latar studio (ruang layar, paralaks dari kamera) ----------
     LT.studio(ctx, t, { warna: "ungu", px: clamp((cp.x - 960) / 260, -1, 1) });
     ctx.save(); cm.apply(ctx);
@@ -262,7 +361,7 @@
     // ---------- jalur "masuk ke rumah" yang dicoret (b3_1) ----------
     const pa = clamp((t - e.masuk + 0.35) / 0.9), pf = 1 - clamp((t - e.rekam - 0.9) / 0.6);
     if (pa > 0 && pf > 0) {
-      const p0 = [1590, 690], p1 = [1230, 230], p2 = [HOUSE[0] + 70, HOUSE[1] + 40], n = 40, red = clamp((t - e.rumahE + 0.05) / 0.25);
+      const p0 = [PEL.x - 120, 690], p1 = [1210, 230], p2 = [HOUSE[0] + 70, HOUSE[1] + 40], n = 40, red = clamp((t - e.rumahE + 0.05) / 0.25);
       ctx.save(); ctx.globalAlpha *= pf; ctx.lineCap = "round";
       for (let i = 0; i < n * pa; i++) { const [x, y] = qpt(p0, p1, p2, i / n); ctx.fillStyle = red > 0.5 ? P.red : "#FFF6E6"; ctx.beginPath(); ctx.arc(x, y, 7, 0, TAU); ctx.fill(); }
       const [hx, hy] = qpt(p0, p1, p2, Math.min(pa, 0.999)), [qx, qy] = qpt(p0, p1, p2, Math.max(0, pa - 0.03)), an = Math.atan2(hy - qy, hx - qx);
@@ -271,23 +370,29 @@
     }
 
     // ---------- toples berisi potongan suara ----------
+    const lift = eio(clamp((t - e.detail - 0.05) / 0.75));
     const landed = e.lands.map(x => t >= x), flash = e.lands.reduce((s, x) => s + (t >= x ? Math.exp(-(t - x) * 3.5) : 0), 0);
     const jarGlow = Math.max(flash, win(t, e.jelas - 0.1, e.b3_2e, 0.3, 0.4) * (0.75 + 0.25 * Math.sin(t * 6)), win(t, e.detail - 0.1, e.yakin + 1.5, 0.3, 0.5) * 0.8);
     if (jarGlow > 0) D.glow(ctx, JAR.x, JAR.y - 150, 260, P.violet, 0.6 * Math.min(1, jarGlow));
     ctx.save(); const jw = JAR.size * 0.74, jbH = JAR.size * 0.82; H.rr(ctx, JAR.x - jw / 2 + 10, JAR.y - jbH + 10, jw - 20, jbH - 20, 30); ctx.clip();
-    SLOTS.forEach(([dx, dy, rot], i) => { if (!landed[i]) return; const kk = Math.min(1.05, spring(t - e.lands[i], 12, 0.5));
+    SLOTS.forEach(([dx, dy, rot], i) => { if (!landed[i] || (lift > 0 && LIFTED.includes(i))) return; const kk = Math.min(1.05, spring(t - e.lands[i], 12, 0.5));
       clipCard(ctx, JAR.x + dx, JAR.y + dy, CLIP.w * kk, CLIP.h * kk, i === 4 ? IBU : CARDS[i].prof, { rot, scroll: 0.4 * i, telepon: i === 4 ? 1 : 0, fmax: i === 4 ? 4500 : 5500, glow: Math.min(1, jarGlow) }); });
     ctx.restore();
-    B.toples(ctx, JAR.x, JAR.y, JAR.size, { t, fill: 0, lidColor: "#4C5286", color: P.violet });
-    // stiker mikrofon pada toples
-    ctx.fillStyle = CREAM; ctx.beginPath(); ctx.arc(JAR.x, JAR.y - JAR.size - 26, 30, 0, TAU); ctx.fill(); L.ikon(ctx, "mik", JAR.x, JAR.y - JAR.size - 26, 32, P.violet);
+    B.toples(ctx, JAR.x, JAR.y, JAR.size, { t, fill: 0, lid: false, color: P.violet });
+    drawLid(ctx, lidAngle(t, e), clamp((t - e.detail + 0.05) / 0.5));
 
     // ---------- pelaku ----------
     const toEar = Math.max(clamp((t - e.telp) / 0.55) * (1 - clamp((t - e.detik - 0.2) / 0.6)), clamp((t - e.cerita + 0.3) / 0.5));
     const recOn = t > e.rekam - 0.1;
     const pscreen = (c, w, h, tt) => { c.fillStyle = "#151A3E"; c.fillRect(0, 0, w, h); if (!recOn) return; const pu = 0.55 + 0.45 * Math.sin(tt * 6);
       c.fillStyle = D.hexA(P.red, pu); c.beginPath(); c.arc(w * 0.5, h * 0.3, w * 0.16, 0, TAU); c.fill(); wave(c, w * 0.12, h * 0.62, w * 0.8, h * 0.18, tt, P.pink, 7, 1, 3); };
-    const pel = O.draw(ctx, PEL.x, PEL.y, PEL.h, Object.assign(O.preset("pelaku"), { pose: "pegangHP", blend: { to: "telepon", k: eio(toEar) }, flip: true, t, layar: pscreen, glow: true }));
+    // condong ke kiri (ke toples) berporos di kaki, lalu turun sedikit seperti mengangguk
+    const lv = leanAmt(t, e), lAng = -0.075 * lv, lBob = 9 * lv;
+    const tr = p => { if (!p) return p; const dx = p[0] - PEL.x, dy = p[1] - PEL.y, cs = Math.cos(lAng), sn = Math.sin(lAng); return [PEL.x + dx * cs - dy * sn, PEL.y + dx * sn + dy * cs + lBob]; };
+    ctx.save(); ctx.translate(PEL.x, PEL.y + lBob); ctx.rotate(lAng); ctx.translate(-PEL.x, -PEL.y);
+    const pel0 = O.draw(ctx, PEL.x, PEL.y, PEL.h, Object.assign(O.preset("pelaku"), { pose: "pegangHP", blend: { to: "telepon", k: eio(toEar) }, flip: true, t, layar: pscreen, glow: true }));
+    ctx.restore();
+    const pel = { head: tr(pel0.head), top: tr(pel0.top), hand: tr(pel0.hand), phone: tr(pel0.phone) };
     const pPhone = pel.phone || pel.hand;
 
     // ---------- Bu Rina (b3_3–b3_4) ----------
@@ -310,9 +415,10 @@
         else if (t >= e.rumah - 0.1) bo = { pose: "tunjuk", t, target: at2(HOUSE[0], HOUSE[1]), mood: "think" };
         else bo = { pose: "diam", t, mood: "happy", look: [0.9, -0.2] };
       } else if (t < e.b3_3) {
-        const act = e.card.findIndex((c, i) => t >= c.a - 0.05 && t < (i < 3 ? e.card[i + 1].a - 0.05 : e.semua - 0.1));
-        if (act >= 0) bo = { pose: "tunjuk", t, target: ip(act), mood: "happy" };
-        else if (t >= e.semua - 0.1) bo = { pose: "diam", t, mood: "wow", look: [1, 0.1], wave: t };
+        const act = e.card.findIndex(c => t >= c.a - 0.05 && t < c.r + 0.15);
+        if (t >= e.semua - 0.1) bo = { pose: "diam", t, mood: "wow", look: [1, 0.1], wave: t };
+        else if (act >= 0) bo = { pose: "tunjuk", t, target: [STAGE[act % 2][0] - 120, STAGE[act % 2][1] - 40], mood: "happy" };
+        else bo = { pose: "diam", t, mood: "happy", look: [1, 0.2] };
       } else if (t < e.b3_3a) {
         if (t >= e.angkat - 0.2) bo = { pose: "tunjuk", t, target: [720, 700], mood: "think" };
         else if (t >= e.telp + 0.45) bo = { pose: "kaget", t, k: t - e.telp - 0.45, mood: "wow" };
@@ -320,12 +426,14 @@
       } else if (t < e.b3_3b) bo = { pose: "diam", t, mood: "think", look: [1, -0.5] };
       else if (t < e.b3_4) {
         if (t >= e.cukup - 0.05) bo = { pose: "kaget", t, k: t - e.cukup + 0.05, mood: "wow" };
-        else bo = { pose: "tunjuk", t, target: [1300, 420], mood: "think" };
+        else bo = { pose: "tunjuk", t, target: R1c, mood: "think" };
       } else {
         const tg = e.tags.slice().reverse().find(x => t >= x.t - 0.1);
         if (t >= e.yakin - 0.05) bo = { pose: "kaget", t, k: t - e.yakin + 0.05, mood: "wow", sweat: true };
-        else if (t >= e.cerita - 0.2) bo = { pose: "tunjuk", t, target: [760, 220], mood: "think" };
-        else if (tg) bo = { pose: "tunjuk", t, target: ip(tg.src), mood: "think" };
+        else if (t >= e.cerita - 0.2) bo = { pose: "tunjuk", t, target: [BUB.x - 200, BUB.y + 40], mood: "think" };
+        else if (t >= e.detail - 0.1) bo = { pose: "tunjuk", t, target: [JAR.x, 470], mood: "think" };
+        else if (tg && t < tg.land + 0.4) bo = { pose: "tunjuk", t, target: ip(tg.src), mood: "think" };
+        else if (t >= e.nb) bo = { pose: "diam", t, mood: "think", look: [1, -0.6] };
         else bo = { pose: "diam", t, mood: "happy", look: [0.9, -0.3] };
       }
       B.draw(ctx, BIP.x, BIP.y, BIP.s, bo);
@@ -363,14 +471,14 @@
       }
       for (let i = 0; i < 5; i++) {
         const f = i < 4 ? e.card[i] : e.clip4; if (t < f.lv || t >= e.lands[i]) continue;
-        const u = eio(clamp((t - f.lv) / (e.lands[i] - f.lv))), [dx, dy, rot] = SLOTS[i];
+        const u = clamp((t - f.lv) / (e.lands[i] - f.lv)), [dx, dy, rot] = SLOTS[i];
         const s0 = i < 4 ? [STAGE[i % 2][0], STAGE[i % 2][1] + 84] : [R1c[0], R1c[1]], w0 = i < 4 ? CARD.w - 40 : 360, h0 = i < 4 ? 62 : 140;
-        const x = lerp(s0[0], JAR.x + dx, u), y = lerp(s0[1], JAR.y + dy, u) - Math.sin(Math.PI * u) * 170;
-        clipCard(c, x, y, lerp(w0, CLIP.w, u), lerp(h0, CLIP.h, u), i === 4 ? IBU : CARDS[i].prof, { rot: rot * u, scroll: 0.4 * i, telepon: i === 4 ? 1 : 0, fmax: i === 4 ? 4500 : 5500, glow: 1 - u * 0.5 });
+        const fp = flyPos(s0, [JAR.x + dx, JAR.y + dy], u);
+        clipCard(c, fp.x, fp.y, lerp(w0, CLIP.w, fp.s), lerp(h0, CLIP.h, fp.s), i === 4 ? IBU : CARDS[i].prof, { rot: rot * eio(clamp((u - 0.72) / 0.28)), scroll: 0.4 * i, telepon: i === 4 ? 1 : 0, fmax: i === 4 ? 4500 : 5500, glow: 1 - u * 0.5 });
       }
       // label: suara yang jelas
       const ja = win(t, e.jelas, e.b3_2e - 0.1, 0.2, 0.4);
-      if (ja > 0) { c.save(); c.globalAlpha *= ja; PT.tag(c, "suara yang jelas", JAR.x - 20, JAR.y - 400, { size: 48, color: P.teal, scale: lerp(0.88, 1, Math.min(1, pop(t, e.jelas))) }); c.restore(); }
+      if (ja > 0) { c.save(); c.globalAlpha *= ja; PT.tag(c, "suara yang jelas", JAR.x - 10, JAR.y - 462, { size: 48, color: P.teal, scale: lerp(0.88, 1, Math.min(1, pop(t, e.jelas))) }); c.restore(); }
 
       // ---------- panggilan (b3_3) ----------
       if (callA > 0.01 && rina) {
@@ -380,10 +488,10 @@
         c.save(); c.globalAlpha *= callA * 0.35; c.fillStyle = "#DDE6FF"; c.beginPath(); c.moveTo(rp[0], rp[1]); c.lineTo(cx - 190 * k, cy - 360 * k); c.lineTo(cx - 190 * k, cy + 360 * k); c.closePath(); c.fill(); c.restore();
         c.save(); c.globalAlpha *= callA; c.translate(cx, cy); c.scale(k, k);
         const picked = t >= e.angkat + 0.15, press = clamp((t - e.angkat + 0.45) / 0.4);
-        const dur = Math.max(0, Math.floor(t - e.angkat)), durS = "00:0" + Math.min(9, dur);
+        const dur = Math.max(0, Math.floor(t - e.h[0])), durS = "00:0" + Math.min(9, dur);   // waktu bicara mulai pada "Halo?" pertama → 00:03 saat dipotong
         const a = L.hp(c, 0, 0, CALL.h, { t, teks: 1.12, ringkas: true, ring: picked ? 0 : 0.6 * clamp((t - e.telp - 0.45) / 0.3), glow: 0.5,
           screen: (s, w, h, tt) => picked ? L.panggilan(s, w, h, { t: tt, nama: "Nomor tidak dikenal", durasi: durS, suara: speaking(TL, t) && t >= e.b3_3a ? 1 : 0.05, teks: 1.12, ringkas: true, jam: false, tanya: false })
-            : L.panggilanMasuk(s, w, h, { t: tt, nama: "Nomor tidak dikenal", nomor: "0812-0000-1234", teks: 1.12, ringkas: true, jam: false, tanya: false }) });
+            : ringIn(s, w, h, tt) });
         if (!picked && a.out && a.out.terima && t > e.angkat - 0.8) { const p = a.map(a.out.terima.cx, a.out.terima.cy); L.jari(c, p.x + 16, p.y - 4, 110, { rot: -1.1, tekan: press, t, kulit: O.SKIN[3], lengan: "#F2A65A" }); }
         c.restore();
       }
@@ -399,7 +507,6 @@
         for (let i = 0; i < 3; i++) { const end = i === 0 ? e.h[2] - 0.3 : e.b3_3b + 0.5, a = win(t, e.h[i] - 0.05, end, 0.15, 0.2) * (i === 1 ? 1 - 0.3 * clamp((t - e.h[2]) / 0.3) : 1);
           if (a > 0) speech(c, says[i], pos[i][0], pos[i][1], lerp(0.8, 1, pop(t, e.h[i] - 0.05, 13, 0.5)), a, i !== 1 ? [-30, -60, 70] : null); } }
       // rekaman di HP pelaku: pita telepon (300–3400 Hz) tumbuh selama Bu Rina bicara, lalu jadi klip
-      const R0 = { x: 1130, y: 205, w: 600, h: 150 }, R1 = { x: 1250, y: 215, w: 360, h: 140 };
       const ra = win(t, e.angkat + 0.1, e.clip4.lv + 0.02, 0.3, 0.01);
       if (ra > 0) {
         const sh = eio(clamp((t - e.detik + 0.1) / 0.5)), R = { x: lerp(R0.x, R1.x, sh), y: lerp(R0.y, R1.y, sh), w: lerp(R0.w, R1.w, sh), h: lerp(R0.h, R1.h, sh) };
@@ -417,41 +524,46 @@
           const ck = pop(t, e.cukup - 0.05, 12, 0.45); if (ck > 0) { c.save(); c.translate(R.x + R.w, R.y); c.scale(ck, ck); D.glow(c, 0, 0, 70, P.green, 0.6); c.fillStyle = P.green; c.beginPath(); c.arc(0, 0, 34, 0, TAU); c.fill(); L.ikon(c, "cek", 0, 0, 36, "#FFFFFF"); c.restore(); } }
       }
       const ca = win(t, e.contoh - 0.05, e.b3_4 + 1.2, 0.2, 0.4);
-      if (ca > 0) { c.save(); c.globalAlpha *= ca; PT.tag(c, "contoh suara", JAR.x, JAR.y - 400, { size: 48, color: P.violet, scale: lerp(0.88, 1, Math.min(1, pop(t, e.contoh - 0.05))) }); c.restore(); }
+      if (ca > 0) { c.save(); c.globalAlpha *= ca; PT.tag(c, "contoh suara", JAR.x, PILLY, { size: 48, color: P.violet, scale: lerp(0.88, 1, Math.min(1, pop(t, e.contoh - 0.05))) }); c.restore(); }
 
       // ---------- catatan pelaku (b3_4) ----------
-      const na = clamp((t - e.pel4 + 0.15) / 0.3);
-      notebook(c, t, e, na);
+      const NX = noteXf(t, e, pel.hand);
+      notebook(c, t, e, NX);
       e.tags.forEach((tg, r) => {
-        if (t < tg.t - 0.05) return; const [sx, sy] = ip(tg.src), [rx, ry] = rowPos(r), u = eio(clamp((t - tg.t - 0.55) / 0.75)), kp = pop(t, tg.t - 0.05, 12, 0.5);
-        const row = ROWS[r];
-        if (u < 1) { const x = lerp(sx, rx + 150, u), y = lerp(sy - 90, ry, u) - Math.sin(Math.PI * u) * (r === 0 ? 120 : -70); c.save(); c.globalAlpha *= clamp(kp * 2); PT.tag(c, row.s, x, y, { size: 44, color: ICOL[tg.src], scale: lerp(0.92, 1, Math.min(1, kp)) }); c.restore(); }
-        else { const lit = 1 + 0.6 * win(t, e.detail - 0.05, e.yakin + 1.4, 0.2, 0.4) * (0.5 + 0.5 * Math.sin(t * 6 + r));
-          if (lit > 1.01) D.glow(c, rx + 150, ry, 230, P.amber, 0.35 * (lit - 1));
-          rowIcon(c, row.ic, rx - 50, ry, ICOL[tg.src]); D.txt(c, row.s, rx, ry + 16, 44, { color: NAVY, weight: 800 }); }
+        if (t < tg.t - 0.05 || t >= tg.land) return; const [sx, sy] = ip(tg.src), [rx, ry] = toW(NX, 300, RY[r]), u = eio(clamp((t - tg.fly) / (tg.land - tg.fly))), kp = pop(t, tg.t - 0.05, 12, 0.5);
+        const [x, y] = qpt([sx, sy - 90], [rx - 120, ry + 150], [rx, ry], u);   // datang dari bawah: tidak melintasi baris yang sudah tertulis
+        c.save(); c.globalAlpha *= clamp(kp * 2); PT.tag(c, ROWS[r].s, x, y, { size: 44, color: ICOL[tg.src], scale: lerp(0.92, 1, Math.min(1, kp)) }); c.restore();
       });
-      // "Detail inilah": isi catatan dan toples dirangkai menuju HP pelaku
-      const da = win(t, e.detail - 0.1, e.yakin + 2, 0.4, 0.5);
+      // "Detail inilah": dua klip suara anak diangkat keluar dari toples; klip dan catatan dirangkai ke HP pelaku
+      if (lift > 0) LIFTED.forEach((si, j) => {
+        const [dx, dy, rot] = SLOTS[si], p0 = [JAR.x + dx, JAR.y + dy], p2 = LIFT[j], [x, y] = qpt(p0, [JAR.x + 10, JAR.y - JAR.size - 130], p2, lift), s = lerp(1, 1.4, lift);
+        clipCard(c, x, y + Math.sin(t * 2.2 + j * 2) * 5 * lift, CLIP.w * s, CLIP.h * s, ANAK, { rot: rot * (1 - lift), scroll: 0.4 * si, glow: 0.65 + 0.35 * Math.sin(t * 5 + j * 1.7), col: P.teal });
+      });
+      const da = win(t, e.detail + 0.3, e.yakin + 2, 0.4, 0.5);
       if (da > 0) {
-        const srcs = [[JAR.x, JAR.y - JAR.size + 10, P.violet]].concat([0, 1, 2].map(r => { return [NOTE.x + 170 + r * 150, NOTE.y + NOTE.h - 4, ICOL[e.tags[r].src]]; }));
-        srcs.forEach(([x, y, col], j) => { const gp = clamp((t - e.detail - j * 0.12) / 0.5); if (gp <= 0) return; const ex = lerp(x, pPhone[0], eout(gp)), ey = lerp(y, pPhone[1], eout(gp));
+        const nr = toW(NX, NOTE.w - 30, NOTE.h - 8);
+        const srcs = [[LIFT[0][0] + 50, LIFT[0][1] + 30, P.teal, [LIFT[0][0] + 220, LIFT[0][1] + 110]], [LIFT[1][0] + 90, LIFT[1][1], P.teal, [LIFT[1][0] + 200, LIFT[1][1] + 40]], [nr[0], nr[1], P.amber, [1080, 760]]];
+        srcs.forEach(([x, y, col, cc], j) => { const gp = clamp((t - e.detail - 0.3 - j * 0.15) / 0.5); if (gp <= 0) return; const ex = lerp(x, pPhone[0], eout(gp)), ey = lerp(y, pPhone[1], eout(gp));
           c.save(); c.globalAlpha *= da; c.strokeStyle = col; c.lineWidth = 6; c.setLineDash([3, 13]); c.lineDashOffset = -t * 45; c.lineCap = "round";
-          c.beginPath(); c.moveTo(x, y); c.quadraticCurveTo((x + ex) / 2 + 60, Math.max(y, ey) + 40, ex, ey); c.stroke(); c.setLineDash([]);
-          const u = ((t - e.detail) * 0.9 + j * 0.25) % 1, px = lerp(x, ex, u), py = lerp(y, ey, u) + Math.sin(Math.PI * u) * 30; D.glow(c, px, py, 26, col, gp); c.restore(); });
+          c.beginPath(); c.moveTo(x, y); c.quadraticCurveTo(cc[0], cc[1], ex, ey); c.stroke(); c.setLineDash([]);
+          const u = ((t - e.detail) * 0.9 + j * 0.3) % 1, [px, py] = qpt([x, y], cc, [ex, ey], u); D.glow(c, px, py, 28, col, gp); c.restore(); });
         D.glow(c, pPhone[0], pPhone[1], 120, P.teal, 0.6 * da * (0.7 + 0.3 * Math.sin(t * 6)));
       }
-      // ---------- cerita palsu yang meyakinkan ----------
+      // ---------- cerita palsu yang meyakinkan: gelembung di kanan atas, ekor ke HP pelaku, pola suara anak (pita telepon) ----------
       const fa = clamp((t - e.cerita + 0.15) / 0.4);
       if (fa > 0) {
-        const BX = 700, BY = 205, k = lerp(0.4, 1, pop(t, e.cerita - 0.15, 9, 0.55)), sure = clamp((t - e.yakin + 0.1) / 0.35);
-        // dari HP pelaku ke gelembung
-        c.save(); c.globalAlpha *= fa * 0.9; c.strokeStyle = P.teal; c.lineWidth = 6; c.setLineDash([3, 14]); c.lineDashOffset = -t * 40; c.lineCap = "round";
-        c.beginPath(); c.moveTo(pPhone[0] - 10, pPhone[1] - 10); c.quadraticCurveTo(1250, 560, BX + 300, BY + 40); c.stroke(); c.restore();
-        if (sure > 0) D.glow(c, BX, BY, 520, P.teal, 0.35 * sure);
-        speech(c, "“Bu, ini aku, Kakak…”", BX, BY, k, fa * lerp(0.7, 1, sure), [260, 330, 120], { size: 52, fill: sure > 0.5 ? CREAM : "#DCE3F7", stroke: sure > 0.5 ? P.teal : "#8C93C4", dash: sure > 0.5 ? null : [14, 12], color: NAVY });
-        // gelombang suara tiruan (warna anak) di bawah gelembung
-        c.save(); c.globalAlpha *= fa; c.fillStyle = "rgba(10,14,50,0.5)"; H.rr(c, BX - 170, BY + 62, 340, 56, 28); c.fill(); wave(c, BX - 150, BY + 90, 300, 36, t, sure > 0.5 ? P.teal : "#8C93C4", 22, lerp(0.5, 1, sure), 4); c.restore();
-        stamp(c, "Meyakinkan", BX + 20, BY + 225, lerp(1.6, 1, eout(clamp((t - e.yakin + 0.05) / 0.22))), clamp((t - e.yakin + 0.05) / 0.12));
+        const k = lerp(0.4, 1, pop(t, e.cerita - 0.15, 9, 0.55)), sure = clamp((t - e.yakin + 0.1) / 0.35), w = BUB.w, h = BUB.h;
+        c.save(); c.globalAlpha *= fa; c.translate(BUB.x, BUB.y); c.scale(k, k);
+        if (sure > 0) D.glow(c, 0, 0, 560, P.teal, 0.4 * sure * (0.85 + 0.15 * Math.sin(t * 6)));
+        const tp = [(pPhone[0] - 14 - BUB.x) / k, (pPhone[1] - 26 - BUB.y) / k], tx0 = w * 0.17, tx1 = w * 0.31;
+        const shape = () => { H.rr(c, -w / 2, -h / 2, w, h, 40); c.moveTo(tx0, h / 2 - 2); c.lineTo(tp[0], tp[1]); c.lineTo(tx1, h / 2 - 2); c.closePath(); };
+        c.save(); c.translate(5, 8); c.fillStyle = "rgba(10,14,50,0.3)"; c.beginPath(); shape(); c.fill(); c.restore();
+        c.fillStyle = sure > 0.5 ? CREAM : "#DCE3F7"; c.beginPath(); shape(); c.fill();
+        c.strokeStyle = sure > 0.5 ? P.teal : "#8C93C4"; c.lineWidth = 6; if (sure <= 0.5) c.setLineDash([14, 12]); c.beginPath(); H.rr(c, -w / 2, -h / 2, w, h, 40); c.stroke(); c.setLineDash([]);
+        D.txt(c, "“Bu, ini aku, Kakak…”", 0, -h / 2 + 76, 52, { align: "center", color: NAVY, weight: 800, fit: w - 60 });
+        L.spektrogram(c, -w / 2 + 34, -h / 2 + 106, w - 68, 84, { profil: ANAK, dur: 3, fmax: 4500, telepon: 1, scroll: t * 0.6, reveal: 0.05 + 0.95 * clamp((t - e.cerita) / (e.yakin - e.cerita)), frame: true, aksen: sure > 0.5 ? P.teal : "#8C93C4", r: 14, alpha: lerp(0.55, 1, sure) });
+        c.restore();
+        stamp(c, "Meyakinkan", BUB.x - 180, BUB.y + 150, lerp(1.6, 1, eout(clamp((t - e.yakin + 0.05) / 0.22))), clamp((t - e.yakin + 0.05) / 0.12));
       }
     });
   }
@@ -468,13 +580,13 @@
       r(e.rumahE, "clack", 0.7),
       r(e.banyak, "shimmer", 0.55),
       ...e.card.map((cd, i) => r(cd.a + 0.05, "pop", 0.55 + (i === 0 ? 0.1 : 0))),
-      r(e.card[0].land, "clack", 0.45),
       r(e.semua, "shimmer", 0.6),
       r(e.callIn - 0.25, "whoosh", 0.55),
       r(e.angkat - 0.05, "clack", 0.6),
       r(e.cukup, "pop", 0.6),
       r(e.clip4.lv - 0.3, "whoosh", 0.5),
       r(e.clip4.land, "clack", 0.6),
+      r(e.nb - 0.55, "whoosh", 0.4),
       ...e.tags.map(tg => r(tg.t, "pop", 0.5)),
       r(e.detail, "shimmer", 0.5),
       r(e.yakin, "boom", 0.8),
