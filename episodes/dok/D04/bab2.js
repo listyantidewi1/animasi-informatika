@@ -293,10 +293,16 @@
     }
     ctx.restore();
     // label layar
-    const s0 = SLOT(0), [jx, jy] = cm.S(s0.x + s0.w / 2, 395);
+    // Bip kecil di tepi kanan bawah saat kamera mendekat: menunjuk kotak judul
+    const sb = clamp((cm.z - 1.6) / 0.6);
+    if (sb > 0) { const [bx, by] = cm.S(930, 317), x = lerp(2080, 1795, eout(sb));
+      B.draw(ctx, x, 892, 176, l > T.satu - 0.2 ? { t, pose: "tunjuk", target: [bx + 110, by + 20], mood: l > T.alg ? "wow" : "happy" } : { t, pose: "diam", mood: "wow", look: [-1, -0.6] }); }
+    // label "Jilid 1" di kanan kalender (tidak menimpa kalender), panah ke jilid 1
+    const s0 = SLOT(0), [jx, jy] = cm.S(1185, 400);
     const ja = (1 - clamp((l - FLY0 + 0.3) / 0.3));
-    if (ja > 0) tag(real > 0.5 ? "Jilid 1 terbit" : "Jilid 1", jx, jy, l - T.jil - 0.2, { a: ja, col: "#FF8FB1", size: 48, to: cm.S(s0.x + s0.w / 2, 306) });
-    if (pa > 0) { const [px, py] = cm.S(930, 384); tag("satu kata", px, py, l - T.satu, { a: 1 - clamp((l - T.alg) / 0.3), col: P.amber, size: 50, to: cm.S(930, 346) }); }
+    if (ja > 0) tag(real > 0.5 ? "Jilid 1 terbit" : "Jilid 1", jx, jy, l - T.jil - 0.2, { a: ja, col: "#FF8FB1", size: 48, to: cm.S(s0.x + s0.w / 2 + 6, 306) });
+    // "satu kata" di atas kotak judul (tidak menutup baris halaman)
+    if (pa > 0) { const [px, py] = cm.S(930, 258); tag("satu kata", px, py, l - T.satu, { a: 1 - clamp((l - T.alg) / 0.3), col: P.amber, size: 50, to: cm.S(930, 290) }); }
   }
 
   // =====================================================================================
@@ -305,24 +311,26 @@
   const CARD = { x: 220, y: 150, w: 700, h: 690 };
   const LINES = ["Panaskan minyak", "Tumis bawang", "Masukkan nasi", null, "Aduk, lalu sajikan"];
   const BADGE = ["#FF6F91", "#FFB547", "#5BD68A", "#5AA9FF", "#9584FF"];
-  const MEAS = [{ x: 1270, nm: ["sejumput"], s: 0.6 }, { x: 1490, nm: ["1 sendok", "teh"], s: 0.85 }, { x: 1710, nm: ["1 sendok", "makan"], s: 1.15 }];
-  const BIPK = { x: 1042, y: 720, s: 240 };
+  // tiga takaran: x = tengah kolom (label di bawah), ox = titik asal gambar, qx = tengah mangkuk (tanda tanya di atasnya)
+  const MS = 1.5, SPOON = [0, 0.75, 1.3];
+  const MEAS = [{ x: 1218, ox: 1218, qx: 1218, nm: ["sejumput"] }, { x: 1460, ox: 1457, qx: 1428, nm: ["1 sendok", "teh"] }, { x: 1702, ox: 1697, qx: 1646, nm: ["1 sendok", "makan"] }];
+  const BIPK = { x: 985, y: 720, s: 225 };
   function salt(ctx, x, y, w, hgt, seed) {
     ctx.fillStyle = "#FFFFFF"; ctx.beginPath(); ctx.moveTo(x - w / 2, y); ctx.quadraticCurveTo(x, y - hgt * 2, x + w / 2, y); ctx.closePath(); ctx.fill();
     ctx.fillStyle = "rgba(160,180,220,0.6)"; const r = D.rng(seed); for (let i = 0; i < 8; i++) { const u = r() - 0.5; ctx.fillRect(x + u * w * 0.8, y - r() * hgt * 0.9, 3, 3); }
   }
   function measure(ctx, i, x, y, a, glowA) {
     if (a <= 0) return; ctx.save(); ctx.globalAlpha *= a;
-    if (glowA > 0) D.glow(ctx, x, y - 40, 150, P.green, 0.6 * glowA);
-    ctx.fillStyle = "rgba(20,30,80,0.25)"; ctx.beginPath(); ctx.ellipse(x, y + 2, 70, 12, 0, 0, TAU); ctx.fill();
+    if (glowA > 0) D.glow(ctx, x - 20, y - 30, 110, P.green, 0.7 * glowA);
+    ctx.fillStyle = "rgba(20,30,80,0.25)"; ctx.beginPath(); ctx.ellipse(x - (i ? 14 * SPOON[i] : 0), y + 2, i ? 50 * SPOON[i] : 66, 10, 0, 0, TAU); ctx.fill();
     if (i === 0) {   // piring kecil berisi sejumput garam
       ctx.fillStyle = "#E8EEFF"; ctx.beginPath(); ctx.ellipse(x, y - 8, 62, 16, 0, 0, TAU); ctx.fill(); ctx.fillStyle = "#C9D3F2"; ctx.beginPath(); ctx.ellipse(x, y - 10, 44, 10, 0, 0, TAU); ctx.fill();
       salt(ctx, x, y - 12, 34, 8, 3);
     } else {         // sendok (teh: kecil, makan: besar)
-      const s = i === 1 ? 0.8 : 1.15;
+      const s = SPOON[i];
       ctx.save(); ctx.translate(x, y - 14); ctx.scale(s, s);
-      ctx.strokeStyle = "#AEB8DC"; ctx.lineWidth = 12; ctx.lineCap = "round"; ctx.beginPath(); ctx.moveTo(10, -4); ctx.lineTo(90, -26); ctx.stroke();
-      ctx.strokeStyle = "#DDE3F7"; ctx.lineWidth = 4; ctx.beginPath(); ctx.moveTo(14, -8); ctx.lineTo(86, -28); ctx.stroke();
+      ctx.strokeStyle = "#AEB8DC"; ctx.lineWidth = 12; ctx.lineCap = "round"; ctx.beginPath(); ctx.moveTo(10, -4); ctx.lineTo(72, -58); ctx.stroke();
+      ctx.strokeStyle = "#DDE3F7"; ctx.lineWidth = 4; ctx.beginPath(); ctx.moveTo(14, -10); ctx.lineTo(68, -58); ctx.stroke();
       ctx.fillStyle = "#C3CCEB"; ctx.beginPath(); ctx.ellipse(-26, 0, 44, 22, 0, 0, TAU); ctx.fill(); ctx.fillStyle = "#E6EBFA"; ctx.beginPath(); ctx.ellipse(-26, -3, 36, 15, 0, 0, TAU); ctx.fill();
       salt(ctx, -26, -6, 58, 14, 7 + i); ctx.restore();
     }
@@ -340,6 +348,18 @@
     }
     ctx.fillStyle = P.amber; ctx.beginPath(); ctx.arc(x, y - s, 7, 0, TAU); ctx.fill(); ctx.restore();
   }
+  // ikon kecil untuk baris daftar: bola lampu (kita mengerti) dan monitor generik (komputer)
+  function iconBulb(c, x, y, r) {
+    c.save(); c.fillStyle = "#FFE08A"; c.beginPath(); c.arc(x, y - r * 0.18, r * 0.5, 0, TAU); c.fill();
+    c.fillStyle = "#C9D3F2"; H.rr(c, x - r * 0.24, y + r * 0.26, r * 0.48, r * 0.32, r * 0.08); c.fill();
+    c.strokeStyle = "#B8860B"; c.lineWidth = 3; c.beginPath(); c.moveTo(x - r * 0.12, y + r * 0.1); c.lineTo(x, y - r * 0.12); c.lineTo(x + r * 0.12, y + r * 0.1); c.stroke(); c.restore();
+  }
+  function iconMonitor(c, x, y, r) {
+    c.save(); c.fillStyle = "#DDE3F7"; H.rr(c, x - r * 0.62, y - r * 0.5, r * 1.24, r * 0.82, r * 0.1); c.fill();
+    c.fillStyle = "#2B3A8C"; H.rr(c, x - r * 0.52, y - r * 0.41, r * 1.04, r * 0.62, r * 0.06); c.fill();
+    c.fillStyle = "#7FD6FF"; c.fillRect(x - r * 0.4, y - r * 0.28, r * 0.5, r * 0.07); c.fillRect(x - r * 0.4, y - r * 0.14, r * 0.7, r * 0.07);
+    c.fillStyle = "#DDE3F7"; c.fillRect(x - r * 0.08, y + r * 0.32, r * 0.16, r * 0.18); H.rr(c, x - r * 0.34, y + r * 0.48, r * 0.68, r * 0.1, r * 0.05); c.fill(); c.restore();
+  }
   function scene22(ctx, b, l, t) {
     const T = { res: at(b, "resep"), men: at(b, "menulis"), gar: at(b, "\"garam"), sec: at(b, "secukupnya"), secE: atE(b, "secukupnya\"."), kita: at(b, "Kita mengerti"),
       tet: at(b, "tetapi"), kom: at(b, "komputer tidak"), tid: at(b, "tidak."), knu: at(b, "Menurut Knuth"), alg: at(b, "algoritma harus"), dit: at(b, "ditulis"),
@@ -355,34 +375,33 @@
     if (lift < 1) { ctx.fillStyle = CREAM; ctx.beginPath(); Q.forEach(([x, y], i) => (i ? ctx.lineTo(x, y) : ctx.moveTo(x, y))); ctx.closePath(); ctx.fill();
       ctx.strokeStyle = "rgba(120,90,60,0.35)"; ctx.lineWidth = 2; ctx.stroke(); }
     const cardA = clamp((lift - 0.85) / 0.15);
-    // Bip
+    // Bip mengikuti kartu langkah satu per satu (± 0,5 detik per langkah)
     const meas0 = T.tet + 0.15, measOut = T.sam - 0.3;
+    const stepT = i => T.sam + 0.95 + i * 0.5;
+    let cur = -1; for (let i = 0; i < 5; i++) if (l >= stepT(i) - 0.2) cur = i;
+    const NY = i => 280 + i * 104;          // tengah kartu langkah ke-i (kartu tinggi 80, celah 24); i = 5: kartu "Selesai"
     let bo = { t, pose: "diam", mood: "happy", look: [-1, -0.2] };
     if (l > T.kita && l < T.tet) bo = { t, pose: "diam", mood: "happy", look: [-1, -0.3] };
     if (l >= T.tet && l < T.dit + 0.6) bo = { t, pose: "diam", mood: "think", look: [1, 0.1 + 0.2 * Math.sin(l * 2.2)], sweat: l > T.tid };
     if (l >= T.dit + 0.6 && l < T.sam) bo = { t, pose: "diam", mood: "happy", look: [1, 0.2] };
-    const stepT = i => T.sam + 0.75 + i * ((T.iku + 0.55 - T.sam - 0.75) / 4);
-    let cur = -1; for (let i = 0; i < 5; i++) if (l >= stepT(i) - 0.15) cur = i;
-    const NY = i => 300 + i * 100;
-    if (l >= T.sam && l < T.lan) bo = { t, pose: "tunjuk", target: [C.x + C.w + 6, cur >= 0 ? NY(cur) : NY(0)], mood: "happy" };
+    if (l >= T.sam && l < T.lan) bo = { t, pose: "tunjuk", target: [C.x + C.w + 4, cur >= 0 ? NY(cur) : NY(0)], mood: "happy" };
     if (l >= T.lan && l < T.akh + 0.3) bo = { t, pose: "diam", mood: "happy", look: [-1, 0] };
     if (l >= T.akh + 0.3) bo = { t, pose: "diam", mood: "happy", look: [-0.6, -0.2], wave: l };
     B.draw(ctx, BIPK.x, BIPK.y, BIPK.s, bo);
-    // tiga takaran di meja
+    // tiga takaran di meja (berjarak, ukuran sendok jelas berbeda)
     const chosen = clamp((l - T.dit - 0.5) / 0.4);
     MEAS.forEach((m, i) => { const u = l - meas0 - i * 0.3, a = clamp(u / 0.25) * (1 - clamp((l - measOut) / 0.4)) * (i === 1 ? 1 : 1 - 0.75 * chosen);
-      if (u <= 0 || a <= 0) return; const k = pop(u, 12, 0.5); ctx.save(); ctx.translate(m.x, 612); ctx.scale(k * 1.45, k * 1.45); measure(ctx, i, 0, 0, a, i === 1 ? chosen : 0); ctx.restore(); });
+      if (u <= 0 || a <= 0) return; const k = pop(u, 12, 0.5); ctx.save(); ctx.translate(m.ox, 612); ctx.scale(k * MS, k * MS); measure(ctx, i, 0, 0, a, i === 1 ? chosen : 0); ctx.restore(); });
 
     // ---- kartu resep / kartu langkah ----
     if (cardA > 0) {
       ctx.save(); ctx.globalAlpha *= cardA;
-      // latar kertas (memudar saat terpecah)
       const pA = 1 - split;
       if (pA > 0) { ctx.save(); ctx.globalAlpha *= pA; ctx.shadowColor = "rgba(10,14,50,0.35)"; ctx.shadowBlur = 30; ctx.shadowOffsetY = 14;
         ctx.fillStyle = CREAM; H.rr(ctx, C.x, C.y, C.w, C.h, 18); ctx.fill(); ctx.restore();
         ctx.save(); ctx.globalAlpha *= pA; ctx.fillStyle = "#E5484D"; ctx.beginPath(); ctx.arc(C.x + C.w / 2, C.y + 8, 14, 0, TAU); ctx.fill(); ctx.restore(); }
       // judul: berbalik dari "Resep" menjadi "Algoritma"
-      const ty = lerp(C.y + 92, 214, split), fl = clamp((l - T.alg + 0.05) / 0.5), sy = Math.abs(Math.cos(Math.PI * fl));
+      const ty = lerp(C.y + 92, 196, split), fl = clamp((l - T.alg + 0.05) / 0.5), sy = Math.abs(Math.cos(Math.PI * fl));
       const titleA = clamp((l - T.res) / 0.3);
       if (titleA > 0) { ctx.save(); ctx.globalAlpha *= titleA;
         if (split > 0) { ctx.save(); ctx.globalAlpha *= split; ctx.fillStyle = "rgba(10,18,52,0.82)"; H.rr(ctx, C.x, ty - 62, C.w, 86, 43); ctx.fill(); ctx.restore(); }
@@ -391,15 +410,16 @@
         H.text(ctx, nw ? "Algoritma Nasi Goreng" : typed("Resep Nasi Goreng", (l - T.res) / 0.9), 0, 18, 52, { align: "center", weight: 900, color: col, fit: C.w - 50 });
         ctx.restore(); }
       if (pA > 0) { ctx.save(); ctx.globalAlpha *= pA; ctx.fillStyle = "rgba(43,58,140,0.18)"; ctx.fillRect(C.x + 40, C.y + 120, C.w - 80, 3); ctx.restore(); }
-      // jalur penghubung antarkartu langkah
-      if (split > 0) { ctx.save(); ctx.globalAlpha *= split; ctx.strokeStyle = "rgba(255,255,255,0.55)"; ctx.lineWidth = 8; ctx.setLineDash([2, 16]); ctx.lineCap = "round";
-        ctx.beginPath(); ctx.moveTo(C.x + 70, NY(0)); ctx.lineTo(C.x + 70, l > T.pas ? NY(5) : NY(4)); ctx.stroke(); ctx.setLineDash([]); ctx.restore(); }
+      const cyOf = i => lerp(C.y + 190 + i * 104, NY(i), eio(clamp(split * 1.25 - i * 0.06)));
       for (let i = 0; i < 5; i++) {
-        const y0 = C.y + 190 + i * 104, y1 = NY(i), cy = lerp(y0, y1, eio(clamp(split * 1.25 - i * 0.06)));
+        const cy = cyOf(i);
         const appear = i === 3 ? clamp((l - T.gar + 0.4) / 0.3) : clamp((l - T.res - 0.35 - i * 0.14) / 0.3);
         if (appear <= 0) continue;
         ctx.save(); ctx.globalAlpha *= appear;
-        if (split > 0) { ctx.save(); ctx.globalAlpha *= split; ctx.shadowColor = "rgba(10,14,50,0.3)"; ctx.shadowBlur = 16; ctx.shadowOffsetY = 6; ctx.fillStyle = CREAM; H.rr(ctx, C.x, cy - 42, C.w, 84, 20); ctx.fill(); ctx.restore(); }
+        if (split > 0) { ctx.save(); ctx.globalAlpha *= split; ctx.shadowColor = "rgba(10,14,50,0.3)"; ctx.shadowBlur = 16; ctx.shadowOffsetY = 6; ctx.fillStyle = CREAM; H.rr(ctx, C.x, cy - 40, C.w, 80, 20); ctx.fill(); ctx.restore();
+          // cincin terang pada kartu yang sedang ditunjuk Bip
+          const ra = i === cur && l < T.lan ? clamp((l - stepT(i) + 0.2) / 0.15) * (1 - clamp((l - T.lan + 0.2) / 0.2)) : 0;
+          if (ra > 0) { ctx.save(); ctx.globalAlpha *= ra; ctx.strokeStyle = P.amber; ctx.lineWidth = 7; H.rr(ctx, C.x - 6, cy - 46, C.w + 12, 92, 24); ctx.stroke(); ctx.restore(); } }
         // nomor langkah (berdenyut saat "langkah yang jelas")
         const pu = l - (T.lan + 0.1 + i * 0.2), pk = pu > 0 && pu < 0.6 ? 1 + 0.22 * Math.sin(Math.PI * pu / 0.6) : 1;
         ctx.save(); ctx.translate(C.x + 70, cy); ctx.scale(pk, pk); ctx.fillStyle = BADGE[i]; ctx.beginPath(); ctx.arc(0, 0, 32, 0, TAU); ctx.fill();
@@ -423,42 +443,62 @@
         const cu = l - stepT(i); if (split > 0.9 && cu > 0) check(ctx, C.x + C.w - 50, cy, 26, P.green, cu);
         ctx.restore();
       }
-      // kartu bendera "Selesai"
+      // panah putus-putus antar-lencana nomor (urutan langkah) sampai kartu "Selesai"
+      if (split > 0.6) { const pa = clamp((split - 0.6) / 0.4), xa = C.x + 70;
+        for (let i = 0; i < 5; i++) { if (i === 4 && l < T.pas) continue;
+          const y0 = cyOf(i) + 36, y1 = (i < 4 ? cyOf(i + 1) : NY(5)) - (i < 4 ? 36 : 40), dn = clamp((y1 - y0 - 10) / 26);
+          if (y1 - y0 < 14) continue;
+          ctx.save(); ctx.globalAlpha *= pa * (i === 4 ? clamp((l - T.pas) / 0.3) : 1); ctx.strokeStyle = P.amber; ctx.fillStyle = P.amber; ctx.lineWidth = 6; ctx.lineCap = "round"; ctx.setLineDash([7, 7]);
+          ctx.beginPath(); ctx.moveTo(xa, y0); ctx.lineTo(xa, y1 - 10); ctx.stroke(); ctx.setLineDash([]);
+          ctx.beginPath(); ctx.moveTo(xa - 11 * dn, y1 - 12); ctx.lineTo(xa + 11 * dn, y1 - 12); ctx.lineTo(xa, y1); ctx.closePath(); ctx.fill(); ctx.restore(); } }
+      // kartu "Selesai" + bendera finis bertiang di sampingnya
       const fu = l - T.pas - 0.15;
-      if (fu > 0) { const k = pop(fu, 11, 0.45), cy = NY(5); ctx.save(); ctx.translate(C.x + C.w / 2, cy); ctx.scale(k, k); ctx.translate(-(C.x + C.w / 2), -cy);
-        ctx.save(); ctx.shadowColor = "rgba(10,14,50,0.3)"; ctx.shadowBlur = 16; ctx.shadowOffsetY = 6; ctx.fillStyle = "#2E9A63"; H.rr(ctx, C.x, cy - 42, C.w, 84, 20); ctx.fill(); ctx.restore();
-        flag(ctx, C.x + 60, cy + 30, 62, t);
-        H.text(ctx, "Selesai", C.x + 124, cy + 16, 46, { weight: 900, color: "#FFFFFF" }); ctx.restore(); }
+      if (fu > 0) { const k = pop(fu, 11, 0.45), cy = NY(5), SW = 440; ctx.save(); ctx.translate(C.x + SW / 2, cy); ctx.scale(k, k); ctx.translate(-(C.x + SW / 2), -cy);
+        ctx.save(); ctx.shadowColor = "rgba(10,14,50,0.3)"; ctx.shadowBlur = 16; ctx.shadowOffsetY = 6; ctx.fillStyle = "#2E9A63"; H.rr(ctx, C.x, cy - 40, SW, 80, 20); ctx.fill(); ctx.restore();
+        ctx.fillStyle = "#FFFFFF"; ctx.beginPath(); ctx.arc(C.x + 70, cy, 32, 0, TAU); ctx.fill(); check(ctx, C.x + 70, cy, 26, P.green, 1);
+        H.text(ctx, "Selesai", C.x + 124, cy + 16, 46, { weight: 900, color: "#FFFFFF" }); ctx.restore();
+        const fa = clamp((fu - 0.1) / 0.3), rise = eout(clamp((fu - 0.1) / 0.5));
+        if (fa > 0) { LP.glowE(ctx, C.x + SW + 80, cy + 92, 60, 9, "#0B1236", 0.4 * fa, "source-over"); flag(ctx, C.x + SW + 80, cy + 92, 140 * lerp(0.5, 1, rise), t, fa); } }
       ctx.restore();
     }
     // ---- label layar ----
     D.post(c => {
-      // "kita paham"
-      const ka = clamp((l - T.kita) / 0.3) * (1 - clamp((l - T.tet + 0.1) / 0.3));
-      if (ka > 0) B.daftarPeriksa(c, 1120, 250, 700, { t, text: "Kita mengerti", state: "check", u: ka, su: clamp((l - T.kita - 0.4) / 0.3) });
-      // tanda tanya di atas takaran + pertanyaan
+      // panel kanan atas: "Kita mengerti ✓" lalu "Komputer tidak ✗" (bertahan berdampingan sampai ± 9,6 detik)
+      const RX = 1130, RW = 680, HY = 100;
+      const knA = clamp((l - T.knu) / 0.3), rowOut = clamp((l - T.alg + 0.1) / 0.35);
+      const r1 = clamp((l - T.tep) / 0.3), r2 = clamp((l - T.lan) / 0.3), r3 = clamp((l - T.pas) / 0.3);
+      // kartu latar gelap di belakang seluruh panel Knuth (tingginya mengikuti isi)
+      const hK = 106, h1 = 153;
+      const bot = Math.max(lerp(190, 430, 1 - rowOut), 190 + lerp(0, h1 + 10, eout(r1)) + lerp(0, hK + 10, eout(r2)) + lerp(0, hK + 10, eout(r3)));
+      if (knA > 0) { c.save(); c.globalAlpha = knA; c.fillStyle = "rgba(10,18,52,0.85)"; H.rr(c, RX - 20, HY - 18, RW + 40, bot - HY + 30, 30); c.fill();
+        H.text(c, "Menurut Knuth:", RX + 10, HY + 54, 52, { weight: 900, color: P.amber }); c.restore(); }
+      const ka = clamp((l - T.kita) / 0.3) * (1 - rowOut);
+      if (ka > 0) B.daftarPeriksa(c, RX, 190, RW, { t, text: "Kita mengerti", icon: iconBulb, state: "check", u: ka, su: clamp((l - T.kita - 0.4) / 0.3) });
+      const ca = clamp((l - T.kom) / 0.3) * (1 - rowOut);
+      if (ca > 0) B.daftarPeriksa(c, RX, 190 + hK + 12, RW, { t, text: "Komputer tidak", icon: iconMonitor, state: "cross", u: ca, su: clamp((l - T.tid) / 0.3), fill: "#5A4AA8" });
+      // tiga syarat menurut Knuth
+      if (r1 > 0) B.daftarPeriksa(c, RX, 190, RW, { t, text: "tepat: komputer bisa mengikuti", state: "check", u: r1, su: clamp((l - T.iku) / 0.3) });
+      if (r2 > 0) B.daftarPeriksa(c, RX, 190 + h1 + 10, RW, { t, text: "langkahnya jelas", state: "check", u: r2, su: clamp((l - T.jel) / 0.3) });
+      if (r3 > 0) B.daftarPeriksa(c, RX, 190 + h1 + hK + 20, RW, { t, text: "pasti berakhir", state: "check", u: r3, su: clamp((l - T.akh) / 0.3) });
+      // tanda tanya tepat di atas tiap takaran
       const qa = 1 - clamp((l - T.dit - 0.3) / 0.4);
-      MEAS.forEach((m, i) => { const u = l - T.tid + 0.1 - i * 0.18; if (u <= 0 || qa <= 0) return; c.save(); c.globalAlpha = qa; const k = pop(u, 12, 0.45); c.translate(m.x, 450 + 6 * Math.sin(l * 3 + i)); c.scale(k, k); c.fillStyle = "rgba(10,18,52,0.35)"; c.beginPath(); c.arc(3, 5, 40, 0, TAU); c.fill(); c.fillStyle = P.amber; c.beginPath(); c.arc(0, 0, 40, 0, TAU); c.fill(); H.text(c, "?", 0, 19, 56, { align: "center", weight: 900, color: "#1C2050" }); c.restore(); });
+      MEAS.forEach((m, i) => { const u = l - T.tid + 0.1 - i * 0.18; if (u <= 0 || qa <= 0) return; c.save(); c.globalAlpha = qa; const k = pop(u, 12, 0.45); c.translate(m.qx, 512 + 5 * Math.sin(l * 3 + i)); c.scale(k, k); c.fillStyle = "rgba(10,18,52,0.35)"; c.beginPath(); c.arc(3, 5, 36, 0, TAU); c.fill(); c.fillStyle = P.amber; c.beginPath(); c.arc(0, 0, 36, 0, TAU); c.fill(); H.text(c, "?", 0, 18, 52, { align: "center", weight: 900, color: "#1C2050" }); c.restore(); });
+      // label tepat di bawah tiap takaran (celah antarlabel ≥ 24 px)
       const la = clamp((l - meas0) / 0.3) * (1 - clamp((l - measOut) / 0.4));
       if (la > 0) MEAS.forEach((m, i) => { const u = clamp((l - meas0 - i * 0.3) / 0.25) * la * (i === 1 ? 1 : 1 - 0.6 * chosen); if (u <= 0) return; c.save(); c.globalAlpha = u;
-        c.fillStyle = "rgba(10,18,52,0.82)"; H.rr(c, m.x - 106, 652, 212, m.nm.length * 52 + 20, 18); c.fill();
-        if (i === 1 && chosen > 0) { c.strokeStyle = D.hexA(P.green, chosen); c.lineWidth = 4; c.stroke(); }
-        m.nm.forEach((s, j) => H.text(c, s, m.x, 700 + j * 52, 44, { align: "center", weight: 800, color: "#FFFFFF" })); c.restore(); });
+        c.font = `800 44px ${F}`; const w = Math.min(218, Math.max(...m.nm.map(s => c.measureText(s).width)) + 28);
+        c.fillStyle = "rgba(10,18,52,0.9)"; H.rr(c, m.x - w / 2, 646, w, m.nm.length * 50 + 22, 18); c.fill();
+        if (i === 1 && chosen > 0) { c.strokeStyle = D.hexA(P.green, chosen); c.lineWidth = 5; c.stroke(); }
+        m.nm.forEach((s, j) => H.text(c, s, m.x, 692 + j * 50, 44, { align: "center", weight: 800, color: "#FFFFFF", fit: w - 12 })); c.restore(); });
       const ba = clamp((l - T.tid - 0.2) / 0.3) * (1 - clamp((l - T.alg) / 0.4));
-      if (ba > 0) { c.globalAlpha = ba; const k = pop(l - T.tid - 0.2, 12, 0.5); c.save(); c.translate(1450, 330); c.scale(k, k); D.label(c, "Berapa banyak?", 0, 0, { size: 54, col: P.pink }); c.restore(); c.globalAlpha = 1; }
-      // syarat algoritma menurut Knuth
-      const ha = clamp((l - T.lan + 0.2) / 0.3);
-      if (ha > 0) { c.save(); c.globalAlpha = ha; c.fillStyle = "rgba(10,18,52,0.85)"; H.rr(c, 1150, 196, 450, 74, 37); c.fill(); H.text(c, "Menurut Knuth:", 1180, 248, 48, { weight: 900, color: P.amber }); c.restore(); }
-      const r1 = clamp((l - T.jel + 0.1) / 0.3), r2 = clamp((l - T.pas) / 0.3);
-      if (r1 > 0) B.daftarPeriksa(c, 1150, 290, 620, { t, text: "langkahnya jelas", state: "check", u: r1, su: clamp((l - T.jel + 0.3) / 0.3) });
-      if (r2 > 0) B.daftarPeriksa(c, 1150, 418, 620, { t, text: "pasti berakhir", state: "check", u: r2, su: clamp((l - T.akh) / 0.3) });
+      if (ba > 0) { c.save(); c.globalAlpha = ba; const k = pop(l - T.tid - 0.2, 12, 0.5); c.translate(1460, 846); c.scale(k, k); D.label(c, "Berapa banyak?", 0, 0, { size: 50, col: P.pink, fill: "#0E1640" }); c.restore(); }
     });
   }
 
   // =====================================================================================
   // b2_3 ruang naskah kuno: al-Khwarizmi → algoritma
   // =====================================================================================
-  const SC = { cx: 860, cy: 470, w: 1000, h: 250 };
+  const SC = { cx: 860, cy: 468, w: 1000, h: 320 };
   function starTile(ctx, x, y, r) {
     ctx.beginPath(); for (let i = 0; i < 16; i++) { const rr = i % 2 ? r * 0.62 : r, a = i * Math.PI / 8 + Math.PI / 16; ctx.lineTo(x + Math.cos(a) * rr, y + Math.sin(a) * rr); } ctx.closePath();
   }
@@ -509,72 +549,120 @@
     LP.glowE(ctx, cx, cy + h / 2 + 30, pw * 0.6 + 60, 22, "#1A1030", 0.35, "source-over");
     let gr = ctx.createLinearGradient(0, cy - h / 2, 0, cy + h / 2); gr.addColorStop(0, "#F6E7C6"); gr.addColorStop(0.5, "#FBEFD6"); gr.addColorStop(1, "#EAD3A6");
     ctx.fillStyle = gr; ctx.fillRect(x0, cy - h / 2, pw, h);
-    if (u > 0.2) { ctx.save(); ctx.beginPath(); ctx.rect(x0, cy - h / 2, pw, h); ctx.clip(); ctx.strokeStyle = "rgba(150,90,40,0.55)"; ctx.lineWidth = 3;
-      ctx.strokeRect(cx - w / 2 + 34, cy - h / 2 + 18, w - 68, h - 36); ctx.lineWidth = 1.5; ctx.strokeRect(cx - w / 2 + 42, cy - h / 2 + 26, w - 84, h - 52);
-      ctx.fillStyle = "rgba(170,100,50,0.5)"; [cx - w / 2 + 90, cx + w / 2 - 90].forEach(sx => { starTile(ctx, sx, cy, 26); ctx.fill(); }); ctx.restore(); }
+    if (u > 0.2) { ctx.save(); ctx.beginPath(); ctx.rect(x0, cy - h / 2, pw, h); ctx.clip();
+      // bingkai hias geometris: garis ganda, deretan belah ketupat, bintang di sudut
+      const L = cx - w / 2 + 34, R = cx + w / 2 - 34, Tp = cy - h / 2 + 18, Bt = cy + h / 2 - 18;
+      ctx.strokeStyle = "rgba(150,90,40,0.6)"; ctx.lineWidth = 3; ctx.strokeRect(L, Tp, R - L, Bt - Tp);
+      ctx.lineWidth = 1.5; ctx.strokeRect(L + 22, Tp + 22, R - L - 44, Bt - Tp - 44);
+      ctx.fillStyle = "rgba(176,96,44,0.55)";
+      for (let x = L + 50; x < R - 40; x += 34) [Tp + 11, Bt - 11].forEach(y => { ctx.beginPath(); ctx.moveTo(x, y - 6); ctx.lineTo(x + 6, y); ctx.lineTo(x, y + 6); ctx.lineTo(x - 6, y); ctx.closePath(); ctx.fill(); });
+      for (let y = Tp + 46; y < Bt - 30; y += 34) [L + 11, R - 11].forEach(x => { ctx.beginPath(); ctx.moveTo(x, y - 6); ctx.lineTo(x + 6, y); ctx.lineTo(x, y + 6); ctx.lineTo(x - 6, y); ctx.closePath(); ctx.fill(); });
+      ctx.fillStyle = "#B8642E"; [[L + 11, Tp + 11], [R - 11, Tp + 11], [L + 11, Bt - 11], [R - 11, Bt - 11]].forEach(([x, y]) => { starTile(ctx, x, y, 20); ctx.fill(); });
+      ctx.fillStyle = "rgba(170,100,50,0.45)"; [cx - w / 2 + 100, cx + w / 2 - 100].forEach(sx => { starTile(ctx, sx, cy - 10, 30); ctx.fill(); });
+      ctx.restore(); }
     [x0, x1].forEach(rx => { gr = ctx.createLinearGradient(rx - 18, 0, rx + 18, 0); gr.addColorStop(0, "#8C5E3C"); gr.addColorStop(0.5, "#C98A57"); gr.addColorStop(1, "#7A4E34");
       ctx.fillStyle = gr; H.rr(ctx, rx - 18, cy - h / 2 - 22, 36, h + 44, 14); ctx.fill(); ctx.fillStyle = "#E3B067"; ctx.beginPath(); ctx.arc(rx, cy - h / 2 - 26, 12, 0, TAU); ctx.fill(); ctx.beginPath(); ctx.arc(rx, cy + h / 2 + 26, 12, 0, TAU); ctx.fill(); });
   }
-  function nameText(ctx, x, y, size, reveal, col) {
-    ctx.save(); ctx.font = `900 ${size}px ${F}`; const w = ctx.measureText("al-Khwarizmi").width;
-    ctx.beginPath(); ctx.rect(x - w / 2 - 10, y - size, (w + 20) * reveal, size * 1.4); ctx.clip();
-    H.text(ctx, "al-Khwarizmi", x, y, size, { align: "center", weight: 900, color: col });
-    ctx.strokeStyle = col; ctx.lineWidth = 4; ctx.lineCap = "round"; ctx.beginPath(); ctx.moveTo(x - w / 2, y + 26); ctx.bezierCurveTo(x - w / 6, y + 46, x + w / 6, y + 6, x + w / 2 + 30, y + 30); ctx.stroke();
+  // kata dua warna: bagian "al" (sama di kedua kata) diberi warna sendiri; (x, y) = awal kiri garis dasar
+  const NAMEF = s => `italic 800 ${s}px ${F}`;
+  function twoTone(ctx, word, x, y, size, colAl, colRest, a = 1) {
+    if (a <= 0) return; ctx.save(); ctx.globalAlpha *= a; ctx.font = NAMEF(size); ctx.textAlign = "left"; ctx.textBaseline = "alphabetic";
+    const wa = ctx.measureText("al").width, wf = ctx.measureText(word).width;
+    // kata utuh digambar dua kali dengan potongan (clip): "al" berwarna sendiri, sisanya warna lain
+    ctx.save(); ctx.beginPath(); ctx.rect(x - size, y - size * 1.3, wa + size, size * 1.8); ctx.clip(); ctx.fillStyle = colAl; ctx.fillText(word, x, y); ctx.restore();
+    ctx.save(); ctx.beginPath(); ctx.rect(x + wa, y - size * 1.3, wf + size, size * 1.8); ctx.clip(); ctx.fillStyle = colRest; ctx.fillText(word, x, y); ctx.restore();
+    ctx.restore();
+  }
+  const wordW = (ctx, word, size) => { ctx.save(); ctx.font = NAMEF(size); const w = ctx.measureText(word).width; ctx.restore(); return w; };
+  function nameText(ctx, x, y, size, reveal) {
+    const w = wordW(ctx, "al-Khwarizmi", size), x0 = x - w / 2;
+    ctx.save(); ctx.beginPath(); ctx.rect(x0 - 30, y - size, (w + 60) * reveal, size * 1.6); ctx.clip();
+    twoTone(ctx, "al-Khwarizmi", x0, y, size, "#B8460E", "#5A3418");
+    // hiasan kaligrafis di bawah nama
+    ctx.strokeStyle = "#7A4420"; ctx.lineWidth = 4; ctx.lineCap = "round"; ctx.beginPath(); ctx.moveTo(x0 - 10, y + 24); ctx.bezierCurveTo(x - w / 6, y + 48, x + w / 6, y + 4, x + w / 2 + 30, y + 30); ctx.stroke();
+    ctx.lineWidth = 2.5; ctx.beginPath(); ctx.moveTo(x0 + 30, y + 40); ctx.quadraticCurveTo(x, y + 58, x + w / 2 - 20, y + 42); ctx.stroke();
+    ctx.fillStyle = "#B8460E"; [[x0 - 22, y + 22], [x + w / 2 + 44, y + 30]].forEach(([dx, dy]) => { ctx.beginPath(); ctx.moveTo(dx, dy - 8); ctx.lineTo(dx + 8, dy); ctx.lineTo(dx, dy + 8); ctx.lineTo(dx - 8, dy); ctx.closePath(); ctx.fill(); });
     ctx.restore(); return w;
+  }
+  function phoneIcon(c, x, y, a) {
+    c.save(); c.globalAlpha *= a; c.fillStyle = "#1C2050"; H.rr(c, x - 17, y - 30, 34, 60, 7); c.fill();
+    c.fillStyle = "#7FD6FF"; H.rr(c, x - 13, y - 24, 26, 46, 4); c.fill(); c.fillStyle = "#FFFFFF"; c.fillRect(x - 8, y - 16, 16, 4); c.fillRect(x - 8, y - 8, 12, 4); c.restore();
   }
   function scene23(ctx, b, l, t) {
     const T = { alg: at(b, "algoritma"), ber: at(b, "berasal"), nam: at(b, "al-Khwarizmi,"), namE: atE(b, "al-Khwarizmi,"), ilm: at(b, "ilmuwan"),
-      sek: at(b, "sekitar"), rib: at(b, "seribu"), rat: atE(b, "ratus"), thn: at(b, "tahun lalu"), end: atE(b, "lalu.") };
+      yang: at(b, "yang"), sek: at(b, "sekitar"), rib: at(b, "seribu"), dua: at(b, "dua ratus"), thn: at(b, "tahun lalu"), end: atE(b, "lalu.") };
     const cz = 1 + 0.03 * eio(l / b.dur);
     ctx.save(); ctx.translate(960, 540); ctx.scale(cz, cz); ctx.translate(-960, -540);
     oldRoom(ctx, t);
     const un = clamp((l - T.ber + 0.1) / 0.9);
     scroll(ctx, un, t);
-    const NY_ = SC.cy + 36, rev = clamp((l - T.nam + 0.05) / Math.max(0.5, T.namE - T.nam + 0.1));
-    if (rev > 0) nameText(ctx, SC.cx, NY_, 104, rev, "#5A3418");
-    // Bip dengan kaca pembesar
+    const NY_ = SC.cy + 6, NS = 104, rev = clamp((l - T.nam + 0.05) / Math.max(0.5, T.namE - T.nam + 0.1));
+    const nw = wordW(ctx, "al-Khwarizmi", NS), nx0 = SC.cx - nw / 2;
+    // sorotan pada "al-" selama nama berubah
+    const m0 = T.namE + 0.02, m1 = T.yang - 0.06, mu = clamp((l - m0) / (m1 - m0));
+    const hiA = clamp((l - m0 + 0.2) / 0.25) * (1 - clamp((l - m1 - 0.4) / 0.4));
+    if (rev > 0 && hiA > 0) { const aw = wordW(ctx, "al-", NS); ctx.save(); ctx.globalAlpha *= hiA; D.glow(ctx, nx0 + aw / 2, NY_ - 34, 120, P.amber, 0.55);
+      ctx.fillStyle = "rgba(255,200,90,0.45)"; H.rr(ctx, nx0 - 12, NY_ - 88, aw + 22, 108, 16); ctx.fill(); ctx.restore(); }
+    if (rev > 0) nameText(ctx, SC.cx, NY_, NS, rev);
+    // Bip berjalan masuk, lalu menunjuk "al-" di gulungan
     const bipIn = clamp((l - T.ber) / 0.6);
-    const bo = l > T.nam + 0.3 && l < T.sek ? { t, pose: "kacaPembesar", target: [1150, NY_ - 40], glass: 0.62,
-      content: (c, cx, cy, r) => { c.fillStyle = "#FBEFD6"; c.fillRect(cx - r, cy - r, 2 * r, 2 * r); c.save(); c.translate(cx, cy); c.scale(1.6, 1.6); c.translate(-1120, -(NY_ - 36)); nameText(c, SC.cx, NY_, 104, 1, "#5A3418"); c.restore(); } }
-      : { t, pose: "diam", mood: l > T.sek ? "wow" : "happy", look: l > T.sek ? [-0.9, 0.5] : [-1, -0.3] };
-    B.draw(ctx, 1480 + 90 * (1 - eio(bipIn)), 700, 230, bipIn > 0 && bipIn < 1 ? { t, pose: "jalan", dir: -1 } : bo);
+    const bo = l > T.nam + 0.3 && l < T.sek ? { t, pose: "tunjuk", target: [nx0 + 60, NY_ - 40], mood: "wow" }
+      : { t, pose: "diam", mood: l > T.sek ? "wow" : "happy", look: l > T.sek ? [-0.9, 0.6] : [-1, -0.3] };
+    B.draw(ctx, 1530 + 90 * (1 - eio(bipIn)), 700, 225, bipIn > 0 && bipIn < 1 ? { t, pose: "jalan", dir: -1 } : bo);
     ctx.restore();
 
     // ---- lapisan layar ----
-    const WY = 200;
+    const WY = 172, WS = 112, Y0 = 286, S0 = 92;
     D.post(c => {
       c.save(); c.translate(960, 540); c.scale(cz, cz); c.translate(-960, -540);
-      // kata "algoritma" di atas
-      const wa = l - T.alg + 0.1;
-      if (wa > 0) { const k = pop(wa, 10, 0.5), mu = l - (T.namE + 1.15), pulse = mu > 0 && mu < 0.7 ? 1 + 0.12 * Math.sin(Math.PI * mu / 0.7) : 1;
-        if (mu > 0) D.glow(c, SC.cx, WY - 34, 420, P.teal, 0.5 * Math.max(0, 1 - mu / 1.6));
-        c.save(); c.translate(SC.cx, WY); c.scale(k * pulse, k * pulse); H.text(c, "algoritma", 0, 0, 112, { align: "center", weight: 900, color: "#7FF0E2" }); c.restore(); }
-      // salinan nama naik lalu berubah menjadi "algoritma"
-      const m0 = T.namE + 0.15, mu = clamp((l - m0) / 1.0);
-      if (mu > 0 && mu < 1) { const e = eio(Math.min(1, mu / 0.75)), y = lerp(NY_, WY, e), x = SC.cx, s = lerp(104, 112, e), a = 1 - clamp((mu - 0.58) / 0.15);
-        c.save(); c.globalAlpha = a; D.glow(c, x, y - 34, 160, P.amber, 0.5);
-        if (mu < 0.4) H.text(c, "al-Khwarizmi", x, y, s * (1 - 0.2 * mu), { align: "center", weight: 900, color: "#FFD38A" });
-        else H.text(c, "algoritma", x, y, s * (0.9 + 0.1 * mu), { align: "center", weight: 900, color: "#7FF0E2" });
-        for (let i = 0; i < 6; i++) sparkle(c, x + Math.cos(i * 1.05 + l * 3) * 190, y - 30 + Math.sin(i * 1.05 + l * 3) * 50, 10, Math.sin(Math.PI * mu), i);
+      // kata "algoritma" di atas: meredup saat salinan nama naik, kembali dan berdenyut saat salinan tiba
+      const wa = l - T.alg + 0.1, arr = l - (m0 + 0.93 * (m1 - m0));
+      if (wa > 0) { const k = pop(wa, 10, 0.5), pulse = arr > 0 && arr < 0.7 ? 1 + 0.12 * Math.sin(Math.PI * arr / 0.7) : 1;
+        const dim = mu > 0 && arr < 0 ? 1 - 0.8 * clamp(mu / 0.15) : clamp(0.2 + arr / 0.25);
+        if (arr > 0) D.glow(c, SC.cx, WY - 34, 420, P.teal, 0.5 * Math.max(0, 1 - arr / 1.6));
+        const ww = wordW(c, "algoritma", WS); c.save(); c.translate(SC.cx, WY); c.scale(k * pulse, k * pulse);
+        twoTone(c, "algoritma", -ww / 2, 0, WS, arr > 0 ? "#FFD38A" : "#7FF0E2", "#7FF0E2", wa > 0 && mu > 0 ? dim : 1); c.restore(); }
+      // salinan nama muncul di atas gulungan, "al-Khwarizmi" memudar menjadi "algoritma" (bagian "al" tetap), lalu naik bergabung
+      if (mu > 0 && mu < 1) {
+        const a = clamp(mu / 0.12) * (1 - clamp((mu - 0.93) / 0.07)), xf = clamp((mu - 0.3) / 0.3), ru = eio(clamp((mu - 0.6) / 0.33));
+        const size = lerp(S0, WS, ru), y = lerp(Y0, WY, ru);
+        const wN = wordW(c, "al-Khwarizmi", S0), wA = wordW(c, "algoritma", size), xL0 = SC.cx - wN / 2, xL = lerp(xL0, SC.cx - wA / 2, ru);
+        c.save(); c.globalAlpha = a; D.glow(c, SC.cx, y - 34, 240, P.amber, 0.45);
+        c.fillStyle = "rgba(10,18,52,0.55)"; H.rr(c, SC.cx - Math.max(wN, wA) / 2 - 30, y - size * 0.8, Math.max(wN, wA) + 60, size * 1.04, 24); c.fill();
+        // "al" digambar sekali (tetap); sisa kata lama naik dan memudar, sisa kata baru naik dari bawah
+        c.font = NAMEF(size); c.textAlign = "left"; const wal = c.measureText("al").width;
+        const part = (word, left, col, dy, al) => { if (al <= 0) return; c.save(); c.globalAlpha *= al; c.beginPath();
+          if (left) c.rect(xL - size, y - size * 1.4, wal + size, size * 2); else c.rect(xL + wal, y - size * 1.4 + dy, 1400, size * 2); c.clip();
+          c.fillStyle = col; c.fillText(word, xL, y + dy); c.restore(); };
+        const oldW = "al-Khwarizmi", newW = "algoritma";
+        part(xf < 0.5 ? oldW : newW, true, "#FFD38A", 0, 1);
+        part(oldW, false, "#FFF1D6", -26 * eio(xf), 1 - xf);
+        part(newW, false, "#7FF0E2", 26 * (1 - eio(xf)), xf);
+        for (let i = 0; i < 6; i++) sparkle(c, SC.cx + Math.cos(i * 1.05 + l * 3) * 330, y - 30 + Math.sin(i * 1.05 + l * 3) * 60, 10, Math.sin(Math.PI * mu), i);
         c.restore(); }
-      // "ilmuwan Persia"
-      if (l > T.ilm) { c.save(); const k = pop(l - T.ilm, 12, 0.5); c.translate(SC.cx - 250, 660); c.scale(k, k); D.label(c, "ilmuwan Persia", 0, 0, { size: 48, col: "#E9B35C" }); c.restore(); }
-      // garis waktu 12 ruas × 100 tahun
-      const tl0 = T.sek - 0.25, X0 = 260, X1 = 1340, LY = 800, grow = eio((l - tl0) / Math.max(0.6, T.rat - tl0));
-      if (l > tl0) { const ga = clamp((l - tl0) / 0.3); c.globalAlpha = ga;
-        c.fillStyle = "rgba(10,18,52,0.6)"; H.rr(c, X0 - 40, LY - 26, X1 - X0 + 80, 52, 26); c.fill();
-        c.strokeStyle = "rgba(255,255,255,0.25)"; c.lineWidth = 6; c.beginPath(); c.moveTo(X0, LY); c.lineTo(X1, LY); c.stroke();
-        c.strokeStyle = "#E9B35C"; c.lineWidth = 8; c.lineCap = "round"; c.beginPath(); c.moveTo(X0, LY); c.lineTo(lerp(X0, X1, grow), LY); c.stroke();
-        for (let i = 0; i <= 12; i++) { const x = lerp(X0, X1, i / 12), on = grow >= i / 12 - 1e-6; c.fillStyle = on ? "#FFE2A8" : "rgba(255,255,255,0.3)"; c.beginPath(); c.arc(x, LY, i % 12 === 0 ? 13 : 8, 0, TAU); c.fill(); }
-        // ujung kiri: gulungan kecil; ujung kanan: sekarang
-        c.save(); c.translate(X0, LY - 58); c.fillStyle = "#F6E7C6"; c.fillRect(-26, -16, 52, 32); c.fillStyle = "#A8744B"; c.fillRect(-32, -20, 8, 40); c.fillRect(24, -20, 8, 40); c.restore();
-        H.text(c, "dulu", X0, LY + 76, 44, { align: "center", weight: 800, color: "#FFFFFF" });
-        if (grow > 0.98) H.text(c, "sekarang", X1, LY + 76, 44, { align: "center", weight: 800, color: "#FFFFFF" });
-        const yrs = Math.round(1200 * grow / 100) * 100, lu = clamp((l - T.rat + 0.05) / 0.3);
-        const s = (lu > 0 ? "± " : "") + (yrs >= 1000 ? "1." + String(yrs - 1000).padStart(3, "0") : String(yrs)) + " tahun";
-        c.save(); c.translate(lerp(X0, X1, grow / 2), LY - 64); const k = 1 + 0.15 * Math.sin(Math.PI * lu) * (lu < 1 ? 1 : 0); c.scale(k, k);
-        if (yrs > 0) D.label(c, s, 0, 0, { size: 50, col: lu > 0 ? P.amber : "#E9B35C" }); c.restore();
-        c.globalAlpha = 1; }
+      // "ilmuwan Persia" di pita bawah gulungan
+      if (l > T.ilm) { c.save(); const u = clamp((l - T.ilm) / 0.3); c.globalAlpha = u; c.translate(SC.cx, 570 + 14 * (1 - eout(u))); D.label(c, "ilmuwan Persia", 0, 0, { size: 44, col: "#E9B35C" }); c.restore(); }
+      // garis waktu: 12 ruas; 10 ruas menyala pada "seribu", 2 ruas lagi pada "dua ratus"
+      const tl0 = T.sek - 0.25, X0 = 322, X1 = 1086, LY = 852, xs = i => lerp(X0, X1, i / 12);
+      if (l > tl0) { const ga = clamp((l - tl0) / 0.3); c.save(); c.globalAlpha = ga;
+        c.fillStyle = "rgba(10,18,52,0.72)"; H.rr(c, 96, 714, 1300, 178, 34); c.fill();
+        c.strokeStyle = "rgba(255,255,255,0.25)"; c.lineWidth = 6; c.lineCap = "round"; c.beginPath(); c.moveTo(X0, LY); c.lineTo(X1, LY); c.stroke();
+        const gA = eio((l - T.rib) / 0.45) * 10, gB = eio((l - T.dua) / 0.35) * 2, n = gA + gB;
+        c.strokeStyle = "#E9B35C"; c.lineWidth = 9; if (n > 0) { c.beginPath(); c.moveTo(X0, LY); c.lineTo(xs(n), LY); c.stroke(); }
+        for (let i = 0; i <= 12; i++) { const on = n >= i - 1e-6 && n > 0; c.fillStyle = on ? "#FFE2A8" : "rgba(255,255,255,0.35)"; c.beginPath(); c.arc(xs(i), LY, i % 12 === 0 ? 13 : 9, 0, TAU); c.fill(); }
+        // ujung kiri: gulungan kecil + "dulu"; ujung kanan: HP generik + "sekarang"
+        c.save(); c.translate(X0 - 52, LY); c.fillStyle = "#F6E7C6"; c.fillRect(-22, -14, 44, 28); c.fillStyle = "#A8744B"; c.fillRect(-28, -18, 7, 36); c.fillRect(21, -18, 7, 36); c.restore();
+        H.text(c, "dulu", 122, LY + 16, 44, { weight: 800, color: "#FFFFFF" });
+        phoneIcon(c, X1 + 44, LY, 1); H.text(c, "sekarang", X1 + 80, LY + 16, 44, { weight: 800, color: "#FFFFFF" });
+        // kurung + angka yang diucapkan
+        const merge = clamp((l - T.thn) / 0.3);
+        const brace = (xa, xb, u, col) => { if (u <= 0) return; c.save(); c.globalAlpha *= u; c.strokeStyle = col; c.lineWidth = 4; c.beginPath(); c.moveTo(xa, LY - 18); c.lineTo(xa, LY - 30); c.lineTo(xb, LY - 30); c.lineTo(xb, LY - 18); c.stroke(); c.restore(); };
+        const aA = clamp((l - T.rib) / 0.3) * (1 - merge), aB = clamp((l - T.dua) / 0.3) * (1 - merge);
+        brace(xs(0) + 6, xs(10) - 6, aA, "#FFE2A8"); brace(xs(10) + 6, xs(12) - 6, aB, P.amber); brace(xs(0) + 6, xs(12) - 6, merge, P.amber);
+        if (aA > 0) { c.save(); c.globalAlpha *= aA; c.translate(xs(5), LY - 74); const k = pop(l - T.rib, 12, 0.5); c.scale(k, k); D.label(c, "1.000 tahun", 0, 0, { size: 46, col: "#E9B35C" }); c.restore(); }
+        if (aB > 0) { c.save(); c.globalAlpha *= aB; c.translate(xs(11), LY - 74); const k = pop(l - T.dua, 12, 0.5); c.scale(k, k); D.label(c, "+200", 0, 0, { size: 46, col: P.amber }); c.restore(); }
+        if (merge > 0) { c.save(); c.globalAlpha *= merge; c.translate(xs(6), LY - 74); const k = pop(l - T.thn, 12, 0.45); c.scale(k, k); D.label(c, "± 1.200 tahun", 0, 0, { size: 50, col: P.amber }); c.restore(); }
+        c.restore(); }
       c.restore();
     });
   }
@@ -598,7 +686,7 @@
     ctx.save(); cm.apply(ctx);
     B.draw(ctx, BIPW.x, BIPW.y - 14 * dance * Math.abs(Math.sin(l * 4.2)), BIPW.s, l < T.gub ? { t, pose: "diam", mood: "happy", look: [-1, -0.4] } : { t, pose: "diam", mood: "happy", look: [-1, Math.sin(l * 2.1) * 0.4], wave: l * 1.4 });
     ctx.restore();
-    const open = eio((l - T.pro + 0.1) / 0.8), staffU = eio((l - T.gub + 0.25) / 1.1);
+    const open = eio((l - T.pro + 0.1) / 0.8), staffU = eio((l - T.gub + 0.3) / 0.75);   // buku selesai mengecil sebelum "puisi"
     // buku: sampul → halaman kode
     // saat musik mulai: buku mengecil ke kiri bawah, paranada mengambil tengah layar
     const bk = 1 - 0.45 * staffU, BC = [CV.x + CV.w / 2, CV.y + CV.h / 2], BN = [lerp(BC[0], 420, staffU), lerp(BC[1], 650, staffU)];
@@ -648,7 +736,10 @@
     const wave = (x, k) => Math.sin(x * 0.006 - l * 1.6 + k * 0.25) * 16 * staffU;
     if (staffU > 0) {
       ctx.save(); ctx.globalAlpha *= clamp(staffU * 1.5);
-      for (let k = 0; k < 5; k++) { ctx.strokeStyle = "rgba(255,244,214,0.85)"; ctx.lineWidth = 4; ctx.beginPath();
+      // pita gelap di belakang paranada (tidak lagi menimpa rak dan gelas pensil)
+      ctx.fillStyle = "rgba(10,18,52,0.78)"; H.rr(ctx, X0 - 24, SY - 132, lerp(120, X1 - X0 + 48, staffU), 262, 36); ctx.fill();
+      ctx.strokeStyle = "rgba(255,226,168,0.35)"; ctx.lineWidth = 3; ctx.stroke();
+      for (let k = 0; k < 5; k++) { ctx.strokeStyle = "rgba(255,244,214,0.92)"; ctx.lineWidth = 5; ctx.beginPath();
         for (let x = X0; x <= lerp(X0, X1, staffU); x += 20) { const y = SY + (k - 2) * GAP + wave(x, k); x === X0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y); } ctx.stroke(); }
       // kunci G sederhana
       ctx.strokeStyle = P.amber; ctx.lineWidth = 7; ctx.lineCap = "round"; ctx.beginPath();
@@ -661,7 +752,8 @@
         const u = eio(clamp((l - T.gub - 0.2 - i * 0.09) / 0.9)); if (u <= 0) return;
         const drift = Math.max(0, l - T.gub - 1.6) * 34, tx = X0 + 160 + (((i * 52 - drift) % 728) + 728) % 728;
         const ty = SY + 2 * GAP - p * GAP / 2 + wave(tx, 2) - 10 * Math.abs(Math.sin(l * 3 + i));
-        const x = lerp(sx, tx, u), y = lerp(sy, ty, u) - Math.sin(Math.PI * u) * 120;
+        // jalur melengkung di bawah kalender lalu naik ke paranada
+        const cx = 860, cy = 640, x = (1 - u) * (1 - u) * sx + 2 * u * (1 - u) * cx + u * u * tx, y = (1 - u) * (1 - u) * sy + 2 * u * (1 - u) * cy + u * u * ty;
         const col = [P.pink, P.amber, P.teal, P.violet, P.green, P.blue][i % 6];
         ctx.save(); ctx.translate(x, y); ctx.fillStyle = col; ctx.beginPath(); ctx.ellipse(0, 0, 21, 15, -0.4, 0, TAU); ctx.fill();
         ctx.strokeStyle = col; ctx.lineWidth = 5; ctx.beginPath(); ctx.moveTo(18, -4); ctx.lineTo(18, -76); ctx.stroke();
@@ -671,8 +763,8 @@
     // ---- label layar ----
     { const s = l - T.seni, a = 1 - clamp((l - T.pro + 0.35) / 0.2); if (s > 0 && a > 0) tag("art = seni", 1420, 330, s, { a, col: P.amber, size: 56, to: [CV.x + CV.w / 2 + 40, CV.y + 150] }); }
     const pa = l - T.pui + 0.05, ma = l - T.mus + 0.05;
-    if (pa > 0) tag("puisi", 380, 390, pa, { col: P.pink, size: 54 });
-    if (ma > 0) tag("musik", 1600, 240, ma, { col: P.teal, size: 54 });
+    if (pa > 0) tag("puisi", 760, 700, pa, { col: P.pink, size: 54, to: [584, 640] });   // di samping buku yang sudah mengecil
+    if (ma > 0) tag("musik", 1650, 222, ma, { col: P.teal, size: 54 });
     const pr = l - T.pro - 0.05; if (pr > 0 && staffU < 0.3) tag("program", 1420, 330, pr, { col: P.violet, size: 52, a: 1 - clamp(staffU / 0.3) });
   }
 
@@ -687,33 +779,23 @@
 
   // ---------- efek suara ----------
   K.sfxParts = K.sfxParts || {};
-  K.sfxParts.b2 = TL => [
+  K.sfxParts.b2 = TL => [                                          // 17 bunyi, rata-rata ± satu per 3 detik
     K.sfxAt(TL, "b2_1", "terbit", 0.1, "shimmer", 0.55),          // jilid 1 menjadi nyata di rak
-    K.sfxAt(TL, "b2_1", "tahun", -0.3, "whoosh", 0.4),            // halaman kalender disobek
     K.sfxAt(TL, "b2_1", "delapan,", 0.05, "pop", 0.6),            // angka 8 mendarat: 1968
     K.sfxAt(TL, "b2_1", "dimulai", -0.15, "whoosh", 0.5),         // buku terbang ke penyangga lalu terbuka
-    K.sfxAt(TL, "b2_1", "satu kata", 0.05, "pop", 0.5),           // kotak judul disorot
     K.sfxAt(TL, "b2_1", "algoritma.", 0.1, "shimmer", 0.7),       // kata "Algoritma" terisi
     K.sfxAt(TL, "b2_2", "resep", -0.2, "whoosh", 0.5),            // kertas resep terangkat
     K.sfxAt(TL, "b2_2", "secukupnya\".", 0.75, "pop", 0.5),       // stabilo
-    K.sfxAt(TL, "b2_2", "Kita mengerti", 0.4, "pop", 0.45),       // centang "kita paham"
-    K.sfxAt(TL, "b2_2", "tidak.", 0.0, "pop", 0.6),               // tanda tanya di atas takaran
-    K.sfxAt(TL, "b2_2", "algoritma harus", 0.0, "shimmer", 0.55), // judul berbalik: Algoritma
+    K.sfxAt(TL, "b2_2", "tidak.", 0.0, "pop", 0.6),               // tanda silang + tanda tanya di atas takaran
     K.sfxAt(TL, "b2_2", "ditulis", 0.05, "clack", 0.6),           // "secukupnya" dicoret
     K.sfxAt(TL, "b2_2", "sampai komputer", 0.05, "whoosh", 0.5),  // kertas terpecah jadi kartu langkah
-    K.sfxAt(TL, "b2_2", "mengikutinya,", 0.4, "pop", 0.4),        // centang langkah terakhir
-    K.sfxAt(TL, "b2_2", "jelas", 0.0, "pop", 0.45),               // baris "langkahnya jelas"
-    K.sfxAt(TL, "b2_2", "pasti", 0.2, "shimmer", 0.6),            // kartu bendera "Selesai"
-    K.sfxAt(TL, "b2_3", "algoritma", -0.05, "pop", 0.5),          // kata algoritma muncul
+    K.sfxAt(TL, "b2_2", "pasti", 0.2, "shimmer", 0.6),            // kartu "Selesai" + bendera finis
     K.sfxAt(TL, "b2_3", "berasal", -0.05, "whoosh", 0.5),         // gulungan terbuka
-    K.sfxAt(TL, "b2_3", "al-Khwarizmi,", 0.9, "shimmer", 0.6),    // nama berubah menjadi "algoritma"
-    K.sfxAt(TL, "b2_3", "ilmuwan", 0.0, "pop", 0.45),             // label ilmuwan Persia
-    K.sfxAt(TL, "b2_3", "tahun lalu", 0.0, "pop", 0.6),           // penghitung mendarat di ±1.200 tahun
+    K.sfxAt(TL, "b2_3", "yang", -0.15, "shimmer", 0.6),           // salinan "algoritma" tiba di kata atas
+    K.sfxAt(TL, "b2_3", "tahun lalu", 0.0, "pop", 0.6),           // garis waktu mendarat di ±1.200 tahun
     K.sfxAt(TL, "b2_4", "art,", 0.05, "pop", 0.55),               // "Art" disorot
-    K.sfxAt(TL, "b2_4", "seni,", 0.0, "pop", 0.45),               // label art = seni
     K.sfxAt(TL, "b2_4", "menyusun", -0.1, "whoosh", 0.5),         // sampul terbuka, kode diketik
     K.sfxAt(TL, "b2_4", "indah,", 0.0, "shimmer", 0.5),           // kode berkilau
-    K.sfxAt(TL, "b2_4", "menggubah", -0.2, "riser", 0.5),         // kode menjadi paranada
-    K.sfxAt(TL, "b2_4", "musik.", 0.05, "shimmer", 0.6),          // not mengalun
+    K.sfxAt(TL, "b2_4", "musik.", 0.05, "shimmer", 0.6),          // not mengalun di paranada
   ].filter(Boolean);
 })(typeof window !== "undefined" ? window : globalThis);

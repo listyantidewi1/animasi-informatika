@@ -79,6 +79,7 @@
   const CAL = { x: 1640, y: 702, w: 230, h: 214 };
   const STK = { x: 170, y: 880 };
   const PEN_REST = { x: 1215, y: 930, ang: -0.32 };
+  const PEN_ANG = -2.1;   // badan pensil ke kiri atas: menutupi tempat yang SUDAH dikunjungi, bukan yang akan datang
   const BIP1 = { x: 1395, y: 770, s: 150 };
   const BIPC = { x: 1735, y: 812, s: 170 };
   const YEARS = [1990, 1995, 2000, 2005, 2011, 2016, 2022, 2026];
@@ -164,7 +165,7 @@
   }
   function glasses(ctx, glow) {
     const { x, y } = GLS;
-    if (glow > 0.01) addLight(ctx, x, y - 4, 130, P.warm, 0.55 * glow);
+    if (glow > 0.01) { addLight(ctx, x, y - 4, 230, P.warm, 0.95 * glow); addLight(ctx, x, y - 4, 90, "#FFF6DA", 0.9 * glow); }
     shadowE(ctx, x + 8, y + 20, 84, 14, 0.3);
     ctx.save(); ctx.translate(x, y); ctx.scale(0.76, 0.55);
     ctx.strokeStyle = "#2B2440"; ctx.lineWidth = 7;
@@ -172,10 +173,12 @@
     [-46, 46].forEach(cx => {
       ctx.fillStyle = "rgba(190,220,255,0.28)"; ctx.beginPath(); ctx.arc(cx, 0, 38, 0, TAU); ctx.fill();
       ctx.strokeStyle = "#2B2440"; ctx.lineWidth = 7; ctx.stroke();
+      if (glow > 0.01) { ctx.save(); ctx.globalAlpha *= glow; ctx.strokeStyle = "#FFD27A"; ctx.lineWidth = 9; ctx.beginPath(); ctx.arc(cx, 0, 40, 0, TAU); ctx.stroke(); ctx.restore(); }
       ctx.strokeStyle = `rgba(255,255,255,${0.6 + 0.4 * glow})`; ctx.lineWidth = 4; ctx.beginPath(); ctx.arc(cx, 0, 26, -2.4, -1.6); ctx.stroke();
     });
     ctx.strokeStyle = "#2B2440"; ctx.lineWidth = 7; ctx.beginPath(); ctx.moveTo(-10, -6); ctx.quadraticCurveTo(0, -18, 10, -6); ctx.stroke();
     ctx.restore();
+    if (glow > 0.01) { sparkle(ctx, x - 34, y - 14, 26 * glow, glow); sparkle(ctx, x + 40, y - 18, 18 * glow, glow * 0.8); }
   }
   // kalender meja: fl 0..7 = indeks tahun (pecahan = halaman sedang dibalik ke atas)
   function calPage(ctx, x, top, w, h, yr, noText) {
@@ -260,7 +263,6 @@
       ctx.strokeStyle = "#4A4E6E"; ctx.lineWidth = 4; ctx.beginPath(); ctx.moveTo(0, 0); ctx.lineTo(0, -66); ctx.stroke();
       ctx.fillStyle = "#E25A54"; ctx.beginPath(); ctx.moveTo(0, -66); ctx.lineTo(-80, -54); ctx.lineTo(0, -40); ctx.closePath(); ctx.fill();
       ctx.restore();
-      if (ta > 0.01) { ctx.save(); ctx.globalAlpha *= clamp(fa * 2) * ta; wtxt(ctx, "awal", bx - 46, by - 92, 30, { weight: 900, color: "#B23A36" }); ctx.restore(); }
     }
   }
   function dust(ctx, t, a, box = [560, 330, 760, 480]) {
@@ -276,7 +278,7 @@
     stack(ctx); glasses(ctx, o.glassGlow || 0);
     calendar(ctx, t, o.cal == null ? 7 : o.cal);
     paper(ctx, t, o.route || {});
-    const pn = o.pen || PEN_REST; pencil(ctx, pn.x, pn.y, pn.ang, pn.lift || 0);
+    if (o.pen !== false) { const pn = o.pen || PEN_REST; pencil(ctx, pn.x, pn.y, pn.ang, pn.lift || 0); }
     if (o.bip) o.bip(ctx);
     grade(ctx, 0.12);
     KL.parts.warmPool(ctx, 860, 760, 700, 0.6, 0.5);
@@ -292,7 +294,7 @@
     if (BLUR) return BLUR;
     const pad = [120, 80], cw = W + 2 * pad[0], ch = HH + 2 * pad[1];
     const a = mk(cw, ch), x = a.getContext("2d"); x.translate(pad[0], pad[1]);
-    world(x, 0, { cal: 7, route: ROUTE_DONE });
+    world(x, 0, { cal: 7, route: ROUTE_DONE, pen: false });
     const b = mk(cw, ch), y = b.getContext("2d"); y.filter = "blur(7px)"; y.drawImage(a, 0, 0); y.filter = "none";
     BLUR = { img: b, pad };
     return BLUR;
@@ -355,7 +357,7 @@
   function dots(ctx, Pj, o = {}) {
     const n = Pj.n, S = Pj.S, list = [];
     for (let i = 0; i < n; i++) for (let j = 0; j < n; j++) for (let k = 0; k < n; k++) list.push([i, j, k]);
-    const arr = list.map(r => ({ r, p: Pj(...r) })).sort((A, B) => B.p.d - A.p.d);
+    const arr = list.map(r => ({ r, p: Pj(...r) })).sort((A, B) => B.p.d - A.p.d), badges = [];
     ctx.save(); if (o.alpha != null) ctx.globalAlpha *= o.alpha;
     if (n > 6) { // kubus besar: titik kecil saja
       arr.forEach(({ r, p }) => { if (!(r[0] === n - 1 || r[1] === 0 || r[2] === n - 1)) return; const ru = o.rise ? o.rise(r) : 1; if (ru <= 0.01) return; const rad = Math.max(1.8, S * 0.15);
@@ -367,16 +369,19 @@
       const ru = o.rise ? o.rise(idx) : 1; if (ru <= 0.001) return;
       let x = p.x, y = p.y; if (o.from && ru < 1) { const [fx, fy] = o.from(idx), e = eio(ru); x = lerp(fx, p.x, e); y = lerp(fy, p.y, e) - Math.sin(e * Math.PI) * 120; }
       const rad = S * 0.112 * (1 - p.d * 0.07) * (n === 3 ? 1 : 1.25), h = o.hi ? o.hi(r) : 0, na = o.num ? o.num(idx) : 0;
-      ctx.save(); ctx.globalAlpha *= clamp(ru * 3);
+      ctx.save(); ctx.globalAlpha *= clamp(ru * 3) * (o.dim ? o.dim(r) : 1);
       D.glow(ctx, x, y, rad * 3.2, o.col ? o.col(r) || "#CFE0FF" : "#CFE0FF", 0.35 + 0.4 * h);
       if (h > 0.01) { D.glow(ctx, x, y, rad * 5, DOORC, 0.5 * h); }
       ctx.fillStyle = (o.col && o.col(r)) || (h > 0.5 ? "#FFE3A0" : "#F2F6FF"); ctx.beginPath(); ctx.arc(x, y, rad * (1 + 0.35 * h), 0, TAU); ctx.fill();
-      if (na > 0.01) { // lencana nomor
-        const k = lerp(0.6, 1, clamp(spring(na * 0.7, 10, 0.5))); ctx.save(); ctx.globalAlpha *= na; ctx.translate(x, y); ctx.scale(k, k);
-        ctx.fillStyle = "rgba(16,22,64,0.92)"; ctx.beginPath(); ctx.arc(0, 0, 27, 0, TAU); ctx.fill(); ctx.strokeStyle = "rgba(242,246,255,0.85)"; ctx.lineWidth = 3; ctx.stroke();
-        D.txt(ctx, String(idx + 1), 0, 14, 40, { align: "center", weight: 900, color: "#FFFFFF" }); ctx.restore(); }
+      if (na > 0.01) badges.push({ x, y, na, idx, h, a: ctx.globalAlpha });
       ctx.restore();
     });
+    // lencana nomor: digambar paling atas; yang terlalu berdekatan didorong sedikit menjauh
+    for (let it = 0; it < 3; it++) for (let a1 = 0; a1 < badges.length; a1++) for (let b1 = a1 + 1; b1 < badges.length; b1++) {
+      const A = badges[a1], B = badges[b1], dx = B.x - A.x, dy = B.y - A.y, d = Math.hypot(dx, dy) || 1; if (d >= 70) continue; const m = (70 - d) / 2 / d; A.x -= dx * m; A.y -= dy * m; B.x += dx * m; B.y += dy * m; }
+    badges.forEach(({ x, y, na, idx, h, a }) => { const k = lerp(0.6, 1, clamp(spring(na * 0.7, 10, 0.5))); ctx.save(); ctx.globalAlpha = a * na; ctx.translate(x, y); ctx.scale(k, k);
+      ctx.fillStyle = "rgba(16,22,64,0.94)"; ctx.beginPath(); ctx.arc(0, 0, 30, 0, TAU); ctx.fill(); ctx.strokeStyle = h > 0.5 ? DOORC : "rgba(242,246,255,0.85)"; ctx.lineWidth = 3.5; ctx.stroke();
+      D.txt(ctx, String(idx + 1), 0, 15.5, 44, { align: "center", weight: 900, color: "#FFFFFF" }); ctx.restore(); });
     ctx.restore();
   }
   // panah pintu dari ruangan A sepanjang sumbu ax (+1). Tembus: panah ke dinding + rintisan masuk dari dinding seberang.
@@ -409,32 +414,39 @@
     if (f < 0.5) return Pj(sg.A[0] + e[0] * f, sg.A[1] + e[1] * f, sg.A[2] + e[2] * f);
     const g2 = f - 1; return Pj(sg.B[0] + e[0] * g2, sg.B[1] + e[1] * g2, sg.B[2] + e[2] * g2);
   }
+  // o: lw, alpha, head, headR, portals, trail (jumlah ruas terakhir yang lebih terang), recent [pLalu, p] (kilat tembus + busur)
   function drawPath(ctx, Pj, seq, c, p, o = {}) {
     if (p <= 0.001) return; const N = seq.length, col = COL3[c], lwB = o.lw || Math.max(2.5, Pj.S * 0.05);
-    const segs = [];
+    const segs = [], fl = Math.floor(p);
     for (let s = 0; s < Math.ceil(Math.min(N, p)); s++) {
       const sg = pathSeg(Pj, seq, s), f = clamp(p - s), e = [0, 0, 0]; e[sg.ax] = 1; const A = sg.A, B = sg.B;
-      const at = (R, fr) => Pj(R[0] + e[0] * fr, R[1] + e[1] * fr, R[2] + e[2] * fr);
-      if (!sg.wrap) segs.push([at(A, 0), at(A, f), 0]);
-      else { segs.push([at(A, 0), at(A, 0.5 * clamp(f * 2)), 1]); if (f > 0.5) segs.push([at(B, -0.5), at(B, -0.5 + 0.5 * clamp(f * 2 - 1)), 2]); }
+      const at = (R, fr) => Pj(R[0] + e[0] * fr, R[1] + e[1] * fr, R[2] + e[2] * fr), w = o.trail && p < N ? (s >= fl - o.trail ? 1 : 0.5) : 1;
+      if (!sg.wrap) segs.push([at(A, 0), at(A, f), 0, w, s]);
+      else { segs.push([at(A, 0), at(A, 0.5 * clamp(f * 2)), 1, w, s]); if (f > 0.5) segs.push([at(B, -0.5), at(B, -0.5 + 0.5 * clamp(f * 2 - 1)), 2, w, s]); }
     }
     ctx.save(); ctx.globalAlpha *= o.alpha == null ? 1 : o.alpha; ctx.lineCap = "round";
     [[lwB * (Pj.n > 3 ? 2 : 3.2), Pj.n > 3 ? 0.12 : 0.22, "lighter"], [lwB, 1, "source-over"]].forEach(([lw, al, mode]) => {
-      ctx.globalCompositeOperation = mode; ctx.lineWidth = lw;
-      segs.forEach(([a, b, kind]) => { ctx.strokeStyle = D.hexA(col, al); ctx.setLineDash(kind ? [lw * 1.3, lw * 0.9] : []); ctx.beginPath(); ctx.moveTo(a.x, a.y); ctx.lineTo(b.x, b.y); ctx.stroke(); });
+      ctx.globalCompositeOperation = mode;
+      segs.forEach(([a, b, kind, w]) => { ctx.lineWidth = w < 1 ? lw * 0.8 : lw * (o.trail && p < N && mode === "lighter" ? 1.4 : 1); ctx.strokeStyle = D.hexA(col, al * (w < 1 ? 0.55 : 1)); ctx.setLineDash(kind ? [lw * 1.3, lw * 0.9] : []); ctx.beginPath(); ctx.moveTo(a.x, a.y); ctx.lineTo(b.x, b.y); ctx.stroke(); });
     });
     ctx.setLineDash([]); ctx.globalCompositeOperation = "source-over";
-    // gerbang tembus (cincin kecil di dinding keluar & masuk)
-    if (o.portals !== false && Pj.n <= 5) segs.forEach(([a, b, kind]) => { if (!kind) return; const q = kind === 1 ? b : a; ctx.strokeStyle = D.hexA(col, 0.9); ctx.lineWidth = Math.max(2, lwB * 0.5); ctx.beginPath(); ctx.ellipse(q.x, q.y, lwB * 1.6, lwB * 1.1, 0, 0, TAU); ctx.stroke(); });
-    if (o.head && p < N) { const s = Math.floor(p), hp = pointOn(Pj, pathSeg(Pj, seq, s), p - s); ctx.globalCompositeOperation = "lighter"; D.glow(ctx, hp.x, hp.y, lwB * 9, col, 1); ctx.globalCompositeOperation = "source-over";
-      ctx.fillStyle = "#FFFFFF"; ctx.beginPath(); ctx.arc(hp.x, hp.y, lwB * 1.25, 0, TAU); ctx.fill(); }
+    // gerbang tembus (cincin di dinding keluar & masuk); kilat + busur putus-putus saat baru saja diseberangi
+    if (o.portals !== false && Pj.n <= 5) segs.forEach(([a, b, kind, w, s]) => { if (!kind) return; const q = kind === 1 ? b : a;
+      let fx = 0; if (o.recent) { const [p0, p1] = o.recent, xc = s + 0.5; if (xc > p0 && xc <= p1 && p1 > p0) fx = clamp((xc - p0) / (p1 - p0)); }
+      if (fx > 0.01) D.glow(ctx, q.x, q.y, lwB * 9, col, 0.8 * fx);
+      ctx.strokeStyle = D.hexA(col, 0.9); ctx.lineWidth = Math.max(2, lwB * 0.5) * (1 + fx); ctx.beginPath(); ctx.ellipse(q.x, q.y, lwB * (1.6 + 1.4 * fx), lwB * (1.1 + 1 * fx), 0, 0, TAU); ctx.stroke(); });
+    if (o.recent && Pj.n <= 5) { const [p0, p1] = o.recent; for (let s = Math.max(0, Math.floor(p0 - 0.5)); s < Math.min(N, Math.ceil(p1)); s++) { const sg = pathSeg(Pj, seq, s), xc = s + 0.5; if (!sg.wrap || xc <= p0 || xc > p1 || p1 <= p0) continue;
+      const fx = clamp((xc - p0) / (p1 - p0)), e = [0, 0, 0]; e[sg.ax] = 1; const Ex = Pj(sg.A[0] + e[0] * 0.5, sg.A[1] + e[1] * 0.5, sg.A[2] + e[2] * 0.5), Nx = Pj(sg.B[0] - e[0] * 0.5, sg.B[1] - e[1] * 0.5, sg.B[2] - e[2] * 0.5);
+      wrapArc(ctx, Ex, Nx, Pj(1, 1, 1), col, clamp(fx * 1.6), clamp((1 - fx) * 3), 4); } }
+    if (o.head && p < N) { const s = Math.floor(p), hp = pointOn(Pj, pathSeg(Pj, seq, s), p - s), hr = o.headR || lwB * 1.25; ctx.globalCompositeOperation = "lighter"; D.glow(ctx, hp.x, hp.y, Math.max(lwB * 9, hr * 4.5), col, 1); ctx.globalCompositeOperation = "source-over";
+      ctx.fillStyle = "#FFFFFF"; ctx.beginPath(); ctx.arc(hp.x, hp.y, hr, 0, TAU); ctx.fill(); ctx.strokeStyle = col; ctx.lineWidth = 4; ctx.stroke(); }
     ctx.restore();
   }
 
   // panggung kubus: latar kabur + bayang gelap lembut di belakang kubus + debu
   function stage(ctx, t, cam, o = {}) {
     ctx.save(); camT(ctx, cam);
-    if ((o.sharp || 0) > 0.01) { world(ctx, t, o.sharpOpt || { cal: 7, route: ROUTE_DONE }); }
+    if ((o.sharp || 0) > 0.01) { world(ctx, t, o.sharpOpt || { cal: 7, route: ROUTE_DONE, pen: false }); }
     drawBlur(ctx, o.blur == null ? 1 : o.blur);
     ctx.restore();
     const ha = o.halo == null ? 1 : o.halo;
@@ -462,9 +474,10 @@
   function pen1(T, l, rp) {
     const A = plW(0), rest = PEN_REST;
     if (l < T.tTul) return rest;
-    if (l < T.tKunj + 0.15) { const u = eio(ramp(l, T.tTul, T.tKunj + 0.1 - T.tTul)); return { x: lerp(rest.x, A[0], u), y: lerp(rest.y, A[1], u) - Math.sin(u * Math.PI) * 60, ang: lerp(rest.ang, -1.02, u), lift: Math.sin(u * Math.PI) * 0.8 }; }
-    if (rp < 6) { const p = routePt(rp); return { x: p[0], y: p[1], ang: -1.02, lift: 0 }; }
-    const u = eio(ramp(l, T.tAwal + 0.35, 0.9)); return { x: lerp(A[0], rest.x, u), y: lerp(A[1], rest.y, u) - Math.sin(u * Math.PI) * 60, ang: lerp(-1.02, rest.ang, u), lift: Math.sin(u * Math.PI) * 0.8 };
+    if (l < T.tKunj + 0.15) { const u = eio(ramp(l, T.tTul, T.tKunj + 0.1 - T.tTul)); return { x: lerp(rest.x, A[0], u), y: lerp(rest.y, A[1], u) - Math.sin(u * Math.PI) * 60, ang: lerp(rest.ang, PEN_ANG, u), lift: Math.sin(u * Math.PI) * 0.8 }; }
+    if (rp < 6) { const p = routePt(rp); return { x: p[0], y: p[1], ang: PEN_ANG, lift: 0 }; }
+    // selesai: pensil diangkat lurus ke atas sampai keluar bingkai (tidak melintasi rute)
+    const u = eio(ramp(l, T.tAwal + 0.6, 0.85)); return { x: A[0] - 40 * u, y: A[1] - 460 * u, ang: PEN_ANG, lift: clamp(u * 3) };
   }
   function routeState1(T, l, t) {
     const rp = rp1(T, l);
@@ -499,6 +512,8 @@
       tag(cx, "sebuah rute", 760, 168, p2.a * (1 - ramp(l, T.tTepat - 0.25, 0.25)), { sp: p2.sp, col: P.amber, size: 52 });
       const p3 = pop(l, T.tTepat);
       tag(cx, "setiap tempat: tepat 1 kali", 760, 168, p3.a * (1 - ramp(l, T.tLalu + 0.2, 0.3)), { sp: p3.sp, col: P.amber, size: 52 });
+      const pAw = pop(l, T.tAwal), [ax, ay] = toS(c, plW(0)[0] - 62, plW(0)[1] + 78);
+      tag(cx, "awal", ax, ay, pAw.a, { sp: pAw.sp, col: P.green, size: 48 });
       const p4 = pop(l, T.tAwal - 0.05);
       tag(cx, "lalu kembali ke tempat awal", 760, 168, p4.a, { sp: p4.sp, col: P.green, size: 52 });
       // penghitung tempat dikunjungi (pojok kanan atas)
@@ -527,8 +542,9 @@
   // token tembus: s ∈ [-0.5, 2.5) sepanjang baris j=0,k=0; tiga putaran
   // waktu (pecahan putaran) saat token menyeberang dinding kanan (s = 2.5)
   const ZC = (() => { let a = 0, z = 1; for (let i = 0; i < 40; i++) { const m = (a + z) / 2; if (3 * eio(m) < 2.5) a = m; else z = m; } return z; })();
-  function loops2(T) { const L = 2.6, s1 = T.tSis + 0.1 - L * ZC, s2 = Math.max(s1 + L + 0.25, T.tPac - 0.1), s3 = s2 + L + 0.25; return [s1, s2, s3].map(s0 => ({ s0, L })); }
-  function tokenS(lp, l) { for (const { s0, L } of lp) { if (l >= s0 && l < s0 + L) { const s = 3 * eio((l - s0) / L); return s < 2.5 ? s : s - 3; } } return null; }
+  // putaran lebih pendek: penyeberangan ke-1 pada "sisi", ke-3 selesai sebelum peralihan beat; bola istirahat di ruangan 1
+  function loops2(T) { const L = 2.1, s1 = T.tSis + 0.1 - L * ZC, s2 = s1 + L + 0.08, s3 = s2 + L + 0.08; return [s1, s2, s3].map(s0 => ({ s0, L })); }
+  function tokenS(lp, l) { for (const { s0, L } of lp) { if (l >= s0 && l < s0 + L) { const s = 3 * eio((l - s0) / L); return s < 2.5 ? s : s - 3; } } return 0; }
   const crossTimes = lp => lp.map(({ s0, L }) => s0 + L * ZC);
   function arcade(ctx, x, y, w, h, s, t, a) {
     if (a <= 0.01) return; ctx.save(); ctx.globalAlpha *= a;
@@ -553,10 +569,12 @@
     ctx.fillStyle = "#5A62B0"; RR(ctx, x - 50, y + h / 2 + 16, 100, 16, 6); ctx.fill();
     ctx.restore();
   }
-  function bip2(ctx, b, l, t, T, Pj, tok, cross) {
-    const u = eio(ramp(l, 0.45, 1.5)), x = lerp(BIP1.x, BIPC.x, u), y = lerp(BIP1.y, BIPC.y, u), s = lerp(BIP1.s, BIPC.s, u);
+  function bip2(ctx, b, l, t, T, Pj, cz, tok, cross) {
+    // mulai persis di tempat Bip b7_1 (ruang kamera), ikut mengecil saat kamera mundur, lalu berjalan ke BIPC
+    const [x0, y0] = toS(cz, BIP1.x, BIP1.y), s0 = BIP1.s * cz.z, u = eio(ramp(l, 1.0, 1.3));
+    const x = lerp(x0, BIPC.x, u), y = lerp(y0, BIPC.y, u), s = lerp(s0, BIPC.s, u);
     let o;
-    if (l < 0.45) o = { pose: "diam", t, mood: "happy", look: [-0.6, -0.6] };
+    if (l < 1.0) o = { pose: "diam", t, mood: "happy", look: [-0.8, 0.4] };
     else if (u < 1) o = { pose: "jalan", t, dir: 1 };
     else if (l < T.t3a - 0.2) o = { pose: "diam", t, mood: "wow", look: [-1, -0.4] };
     else if (l < T.tSet) { const tg = Pj(1, 1, 1); o = { pose: "tunjuk", t, target: [tg.x + 80, tg.y], mood: "happy" }; }
@@ -565,66 +583,97 @@
       else { const lx = tok ? clamp((tok.x - x) / 600, -1, 1) : -0.6; o = { pose: "diam", t, mood: "happy", look: [lx, -0.2] }; } }
     KB.draw(ctx, x, y, s, o);
   }
+  // busur putus-putus dari titik keluar ke titik masuk (melengkung menjauhi pusat kubus / ke atas)
+  function wrapArc(ctx, E, N, ctr, col, a, prog, lw = 5) {
+    if (a <= 0.01 || prog <= 0.01) return;
+    const mx = (E.x + N.x) / 2, my = (E.y + N.y) / 2, dx = N.x - E.x, dy = N.y - E.y, dl = Math.hypot(dx, dy) || 1;
+    let px = -dy / dl, py = dx / dl; const dt = (mx - ctr.x) * px + (my - ctr.y) * py;
+    if (ctr.up ? py > 0 : (dt < 0 || (Math.abs(dt) < 5 && py > 0))) { px = -px; py = -py; }
+    const cxp = mx + px * dl * (ctr.bulge || 0.42), cyp = my + py * dl * (ctr.bulge || 0.42), Q = u => [(1 - u) * (1 - u) * E.x + 2 * (1 - u) * u * cxp + u * u * N.x, (1 - u) * (1 - u) * E.y + 2 * (1 - u) * u * cyp + u * u * N.y];
+    ctx.save(); ctx.globalAlpha *= a; ctx.strokeStyle = col; ctx.lineWidth = lw; ctx.lineCap = "round"; ctx.setLineDash([lw * 2.4, lw * 2]);
+    ctx.beginPath(); for (let k = 0; k <= 30; k++) { const u = prog * k / 30, [qx, qy] = Q(u); k ? ctx.lineTo(qx, qy) : ctx.moveTo(qx, qy); } ctx.stroke(); ctx.setLineDash([]);
+    if (prog < 0.999) { const [hx, hy] = Q(prog); D.glow(ctx, hx, hy, lw * 6, col, 0.8); }
+    else { const [ax, ay] = Q(0.96), an = Math.atan2(N.y - ay, N.x - ax), hl = lw * 3.2; ctx.fillStyle = col; ctx.beginPath(); ctx.moveTo(N.x, N.y); ctx.lineTo(N.x - Math.cos(an - 0.5) * hl, N.y - Math.sin(an - 0.5) * hl); ctx.lineTo(N.x - Math.cos(an + 0.5) * hl, N.y - Math.sin(an + 0.5) * hl); ctx.closePath(); ctx.fill(); }
+    ctx.restore();
+  }
+  // zum ke ruangan 000 selama penjelasan pintu (7.6 – 14.3), lalu mundur pada "Pintu di ujung"
+  const ZOOM = { z: 1.7, x: 600, y: 650 };
+  function zoom2(T, l) { return eio(ramp(l, T.tSet - 0.1, 0.9)) * (1 - eio(ramp(l, T.tUj - 0.05, 0.95))); }
+  function proj2(T, l, t) {
+    const m = zoom2(T, l), S = CUBE.S * lerp(1, ZOOM.z, m), base = mkProj(3, CUBE.x, CUBE.y, CUBE.S, swayYaw(t)), o = base(0, 0, 0);
+    const offX = (o.x - CUBE.x) * ZOOM.z, offY = (o.y - CUBE.y) * ZOOM.z;
+    return mkProj(3, lerp(CUBE.x, ZOOM.x - offX, m), lerp(CUBE.y, ZOOM.y - offY, m), S, swayYaw(t));
+  }
   S.b7_2 = function (ctx, b, l, t) {
     const T = T2(b), c = cam2(b, l, T), cz = drift(c, t);
     const [t3a, t3b, t3c] = threeT(b);
     const blurA = ramp(l, 0.35, 1.2), haloA = ramp(l, 0.9, 1.0);
-    stage(ctx, t, cz, { sharp: 1 - blurA, blur: blurA, halo: haloA, sharpOpt: { cal: 7, route: Object.assign({}, ROUTE_DONE, { textA: clamp((cz.z - 1.35) / 0.2) }) } });
-    // proyeksi (kubus tetap di layar; tidak ikut kamera — muncul setelah kamera mundur)
-    const Pj = mkProj(3, CUBE.x, CUBE.y, CUBE.S, swayYaw(t));
+    stage(ctx, t, cz, { sharp: 1 - blurA, blur: blurA, halo: haloA, sharpOpt: { cal: 7, pen: false, route: Object.assign({}, ROUTE_DONE, { textA: clamp((cz.z - 1.35) / 0.2) }) } });
+    // proyeksi (kubus tetap di layar; tidak ikut kamera — muncul setelah kamera mundur); zum ke ruangan 000 untuk bagian pintu
+    const Pj = proj2(T, l, t), zm = zoom2(T, l);
     const boxA = ramp(l, T.tGed - 0.1, 0.3), boxDraw = ramp(l, T.tGed - 0.1, Math.max(0.6, T.tKub + 0.5 - T.tGed));
     const fromPt = idx => { const r = D.rng(100 + idx); const [sx, sy] = toS(cz, PAP.x + (r() - 0.5) * 520, PAP.y + (r() - 0.5) * 160); return [sx, sy]; };
-    const numA = idx => ramp(l, land2(T, idx), 0.15) * (1 - ramp(l, T.tSet - 0.3, 0.5));
-    const latA = ramp(l, T.tRu, 0.6) * (1 - 0.55 * ramp(l, T.tSet, 0.6));
+    const wrapPh = ramp(l, T.tUj, 0.5);            // bagian tembus: baris depan-bawah (ruangan 1-2-3) saja yang terang
+    const numA = idx => ramp(l, land2(T, idx), 0.15) * (idx === 0 ? 1 : idx <= 2 ? Math.max(1 - ramp(l, T.tSet - 0.3, 0.5), ramp(l, T.tUj + 0.2, 0.4)) : 1 - ramp(l, T.tSet - 0.3, 0.5));
+    const latA = ramp(l, T.tRu, 0.6) * (1 - 0.55 * ramp(l, T.tSet, 0.6)) * (1 - 0.5 * wrapPh);
+    const isRow = r => r[1] === 0 && r[2] === 0;
+    const dim = r => { const o0 = r[0] + r[1] + r[2] === 0; return o0 ? 1 : isRow(r) ? 1 - 0.5 * zm : 1 - 0.5 * zm - 0.75 * wrapPh * (1 - zm); };
     // sorot baris / lajur / tingkat
     const rowA = [win(l, t3a - 0.05, t3b - 0.1, 0.3), win(l, t3b - 0.05, t3c - 0.1, 0.3), win(l, t3c - 0.05, T.tSet - 0.1, 0.3)];
     const rows = [[[0, 0, 0], [1, 0, 0], [2, 0, 0]], [[2, 0, 0], [2, 1, 0], [2, 2, 0]], [[0, 0, 0], [0, 0, 1], [0, 0, 2]]];
-    // ruangan 000 disorot, pintu
     const hiA = ramp(l, T.tSet + 0.25, 0.4) * (1 - 0.6 * ramp(l, T.tUj + 0.2, 0.5));
     const doorT = [T.tKan, T.tBel, T.tAtas];
-    const lp = loops2(T), cross = crossTimes(lp), sTok = l >= T.tUj ? tokenS(lp, l) : null;
+    const lp = loops2(T), cross = crossTimes(lp), tokA = ramp(l, T.tUj + 0.2, 0.4), sTok = tokA > 0.01 ? tokenS(lp, l) : null;
     const tok = sTok != null ? Pj(sTok, 0, 0) : null;
     // gambar kubus
     boxBack(ctx, Pj, boxA, ramp(l, T.tRu, 0.6));
+    // lantai (tingkat bawah) disorot saat pintu kanan/belakang: dua pintu itu sejajar lantai, pintu atas tegak
+    const floorA = win(l, T.tPin, T.tUj - 0.1, 0.4) * 0.8;
+    if (floorA > 0.01) { ctx.save(); ctx.globalAlpha *= floorA; poly(ctx, faceQuad(Pj, 2, -0.5)); ctx.fillStyle = D.hexA(DOORC, 0.12); ctx.fill(); ctx.strokeStyle = D.hexA(DOORC, 0.4); ctx.lineWidth = 3; ctx.stroke(); ctx.restore(); }
     lattice(ctx, Pj, latA);
-    // sorot baris
     rows.forEach((rw, i) => { const a = rowA[i]; if (a <= 0.01) return; ctx.save(); ctx.globalAlpha *= a; ctx.lineCap = "round";
       const p0 = Pj(...rw[0]), p2 = Pj(...rw[2]); ctx.strokeStyle = D.hexA(DOORC, 0.35); ctx.lineWidth = 54; ctx.beginPath(); ctx.moveTo(p0.x, p0.y); ctx.lineTo(p2.x, p2.y); ctx.stroke();
       ctx.strokeStyle = DOORC; ctx.lineWidth = 6; ctx.stroke(); ctx.restore(); });
-    // pintu ruangan 000 (abu-abu muncul di "tiga pintu", tiap pintu berkedip saat disebut)
-    const r0 = [0, 0, 0], dA = ramp(l, T.tPin, 0.4) * (1 - ramp(l, T.tUj - 0.1, 0.5) * 0.65);
-    for (let ax = 0; ax < 3; ax++) { const tk = doorT[ax], on = ramp(l, tk - 0.05, 0.15), blink = l > tk && l < tk + 1.0 ? 0.5 + 0.5 * Math.cos((l - tk) * TAU * 2.5) : 0;
-      const col = on > 0.5 ? (blink > 0.01 && l < tk + 1.0 ? DOORC : "#FFFFFF") : "rgba(220,228,255,0.8)", u = ramp(l, T.tPin + ax * 0.12, 0.35);
-      if (on > 0.01 && l < tk + 1.0) { const tip = door(ctx, Pj, r0, ax, { u: 1, lw: 30, col: D.hexA(DOORC, 0.3 * blink), head: false, a: dA }); }
-      door(ctx, Pj, r0, ax, { u, lw: on > 0.5 ? 12 : 8, col, head: l >= T.tArah - 0.05, a: dA, g0: 0.22, g1: 0.82 });
+    // baris depan-bawah saat bagian tembus
+    if (wrapPh > 0.01) { ctx.save(); ctx.globalAlpha *= wrapPh; ctx.lineCap = "round"; const p0 = Pj(-0.5, 0, 0), p2 = Pj(2.5, 0, 0);
+      ctx.strokeStyle = D.hexA(DOORC, 0.16); ctx.lineWidth = 64; ctx.beginPath(); ctx.moveTo(p0.x, p0.y); ctx.lineTo(p2.x, p2.y); ctx.stroke();
+      ctx.strokeStyle = D.hexA(DOORC, 0.5); ctx.lineWidth = 5; ctx.setLineDash([12, 10]); ctx.stroke(); ctx.setLineDash([]); ctx.restore(); }
+    // pintu ruangan 000 (muncul di "tiga pintu", tiap pintu berkedip saat disebut)
+    const r0 = [0, 0, 0], dA = ramp(l, T.tPin, 0.4) * (1 - ramp(l, T.tUj - 0.1, 0.5) * 0.75);
+    for (let ax = 0; ax < 3; ax++) { const tk = doorT[ax], on = ramp(l, tk - 0.05, 0.15), live = l > tk - 0.05 && l < tk + 1.1, blink = live ? 0.5 + 0.5 * Math.cos((l - tk) * TAU * 2) : 0;
+      const col = on > 0.5 ? (live ? DOORC : "#FFFFFF") : "rgba(220,228,255,0.85)", u = ramp(l, T.tPin + ax * 0.12, 0.35);
+      if (live && on > 0.01) door(ctx, Pj, r0, ax, { u: 1, lw: 44, col: D.hexA(DOORC, 0.22 + 0.3 * blink), head: false, a: dA, g0: 0.22, g1: 0.72 });
+      door(ctx, Pj, r0, ax, { u, lw: on > 0.5 ? 16 : 12, col, head: l >= T.tArah - 0.05, a: dA, g0: 0.22, g1: 0.72 });
     }
-    // pintu tembus dari ruangan 200 (dan masuk ke 000)
+    // dinding tembus (kanan = keluar, kiri = masuk)
     const wA = ramp(l, T.tUj, 0.4);
+    const flashR = cross.reduce((m, tc) => Math.max(m, l > tc - 0.3 && l < tc + 0.5 ? 1 - Math.abs(l - tc) / 0.5 : 0), 0);
+    const E = Pj(2.5, 0, 0), N = Pj(-0.5, 0, 0);
     if (wA > 0.01) {
       const fR = faceQuad(Pj, 0, 2.5), fL = faceQuad(Pj, 0, -0.5);
-      const flashR = cross.reduce((m, tc) => Math.max(m, l > tc - 0.3 && l < tc + 0.5 ? 1 - Math.abs(l - tc) / 0.5 : 0), 0);
-      ctx.save(); ctx.globalAlpha *= wA; poly(ctx, fR); ctx.fillStyle = D.hexA(DOORC, 0.12 + 0.3 * flashR); ctx.fill(); ctx.strokeStyle = D.hexA(DOORC, 0.4 + 0.5 * flashR); ctx.lineWidth = 4; ctx.stroke();
-      poly(ctx, fL); ctx.fillStyle = D.hexA(DOORC, 0.05 + 0.2 * flashR); ctx.fill(); ctx.strokeStyle = D.hexA(DOORC, 0.25 + 0.5 * flashR); ctx.lineWidth = 3; ctx.setLineDash([10, 8]); ctx.stroke(); ctx.setLineDash([]); ctx.restore();
-      arrowLine(ctx, Pj(2.2, 0, 0), Pj(2.5, 0, 0), 9, DOORC, true, wA);
-      arrowLine(ctx, Pj(-0.5, 0, 0), Pj(-0.2, 0, 0), 7, DOORC, true, wA * 0.8);
-      const e1 = Pj(2.5, 0, 0), e2 = Pj(-0.5, 0, 0); ctx.save(); ctx.globalAlpha *= wA; ctx.strokeStyle = DOORC; ctx.lineWidth = 4; [e1, e2].forEach(p => { ctx.beginPath(); ctx.ellipse(p.x, p.y, 30 + 14 * flashR, 21 + 10 * flashR, 0, 0, TAU); ctx.stroke(); }); ctx.restore();
+      ctx.save(); ctx.globalAlpha *= wA; poly(ctx, fR); ctx.fillStyle = D.hexA(DOORC, 0.2 + 0.3 * flashR); ctx.fill(); ctx.strokeStyle = D.hexA(DOORC, 0.6 + 0.4 * flashR); ctx.lineWidth = 5; ctx.stroke();
+      poly(ctx, fL); ctx.fillStyle = D.hexA(DOORC, 0.12 + 0.25 * flashR); ctx.fill(); ctx.strokeStyle = D.hexA(DOORC, 0.45 + 0.5 * flashR); ctx.lineWidth = 4; ctx.setLineDash([12, 9]); ctx.stroke(); ctx.setLineDash([]); ctx.restore();
+      arrowLine(ctx, Pj(2.2, 0, 0), Pj(2.5, 0, 0), 12, DOORC, true, wA);
+      arrowLine(ctx, Pj(-0.5, 0, 0), Pj(-0.2, 0, 0), 10, DOORC, true, wA * 0.85);
+      ctx.save(); ctx.globalAlpha *= wA; ctx.strokeStyle = DOORC; ctx.lineWidth = 6; [E, N].forEach(p => { if (flashR > 0.01) D.glow(ctx, p.x, p.y, 110, DOORC, 0.6 * flashR); ctx.beginPath(); ctx.ellipse(p.x, p.y, 40 + 20 * flashR, 28 + 14 * flashR, 0, 0, TAU); ctx.stroke(); }); ctx.restore();
     }
-    dots(ctx, Pj, { rise: idx => ramp(l, land2(T, idx) - 0.55, 0.55), from: fromPt, num: numA, hi: r => (r[0] + r[1] + r[2] === 0 ? hiA : 0) });
-    // token
-    if (tok) { const tr = sTok; ctx.save(); ctx.globalCompositeOperation = "lighter";
-      for (let q = 1; q <= 6; q++) { const sq = tr - q * 0.06; if (sq < -0.5) break; const pq = Pj(sq, 0, 0); D.glow(ctx, pq.x, pq.y, 30 - q * 3, "#FFD447", 0.5 - q * 0.07); }
-      D.glow(ctx, tok.x, tok.y, 70, "#FFD447", 0.9); ctx.restore(); ctx.fillStyle = "#FFF3C4"; ctx.beginPath(); ctx.arc(tok.x, tok.y, 17, 0, TAU); ctx.fill(); }
+    dots(ctx, Pj, { rise: idx => ramp(l, land2(T, idx) - 0.55, 0.55), from: fromPt, num: numA, dim, hi: r => (r[0] + r[1] + r[2] === 0 ? hiA : 0) });
+    // busur tembus di setiap penyeberangan
+    cross.forEach(tc => { const a = ramp(l, tc - 0.05, 0.1) * (1 - ramp(l, tc + 0.6, 0.25)); wrapArc(ctx, E, N, { x: 0, y: 0, up: true, bulge: 0.6 }, DOORC, a, eio(ramp(l, tc, 0.4)), 6); });
+    // bola
+    if (tok) { const tr = sTok; ctx.save(); ctx.globalAlpha *= tokA; ctx.globalCompositeOperation = "lighter";
+      for (let q = 1; q <= 6; q++) { const sq = tr - q * 0.06; if (sq < -0.5) break; const pq = Pj(sq, 0, 0); D.glow(ctx, pq.x, pq.y, 44 - q * 4, "#FFD447", 0.5 - q * 0.07); }
+      D.glow(ctx, tok.x, tok.y, 96, "#FFD447", 0.95); ctx.globalCompositeOperation = "source-over"; ctx.fillStyle = "#FFF3C4"; ctx.beginPath(); ctx.arc(tok.x, tok.y, 26, 0, TAU); ctx.fill();
+      ctx.strokeStyle = "#FFB52E"; ctx.lineWidth = 4; ctx.stroke(); ctx.restore(); }
     boxFront(ctx, Pj, boxA, boxDraw);
-    // tepi ukuran "3"
+    // tepi ukuran "3" (hilang sebelum zum)
     const edgeLbl = [{ A: [-0.5, -0.5, -0.5], B: [2.5, -0.5, -0.5] }, { A: [2.5, -0.5, -0.5], B: [2.5, 2.5, -0.5] }, { A: [-0.5, -0.5, -0.5], B: [-0.5, -0.5, 2.5] }];
-    const edgeA = [t3a, t3b, t3c].map(tt => ramp(l, tt - 0.05, 0.25) * (1 - ramp(l, T.tPin, 0.5)));
-    edgeLbl.forEach((E, i) => { const a = edgeA[i]; if (a <= 0.01) return; const p = Pj(...E.A), q = Pj(...E.B); ctx.save(); ctx.globalAlpha *= a; ctx.strokeStyle = DOORC; ctx.lineWidth = 8; ctx.lineCap = "round"; ctx.beginPath(); ctx.moveTo(p.x, p.y); ctx.lineTo(q.x, q.y); ctx.stroke(); ctx.restore(); });
-    // Bip
-    bip2(ctx, b, l, t, T, Pj, tok, cross);
+    const edgeA = [t3a, t3b, t3c].map(tt => ramp(l, tt - 0.05, 0.25) * (1 - ramp(l, T.tSet - 0.25, 0.4)));
+    edgeLbl.forEach((E2, i) => { const a = edgeA[i]; if (a <= 0.01) return; const p = Pj(...E2.A), q = Pj(...E2.B); ctx.save(); ctx.globalAlpha *= a; ctx.strokeStyle = DOORC; ctx.lineWidth = 8; ctx.lineCap = "round"; ctx.beginPath(); ctx.moveTo(p.x, p.y); ctx.lineTo(q.x, q.y); ctx.stroke(); ctx.restore(); });
+    bip2(ctx, b, l, t, T, Pj, cz, tok, cross);
     D.post(cx => {
-      // label tepi "3"
-      edgeLbl.forEach((E, i) => { const a = edgeA[i]; if (a <= 0.01) return; const m = Pj((E.A[0] + E.B[0]) / 2, (E.A[1] + E.B[1]) / 2, (E.A[2] + E.B[2]) / 2);
-        const dx = m.x - CUBE.x, dy = m.y - CUBE.y, dl = Math.hypot(dx, dy) || 1, off = [70, 70, 70][i];
+      edgeLbl.forEach((E2, i) => { const a = edgeA[i]; if (a <= 0.01) return; const m = Pj((E2.A[0] + E2.B[0]) / 2, (E2.A[1] + E2.B[1]) / 2, (E2.A[2] + E2.B[2]) / 2);
+        const dx = m.x - CUBE.x, dy = m.y - CUBE.y, dl = Math.hypot(dx, dy) || 1, off = 70;
         const sp = clamp(spring(l - [t3a, t3b, t3c][i], 10, 0.5)); tag(cx, "3", m.x + dx / dl * off, m.y + dy / dl * off, a, { sp, col: DOORC, size: 56 }); });
       // panel kanan
       const nL = [...Array(27).keys()].filter(i => l >= land2(T, i)).length, cA = ramp(l, land2(T, 0), 0.2);
@@ -632,12 +681,14 @@
       const f1 = ramp(l, t3a, 0.2), f2 = ramp(l, t3b, 0.2), f3 = ramp(l, t3c, 0.2), fOut = 1 - ramp(l, T.tPin - 0.2, 0.4);
       if (f1 > 0.01) { const s = f3 > 0.5 ? "3 × 3 × 3 = 27" : f2 > 0.5 ? "3 × 3" : "3"; tag(cx, s, 1450, 290, f1 * fOut, { col: DOORC, size: 56 }); }
       const pA = pop(l, T.tArah); tag(cx, "3 pintu, satu arah", 1450, 290, pA.a * (1 - ramp(l, T.tUj - 0.2, 0.3)), { sp: pA.sp, col: DOORC, size: 52 });
-      // label pintu
-      const lbl = [["kanan", [0.6, 0, 0], [10, 72]], ["belakang", [0, 0.75, 0], [150, 10]], ["atas", [0, 0, 0.7], [-112, 0]]];
-      lbl.forEach(([s, pos, off], i) => { const p = pop(l, doorT[i]); if (p.a <= 0.01) return; const q = Pj(...pos);
-        tag(cx, s, q.x + off[0], q.y + off[1], p.a * (1 - ramp(l, T.tUj - 0.1, 0.4)), { sp: p.sp, col: DOORC, size: 48 }); });
+      // label pintu: di samping panah, di sisi yang kosong (kanan: di bawah, atas: di kiri, belakang: di atas lantai sebelah kanan)
+      const lbl = [["kanan", () => { const q = Pj(0.47, 0, 0); return [q.x, q.y + 0.42 * Pj.S]; }], ["belakang", () => { const q = Pj(0.6, 0.62, 0); return [q.x + 0.12 * Pj.S, q.y + 0.05 * Pj.S]; }], ["atas", () => { const q = Pj(0, 0, 0.47); return [q.x - 0.5 * Pj.S, q.y]; }]];
+      lbl.forEach(([s, pos], i) => { const p = pop(l, doorT[i]); if (p.a <= 0.01) return; const [qx, qy] = pos(); const live = l > doorT[i] && l < doorT[i] + 1.1;
+        tag(cx, s, qx, qy, p.a * (1 - ramp(l, T.tUj - 0.1, 0.4)), { sp: p.sp, col: DOORC, size: 50, fill: live ? "rgba(70,48,10,0.95)" : undefined }); });
       // tembus
       const pT = pop(l, T.tSis); tag(cx, "tembus ke sisi seberang", 1450, 290, pT.a, { sp: pT.sp, col: DOORC, size: 50 });
+      const pK = pop(l, T.tTem); tag(cx, "keluar", E.x + 95, E.y - 80, pK.a * wA, { sp: pK.sp, col: DOORC, size: 46 });
+      tag(cx, "masuk", N.x - 135, N.y - 40, pK.a * wA, { sp: pK.sp, col: DOORC, size: 46 });
       // layar permainan generik
       const pP = pop(l, T.tPac), aw = 420, ah = 200;
       if (pP.a > 0.01) { cx.save(); cx.globalAlpha *= pP.a; cx.translate(1450, 470); const k = lerp(0.85, 1, pP.sp); cx.scale(k, k); arcade(cx, 0, 0, aw, ah, sTok, t, 1); cx.restore();
@@ -651,9 +702,15 @@
     return { tTk: D.at(b, "Teka-tekinya"), tWar: D.at(b, "mewarnai"), tPin: D.at(b, "setiap pintu"), tM: D.at(b, "merah,"), tH: D.at(b, "hijau,"), tB: D.at(b, "biru,"),
       tSeh: D.at(b, "sehingga"), tJal: D.at(b, "satu jalan"), tSem: D.at(b, "semua ruangan"), tTep: D.at(b, "tepat satu"), tEnd: D.speechEnd(b) };
   }
-  function runs3(T, b) { const a = T.tM + 0.1, L = 3.35, gap = 0.12; return [[a, a + L], [a + L + gap, a + 2 * L + gap], [a + 2 * L + 2 * gap, a + 3 * L + 2 * gap]]; }
-  const prog = (l, r) => 27 * clamp((l - r[0]) / (r[1] - r[0]));
-  const count = (l, r) => (l < r[0] ? 0 : Math.min(27, Math.floor(prog(l, r) + 1e-6) + 1));
+  // merah pelan di awal (6 ruangan pertama ± 0,42 s per ruangan) lalu makin cepat; hijau dan biru lebih cepat
+  function runs3(T) { const a = T.tM + 0.08; return [[a, 8.6], [8.7, 11.4], [11.5, 14.1]]; }
+  const ss = u => u * u * (3 - 2 * u);
+  function prog3(R, c, l) {
+    const [a, b2] = R[c], tau = l - a, Dd = b2 - a; if (tau <= 0) return 0; if (tau >= Dd) return 27;
+    if (c === 0) { const slow = 0.42, n0 = 5, T0 = n0 * slow; if (tau < T0) return tau / slow; const u = (tau - T0) / (Dd - T0), k = clamp((Dd - T0) / ((27 - n0) * slow)); return n0 + (27 - n0) * (k * u + (1 - k) * ss(u)); }
+    const u = tau / Dd; return 27 * (0.35 * u + 0.65 * ss(u));
+  }
+  const count = (l, R, c) => (l < R[c][0] ? 0 : Math.min(27, Math.floor(prog3(R, c, l) + 1e-6) + 1));
   function doorColors(seqs, ps) {   // kunci "ijk:ax" → warna (yang sudah dilewati)
     const m = {}; seqs.forEach((seq, c) => { const p = ps[c]; for (let s = 0; s < Math.min(27, Math.ceil(p)); s++) { if (p - s < 0.5 && s === Math.floor(p)) continue; const A = rid(seq[s]), B = rid(seq[(s + 1) % 27]); let ax = 0; for (let q = 0; q < 3; q++) if (A[q] !== B[q]) ax = q; m[seq[s] + ":" + ax] = c; } }); return m;
   }
@@ -664,56 +721,82 @@
     ctx.fillStyle = col; ctx.beginPath(); ctx.moveTo(-0.05 * s, -0.09 * s); ctx.quadraticCurveTo(-0.055 * s, -0.2 * s, 0, -0.25 * s); ctx.quadraticCurveTo(0.055 * s, -0.2 * s, 0.05 * s, -0.09 * s); ctx.closePath(); ctx.fill();
     D.glow(ctx, 0, -0.2 * s, 0.14 * s, col, 0.6); ctx.restore();
   }
-  function stage3(ctx, t) { stage(ctx, t, drift(WIDE, t), { blur: 1, halo: 1 }); }
+  function stage3(ctx, t, o) { stage(ctx, t, drift(WIDE, t), Object.assign({ blur: 1, halo: 1 }, o || {})); }
+  // sorot ruangan 000: tiga pintu keluarnya selalu merah, hijau, biru (setiap warna keluar dari setiap ruangan tepat sekali)
+  function spot000(ctx, Pj, seqs, a, lw = 8) {
+    if (a <= 0.01) return; const o0 = Pj(0, 0, 0);
+    ctx.save(); ctx.globalAlpha *= a; ctx.fillStyle = "rgba(8,12,40,0.16)"; ctx.fillRect(0, 0, W, HH); ctx.restore();
+    ctx.save(); ctx.globalAlpha *= a;
+    seqs.forEach((seq, c) => { const sg = pathSeg(Pj, seq, 0), e = [0, 0, 0]; e[sg.ax] = 1; arrowLine(ctx, Pj(0.18 * e[0], 0.18 * e[1], 0.18 * e[2]), Pj(0.85 * e[0], 0.85 * e[1], 0.85 * e[2]), lw * 2.6, COL3[c], true, 1);
+      const q = Pj(e[0], e[1], e[2]); ctx.fillStyle = "#F2F6FF"; ctx.globalAlpha = a * 0.6; ctx.beginPath(); ctx.arc(q.x, q.y, Pj.S * 0.1, 0, TAU); ctx.fill(); ctx.globalAlpha = a; });
+    D.glow(ctx, o0.x, o0.y, Pj.S * 0.7, DOORC, 0.6); ctx.fillStyle = "#FFE3A0"; ctx.beginPath(); ctx.arc(o0.x, o0.y, Pj.S * 0.14, 0, TAU); ctx.fill();
+    ctx.strokeStyle = DOORC; ctx.lineWidth = 6; ctx.beginPath(); ctx.arc(o0.x, o0.y, Pj.S * 0.27, 0, TAU); ctx.stroke();
+    ctx.restore();
+  }
   function cube3Full(ctx, t, Pj, o) {
-    // o: greyA, ps[3], active, dimOthers, doneGlow
+    // o: greyA, greyDim, ps[3], recent[3], active, doneGlow, spot
     const seqs = KUB()["3"]; if (!seqs) return;
     boxBack(ctx, Pj, 1, 1);
     const dc = doorColors(seqs, o.ps);
-    // pintu abu-abu yang belum berwarna
     if (o.greyA > 0.01) for (let i = 0; i < 3; i++) for (let j = 0; j < 3; j++) for (let k = 0; k < 3; k++) for (let ax = 0; ax < 3; ax++) {
       const key = `${i}${j}${k}:${ax}`; if (dc[key] != null) continue; const u = o.grow ? o.grow(k * 9 + j * 3 + i) : 1;
-      door(ctx, Pj, [i, j, k], ax, { u, lw: 5, col: "rgba(220,230,255,0.75)", head: true, a: o.greyA, g0: 0.2, g1: 0.78 });
+      door(ctx, Pj, [i, j, k], ax, { u, lw: 5, col: "rgba(220,230,255,0.75)", head: true, a: o.greyA * (o.greyDim == null ? 1 : o.greyDim), g0: 0.2, g1: 0.78 });
     }
-    seqs.forEach((seq, c) => { const act = o.active === c; const al = o.active == null || act ? 1 : 0.32 + 0.68 * (o.doneGlow || 0);
-      drawPath(ctx, Pj, seq, c, o.ps[c], { lw: 8, alpha: al, head: act }); });
-    const headRoom = {}; if (o.active != null) { const p = o.ps[o.active]; if (p > 0 && p < 27) headRoom[seqs[o.active][Math.min(26, Math.round(p))]] = o.active; }
-    dots(ctx, Pj, { col: r => { const k = r.join(""); return headRoom[k] != null ? COL3[headRoom[k]] : null; }, hi: r => (o.startHi && r.join("") === "000" ? o.startHi : 0) });
+    seqs.forEach((seq, c) => { if (o.active === c) return; const al = (o.active == null ? 1 : 0.32 + 0.68 * (o.doneGlow || 0)) * (1 - 0.5 * (o.spot || 0)); drawPath(ctx, Pj, seq, c, o.ps[c], { lw: 8, alpha: al }); });
+    // ruangan yang baru dicapai: kilat + cincin melebar
+    const flash = {}; if (o.active != null) { const p = o.ps[o.active], fl = Math.floor(p), fr = p - fl; if (p > 0 && p < 27) flash[seqs[o.active][fl]] = clamp(1 - fr * 2); }
+    dots(ctx, Pj, { col: r => { const k = r.join(""); return flash[k] > 0.01 ? COL3[o.active] : null; }, hi: r => (o.startHi && r.join("") === "000" ? o.startHi : 0) });
+    if (o.active != null) { const c = o.active, p = o.ps[c]; drawPath(ctx, Pj, seqs[c], c, p, { lw: 9, head: true, headR: 16, trail: 3, recent: o.recent && o.recent[c] });
+      Object.keys(flash).forEach(k => { const f = flash[k]; if (f <= 0.01) return; const q = Pj(...rid(k)); ctx.save(); ctx.globalAlpha *= f; ctx.strokeStyle = COL3[c]; ctx.lineWidth = 5; ctx.beginPath(); ctx.arc(q.x, q.y, Pj.S * (0.2 + 0.25 * (1 - f)), 0, TAU); ctx.stroke(); D.glow(ctx, q.x, q.y, Pj.S * 0.6, COL3[c], 0.6 * f); ctx.restore(); }); }
     boxFront(ctx, Pj, 1, 1);
+    spot000(ctx, Pj, seqs, o.spot || 0);
   }
+  const BIPB = (c, px, py, s, col, t) => brush(c, px, py, s, col, t);
   function bip3(ctx, l, t, T, act, Pj) {
     const col = act == null ? "#C9CDE6" : COL3[act];
     if (l < T.tWar) { KB.draw(ctx, BIPC.x, BIPC.y, BIPC.s, { pose: "diam", t, mood: "think", look: [-1, -0.3] }); return; }
-    KB.draw(ctx, BIPC.x, BIPC.y, BIPC.s, { pose: "pegang", hold: "samping", dir: -1, propSize: 0.5, t, mood: "happy", look: [-1, -0.2], prop: (c, px, py, s) => brush(c, px, py, s, col, t) });
+    KB.draw(ctx, BIPC.x, BIPC.y, BIPC.s, { pose: "pegang", hold: "samping", dir: -1, propSize: 0.5, t, mood: "happy", look: [-1, -0.2], prop: (c, px, py, s) => BIPB(c, px, py, s, col, t) });
   }
+  // legenda: kepala panel + baris per warna; panel sorot ruangan 000
+  const LEG = { x: 1180, w: 560, head: 246, y0: 350, dy: 105 };
   S.b7_3 = function (ctx, b, l, t) {
-    const T = T3(b), R = runs3(T, b), ps = R.map(r => prog(l, r)), Pj = mkProj(3, CUBE.x, CUBE.y, CUBE.S, swayYaw(t));
+    const T = T3(b), R = runs3(T), ps = R.map((r, c) => prog3(R, c, l)), Pj = mkProj(3, CUBE.x, CUBE.y, CUBE.S, swayYaw(t));
+    const recent = R.map((r, c) => [prog3(R, c, l - 0.55), ps[c]]);
     let active = null; R.forEach((r, c) => { if (l >= r[0] && l < r[1]) active = c; });
-    const doneT = R[2][1], doneGlow = ramp(l, doneT, 0.6);
+    const doneT = R[2][1], doneGlow = ramp(l, doneT, 0.6), spot = ramp(l, doneT + 0.35, 0.45);
     stage3(ctx, t);
-    // sisa b7_2: sorot ruangan 000 memudar
-    const greyA = ramp(l, T.tPin - 0.1, 0.4);
-    cube3Full(ctx, t, Pj, { greyA, grow: idx => ramp(l, T.tPin - 0.1 + idx * 0.022, 0.3), ps, active, doneGlow, startHi: (1 - ramp(l, 0.2, 0.6)) * 0.4 + win(l, R[0][0] - 0.3, R[0][0] + 0.5, 0.2) });
-    // kilau selesai
-    if (doneGlow > 0.01) { const pulse = 0.5 + 0.5 * Math.sin((l - doneT) * 3); D.glow(ctx, CUBE.x, CUBE.y, 520, "#9FB6FF", 0.12 * doneGlow * pulse); }
+    const greyA = ramp(l, T.tPin - 0.1, 0.4), greyDim = 1 - 0.65 * ramp(l, R[0][0] - 0.3, 0.4);
+    cube3Full(ctx, t, Pj, { greyA, greyDim, grow: idx => ramp(l, T.tPin - 0.1 + idx * 0.022, 0.3), ps, recent, active, doneGlow, spot,
+      startHi: (1 - ramp(l, 0.2, 0.6)) * 0.4 + win(l, R[0][0] - 0.3, R[0][0] + 0.5, 0.2) });
+    if (doneGlow > 0.01) { const pulse = 0.5 + 0.5 * Math.sin((l - doneT) * 3); D.glow(ctx, CUBE.x, CUBE.y, 520, "#9FB6FF", 0.12 * doneGlow * pulse * (1 - 0.6 * spot)); }
     bip3(ctx, l, t, T, active, Pj);
     D.post(cx => {
-      // 27 × 3 = 81 pintu → semua berwarna
       const p0 = pop(l, T.tPin);
       tag(cx, "27 ruangan × 3 pintu = 81 pintu", 1335, 150, p0.a * (1 - ramp(l, doneT - 0.1, 0.3)), { sp: p0.sp, col: DOORC, size: 46 });
       const pD = pop(l, doneT + 0.1); tag(cx, "81 pintu, masing-masing 1 warna", 1335, 150, pD.a, { sp: pD.sp, col: P.green, size: 46 });
-      // legenda + penghitung per warna
-      [T.tM, T.tH, T.tB].forEach((tw, c) => { const p = pop(l, tw - 0.05); if (p.a <= 0.01) return; const y = 330 + c * 112, n = count(l, R[c]), done = l >= R[c][1];
-        cx.save(); cx.globalAlpha *= p.a; cx.translate(1180, y); const k = lerp(0.86, 1, p.sp); cx.scale(k, k);
-        const act = active === c; D.panel(cx, 0, -46, 560, 92, { fill: act ? "rgba(22,30,80,0.95)" : "rgba(14,20,58,0.86)", stroke: act ? COL3[c] : "rgba(242,246,255,0.25)", lw: act ? 4 : 2, r: 46 });
+      // kepala legenda
+      const pR = ramp(l, T.tM - 0.1, 0.3) * (1 - ramp(l, doneT, 0.3));
+      if (pR > 0.01) { cx.save(); cx.globalAlpha *= pR; D.panel(cx, LEG.x, LEG.head - 38, LEG.w, 76, { fill: "rgba(14,20,58,0.9)", stroke: "rgba(242,246,255,0.3)", lw: 2, r: 38 });
+        D.txt(cx, "ruangan dilewati", LEG.x + LEG.w / 2, LEG.head + 16, 46, { align: "center", weight: 800, color: "#FFFFFF" }); cx.restore(); }
+      // baris per warna + penghitung (berdenyut setiap ruangan baru)
+      [T.tM, T.tH, T.tB].forEach((tw, c) => { const p = pop(l, tw - 0.05); if (p.a <= 0.01) return; const y = LEG.y0 + c * LEG.dy, n = count(l, R, c), done = l >= R[c][1];
+        cx.save(); cx.globalAlpha *= p.a; cx.translate(LEG.x, y); const k = lerp(0.86, 1, p.sp); cx.scale(k, k);
+        const act = active === c; D.panel(cx, 0, -46, LEG.w, 92, { fill: act ? "rgba(22,30,80,0.95)" : "rgba(14,20,58,0.86)", stroke: act ? COL3[c] : "rgba(242,246,255,0.25)", lw: act ? 4 : 2, r: 46 });
         cx.fillStyle = COL3[c]; cx.beginPath(); cx.arc(48, 0, 22, 0, TAU); cx.fill(); if (act) D.glow(cx, 48, 0, 50, COL3[c], 0.6);
         D.txt(cx, CNAME[c], 88, 18, 50, { weight: 900, color: "#FFFFFF" });
-        D.txt(cx, `${n} / 27`, done ? 440 : 520, 18, 50, { align: "right", weight: 900, color: n > 0 ? COL3[c] : P.ink2 });
+        const fr = ps[c] - Math.floor(ps[c]), kp = act ? 1 + 0.22 * clamp(1 - fr * 2.5) * (ps[c] < 8 ? 1 : 0.5) : 1, xr = done ? 440 : 520;
+        cx.save(); cx.translate(xr, 0); cx.scale(kp, kp); D.txt(cx, `${n} / 27`, 0, 18, 50, { align: "right", weight: 900, color: n > 0 ? COL3[c] : P.ink2 }); cx.restore();
         cx.restore();
-        if (done) checkMark(cx, 1180 + 500, y, 26, ramp(l, R[c][1], 0.2), clamp(spring(l - R[c][1], 10, 0.5)));
+        if (done) checkMark(cx, LEG.x + 500, y, 26, ramp(l, R[c][1], 0.2), clamp(spring(l - R[c][1], 10, 0.5)));
       });
-      // label "ruangan" kecil di atas penghitung saat jalan pertama
-      const pR = ramp(l, R[0][0], 0.3) * (1 - ramp(l, doneT, 0.3)); if (pR > 0.01) { cx.save(); cx.globalAlpha *= pR; D.txt(cx, "ruangan dilewati:", 1180 + 12, 262, 40, { weight: 800, color: P.ink2 }); cx.restore(); }
+      // panel sorot ruangan 000
+      if (spot > 0.01) { const sp = clamp(spring(l - doneT - 0.35, 10, 0.55)); cx.save(); cx.globalAlpha *= spot; cx.translate(1335, 700); const k = lerp(0.86, 1, sp); cx.scale(k, k);
+        D.panel(cx, -250, -66, 500, 132, { fill: "rgba(14,20,58,0.94)", stroke: DOORC, lw: 4, r: 30 });
+        D.txt(cx, "1 ruangan: 3 pintu", 0, -12, 46, { align: "center", weight: 900, color: "#FFFFFF" });
+        cx.font = `900 46px ${FONT}`; const parts = [["merah", COL3[0]], [", ", "#FFFFFF"], ["hijau", COL3[1]], [", ", "#FFFFFF"], ["biru", COL3[2]]], ws = parts.map(([s2]) => cx.measureText(s2).width);
+        let xx = -(ws.reduce((a2, b3) => a2 + b3, 0) + cx.measureText("→ ").width) / 2; D.txt(cx, "→ ", xx, 46, 46, { weight: 900, color: DOORC }); xx += cx.measureText("→ ").width;
+        parts.forEach(([s2, c2], i) => { D.txt(cx, s2, xx, 46, 46, { weight: 900, color: c2 }); xx += ws[i]; });
+        cx.restore(); }
     });
   };
 
@@ -724,7 +807,7 @@
       tMen: D.at(b, "untuk menemukan"), tSam: D.at(b, "sampai di"), t16: D.at(b, "enam belas."), t16e: D.atEnd(b, "enam belas."), tTet: D.at(b, "Tetapi"), tSol: D.at(b, "solusi"),
       tSem: D.at(b, "semua ukuran"), tBel: D.at(b, "belum ditemukan."), tEnd: D.speechEnd(b) };
   }
-  const C4 = { c3: { x: 200, y: 610, B: 150 }, c5: { x: 560, y: 560, B: 230 }, c16: { x: 1030, y: 470, B: 370 }, lap: { x: 1560, y: 570, w: 340 }, q: { x: 1530, y: 520, B: 210 }, bip: { x: 1836, y: 800, s: 116 } };
+  const C4 = { c3: { x: 200, y: 610, B: 150 }, c5: { x: 560, y: 560, B: 230 }, c16: { x: 1030, y: 470, B: 370 }, lap: { x: 1560, y: 570, w: 340 }, q: { x: 1480, y: 520, B: 210 }, bip: { x: 1836, y: 800, s: 116 } };
   function laptop(ctx, cx, cy, w, t, o = {}) {
     const sh = w * 0.62, top = cy - sh, bw = w * 1.14;
     ctx.save();
@@ -755,10 +838,13 @@
       const p = Pj(...A), q = Pj(...B); ctx.beginPath(); ctx.moveTo(p.x, p.y); ctx.lineTo(q.x, q.y); ctx.stroke(); }
     ctx.setLineDash([]); ctx.restore();
   }
-  function bip4(ctx, l, t, T, laps) {
-    const x = C4.bip.x, y = C4.bip.y, s = C4.bip.s;
+  function bip4(ctx, l, t, T) {
+    // mulai sama persis dengan akhir b7_3 (BIPC, memegang kuas), pindah dan mengecil hanya saat laptop masuk
+    const u = eio(ramp(l, T.tDan - 0.2, 1.1)), x = lerp(BIPC.x, C4.bip.x, u), y = lerp(BIPC.y, C4.bip.y, u), s = lerp(BIPC.s, C4.bip.s, u);
     let o;
-    if (l < T.tDan) o = { pose: "diam", t, mood: "happy", look: [-1, -0.2] };
+    if (l < T.tDan - 0.2) { KB.draw(ctx, x, y, s, { pose: "pegang", hold: "samping", dir: -1, propSize: 0.5, t, mood: "happy", look: [-1, -0.2], prop: (c, px, py, s2) => BIPB(c, px, py, s2, "#C9CDE6", t) }); return; }
+    if (u < 1) o = { pose: "jalan", t, dir: 1 };
+    else if (l < T.tDan) o = { pose: "diam", t, mood: "happy", look: [-1, -0.2] };
     else if (l < T.tMen) o = { pose: "tunjuk", t, target: [C4.lap.x + 90, C4.lap.y - 100], mood: "happy" };
     else if (l < T.t16) o = { pose: "tunjuk", t, target: [C4.c16.x + 160, C4.c16.y], mood: "happy" };
     else if (l < T.t16 + 1.3) o = { pose: "kaget", t, k: l - T.t16, mood: "wow", seru: false };
@@ -768,12 +854,15 @@
   }
   S.b7_4 = function (ctx, b, l, t) {
     const T = T4(b), seqs = KUB();
-    stage3(ctx, t);
-    // kubus 3: besar di tengah → kecil ke kiri
+    // kubus 3: besar di tengah → kecil ke kiri; bayang gelap ikut bergeser supaya sisi kanan (laptop, kubus tanya) juga gelap
     const mv = eio(ramp(l, T.tDan - 0.2, 1.1));
+    stage3(ctx, t, { haloAt: [lerp(CUBE.x, 1150, mv), lerp(CUBE.y, 520, mv)], haloR: lerp(640, 900, mv), halo: lerp(1, 0.72, mv) });
+    const qa0 = ramp(l, T.tSol, 0.6); if (qa0 > 0.01) { const gr = ctx.createRadialGradient(C4.q.x, C4.q.y, 40, C4.q.x, C4.q.y, 420); gr.addColorStop(0, `rgba(10,14,48,${0.55 * qa0})`); gr.addColorStop(1, "rgba(10,14,48,0)"); ctx.fillStyle = gr; ctx.fillRect(0, 0, W, HH); }
     const S3 = lerp(CUBE.S, C4.c3.B / 3, mv), x3 = lerp(CUBE.x, C4.c3.x, mv), y3 = lerp(CUBE.y, C4.c3.y, mv);
     const P3 = mkProj(3, x3, y3, S3, swayYaw(t));
-    if (seqs["3"]) { boxBack(ctx, P3, 1, 1); seqs["3"].forEach((seq, c) => drawPath(ctx, P3, seq, c, 27, { lw: lerp(8, 4, mv) })); dots(ctx, P3, {}); boxFront(ctx, P3, 1, 1); }
+    const spot4 = 1 - ramp(l, Math.min(2.0, T.tUk3 - 0.6), 0.6);
+    if (seqs["3"]) { boxBack(ctx, P3, 1, 1); seqs["3"].forEach((seq, c) => drawPath(ctx, P3, seq, c, 27, { lw: lerp(8, 4, mv), alpha: 1 - 0.5 * spot4 })); dots(ctx, P3, {}); boxFront(ctx, P3, 1, 1);
+      spot000(ctx, P3, seqs["3"], spot4); }
     // kubus 5 (data asli)
     const a5 = ramp(l, T.tMen - 0.1, 0.5), p5 = 125 * eio(ramp(l, T.tMen + 0.1, 1.3));
     if (a5 > 0.01 && seqs["5"]) { const k5 = lerp(0.7, 1, clamp(spring(l - T.tMen + 0.1, 9, 0.6))), P5 = mkProj(5, C4.c5.x, C4.c5.y, C4.c5.B / 5 * k5, swayYaw(t) + 0.01);
@@ -801,7 +890,7 @@
         const mA = 1 - clamp(Math.min(mv, 1 - mv) * 6); const w3 = tag(cx, big > 0.5 ? "Knuth: ukuran 3" : "ukuran 3", lx3, ly3, p3.a * mA, { sp: p3.sp, col: P.green, size: big > 0.5 ? 56 : 46 });
         if (w3) checkMark(cx, lx3 + w3 / 2 + (big > 0.5 ? 40 : 32), ly3, big > 0.5 ? 30 : 24, p3.a * mA, p3.sp); }
       // Filip Stappers (label di samping papan ketik, tanpa wajah)
-      const pF = pop(l, T.tFil); if (pF.a > 0.01 && lout < 0.95) tag(cx, "Filip Stappers", lx - 50, 795, pF.a * (1 - lout), { sp: pF.sp, col: P.teal, size: 50 });
+      const pF = pop(l, T.tFil); if (pF.a > 0.01 && lout < 0.95) tag(cx, "Filip Stappers", lx - 30, C4.lap.y + 120, pF.a * (1 - lout), { sp: pF.sp, col: P.teal, size: 50 });
       // layar laptop: penghitung ukuran
       if (LT && typing + ramp(l, T.tKom, 0.3) > 0.01) { const a = ramp(l, T.tKom, 0.3) * (1 - lout);
         cx.save(); cx.globalAlpha *= a; D.txt(cx, "ukuran", LT.sx + LT.sw / 2, LT.sy + 58, 44, { align: "center", weight: 800, color: P.ink2 });
@@ -812,8 +901,8 @@
       const p5l = pop(l, T.tMen + 1.0); if (p5l.a > 0.01) { const w = tag(cx, "ukuran 5", C4.c5.x, 800, p5l.a, { sp: p5l.sp, col: P.green, size: 46 }); checkMark(cx, C4.c5.x + w / 2 + 32, 800, 24, p5l.a, p5l.sp); }
       const p16 = pop(l, T.t16e - 0.1); if (p16.a > 0.01) { const w = tag(cx, "ukuran 16", C4.c16.x, 800, p16.a, { sp: p16.sp, col: P.green, size: 46 }); checkMark(cx, C4.c16.x + w / 2 + 32, 800, 24, p16.a, p16.sp); }
       // tanda tanya + semua ukuran + belum ditemukan
-      const pq = pop(l, T.tSem); if (pq.a > 0.01) { cx.save(); cx.globalAlpha *= pq.a; const k = lerp(0.5, 1, pq.sp); cx.translate(C4.q.x, 262 + Math.sin(t * 2.2) * 6); cx.scale(k, k);
-        D.glow(cx, 0, -45, 120, P.amber, 0.5); D.txt(cx, "?", 0, 10, 150, { align: "center", weight: 900, color: P.amber }); cx.restore();
+      const pq = pop(l, T.tSem); if (pq.a > 0.01) { cx.save(); cx.globalAlpha *= pq.a; const k = lerp(0.5, 1, pq.sp); cx.translate(C4.q.x, C4.q.y + Math.sin(t * 2.2) * 5); cx.scale(k, k);
+        D.glow(cx, 0, -10, 150, P.amber, 0.55); D.txt(cx, "?", 0, 60, 170, { align: "center", weight: 900, color: "#FFD27A" }); cx.restore();
         tag(cx, "semua ukuran", C4.q.x, 745, pq.a, { sp: pq.sp, col: P.warm, size: 48 }); }
       const pb = pop(l, T.tBel); tag(cx, "belum ditemukan", C4.q.x, 850, pb.a, { sp: pb.sp, col: P.red, size: 50 });
     });
@@ -836,12 +925,13 @@
     K.sfxAt(TL, "b7_2", "kanan,", 0.0, "clack", 0.5),
     K.sfxAt(TL, "b7_2", "atas.", 0.0, "clack", 0.5),
     K.sfxAt(TL, "b7_2", "sisi", 0.1, "whoosh", 0.6),
-    K.sfxAt(TL, "b7_2", "Pac-Man.", 0.85, "whoosh", 0.4),
+    K.sfxAt(TL, "b7_2", "Pac-Man.", 0.22, "whoosh", 0.45),
+    K.sfxAt(TL, "b7_2", "Pac-Man.", 2.4, "whoosh", 0.4),
     K.sfxAt(TL, "b7_3", "setiap pintu", 0.0, "shimmer", 0.45),
     K.sfxAt(TL, "b7_3", "merah,", 0.1, "riser", 0.4),
-    K.sfxAt(TL, "b7_3", "merah,", 3.57, "pop", 0.5),
-    K.sfxAt(TL, "b7_3", "merah,", 7.04, "pop", 0.5),
-    K.sfxAt(TL, "b7_3", "merah,", 10.45, "shimmer", 0.65),
+    K.sfxAt(TL, "b7_3", "merah,", 5.08, "pop", 0.5),
+    K.sfxAt(TL, "b7_3", "merah,", 7.88, "pop", 0.5),
+    K.sfxAt(TL, "b7_3", "merah,", 10.48, "shimmer", 0.65),
     K.sfxAt(TL, "b7_4", "berukuran tiga,", 0.0, "pop", 0.5),
     K.sfxAt(TL, "b7_4", "Filip", 0.0, "clack", 0.45),
     K.sfxAt(TL, "b7_4", "untuk menemukan", 0.1, "pop", 0.45),

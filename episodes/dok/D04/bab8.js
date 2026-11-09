@@ -65,6 +65,12 @@
     ctx.translate(x, y); const k = lerp(0.86, 1, sp); ctx.scale(k, k); const w = D.label(ctx, s, 0, 0, { size: opt.size || 50, col: opt.col || P.amber, color: opt.color, fill: opt.fill });
     ctx.restore(); return w;
   }
+  // faktor tepi untuk label yang ikut bergeser bersama kamera (memudar sebelum keluar zona aman)
+  function edgeF(cx, x, s, size) {
+    const sz = Math.max(44, size || 50); cx.save(); cx.font = `800 ${sz}px ${FONT}`; const w = cx.measureText(s).width; cx.restore();
+    const m = cx.getTransform(), X = m.a * x + m.e, hw = w * m.a / 2; return clamp((X - hw - 100) / 40) * clamp((1820 - X - hw) / 40);
+  }
+  const etag = (cx, s, x, y, a, opt = {}) => tag(cx, s, x, y, a * edgeF(cx, x, s, opt.size), opt);
   // pil berlebar tetap (lebar teks penuh) yang teksnya muncul bertahap, rata kiri
   function ptag(ctx, full, shown, x, y, a, o = {}) {
     if (a <= 0.01 || !shown) return; const size = o.size || 48; ctx.save(); ctx.globalAlpha *= clamp(a);
@@ -317,10 +323,10 @@
   function dots(ctx, Pj, o = {}) {
     const n = Pj.n, S = Pj.S;
     ctx.save(); if (o.alpha != null) ctx.globalAlpha *= o.alpha;
-    if (n > 6) {
+    if (n > 6) { const base = ctx.globalAlpha;
       for (let i = 0; i < n; i++) for (let j = 0; j < n; j++) for (let k = 0; k < n; k++) { if (!(i === n - 1 || j === 0 || k === n - 1)) continue;
         const ru = o.rise ? o.rise([i, j, k]) : 1; if (ru <= 0.01) continue; const p = Pj(i, j, k), rad = Math.max(1.8, S * 0.13);
-        ctx.globalAlpha = (o.alpha == null ? 1 : o.alpha) * ru * 0.85; ctx.fillStyle = "#E4ECFF"; ctx.beginPath(); ctx.arc(p.x, p.y, rad, 0, TAU); ctx.fill(); }
+        ctx.globalAlpha = base * ru * 0.85; ctx.fillStyle = "#E4ECFF"; ctx.beginPath(); ctx.arc(p.x, p.y, rad, 0, TAU); ctx.fill(); }
       ctx.restore(); return;
     }
     const list = []; for (let i = 0; i < n; i++) for (let j = 0; j < n; j++) for (let k = 0; k < n; k++) list.push([i, j, k]);
@@ -560,15 +566,15 @@
 
   // =====================================================================
   // b8_2 + awal b8_3: kartu percobaan dan kisi 31 kartu
-  const ACT = { x: 140, y: 230, w: 560, h: 500 };
+  const ACT = { x: 140, y: 230, w: 560, h: 440 };
   const GRID = { x0: 800, y0: 250, px: 124, py: 136, w: 108, h: 120 };
   const slot = k => { const i = k - 1, r = Math.floor(i / 8), c = i % 8; return [GRID.x0 + c * GRID.px + GRID.w / 2, GRID.y0 + r * GRID.py + GRID.h / 2]; };
   const BIPS = { x: GRID.x0 + 7 * GRID.px + GRID.w / 2, y: GRID.y0 + 3 * GRID.py + 70, s: 104 };
-  const NOTE = { x: 610, y: 800, rot: -0.07 };
+  const NOTE = { x: 690, y: 770, rot: -0.07 };
   const CLK = { x: 1720, y: 150, r: 50 };
   const STAT = k => k === 31 ? "B" : [5, 12, 19, 26].includes(k) ? "K" : (k % 3 === 2 ? "X" : "L");
   const STAMP = { L: ["terlalu lambat", "#9AA3C7"], X: ["tidak berhasil", "#E07A7A"], K: ["ada kemajuan", AIA], B: ["berhasil!", P.green] };
-  function attempts(b) { const A = [0, D.at(b, "mencoba"), D.at(b, "menulis program")]; const t3 = D.at(b, "kecil,") + 0.35; for (let k = 3; k <= 30; k++) A.push(lerp(t3, b.dur - 0.35, (k - 3) / 27)); return A; }
+  function attempts(b) { const A = [0, D.at(b, "mencoba"), D.at(b, "menulis program")]; const t3 = D.at(b, "sementara"); for (let k = 3; k <= 30; k++) A.push(lerp(t3, b.dur - 0.35, (k - 3) / 27)); return A; }
   function clockFrac(TL, t) {
     const b2 = TL.beats.find(x => x.id === "b8_2"), b3 = TL.beats.find(x => x.id === "b8_3"); if (!b2 || !b3) return 0;
     const t0 = b2.start + D.at(b2, "mencoba"), t1 = b3.start + D.atEnd(b3, "jam"); return clamp((t - t0) / (t1 - t0));
@@ -584,15 +590,18 @@
   }
   // kartu percobaan besar: o.k nomor (0 = belum), code 0..1, stamp status, stampA, think, glow (emas)
   function activeCard(ctx, t, o) {
-    const { x, y, w, h } = ACT, gold = o.k === 31, col = gold ? GOLD : AIA;
+    const { x, y, w, h } = ACT, gold = o.gold == null ? o.k === 31 : o.gold, col = gold ? GOLD : AIA;
     ctx.save();
     if ((o.glow || 0) > 0.01) D.glow(ctx, x + w / 2, y + h / 2, 520, GOLD, 0.35 * o.glow);
+    if ((o.run || 0) > 0.01) D.glow(ctx, x + w / 2, y + h / 2, 480, AIA, 0.3 * o.run * (0.55 + 0.45 * Math.sin(t * 4)));
     ctx.fillStyle = "rgba(10,14,40,0.4)"; RR(ctx, x + 10, y + 14, w, h, 22); ctx.fill();
     ctx.fillStyle = "#EEF3FF"; RR(ctx, x, y, w, h, 22); ctx.fill(); ctx.strokeStyle = D.hexA(col, 0.95); ctx.lineWidth = gold ? 7 : 5; ctx.stroke();
     ctx.fillStyle = col; RR(ctx, x, y, w, 96, 22); ctx.fill(); ctx.fillRect(x, y + 60, w, 36);
     wtxt(ctx, o.k ? `percobaan ${o.k}` : "percobaan", x + w / 2, y + 66, 52, { weight: 900, color: "#10142E" });
     if (o.think) { for (let d = 0; d < 3; d++) { const yy = y + 260 - Math.max(0, Math.sin(t * 6 - d * 0.9)) * 18; ctx.fillStyle = D.hexA("#1F9C90", 0.9); ctx.beginPath(); ctx.arc(x + w / 2 + (d - 1) * 50, yy, 14, 0, TAU); ctx.fill(); } }
-    else codeLines(ctx, x + 70, y + 132, w - 120, o.code || 0, o.k || 1, 7);
+    else codeLines(ctx, x + 70, y + 132, w - 120, o.code || 0, o.k || 1, 5);
+    if ((o.run || 0) > 0.01) {   // program sedang dijalankan: garis pindai turun-naik di area kode
+      const sy = y + 120 + (0.5 - 0.5 * Math.cos(t * 2.6)) * 200; ctx.save(); ctx.globalAlpha *= o.run; ctx.fillStyle = D.hexA(AIA, 0.28); ctx.fillRect(x + 24, sy - 5, w - 48, 10); ctx.restore(); }
     const sa = o.stampA || 0;
     if (o.stamp && sa > 0.01) { const [s, sc] = STAMP[o.stamp], k = lerp(1.35, 1, eout(clamp(sa * 1.4)));
       ctx.save(); ctx.globalAlpha *= clamp(sa * 2); ctx.translate(x + w / 2, y + h - 78); ctx.rotate(-0.06); ctx.scale(k, k);
@@ -607,6 +616,14 @@
     if (a <= 0.01) return; const [cx, cy] = o.at || slot(k), st = STAT(k), sp = clamp(spring(a * 1.0, 10, 0.55)), sc = lerp(0.5, 1, sp) * (o.scale || 1);
     const w = GRID.w, h = GRID.h;
     ctx.save(); ctx.globalAlpha *= clamp(a * 3); ctx.translate(cx, cy); ctx.scale(sc, sc);
+    if (o.pending) {   // percobaan yang belum ada hasilnya: kartu netral bergaris putus-putus + titik "sedang dicoba"
+      ctx.fillStyle = "rgba(10,14,40,0.35)"; RR(ctx, -w / 2 + 5, -h / 2 + 7, w, h, 14); ctx.fill();
+      ctx.fillStyle = "#454C78"; RR(ctx, -w / 2, -h / 2, w, h, 14); ctx.fill();
+      ctx.save(); ctx.setLineDash([10, 7]); ctx.lineDashOffset = -t * 18; ctx.strokeStyle = "rgba(220,228,255,0.8)"; ctx.lineWidth = 3; RR(ctx, -w / 2 + 2, -h / 2 + 2, w - 4, h - 4, 13); ctx.stroke(); ctx.restore();
+      wtxt(ctx, String(k), 0, 4, 48, { weight: 900, color: "#FFFFFF" });
+      for (let d = 0; d < 3; d++) { ctx.fillStyle = `rgba(220,228,255,${0.45 + 0.55 * Math.max(0, Math.sin(t * 6 - d * 0.9))})`; ctx.beginPath(); ctx.arc((d - 1) * 20, h / 2 - 24, 6, 0, TAU); ctx.fill(); }
+      ctx.restore(); return;
+    }
     const gl = (o.glow || 0); if (gl > 0.01) D.glow(ctx, 0, 0, 150, st === "B" ? GOLD : AIA, 0.5 * gl);
     const fill = st === "B" ? "#6B5418" : st === "K" ? "#1E5560" : "#454C78", bd = st === "B" ? GOLD : st === "K" ? AIA : "rgba(200,210,240,0.45)";
     ctx.fillStyle = "rgba(10,14,40,0.35)"; RR(ctx, -w / 2 + 5, -h / 2 + 7, w, h, 14); ctx.fill();
@@ -620,13 +637,25 @@
   function region1(ctx, t, st) {
     activeCard(ctx, t, st);
     for (let k = 1; k <= 31; k++) { const a = st.minis(k); if (a <= 0.01) continue;
-      if (st.fly && st.fly.k === k && st.fly.u < 1) { const u = eio(st.fly.u), [sx, sy] = [ACT.x + ACT.w / 2, ACT.y + ACT.h - 78], [tx, ty] = slot(k);
+      if (st.fly && st.fly.k === k && st.fly.u < 1) { const u = eio(st.fly.u), [sx, sy] = [ACT.x + ACT.w - 30, ACT.y + 150], [tx, ty] = slot(k);
         miniCard(ctx, k, 1, t, { at: [lerp(sx, tx, u), lerp(sy, ty, u) - Math.sin(u * Math.PI) * 90], scale: lerp(1.25, 1, u) }); }
-      else miniCard(ctx, k, a, t, { glow: st.mGlow ? st.mGlow(k) : 0 }); }
+      else miniCard(ctx, k, a, t, { glow: st.mGlow ? st.mGlow(k) : 0, pending: st.pend ? st.pend(k) : false }); }
     clock(ctx, CLK.x, CLK.y, CLK.r, st.clk || 0, t, st.clkDone || 0);
     sticky(ctx, NOTE.x, NOTE.y + (1 - eout(clamp(st.note || 0))) * 30, NOTE.rot + Math.sin(t * 1.7) * 0.01, clamp((st.note || 0) * 3), st.notePulse || 0);
     if (st.hand) hand(ctx, st.hand.x, st.hand.y, 2.62, { s: 1.05 });
     if (st.bip) KB.draw(ctx, st.bipX == null ? BIPS.x : st.bipX, st.bipY == null ? BIPS.y : st.bipY, BIPS.s, st.bip);
+  }
+  // keterangan ikon kisi (di bawah kartu percobaan); ta = waktu muncul [⧗, ✕, ★]
+  const LEG = { x: 150, y: 732, dy: 58 };
+  function legend(cx, l, ta, a = 1) {
+    const pa = ramp(l, ta[0] - 0.1, 0.3) * a; if (pa <= 0.01) return; const { x, y, dy } = LEG;
+    const hv = ta.reduce((s, v) => s + eio(ramp(l, v - 0.15, 0.3)), 0);   // panel tumbuh satu baris per ikon baru
+    cx.save(); cx.globalAlpha *= pa; cx.fillStyle = "rgba(10,18,52,0.84)"; RR(cx, x - 26, y - 50, 404, 74 + Math.max(0, hv - 1) * dy, 20); cx.fill(); cx.strokeStyle = "rgba(200,210,240,0.35)"; cx.lineWidth = 3; cx.stroke(); cx.restore();
+    [["L", "terlalu lambat", "#AAB3D7"], ["X", "tidak berhasil", "#F08A8A"], ["K", "ada kemajuan", AIA]].forEach(([k, s, col], i) => {
+      const p = pop(l, ta[i]), al = p.a * a; if (al <= 0.01) return; const yy = y + i * dy;
+      cx.save(); cx.globalAlpha *= al; cx.translate(x + 18, yy - 15); const kk = lerp(0.6, 1, p.sp); cx.scale(kk, kk);
+      if (k === "L") hourglass(cx, 0, 0, 17, col); else if (k === "X") crossMark(cx, 0, 0, 13, col); else star(cx, 0, 0, 22, col); cx.restore();
+      cx.save(); cx.globalAlpha *= al; D.txt(cx, s, x + 54, yy, 44, { weight: 800, color: k === "K" ? "#8FF3E8" : P.ink }); cx.restore(); });
   }
   function T2(b) { return { tMc: D.at(b, "mencoba"), tPr: D.at(b, "menulis program"), tSem: D.at(b, "sementara"), tSt: D.at(b, "Stappers"), tMd: D.at(b, "mendampingi"),
     tIng: D.at(b, "mengingatkannya"), tCat: D.at(b, "mencatat"), tKm: D.at(b, "kemajuan."), tEnd: D.speechEnd(b) }; }
@@ -638,16 +667,18 @@
     if (l < tout) { const pr = Math.sin(clamp((l - tst) / 0.3) * Math.PI) * 10; return { x: tgt[0] + pr, y: tgt[1] + pr * 0.6 }; }
     const u = eio(ramp(l, tout, 1.0)); return { x: lerp(tgt[0], off[0], u), y: lerp(tgt[1], off[1], u) };
   }
+  const legT = A => [A[1] + 0.9 * (A[2] - A[1]), A[2] + 0.9 * (A[3] - A[2]), A[5] + 0.12];   // ikon mendarat di kisi
   S.b8_2 = function (ctx, b, l, t, TL) {
     const T = T2(b), A = attempts(b); stage(ctx, t);
     let k = 0; for (let i = 1; i <= 30; i++) if (l >= A[i]) k = i;
     const nx = k ? (k < 30 ? A[k + 1] : A[k] + 0.5) : A[1], ph = k ? clamp((l - A[k]) / (nx - A[k])) : 0, det = k > 0 && k <= 2;
-    const appear = i => A[i] + (i <= 2 ? 0.5 * (A[i + 1] - A[i]) : 0.12);
+    // dua percobaan pertama pelan: kode diketik (0–0,35), cap terbaca ≥ 1 detik, lalu kartu kecil terbang ke kisi (0,6–0,9)
+    const appear = i => A[i] + (i <= 2 ? 0.6 * (A[i + 1] - A[i]) : 0.12);
     const st = {
-      k, code: det ? clamp(ph / 0.5) : (k ? 0.45 + 0.55 * ph : 0), think: k === 0,
-      stamp: k ? STAT(k) : null, stampA: k ? (det ? ramp(ph, 0.5, 0.12) : ramp(ph, 0.35, 0.1)) : 0,
+      k, code: det ? clamp(ph / 0.35) : (k ? 0.45 + 0.55 * ph : 0), think: k === 0,
+      stamp: k ? STAT(k) : null, stampA: k ? (det ? ramp(ph, 0.35, 0.12) : ramp(ph, 0.35, 0.1)) : 0,
       minis: i => i > 30 ? 0 : ramp(l, appear(i), i <= 2 ? 0.01 : 0.18),
-      fly: det && ph >= 0.5 ? { k, u: clamp((ph - 0.5) / 0.4) } : null,
+      fly: det && ph >= 0.6 ? { k, u: clamp((ph - 0.6) / 0.3) } : null,
       mGlow: i => STAT(i) === "K" ? win(l, T.tCat, b.dur, 0.3) * (0.6 + 0.4 * Math.sin(t * 4 + i)) : 0,
       note: ramp(l, T.tMd, 0.25), notePulse: win(l, T.tCat, b.dur, 0.3) * (0.5 + 0.5 * Math.sin(t * 4)),
       hand: handPos(l, T), clk: clockFrac(TL, t),
@@ -661,9 +692,10 @@
     region1(ctx, t, st);
     D.post(cx => {
       tag(cx, "Claude Opus 4.6 (Anthropic)", 470, 150, 1, { col: AIA, size: 44 });
-      const pS = pop(l, T.tSt); tag(cx, "Filip Stappers", 935, 862, pS.a, { sp: pS.sp, col: P.warm, size: 46 });
-      const pK = pop(l, T.tKm); const w = tag(cx, "kemajuan dicatat", 1440, 862, pK.a, { sp: pK.sp, col: AIA, size: 46 });
-      if (w) { cx.save(); cx.globalAlpha *= pK.a; star(cx, 1440 - w / 2 - 36, 862, 24, AIA); cx.restore(); }
+      legend(cx, l, legT(A));
+      const pS = pop(l, T.tSt); tag(cx, "Filip Stappers", 1010, 862, pS.a, { sp: pS.sp, col: P.warm, size: 46 });
+      const pK = pop(l, T.tKm); const w = tag(cx, "kemajuan dicatat", 1490, 862, pK.a, { sp: pK.sp, col: AIA, size: 46 });
+      if (w) { cx.save(); cx.globalAlpha *= pK.a; star(cx, 1490 - w / 2 - 36, 862, 24, AIA); cx.restore(); }
     });
   };
 
@@ -674,10 +706,10 @@
     tLalu: D.at(b, "lalu Knuth"), tKn: D.at(b, "Knuth"), tTul: D.at(b, "menulis sendiri"), tBkt: D.atEnd(b, "matematikanya."), tBi: D.at(b, "Bukti itu"), tDip: D.at(b, "diperiksa ulang"),
     tKim: D.at(b, "Kim"), tPb: D.at(b, "pemeriksa bukti"), tLean: D.at(b, "Lean."), tLeanE: D.atEnd(b, "Lean."), tEnd: D.speechEnd(b) }; }
   // wilayah 2 (koordinat layar saat kamera tiba)
-  const R2 = { c: [{ n: 3, x: 280, y: 450, B: 170 }, { n: 5, x: 680, y: 450, B: 250 }, { n: 7, x: 1150, y: 440, B: 320 }], lap: { x: 1585, y: 650, w: 360 } };
+  const R2 = { c: [{ n: 3, x: 280, y: 450, B: 170 }, { n: 5, x: 680, y: 450, B: 250 }, { n: 7, x: 1120, y: 440, B: 320 }], lap: { x: 1585, y: 650, w: 360 } };
   const R3 = { pap: { x: 560, y: 470, w: 600, h: 520 }, mac: { x: 1390, y: 470, w: 480, h: 400 } };
   // kertas bukti (tulisan tangan ilustratif); u 0..1 progres menulis; kembalikan ujung pensil
-  const PROOF = [["Bukti", 62, "italic 800", 0.16], ["s = i + j + k (mod m)", 46, "italic 700", 0.42], [null, 0, 0, 0.58], ["untuk setiap m ganjil", 46, "italic 700", 0.82], [null, 0, 0, 1]];
+  const PROOF = [["Bukti", 62, "italic 800", 0.16], ["s = (i + j + k) mod m", 46, "italic 700", 0.42], [null, 0, 0, 0.58], ["untuk setiap m ganjil", 46, "italic 700", 0.82], [null, 0, 0, 1]];
   function proofPaper(ctx, x, y, w, h, u, t, o = {}) {
     ctx.save(); ctx.translate(x, y); if (o.rot) ctx.rotate(o.rot); if (o.sc) ctx.scale(o.sc, o.sc);
     ctx.fillStyle = "rgba(10,14,40,0.35)"; ctx.fillRect(-w / 2 + 10, -h / 2 + 14, w, h);
@@ -692,7 +724,7 @@
         for (let q = 0; q <= 1.0001; q += 0.02) { if (q > f) break; ctx.lineTo(x0 + q * len, yy - 14 + Math.sin(q * 46 + i) * 7); } ctx.stroke();
         if (i === 4 && f > 0.98) { ctx.fillStyle = INK; ctx.fillRect(x0 + len + 24, yy - 30, 26, 26); }
         if (f < 1) tip = [x0 + len * f, yy - 14]; } });
-    if (o.ticks) o.ticks.forEach((a, i) => { if (a > 0.01) checkMark(ctx, w / 2 - 56, -h / 2 + 100 + [0, 1, 3, 4][i] * 92 - 16, 24, a, clamp(spring(a * 0.8, 10, 0.5))); });
+    if (o.ticks) o.ticks.forEach((a, i) => { if (a > 0.01) checkMark(ctx, w / 2 + 38, -h / 2 + 100 + [0, 1, 3, 4][i] * 92 - 16, 24, a, clamp(spring(a * 0.8, 10, 0.5))); });
     ctx.restore();
     return tip ? [x + tip[0] * (o.sc || 1), y + tip[1] * (o.sc || 1)] : null;
   }
@@ -735,40 +767,45 @@
   }
   S.b8_3 = function (ctx, b, l, t, TL) {
     const T = T3(b);
-    const tP1 = T.tKub - 0.1, tP2 = T.tLalu - 0.35, P1 = eio(ramp(l, tP1, 1.1)), P2 = eio(ramp(l, tP2, 1.1)), camX = 1920 * (P1 + P2);
+    const tSatu = (tokTimes(b, "puluh satu,", 2) || [0, T.t31 + 0.22])[1];          // "…satu," = nomor 31 terdengar utuh
+    const tP1 = T.tKub + 0.3, tP2 = T.tKn, P1 = eio(ramp(l, tP1, 1.1)), P2 = eio(ramp(l, tP2, 1.1)), camX = 1920 * (P1 + P2);
     stage(ctx, t, { px: camX * 0.025 });
     const ox1 = -camX, ox2 = 1920 - camX, ox3 = 3840 - camX;
-    // ---- wilayah 1 ----
-    const cardGold = ramp(l, T.tPc, 0.4), m31 = ramp(l, T.t31 + 0.05, 0.25);
+    const won = l >= T.tBh, m31 = ramp(l, tSatu + 0.05, 0.25), gold = ramp(l, T.tBh, 0.4);
+    // ---- wilayah 1: percobaan 31 (hasil baru terlihat saat "berhasil") ----
     if (ox1 > -1920) { ctx.save(); ctx.translate(ox1, 0);
-      region1(ctx, t, { k: l < T.tPc ? 30 : 31, code: l < T.tPc ? 1 : ramp(l, T.tPc + 0.2, T.tMh + 0.5 - T.tPc), stamp: l < T.tPc ? null : "B", stampA: ramp(l, T.tBh, 0.15), glow: cardGold * (0.6 + 0.4 * Math.sin(t * 3)),
-        minis: i => i < 31 ? 1 : m31, mGlow: i => i === 31 ? m31 * (0.6 + 0.4 * Math.sin(t * 3)) : 0, note: 1, notePulse: 0, hand: null, clk: clockFrac(TL, t), clkDone: ramp(l, T.tJamE, 0.3) });
+      region1(ctx, t, { k: l < tSatu ? 30 : 31, gold: won, code: l < tSatu ? 1 : ramp(l, tSatu + 0.15, T.tMh + 0.5 - tSatu),
+        stamp: l < tSatu ? STAT(30) : (won ? "B" : null), stampA: l < tSatu ? 1 : ramp(l, T.tBh, 0.15), run: win(l, tSatu + 0.3, T.tBh, 0.3), glow: gold * (0.6 + 0.4 * Math.sin(t * 3)),
+        minis: i => i < 31 ? 1 : m31, pend: i => i === 31 && !won,
+        mGlow: i => i === 31 ? (won ? gold * (0.7 + 0.3 * Math.sin(t * 3)) : 0) : 0, note: 1, notePulse: 0, hand: null, clk: clockFrac(TL, t), clkDone: ramp(l, T.tJamE, 0.3) });
       ctx.restore(); }
-    // kartu 31: muncul di petak kisi, lalu ikut kamera ke pojok kiri atas wilayah 2
     // Bip: petak kisi → jalan ke wilayah 2 → wilayah 3
     { const b1 = [BIPS.x, BIPS.y], b2 = [1830, 830], b3 = [1790, 830], u1 = eio(ramp(l, tP1, 1.1)), u2 = eio(ramp(l, tP2, 1.1));
       const x = u2 > 0 ? lerp(b2[0], b3[0], u2) : lerp(b1[0], b2[0], u1), y = u2 > 0 ? lerp(b2[1], b3[1], u2) : lerp(b1[1], b2[1], u1);
       const moving = (u1 > 0 && u1 < 1) || (u2 > 0 && u2 < 1); let o;
       if (moving) o = { pose: "jalan", t, dir: 1, mood: "happy" };
-      else if (l < T.tPc) o = { pose: "diam", t, mood: "think", look: [-1, -0.2] };
-      else if (l < T.tBh) o = { pose: "diam", t, mood: "wow", look: [-1, 0] };
+      else if (l < tSatu) o = { pose: "diam", t, mood: "think", look: [-1, -0.2] };
+      else if (l < T.tBh) o = { pose: "diam", t, mood: "think", look: [-1, 0] };
       else if (l < T.tBh + 1.2) o = { pose: "kaget", t, k: l - T.tBh, mood: "wow", seru: false };
+      else if (l < tP1) o = { pose: "diam", t, mood: "happy", look: [-1, -0.3] };
       else if (l < tP2) o = { pose: "tunjuk", t, target: [1585, 520], mood: "happy" };
       else if (l < T.tLeanE + 0.25) o = { pose: "diam", t, mood: "think", look: [-1, -0.3] };
       else if (l < T.tLeanE + 1.45) o = { pose: "kaget", t, k: l - T.tLeanE - 0.25, mood: "wow", seru: false };
       else o = { pose: "diam", t, mood: "happy", look: [-1, -0.2] };
       KB.draw(ctx, x, y, u2 > 0.5 ? 115 : lerp(BIPS.s, 100, u1), o); }
     // ---- wilayah 2: kubus ganjil + uji ----
-    const pc = [T.tKub + 0.5, T.tKub + 1.0, T.tKub + 1.6].map((t0, i) => eio(ramp(l, t0, [1.4, 2.0, 2.6][i])));
+    const pc0 = [T.tKub + 0.9, T.tKub + 1.4, T.tKub + 2.0], pcD = [1.4, 2.0, 2.4], pcE = pc0.map((v, i) => v + pcD[i]);
+    const pc = pc0.map((t0, i) => eio(ramp(l, t0, pcD[i])));
     const tUe = T.t101 + 0.45, nOdd = l < T.tUji ? 3 : 3 + 2 * Math.round(49 * eio(ramp(l, T.tUji, tUe - T.tUji)));
     if (ox2 < 1920 && ox2 > -1920) { ctx.save(); ctx.translate(ox2, 0);
-      miniCard(ctx, 31, ramp(l, tP1 + 0.8, 0.3), t, { at: [215, 170], glow: 0.6 + 0.4 * Math.sin(t * 3) });
-      R2.c.forEach((c, i) => { const a = ramp(l, T.tKub - 0.2 + i * 0.25, 0.5); colorCube(ctx, c.n, c.x, c.y, c.B * lerp(0.75, 1, eout(a)), pc[i], t, { a, yaw: i * 0.01, rise: r => a }); });
+      miniCard(ctx, 31, ramp(l, tP1 + 0.6, 0.3), t, { at: [240, 175], scale: 1.2, glow: 0.6 + 0.4 * Math.sin(t * 3) });
+      R2.c.forEach((c, i) => { const a = ramp(l, T.tKub + 0.2 + i * 0.25, 0.5); colorCube(ctx, c.n, c.x, c.y, c.B * lerp(0.75, 1, eout(a)), pc[i], t, { a, yaw: i * 0.01, rise: r => a }); });
       laptop(ctx, R2.lap.x, R2.lap.y, R2.lap.w, t, { lit: 1, typing: win(l, T.tUji - 0.2, tUe, 0.3), screen: (c, sx, sy, sw, sh) => {
         const a = ramp(l, T.tSt, 0.4); if (a <= 0.01) { lapQ(c, sx, sy, sw, sh, t, 0.6); return; }
-        c.save(); c.globalAlpha *= a; wtxt(c, "ukuran", sx + sw / 2 - 40, sy + 54, 44, { weight: 800, color: P.ink2 });
-        wtxt(c, String(nOdd), sx + sw / 2 - 40, sy + 140, 84, { weight: 900, color: "#FFFFFF" });
-        if (l >= T.tUji) checkMark(c, sx + sw / 2 + 92, sy + 112, 28, 1, 1);
+        c.save(); c.globalAlpha *= a; wtxt(c, "ukuran", sx + 22, sy + 52, 44, { align: "left", weight: 800, color: P.ink2 });
+        const ga = ramp(l, T.tUji, 0.3); if (ga > 0.01) { c.save(); c.globalAlpha *= ga; wtxt(c, l < T.t101 ? "→ …" : "→ 101", sx + sw - 18, sy + 52, 44, { align: "right", weight: 900, color: l < T.t101 ? "#FFD38A" : "#7FE3A4" }); c.restore(); }
+        wtxt(c, String(nOdd), sx + sw / 2 - 40, sy + 142, 84, { weight: 900, color: "#FFFFFF" });
+        if (l >= T.tUji) checkMark(c, sx + sw / 2 + 92, sy + 114, 28, 1, 1);
         const n = (nOdd - 1) / 2; for (let q = 0; q < 50; q++) { c.fillStyle = q < n ? P.green : "rgba(242,246,255,0.18)"; c.fillRect(sx + 18 + q * (sw - 36) / 50, sy + sh - 30, (sw - 36) / 50 - 2, 14); }
         c.restore(); } });
       ctx.restore(); }
@@ -783,36 +820,39 @@
       machine(ctx, mac.x, mac.y, t, { lines, ticks: tk, scan: ramp(l, T.tDip + 0.4, T.tLeanE - T.tDip), busy: l > T.tDip && ok < 0.5, ok, nameA: ramp(l, T.tLean, 0.3) });
       keyboard(ctx, mac.x, mac.y + mac.h / 2 + 50, 300, t, win(l, T.tKim, T.tLeanE, 0.3));
       const tip = proofPaper(ctx, pap.x, pap.y, pap.w, pap.h, wr, t, { ticks: [0, 1, 2, 3].map(i => ok * ramp(l, T.tLeanE + 0.5 + i * 0.25, 0.2)) });
-      glasses(ctx, ramp(l, T.tKn, 0.4) * 0.8, pap.x + 200, pap.y + 200, 0.8);
-      const pn = tip ? { x: tip[0], y: tip[1], ang: -1.0, lift: 0 } : { x: pap.x + 210, y: pap.y + 150, ang: -0.6, lift: 0 };
+      // kacamata pindah ke kiri bawah kertas dan pensil ke samping kertas saat bukti lolos (tidak menutupi tulisan)
+      const gm = eio(ramp(l, T.tLeanE + 0.3, 0.7));
+      glasses(ctx, ramp(l, T.tKn, 0.4) * 0.8, lerp(pap.x + 200, pap.x - 250, gm), lerp(pap.y + 200, pap.y + 252, gm), 0.8);
+      const done = eio(ramp(l, T.tBi - 0.2, 0.6)), rest = { x: pap.x - pap.w / 2 - 44, y: pap.y + 220, ang: -Math.PI / 2 + 0.12 };
+      const pn = tip ? { x: tip[0], y: tip[1], ang: -1.0 } : { x: lerp(pap.x + 210, rest.x, done), y: lerp(pap.y + 150, rest.y, done), ang: lerp(-0.6, rest.ang, done) };
       pencil(ctx, pn.x, pn.y, pn.ang, 0, 0.9);
       ctx.restore(); }
     D.post(cx => {
-      // wilayah 1
-      const a1 = 1 - ramp(l, tP1, 0.25);
-      if (a1 > 0.01) { tag(cx, "Claude Opus 4.6 (Anthropic)", 470, 150, a1, { col: AIA, size: 44 }); tag(cx, "Filip Stappers", 935, 862, a1, { col: P.warm, size: 46 });
-        const pJ = pop(l, T.tJam); tag(cx, "± 1 jam", CLK.x - 170, CLK.y, pJ.a * a1, { sp: pJ.sp, col: GOLD, size: 50 }); }
-      // wilayah 2
-      const a2 = ramp(l, tP1 + 0.8, 0.3) * (1 - ramp(l, tP2, 0.25));
-      if (a2 > 0.01) {
-        const pG = pop(l, T.tGj); tag(cx, "ukuran ganjil", 720, 160, pG.a * a2, { sp: pG.sp, col: P.green, size: 52 });
-        R2.c.forEach((c, i) => { const p = pop(l, T.tKub + 0.3 + i * 0.4); const w = tag(cx, `${c.n} × ${c.n} × ${c.n}`, c.x, 770, p.a * a2, { sp: p.sp, col: COL3[i], size: 46 });
-          if (w && pc[i] >= 1) checkMark(cx, c.x + w / 2 + 32, 770, 24, ramp(l, [T.tKub + 1.9, T.tKub + 3.0, T.tKub + 4.2][i], 0.2) * a2, 1); });
-        const pS = pop(l, T.tSt); tag(cx, "Filip Stappers", R2.lap.x, 848, pS.a * a2, { sp: pS.sp, col: P.warm, size: 46 });
-        const pD = pop(l, tUe); const w = tag(cx, "diuji sampai 101", R2.lap.x, 340, pD.a * a2, { sp: pD.sp, col: P.green, size: 46 });
-        if (w) checkMark(cx, R2.lap.x + w / 2 + 30, 340, 22, pD.a * a2, pD.sp);
-      }
-      // wilayah 3
-      const a3 = ramp(l, tP2 + 0.8, 0.3);
-      if (a3 > 0.01) {
-        const pK = pop(l, T.tKn); tag(cx, "Donald Knuth", R3.pap.x, 815, pK.a * a3, { sp: pK.sp, col: P.warm, size: 48 });
-        const pB = pop(l, T.tBkt - 0.3); tag(cx, "bukti matematika", R3.pap.x, 160, pB.a * a3 * (1 - ramp(l, T.tBi, 0.3)), { sp: pB.sp, col: P.amber, size: 48 });
-        const pDp = pop(l, T.tDip); tag(cx, "diperiksa ulang", R3.mac.x, 160, pDp.a * a3 * (1 - ramp(l, T.tPb - 0.15, 0.2)), { sp: pDp.sp, col: P.teal, size: 48 });
-        const pPb = pop(l, T.tPb); tag(cx, "program pemeriksa bukti", R3.mac.x, 160, pPb.a * a3 * (1 - ramp(l, T.tLeanE + 0.15, 0.2)), { sp: pPb.sp, col: P.teal, size: 48 });
-        const pOk = pop(l, T.tLeanE + 0.3); const w = tag(cx, "bukti lolos pemeriksaan", R3.mac.x - 20, 160, pOk.a * a3, { sp: pOk.sp, col: P.green, size: 48 });
-        if (w) checkMark(cx, R3.mac.x - 20 + w / 2 + 34, 160, 26, pOk.a * a3, pOk.sp);
-        const pKm = pop(l, T.tKim); tag(cx, "Kim Morrison", R3.mac.x, 845, pKm.a * a3, { sp: pKm.sp, col: P.teal, size: 48 });
-      }
+      // label ikut bergeser bersama wilayahnya (memudar di tepi layar)
+      if (ox1 > -1920) { cx.save(); cx.translate(ox1, 0);
+        etag(cx, "Claude Opus 4.6 (Anthropic)", 470, 150, 1, { col: AIA, size: 44 }); etag(cx, "Filip Stappers", 1010, 862, 1, { col: P.warm, size: 46 });
+        legend(cx, l, [-1, -1, -1], clamp((ox1 + 100) / 60));
+        const pJ = pop(l, T.tJam); etag(cx, "± 1 jam", CLK.x - 170, CLK.y, pJ.a, { sp: pJ.sp, col: GOLD, size: 50 });
+        cx.restore(); }
+      if (ox2 < 1920 && ox2 > -1920) { cx.save(); cx.translate(ox2, 0);
+        const pG = pop(l, T.tGj); etag(cx, "ukuran ganjil", 720, 160, pG.a, { sp: pG.sp, col: P.green, size: 52 });
+        R2.c.forEach((c, i) => { const p = pop(l, T.tKub + 0.3 + i * 0.4), s0 = `${c.n} × ${c.n} × ${c.n}`, f = edgeF(cx, c.x, s0, 46);
+          const w = tag(cx, s0, c.x, 770, p.a * f, { sp: p.sp, col: P.ink2, size: 46 });
+          const pk = pop(l, pcE[i]); if (w) checkMark(cx, c.x + w / 2 + 32, 770, 24, pk.a * f, pk.sp);
+          etag(cx, `${c.n ** 3} ruangan`, c.x, 856, pk.a, { sp: pk.sp, col: P.amber, size: 44 }); });
+        const pS = pop(l, T.tSt); etag(cx, "Filip Stappers", R2.lap.x, 848, pS.a, { sp: pS.sp, col: P.warm, size: 46 });
+        const DX = R2.lap.x - 25, DY = 372, pD = pop(l, tUe), fD = edgeF(cx, DX + 20, "diuji sampai 101 ✓", 46); const w = tag(cx, "diuji sampai 101", DX, DY, pD.a * fD, { sp: pD.sp, col: P.green, size: 46 });
+        if (w) checkMark(cx, DX + w / 2 + 30, DY, 22, pD.a * fD, pD.sp);
+        cx.restore(); }
+      if (ox3 < 1920) { cx.save(); cx.translate(ox3, 0);
+        const pK = pop(l, T.tKn); etag(cx, "Donald Knuth", R3.pap.x, 815, pK.a, { sp: pK.sp, col: P.warm, size: 48 });
+        const pB = pop(l, T.tBkt - 0.3); etag(cx, "bukti matematika", R3.pap.x, 160, pB.a * (1 - ramp(l, T.tBi, 0.3)), { sp: pB.sp, col: P.amber, size: 48 });
+        const pDp = pop(l, T.tDip); etag(cx, "diperiksa ulang", R3.mac.x, 160, pDp.a * (1 - ramp(l, T.tPb - 0.15, 0.2)), { sp: pDp.sp, col: P.teal, size: 48 });
+        const pPb = pop(l, T.tPb); etag(cx, "program pemeriksa bukti", R3.mac.x, 160, pPb.a * (1 - ramp(l, T.tLeanE + 0.15, 0.2)), { sp: pPb.sp, col: P.teal, size: 48 });
+        const pOk = pop(l, T.tLeanE + 0.3); const w = etag(cx, "bukti lolos pemeriksaan", R3.mac.x - 20, 160, pOk.a, { sp: pOk.sp, col: P.green, size: 48 });
+        if (w) checkMark(cx, R3.mac.x - 20 + w / 2 + 34, 160, 26, pOk.a, pOk.sp);
+        const pKm = pop(l, T.tKim); etag(cx, "Kim Morrison", R3.mac.x, 845, pKm.a, { sp: pKm.sp, col: P.teal, size: 48 });
+        cx.restore(); }
     });
   };
 
@@ -825,17 +865,18 @@
   const CE = [{ n: 4, x: 330, y: 450, B: 190 }, { n: 6, x: 760, y: 450, B: 250 }, { n: 8, x: 1230, y: 440, B: 300 }], QE = { x: 1650, y: 450, B: 200 };
   S.b8_4 = function (ctx, b, l, t) {
     const T = T4(b); stage(ctx, t);
-    const out1 = eio(ramp(l, T.tBH - 0.1, 0.8));                 // fase 1 pergi
+    const out1 = eio(ramp(l, T.tBH - 0.1, 0.4));                 // fase 1 pergi cepat dulu (kubus genap dan labelnya)
     const gOut = ramp(l, T.tTer, 0.9);                            // laptop dan AI meredup saat kubus raksasa
     // ---- fase 1: kubus genap ----
     if (out1 < 1) { ctx.save(); ctx.globalAlpha *= 1 - out1;
       CE.forEach((c, i) => { const a = ramp(l, T.tUG + i * 0.2, 0.6), Pj = mkProj(c.n, c.x, c.y - out1 * 60, c.B / c.n * lerp(0.7, 1, eout(a)), swayYaw(t) + i * 0.01);
         ctx.save(); ctx.globalAlpha *= a; boxBack(ctx, Pj, 1, 1); dots(ctx, Pj, { rise: r => ramp(a, 0.2 + (r[2] / c.n) * 0.5, 0.3) }); boxFront(ctx, Pj, 1); ctx.restore(); });
-      const qa = ramp(l, T.tTM, 0.6); qCube(ctx, mkProj(4, QE.x, QE.y, QE.B / 4, swayYaw(t) + 0.12 * Math.sin(t * 0.4)), qa, t);
       ctx.restore(); }
+    // kubus "?" tetap di tempat sampai terbang masuk ke laptop
+    const qFly = eio(ramp(l, T.tBH + 0.3, 1.0));
+    if (qFly <= 0) { const qa = ramp(l, T.tTM, 0.6); qCube(ctx, mkProj(4, QE.x, QE.y, QE.B / 4, swayYaw(t) + 0.12 * Math.sin(t * 0.4)), qa, t); }
     // ---- fase 2: laptop Ho Boon Suan + tumpukan GPT ----
-    const lin = eio(ramp(l, T.tBH - 0.1, 0.9)), lapX = lerp(-300, LAP.x, lin) - gOut * 60;
-    const qFly = eio(ramp(l, T.tBH + 0.1, 1.0));                // kubus "?" masuk ke layar laptop
+    const lin = eio(ramp(l, T.tBH + 0.4, 0.9)), lapX = lerp(-300, LAP.x, lin) - gOut * 60;
     const nEven = l < T.tUji ? 8 : 8 + 2 * Math.round(96 * eio(ramp(l, T.tUji + 0.1, T.tBU + 0.3 - T.tUji)));
     const codeIn = ramp(l, T.tMP + 1.15, 0.3);
     if (lin > 0.01) laptop(ctx, lapX, LAP.y, LAP.w, t, { alpha: 1 - gOut, lid: "#33306E", body: "#3F3A82", lit: 1, typing: win(l, T.tHo, T.tMin + 0.4, 0.3) + win(l, T.tUji, T.tBU, 0.3), screen: (c, sx, sy, sw, sh) => {
@@ -847,7 +888,7 @@
       checkMark(c, sx + sw / 2 + 100, sy + 112, 28, 1, 1);
       const n = (nEven - 8) / 2; for (let q = 0; q < 48; q++) { c.fillStyle = q * 2 <= n ? P.green : "rgba(242,246,255,0.18)"; c.fillRect(sx + 18 + q * (sw - 36) / 48, sy + sh - 30, (sw - 36) / 48 - 2, 14); } } });
     // kubus "?" terbang dari kanan ke layar laptop
-    if (qFly > 0 && qFly < 1) { const x = lerp(QE.x, LAP.x - 40, qFly), y = lerp(QE.y, LAP.y - 120, qFly) - Math.sin(qFly * Math.PI) * 100; qCube(ctx, mkProj(4, x, y, lerp(QE.B, 60, qFly) / 4, swayYaw(t)), 1 - qFly * 0.6, t); }
+    if (qFly > 0 && qFly < 1) { const x = lerp(QE.x, lapX - 40, qFly), y = lerp(QE.y, LAP.y - 130, qFly) - Math.sin(qFly * Math.PI) * 100; qCube(ctx, mkProj(4, x, y, lerp(QE.B, 60, qFly) / 4, swayYaw(t)), 1 - qFly * 0.4, t); }
     const dA = ramp(l, T.tGPT - 0.15, 0.9), soalAb = ramp(l, T.tGPT + 0.3, 0.6);
     aiDeck(ctx, DECK.x + gOut * 220, DECK.y, DECK.s, dA, t, { style: "O", think: soalAb >= 1 && l < T.tMP, alpha: 1 - gOut, flash: win(l, T.tGPT + 0.75, T.tGPT + 1.3, 0.3) });
     // kartu soal: laptop → AI;  kartu program: AI → laptop
@@ -872,7 +913,7 @@
       // pembanding kecil 3 × 3 × 3 (bab 7)
       const ca = ramp(l, T.tEnd + 0.25, 0.5); if (ca > 0.01) { ctx.save(); ctx.globalAlpha *= ca; colorCube(ctx, 3, 250, 520, 110, 1, t, { lw: 3.5 }); ctx.restore(); } }
     // Bip
-    { let o, x = 1835, y = 812, s = 104;
+    { let o, x = 1852, y = 812, s = 104;
       if (l < T.tHB) o = { pose: "diam", t, mood: "happy", look: [-1, -0.2] };
       else if (l < T.tTM) o = { pose: "tunjuk", t, target: [CE[2].x + 120, CE[2].y - 120], mood: "happy" };
       else if (l < T.tBH) o = { pose: "diam", t, mood: "think", look: [-0.6, -0.9] };
@@ -889,12 +930,13 @@
         const pk = pop(l, T.tKc + 0.1); tag(cx, "Claude: hanya ukuran kecil", 760, 862, pk.a * a1 * (1 - ramp(l, T.tRu - 0.1, 0.2)), { sp: pk.sp, col: AIA, size: 46 });
         const pq = pop(l, T.tRu); if (pq.a > 0.01) { cx.save(); cx.globalAlpha *= pq.a * a1; const k = lerp(0.5, 1, pq.sp); cx.translate(QE.x, 300 + Math.sin(t * 2.2) * 6); cx.scale(k, k);
           D.glow(cx, 0, -45, 110, P.amber, 0.5); D.txt(cx, "?", 0, 10, 140, { align: "center", weight: 900, color: P.amber }); cx.restore(); }
-        const pT = pop(l, T.tTM + 0.3); tag(cx, "10, 12, 14, …", QE.x - 30, 770, pT.a * a1, { sp: pT.sp, col: P.warm, size: 46 });
-        const pr = pop(l, T.tRuE - 0.1); tag(cx, "rumus umum: belum ada", 760, 862, pr.a * a1, { sp: pr.sp, col: P.red, size: 48 });
+        const pT = pop(l, T.tTM + 0.3); tag(cx, "10, 12, 14, …", QE.x - 75, 770, pT.a * a1, { sp: pT.sp, col: P.warm, size: 46 });
+        const pS = pop(l, T.tBk); tag(cx, "dicari satu per satu", 760, 242, pS.a * a1, { sp: pS.sp, col: P.ink2, size: 44 });
+        const pr = pop(l, T.tRu + 0.1); tag(cx, "rumus umum: belum ada", 760, 862, pr.a * a1, { sp: pr.sp, col: P.red, size: 48 });
       }
       const a2 = ramp(l, T.tBH, 0.4) * (1 - ramp(l, T.tTer, 0.4));
       if (a2 > 0.01) {
-        const pH = pop(l, T.tBH); tag(cx, "beberapa hari kemudian", 960, 140, pH.a * a2 * (1 - ramp(l, T.tGPT - 0.2, 0.3)), { sp: pH.sp, col: P.warm, size: 46 });
+        const pH = pop(l, T.tBH + 0.3); tag(cx, "beberapa hari kemudian", 960, 140, pH.a * a2 * (1 - ramp(l, T.tGPT - 0.2, 0.3)), { sp: pH.sp, col: P.warm, size: 46 });
         const pn = pop(l, T.tHo); ptag(cx, "Ho Boon Suan, Singapura", l < T.tSg ? "Ho Boon Suan" : "Ho Boon Suan, Singapura", LAP.x, 795, pn.a * a2, { sp: pn.sp, col: P.warm, size: 48 });
         const pg = pop(l, T.tGPT); ptag(cx, "GPT-5.3-codex (OpenAI)", l < T.tOAI ? "GPT-5.3-codex" : "GPT-5.3-codex (OpenAI)", DECK.x, 190, pg.a * a2, { sp: pg.sp, col: AIO, size: 48 });
         const p8 = pop(l, T.t8); tag(cx, "ukuran genap, mulai 8", LAP.x, 290, p8.a * a2 * (1 - ramp(l, T.tUji + 0.6, 0.3)), { sp: p8.sp, col: AIO, size: 46 });
@@ -935,7 +977,7 @@
   S.b8_5 = function (ctx, b, l, t) {
     const T = T5(b);
     const c = drift(D.path([[0, 960, 575, 1.0], [b.dur, 960, 585, 1.04]], l), t);
-    const t0 = T.tMB - 0.25, t1 = T.tHal + 0.15, nLand = i => t0 + (t1 - t0) * (i / 13) + 0.42;   // halaman i (0..13) mendarat
+    const FLY = 0.5, t0 = T.tMB - 0.25, nLand = i => t0 + FLY + (T.tHal + 0.1 - t0 - FLY) * (i / 13);   // halaman i (0..13) mendarat; ke-14 tepat pada "halaman"
     const hdrA = ramp(l, T.tUG, 0.4);
     // jalur kaca pembesar: menyusuri 3 baris halaman atas
     const sweep = l < T.tKn ? -1 : ((l - T.tKn - 0.4) / 2.2);
@@ -946,7 +988,7 @@
     const lx = lerp(lerp(1900, lens.x, handIn), 2100, rest), ly = lerp(lerp(1000, lens.y, handIn), 1150, rest);
     ctx.save(); camT(ctx, c);
     world(ctx, t, { glassGlow: win(l, T.tKn - 0.1, b.dur + 1, 0.4) * 0.8, pen: PEN_REST,
-      onWall: cx => aiDeck(cx, DK5.x, DK5.y, DK5.s, ramp(l, T.tGL - 0.1, 0.8), t, { style: "O", think: l > T.tGL + 0.5 && l < t0, flash: win(l, t0, t1, 0.3) }),
+      onWall: cx => aiDeck(cx, DK5.x, DK5.y, DK5.s, ramp(l, T.tGL - 0.1, 0.8), t, { style: "O", think: l > T.tGL + 0.5 && l < t0, flash: win(l, t0, T.tHal + 0.1, 0.3) }),
       onDesk: cx => {
         for (let i = 0; i < 14; i++) { const ld = nLand(i); if (l < ld) continue; const x = PG.x + i * 1.6 - 10, y = PG.y - i * 4.5, top = i === 13;
           page(cx, x, y, PG.w, PG.h, Math.sin(i * 1.7) * 0.012, top ? hdrA : 0, t, top || l < nLand(i + 1)); }
@@ -960,15 +1002,17 @@
         KB.draw(cx, 1590, 800, 120, o); },
     });
     // halaman yang sedang terbang dari AI ke meja
-    for (let i = 0; i < 14; i++) { const ld = nLand(i), st = ld - 0.42; if (l < st || l >= ld) continue; const u = eio((l - st) / 0.42);
-      const x = lerp(DK5.x, PG.x + i * 1.6 - 10, u), y = lerp(DK5.y, PG.y - i * 4.5, u) - Math.sin(u * Math.PI) * 120, sc = lerp(0.35, 1, u);
-      ctx.save(); ctx.translate(x, y); ctx.scale(sc, sc * lerp(1.6, 1, u)); page(ctx, 0, 0, PG.w, PG.h, (1 - u) * 0.4, 0, t, false); ctx.restore(); }
+    // halaman kecil keluar dari bawah tumpukan kartu, melengkung ke kanan bawah, lalu mendarat (tanpa diregang)
+    for (let i = 0; i < 14; i++) { const ld = nLand(i), st = ld - FLY; if (l < st || l >= ld) continue; const u = eio((l - st) / FLY);
+      const p0 = [DK5.x + 20, DK5.y + 120], p1 = [1120, 540], p2 = [PG.x + i * 1.6 - 10, PG.y - i * 4.5], v = 1 - u;
+      const x = v * v * p0[0] + 2 * v * u * p1[0] + u * u * p2[0], y = v * v * p0[1] + 2 * v * u * p1[1] + u * u * p2[1], sc = lerp(0.18, 1, u * u);
+      ctx.save(); ctx.globalAlpha *= clamp(u * 6); ctx.translate(x, y); ctx.scale(sc, sc); page(ctx, 0, 0, PG.w, PG.h, (1 - u) * 0.35, 0, t, false); ctx.restore(); }
     dust(ctx, t, 0.7);
     ctx.restore();
     let nPg = 0; for (let i = 0; i < 14; i++) if (l >= nLand(i)) nPg = i + 1;
     D.post(cx => {
       const [gx, gy] = toS(c, DK5.x, DK5.y - 205); const pG = pop(l, T.tGL); ptag(cx, "GPT-5.4 Pro (OpenAI)", "GPT-5.4 Pro (OpenAI)", Math.max(gx, 380), Math.max(gy, 110), pG.a, { sp: pG.sp, col: AIO, size: 48 });
-      const ca = ramp(l, t0 + 0.3, 0.3); if (ca > 0.01) { const [sx, sy] = toS(c, PG.x - PG.w / 2 - 190, PG.y - 150); tag(cx, nPg >= 14 && l >= T.tHal ? "14 halaman" : `halaman ${Math.max(1, nPg)}`, sx, sy, ca, { col: AIO, size: 50 }); }
+      const ca = ramp(l, nLand(0) - 0.1, 0.25); if (ca > 0.01) { const [sx, sy] = toS(c, PG.x - PG.w / 2 - 190, PG.y - 150); tag(cx, nPg >= 14 && l >= T.tHal ? "14 halaman" : `halaman ${Math.max(1, nPg)}`, sx, sy, ca, { col: AIO, size: 50 }); }
       const pK = pop(l, T.tKn); { const [kx, ky] = toS(c, PG.x, PG.y - 225); tag(cx, "diperiksa Knuth", kx, ky, pK.a, { sp: pK.sp, col: P.warm, size: 48 }); }
       const pT = pop(l, T.tTC); if (pT.a > 0.01) { const [sx, sy] = toS(c, PG.x + 60, PG.y + 50); cx.save(); cx.globalAlpha *= pT.a; cx.translate(sx, sy); cx.rotate(-0.07); const k = lerp(1.4, 1, eout(clamp((l - T.tTC) / 0.3))); cx.scale(k, k);
         cx.font = `900 50px ${FONT}`; const w = cx.measureText("tampak tanpa cacat").width + 120; cx.fillStyle = "rgba(255,255,255,0.93)"; RR(cx, -w / 2, -44, w, 88, 16); cx.fill(); cx.strokeStyle = P.green; cx.lineWidth = 6; cx.stroke();
@@ -1028,7 +1072,14 @@
     const T = T6(b); stage(ctx, t, { haloAt: [960, 470] });
     const aL = ramp(l, 0.05, 0.5), aR = ramp(l, T.tKini - 0.1, 0.5);
     const yr = l < T.tTT ? "2026" : String(2026 - Math.min(3, Math.floor(ramp(l, T.tTT, T.tSb + 0.4 - T.tTT) * 3 + 1e-6)));
-    noteCard(ctx, CL, aL, yr, P.warm); noteCard(ctx, CR, aR, "2026", AIA);
+    noteCard(ctx, CL, aL, yr, P.warm);
+    // kartu 2026 sudah "menunggu" sebagai bayangan putus-putus (komposisi seimbang), terisi penuh saat "Kini"
+    const gA = ramp(l, 0.5, 0.6) * (1 - aR);
+    if (gA > 0.01) { const R = CR; ctx.save(); ctx.globalAlpha *= gA;
+      ctx.fillStyle = "rgba(63,216,200,0.07)"; RR(ctx, R.x, R.y, R.w, R.h, 22); ctx.fill();
+      ctx.setLineDash([18, 12]); ctx.lineDashOffset = -t * 16; ctx.strokeStyle = D.hexA(AIA, 0.55); ctx.lineWidth = 5; RR(ctx, R.x + 3, R.y + 3, R.w - 6, R.h - 6, 20); ctx.stroke(); ctx.setLineDash([]);
+      ctx.globalAlpha *= 0.42; D.txt(ctx, "2026 ?", R.x + R.w / 2, R.y + R.h / 2 + 30, 96, { align: "center", weight: 900, color: "#BFF5EE" }); ctx.restore(); }
+    noteCard(ctx, CR, aR, "2026", AIA);
     // timbangan: kiri turun (ragu) → bergeser pelan ke kanan (terbuka), tidak jatuh
     const dL = ramp(l, T.tHr, 0.45), dR = ramp(l, T.tMr, 0.45);
     let ang = -0.2 * eio(ramp(l, T.tHr + 0.4, 0.9)); ang = lerp(ang, 0.1, eio(ramp(l, T.tMr + 0.4, 3.2))); ang += 0.012 * Math.sin(t * 1.1);
@@ -1070,15 +1121,17 @@
     ctx.strokeStyle = "rgba(60,70,120,0.6)"; ctx.lineWidth = 4; ctx.lineCap = "round";
     for (let r = 0; r < 4; r++) { const yy = -h / 2 + 130 + r * 42, x0 = -w / 2 + 330, len = [300, 260, 320, 180][r]; ctx.beginPath(); ctx.moveTo(x0, yy); for (let q = 0; q <= 1.0001; q += 0.025) ctx.lineTo(x0 + q * len, yy + Math.sin(q * 48 + r * 2) * 6); ctx.stroke(); }
   }
+  const foldT = b => D.atEnd(b, "catatannya") + 0.08;
   S.b8_7 = function (ctx, b, l, t) {
-    const T = T7(b);
+    const T = T7(b), tF = foldT(b);
     const c = drift(D.path([[0, 960, 600, 1.0], [b.dur, 950, 590, 1.035]], l), t);
-    const f1 = eio(ramp(l, T.tMc, 0.7)), f2 = eio(ramp(l, T.tMc + 0.75, 0.6)), mv = eio(ramp(l, T.tMc + 1.45, 1.0)), land = ramp(l, T.tMc + 2.45, 0.35);
-    const nx = lerp(PAP.x, STK.x + 80, mv), ny = lerp(PAP.y, STK.y - 72, mv) - Math.sin(mv * Math.PI) * 170 + Math.sin(land * Math.PI) * -6;
+    // catatan tetap terbuka sampai "catatannya" selesai, lalu dilipat dua kali dan mendarat di tumpukan naskah ±4 detik
+    const f1 = eio(ramp(l, tF, 0.55)), f2 = eio(ramp(l, tF + 0.6, 0.55)), mv = eio(ramp(l, tF + 1.15, 0.85)), land = ramp(l, tF + 2.0, 0.35);
+    const nx = lerp(PAP.x, STK.x + 125, mv), ny = lerp(PAP.y, STK.y - 72, mv) - Math.sin(mv * Math.PI) * 50 + Math.sin(land * Math.PI) * -6;
     ctx.save(); camT(ctx, c);
     world(ctx, t, { glassGlow: win(l, T.tKn - 0.1, T.tKn + 1.6, 0.4) + 0.4 * ramp(l, T.tEnd, 1.0),
       onDesk: cx => {
-        const { w, h } = PAP, sc = lerp(1, 0.8, mv), BK = "#EDE3CC", BK2 = "#F4EBD6";
+        const { w, h } = PAP, sc = lerp(1, 0.9, mv), BK = "#EDE3CC", BK2 = "#F4EBD6";
         const front = () => { cx.fillStyle = "#FBF4E2"; cx.fillRect(-w / 2, -h / 2, w, h); cx.strokeStyle = "rgba(90,130,200,0.28)"; cx.lineWidth = 2;
           for (let r = 1; r < 7; r++) { const yy = -h / 2 + r * h / 7; cx.beginPath(); cx.moveTo(-w / 2 + 10, yy); cx.lineTo(w / 2 - 10, yy); cx.stroke(); } cycNote(cx, w, h, t); };
         cx.save(); cx.translate(nx, ny); cx.rotate(lerp(-0.012, 0.05, mv)); cx.scale(sc, sc); cx.translate(-w / 4 * f2, -h / 4 * f1);
@@ -1101,7 +1154,7 @@
               else { cx.fillStyle = BK2; cx.fillRect(0, 0, w / 2 * -k2, h / 2); } }
             else { cx.fillStyle = BK2; cx.fillRect(0, 0, w / 2, h / 2); }
             cx.strokeStyle = "rgba(150,120,80,0.55)"; cx.lineWidth = 3; cx.beginPath(); cx.moveTo(f2 > 0.5 ? 0 : -w / 2, 2); cx.lineTo(w / 2, 2); cx.stroke();
-            if (f2 > 0.6) { cx.save(); cx.globalAlpha *= ramp(f2, 0.6, 0.4); wtxt(cx, "catatan", w / 4, h / 4 + 20, 58, { weight: "italic 800", color: INK }); cx.restore(); }
+            if (f2 > 0.6) { cx.save(); cx.globalAlpha *= ramp(f2, 0.6, 0.4); wtxt(cx, "Claude’s", w / 4, h / 4 - 8, 54, { weight: "italic 800", color: INK }); wtxt(cx, "Cycles", w / 4, h / 4 + 52, 54, { weight: "italic 800", color: INK }); cx.restore(); }
           }
         }
         cx.restore();
@@ -1114,7 +1167,7 @@
     ctx.restore();
     (cx => {
       const pa = ramp(l, T.tWe - 0.35, 0.45); if (pa <= 0.01) return;
-      const X = 440, Y = 600, Wd = 900, Hd = 300; cx.save(); cx.globalAlpha *= pa; cx.translate(0, (1 - eout(pa)) * 24);
+      const X = 560, Y = 292, Wd = 880, Hd = 300;   // di dinding kosong: meja dan catatan tetap terlihat cx.save(); cx.globalAlpha *= pa; cx.translate(0, (1 - eout(pa)) * 24);
       cx.fillStyle = "rgba(10,14,40,0.35)"; RR(cx, X + 10, Y + 14, Wd, Hd, 22); cx.fill(); cx.fillStyle = "rgba(251,244,226,0.97)"; RR(cx, X, Y, Wd, Hd, 22); cx.fill(); cx.strokeStyle = D.hexA(P.amber, 0.9); cx.lineWidth = 4; cx.stroke();
       const en = ["“We", "are", "living", "in", "very", "interesting", "times", "indeed.”"], et = tokTimes(b, "\"We", 8) || en.map((_, i) => T.tWe + i * 0.4);
       const id = ["Kita", "sungguh", "hidup", "di", "masa", "yang", "sangat", "menarik."], it = tokTimes(b, "kita sungguh", 8) || id.map((_, i) => T.tKita + i * 0.3);
@@ -1132,24 +1185,24 @@
   // ---------- efek suara ----------
   K.sfxParts = K.sfxParts || {};
   K.sfxParts.b8 = TL => {
-    const b2 = TL.beats.find(x => x.id === "b8_2"), A = b2 ? attempts(b2) : null;
+    const b2 = TL.beats.find(x => x.id === "b8_2"), A = b2 ? attempts(b2) : null, b7 = TL.beats.find(x => x.id === "b8_7");
     return [
       K.sfxAt(TL, "b8_1", "memberikan soal", 0.1, "whoosh", 0.45),
       K.sfxAt(TL, "b8_1", "Claude", 0.0, "shimmer", 0.6),
       K.sfxAt(TL, "b8_1", "Anthropic", 0.0, "pop", 0.4),
       K.sfxAt(TL, "b8_1", "tiga minggu", 0.0, "clack", 0.4),
-      A && K.sfxAt(TL, "b8_2", null, A[1] + 0.5 * (A[2] - A[1]), "clack", 0.45),
-      A && K.sfxAt(TL, "b8_2", null, A[2] + 0.5 * (A[3] - A[2]), "clack", 0.45),
+      A && K.sfxAt(TL, "b8_2", null, A[1] + 0.35 * (A[2] - A[1]), "clack", 0.45),
+      A && K.sfxAt(TL, "b8_2", null, A[2] + 0.35 * (A[3] - A[2]), "clack", 0.45),
       K.sfxAt(TL, "b8_2", "sementara", 0.1, "whoosh", 0.4),
       K.sfxAt(TL, "b8_2", "mendampingi", 0.0, "pop", 0.5),
       K.sfxAt(TL, "b8_2", "kemajuan.", 0.0, "shimmer", 0.45),
-      K.sfxAt(TL, "b8_3", "puluh satu,", 0.05, "pop", 0.6),
+      K.sfxAt(TL, "b8_3", "puluh satu,", 0.27, "pop", 0.6),
       K.sfxAt(TL, "b8_3", "jam", 0.3, "clack", 0.4),
       K.sfxAt(TL, "b8_3", "berhasil", 0.0, "shimmer", 0.7),
-      K.sfxAt(TL, "b8_3", "kubus berukuran", -0.1, "whoosh", 0.45),
+      K.sfxAt(TL, "b8_3", "kubus berukuran", 0.3, "whoosh", 0.45),
       K.sfxAt(TL, "b8_3", "ganjil.", 0.0, "pop", 0.5),
       K.sfxAt(TL, "b8_3", "seratus satu,", 0.45, "pop", 0.55),
-      K.sfxAt(TL, "b8_3", "lalu Knuth", -0.35, "whoosh", 0.45),
+      K.sfxAt(TL, "b8_3", "Knuth", 0.0, "whoosh", 0.45),
       K.sfxAt(TL, "b8_3", "Bukti itu", 0.1, "whoosh", 0.4),
       K.sfxAt(TL, "b8_3", "Kim", 0.0, "clack", 0.35),
       K.sfxAt(TL, "b8_3", "Lean.", 0.6, "shimmer", 0.7),
@@ -1175,8 +1228,8 @@
       K.sfxAt(TL, "b8_6", "merevisi", 0.4, "clack", 0.45),
       K.sfxAt(TL, "b8_6", "\"Hats off", 0.0, "shimmer", 0.55),
       K.sfxAt(TL, "b8_6", "angkat topi", 0.0, "pop", 0.5),
-      K.sfxAt(TL, "b8_7", "menutup catatannya", 1.45, "whoosh", 0.35),
-      K.sfxAt(TL, "b8_7", "menutup catatannya", 2.45, "clack", 0.35),
+      b7 && K.sfxAt(TL, "b8_7", null, foldT(b7) + 1.15, "whoosh", 0.35),
+      b7 && K.sfxAt(TL, "b8_7", null, foldT(b7) + 2.0, "clack", 0.35),
       K.sfxAt(TL, "b8_7", "menarik.", 0.4, "shimmer", 0.45),
     ].filter(Boolean);
   };
