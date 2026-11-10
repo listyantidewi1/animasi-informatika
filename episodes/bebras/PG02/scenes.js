@@ -255,9 +255,9 @@
     rows.forEach(([nm, who], r) => {
       const ry = y + hh + 6 + r * (rh + 6);
       ctx.fillStyle = "#F3F6F8"; rr(ctx, x, ry, lw - 10, rh, 12); ctx.fill();
-      const ic = Math.min(rh * 0.75, 76);
-      if (who === "bear") bear(ctx, x + ic * 0.62, ry + rh * 0.5, ic * 0.9); else beaver(ctx, x + ic * 0.62, ry + rh * 0.5, ic);
-      text(ctx, nm, x + ic * 1.25, ry + rh / 2 + fs * 0.36, fs, { weight: 900, color: WHO[who], fit: lw - ic * 1.25 - 18 });
+      const ic = opt.noIcon ? 0 : Math.min(rh * 0.75, 76);
+      if (opt.noIcon) {} else if (who === "bear") bear(ctx, x + ic * 0.62, ry + rh * 0.5, ic * 0.9); else beaver(ctx, x + ic * 0.62, ry + rh * 0.5, ic);
+      text(ctx, nm, x + ic * 1.25 + (opt.noIcon ? 14 : 0), ry + rh / 2 + fs * 0.36, fs, { weight: 900, color: WHO[who], fit: lw - ic * 1.25 - 18 });
       for (let m = 0; m < n; m++) {
         const cx = x + lw + m * cw + 4, cell = cells[r] && cells[r][m];
         ctx.strokeStyle = "#D5DCE1"; ctx.lineWidth = 2; ctx.setLineDash([8, 6]); rr(ctx, cx, ry, cw - 8, rh, 12); ctx.stroke(); ctx.setLineDash([]);
@@ -867,10 +867,10 @@
     para(ctx, "Berapa menit paling sedikit untuk memotong dan memuat semuanya?", 960, 215, 44, 900, { align: "center", weight: 900, lh: 1.2 });
     const done = b.id === "p3";
     const good = done ? P(l, at(b, "enam menit."), 0.5) : 0;
-    const pos = [[475, 360], [1005, 360], [475, 590], [1005, 590]];
+    const pos = [[475, 360], [985, 360], [475, 590], [985, 590]];
     for (let i = 0; i < 4; i++) {
       const st = done ? (i === 0 ? { strike: 1, dim: 1 } : i === 1 ? { tick: 1, good: good > 0.5, ring: good } : { dim: 1 }) : {};
-      optCard(ctx, i, pos[i][0], pos[i][1], 440, 170, st, 60);
+      optCard(ctx, i, pos[i][0], pos[i][1], 430, 170, st, 60);
     }
   }
   function hitung_v(ctx, b, l) {
@@ -884,13 +884,13 @@
   }
   function batas_v(ctx, b, l) {
     board(ctx);
-    const G = { x: 470, y: 150, lw: 180, cw: 158, hh: 46, rh: 92, n: 5 };
+    const G = { x: 465, y: 150, lw: 225, cw: 150, hh: 46, rh: 92, n: 5 };
     const bearRow = [], beavRow = [];
     for (let m = 0; m < 5; m++) {
       bearRow.push({ t1: "2", t2: "potongan", kind: "cut", a: 1, color: WHO.bear, bg: "#FEF1E4", x: m === 4 ? 1 : 0 });
       beavRow.push(m >= 2 ? { t1: "muat", kind: "load", a: 1, color: WHO.beaver, bg: "#E9F1FC" } : { t1: "1", t2: "potongan", kind: "cut", a: 1, color: WHO.beaver, bg: "#E9F1FC" });
     }
-    gantt(ctx, G, [bearRow, beavRow], { fs: 26 });
+    gantt(ctx, G, [bearRow, beavRow], { fs: 26, noIcon: true });
     text(ctx, "Potongan di menit 5 masih harus dimuat.", 960, 470, 34, { align: "center", weight: 800, color: RED, fit: 960 });
     text(ctx, "Beruang: 2 × 4 = 8", 960, 560, 48, { align: "center", weight: 900, color: WHO.bear });
     text(ctx, "Berang-berang: 2", 960, 630, 48, { align: "center", weight: 900, color: WHO.beaver });
@@ -901,8 +901,8 @@
   function jadwal_v(ctx, b, l) {
     board(ctx);
     const st = schedState(b, l);
-    const G = { x: 470, y: 150, lw: 170, cw: 135, hh: 44, rh: 96, n: 6 };
-    gantt(ctx, G, schedCells(st), { fs: 24 });
+    const G = { x: 465, y: 150, lw: 225, cw: 125, hh: 44, rh: 96, n: 6 };
+    gantt(ctx, G, schedCells(st), { fs: 24, noIcon: true });
     const { load } = logCuts(st);
     truck(ctx, 500, 820, 1.05, load.map((a, i) => ({ a, color: LOGC[i] })));
     const u = P(l, at(b, "pekerjaan selesai"), 0.6);
