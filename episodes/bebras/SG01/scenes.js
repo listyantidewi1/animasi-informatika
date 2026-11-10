@@ -731,6 +731,22 @@
     for (const w of "ABCD") beaver(ctx, 660 + "ABCD".indexOf(w) * 200, 650, 140, w);
   }
 
-  Object.assign(K.SCENES, { buka, kredit, soal, bahan: bahanScene, roti: rotiScene, tabel: tabelScene, pilihan: pilihanScene, bagi: bagiScene, periksa: periksaScene, jadwal, langkah, akhir, cta_bebras });
+  // soal untuk layar vertikal (Short): empat tusuk sate di atas, empat berang-berang + permintaan di bawah; potong [460, 130, 1000, 700]
+  function soal_v(ctx, b, l) {
+    board(ctx);
+    [1, 2, 3, 4].forEach((n, i) => sate(ctx, n, 600 + i * 240, 150, 52, { labelSize: 30 }));
+    const cells = { A: [470, 495], B: [960, 495], C: [470, 665], D: [960, 665] };
+    for (const w of "ABCD") {
+      const [x, y] = cells[w];
+      beaver(ctx, x + 70, y + 75, 120, w);
+      const r = REQ[w];
+      ctx.fillStyle = "#FFFFFF"; ctx.strokeStyle = INK; ctx.lineWidth = 3; rr(ctx, x + 145, y + 18, 330, 120, 24); ctx.fill(); ctx.stroke();
+      const lines = wrap(ctx, r.txt, 28, 800, 210);
+      lines.forEach((ln, i) => text(ctx, ln, x + 165, y + 78 - (lines.length - 1) * 17 + i * 34, 28, { weight: 800, color: INK }));
+      bahan(ctx, r.k, x + 425, y + 78, 70);
+    }
+  }
+
+  Object.assign(K.SCENES, { buka, kredit, soal, bahan: bahanScene, roti: rotiScene, tabel: tabelScene, pilihan: pilihanScene, bagi: bagiScene, periksa: periksaScene, jadwal, langkah, akhir, cta_bebras, soal_v });
   K.bebrasSG = { beaver, sate, bahan, hitTable, tableGeo, SATE };
 })(typeof window !== "undefined" ? window : globalThis);
