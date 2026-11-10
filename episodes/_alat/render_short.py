@@ -23,7 +23,11 @@ def kelas_of(c):
 code = PARENT["episode"]; SIM = "for" in PARENT    # video simulasi: kelas dan link latihan diambil dari episode pemakainya
 DOK = PARENT.get("kind") == "dokumenter"   # dokumenter untuk umum: tanpa kelas, ajakan ke channel YouTube
 CHANNEL = "youtube.com/@iTeachSWE"
-if DOK:
+BEBRAS = PARENT.get("kind") == "bebras"   # pembahasan soal Bebras: tanpa kelas dan link latihan; kredit soal di deskripsi
+if BEBRAS:
+    bb = PARENT.get("bebras", {}); kelas = ""; LINK = ""; FULL = f"Pembahasan Soal Bebras | {PARENT['title']}"
+    KREDIT = f"Soal: {bb.get('judul_asli', '')}, Bebras {bb.get('tahun', '')}, kontributor {bb.get('negara', '')} ({bb.get('kode', '')}), digambar ulang."
+elif DOK:
     kelas = ""; LINK = CHANNEL; FULL = PARENT["title"]
 elif SIM:
     ks = sorted({kelas_of(c) for c in PARENT["for"]}); kelas = f"Kelas {ks[0]}" if len(ks) == 1 else f"Kelas {ks[0]}–{ks[-1]}"
@@ -49,6 +53,9 @@ def timeline(variant):
     if DOK: TL["parent_beats"] = PTL["beats"]; TL["parent_segments"] = PTL.get("segments")   # adegan dokumenter boleh membaca beat lain di timeline induk
     for b in TL["beats"]:
         if b.get("src") in src: s0 = src[b["src"]]; b["src_dur"] = s0["dur"]; b["src_audio"] = s0["audio"]; b["src_text"] = s0["text"]; b["src_lead"] = (s0["speech"] - s0["start"]) if s0.get("speech") is not None else 0.4; b["src_words"] = s0.get("words"); b["src_suara"] = s0.get("suara"); b["src_beat"] = s0 if DOK else None
+    if BEBRAS:
+        TL.update(episode=code, label=PARENT.get("bebras", {}).get("kategori", "Bebras").split(" (")[0], full_title=FULL, link=LINK, cta_heading="TONTON PEMBAHASAN LENGKAPNYA")
+        return TL
     TL.update(episode=code, label="Dokumenter Animasi" if DOK else ("Simulasi Informatika " if SIM else "Informatika ") + kelas, full_title=FULL, link=LINK,
               cta_heading="TONTON VIDEO LENGKAPNYA" if DOK else "TONTON SIMULASI LENGKAPNYA" if SIM else "TONTON EPISODE LENGKAPNYA")
     return TL
@@ -84,14 +91,16 @@ def render(pg, variant):
 def youtube_md():
     yt = SCRIPT.get("youtube", {})
     title = SCRIPT.get("judul_short") or SCRIPT["hook"]
-    if DOK: desc = "\n".join([SCRIPT.get("ringkas", ""), "", f"Dokumenter lengkap: {FULL} (lihat video terkait di atas judul).",
+    if BEBRAS: desc = "\n".join([SCRIPT.get("ringkas", ""), "", f"Pembahasan lengkap: {FULL} (lihat video terkait di atas judul).", "",
+                      KREDIT, "", " ".join(yt.get("tagar", ["#shorts", "#Bebras"]))])
+    elif DOK: desc = "\n".join([SCRIPT.get("ringkas", ""), "", f"Dokumenter lengkap: {FULL} (lihat video terkait di atas judul).",
                       f"Subscribe: https://www.{CHANNEL}", f"Belajar informatika gratis: {SITE}/", "", " ".join(yt.get("tagar", ["#shorts", "#AI"]))])
     else: desc = "\n".join([SCRIPT.get("ringkas", ""), "", ("Simulasi lengkap: " if SIM else "Episode lengkap: ") + f"{FULL} (lihat video terkait di atas judul).",
                       f"Latihan interaktif: https://{LINK}", f"Semua episode: {SITE}/", "",
                       "Semua nama, akun, dan contoh di video ini fiktif.", "", " ".join(yt.get("tagar", ["#shorts", "#informatika"]))])
     md = f"# YouTube Short {code}\n\n**Judul** (≤100 karakter):\n\n{title}\n\n**Deskripsi:**\n\n```\n{desc}\n```\n\n" \
          f"**Video terkait** (fitur \"Related video\" di YouTube Studio): {FULL}\n\n" + \
-         ("**Berkas:** `video/Short_*_suara.mp4` (narasi; hanya versi bersuara).\n" if SIM or DOK else "**Berkas:** `video/Short_*_suara.mp4` (narasi) dan `video/Short_*_teks.mp4` (tanpa suara, waktu baca 1,6 kata/detik).\n")
+         ("**Berkas:** `video/Short_*_suara.mp4` (narasi; hanya versi bersuara).\n" if SIM or DOK or BEBRAS else "**Berkas:** `video/Short_*_suara.mp4` (narasi) dan `video/Short_*_teks.mp4` (tanpa suara, waktu baca 1,6 kata/detik).\n")
     open(os.path.join(ROOT, "youtube.md"), "w", encoding="utf-8").write(md)
 
 with sync_playwright() as p:
