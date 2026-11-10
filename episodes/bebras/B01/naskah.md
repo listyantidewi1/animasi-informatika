@@ -27,6 +27,12 @@ Soal ini berjudul "Mengenali Wajah". Soal ini berasal dari Bebras tahun dua ribu
 Setelah menonton video ini, kamu bisa membaca gambar bercabang dan menemukan jawaban yang pasti benar. Kamu tidak perlu menebak-nebak.
 *[Visual: kartu judul "Mengenali Teman Baru"; kode kecil "Bebras 2022 · SiKecil · 2022-AU-02"; kalimat kait di bawah judul.]*
 
+Sebelum membahasnya, mari kita lihat soalnya dulu. Ada tiga berang-berang baru, yaitu A, B, dan C. Ada juga gambar bercabang dengan lingkaran bernomor satu, dua, dan tiga.
+*[Visual: soal utuh: tiga berang-berang di kiri, gambar bercabang di tengah, lingkaran 1–3 menyala bergantian.]*
+
+Pertanyaannya adalah, berang-berang mana yang masuk ke lingkaran satu, lingkaran dua, dan lingkaran tiga? Ayo kita cari jawabannya bersama-sama.
+*[Visual: kartu pertanyaan dan kotak jawaban "Lingkaran 1, 2, 3 = ?" (masukan Bu Dewi, 10 Nov: soal ditampilkan dan dipahami dulu sebelum pembahasan).]*
+
 ## 1. Pemanasan: tebak-tebakan ya atau tidak (±1:15)
 
 Sebelum mulai, ayo kita main tebak-tebakan dulu.
