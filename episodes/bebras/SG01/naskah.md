@@ -1,7 +1,7 @@
 # Pembahasan Soal Bebras Siaga: Pesta BBQ (2024-KR-02)
 
 Video pembahasan ±9 menit untuk kategori **Siaga (kelas 4–6 SD)**, seri "Pembahasan Soal Bebras". Ini soal Siaga pertama. Bahasanya tetap semudah kategori SiKecil (permintaan Bu Dewi, 10 Nov 2026). Isinya tidak terikat waktu, supaya bisa dipakai kapan saja.
-Draf 1 (10 Nov 2026), menunggu suntingan Bu Dewi. Teks biasa adalah narasi yang dibacakan; teks *[Visual: …]* adalah catatan gambar dan tidak dibacakan.
+Draf 2 (10 Nov 2026), isi disetujui Bu Dewi dengan syarat gaya bahasa sama dengan B01 dan B02; kalimat dirapikan (setiap kalimat lengkap, kata sambung di awal kalimat diberi koma, tanpa titik dua dalam narasi, angka nol diucapkan "tidak punya"), dan jawabannya sudah diperiksa ulang dengan mencoba semua kemungkinan pembagian. Teks biasa adalah narasi yang dibacakan; teks *[Visual: …]* adalah catatan gambar dan tidak dibacakan.
 
 Soal asli: "Pesta BBQ", Bebras 2024, usulan Korea Selatan (kode 2024-KR-02). Judul asli berbahasa Inggris belum diketahui; kemungkinan "BBQ Party" (mohon Bu Dewi pastikan). Semua gambar soal digambar ulang dengan kode: empat berang-berang, gelembung permintaan, dan empat tusuk sate.
 
@@ -24,6 +24,8 @@ Isi tiap tusuk (dari atas ke bawah) dan tabel hitungnya. Setiap tusuk berisi lim
 | 4 | bawang putih, daging, bawang putih, daging, bawang merah | 2 | 0 | 1 | 2 |
 
 **Jawaban yang dinalar di video:** Sate 1 = D, Sate 2 = B, Sate 3 = A, Sate 4 = C. Jawaban ini satu-satunya yang memuaskan keempat berang-berang.
+
+**Pemeriksaan jawaban (10 Nov):** isi tiap tusuk dihitung ulang dari gambar soal yang diperbesar, lalu ke-24 cara membagi empat sate kepada empat berang-berang dicoba satu per satu. Hanya satu cara yang memenuhi keempat permintaan, yaitu jawaban di atas. Bila "sebanyak mungkin" diartikan longgar (C dan D cukup mendapat sebanyak mungkin setelah A dan B puas), jawaban terbaiknya tetap sama, karena hanya cara ini yang memberi C dua bawang putih dan D tiga daging.
 
 ---
 Catatan untuk penonton kelas 4–6 SD: bahasanya tetap sederhana, kalimat pendek tetapi lengkap. Yang baru dibanding SiKecil adalah dua alat berpikir: (1) **tabel hitung**, yaitu menghitung isi setiap sate lalu menuliskannya di tabel supaya kita tidak perlu mengingat-ingat; (2) **mulai dari yang pilihannya paling sedikit**, yaitu membagikan dulu kepada teman yang hanya punya satu pilihan. Kedua alat ini dikenalkan lewat contoh dulu, baru diberi nama.
@@ -101,7 +103,7 @@ Coba bayangkan kalau kita memberi roti keju kepada Sinta lebih dulu. Lalu, Dito 
 Mari kita ulangi dengan cara yang lebih baik. Dito hanya punya satu pilihan, yaitu roti keju. Sinta punya dua pilihan. Jadi, kita bagikan dulu kepada Dito, karena pilihannya paling sedikit.
 *[Visual: roti kembali ke piring; di bawah Dito ditulis "1 pilihan", di bawah Sinta ditulis "2 pilihan"; Dito dilingkari.]*
 
-Dito mendapat roti keju. Roti yang tersisa adalah roti cokelat, dan Sinta boleh roti apa saja. Jadi, Sinta mendapat roti cokelat. Sekarang keduanya puas.
+Dito mendapat roti keju. Roti yang tersisa adalah roti cokelat, dan Sinta boleh roti apa saja. Jadi, Sinta mendapat roti cokelat. Sekarang, keduanya sudah puas.
 *[Visual: roti keju ke Dito, roti cokelat ke Sinta; keduanya tersenyum; dua centang hijau.]*
 
 Hebat! Kita tidak menebak. Kita melihat dulu berapa pilihan setiap teman, lalu kita mulai dari teman yang pilihannya paling sedikit.
@@ -117,16 +119,16 @@ Ada empat tusuk sate, dan isinya bermacam-macam. Supaya tidak bingung, kita hitu
 Kita mulai dari sate satu. Kita hitung dari atas ke bawah. Ada daging, daging, wortel, daging, dan bawang putih.
 *[Visual: sate 1 membesar di samping tabel; setiap potong menyala satu per satu dari atas saat disebut.]*
 
-Jadi, sate satu berisi tiga daging, satu wortel, nol bawang merah, dan satu bawang putih.
+Jadi, sate satu berisi tiga daging, satu wortel, dan satu bawang putih. Sate satu tidak punya bawang merah, jadi kita tulis angka nol.
 *[Visual: baris Sate 1 diisi tulisan tangan: 3, 1, 0, 1. Angka 0 ditulis jelas, tidak dikosongkan.]*
 
-Sekarang sate dua. Ada wortel, daging, daging, bawang putih, dan wortel. Jadi, sate dua berisi dua daging, dua wortel, nol bawang merah, dan satu bawang putih.
+Sekarang, kita hitung sate dua. Ada wortel, daging, daging, bawang putih, dan wortel. Jadi, sate dua berisi dua daging, dua wortel, dan satu bawang putih. Sate dua juga tidak punya bawang merah.
 *[Visual: sate 2 membesar; potongan menyala satu per satu; baris Sate 2 diisi: 2, 2, 0, 1.]*
 
 Sate tiga berisi wortel, daging, bawang merah, bawang putih, dan daging. Jadi, ada dua daging, satu wortel, satu bawang merah, dan satu bawang putih.
 *[Visual: sate 3 membesar; potongan menyala; baris Sate 3 diisi: 2, 1, 1, 1.]*
 
-Sate empat berisi bawang putih, daging, bawang putih, daging, dan bawang merah. Jadi, ada dua daging, nol wortel, satu bawang merah, dan dua bawang putih.
+Sate empat berisi bawang putih, daging, bawang putih, daging, dan bawang merah. Jadi, ada dua daging, satu bawang merah, dan dua bawang putih. Sate empat tidak punya wortel.
 *[Visual: sate 4 membesar; potongan menyala; baris Sate 4 diisi: 2, 0, 1, 2.]*
 
 Mari kita periksa tabelnya. Setiap tusuk sate berisi lima potong. Kalau angka di setiap baris dijumlahkan, hasilnya harus lima.
@@ -149,7 +151,7 @@ Berang-berang B tidak bisa makan bawang merah. Lihat kolom bawang merah. Sate ti
 Sekarang, coba kerjakan berang-berang C sendiri. C ingin bawang putih sebanyak mungkin. Sate mana yang bawang putihnya paling banyak? Hentikan videonya sebentar kalau kamu perlu waktu.
 *[Visual: kolom bawang putih menyala; jam pasir dan tulisan "Pikirkan dulu" selama ±6 detik tanpa narasi.]*
 
-Sudah? Mari kita periksa. Di kolom bawang putih, sate satu, dua, dan tiga masing-masing punya satu bawang putih. Sate empat punya dua. Jadi, yang paling banyak hanya sate empat. C hanya punya satu pilihan, yaitu sate empat.
+Sudah selesai? Mari kita periksa. Di kolom bawang putih, sate satu, dua, dan tiga masing-masing punya satu bawang putih. Sate empat punya dua bawang putih. Jadi, yang paling banyak hanya sate empat. C hanya punya satu pilihan, yaitu sate empat.
 *[Visual: angka 2 di sate 4 dilingkari hijau besar; kotak C diisi "4".]*
 
 Berang-berang D ingin daging sebanyak mungkin. Di kolom daging, sate satu punya tiga daging. Sate yang lain hanya punya dua daging. Jadi, D juga hanya punya satu pilihan, yaitu sate satu.
@@ -160,7 +162,7 @@ Sekarang kita tahu pilihan semua berang-berang. A punya tiga pilihan. B punya du
 
 ## 5. Membagikan sate (±1:30)
 
-Ingat pemanasan kita tadi. Kita mulai dari berang-berang yang pilihannya paling sedikit. Yaitu C dan D.
+Ingat pemanasan kita tadi. Kita mulai dari berang-berang yang pilihannya paling sedikit, yaitu C dan D.
 *[Visual: Kiko menunjuk kotak C dan D; keduanya dilingkari oranye.]*
 
 C hanya cocok dengan sate empat. Jadi, sate empat untuk C.
@@ -175,12 +177,12 @@ Sekarang giliranmu. Sate yang tersisa adalah sate dua dan sate tiga. Berang-bera
 Ayo kita periksa. Sate satu sudah diberikan kepada D. Jadi, pilihan B tinggal satu, yaitu sate dua. Sate dua tidak punya bawang merah, jadi B bisa memakannya.
 *[Visual: angka 1 di kotak B dicoret karena sudah dipakai D; sate 2 bergeser ke piring B; kotak jawaban "Sate 2 = B".]*
 
-Terakhir, berang-berang A. Sate yang tersisa hanya sate tiga. Apakah sate tiga punya wortel? Lihat tabelnya. Sate tiga punya satu wortel. Jadi, A juga puas.
+Terakhir, kita bagikan sate untuk berang-berang A. Sate yang tersisa hanya sate tiga. Apakah sate tiga punya wortel? Lihat tabelnya. Sate tiga punya satu wortel. Jadi, A juga puas.
 *[Visual: baris Sate 3 kolom wortel menyala; sate 3 bergeser ke piring A; kotak jawaban "Sate 3 = A".]*
 
 ## 6. Memeriksa jawaban (±0:50)
 
-Sekarang semua sate sudah dibagikan. Sate satu untuk D. Sate dua untuk B. Sate tiga untuk A. Sate empat untuk C.
+Sekarang semua sate sudah dibagikan. Sate satu diberikan kepada D. Sate dua diberikan kepada B. Sate tiga diberikan kepada A. Sate empat diberikan kepada C.
 *[Visual: empat berang-berang memegang satenya masing-masing; empat kotak jawaban lengkap.]*
 
 Mari kita periksa sekali lagi. A butuh wortel, dan sate tiga punya wortel. B tidak bisa makan bawang merah, dan sate dua tidak punya bawang merah.
@@ -241,4 +243,4 @@ Pola sama dengan Short B01–B03: soal disajikan utuh dulu, lalu pembahasan. Tid
 
 ## Perkiraan kredit ElevenLabs
 
-Naskah video berisi 7.418 karakter narasi (1.141 kata), sehingga satu video memakai **±4.080 kredit** (±0,55 kredit per karakter). Narasi Short berisi 935 karakter, sehingga Short memakai **±515 kredit**. Totalnya **±4.600 kredit**. Sisa kuota ElevenLabs saat ini ±43.800 kredit (dicek 10 Nov 2026). Bila B02 dan B03 yang sedang diproduksi belum memakai kreditnya (±8.500 kredit untuk keduanya), sisanya masih ±35.300 kredit, jadi cukup.
+Naskah video berisi 7.613 karakter narasi (1.170 kata), sehingga satu video memakai **±4.190 kredit** (±0,55 kredit per karakter). Narasi Short berisi 935 karakter, sehingga Short memakai **±515 kredit**. Totalnya **±4.700 kredit**. Sisa kuota ElevenLabs saat ini ±43.800 kredit (dicek 10 Nov 2026). Bila B02 dan B03 yang sedang diproduksi belum memakai kreditnya (±8.500 kredit untuk keduanya), sisanya masih ±35.300 kredit, jadi cukup.
