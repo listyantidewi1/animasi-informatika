@@ -175,7 +175,7 @@
   }
   function tagPos(k) { const p = edgePts(k); return ptAt(p, 0.42); }
   // tokens: posisi berdiri di samping kotak (supaya gambar kotak tidak tertutup)
-  const SIDE = { r: [790, 200], h: [500, 362], s: [1100, 362] };
+  const SIDE = { r: [790, 200], h: [500, 362], s: [1420, 362] };   // token tidak pernah berhenti di atas ikon kotak
 
   function tree(ctx, st) {
     const draw = st.draw == null ? 1 : st.draw;                   // animasi menggambar pohon (0..1)
@@ -218,7 +218,7 @@
       ctx.fillStyle = "#FFFFFF"; ctx.beginPath(); ctx.arc(x, y, R, 0, Math.PI * 2); ctx.fill();
       mline(ctx, Array.from({ length: 41 }, (_, j) => [x + R * Math.cos(-Math.PI / 2 + j / 40 * Math.PI * 2), y + R * Math.sin(-Math.PI / 2 + j / 40 * Math.PI * 2)]), u, g > 0 ? ORANGE : INK, g > 0 ? 6 : 4);
       if (u < 1) return;
-      const occ = st.fill && st.fill[num];
+      const occ = st.fill && st.fill[num], arriving = st.arriving === num;
       if (num === 4) { if (!st.c4empty) beaver(ctx, x, y + 4, 104, {}); }
       else if (occ) {
         beaver(ctx, x, y + 2, 92, { ...WHO[occ] });
@@ -226,7 +226,7 @@
         ctx.fillStyle = INK; ctx.beginPath(); ctx.arc(lx, ly, 22, 0, Math.PI * 2); ctx.fill(); text(ctx, occ, lx, ly + 10, 28, { align: "center", color: "#fff", weight: 900 });
       }
       if (num <= 3) {
-        if (occ) { // nomor pindah ke lencana kecil di kiri atas
+        if (occ || arriving) { // nomor pindah ke lencana kecil di kiri atas
           const nx = x - R * 0.75, ny = y - R * 0.75; ctx.fillStyle = "#FFFFFF"; ctx.strokeStyle = INK; ctx.lineWidth = 3; ctx.beginPath(); ctx.arc(nx, ny, 22, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
           text(ctx, String(num), nx, ny + 10, 28, { align: "center", weight: 900 });
         } else {
@@ -366,6 +366,9 @@
   const BEFORE = { A: {}, B: { 3: "A" }, C: { 3: "A", 2: "B" } };   // jawaban yang sudah ditemukan sebelum berang-berang ini
   const ANS = { 1: "C", 2: "B", 3: "A" };
 
+  // jalur token: menyusuri panah, lalu memutar di luar kotak (tidak melintas di atas ikon kotak)
+  function route1(e1, mid) { const p = edgePts(e1), [sx, sy] = SIDE[mid]; return [SIDE.r, ptAt(p, 0.2), ptAt(p, 0.7), [sx, 280], [sx, sy]]; }
+  function route2(e2, mid) { const p = edgePts(e2), [sx] = SIDE[mid]; return [SIDE[mid], [sx, 470], ptAt(p, 0.3), p[1], N[E[e2][1]]]; }
   function trace(ctx, b, l, cf) {
     const who = cf.tr.who, ev = cf.tr.ev, route = ROUTE[who];
     const tOf = k => !(k in ev) ? Infinity : ev[k] === DONE ? -99 : at(b, ev[k]);
@@ -384,7 +387,8 @@
     const dimBox = cf.dimHat ? { h: P(l, 0.3, 0.8) } : {};
     const glowC = {}; if (m2 >= 1) glowC[DEST[who]] = 1;
     if (cf.home && l >= at(b, cf.home)) glowC.c4 = 0.6 + 0.4 * Math.sin(l * 5);
-    tree(ctx, { l, path, glow, fill, glowC, dimBox, c4empty: who === "P" && !(m2 >= 1 && "m2" in ev) && !cf.home });
+    const arriving = m2 > 0.6 && m2 < 1 && who !== "P" ? +DEST[who].slice(1) : 0;
+    tree(ctx, { l, path, glow, fill, glowC, dimBox, arriving, c4empty: who === "P" && !(m2 >= 1 && "m2" in ev) && !cf.home });
     // ya/tidak tulisan tangan di samping tepi yang dilalui
     [[e1, m1], [e2, m2]].forEach(([k, u]) => {
       if (u < 0.5) return; const [x, y] = tagPos(k), yes = E[k][2], left = N[E[k][1]][0] < N[E[k][0]][0];
@@ -398,11 +402,11 @@
       const u = P(l, 0.8, 2.4); pos = ptAt([N.c4, [1560, 470], [1560, 230], SIDE.r.map((v, i) => v + (i ? 0 : 0))], u);
       if (u < 0.02) pos = null;
     } else if (m2 > 0) pos = ptAt([...edgePts(e2)].concat([N[E[e2][1]]]).slice(0), m2);
-    else if (m1 > 0) pos = ptAt([SIDE.r, ...edgePts(e1), SIDE[mid]], m1);
+    else if (m1 > 0) pos = ptAt(route1(e1, mid), m1);
     else pos = SIDE.r;
     if (who === "P" && cf.lift && pos == null) pos = null;
     if (m2 > 0) { // dari samping kotak tengah ke tepi lalu ke lingkaran
-      pos = ptAt([SIDE[mid], ...edgePts(e2), N[E[e2][1]]], m2);
+      pos = ptAt(route2(e2, mid), m2);
     }
     const inCircle = m2 >= 1;
     if (pos && !(inCircle && who !== "P")) {
@@ -683,7 +687,7 @@
       ctx.fillStyle = "#4FB36B"; for (const x of [-180, -60, 60, 180]) { ctx.beginPath(); ctx.arc(x, -170, 46, 0, Math.PI * 2); ctx.fill(); }
       ctx.restore();
       hand(ctx, rot > 3 ? "pohon terbalik" : "pohon", 1400, 790, 40, { color: INK });
-      if (rot > 3) { hand(ctx, "batang di atas", 1440, 230, 28, { color: C.ink2, align: "left" }); hand(ctx, "cabang ke bawah", 1640, 470, 28, { color: C.ink2, align: "left" }); }
+      if (rot > 3) { hand(ctx, "batang di atas", 1440, 230, 28, { color: C.ink2, align: "left" }); hand(ctx, "cabang ke bawah", 1590, 470, 28, { color: C.ink2, align: "left" }); }
     },
     komputer(ctx, b, l, t, TL) {
       board(ctx);
