@@ -32,7 +32,7 @@ Catatan untuk penonton kelas 4–6 SD: bahasanya tetap sederhana, kalimat pendek
 
 Nama bahan tidak tertulis di soal, hanya bergambar. Saya menamainya daging (kotak cokelat), wortel (irisan bulat oranye), bawang merah (irisan setengah lingkaran merah muda bergaris), dan bawang putih (siung putih). Mohon Bu Dewi cek, terutama "bawang merah" untuk irisan merah muda bergaris (bisa juga disebut bawang bombai merah).
 
-Gaya: coretan spidol di papan tulis ditambah simulasi "meja panggangan" (tusuk sate digeser ke piring berang-berang, potongan sate menyala saat dihitung). Ada tiga jeda "pikirkan dulu" (±6 detik).
+Gaya: coretan spidol di papan tulis ditambah simulasi "meja panggangan" (tusuk sate digeser ke piring berang-berang, potongan sate menyala saat dihitung). Ada dua jeda "pikirkan dulu" (±6 detik).
 
 ---
 
