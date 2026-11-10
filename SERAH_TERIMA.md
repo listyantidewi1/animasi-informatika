@@ -13,6 +13,7 @@ Untuk sesi Claude baru. Baca juga `CLAUDE.md` (aturan seri), `README.md` (status
 | Unggahan Seri Informatika | https://claude.ai/artifact/31d36ZDMPwSeD7EQeG6Sjh | pelacak unggah: unduh Short/thumbnail, judul & deskripsi YouTube (koleksi `episodes`, `yt`) |
 | Alamat Video YouTube | https://claude.ai/artifact/A3QeNGQ9ZFsPcttnLNjTSH | Bu Dewi mengisi ID video YouTube (koleksi `video`) |
 | Unggahan TikTok Informatika | https://claude.ai/artifact/Vuocb51PWEuCTspcjQfi19 | pelacak TikTok |
+| Unggahan Pembahasan Bebras | https://claude.ai/artifact/AmFLXnoh3o7fTBPn6fhgox | pelacak unggah video Bebras (koleksi `soal`, satu dokumen per soal) |
 | Kurikulum Seri Animasi Informatika (Fase D–F) | https://claude.ai/artifact/YNDgZGE8hvRXPZs9d52DLt | peta 52 unit |
 | Analisis Kebutuhan Video Simulasi | https://claude.ai/artifact/1t4Jj3bfW32Sd2L13jD8kk | daftar S01–S32, K01–K26 |
 
@@ -30,3 +31,9 @@ Untuk sesi Claude baru. Baca juga `CLAUDE.md` (aturan seri), `README.md` (status
 - `episodes/_alat/yt_panel.py`: dokumen panel judul & deskripsi YouTube untuk pelacak.
 - `episodes/_alat/lembar_kontak.py`: lembar kontak per bab dari video jadi.
 - `episodes/_alat/thumbnail_dok.py`: thumbnail dokumenter dari berkas gambar JS.
+
+## Halaman Unggahan Pembahasan Bebras (10 Nov)
+- Satu dokumen per soal di koleksi `soal` (id = kode, mis. `B01`): `kode`, `urut`, `judul`, `kategori`, `kredit` {judul_asli, tahun, negara, kode}, `video.lengkap` dan `video.short` masing-masing {durasi, format, judul, deskripsi, catatan, file {id, size, nama}, srt {nama, teks} (opsional)}, `up` {lengkap, short}.
+- Menambah soal baru: unggah MP4 sebagai aset halaman (Artifact `asset: true`, batas 20 MiB per berkas; video panjang yang lebih besar diperkecil dengan audio AAC 64k, video `-c:v copy`), lalu `set` dokumen `soal/B0n` lewat ArtifactData. Contoh lengkap: dokumen `soal/B01`.
+- Deskripsi YouTube wajib memuat kredit soal (judul asli, tahun, negara, kode) dan tidak menyebut tanggal. Bab diambil dari awal cue .srt pertama tiap segmen.
+- Tombol "Hapus video yang sudah diunggah" di halaman hanya menghapus aset halaman (dua klik), judul/deskripsi/subtitel tetap.
