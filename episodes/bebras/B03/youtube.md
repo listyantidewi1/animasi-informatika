@@ -33,5 +33,3 @@ Semua gambar dibuat dengan kode; tanpa musik latar. Narasi: Kak Ceria (ElevenLab
 ```
 
 **Subtitel:** unggah `video/Informatika_B03_suara.srt` sebagai bahasa Indonesia.
-
-**Catatan:** judul asli bahasa Inggris belum diketahui; tambahkan ke kredit bila sudah ada.

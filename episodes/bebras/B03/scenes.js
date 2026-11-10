@@ -8,7 +8,7 @@
 (function (global) {
   const K = global.Kiko, H = K.helpers, C = K.C;
   const { rr, text, para, card, kiko, kid, ease, clamp, lerp } = H;
-  const JUDUL_ASLI = "";   // judul asli bahasa Inggris (menunggu Bu Dewi)
+  const JUDUL_ASLI = "";   // soal 2025: berkas soal hanya memuat judul Indonesia, jadi kredit memakai judul itu
   const INK = "#2B3440", ORANGE = "#EE7A12", GREEN = "#23964F", RED = "#D9443B";
   const RG = "#CDD4DA", RGD = "#59656E", BRED = "#E5483B", BYEL = "#F2B134", BGRN = "#2FA65A", MOUTH = "#F2665A";
 

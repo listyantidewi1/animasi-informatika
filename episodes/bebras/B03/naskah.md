@@ -3,7 +3,7 @@
 Video pembahasan ±7 menit untuk kategori **SiKecil (kelas 1–3 SD)**, seri "Pembahasan Soal Bebras". Isinya tidak terikat waktu, supaya bisa dipakai kapan saja.
 Draf 2 (10 Nov 2026), isi disetujui Bu Dewi; tanda baca dirapikan mengikuti D01 dan D02. Teks biasa adalah narasi yang dibacakan; teks *[Visual: …]* adalah catatan gambar dan tidak dibacakan.
 
-Soal asli: "Perakitan Robot", Bebras 2025, usulan Kanada (kode 2025-CA-01). Judul asli berbahasa Inggris belum diketahui (mohon Bu Dewi isi bila ada). Semua gambar soal digambar ulang dengan kode: robot mainan, lima hewan, dan pilihan jawaban A–D.
+Soal asli: "Perakitan Robot", Bebras 2025, usulan Kanada (kode 2025-CA-01). Berkas soal 2025 hanya memuat judul Indonesia, jadi kredit memakai judul itu. Semua gambar soal digambar ulang dengan kode: robot mainan, lima hewan, dan pilihan jawaban A–D.
 
 **Isi soal (dari gambar):** lima hewan bekerja berurutan di jalur perakitan robot mainan. Setiap hewan memasang satu bagian.
 
