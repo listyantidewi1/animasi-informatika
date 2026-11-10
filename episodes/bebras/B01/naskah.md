@@ -1,133 +1,194 @@
-# Pembahasan Soal Bebras: Mengenali Wajah Teman Baru (2022-AU-02)
+# Pembahasan Soal Bebras: Mengenali Teman Baru (2022-AU-02)
 
-Video pembahasan ±5 menit untuk murid SD (juga cocok untuk SMP kelas VII), seri baru "Pembahasan Soal Bebras" menjelang Bebras Challenge week.
-Draf 1 (10 Nov 2026), menunggu suntingan Bu Dewi. Teks biasa adalah narasi yang dibacakan; teks *[Visual: …]* adalah catatan gambar dan tidak dibacakan.
+Video pembahasan ±8 menit untuk kategori **SiKecil (kelas 1–3 SD)**, seri baru "Pembahasan Soal Bebras" menjelang Bebras Challenge week.
+Draf 2 (10 Nov 2026), menunggu suntingan Bu Dewi. Teks biasa adalah narasi yang dibacakan; teks *[Visual: …]* adalah catatan gambar dan tidak dibacakan.
 
-Soal asli: "Remembering Face", Bebras 2022, usulan Australia (kode 2022-AU-02). Gambar soal digambar ulang dengan kode (berang-berang, kacamata hitam, topi, syal), tidak disalin dari berkas soal.
+Soal asli: "Remembering Face", Bebras 2022, usulan Australia (kode 2022-AU-02). Gambar soal digambar ulang dengan kode, tidak disalin dari berkas soal.
 
 **Jawaban yang dinalar di video:** Lingkaran 1 = C, Lingkaran 2 = B, Lingkaran 3 = A.
 
 ---
-Gaya: animasi coretan spidol di papan tulis ditambah simulasi berang-berang yang berjalan mengikuti panah (rincian di "Usulan produksi"). Tempo: setiap langkah penelusuran ditahan lama (panah menyala satu per satu, berang-berang berjalan mengikuti panah), dan ada dua jeda "pikirkan dulu" (±5 detik) sebelum jawaban B dan C.
+Catatan untuk penonton kelas 1–3 SD (masukan Bu Dewi, 10 Nov): durasi boleh panjang asal anak paham. Karena itu naskah memakai kalimat pendek tetapi lengkap, satu gagasan per kalimat, kata sehari-hari, dan banyak pengulangan. Urutannya konkret dulu (permainan tebak-tebakan ya atau tidak), baru gambar soal. Setiap simbol (centang, silang, panah, kotak) dijelaskan sendiri-sendiri. Kanan dan kiri selalu ditunjuk dengan gambar tangan, karena sebagian anak kelas 1 masih tertukar.
+
+Gaya: animasi coretan spidol di papan tulis ditambah simulasi berang-berang yang berjalan mengikuti panah (rincian di "Usulan produksi"). Setiap langkah penelusuran ditahan lama, dan ada tiga jeda "pikirkan dulu" (±6 detik).
 
 ---
 
-## 0. Pembuka (±0:25)
+## 0. Pembuka (±0:30)
 
-Halo, teman-teman! Minggu depan ada Tantangan Bebras, yaitu lomba berpikir yang seru untuk anak-anak di seluruh dunia.
-*[Visual: Kiko melambai di depan papan tulis kelas; tulisan "Tantangan Bebras" dengan berang-berang kecil.]*
+Halo, teman-teman! Aku Kiko. Minggu depan ada Tantangan Bebras. Tantangan Bebras adalah lomba berpikir yang seru untuk anak-anak di seluruh dunia.
+*[Visual: papan tulis putih; Kiko masuk dari kanan dan melambai; spidol menulis "Tantangan Bebras" dan menggambar berang-berang kecil.]*
 
-Di video ini, kita akan membahas satu soal Bebras bersama-sama, pelan-pelan, langkah demi langkah.
+Hari ini, kita akan mengerjakan satu soal Bebras bersama-sama. Kita akan mengerjakannya pelan-pelan, satu langkah demi satu langkah.
 
-Setelah menonton, kamu bisa membaca diagram bercabang seperti ini dan menemukan jawaban yang pasti benar, bukan jawaban tebakan.
-*[Visual: kartu judul "Mengenali Wajah Teman Baru"; kode kecil "Bebras 2022 · 2022-AU-02 · Australia"; kalimat kait di bawah judul.]*
+Setelah menonton video ini, kamu bisa membaca gambar bercabang dan menemukan jawaban yang pasti benar. Kamu tidak perlu menebak-nebak.
+*[Visual: kartu judul "Mengenali Teman Baru"; kode kecil "Bebras 2022 · SiKecil · 2022-AU-02"; kalimat kait di bawah judul.]*
 
-## 1. Membaca soalnya (±0:45)
+## 1. Pemanasan: tebak-tebakan ya atau tidak (±1:15)
 
-Di sebuah kelas, ada tiga murid baru. Mereka adalah berang-berang, dan kita beri nama A, B, dan C.
-*[Visual: tiga berang-berang masuk kelas satu per satu, label A, B, C di bawahnya.]*
+Sebelum mulai, ayo kita main tebak-tebakan dulu.
+*[Visual: spidol menggambar dua anak di papan: Dito memakai topi, Sinta tidak memakai topi. Nama mereka ditulis di bawahnya.]*
 
-Supaya mudah mengenali teman baru, murid-murid di kelas itu memperhatikan benda yang dipakai setiap berang-berang, yaitu kacamata hitam, topi, dan syal.
-*[Visual: tiga benda muncul berjajar dengan nama: kacamata hitam, topi hijau, syal merah muda.]*
+Di papan ada dua teman, yaitu Dito dan Sinta. Aku sedang memikirkan salah satu dari mereka. Kamu boleh bertanya kepadaku, tetapi aku hanya akan menjawab "ya" atau "tidak".
+*[Visual: gelembung pikiran di atas Kiko berisi tanda tanya.]*
 
-Mereka juga membuat sebuah diagram. Diagram ini punya empat lingkaran di bagian bawah. Tiga lingkaran bernomor satu, dua, dan tiga, sedangkan lingkaran keempat sudah berisi gambar berang-berang.
-*[Visual: diagram soal tergambar dari atas ke bawah; empat lingkaran berkedip satu per satu.]*
+Coba tanyakan, "Apakah dia memakai topi?" Aku jawab, "Ya."
+*[Visual: tulisan tangan "Pakai topi?" lalu "Ya" dengan centang hijau.]*
 
-Tugas kita adalah memasangkan setiap berang-berang, yaitu A, B, dan C, dengan lingkaran yang tepat, yaitu lingkaran satu, dua, atau tiga.
-*[Visual: tiga kotak isian "Lingkaran 1, 2, 3" dengan tanda tanya.]*
+Nah, sekarang kamu tahu. Di antara Dito dan Sinta, yang memakai topi hanya Dito. Jadi, teman yang aku pikirkan adalah Dito.
+*[Visual: Sinta dicoret tipis; Dito dilingkari spidol oranye.]*
 
-## 2. Cara membaca diagram (±1:00)
+Hebat! Kamu menemukan jawabannya hanya dengan satu pertanyaan. Kita tidak menebak. Kita bertanya, lalu kita melihat jawabannya.
 
-Diagram ini mirip permainan tanya jawab. Setiap kotak abu-abu berisi satu pertanyaan.
-*[Visual: kotak paling atas membesar.]*
+Soal Bebras hari ini juga seperti tebak-tebakan ini. Bedanya, pertanyaannya sudah disiapkan di dalam sebuah gambar.
+*[Visual: papan dihapus dengan penghapus; muncul gambar soal yang digambar ulang dengan spidol.]*
 
-Kotak paling atas bergambar kacamata hitam. Artinya, kotak itu bertanya, "Apakah berang-berang ini memakai kacamata hitam?"
-*[Visual: gelembung tanya muncul dari kotak kacamata.]*
+## 2. Tiga teman baru (±1:00)
 
-Dari setiap kotak keluar dua panah. Panah yang diberi tanda centang hijau artinya "ya", sedangkan panah yang diberi tanda silang merah artinya "tidak".
-*[Visual: centang hijau menyala dengan tulisan "ya", silang merah menyala dengan tulisan "tidak".]*
+Di sebuah kelas, ada tiga murid baru. Ketiganya adalah berang-berang. Kita beri nama mereka A, B, dan C.
+*[Visual: tiga berang-berang masuk satu per satu; huruf A, B, C ditulis besar di bawahnya.]*
 
-Dengan cara yang sama, kotak bergambar topi bertanya, "Apakah dia memakai topi?", dan kotak bergambar syal bertanya, "Apakah dia memakai syal?"
-*[Visual: gelembung tanya pada kotak topi, lalu pada kotak syal.]*
+Mari kita lihat mereka satu per satu. Lihat baik-baik apa yang mereka pakai.
+*[Visual: di samping setiap berang-berang ada tabel kecil tiga baris: gambar kacamata hitam, gambar topi, gambar syal. Kotak isiannya masih kosong.]*
 
-Aturannya ada tiga. Pertama, kita selalu mulai dari kotak paling atas. Kedua, kita jawab pertanyaannya, lalu kita ikuti panah yang sesuai dengan jawaban itu. Ketiga, kita terus berjalan sampai tiba di sebuah lingkaran.
-*[Visual: tiga aturan muncul bernomor di samping diagram dan tetap terlihat kecil di pojok sampai akhir video.]*
+Ini berang-berang A. A memakai syal berwarna merah muda di lehernya. A tidak memakai kacamata hitam. A juga tidak memakai topi.
+*[Visual: syal A dilingkari; tabel A diisi: kacamata hitam ✗, topi ✗, syal ✓.]*
 
-Sebelum mencoba, mari kita periksa lingkaran paling kanan yang sudah terisi. Berang-berang di lingkaran itu tidak memakai kacamata hitam dan tidak memakai syal.
-*[Visual: lingkaran kanan menyala; berang-berang polos di dalamnya.]*
+Ini berang-berang B. B memakai kacamata hitam berwarna biru. B tidak memakai topi. B juga tidak memakai syal.
+*[Visual: kacamata B dilingkari; tabel B diisi: kacamata hitam ✓, topi ✗, syal ✗.]*
 
-Jalan menuju lingkaran itu memang "tidak", lalu "tidak" lagi. Jadi diagramnya cocok, dan sekarang kita tahu cara membacanya.
-*[Visual: jalan dari atas ke kanan lalu ke kanan menyala oranye: silang di bawah kacamata, silang di bawah syal.]*
+Ini berang-berang C. C memakai kacamata hitam, dan C juga memakai topi berwarna hijau. Jadi, C memakai dua benda. C tidak memakai syal.
+*[Visual: kacamata dan topi C dilingkari; tabel C diisi: kacamata hitam ✓, topi ✓, syal ✗.]*
 
-## 3. Menelusuri berang-berang A (±0:40)
+Tabel kecil ini akan menolong kita nanti. Kita tidak perlu mengingat semuanya, karena kita tinggal melihat tabelnya.
+*[Visual: tiga tabel bergeser ke pinggir papan dan tetap terlihat sampai akhir video.]*
 
-Kita mulai dari berang-berang A. Lihat baik-baik: A memakai syal merah muda, tetapi A tidak memakai kacamata hitam dan tidak memakai topi.
-*[Visual: A diperbesar; daftar periksa di sebelahnya: kacamata hitam ✗, topi ✗, syal ✓.]*
+## 3. Mengenal gambar soal (±1:30)
 
-Langkah pertama, kotak paling atas bertanya, "Apakah A memakai kacamata hitam?" Jawabannya tidak, jadi kita ikuti panah bertanda silang ke kanan.
-*[Visual: A kecil berdiri di kotak kacamata, lalu meluncur mengikuti panah silang ke kotak syal.]*
+Sekarang, mari kita lihat gambar soalnya. Kita kenali bagiannya satu per satu.
+*[Visual: gambar soal lengkap di tengah papan.]*
 
-Langkah kedua, kita sampai di kotak syal. "Apakah A memakai syal?" Jawabannya ya, jadi kita ikuti panah bertanda centang.
-*[Visual: A meluncur mengikuti panah centang ke lingkaran 3; lingkaran 3 terisi A.]*
+Pertama, lihat kotak abu-abu. Setiap kotak abu-abu berisi satu pertanyaan.
+*[Visual: tiga kotak abu-abu berkedip bergantian.]*
 
-Kita tiba di lingkaran tiga. Jadi, berang-berang A adalah pasangan lingkaran tiga.
+Kotak paling atas bergambar kacamata hitam. Kotak ini bertanya, "Apakah dia memakai kacamata hitam?"
+*[Visual: kotak atas membesar; gelembung tanya dengan tulisan tangan "Pakai kacamata hitam?".]*
 
-Perhatikan juga bahwa kita tidak pernah bertanya apakah A memakai topi, karena jalan A tidak melewati kotak topi.
-*[Visual: kotak topi meredup sebentar.]*
+Kotak di kiri bergambar topi. Kotak ini bertanya, "Apakah dia memakai topi?" Kotak di kanan bergambar syal. Kotak ini bertanya, "Apakah dia memakai syal?"
+*[Visual: tangan kiri bergambar menunjuk kotak topi, lalu tangan kanan menunjuk kotak syal; gelembung tanya muncul di masing-masing kotak.]*
 
-## 4. Menelusuri berang-berang B (±0:45)
+Kedua, lihat tanda di bawah setiap kotak. Tanda centang hijau artinya "ya". Tanda silang merah artinya "tidak".
+*[Visual: centang hijau besar dengan tulisan "YA"; silang merah besar dengan tulisan "TIDAK".]*
 
-Sekarang giliranmu. Coba telusuri jalan berang-berang B sendiri, dimulai dari kotak paling atas. Hentikan videonya sebentar, lalu pikirkan, B sampai di lingkaran nomor berapa?
-*[Visual: B diperbesar; jam pasir "Pikirkan dulu" selama ±5 detik tanpa narasi.]*
+Ketiga, lihat panahnya. Panah menunjukkan jalan yang harus kita ikuti. Kalau jawabannya ya, kita ikuti panah yang bertanda centang. Kalau jawabannya tidak, kita ikuti panah yang bertanda silang.
+*[Visual: berang-berang kecil tanpa huruf berjalan sebentar di panah centang, kembali, lalu berjalan di panah silang.]*
 
-B memakai kacamata hitam, tetapi B tidak memakai topi dan tidak memakai syal.
-*[Visual: daftar periksa: kacamata hitam ✓, topi ✗, syal ✗.]*
+Keempat, lihat lingkaran di paling bawah. Ada empat lingkaran. Lingkaran itu adalah tempat berhenti. Tiga lingkaran masih kosong dan diberi nomor satu, dua, dan tiga. Satu lingkaran lagi sudah berisi gambar berang-berang.
+*[Visual: empat lingkaran berkedip satu per satu; angka 1, 2, 3 ditebalkan spidol.]*
 
-Kotak paling atas bertanya, "Apakah B memakai kacamata hitam?" Jawabannya ya, jadi kita ikuti panah centang ke kiri, menuju kotak topi.
-*[Visual: B meluncur ke kotak topi.]*
+Tugas kita adalah menemukan rumah yang tepat untuk A, B, dan C. Siapa yang masuk lingkaran satu, siapa yang masuk lingkaran dua, dan siapa yang masuk lingkaran tiga?
+*[Visual: tiga kotak isian "Lingkaran 1 = ?", "Lingkaran 2 = ?", "Lingkaran 3 = ?".]*
 
-Kotak topi bertanya, "Apakah B memakai topi?" Jawabannya tidak, jadi kita ikuti panah silang.
-*[Visual: B meluncur ke lingkaran 2; lingkaran 2 terisi B.]*
+Ingat tiga aturan ini. Satu, kita selalu mulai dari kotak paling atas. Dua, kita jawab pertanyaannya, lalu kita ikuti panah yang cocok. Tiga, kita terus berjalan sampai tiba di lingkaran.
+*[Visual: tiga aturan ditulis bernomor dengan gambar kecil (bintang di puncak, panah, lingkaran), lalu mengecil ke pojok dan tetap terlihat sampai akhir video.]*
 
-Kita tiba di lingkaran dua. Jadi, berang-berang B adalah pasangan lingkaran dua.
+## 4. Mencoba dengan berang-berang yang sudah ada (±0:45)
 
-## 5. Menelusuri berang-berang C (±0:45)
+Ayo kita coba dulu aturannya. Kita pakai berang-berang yang sudah ada di lingkaran paling kanan. Berang-berang ini tidak memakai apa-apa.
+*[Visual: berang-berang polos keluar dari lingkarannya dan naik ke kotak paling atas.]*
 
-Tinggal satu lagi. Coba telusuri berang-berang C sendiri dulu, lalu cocokkan jawabanmu.
-*[Visual: C diperbesar; jam pasir "Pikirkan dulu" ±5 detik tanpa narasi.]*
+Kita mulai dari kotak paling atas. Apakah dia memakai kacamata hitam? Tidak. Jadi, kita ikuti panah bertanda silang.
+*[Visual: berang-berang polos berjalan mengikuti panah silang ke kanan; jalannya digaris spidol oranye; tulisan tangan "tidak" di samping panah.]*
 
-C memakai dua benda, yaitu kacamata hitam dan topi hijau. C tidak memakai syal.
-*[Visual: daftar periksa: kacamata hitam ✓, topi ✓, syal ✗.]*
+Sekarang kita sampai di kotak syal. Apakah dia memakai syal? Tidak. Jadi, kita ikuti lagi panah bertanda silang.
+*[Visual: berang-berang polos berjalan mengikuti panah silang ke lingkaran paling kanan.]*
 
-Mungkin ada teman yang bingung, harus mulai dari kacamata atau dari topi? Ingat aturan pertama. Kita tidak memilih sendiri, karena kita selalu mulai dari kotak paling atas.
-*[Visual: Kiko menunjuk aturan nomor 1 di pojok.]*
+Kita sampai di lingkaran paling kanan. Itu memang tempatnya! Berarti aturan kita sudah benar. Sekarang kita siap mengerjakan soalnya.
+*[Visual: lingkaran kanan bersinar; bintang kecil muncul.]*
 
-"Apakah C memakai kacamata hitam?" Jawabannya ya, jadi kita ke kiri, menuju kotak topi. "Apakah C memakai topi?" Jawabannya ya lagi, jadi kita ikuti panah centang.
-*[Visual: C meluncur ke kotak topi, lalu ke lingkaran 1; lingkaran 1 terisi C.]*
+## 5. Berang-berang A (±0:55)
 
-Kita tiba di lingkaran satu. Jadi, berang-berang C adalah pasangan lingkaran satu.
+Kita mulai dengan berang-berang A. Lihat tabel A. A tidak memakai kacamata hitam dan tidak memakai topi, tetapi A memakai syal.
+*[Visual: A naik ke kotak paling atas; tabel A menyala.]*
 
-## 6. Memeriksa jawaban (±0:35)
+Langkah pertama. Kita mulai dari kotak paling atas. Apakah A memakai kacamata hitam? Lihat tabelnya. Jawabannya tidak.
+*[Visual: baris kacamata pada tabel A berkedip ✗.]*
 
-Sekarang kita punya jawabannya. Lingkaran satu adalah C, lingkaran dua adalah B, dan lingkaran tiga adalah A.
-*[Visual: diagram lengkap dengan A, B, C di lingkarannya; tiga kotak isian terisi: Lingkaran 1 = C, Lingkaran 2 = B, Lingkaran 3 = A.]*
+Karena jawabannya tidak, kita ikuti panah bertanda silang. Panah itu menuju ke kotak syal.
+*[Visual: A berjalan ke kanan mengikuti panah silang; jalan digaris oranye; tulisan "tidak".]*
 
-Mari kita periksa sekali lagi. Setiap lingkaran mendapat tepat satu berang-berang, tidak ada lingkaran yang kosong, dan tidak ada berang-berang yang terpakai dua kali.
-*[Visual: centang hijau kecil muncul di setiap lingkaran.]*
+Langkah kedua. Apakah A memakai syal? Lihat tabelnya lagi. Jawabannya ya.
+*[Visual: baris syal pada tabel A berkedip ✓.]*
 
-Kita juga bisa memeriksa dari bawah ke atas. Jalan ke lingkaran satu adalah "ya kacamata" dan "ya topi", dan C memang memakai keduanya. Jawaban kita cocok, jadi kita yakin jawabannya benar.
-*[Visual: jalan lingkaran 1 menyala dari bawah ke atas; ikon kacamata dan topi melompat ke C.]*
+Karena jawabannya ya, kita ikuti panah bertanda centang.
+*[Visual: A berjalan mengikuti panah centang dan masuk ke lingkaran 3; tulisan "ya".]*
 
-## 7. Penutup (±0:30)
+A sampai di lingkaran tiga. Jadi, A adalah jawaban untuk lingkaran tiga.
+*[Visual: kotak isian "Lingkaran 3 = A" ditulis spidol.]*
 
-Diagram seperti ini disebut pohon keputusan, atau decision tree. Disebut pohon karena bentuknya bercabang-cabang, seperti pohon yang terbalik.
-*[Visual: diagram berubah samar menjadi pohon terbalik dengan cabang, lalu kembali ke diagram.]*
+Kita tidak pernah bertanya apakah A memakai topi. Itu tidak apa-apa, karena jalan A tidak melewati kotak topi.
+*[Visual: kotak topi meredup sebentar, lalu kembali normal.]*
 
-Komputer juga memakai pohon keputusan untuk mengenali sesuatu, dengan cara bertanya satu per satu, persis seperti yang baru saja kita lakukan.
-*[Visual: Kiko memindai benda; pertanyaan ya/tidak muncul satu per satu di layar Kiko.]*
+## 6. Berang-berang B (±1:00)
 
-Jadi, kalau di Tantangan Bebras nanti kamu menemukan diagram bercabang, ingat tiga aturannya. Mulailah dari atas, jawab satu pertanyaan, lalu ikuti panahnya sampai selesai.
-*[Visual: tiga aturan muncul besar sekali lagi.]*
+Sekarang giliranmu. Coba kerjakan berang-berang B sendiri. Mulailah dari kotak paling atas, lalu ikuti panahnya dengan jarimu. B akan sampai di lingkaran nomor berapa? Hentikan videonya sebentar kalau kamu perlu waktu.
+*[Visual: B naik ke kotak paling atas; jam pasir dan tulisan "Pikirkan dulu" selama ±6 detik tanpa narasi.]*
+
+Sudah? Mari kita periksa bersama-sama. Lihat tabel B. B memakai kacamata hitam, tetapi B tidak memakai topi dan tidak memakai syal.
+*[Visual: tabel B menyala.]*
+
+Langkah pertama. Apakah B memakai kacamata hitam? Jawabannya ya. Jadi, kita ikuti panah bertanda centang. Panah itu menuju ke kotak topi.
+*[Visual: B berjalan ke kiri mengikuti panah centang; tulisan "ya".]*
+
+Langkah kedua. Apakah B memakai topi? Jawabannya tidak. Jadi, kita ikuti panah bertanda silang.
+*[Visual: B berjalan mengikuti panah silang dan masuk ke lingkaran 2; tulisan "tidak".]*
+
+B sampai di lingkaran dua. Jadi, B adalah jawaban untuk lingkaran dua.
+*[Visual: kotak isian "Lingkaran 2 = B" ditulis spidol.]*
+
+## 7. Berang-berang C (±1:10)
+
+Tinggal satu teman lagi, yaitu berang-berang C. Coba kerjakan sendiri dulu, ya. C akan sampai di lingkaran nomor berapa?
+*[Visual: C naik ke kotak paling atas; jam pasir "Pikirkan dulu" ±6 detik tanpa narasi.]*
+
+Ayo kita periksa. Lihat tabel C. C memakai kacamata hitam dan topi. C tidak memakai syal.
+*[Visual: tabel C menyala.]*
+
+C memakai dua benda. Mungkin kamu bingung, harus mulai dari kacamata atau dari topi? Ingat aturan nomor satu. Kita selalu mulai dari kotak paling atas. Jadi, kita tidak perlu memilih sendiri.
+*[Visual: Kiko menunjuk aturan nomor 1 di pojok; aturan itu membesar sebentar.]*
+
+Langkah pertama. Apakah C memakai kacamata hitam? Jawabannya ya. Jadi, kita ikuti panah bertanda centang ke kotak topi.
+*[Visual: C berjalan ke kiri mengikuti panah centang; tulisan "ya".]*
+
+Langkah kedua. Apakah C memakai topi? Jawabannya ya lagi. Jadi, kita ikuti panah bertanda centang.
+*[Visual: C berjalan mengikuti panah centang dan masuk ke lingkaran 1; tulisan "ya".]*
+
+C sampai di lingkaran satu. Jadi, C adalah jawaban untuk lingkaran satu.
+*[Visual: kotak isian "Lingkaran 1 = C" ditulis spidol.]*
+
+## 8. Memeriksa jawaban (±0:50)
+
+Sekarang semua lingkaran sudah terisi. Lingkaran satu adalah C. Lingkaran dua adalah B. Lingkaran tiga adalah A.
+*[Visual: gambar soal lengkap dengan A, B, C di lingkarannya; tiga kotak isian lengkap.]*
+
+Mari kita periksa sekali lagi. Setiap lingkaran berisi satu berang-berang. Tidak ada lingkaran yang kosong. Tidak ada berang-berang yang masuk ke dua lingkaran.
+*[Visual: centang kecil muncul di setiap lingkaran satu per satu.]*
+
+Kita juga bisa memeriksa dari bawah ke atas. Jalan ke lingkaran satu melewati centang kacamata dan centang topi. Artinya, berang-berang di lingkaran satu memakai kacamata hitam dan topi. C memang memakai keduanya, jadi jawaban kita cocok.
+*[Visual: jalan lingkaran 1 menyala oranye dari bawah ke atas; gambar kacamata dan topi melompat ke C.]*
+
+Jawaban kita pasti benar, karena setiap langkahnya kita periksa dengan tabel.
+
+## 9. Penutup (±0:45)
+
+Gambar bercabang seperti ini disebut pohon keputusan. Namanya pohon karena bentuknya bercabang-cabang, seperti pohon yang terbalik.
+*[Visual: gambar soal berubah samar menjadi pohon terbalik dengan batang di atas dan cabang ke bawah, lalu kembali seperti semula.]*
+
+Komputer juga sering memakai pohon keputusan. Komputer bertanya satu per satu, lalu mengikuti jawabannya, sama seperti yang baru saja kita lakukan.
+*[Visual: Kiko memindai sebuah benda; pertanyaan ya atau tidak muncul satu per satu di layar dada Kiko.]*
+
+Kalau nanti di Tantangan Bebras kamu bertemu gambar bercabang, ingat tiga aturannya. Mulailah dari atas. Jawab pertanyaannya. Ikuti panahnya sampai ke lingkaran.
+*[Visual: tiga aturan muncul besar sekali lagi, ditulis ulang dengan spidol.]*
 
 Selamat berlatih, dan semoga sukses di Tantangan Bebras!
 *[Visual: Kiko dan tiga berang-berang melambai; tulisan "Soal: Bebras 2022 (2022-AU-02, Australia)".]*
@@ -137,11 +198,11 @@ Selamat berlatih, dan semoga sukses di Tantangan Bebras!
 ## Usulan produksi (mohon dicek Bu Dewi)
 
 - **Folder dan kode**: `episodes/bebras/B01/`, alat dipanggil dengan kode `bebras/B01`. Soal berikutnya B02, B03, dan seterusnya.
-- **Suara**: Kak Ceria (Eleven v4), seperti seri kelas VII, karena penontonnya anak-anak. Hanya versi bersuara, tetapi teks narasi tetap tampil besar di layar.
-- **Gaya gambar (masukan Bu Dewi, 10 Nov)**: papan tulis putih dengan coretan spidol yang tergambar sedikit demi sedikit, seperti guru menjelaskan di kelas. Diagram soal digambar ulang dengan spidol, lalu setiap penelusuran ditandai coretan warna: jalan yang sedang ditelusuri digaris spidol oranye, jawaban "ya" atau "tidak" ditulis tangan di samping panah, benda yang dipakai dilingkari, dan benda yang tidak dipakai dicoret. Bagian simulasi: berang-berang kecil berjalan mengikuti panah seperti bidak, dan daftar periksa (kacamata, topi, syal) dicentang atau disilang dengan spidol. Kiko muncul sebagai pemandu di pinggir papan. Semua digambar dengan kode, font Inter untuk teks narasi, huruf ala tulisan tangan untuk coretan.
+- **Suara**: Kak Ceria (Eleven v4), seperti seri kelas VII. Untuk kelas 1–3 SD, kecepatan diturunkan dari 0,9 menjadi 0,85. Hanya versi bersuara. Teks narasi tetap tampil di layar, tetapi lebih kecil dari biasanya, karena banyak anak kelas 1 belum lancar membaca; yang besar adalah gambar dan coretannya.
+- **Gaya gambar (masukan Bu Dewi, 10 Nov)**: papan tulis putih dengan coretan spidol yang tergambar sedikit demi sedikit, seperti guru menjelaskan di kelas. Diagram soal digambar ulang dengan spidol, lalu setiap penelusuran ditandai coretan warna: jalan yang sedang ditelusuri digaris spidol oranye, jawaban "ya" atau "tidak" ditulis tangan di samping panah, benda yang dipakai dilingkari, dan benda yang tidak dipakai dicoret. Bagian simulasi: berang-berang kecil berjalan mengikuti panah seperti bidak, dan tabel kecil (kacamata, topi, syal) untuk setiap berang-berang dicentang atau disilang dengan spidol. Kiko muncul sebagai pemandu di pinggir papan. Semua digambar dengan kode, font Inter untuk teks narasi, huruf ala tulisan tangan untuk coretan.
 - **Short**: belum disertakan; bisa ditambah bila Bu Dewi mau.
 - **Kredit soal di deskripsi**: "Soal: Bebras 2022 (2022-AU-02, Australia), digambar ulang." Mohon Bu Dewi memastikan izin pemakaian soal Bebras untuk video YouTube lewat Bebras Indonesia, karena soal Bebras biasanya dibagikan untuk pendidikan nonkomersial.
 
 ## Perkiraan kredit ElevenLabs
 
-Naskah di atas berisi 4.663 karakter narasi (dihitung ulang setelah suntingan). Dengan ±0,55 kredit per karakter, satu video ini memakai **±2.600 kredit**. Bila nanti dibuat Short, tambah ±350 kredit.
+Naskah di atas berisi 6.586 karakter narasi (1003 kata). Dengan ±0.55 kredit per karakter. satu video ini memakai **±3.600 kredit**. Bila nanti dibuat Short, tambah ±350 kredit. Angkanya dihitung ulang setelah suntingan Bu Dewi.
