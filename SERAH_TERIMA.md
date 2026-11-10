@@ -4,7 +4,7 @@ Untuk sesi Claude baru. Baca juga `CLAUDE.md` (aturan seri), `README.md` (status
 
 ## Status
 - **Seri utama selesai**: 52 episode (D7.0–F12.x) lengkap dengan halaman latihan, video dua versi, dan Short; 58 video simulasi (S01–S32, K01–K26) + Short; 45 TikTok (`episodes/tiktok/`, panduan di `episodes/tiktok/PANDUAN.md`). Situs: https://belajar-informatika.vercel.app/ (otomatis dari `main`).
-- **Dokumenter**: D01, D02, D03, D04 selesai dan terkirim (video lewat chat; Short + thumbnail + judul/deskripsi di halaman pelacak). D04 "Buku yang Ditulis Selama 64 Tahun dan Belum Selesai" (10:04) menunggu tinjauan Bu Dewi atas lembar kontak per bab; dua catatan kecil: 1:39 "Garam secukupnya" sempat terpotong, 4:53 ikon amplop sesaat menutupi "Kotak masuk".
+- **Dokumenter**: D01, D02, D03, D04 selesai dan terkirim (video lewat chat; Short + thumbnail + judul/deskripsi di halaman pelacak). D04 "Buku yang Ditulis Selama 64 Tahun dan Belum Selesai" (10:04) disetujui Bu Dewi tanpa perbaikan (10 Nov).
 - Berkas video (`video/`, `*.wav`) tidak masuk git. Di sesi baru, perbaikan gambar D04 berarti render ulang penuh (±25 menit dengan 3 proses paralel); `--mux` hanya berlaku bila berkas segmen masih ada.
 
 ## Halaman dan dokumen Claude (milik Bu Dewi)
