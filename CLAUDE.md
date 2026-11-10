@@ -5,6 +5,7 @@ Bahasa kerja: Bahasa Indonesia. Pemilik: Bu Dewi (guru Informatika, penulis buku
 ## Sumber kebenaran
 - Peta kurikulum (52 unit, JP, TP, ide animasi, prioritas produksi, matriks CP) ada di dokumen Claude "Kurikulum Seri Animasi Informatika (Fase D–F)". Ringkasannya untuk kelas VII semester 1: D7.0 Jembatan (6 JP), D7.1 Berpikir Komputasional di Sekitar Kita (10), D7.2 Mengenal Komputer (8), D7.3 Kata Sandi Aman dan Rekam Jejak Digital (6), D7.4 Mesin Pencari (4); semester 2: D7.5 Instruksi untuk Manusia dan Mesin (12, SUDAH JADI), D7.6 Data Terstruktur di Sekitar Kita (8), D7.7 Ruang Publik Virtual dan Empati (6), D7.8 Proyek Panduan Digital (8).
 - Urutan produksi mengikuti kurikulum: D7.0 → D7.1 → D7.2 → D7.3 → D7.4 → D7.6 → D7.7 → D7.8 → kelas VIII, dst. Tanyakan ke Bu Dewi bila ingin melompat.
+- Status terkini, alamat halaman pelacak, dan tugas terjadwal: `SERAH_TERIMA.md`. Dokumenter umum (D01–D04, narator Bian, maskot Bip): `episodes/dok/PANDUAN.md`.
 - Alat bersama dan alur produksi: `episodes/_alat/README.md`. Episode contoh yang sudah selesai: `episodes/D7.5/` (papan robot) dan `episodes/D7.0/` (perangkat). Tiru strukturnya.
 
 ## Keputusan yang sudah disepakati (jangan diubah tanpa bertanya)

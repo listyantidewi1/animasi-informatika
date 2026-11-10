@@ -44,3 +44,6 @@ Satu Short per episode di `<kode>/short/`: satu gagasan, 45–60 detik, pertanya
 
 ## Kebutuhan
 Python 3 dengan `playwright` (Chromium), `numpy`; `ffmpeg` dengan filter `rubberband`; font Inter terpasang (dipakai di video). Di laptop untuk suara: `edge-tts`.
+
+## Dokumenter
+Panduan lengkap di `episodes/dok/PANDUAN.md`. Alat khusus: `sinema_dok.js`, `dokkit/`, `align_dok.py`, `cek_dok.py`, `sfx_dok.py`, `musik_dok.py`, `short_dok.js`, `kit_preview.py`, `lembar_kontak.py` (lembar kontak per bab), `thumbnail_dok.py` (thumbnail), `yt_panel.py` (judul & deskripsi untuk halaman pelacak).
