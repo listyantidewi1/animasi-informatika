@@ -1,7 +1,7 @@
 # Pembahasan Soal Bebras: Mengenali Teman Baru (2022-AU-02)
 
-Video pembahasan ±8 menit untuk kategori **SiKecil (kelas 1–3 SD)**, seri baru "Pembahasan Soal Bebras" menjelang Bebras Challenge week.
-Draf 2 (10 Nov 2026), menunggu suntingan Bu Dewi. Teks biasa adalah narasi yang dibacakan; teks *[Visual: …]* adalah catatan gambar dan tidak dibacakan.
+Video pembahasan ±8 menit untuk kategori **SiKecil (kelas 1–3 SD)**, seri baru "Pembahasan Soal Bebras". Isinya tidak terikat waktu (tanpa menyebut "minggu depan"), supaya bisa dipakai kapan saja (masukan Bu Dewi, 10 Nov).
+Draf 3 (10 Nov 2026), isi disetujui Bu Dewi. Teks biasa adalah narasi yang dibacakan; teks *[Visual: …]* adalah catatan gambar dan tidak dibacakan.
 
 Soal asli: "Remembering Face", Bebras 2022, usulan Australia (kode 2022-AU-02). Gambar soal digambar ulang dengan kode, tidak disalin dari berkas soal.
 
@@ -16,7 +16,7 @@ Gaya: animasi coretan spidol di papan tulis ditambah simulasi berang-berang yang
 
 ## 0. Pembuka (±0:30)
 
-Halo, teman-teman! Aku Kiko. Minggu depan ada Tantangan Bebras. Tantangan Bebras adalah lomba berpikir yang seru untuk anak-anak di seluruh dunia.
+Halo, teman-teman! Aku Kiko. Apakah kamu pernah mendengar Tantangan Bebras? Tantangan Bebras adalah lomba berpikir yang seru untuk anak-anak di seluruh dunia.
 *[Visual: papan tulis putih; Kiko masuk dari kanan dan melambai; spidol menulis "Tantangan Bebras" dan menggambar berang-berang kecil.]*
 
 Hari ini, kita akan mengerjakan satu soal Bebras bersama-sama. Kita akan mengerjakannya pelan-pelan, satu langkah demi satu langkah.
@@ -187,7 +187,7 @@ Gambar bercabang seperti ini disebut pohon keputusan. Namanya pohon karena bentu
 Komputer juga sering memakai pohon keputusan. Komputer bertanya satu per satu, lalu mengikuti jawabannya, sama seperti yang baru saja kita lakukan.
 *[Visual: Kiko memindai sebuah benda; pertanyaan ya atau tidak muncul satu per satu di layar dada Kiko.]*
 
-Kalau nanti di Tantangan Bebras kamu bertemu gambar bercabang, ingat tiga aturannya. Mulailah dari atas. Jawab pertanyaannya. Ikuti panahnya sampai ke lingkaran.
+Kalau kamu bertemu gambar bercabang di soal Bebras, ingat tiga aturannya. Mulailah dari atas. Jawab pertanyaannya. Ikuti panahnya sampai ke lingkaran.
 *[Visual: tiga aturan muncul besar sekali lagi, ditulis ulang dengan spidol.]*
 
 Selamat berlatih, dan semoga sukses di Tantangan Bebras!
@@ -205,4 +205,4 @@ Selamat berlatih, dan semoga sukses di Tantangan Bebras!
 
 ## Perkiraan kredit ElevenLabs
 
-Naskah di atas berisi 6.586 karakter narasi (1003 kata). Dengan ±0,55 kredit per karakter, satu video ini memakai **±3.600 kredit**. Bila nanti dibuat Short, tambah ±350 kredit. Angkanya dihitung ulang setelah suntingan Bu Dewi.
+Naskah di atas berisi 6.587 karakter narasi (1003 kata). Dengan ±0,55 kredit per karakter, satu video ini memakai **±3.600 kredit**. Bila nanti dibuat Short, tambah ±350 kredit.
