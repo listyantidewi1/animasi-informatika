@@ -683,7 +683,7 @@
       ctx.fillStyle = "#4FB36B"; for (const x of [-180, -60, 60, 180]) { ctx.beginPath(); ctx.arc(x, -170, 46, 0, Math.PI * 2); ctx.fill(); }
       ctx.restore();
       hand(ctx, rot > 3 ? "pohon terbalik" : "pohon", 1400, 790, 40, { color: INK });
-      if (rot > 3) { hand(ctx, "batang di atas", 1440, 230, 28, { color: C.ink2, align: "left" }); hand(ctx, "cabang ke bawah", 1640, 470, 28, { color: C.ink2, align: "left" }); }
+      if (rot > 3) { hand(ctx, "batang di atas", 1440, 230, 28, { color: C.ink2, align: "left" }); hand(ctx, "cabang ke bawah", 1590, 470, 28, { color: C.ink2, align: "left" }); }
     },
     komputer(ctx, b, l, t, TL) {
       board(ctx);
