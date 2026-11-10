@@ -547,8 +547,29 @@
   // ---------- adegan lain ----------
   function capHat(ctx, x, y, s) { ctx.save(); ctx.translate(x, y); ctx.scale(s / 64, s / 64); ctx.translate(0, 49); hatPart(ctx); ctx.restore(); }
 
+  // soal utuh di awal video: tiga berang-berang, gambar bercabang, dan pertanyaannya
+  function soal(ctx, b, l, t, TL) {
+    board(ctx);
+    const first = b.id === "soal1";
+    const tu = first ? P(l, at(b, "Ada juga"), 0.8) : 1;
+    const glowC = {};
+    if (first) ["c1", "c2", "c3"].forEach((k, i) => glowC[k] = clamp(1 - Math.abs(l - at(b, "bernomor") - 0.6 - i * 0.6) / 0.6, 0, 1));
+    if (tu > 0) { ctx.save(); ctx.globalAlpha = tu; tree(ctx, { l, glowC }); ctx.restore(); }
+    const bu = first ? P(l, at(b, "Ada tiga"), 0.6) : 1;
+    ctx.save(); ctx.globalAlpha = bu;
+    card(ctx, 70, 160, 360, 500, { fill: "#F7F9FA", stroke: "#C9D2D8", lw: 2.5, r: 18 });
+    text(ctx, "Tiga teman baru:", 250, 210, 30, { align: "center", weight: 900, color: INK });
+    [["A", 160, 320], ["B", 340, 320], ["C", 250, 500]].forEach(([w, x, y]) => beaver(ctx, x, y, 124, { ...WHO[w], label: w }));
+    ctx.restore();
+    const qu = first ? 0 : P(l, at(b, "Pertanyaannya"), 0.6);
+    if (qu > 0) {
+      qCard(ctx, { title: "PERTANYAAN", text: "Berang-berang mana yang masuk lingkaran 1, 2, dan 3?", u: qu });
+      ansCard(ctx, {}, { u: qu });
+    }
+  }
+
   Object.assign(K.SCENES, {
-    pohon,
+    pohon, soal,
     buka(ctx, b, l, t, TL) {
       board(ctx);
       const first = b.id === "intro1";
