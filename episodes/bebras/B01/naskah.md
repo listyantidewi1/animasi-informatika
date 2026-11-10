@@ -205,4 +205,4 @@ Selamat berlatih, dan semoga sukses di Tantangan Bebras!
 
 ## Perkiraan kredit ElevenLabs
 
-Naskah di atas berisi 6.586 karakter narasi (1003 kata). Dengan ±0.55 kredit per karakter. satu video ini memakai **±3.600 kredit**. Bila nanti dibuat Short, tambah ±350 kredit. Angkanya dihitung ulang setelah suntingan Bu Dewi.
+Naskah di atas berisi 6.586 karakter narasi (1003 kata). Dengan ±0,55 kredit per karakter, satu video ini memakai **±3.600 kredit**. Bila nanti dibuat Short, tambah ±350 kredit. Angkanya dihitung ulang setelah suntingan Bu Dewi.
