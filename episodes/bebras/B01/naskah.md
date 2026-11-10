@@ -21,6 +21,9 @@ Halo, teman-teman! Aku Kiko. Apakah kamu pernah mendengar Tantangan Bebras? Tant
 
 Hari ini, kita akan mengerjakan satu soal Bebras bersama-sama. Kita akan mengerjakannya pelan-pelan, satu langkah demi satu langkah.
 
+Soal ini berjudul "Mengenali Wajah". Soal ini berasal dari Bebras tahun dua ribu dua puluh dua, dan dibuat oleh tim Bebras dari negara Australia.
+*[Visual: peta dunia sederhana digambar spidol; Australia diwarnai dan diberi bintang; tulisan "Bebras 2022 · Australia · 2022-AU-02". Sejak beat ini sampai akhir, kredit kecil "Soal: Bebras 2022 · Australia (2022-AU-02)" tetap tampil di pojok kiri bawah.]*
+
 Setelah menonton video ini, kamu bisa membaca gambar bercabang dan menemukan jawaban yang pasti benar. Kamu tidak perlu menebak-nebak.
 *[Visual: kartu judul "Mengenali Teman Baru"; kode kecil "Bebras 2022 · SiKecil · 2022-AU-02"; kalimat kait di bawah judul.]*
 
@@ -190,8 +193,8 @@ Komputer juga sering memakai pohon keputusan. Komputer bertanya satu per satu, l
 Kalau kamu bertemu gambar bercabang di soal Bebras, ingat tiga aturannya. Mulailah dari atas. Jawab pertanyaannya. Ikuti panahnya sampai ke lingkaran.
 *[Visual: tiga aturan muncul besar sekali lagi, ditulis ulang dengan spidol.]*
 
-Selamat berlatih, dan semoga sukses di Tantangan Bebras!
-*[Visual: Kiko dan tiga berang-berang melambai; tulisan "Soal: Bebras 2022 (2022-AU-02, Australia)".]*
+Terima kasih kepada tim Bebras Australia yang membuat soal ini. Selamat berlatih, dan semoga sukses di Tantangan Bebras!
+*[Visual: Kiko dan tiga berang-berang melambai; kartu kredit "Soal: Remembering Face (Mengenali Wajah), Bebras 2022, kontributor Australia, kode 2022-AU-02. Gambar soal digambar ulang."]*
 
 ---
 
@@ -201,8 +204,8 @@ Selamat berlatih, dan semoga sukses di Tantangan Bebras!
 - **Suara**: Kak Ceria (Eleven v4), seperti seri kelas VII. Untuk kelas 1–3 SD, kecepatan diturunkan dari 0,9 menjadi 0,85. Hanya versi bersuara. Teks narasi tetap tampil di layar, tetapi lebih kecil dari biasanya, karena banyak anak kelas 1 belum lancar membaca; yang besar adalah gambar dan coretannya.
 - **Gaya gambar (masukan Bu Dewi, 10 Nov)**: papan tulis putih dengan coretan spidol yang tergambar sedikit demi sedikit, seperti guru menjelaskan di kelas. Diagram soal digambar ulang dengan spidol, lalu setiap penelusuran ditandai coretan warna: jalan yang sedang ditelusuri digaris spidol oranye, jawaban "ya" atau "tidak" ditulis tangan di samping panah, benda yang dipakai dilingkari, dan benda yang tidak dipakai dicoret. Bagian simulasi: berang-berang kecil berjalan mengikuti panah seperti bidak, dan tabel kecil (kacamata, topi, syal) untuk setiap berang-berang dicentang atau disilang dengan spidol. Kiko muncul sebagai pemandu di pinggir papan. Semua digambar dengan kode, font Inter untuk teks narasi, huruf ala tulisan tangan untuk coretan.
 - **Short**: belum disertakan; bisa ditambah bila Bu Dewi mau.
-- **Kredit soal di deskripsi**: "Soal: Bebras 2022 (2022-AU-02, Australia), digambar ulang." Mohon Bu Dewi memastikan izin pemakaian soal Bebras untuk video YouTube lewat Bebras Indonesia, karena soal Bebras biasanya dibagikan untuk pendidikan nonkomersial.
+- **Kredit soal (permintaan Bu Dewi, 10 Nov)**: disebut lisan di pembuka dan penutup, tampil kecil di pojok sepanjang video, ada di kartu penutup, dan ditulis di deskripsi YouTube: "Soal: Remembering Face, Bebras 2022, kontributor Australia (2022-AU-02), digambar ulang." Berlaku untuk semua soal berikutnya, dengan negara kontributor masing-masing. Mohon Bu Dewi memastikan izin pemakaian soal Bebras untuk video YouTube lewat Bebras Indonesia, karena soal Bebras biasanya dibagikan untuk pendidikan nonkomersial.
 
 ## Perkiraan kredit ElevenLabs
 
-Naskah di atas berisi 6.587 karakter narasi (1003 kata). Dengan ±0,55 kredit per karakter, satu video ini memakai **±3.600 kredit**. Bila nanti dibuat Short, tambah ±350 kredit.
+Naskah di atas berisi 6.796 karakter narasi (1.037 kata). Dengan ±0,55 kredit per karakter, satu video ini memakai **±3.700 kredit**. Bila nanti dibuat Short, tambah ±350 kredit.
