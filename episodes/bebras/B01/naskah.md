@@ -8,7 +8,7 @@ Soal asli: "Remembering Face", Bebras 2022, usulan Australia (kode 2022-AU-02). 
 **Jawaban yang dinalar di video:** Lingkaran 1 = C, Lingkaran 2 = B, Lingkaran 3 = A.
 
 ---
-Tempo: setiap langkah penelusuran ditahan lama (panah menyala satu per satu, berang-berang berjalan mengikuti panah), dan ada dua jeda "pikirkan dulu" (±5 detik) sebelum jawaban B dan C.
+Gaya: animasi coretan spidol di papan tulis ditambah simulasi berang-berang yang berjalan mengikuti panah (rincian di "Usulan produksi"). Tempo: setiap langkah penelusuran ditahan lama (panah menyala satu per satu, berang-berang berjalan mengikuti panah), dan ada dua jeda "pikirkan dulu" (±5 detik) sebelum jawaban B dan C.
 
 ---
 
@@ -138,7 +138,7 @@ Selamat berlatih, dan semoga sukses di Tantangan Bebras!
 
 - **Folder dan kode**: `episodes/bebras/B01/`, alat dipanggil dengan kode `bebras/B01`. Soal berikutnya B02, B03, dan seterusnya.
 - **Suara**: Kak Ceria (Eleven v4), seperti seri kelas VII, karena penontonnya anak-anak. Hanya versi bersuara, tetapi teks narasi tetap tampil besar di layar.
-- **Gaya gambar**: gaya Fase D (Kiko sebagai pemandu, font Inter, palet `kiko-core.js`); berang-berang, kacamata hitam, topi, dan syal digambar dengan kode.
+- **Gaya gambar (masukan Bu Dewi, 10 Nov)**: papan tulis putih dengan coretan spidol yang tergambar sedikit demi sedikit, seperti guru menjelaskan di kelas. Diagram soal digambar ulang dengan spidol, lalu setiap penelusuran ditandai coretan warna: jalan yang sedang ditelusuri digaris spidol oranye, jawaban "ya" atau "tidak" ditulis tangan di samping panah, benda yang dipakai dilingkari, dan benda yang tidak dipakai dicoret. Bagian simulasi: berang-berang kecil berjalan mengikuti panah seperti bidak, dan daftar periksa (kacamata, topi, syal) dicentang atau disilang dengan spidol. Kiko muncul sebagai pemandu di pinggir papan. Semua digambar dengan kode, font Inter untuk teks narasi, huruf ala tulisan tangan untuk coretan.
 - **Short**: belum disertakan; bisa ditambah bila Bu Dewi mau.
 - **Kredit soal di deskripsi**: "Soal: Bebras 2022 (2022-AU-02, Australia), digambar ulang." Mohon Bu Dewi memastikan izin pemakaian soal Bebras untuk video YouTube lewat Bebras Indonesia, karena soal Bebras biasanya dibagikan untuk pendidikan nonkomersial.
 
