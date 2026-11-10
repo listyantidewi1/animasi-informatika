@@ -17,7 +17,7 @@ Untuk sesi Claude baru. Baca juga `CLAUDE.md` (aturan seri), `README.md` (status
 | Analisis Kebutuhan Video Simulasi | https://claude.ai/artifact/1t4Jj3bfW32Sd2L13jD8kk | daftar S01–S32, K01–K26 |
 
 ## Tugas terjadwal
-"Pasang video YouTube yang sudah tayang" (setiap hari): membaca koleksi `video` di halaman Alamat Video YouTube, mengisi `episodes/_alat/youtube_id.json`, menjalankan `python3 episodes/_alat/yt_tayang.py --build`, memeriksa satu halaman yang berubah lewat server http lokal, commit, push ke `naskah-d7.0` dan `naskah-d7.0:main`, lalu melapor. Hapus tugas itu bila semua kode sudah terisi dan tayang. Per 10 Nov: 18 dari 79 video tayang. Tugas ini terikat ke sesi lama; bila Bu Dewi ingin laporannya muncul di sesi baru, buat ulang tugas serupa dari sesi baru lalu hapus yang lama.
+"Pasang video YouTube yang sudah tayang" (setiap hari): membaca koleksi `video` di halaman Alamat Video YouTube, mengisi `episodes/_alat/youtube_id.json`, menjalankan `python3 episodes/_alat/yt_tayang.py --build`, memeriksa satu halaman yang berubah lewat server http lokal, commit, push ke `naskah-d7.0` dan `naskah-d7.0:main`, lalu melapor. Hapus tugas itu bila semua kode sudah terisi dan tayang. Per 10 Nov: 18 dari 79 video tayang. Sejak 10 Nov tugas ini (06.17 WIB) melapor ke thread "Pindahkan tugas harian video YouTube" di proyek Video Edukasi; tugas lama di sesi sebelumnya sudah dihapus. Bila perlu dipindah lagi, buat ulang dari sesi baru lalu hapus yang lama.
 
 ## Aturan kerja yang perlu diingat
 - Bahasa Indonesia; kalimat lengkap. Commit berbahasa Indonesia; push: `git push origin naskah-d7.0` lalu `git push origin naskah-d7.0:main`.
