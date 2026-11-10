@@ -376,7 +376,8 @@
     const MV = 2.2;
     const m1 = clamp((l - tOf("m1")) / MV, 0, 1), m2 = clamp((l - tOf("m2")) / MV, 0, 1);
     const e1 = route[0], e2 = route[1], mid = E[e1][1];
-    const fill = { ...BEFORE[who] };
+    const before = b.kosong ? {} : BEFORE[who];   // Short: A dan B belum dikerjakan saat C ditelusuri
+    const fill = { ...before };
     if (who !== "P" && m2 >= 1 && ("m2" in ev)) fill[+DEST[who].slice(1)] = who;
     // keadaan pohon
     const path = {}; path[e1] = m1; path[e2] = m2;
@@ -425,7 +426,7 @@
     else if (on("q2")) qCard(ctx, { who, it: BOXITEM[mid], ans: has(who, BOXITEM[mid]), ansU: P(l, tOf("a2"), 0.4) });
     else if (on("q1")) qCard(ctx, { who, it: "glasses", ans: has(who, "glasses"), ansU: P(l, tOf("a1"), 0.4) });
     else if (cf.ruleBig != null) qCard(ctx, { title: "INGAT", text: "Kita selalu mulai dari kotak paling atas." });
-    const ans = { ...BEFORE[who] }; const fresh = {};
+    const ans = { ...before }; const fresh = {};
     if (who !== "P" && "done" in ev && on("done")) { const n = +DEST[who].slice(1); ans[n] = who; fresh[n] = P(l, tOf("done"), 0.8); }
     if (who !== "P") ansCard(ctx, ans, { fresh });
     rulesStrip(ctx, 3, { big: cf.ruleBig != null ? cf.ruleBig + 1 : (on("q1") && m1 <= 0 ? 1 : (m1 > 0 && m1 < 1) || (m2 > 0 && m2 < 1) ? 2 : (m2 >= 1 ? 3 : 0)) });
@@ -568,8 +569,15 @@
     }
   }
 
+  // soal untuk layar vertikal (Short): tiga berang-berang besar di atas, gambar bercabang di bawah; potong [460, 130, 1000, 700]
+  function soal_v(ctx, b, l, t, TL) {
+    board(ctx);
+    [["A", 640], ["B", 960], ["C", 1280]].forEach(([w, x]) => beaver(ctx, x, 245, 170, { ...WHO[w], label: w }));
+    ctx.save(); ctx.translate(960, 440); ctx.scale(0.68, 0.68); ctx.translate(-960, -150); tree(ctx, { l }); ctx.restore();
+  }
+
   Object.assign(K.SCENES, {
-    pohon, soal,
+    pohon, soal, soal_v,
     buka(ctx, b, l, t, TL) {
       board(ctx);
       const first = b.id === "intro1";
