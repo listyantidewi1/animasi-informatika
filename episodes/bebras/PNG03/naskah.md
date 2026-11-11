@@ -189,3 +189,7 @@ Kalau jalan B ke C ditutup, warga dari B hanya berputar di B, A, dan G. Jadi, ja
 Kalau jalan F ke B atau jalan F ke G ditutup, masih ada rute keliling yang melewati ketujuh taman. Jadi, jawabannya adalah FB dan FG.
 
 Tonton pembahasan lengkapnya untuk melihat cara mengujinya langkah demi langkah. Soal ini dibuat oleh tim Bebras Italia.
+
+---
+
+**Catatan produksi (11 Nov):** video 11:16 + Short 1:39, suara Kak Ceria 0,95. Pemakaian ElevenLabs sebenarnya ±3.520 kredit (video + Short); sisa kuota ±10.170 sesudahnya.
