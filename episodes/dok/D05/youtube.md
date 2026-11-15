@@ -3,7 +3,7 @@
 ## Pengaturan unggah (wajib)
 - Penonton: **Tidak, video ini tidak dibuat untuk anak-anak** (penonton umum/keluarga).
 - Konten diubah atau sintetis: **Ya** (narasi dibuat dengan AI).
-- Layar akhir: 20 detik terakhir (mulai sekitar 13:52) untuk elemen layar akhir; pasang D04 atau D03 + tombol subscribe (tempatnya sudah disiapkan di layar: lingkaran kiri untuk subscribe, kotak kanan untuk video berikutnya).
+- Layar akhir: 20 detik terakhir (mulai sekitar 14:22) untuk elemen layar akhir; pasang D04 atau D03 + tombol subscribe (tempatnya sudah disiapkan di layar: lingkaran kiri untuk subscribe, kotak kanan untuk video berikutnya).
 
 ## Judul
 Kenapa Aplikasi Favoritmu Makin Menyebalkan?
@@ -13,16 +13,16 @@ Iklan makin banyak, kabar teman makin jarang muncul, biaya makin naik, tetapi ki
 
 Bab:
 0:00 Pembuka
-1:12 Nama untuk sebuah perasaan
-2:18 Tahap satu: pasar yang ramah
-3:47 Siapa yang membayar es teh gratis?
-4:43 Pintu yang diam-diam terkunci
-5:47 Tahap dua: memeras pengguna
-6:54 Tahap tiga: memeras mitra bisnis
-8:42 Apakah membayar bisa menyelamatkanmu?
-10:17 Bukankah perusahaan memang harus untung?
-11:33 Membuka pintu kembali
-12:58 Penutup
+1:14 Nama untuk sebuah perasaan
+2:24 Tahap satu: pasar yang ramah
+3:56 Siapa yang membayar es teh gratis?
+4:54 Pintu yang diam-diam terkunci
+6:02 Tahap dua: memeras pengguna
+7:12 Tahap tiga: memeras mitra bisnis
+9:03 Apakah membayar bisa menyelamatkanmu?
+10:41 Bukankah perusahaan memang harus untung?
+11:59 Membuka pintu kembali
+13:27 Penutup
 
 Naskah video ini disusun dengan bantuan AI, termasuk Claude buatan Anthropic, lalu diperiksa fakta dan disunting manusia. Narasi: Bian (suara sintetis ElevenLabs). Animasi, musik, dan efek suara dibuat dengan kode oleh I Teach Software Engineering. Pasar Juragan, Bu Sari, Raka, dan warung nasi goreng adalah rekaan; orang sungguhan tidak digambar. Marketplace dan aplikasi ojek online Indonesia sengaja tidak disebut namanya karena angkanya berasal dari liputan media dan keterangan penjual. Angka harga kue dan "kabar teman 8 dari 10" adalah ilustrasi.
 
