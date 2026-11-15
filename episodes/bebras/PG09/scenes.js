@@ -131,7 +131,8 @@
       mline(ctx, seg("F", "D"), P(l, t2, 0.6), GREEN, 10, true); mline(ctx, seg("D", "E"), P(l, t2 + 0.6, 0.6), GREEN, 10, true);
     }
     // simpul
-    const nodeA = id === "soal1" ? k => P(l, at(b, NAMA[k]), 0.5) : () => 1;
+    const nodeA = id === "soal1" ? k => P(l, Math.min(at(b, NAMA[k]), at(b, "enam penari") + KEYS.indexOf(k) * 0.35), 0.5) : () => 1;
+    if (id === "soal1") alpha(ctx, P(l, 0.5, 0.6) * (1 - P(l, at(b, "enam penari"), 0.5)), () => { hand(ctx, "pertunjukan tari berpasangan", 560, 420, 56, { color: ORANGE }); const sw = Math.sin(l * 3) * 12; B.beaver(ctx, 1320, 470 + sw, 170); B.beaver(ctx, 1560, 470 - sw, 170, { flip: true, shirt: "#E07AA0" }); });
     KEYS.forEach(k => {
       const opt = {};
       if (id === "e1" && k === "D") opt.big = 1 + 0.15 * P(l, 0.3, 0.6);
