@@ -154,4 +154,15 @@ K.rangkuman = (c, t, D, a) => { // a.item = [{ikon:'kotak'|'putar'|'cabang'|...,
     c.restore();
   });
 };
-K.adegan = {judul: K.kartuJudul, penutup: K.kartuPenutup, rangkuman: K.rangkuman, tebak: (c, t, D, a) => K.tebak(c, t, D, a.bg)};
+K.adegan = {
+  // catatan umum di atas rekaman beku: panel kanan berisi kode + penjelasan + gambar
+  catatan(c, t, D, a) {
+    K.latar(c, a.bg, 0.72); const p = K.seg(t, 0, .6);
+    K.panel(c, 120, 110, 1680, 860, p, a.warna || K.C.amber);
+    c.save(); c.globalAlpha = K.out(p);
+    K.text(c, a.judul, 190, 190, {size: 46, weight: 800});
+    const kb = K.kode(c, a.kode, 190, 250, {size: a.ukuran || 34, sorot: a.sorot, pSorot: K.out(K.seg(t, .8, 1.4))});
+    c.restore();
+    if (K.adegan[a.gambar]) K.adegan[a.gambar](c, t, D, a, {x: 190, y: 250 + kb.h + 40, w: 1540, h: 860 - kb.h - 210});
+  },
+  judul: K.kartuJudul, penutup: K.kartuPenutup, rangkuman: K.rangkuman, tebak: (c, t, D, a) => K.tebak(c, t, D, a.bg)};

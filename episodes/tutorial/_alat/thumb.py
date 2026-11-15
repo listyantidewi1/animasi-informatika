@@ -19,7 +19,9 @@ def main(ep):
     d.rounded_rectangle([40, 44, 40 + 330, 96], 26, fill=(255, 176, 32)); d.text((205, 70), T.get("pita", "PYTHON"), font=ImageFont.truetype(FB, 30), fill=(20, 24, 38), anchor="mm")
     y = 150
     for i, l in enumerate(T["baris"]):
-        f = ImageFont.truetype(FB, T.get("ukuran", 96)); col = (255, 176, 32) if i == T.get("sorot", -1) else (255, 255, 255)
-        d.text((44, y), l, font=f, fill=col, stroke_width=4, stroke_fill=(18, 24, 41)); y += int(T.get("ukuran", 96) * 1.12)
+        uk = T.get("ukuran", 96)
+        while ImageFont.truetype(FB, uk).getlength(l) > 470: uk -= 4
+        f = ImageFont.truetype(FB, uk); col = (255, 176, 32) if i == T.get("sorot", -1) else (255, 255, 255)
+        d.text((44, y), l, font=f, fill=col, stroke_width=4, stroke_fill=(18, 24, 41)); y += int(uk * 1.12)
     im.save(f"{base}/{ep}_thumbnail.jpg", quality=92); print("thumb ok")
 if __name__ == "__main__": main(sys.argv[1])
