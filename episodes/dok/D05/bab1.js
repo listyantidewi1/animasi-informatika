@@ -87,7 +87,7 @@
       tag(c2, "tulisan Doctorow", xs[0], Y - 330 < 110 ? 110 : Y - 330, pop(l, t22 + 0.5).a, { sp: pop(l, t22 + 0.5).sp, col: P.blue, size: 44 });
       tag(c2, "Kata tahun ini 2023", xs[1], 120, pop(l, tKata).a, { sp: pop(l, tKata).sp, col: P.amber, size: 48 });
       tag(c2, "American Dialect Society", xs[1], 600, pop(l, tKata + 0.3).a * (1 - ja), { col: P.amber, size: 44 });
-      tag(c2, "2024 · Kamus Macquarie", xs[2], 120, pop(l, tKata + 1.8).a, { sp: pop(l, tKata + 1.8).sp, col: P.violet, size: 44 });
+      tag(c2, "2024 · Kamus Macquarie", xs[2] - 70, 120, pop(l, tKata + 1.8).a, { sp: pop(l, tKata + 1.8).sp, col: P.violet, size: 44 });
       tag(c2, "(Australia)", xs[2], 600, pop(l, tKata + 2.0).a * (1 - ja), { col: P.violet, size: 44 });
     });
   };
@@ -134,7 +134,7 @@
     D.post(c2 => {
       tag(c2, "1  baik kepada pengguna", 420, 180, pop(l, t1).a, { sp: pop(l, t1).sp, col: P.green, size: 44 });
       tag(c2, "2  memeras pengguna", 960, 375, pop(l, t2).a, { sp: pop(l, t2).sp, col: P.amber, size: 44 });
-      tag(c2, "3  memeras mitra bisnis", 1500, 560, pop(l, t3).a, { sp: pop(l, t3).sp, col: P.pink, size: 44 });
+      tag(c2, "3  memeras mitra bisnis", 1420, 560, pop(l, t3).a, { sp: pop(l, t3).sp, col: P.pink, size: 44 });
       tag(c2, "pengguna", 290, 400 + 80, st[0] * pop(l, t1 + 0.5).a, { col: P.blue, size: 40 });
       tag(c2, "mitra bisnis", 1060, 590 + 80, st[1] * pop(l, t2 + 0.6).a, { col: P.amber, size: 40 });
       tag(c2, "kantong pemilik", 1640, 880, pop(l, tKant).a, { sp: pop(l, tKant).sp, col: "#FFD23F", size: 44 });
@@ -166,7 +166,7 @@
     });
   };
 
-  K.SCENES.d05_b1 = function (ctx, b, l, t, TL) { const f = S[b.id]; if (f) f(ctx, b, l, t, TL); else D.bg(ctx, t); };
+  K.SCENES.d05_b1 = function (ctx, b, l, t, TL) { const f = S[b.id]; ctx.save(); U.napas(ctx, t); if (f) f(ctx, b, l, t, TL); else D.bg(ctx, t); ctx.restore(); };
   K.SCENES.d05_b1.noCam = true;
   K.sfxParts = K.sfxParts || {};
   K.sfxParts.b1 = TL => [

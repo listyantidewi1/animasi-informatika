@@ -179,7 +179,7 @@
       U.judul(c2, "Siapa yang membayar?", 960, 200, 84, pop(l, tSiapa).a, { sp: pop(l, tSiapa).sp, col: P.amber }); });
   };
 
-  K.SCENES.d05_b2 = function (ctx, b, l, t, TL) { const f = S[b.id]; if (f) f(ctx, b, l, t, TL); else D.bg(ctx, t); };
+  K.SCENES.d05_b2 = function (ctx, b, l, t, TL) { const f = S[b.id]; ctx.save(); U.napas(ctx, t); if (f) f(ctx, b, l, t, TL); else D.bg(ctx, t); ctx.restore(); };
   K.SCENES.d05_b2.noCam = true;
   K.sfxParts = K.sfxParts || {};
   K.sfxParts.b2 = TL => [

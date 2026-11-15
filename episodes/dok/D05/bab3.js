@@ -168,7 +168,7 @@
     D.post(c2 => U.judul(c2, "Tidak ada yang mudah pergi", 960, 160, 64, pop(l, tPergi).a, { sp: pop(l, tPergi).sp, col: P.pink }));
   };
 
-  K.SCENES.d05_b3 = function (ctx, b, l, t, TL) { const f = S[b.id]; if (f) f(ctx, b, l, t, TL); else D.bg(ctx, t); };
+  K.SCENES.d05_b3 = function (ctx, b, l, t, TL) { const f = S[b.id]; ctx.save(); U.napas(ctx, t); if (f) f(ctx, b, l, t, TL); else D.bg(ctx, t); ctx.restore(); };
   K.SCENES.d05_b3.noCam = true;
   K.sfxParts = K.sfxParts || {};
   K.sfxParts.b3 = TL => [

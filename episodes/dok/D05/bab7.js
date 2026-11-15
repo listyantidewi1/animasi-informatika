@@ -122,9 +122,9 @@
     D.post(c2 => {
       panelRem(c2, rem, l);
       const cur = rem.reduce((m, v, i) => (v > 0 ? i : m), -1);
-      if (cur >= 0) tag(c2, REM_DESC[cur], 420, 590, rem[cur], { col: REM_COL[cur], size: 48 });
+      if (cur >= 0) tag(c2, REM_DESC[cur], 610, 800, rem[cur], { col: REM_COL[cur], size: 48 });
       tag(c2, "4 rem menurut Doctorow", 1500, 140, pop(l, tEmpat).a, { sp: pop(l, tEmpat).sp, col: P.amber, size: 48 });
-      if (cur === 2) tag(c2, "kemampuan layanan lain untuk tersambung", 560, 680, rem[2] * (1 - (rem[3] || 0)), { col: P.teal, size: 40 });
+      if (cur === 2) tag(c2, "kemampuan layanan lain untuk tersambung", 610, 885, rem[2] * (1 - (rem[3] || 0)), { col: P.teal, size: 40 });
     });
   };
   S.b7_5 = function (ctx, b, l, t) {
@@ -147,7 +147,7 @@
     });
   };
 
-  K.SCENES.d05_b7 = function (ctx, b, l, t, TL) { const f = S[b.id]; if (f) f(ctx, b, l, t, TL); else D.bg(ctx, t); };
+  K.SCENES.d05_b7 = function (ctx, b, l, t, TL) { const f = S[b.id]; ctx.save(); U.napas(ctx, t); if (f) f(ctx, b, l, t, TL); else D.bg(ctx, t); ctx.restore(); };
   K.SCENES.d05_b7.noCam = true;
   K.sfxParts = K.sfxParts || {};
   K.sfxParts.b7 = TL => [

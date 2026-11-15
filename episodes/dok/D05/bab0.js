@@ -114,7 +114,7 @@
     D.post(c2 => {
       cards.forEach((c, i) => { if (!c.ad) return; const so = clamp(sorot * 10 - i * 0.6); if (so <= 0) return; const p = A.map(A.screen.w * 0.62, c.y + c.h * 0.22);
         if (c.y < A.screen.h * 0.11 || p.y < 110 || p.y > 900) return; U.sponsorTag(c2, p.x + 30, p.y, so, 300); });
-      tag(c2, "Cory Doctorow · Januari 2023", 400, 520, pop(l, tDoc).a, { sp: pop(l, tDoc).sp, col: P.violet, size: 44 });
+      tag(c2, "Cory Doctorow · Januari 2023", 430, 520, pop(l, tDoc).a, { sp: pop(l, tDoc).sp, col: P.violet, size: 44 });
       tag(c2, "di Amazon", 400, 420, pop(l, tAmz).a, { sp: pop(l, tAmz).sp, col: P.violet, size: 44 });
       tag(c2, "5 layar pertama", 1520, 760 - 140, pop(l, tLima).a, { sp: pop(l, tLima).sp, col: P.amber, size: 44 });
     });
@@ -223,7 +223,7 @@
     });
   };
 
-  K.SCENES.d05_b0 = function (ctx, b, l, t, TL) { const f = S[b.id]; if (f) f(ctx, b, l, t, TL); else D.bg(ctx, t); };
+  K.SCENES.d05_b0 = function (ctx, b, l, t, TL) { const f = S[b.id]; ctx.save(); U.napas(ctx, t); if (f) f(ctx, b, l, t, TL); else D.bg(ctx, t); ctx.restore(); };
   K.SCENES.d05_b0.noCam = true;
   K.sfxParts = K.sfxParts || {};
   K.sfxParts.b0 = TL => [

@@ -100,10 +100,10 @@
       ROWS.forEach(([s, v], i) => { const a = ramp(l, tBaru + i * 0.9, 0.35); if (a <= 0) return; const yy = y + 260 + i * rh; c2.save(); c2.globalAlpha = a * sa; c2.translate((1 - eout(a)) * 40, 0);
         txt(c2, "− " + s, x + 40, yy, 44, { weight: 800, color: "#C7413B" }); txt(c2, v, x + w - 40, yy, 44, { align: "right", weight: 900, color: "#C7413B" }); c2.restore(); });
       const ta = pop(l, tTiga); if (ta.a > 0) { c2.save(); c2.globalAlpha = ta.a; c2.fillStyle = "rgba(40,50,100,0.3)"; c2.fillRect(x + 30, y + 640, w - 60, 3);
-        txt(c2, "Total potongan", x + 40, y + 715, 48, { weight: 900, color: "#2A2350" }); txt(c2, "hingga ±30%", x + w - 40, y + 715, 52, { align: "right", weight: 900, color: "#C7413B" }); c2.restore(); }
+        txt(c2, "Total potongan", x + 40, y + 715, 44, { weight: 900, color: "#2A2350" }); txt(c2, "hingga ±30%", x + w - 40, y + 715, 48, { align: "right", weight: 900, color: "#C7413B" }); c2.restore(); }
       c2.globalAlpha = 1;
-      tag(c2, "marketplace besar, sejak 2025", 420, 150, pop(l, tInd).a, { sp: pop(l, tInd).sp, col: P.amber, size: 44 });
-      tag(c2, "perhitungan sebagian penjual", 1200, 940 - 20, pop(l, tHitung).a, { col: P.ink2, size: 40 });
+      tag(c2, "marketplace besar, sejak 2025", 470, 150, pop(l, tInd).a, { sp: pop(l, tInd).sp, col: P.amber, size: 44 });
+      tag(c2, "perhitungan sebagian penjual", 1200, 895, pop(l, tHitung).a, { col: P.ink2, size: 40 });
     });
   };
 
@@ -172,7 +172,7 @@
       tag(c2, "+ pemegang saham", 960, 250, pop(l, tSaham).a, { sp: pop(l, tSaham).sp, col: P.teal, size: 48 }); });
   };
 
-  K.SCENES.d05_b6 = function (ctx, b, l, t, TL) { const f = S[b.id]; if (f) f(ctx, b, l, t, TL); else D.bg(ctx, t); };
+  K.SCENES.d05_b6 = function (ctx, b, l, t, TL) { const f = S[b.id]; ctx.save(); U.napas(ctx, t); if (f) f(ctx, b, l, t, TL); else D.bg(ctx, t); ctx.restore(); };
   K.SCENES.d05_b6.noCam = true;
   K.sfxParts = K.sfxParts || {};
   K.sfxParts.b6 = TL => [

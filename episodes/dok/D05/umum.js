@@ -17,7 +17,11 @@
   const ramp = U.ramp = (l, t0, d = 0.5) => clamp((l - t0) / d);
   U.pop = (l, t0) => ({ a: ramp(l, t0, 0.25), sp: clamp(spring(l - t0, 10, 0.55)) });
   U.camT = (ctx, c) => { ctx.translate(W / 2, HH / 2); ctx.scale(c.z, c.z); ctx.translate(-c.x, -c.y); };
-  U.toS = (c, x, y) => [(x - c.x) * c.z + W / 2, (y - c.y) * c.z + HH / 2];
+  // "napas" kamera: zoom dan geser sangat pelan dari waktu absolut (menyambung antarbeat), hanya untuk lapisan dunia; label D.post tidak ikut
+  U.napas = (ctx, t) => { const z = 1.025 + 0.012 * Math.sin(t * TAU / 16), dx = 6 * Math.sin(t * 0.37), dy = 3.5 * Math.cos(t * 0.29); U._nap = { z, dx, dy };
+    ctx.translate(W / 2 + dx, HH / 2 + dy); ctx.scale(z, z); ctx.translate(-W / 2, -HH / 2); };
+  U.toS = (c, x, y) => { const N = U._nap || { z: 1, dx: 0, dy: 0 }, sx = (x - c.x) * c.z + W / 2, sy = (y - c.y) * c.z + HH / 2;
+    return [(sx - W / 2) * N.z + W / 2 + N.dx, (sy - HH / 2) * N.z + HH / 2 + N.dy]; };
   U.beatOf = (TL, id) => TL.beats.find(x => x.id === id);
   const txt = U.txt = (ctx, s, x, y, size, opt = {}) => D.txt(ctx, s, x, y, size, opt);
   U.rb = n => String(Math.round(n)).replace(/\B(?=(\d{3})+(?!\d))/g, ".");

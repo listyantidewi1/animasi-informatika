@@ -44,7 +44,7 @@
     U.orang(ctx, rx, 900, 380, U.RAKA, { pose: go2 > 0 && go2 < 1 ? "jalan" : (l > tSiapa ? "garuk" : "pegangHP"), t, face: l > tSiapa ? "sedih" : l > tIklan ? "bingung" : "netral", flip: l > tSiapa });
     D.post(c2 => {
       tag(c2, "Raka (tokoh rekaan)", 1160, 120, pop(l, 0.5).a * (1 - ramp(l, tSendiri, 0.4)), { col: P.blue, size: 44 });
-      tag(c2, "sendirian = tidak ada teman", 1500, 160, pop(l, tSiapa).a, { sp: pop(l, tSiapa).sp, col: P.pink, size: 48 });
+      tag(c2, "sendirian = tidak ada teman", 1470, 160, pop(l, tSiapa).a, { sp: pop(l, tSiapa).sp, col: P.pink, size: 48 });
     });
   };
 
@@ -159,7 +159,7 @@
     });
   };
 
-  K.SCENES.d05_b4 = function (ctx, b, l, t, TL) { const f = S[b.id]; if (f) f(ctx, b, l, t, TL); else D.bg(ctx, t); };
+  K.SCENES.d05_b4 = function (ctx, b, l, t, TL) { const f = S[b.id]; ctx.save(); U.napas(ctx, t); if (f) f(ctx, b, l, t, TL); else D.bg(ctx, t); ctx.restore(); };
   K.SCENES.d05_b4.noCam = true;
   K.sfxParts = K.sfxParts || {};
   K.sfxParts.b4 = TL => [

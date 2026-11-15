@@ -139,8 +139,8 @@
       c2.save(); c2.globalAlpha = sw;
       tag(c2, "siapa pun bisa tersambung dengan siapa pun", 960, 110, pop(l, tSiapa).a * (1 - ramp(l, tBusuk - 0.3, 0.3)), { sp: pop(l, tSiapa).sp, col: P.teal, size: 48 });
       if (l > tBusuk - 0.3) U.judul(c2, "Pembusukan bukan hukum alam", 960, 120, 60, ramp(l, tBusuk - 0.3, 0.4), { col: P.pink });
-      const pp = pop(l, tPilih); tag(c2, "ia hasil pilihan", 760, 1000 - 70, pp.a, { sp: pp.sp, col: P.amber, size: 52 });
-      const pu = pop(l, tUbah); tag(c2, "pilihan bisa diubah", 1240, 930, pu.a, { sp: pu.sp, col: P.green, size: 52 });
+      const pp = pop(l, tPilih); tag(c2, "ia hasil pilihan", 760, 890, pp.a, { sp: pp.sp, col: P.amber, size: 52 });
+      const pu = pop(l, tUbah); tag(c2, "pilihan bisa diubah", 1240, 890, pu.a, { sp: pu.sp, col: P.green, size: 52 });
       c2.restore();
     });
   };
@@ -198,7 +198,7 @@
     KB.draw(ctx, 1440, 900, 170, { pose: l > tSam ? "diam" : "tunjuk", target: [SUB.x, SUB.y], t, mood: "happy", wave: l > tSam ? 1 : 0 });
   };
 
-  K.SCENES.d05_b10 = function (ctx, b, l, t, TL) { const f = S[b.id]; if (f) f(ctx, b, l, t, TL); else D.bg(ctx, t); };
+  K.SCENES.d05_b10 = function (ctx, b, l, t, TL) { const f = S[b.id]; ctx.save(); U.napas(ctx, t); if (f) f(ctx, b, l, t, TL); else D.bg(ctx, t); ctx.restore(); };
   K.SCENES.d05_b10.noCam = true;
   K.sfxParts = K.sfxParts || {};
   K.sfxParts.b10 = TL => [

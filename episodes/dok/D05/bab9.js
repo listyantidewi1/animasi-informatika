@@ -102,22 +102,23 @@
     ctx.fillStyle = "#6E4630"; ctx.fillRect(0, 760, W, 320); ctx.fillStyle = "#8A5A3C"; ctx.fillRect(0, 740, W, 30);
     // berkas perkara
     const ba = ramp(l, tKppu - 0.3, 0.5); ctx.save(); ctx.globalAlpha *= ba; ctx.translate(560, 470); ctx.rotate(-0.04);
-    ctx.fillStyle = "#E9C46A"; RR(ctx, -320, -250, 640, 500, 16); ctx.fill(); ctx.fillStyle = "#F5DC8A"; RR(ctx, -300, -230, 600, 460, 12); ctx.fill(); ctx.restore();
-    // palu (memukul saat "menolak kasasinya")
-    const hit = l > tTolak ? Math.max(0, 1 - (l - tTolak) * 4) : 0, ang = -0.7 + 0.7 * (l > tTolak ? Math.min(1, (l - tTolak) * 6) : 0);
-    ctx.save(); ctx.translate(1560, 720); ctx.fillStyle = "#5A3A28"; RR(ctx, -110, -10, 220, 40, 10); ctx.fill(); ctx.rotate(ang);
-    ctx.fillStyle = "#8A5A3C"; RR(ctx, -14, -240, 28, 220, 10); ctx.fill(); ctx.fillStyle = "#A8714C"; RR(ctx, -90, -300, 180, 80, 20); ctx.fill(); ctx.restore();
-    if (hit > 0) { ctx.strokeStyle = D.hexA("#FFFFFF", hit); ctx.lineWidth = 6; for (let i = 0; i < 6; i++) { const a = -Math.PI + i * Math.PI / 5; ctx.beginPath(); ctx.moveTo(1560 + Math.cos(a) * 140, 720 + Math.sin(a) * 60); ctx.lineTo(1560 + Math.cos(a) * 200, 720 + Math.sin(a) * 90); ctx.stroke(); } }
+    ctx.fillStyle = "#E9C46A"; RR(ctx, -380, -250, 760, 500, 16); ctx.fill(); ctx.fillStyle = "#F5DC8A"; RR(ctx, -360, -230, 720, 460, 12); ctx.fill(); ctx.restore();
+    // palu (memukul saat "menolak kasasinya"): gagang mendatar dipegang di kanan, kepala palu turun ke landasan
+    const hit = l > tTolak ? Math.max(0, 1 - (l - tTolak) * 4) : 0, ang = 0.6 * (1 - (l > tTolak ? Math.min(1, (l - tTolak) * 6) : 0)) + 0.04 * Math.sin(t * 2) * (l < tTolak ? 1 : 0);
+    ctx.fillStyle = "#5A3A28"; RR(ctx, 1450, 712, 180, 34, 10); ctx.fill(); ctx.fillStyle = "#4A2E20"; ctx.fillRect(1450, 740, 180, 8);
+    ctx.save(); ctx.translate(1800, 640); ctx.rotate(ang);
+    ctx.fillStyle = "#8A5A3C"; RR(ctx, -250, -14, 260, 28, 12); ctx.fill(); ctx.fillStyle = "#A8714C"; RR(ctx, -300, -72, 96, 144, 22); ctx.fill(); ctx.fillStyle = "#6E4630"; ctx.fillRect(-300, -30, 96, 12); ctx.fillRect(-300, 18, 96, 12); ctx.restore();
+    if (hit > 0) { ctx.strokeStyle = D.hexA("#FFFFFF", hit); ctx.lineWidth = 6; for (let i = 0; i < 6; i++) { const a = -Math.PI + i * Math.PI / 5; ctx.beginPath(); ctx.moveTo(1540 + Math.cos(a) * 130, 712 + Math.sin(a) * 50); ctx.lineTo(1540 + Math.cos(a) * 190, 712 + Math.sin(a) * 80); ctx.stroke(); } }
     const fine = lerp(0, 202.5, eout(clamp((l - tDenda) / 1.6)));
     D.post(c2 => { c2.save(); c2.globalAlpha = ba; c2.translate(560, 470); c2.rotate(-0.04);
       txt(c2, "PERKARA", 0, -160, 52, { align: "center", weight: 900, color: "#5A3A28" }); txt(c2, "03/KPPU-I/2024", 0, -90, 56, { align: "center", weight: 900, color: "#2A2350" });
-      c2.fillStyle = "rgba(90,58,40,0.3)"; c2.fillRect(-260, -50, 520, 4);
-      const rows = [["wajib sistem bayar Google Play", tWajib], ["biaya layanan 15–30%", tBiaya]];
-      rows.forEach(([s, t0], i) => { const a = ramp(l, t0, 0.4); c2.globalAlpha = ba * a; txt(c2, "• " + s, -260, 20 + i * 80, 40, { weight: 800, color: "#5A3A28", fit: 540 }); }); c2.restore();
+      c2.fillStyle = "rgba(90,58,40,0.3)"; c2.fillRect(-320, -50, 640, 4);
+      const rows = [["wajib bayar lewat Google Play", tWajib], ["biaya layanan 15–30%", tBiaya]];
+      rows.forEach(([s, t0], i) => { const a = ramp(l, t0, 0.4); c2.globalAlpha = ba * a; txt(c2, "• " + s, -320, 20 + i * 80, 44, { weight: 800, color: "#5A3A28", fit: 660 }); }); c2.restore();
       tag(c2, "2025: Google dinyatakan melanggar", 560, 130, pop(l, tKppu + 1.0).a, { sp: pop(l, tKppu + 1.0).sp, col: P.amber, size: 48 });
       if (l > tDenda - 0.2) U.judul(c2, "denda Rp" + fine.toFixed(1).replace(".", ",") + " miliar", 1440, 260, 64, ramp(l, tDenda - 0.2, 0.3), { col: P.pink });
-      const sa = pop(l, tTolak); if (sa.a > 0) { c2.save(); c2.globalAlpha = sa.a; c2.translate(580, 560); c2.rotate(-0.12); const k = lerp(2, 1, clamp(sa.sp)); c2.scale(k, k);
-        c2.fillStyle = "rgba(255,246,230,0.9)"; RR(c2, -300, -90, 600, 180, 18); c2.fill(); c2.strokeStyle = P.red; c2.lineWidth = 10; RR(c2, -300, -90, 600, 180, 18); c2.stroke(); txt(c2, "KASASI DITOLAK", 0, -6, 64, { align: "center", weight: 900, color: P.red }); txt(c2, "Maret 2026", 0, 62, 48, { align: "center", weight: 900, color: P.red }); c2.restore(); }
+      const sa = pop(l, tTolak); if (sa.a > 0) { c2.save(); c2.globalAlpha = sa.a; c2.translate(640, 690); c2.rotate(-0.07); const k = lerp(2, 1, clamp(sa.sp)); c2.scale(k, k);
+        c2.fillStyle = "rgba(255,246,230,0.92)"; RR(c2, -280, -90, 560, 180, 18); c2.fill(); c2.strokeStyle = P.red; c2.lineWidth = 10; RR(c2, -280, -90, 560, 180, 18); c2.stroke(); txt(c2, "KASASI DITOLAK", 0, -6, 58, { align: "center", weight: 900, color: P.red }); txt(c2, "Maret 2026", 0, 62, 48, { align: "center", weight: 900, color: P.red }); c2.restore(); }
       tag(c2, "Mahkamah Agung", 1440, 400, pop(l, tMA).a, { sp: pop(l, tMA).sp, col: P.blue, size: 44 });
     });
   };
@@ -153,7 +154,7 @@
         tag(c2, "rem bisa dipasang kembali", 1400, 140, pop(l, tRem + 0.4).a, { sp: pop(l, tRem + 0.4).sp, col: P.green, size: 52 }); }); }
   };
 
-  K.SCENES.d05_b9 = function (ctx, b, l, t, TL) { const f = S[b.id]; if (f) f(ctx, b, l, t, TL); else D.bg(ctx, t); };
+  K.SCENES.d05_b9 = function (ctx, b, l, t, TL) { const f = S[b.id]; ctx.save(); U.napas(ctx, t); if (f) f(ctx, b, l, t, TL); else D.bg(ctx, t); ctx.restore(); };
   K.SCENES.d05_b9.noCam = true;
   K.sfxParts = K.sfxParts || {};
   K.sfxParts.b9 = TL => [

@@ -149,7 +149,7 @@
     else if (ca.a > 0) KB.draw(ctx, 1640, 880, 180, { pose: "diam", t, mood: "think", look: [-0.6, -0.3] });
   };
 
-  K.SCENES.d05_b8 = function (ctx, b, l, t, TL) { const f = S[b.id]; if (f) f(ctx, b, l, t, TL); else D.bg(ctx, t); };
+  K.SCENES.d05_b8 = function (ctx, b, l, t, TL) { const f = S[b.id]; ctx.save(); U.napas(ctx, t); if (f) f(ctx, b, l, t, TL); else D.bg(ctx, t); ctx.restore(); };
   K.SCENES.d05_b8.noCam = true;
   K.sfxParts = K.sfxParts || {};
   K.sfxParts.b8 = TL => [

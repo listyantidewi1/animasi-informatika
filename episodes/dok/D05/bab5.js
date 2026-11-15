@@ -172,7 +172,7 @@
       tag(c2, "…masuk ke balik pintu yang sama", 960, 160, pop(l, tPintu - 0.3).a, { sp: pop(l, tPintu - 0.3).sp, col: P.pink, size: 52 }); });
   };
 
-  K.SCENES.d05_b5 = function (ctx, b, l, t, TL) { const f = S[b.id]; if (f) f(ctx, b, l, t, TL); else D.bg(ctx, t); };
+  K.SCENES.d05_b5 = function (ctx, b, l, t, TL) { const f = S[b.id]; ctx.save(); U.napas(ctx, t); if (f) f(ctx, b, l, t, TL); else D.bg(ctx, t); ctx.restore(); };
   K.SCENES.d05_b5.noCam = true;
   K.sfxParts = K.sfxParts || {};
   K.sfxParts.b5 = TL => [
