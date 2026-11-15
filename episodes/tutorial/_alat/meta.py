@@ -8,7 +8,7 @@ def main(ep, urut):
     bab = "\n".join(f"{mmss(W[n]['mulai'])} {j}" for n, j in M["bab"])
     dur = sum(b["D"] for b in W.values())
     judul = S.JUDUL_YT
-    desk = (M["ringkas"] + "\n\nBab:\n" + bab + "\n\nKode lengkap:\n" + M["kode"].strip() + "\n\n" + M.get("prasyarat", "") +
+    desk = (M["ringkas"] + "\n\nBab:\n" + bab + ("\n\nKode lengkap:\n" + M["kode"].strip() if M.get("kode") else "\n\nLangkah singkat:\n" + M["langkah"].strip()) + "\n\n" + M.get("prasyarat", "") +
             "\nPlaylist: Proyek Pemrograman Sederhana. Narasi: Cahaya (suara sintetis ElevenLabs). Rekaman layar sungguhan; animasi penjelasan dibuat dengan kode oleh I Teach Software Engineering. Naskah disusun dengan bantuan AI (Claude buatan Anthropic) dan disunting manusia.\n\n"
             "Subscribe: https://www.youtube.com/@iTeachSWE\n\n" + " ".join("#" + t.replace(" ", "") for t in M["hashtag"]))
     sdesk = M["short_desk"] + "\n\nTutorial lengkapnya: " + judul + " (playlist Proyek Pemrograman Sederhana).\nSubscribe: https://www.youtube.com/@iTeachSWE\n#shorts " + " ".join("#" + t.replace(" ", "") for t in M["hashtag"][:3])
