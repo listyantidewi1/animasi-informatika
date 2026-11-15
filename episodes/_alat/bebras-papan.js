@@ -205,6 +205,43 @@
       ctx.fillStyle = "#C8102E"; ctx.fillRect(x + w / 2 - h / 10, y, h / 5, h); ctx.fillRect(x, y + h * 0.4, w, h / 5);
       ctx.restore(); frame(ctx, x, y, w, h);
     },
+    // Kroasia: merah, putih, biru + perisai kotak-kotak merah-putih di tengah
+    HR(ctx, x, y, w) {
+      const h = w / 2; pole(ctx, x, y, h); stripesH(ctx, x, y, w, h, ["#FF0000", "#FFFFFF", "#171796"]);
+      const sw = h * 0.42, sx = x + w / 2 - sw / 2, sy = y + h * 0.2, n = 5, c = sw / n;
+      ctx.save(); ctx.beginPath(); ctx.moveTo(sx, sy); ctx.lineTo(sx + sw, sy); ctx.lineTo(sx + sw, sy + c * 3.6); ctx.quadraticCurveTo(sx + sw, sy + c * 5.6, sx + sw / 2, sy + c * 6); ctx.quadraticCurveTo(sx, sy + c * 5.6, sx, sy + c * 3.6); ctx.closePath(); ctx.clip();
+      for (let r = 0; r < 7; r++) for (let k = 0; k < n; k++) { ctx.fillStyle = (r + k) % 2 ? "#FFFFFF" : "#FF0000"; ctx.fillRect(sx + k * c, sy + r * c, c + 0.5, c + 0.5); }
+      ctx.restore(); ctx.strokeStyle = "#171796"; ctx.lineWidth = w * 0.008; ctx.strokeRect(sx, sy, sw, 0.1);
+      frame(ctx, x, y, w, h);
+    },
+    // Taiwan: merah dengan kanton biru dan matahari putih berjari dua belas
+    TW(ctx, x, y, w) {
+      const h = w * 2 / 3; pole(ctx, x, y, h); ctx.fillStyle = "#FE0000"; ctx.fillRect(x, y, w, h); ctx.fillStyle = "#000095"; ctx.fillRect(x, y, w / 2, h / 2);
+      const cx = x + w / 4, cy = y + h / 4, R = h * 0.19, r = R * 0.53; ctx.fillStyle = "#FFFFFF"; ctx.beginPath();
+      for (let i = 0; i < 24; i++) { const a = -Math.PI / 2 + i * Math.PI / 12, rr2 = i % 2 ? r : R; ctx.lineTo(cx + Math.cos(a) * rr2, cy + Math.sin(a) * rr2); } ctx.closePath(); ctx.fill();
+      ctx.fillStyle = "#000095"; ctx.beginPath(); ctx.arc(cx, cy, r * 0.98, 0, Math.PI * 2); ctx.fill(); ctx.fillStyle = "#FFFFFF"; ctx.beginPath(); ctx.arc(cx, cy, r * 0.85, 0, Math.PI * 2); ctx.fill();
+      frame(ctx, x, y, w, h);
+    },
+    // Turki: merah, bulan sabit dan bintang putih
+    TR(ctx, x, y, w) {
+      const h = w * 2 / 3; pole(ctx, x, y, h); ctx.fillStyle = "#E30A17"; ctx.fillRect(x, y, w, h);
+      ctx.fillStyle = "#FFFFFF"; ctx.beginPath(); ctx.arc(x + h * 0.5, y + h / 2, h * 0.25, 0, Math.PI * 2); ctx.fill();
+      ctx.fillStyle = "#E30A17"; ctx.beginPath(); ctx.arc(x + h * 0.5625, y + h / 2, h * 0.2, 0, Math.PI * 2); ctx.fill();
+      const cx = x + h * 0.86, cy = y + h / 2, R = h * 0.125, r = R * 0.4; ctx.fillStyle = "#FFFFFF"; ctx.beginPath();
+      for (let i = 0; i < 10; i++) { const a2 = Math.PI + i * Math.PI / 5, rr2 = i % 2 ? r : R; ctx.lineTo(cx + Math.cos(a2) * rr2, cy + Math.sin(a2) * rr2); } ctx.closePath(); ctx.fill();
+      frame(ctx, x, y, w, h);
+    },
+    // Malaysia: 14 garis merah-putih, kanton biru dengan bulan sabit dan bintang 14 sudut kuning
+    MY(ctx, x, y, w) {
+      const h = w / 2; pole(ctx, x, y, h);
+      for (let i = 0; i < 14; i++) { ctx.fillStyle = i % 2 ? "#FFFFFF" : "#CC0001"; ctx.fillRect(x, y + i * h / 14, w, h / 14 + 0.5); }
+      const ch = h * 8 / 14; ctx.fillStyle = "#010066"; ctx.fillRect(x, y, w / 2, ch);
+      const cx = x + w * 0.16, cy = y + ch / 2, R = ch * 0.4; ctx.fillStyle = "#FFCC00"; ctx.beginPath(); ctx.arc(cx, cy, R, 0, Math.PI * 2); ctx.fill();
+      ctx.fillStyle = "#010066"; ctx.beginPath(); ctx.arc(cx + R * 0.25, cy, R * 0.85, 0, Math.PI * 2); ctx.fill();
+      const sx = x + w * 0.33, sR = ch * 0.34, sr = sR * 0.45; ctx.fillStyle = "#FFCC00"; ctx.beginPath();
+      for (let i = 0; i < 28; i++) { const a2 = -Math.PI / 2 + i * Math.PI / 14, rr2 = i % 2 ? sr : sR; ctx.lineTo(sx + Math.cos(a2) * rr2, cy + Math.sin(a2) * rr2); } ctx.closePath(); ctx.fill();
+      frame(ctx, x, y, w, h);
+    },
     // Lituania: kuning, hijau, merah (atas ke bawah)
     LT(ctx, x, y, w) { const h = w * 3 / 5; pole(ctx, x, y, h); stripesH(ctx, x, y, w, h, ["#FDB913", "#006A44", "#C1272D"]); frame(ctx, x, y, w, h); },
   };
