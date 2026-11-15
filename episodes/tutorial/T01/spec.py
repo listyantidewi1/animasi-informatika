@@ -54,4 +54,4 @@ while True:
  "hashtag": ["python", "belajarpython", "coding", "tutorialpython"],
  "short_desk": "Bikin game tebak angka dengan Python cuma dengan belasan baris kode. Rahasianya tiga ide: variabel, perulangan, dan percabangan. Plus trik menebak di tengah: angka 1 sampai 100 selalu tertebak paling banyak 7 kali.",
 }
-THUMB = {"dari": (14, 9), "crop": (0, 0, 1300, 1080), "pita": "PYTHON PEMULA", "baris": ["BIKIN", "GAME", "TEBAK", "ANGKA"], "sorot": 1, "ukuran": 104}
+THUMB = {"gambar": "thumb_out.json", "dari": (14, 9), "pita": "PYTHON PEMULA", "baris": ["BIKIN", "GAME", "TEBAK", "ANGKA"], "sorot": 1, "ukuran": 104}

@@ -24,7 +24,7 @@ SHORT = {"judul": "Nilai rapor dalam 1 detik?", "beats": [
  {"teks": "Terakhir, angka diubah menjadi grafik batang dengan garis batas tuntas.", "dari": (11, 16, "kiri")},
  {"teks": "Mau mencobanya dengan data kelasmu? Tonton tutorial lengkapnya di channel ini.", "dari": (12, 12, "kiri")},
 ]}
-THUMB = {"dari": (11, 18), "crop": (0, 0, 1300, 1080), "pita": "PYTHON PEMULA", "baris": ["NILAI", "RAPOR", "OTOMATIS"], "sorot": 1, "ukuran": 112}
+THUMB = {"png": "thumb_grafik.png", "dari": (11, 18), "pita": "PYTHON PEMULA", "baris": ["NILAI", "RAPOR", "OTOMATIS"], "sorot": 1, "ukuran": 112}
 META = {
  "ringkas": "Olah data nilai satu kelas dengan Python dan pandas: baca file CSV, hitung rata-rata tiap murid, urutkan peringkat, saring murid di bawah batas tuntas, lalu buat grafik batang dengan matplotlib. Setiap konsep dijelaskan dengan animasi: tabel dan file CSV, arti axis=1 (ke samping) dan axis=0 (ke bawah), saringan baris, sampai cara membaca grafik batang. Bisa diikuti di Google Colab atau Jupyter Notebook.",
  "bab": [(1, "Pembuka"), (2, "Dari list ke tabel"), (3, "File CSV"), (4, "Membaca tabel dengan pandas"), (5, "Tebak dulu"), (6, "Rata-rata dan axis"), (7, "Menghitung rata-rata"), (8, "Mengurutkan dan menyaring"), (9, "Peringkat dan remedial"), (10, "Grafik batang"), (11, "Membuat grafik"), (12, "Ubah batas dan KeyError"), (13, "Rangkuman dan tantangan")],

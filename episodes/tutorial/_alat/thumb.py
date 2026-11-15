@@ -1,3 +1,5 @@
+import sys, os, subprocess
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import sys, subprocess, json, importlib.util
 from PIL import Image, ImageDraw, ImageFont, ImageFilter
 FB = "/usr/share/fonts/opentype/inter/Inter-ExtraBold.otf"
@@ -11,16 +13,20 @@ def main(ep):
     for x in range(30, 1280, 36):
         for y in range(30, 720, 36): d.point((x, y), fill=(40, 48, 74))
     fr = Image.open("/tmp/th.png").convert("RGB"); cx, cy, cw, ch = T.get("crop", (0, 0, 1920, 1080)); fr = fr.crop((cx, cy, cx + cw, cy + ch))
-    fr = fr.resize((700, int(700 * ch / cw))); sh = Image.new("RGBA", (fr.width + 40, fr.height + 40), (0, 0, 0, 0))
+    if T.get("png"):
+        fr = Image.open(f"{base}/{T['png']}").convert("RGB"); cw, ch = fr.size
+    if T.get("gambar"):
+        import kartu_output; kartu_output.buat(json.load(open(f"{base}/{T['gambar']}")), "/tmp/th_k.png"); fr = Image.open("/tmp/th_k.png"); cw, ch = fr.size
+    k = min(T.get('lebar', 720) / cw, 630 / ch); fr = fr.resize((int(cw * k), int(ch * k))); sh = Image.new("RGBA", (fr.width + 40, fr.height + 40), (0, 0, 0, 0))
     ImageDraw.Draw(sh).rounded_rectangle([20, 26, fr.width + 20, fr.height + 26], 18, fill=(0, 0, 0, 160)); sh = sh.filter(ImageFilter.GaussianBlur(10))
-    x0, y0 = 1280 - fr.width - 40, (720 - fr.height) // 2 + 30
+    x0, y0 = 1280 - fr.width - 40, (720 - fr.height) // 2 + (30 if fr.height < 600 else 10)
     im.paste(sh, (x0 - 20, y0 - 20), sh); mask = Image.new("L", fr.size, 0); ImageDraw.Draw(mask).rounded_rectangle([0, 0, fr.width, fr.height], 18, fill=255)
-    im.paste(fr, (x0, y0), mask); d = ImageDraw.Draw(im)
+    im.paste(fr, (x0, y0), fr.split()[3] if fr.mode == 'RGBA' else mask); d = ImageDraw.Draw(im)
     d.rounded_rectangle([40, 44, 40 + 330, 96], 26, fill=(255, 176, 32)); d.text((205, 70), T.get("pita", "PYTHON"), font=ImageFont.truetype(FB, 30), fill=(20, 24, 38), anchor="mm")
     y = 150
     for i, l in enumerate(T["baris"]):
         uk = T.get("ukuran", 96)
-        while ImageFont.truetype(FB, uk).getlength(l) > 470: uk -= 4
+        while ImageFont.truetype(FB, uk).getlength(l) > min(470, x0 - 70): uk -= 4
         f = ImageFont.truetype(FB, uk); col = (255, 176, 32) if i == T.get("sorot", -1) else (255, 255, 255)
         d.text((44, y), l, font=f, fill=col, stroke_width=4, stroke_fill=(18, 24, 41)); y += int(uk * 1.12)
     im.save(f"{base}/{ep}_thumbnail.jpg", quality=92); print("thumb ok")

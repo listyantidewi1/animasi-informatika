@@ -25,7 +25,7 @@ SHORT = {"judul": "Kuis yang menilai dirinya sendiri?", "beats": [
  {"teks": "Terakhir, skor dibagi jumlah soal, lalu dikali seratus.", "dari": (11, 9, "kanan")},
  {"teks": "Mau membuat kuismu sendiri? Tonton tutorial lengkapnya di channel ini.", "dari": (12, 8, "kiri")},
 ]}
-THUMB = {"dari": (10, 11), "crop": (0, 0, 1300, 1080), "pita": "PYTHON PEMULA", "baris": ["BIKIN", "KUIS", "OTOMATIS"], "sorot": 1, "ukuran": 112}
+THUMB = {"gambar": "thumb_out.json", "lebar": 700, "dari": (10, 11), "pita": "PYTHON PEMULA", "baris": ["BIKIN", "KUIS", "OTOMATIS"], "sorot": 1, "ukuran": 112}
 META = {
  "ringkas": "Bikin kuis dengan Python yang langsung memeriksa jawaban dan menghitung nilai akhir. Soal dan kunci jawaban disimpan dalam list, dibuka satu per satu dengan perulangan for, jawaban dirapikan dengan strip() dan lower() sebelum dibandingkan, lalu skor diubah menjadi persen. Setiap konsep dijelaskan dengan animasi: list sebagai rak berlaci, for sebagai tangan yang membuka laci, = dan == yang sering tertukar, sampai diagram persen. Bisa diikuti di Google Colab atau Jupyter Notebook.",
  "bab": [(1, "Pembuka"), (3, "List: rak berlaci"), (4, "Menulis daftar soal"), (5, "Perulangan for"), (7, "Membandingkan teks"), (8, "Memeriksa jawaban"), (9, "Tebak dulu"), (11, "Menghitung nilai"), (13, "Tambah soal dan SyntaxError"), (14, "Rangkuman dan tantangan")],
