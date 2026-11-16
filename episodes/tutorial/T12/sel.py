@@ -1,0 +1,7 @@
+C0 = 'from sklearn.datasets import load_digits\nimport matplotlib.pyplot as plt\n\nangka = load_digits()\nprint(angka.images.shape)\nplt.imshow(angka.images[0], cmap="gray_r")\nplt.show()'
+C1 = 'fig, ax = plt.subplots(1, 10, figsize=(10, 2))\nfor i in range(10):\n    ax[i].imshow(angka.images[i], cmap="gray_r")\n    ax[i].set_title(angka.target[i])\n    ax[i].axis("off")\nplt.show()'
+C2 = 'from sklearn.model_selection import train_test_split\nfrom sklearn.neighbors import KNeighborsClassifier\n\nX_latih, X_uji, y_latih, y_uji = train_test_split(angka.data, angka.target, test_size=0.2, random_state=1)\nmodel = KNeighborsClassifier(n_neighbors=3)\nmodel.fit(X_latih, y_latih)\nprint("Akurasi:", round(model.score(X_uji, y_uji) * 100), "%")'
+C3 = 'tebakan = model.predict(X_uji[:10])\nfig, ax = plt.subplots(1, 10, figsize=(10, 2))\nfor i in range(10):\n    ax[i].imshow(X_uji[i].reshape(8, 8), cmap="gray_r")\n    ax[i].set_title(tebakan[i])\n    ax[i].axis("off")\nplt.show()'
+C4 = 'import numpy as np\nsatu = np.zeros((8, 8))\nsatu[1:7, 4] = 16\nplt.imshow(satu, cmap="gray_r")\nplt.show()\nmodel.predict([satu.ravel()])'
+C5 = 'kiri = np.zeros((8, 8))\nkiri[1:7, 0] = 16\nplt.imshow(kiri, cmap="gray_r")\nplt.show()\nmodel.predict([kiri.ravel()])'
+C6 = 'tengah = np.roll(kiri, 4, axis=1)\nplt.imshow(tengah, cmap="gray_r")\nplt.show()\nmodel.predict([tengah.ravel()])'

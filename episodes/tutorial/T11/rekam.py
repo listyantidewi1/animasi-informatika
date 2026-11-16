@@ -1,5 +1,5 @@
 import sys, time
-sys.path.insert(0, "/home/user/tut/alat"); sys.path.insert(0, "/home/user/tut/T11")
+sys.path.insert(0, "/home/user/tut/alat"); sys.path.append("/home/user/tut/T11")
 from rekam import Rekaman
 from durasi import beat
 from jupy import J, sel

@@ -15,7 +15,7 @@ def buat(spec, out):
     for b in baris:
         teks, warna = b[0], tuple(b[1]) if len(b) > 1 else (30, 41, 59)
         tebal = len(b) > 2 and b[2]
-        if tebal: d.rounded_rectangle([18 * S, (y - 8) * S, (W - 18) * S, (y + lh - 4) * S], 12 * S, fill=tuple(list(warna) + [40]) if False else (220, 252, 231))
+        if tebal: d.rounded_rectangle([18 * S, (y - 8) * S, (W - 18) * S, (y + lh - 4) * S], 12 * S, fill=(254, 226, 226) if warna[0] > 150 and warna[1] < 100 else (220, 252, 231))
         d.text((36 * S, (y + lh / 2 - 6) * S), teks, font=ImageFont.truetype(MONOB if tebal else MONO, uk * S), fill=warna, anchor="lm"); y += lh
     im = im.resize((W, H), Image.LANCZOS); im.save(out)
 if __name__ == "__main__": buat(json.load(open(sys.argv[1])), sys.argv[2])
