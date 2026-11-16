@@ -1,0 +1,5 @@
+C0 = 'import pandas as pd\ndata = pd.read_excel("nilai_kelas.xlsx")\ndata'
+C1 = 'data["rata2"] = data[["mat", "ipa", "bahasa"]].mean(axis=1).round(1)\ndata'
+C2 = 'data["peringkat"] = data["rata2"].rank(ascending=False)\ndata'
+C3 = 'data["peringkat"] = data["rata2"].rank(ascending=False, method="min").astype(int)\ndata'
+C4 = 'def predikat(n):\n    if n >= 90:\n        return "A"\n    elif n >= 80:\n        return "B"\n    elif n >= 70:\n        return "C"\n    else:\n        return "D"\n\ndata["predikat"] = data["rata2"].apply(predikat)\ndata.sort_values("peringkat").to_excel("hasil_nilai.xlsx", index=False)\nprint("Tersimpan!")'
