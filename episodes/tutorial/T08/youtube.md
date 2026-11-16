@@ -1,0 +1,77 @@
+# T08 YouTube
+
+## Video utama (5:23)
+
+**Judul:** Bikin Sandi Rahasia dengan Python (Sandi Caesar dan Cara Membobolnya)
+
+**Deskripsi:**
+
+Buat program Python untuk mengunci dan membuka pesan rahasia dengan sandi Caesar, lalu bobol sandinya sendiri. Kamu belajar mengubah huruf menjadi angka dengan index, membuat fungsi dengan parameter dan return, perulangan untuk setiap huruf, memperbaiki IndexError dengan modulo (abjad yang melingkar seperti jam), brute force untuk mencoba semua kunci, dan kenapa sandi modern memakai kunci dengan kemungkinan yang sangat banyak. Setiap konsep dijelaskan dengan animasi.
+
+Bab:
+0:00 Pembuka
+0:26 Sandi Caesar
+0:48 Huruf menjadi angka
+1:07 Abjad sebagai string
+1:28 Fungsi pengunci
+1:50 Fungsi kunci
+2:14 Fungsi buka
+2:32 Tebak dulu
+2:40 IndexError
+2:59 Modulo
+3:22 Menambahkan modulo
+3:43 Membobol sandi
+4:01 Brute force
+4:24 Sandi modern
+4:43 Rangkuman dan tantangan
+
+Kode lengkap:
+huruf = "abcdefghijklmnopqrstuvwxyz"
+
+def kunci(pesan, geser):
+    hasil = ""
+    for h in pesan:
+        if h in huruf:
+            posisi = huruf.index(h) + geser
+            posisi = posisi % 26
+            hasil = hasil + huruf[posisi]
+        else:
+            hasil = hasil + h
+    return hasil
+
+def buka(sandi, geser):
+    return kunci(sandi, -geser)
+
+rahasia = kunci("ketemu di kantin jam sepuluh", 3)
+print(rahasia)
+print(buka(rahasia, 3))
+
+# brute force
+sandi = "uhuap zvyl shapohu ihzrla"
+for g in range(26):
+    print(g, buka(sandi, g))
+
+Sebelumnya: Bikin Game Ular Sendiri di Browser. Lebih mudah bila sudah menonton Bikin Game Tebak Angka dengan Python. Berikutnya: Bikin Kipas Otomatis Pengukur Suhu (IoT).
+Playlist: Proyek Pemrograman Sederhana. Narasi: Cahaya (suara sintetis ElevenLabs). Rekaman layar sungguhan; animasi penjelasan dibuat dengan kode oleh I Teach Software Engineering. Naskah disusun dengan bantuan AI (Claude buatan Anthropic) dan disunting manusia.
+
+Subscribe: https://www.youtube.com/@iTeachSWE
+
+#python #kriptografi #belajarcoding #coding
+
+**Komentar tersemat:** Tantangan: buat programmu tetap bekerja untuk huruf kapital. Coba pecahkan sandi ini dan tulis jawabannya di komentar: vhodpdw ehodmdu
+
+**Tag:** sandi caesar python, kriptografi untuk pemula, python untuk pemula, fungsi python, modulo python, brute force, belajar coding, tutorial python bahasa indonesia, proyek python sederhana, pesan rahasia
+
+## Short
+
+**Judul:** Pesan rahasia ala Caesar? #shorts
+
+**Deskripsi:**
+
+Sandi Caesar dengan Python: huruf jadi angka, modulo seperti jarum jam, dan kenapa 26 kunci mudah dibobol.
+
+Tutorial lengkapnya: Bikin Sandi Rahasia dengan Python (Sandi Caesar dan Cara Membobolnya) (playlist Proyek Pemrograman Sederhana).
+Subscribe: https://www.youtube.com/@iTeachSWE
+#shorts #python #kriptografi #belajarcoding
+
+**Video terkait:** Bikin Sandi Rahasia dengan Python (Sandi Caesar dan Cara Membobolnya)
