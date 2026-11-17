@@ -3,6 +3,7 @@ python3 rakit.py suara [V05 ...]     -> buat MP3 Cahaya yang belum ada
 python3 rakit.py bab V05 [--cek]      -> rakit satu bab (mp4 + srt bagian), --cek: hanya cetak rencana waktu
 python3 rakit.py gabung               -> gabung semua bab + srt + chapter
 """
+import copy
 import json, os, sys, re, subprocess, urllib.request, time, shutil
 import numpy as np
 sys.path.insert(0, "/home/user/vibe/_alat"); sys.path.insert(0, "/home/user/vibe/prod")
@@ -12,7 +13,8 @@ ROOT = "/home/user/vibe/prod"; RAW = "/home/user/vibe/raw"; FPS = 30; LEAD, TAIL
 FB = "/usr/share/fonts/opentype/inter/Inter-Bold.otf"; FS = "/usr/share/fonts/opentype/inter/Inter-SemiBold.otf"
 VID = "iWydkXKoiVtvdn4vLKp9"; MODEL = "eleven_v4"
 CROP = {"full": (0, 0, 2560, 1440), "termU": (1300, 40, 1260, 709), "termK": (1300, 30, 1040, 585), "termM": (1300, 330, 1260, 709), "termD": (1300, 700, 1260, 709),
-        "edit": (400, 40, 1440, 810), "dt": (1040, 140, 1520, 855)}
+        "edit": (400, 40, 1440, 810), "dt": (1040, 140, 1520, 855),
+        "nMenu": (0, 0, 1600, 900), "nDialog": (640, 0, 1280, 720), "nSide": (0, 0, 1280, 720), "nToolbar": (0, 0, 1680, 945)}
 def sh(*a): subprocess.run(a, check=True)
 def dur(f): return float(subprocess.check_output(["ffprobe", "-v", "error", "-show_entries", "format=duration", "-of", "csv=p=0", f]))
 def bab(kode): return next(b for b in RC.BAB if b["kode"] == kode)
@@ -21,14 +23,18 @@ def bab(kode): return next(b for b in RC.BAB if b["kode"] == kode)
 def tts_teks(t):
     t = t.replace("SPEK.md", "spek titik em de").replace("CLAUDE.md", "klod titik em de").replace("AGENTS.md", "agents titik em de")
     t = re.sub(r"\b([a-z]+)\.(js|json|css|html)\b", lambda m: m.group(1) + " titik " + {"js": "je es", "json": "jeson", "css": "ce es es", "html": "ha te em el"}[m.group(2)], t)
+    for a, b in [("localStorage", "local storage"), ("innerHTML", "inner HTML"), ("textContent", "text content"), ("bagiKeAtas", "bagi ke atas"), ("DevTools", "Dev Tools"), ("F12", "ef dua belas"), ("alamat https", "alamat ha te te pe es"), ("Wi-Fi", "wai fai")]:
+        t = t.replace(a, b)
     t = t.replace("wa.me", "wa titik mi").replace("npm run", "en pe em ran").replace("npm install", "en pe em install").replace("git diff", "git dif")
     return t
+import hashlib
+def mp3(kode, t): return f"{ROOT}/{kode}/suara/h_{hashlib.md5(tts_teks(t).encode()).hexdigest()[:12]}.mp3"
 def suara(kodes):
     for kode in kodes:
         B = bab(kode)["beats"]; os.makedirs(f"{ROOT}/{kode}/suara", exist_ok=True)
         teks = [t for t, _ in B]
         for i, t in enumerate(teks):
-            out = f"{ROOT}/{kode}/suara/b{i:02d}.mp3"
+            out = mp3(kode, t)
             if not t or os.path.exists(out): continue
             body = {"text": tts_teks(t), "model_id": MODEL, "voice_settings": {"stability": 0.5, "similarity_boost": 0.75, "style": 0.0, "speed": 1.0}}
             prev = [x for x in teks[:i] if x]; nxt = [x for x in teks[i + 1:] if x]
@@ -254,6 +260,53 @@ def autocrop(p):
     r = dict(x=X, y=Y, w=w, h=h, ow=int(w * s) // 2 * 2, oh=int(h * s) // 2 * 2, bg="0x%02x%02x%02x" % tuple(bg))
     _AC[key] = r; return r
 
+# ---------------- sorotan baris (OCR tesseract untuk mencari letak baris)
+_OCR = {}
+def ocr_baris(src, t, roi):
+    key = (src, round(t, 2), tuple(roi))
+    if key in _OCR: return _OCR[key]
+    x0, y0, x1, y1 = roi; f = _frame(f"{RAW}/{src}.mkv", t)[y0:y1, x0:x1]
+    png = f"/tmp/ocr_in_{os.getpid()}.png"; Image.fromarray(f).resize(((x1 - x0) * 2, (y1 - y0) * 2)).save(png)
+    tsv = subprocess.run(["tesseract", png, "-", "--psm", "4", "tsv"], capture_output=True, text=True, env=dict(os.environ, OMP_THREAD_LIMIT="1"), timeout=300).stdout.splitlines()
+    L = {}
+    for row in tsv[1:]:
+        c = row.split("\t")
+        if len(c) < 12 or not c[11].strip(): continue
+        k = (int(c[2]), int(c[3]), int(c[4])); X, Y, W, H = (int(v) / 2 for v in c[6:10])
+        bb = [x0 + X, y0 + Y, x0 + X + W, y0 + Y + H]
+        if k in L: L[k]["t"] += " " + c[11]; b = L[k]["bb"]; L[k]["bb"] = [min(b[0], bb[0]), min(b[1], bb[1]), max(b[2], bb[2]), max(b[3], bb[3])]
+        else: L[k] = {"t": c[11], "bb": bb}
+    res = sorted(L.values(), key=lambda d: (d["bb"][1], d["bb"][0])); _OCR[key] = res; return res
+
+def sorot_kotak(p, it):
+    """it: {'teks': potongan teks baris pertama, 'baris': jumlah baris, 't': detik sumber (default akhir bagian)}"""
+    if "kotak" in it: return it["kotak"]
+    t = it.get("t", p["_keep"][-1][1] - 0.3)
+    ac = autocrop(p); roi = [ac["x"], ac["y"], ac["x"] + ac["w"], ac["y"] + ac["h"]] if ac else list(CROP[p["crop"]][:2]) + [CROP[p["crop"]][0] + CROP[p["crop"]][2], CROP[p["crop"]][1] + CROP[p["crop"]][3]]
+    L = ocr_baris(p["src"], t, roi); cari = it["teks"].lower().replace(" ", "")
+    for i, d in enumerate(L):
+        if cari in d["t"].lower().replace(" ", ""):
+            grup = L[i:i + it.get("baris", 1)]
+            bb = [min(g["bb"][0] for g in grup), min(g["bb"][1] for g in grup), max(g["bb"][2] for g in grup), max(g["bb"][3] for g in grup)]
+            return [bb[0] - 10, bb[1] - 7, bb[2] + 10, bb[3] + 7]
+    print("PERINGATAN sorot tidak ketemu:", p["src"], it["teks"], [d["t"][:40] for d in L][:40], flush=True); return None
+
+def filter_sorot(p, ac):
+    out = ""
+    for it in p.get("sorot", []):
+        k = sorot_kotak(p, it)
+        if not k: continue
+        if ac: sx = ac["ow"] / ac["w"]; ox = (1920 - ac["ow"]) / 2 - ac["x"] * sx; oy = (1080 - ac["oh"]) / 2 - ac["y"] * sx
+        else: x, y, w, h = CROP[p["crop"]]; sx = 1920 / w; ox = -x * sx; oy = -y * sx
+        X0, Y0, X1, Y1 = k[0] * sx + ox, k[1] * sx + oy, k[2] * sx + ox, k[3] * sx + oy
+        X0, Y0 = max(4, X0), max(4, Y0); X1, Y1 = min(1916, X1), min(1076, Y1)
+        a = it["_a"] if "_a" in it else it.get("dari", 0.0) * p["_d"]; b = it.get("_b", p["_d"] + 1)
+        if it.get("saat") == "tahan": a = p["_L"] / p["_sp"]  # menyala saat prompt utuh dibekukan
+        en = f":enable='between(t,{a:.2f},{b:.2f})'"
+        out += (f",drawbox=x={X0:.0f}:y={Y0:.0f}:w={X1-X0:.0f}:h={Y1-Y0:.0f}:color=0xFFB020@0.16:t=fill{en}"
+                f",drawbox=x={X0:.0f}:y={Y0:.0f}:w={X1-X0:.0f}:h={Y1-Y0:.0f}:color=0xFFB020@0.95:t=5{en}")
+    return out
+
 # ---------------- potong bagian rekaman
 def potong(p, out, tmp):
     src = f"{RAW}/{p['src']}.mkv"; a, b = p["_a"], p["_b"]; sp = p["_sp"]; D = p["_d"]
@@ -267,10 +320,10 @@ def potong(p, out, tmp):
         ac = autocrop(p)
         if ac:
             base = (f"[0:v]{sel}setpts=(PTS-STARTPTS)/{sp},fps={FPS},crop={ac['w']}:{ac['h']}:{ac['x']}:{ac['y']},scale={ac['ow']}:{ac['oh']}:flags=lanczos,"
-                    f"pad=1920:1080:(ow-iw)/2:(oh-ih)/2:color={ac['bg']},tpad=stop_mode=clone:stop_duration=60")
+                    f"pad=1920:1080:(ow-iw)/2:(oh-ih)/2:color={ac['bg']},tpad=stop_mode=clone:stop_duration=60" + filter_sorot(p, ac))
         else:
             x, y, w, h = CROP[p["crop"]]
-            base = f"[0:v]{sel}setpts=(PTS-STARTPTS)/{sp},fps={FPS},crop={w}:{h}:{x}:{y},scale=1920:1080:flags=lanczos,tpad=stop_mode=clone:stop_duration=60"
+            base = f"[0:v]{sel}setpts=(PTS-STARTPTS)/{sp},fps={FPS},crop={w}:{h}:{x}:{y},scale=1920:1080:flags=lanczos,tpad=stop_mode=clone:stop_duration=60" + filter_sorot(p, None)
     else:
         sw, shh = log(p["src"])["src"]; ph = 1000; pw = int(round(sw * ph / shh / 2)) * 2
         bg = f"{tmp}/{os.path.basename(out)}.bg.png"; x0, y0 = latar_hp(p["cap"], pw, ph, bg)
@@ -287,44 +340,110 @@ def potong(p, out, tmp):
        "-c:v", "libx264", "-preset", "medium", "-crf", "18", "-pix_fmt", "yuv420p", out)
 
 # ---------------- rencana waktu satu bab
+def kalimat(t): return [x.strip() for x in re.split(r"(?<=[.!?])\s+", t) if x.strip()]
+def potong_kalimat(f, kal, A):
+    """batas waktu tiap kalimat di MP3 (jeda hening terdekat dari perkiraan panjang huruf)"""
+    if len(kal) <= 1: return [0.0, A]
+    er = subprocess.run(["ffmpeg", "-i", f, "-af", "silencedetect=noise=-35dB:d=0.15", "-f", "null", "-"], capture_output=True, text=True).stderr
+    S = [float(x) for x in re.findall(r"silence_start: ([0-9.]+)", er)]; E = [float(x) for x in re.findall(r"silence_end: ([0-9.]+)", er)]
+    gaps = [(x + y) / 2 for x, y in zip(S, E) if 0.3 < x < A - 0.3]
+    tl = sum(len(k) for k in kal); c = 0; cuts = []
+    for k in kal[:-1]:
+        c += len(k); e = A * c / tl
+        cand = [g for g in gaps if not cuts or g > cuts[-1] + 0.4]
+        g = min(cand, key=lambda g: abs(g - e)) if cand else e
+        cuts.append(g if abs(g - e) < 3.0 else e)
+    return [0.0] + cuts + [A]
+
+def _isi(kode, p):
+    if p["k"] != "adegan":
+        p["_a"], p["_b"] = waktu(p["src"], p["a"]), waktu(p["src"], p["b"])
+        p["_keep"] = bersih(p["src"], p["_a"], p["_b"]) if p["k"] == "rek" else [(p["_a"], p["_b"])]
+        p["_L"] = max(0.2, sum(y - x for x, y in p["_keep"]))
+
+def _pas(parts, D, diam=False):
+    """atur kecepatan/durasi bagian supaya mengisi D; kembalikan D akhir (tanpa tahan)"""
+    rec = [p for p in parts if p["k"] != "adegan"]; flex = [p for p in parts if p["k"] == "adegan"]
+    if diam:  # kelompok tanpa narasi: rekaman dipercepat supaya tiap bagian +-5 detik
+        for p in rec:
+            p["_sp"] = max(p["speed"], min(30.0, p["_L"] / 5.0)); p["_d"] = p["_L"] / p["_sp"]
+        for p in flex: p["_d"] = p["min"]
+        return sum(p["_d"] for p in parts)
+    M = sum(p["min"] for p in flex)
+    def total(f): return sum(p["_L"] / min(p["speed"] * f, max(p["maks"], p["speed"])) for p in rec)
+    f = 1.0
+    if rec and total(1) + M > D:
+        lo, hi = 1.0, 60.0
+        for _ in range(50):
+            mid = (lo + hi) / 2
+            if total(mid) + M > D: lo = mid
+            else: hi = mid
+        f = hi
+    for p in rec: p["_sp"] = min(p["speed"] * f, max(p["maks"], p["speed"])); p["_d"] = p["_L"] / p["_sp"]
+    fix = sum(p["_d"] for p in rec); D = max(D, fix + M); sisa = D - fix
+    if flex:
+        w = sum(p["bobot"] for p in flex)
+        for p in flex: p["_d"] = max(p["min"], sisa * p["bobot"] / w)
+        D = fix + sum(p["_d"] for p in flex)
+    elif rec and sisa > 0:
+        for p in rec:
+            p["_d"] += sisa * p["_d"] / fix; p["_sp"] = max(0.6 * p["speed"], p["_L"] / p["_d"])
+    return D
+
+AKHIR_BAB = 3.0
 def rencanakan(kode):
+    """Satu beat dipecah menjadi kelompok per kalimat (bagian visual dengan s=k mulai di kalimat ke-k).
+    Bagian dengan 'tahan' dibekukan sekian detik tanpa narasi (waktu membaca prompt / hasil kerja AI).
+    Bagian sesudah bagian bertahan tanpa s menjadi kelompok tanpa narasi."""
     B = bab(kode); hasil = []
     for i, (teks, parts) in enumerate(B["beats"]):
-        mp3 = f"{ROOT}/{kode}/suara/b{i:02d}.mp3"
-        A = dur(mp3) if teks and os.path.exists(mp3) else (len(teks) / 14.5 if teks else 0)
-        D = A + LEAD + TAIL if teks else 0
-        parts = [dict(p) for p in parts]
-        for p in parts:
-            if p["k"] != "adegan":
-                p["_a"], p["_b"] = waktu(p["src"], p["a"]), waktu(p["src"], p["b"])
-                p["_keep"] = bersih(p["src"], p["_a"], p["_b"]) if p["k"] == "rek" else [(p["_a"], p["_b"])]
-                p["_L"] = max(0.2, sum(y - x for x, y in p["_keep"]))
-        rec = [p for p in parts if p["k"] != "adegan"]; flex = [p for p in parts if p["k"] == "adegan"]
-        M = sum(p["min"] for p in flex)
-        def total(f): return sum(p["_L"] / min(p["speed"] * f, max(p["maks"], p["speed"])) for p in rec)
-        f = 1.0
-        if rec and total(1) + M > D:
-            lo, hi = 1.0, 60.0
-            for _ in range(50):
-                mid = (lo + hi) / 2
-                if total(mid) + M > D: lo = mid
-                else: hi = mid
-            f = hi
-        for p in rec: p["_sp"] = min(p["speed"] * f, max(p["maks"], p["speed"])); p["_d"] = p["_L"] / p["_sp"]
-        fix = sum(p["_d"] for p in rec); D = max(D, fix + M); sisa = D - fix
-        if flex:
-            w = sum(p["bobot"] for p in flex)
-            for p in flex: p["_d"] = max(p["min"], sisa * p["bobot"] / w) if len(flex) == 1 else sisa * p["bobot"] / w
-            # pastikan min
-            kur = sum(max(0, p["min"] - p["_d"]) for p in flex)
-            if kur > 0:
-                for p in flex: p["_d"] = max(p["_d"], p["min"])
-                D = fix + sum(p["_d"] for p in flex)
-        elif rec and sisa > 0:
-            # sisa waktu dibagi sebanding panjang tiap bagian (perlambat sedikit), bukan membekukan bagian terakhir
-            for p in rec:
-                p["_d"] += sisa * p["_d"] / fix; p["_sp"] = max(0.6 * p["speed"], p["_L"] / p["_d"])
-        hasil.append(dict(no=i, teks=teks, A=A, D=D, parts=parts))
+        f_mp3 = mp3(kode, teks) if teks else ""
+        A = dur(f_mp3) if teks and os.path.exists(f_mp3) else (len(teks) / 14.5 if teks else 0)
+        kal = kalimat(teks) if teks else []
+        cut = potong_kalimat(f_mp3, kal, A) if teks and os.path.exists(f_mp3) else [0.0, A]
+        if len(cut) != len(kal) + 1: kal = kal or [""]; cut = [0.0] * len(kal) + [A]
+        parts = [copy.deepcopy(p) for p in parts]
+        for p in parts: _isi(kode, p)
+        # kelompok
+        grup = []; diam = False
+        for j, p in enumerate(parts):
+            if j == 0: grup.append(dict(s=p.get("s", 0), parts=[], diam=False))
+            elif "s" in p: grup.append(dict(s=p["s"], parts=[], diam=False)); diam = False
+            elif diam and not grup[-1]["diam"]: grup.append(dict(s=None, parts=[], diam=True))
+            grup[-1]["parts"].append(p)
+            if p.get("tahan"): diam = True
+        bicara = [g for g in grup if not g["diam"]]
+        for k, g in enumerate(bicara):
+            s0 = g["s"] or 0; s1 = bicara[k + 1]["s"] if k + 1 < len(bicara) else len(kal)
+            g["t0"], g["t1"] = cut[min(s0, len(kal))], cut[min(s1, len(kal))]; g["kal"] = kal[s0:s1]
+        for k, g in enumerate(grup):
+            pertama = k == 0; terakhir = k == len(grup) - 1
+            if g["diam"]: g["t0"] = g["t1"] = 0; g["kal"] = []
+            Ag = g["t1"] - g["t0"]
+            lead = LEAD if pertama else (0.15 if not g["diam"] else 0)
+            tail = TAIL if terakhir else 0.25
+            g["lead"] = lead
+            D = _pas(g["parts"], Ag + lead + tail if teks and not g["diam"] else 0, diam=g["diam"] or not teks)
+            if not teks and not g["diam"]: D = _pas(g["parts"], 0)
+            th = 0.0
+            for p in g["parts"]:
+                t = p.get("tahan", 0) or 0
+                if t: p["_d"] += t; th += t
+            g["D"] = D + th
+            # sorotan per kalimat: {"kal": k} menyala saat kalimat ke-k dibacakan (sampai "kal2" atau akhir bagian)
+            off = 0.0
+            for p in g["parts"]:
+                for it in p.get("sorot", []):
+                    if "kal" in it and not g["diam"]:
+                        k1 = min(it["kal"], len(kal)); k2 = min(it.get("kal2", len(kal)), len(kal))
+                        it["_a"] = max(0.0, cut[k1] - g["t0"] + g["lead"] - off - 0.1)
+                        if "kal2" in it: it["_b"] = max(it["_a"] + 0.5, cut[k2] - g["t0"] + g["lead"] - off)
+                off += p["_d"]
+        hasil.append(dict(no=i, teks=teks, A=A, grup=grup, mp3=f_mp3, D=sum(g["D"] for g in grup),
+                          parts=[p for g in grup for p in g["parts"]]))
+    # jeda akhir bab: bekukan bagian terakhir
+    if hasil:
+        g = hasil[-1]["grup"][-1]; g["parts"][-1]["_d"] += AKHIR_BAB; g["D"] += AKHIR_BAB; hasil[-1]["D"] += AKHIR_BAB
     return hasil
 
 def rakit_bab(kode, cek=False):
@@ -355,21 +474,24 @@ def rakit_bab(kode, cek=False):
         if kartu:
             sh("ffmpeg", "-loglevel", "error", "-y", "-f", "lavfi", "-i", "anullsrc=r=48000:cl=stereo", "-t", f"{kartu:.3f}", f"{tmp}/a_kartu.wav"); fh.write(f"file '{tmp}/a_kartu.wav'\n")
         for r in R:
-            w = f"{tmp}/a{r['no']:02d}.wav"
-            if r["teks"]:
-                sh("ffmpeg", "-loglevel", "error", "-y", "-i", f"{base}/suara/b{r['no']:02d}.mp3", "-af", f"adelay={int(LEAD*1000)}:all=1,apad", "-t", f"{r['D']:.3f}", "-ar", "48000", "-ac", "2", w)
-            else:
-                sh("ffmpeg", "-loglevel", "error", "-y", "-f", "lavfi", "-i", "anullsrc=r=48000:cl=stereo", "-t", f"{r['D']:.3f}", w)
-            fh.write(f"file '{w}'\n")
+            for k, g in enumerate(r["grup"]):
+                w = f"{tmp}/a{r['no']:02d}_{k}.wav"
+                if r["teks"] and not g["diam"] and g["t1"] > g["t0"]:
+                    sh("ffmpeg", "-loglevel", "error", "-y", "-ss", f"{g['t0']:.3f}", "-to", f"{g['t1']:.3f}", "-i", r["mp3"],
+                       "-af", f"afade=t=in:d=0.02,adelay={int(g['lead']*1000)}:all=1,apad", "-t", f"{g['D']:.3f}", "-ar", "48000", "-ac", "2", w)
+                else:
+                    sh("ffmpeg", "-loglevel", "error", "-y", "-f", "lavfi", "-i", "anullsrc=r=48000:cl=stereo", "-t", f"{g['D']:.3f}", w)
+                fh.write(f"file '{w}'\n")
     sh("ffmpeg", "-loglevel", "error", "-y", "-f", "concat", "-safe", "0", "-i", f"{tmp}/audio.txt", "-c:a", "pcm_s16le", f"{tmp}/audio.wav")
     sh("ffmpeg", "-loglevel", "error", "-y", "-i", f"{tmp}/video.mp4", "-i", f"{tmp}/audio.wav", "-c:v", "copy", "-c:a", "aac", "-b:a", "192k", "-shortest", f"{base}/{kode}.mp4")
     # srt relatif bab
     srt = []; t = kartu
     for r in R:
-        if r["teks"]:
-            kal = [s.strip() for s in re.split(r"(?<=[.!?])\s+", r["teks"]) if s.strip()]; tl = sum(len(s) for s in kal); t0 = t + LEAD
-            for s in kal: d = r["A"] * len(s) / tl; srt.append((t0, t0 + d - 0.05, s)); t0 += d
-        t += r["D"]
+        for g in r["grup"]:
+            if g["kal"] and r["teks"]:
+                tl = sum(len(x) for x in g["kal"]); t0 = t + g["lead"]; Ag = g["t1"] - g["t0"]
+                for x in g["kal"]: d = Ag * len(x) / tl; srt.append((t0, t0 + d - 0.05, x)); t0 += d
+            t += g["D"]
     json.dump(srt, open(f"{base}/srt.json", "w"), ensure_ascii=False)
     print("SELESAI", kode, dur(f"{base}/{kode}.mp4"), flush=True)
 

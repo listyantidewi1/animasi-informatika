@@ -14,23 +14,24 @@ Semua kesalahan di video ini benar-benar terjadi saat direkam: hasil yang tersem
 
 Alat: Vite + JavaScript murni, Vitest, PWA (manifest + service worker tanpa plugin), Claude Code sebagai asisten AI. Cara yang sama bisa dipakai dengan Gemini CLI, GitHub Copilot, atau Cursor.
 Catatan: lembar Bagikan di HP pada bab "Kirim ke WhatsApp" adalah tiruan untuk perekaman; teks ringkasannya asli dari aplikasi.
+Alamat 192.168.1.23 di bab "Prompt pertama" hanya contoh alamat Wi-Fi rumah; alamat di laptopmu akan berbeda.
 
 Kode akhir: [link repo]
 
 Chapter
 0:00 Kait
-1:15 Vibe coding yang benar
-4:04 Spek satu halaman
-8:41 Siapkan proyek
-10:26 Prompt pertama: kerangka
-13:14 Logika inti dan tes
-19:08 Rasa aplikasi HP
-21:48 Simpan offline
-25:00 Kirim ke WhatsApp
-27:02 Jadikan aplikasi
-31:42 Cek kerjaan AI
-35:16 Terbitkan
-36:18 Penutup
+1:22 Vibe coding yang benar
+4:21 Spek satu halaman
+9:53 Siapkan proyek
+11:54 Prompt pertama: kerangka
+17:07 Logika inti dan tes
+24:13 Rasa aplikasi HP
+27:31 Simpan offline
+31:22 Kirim ke WhatsApp
+33:46 Jadikan aplikasi
+39:21 Cek kerjaan AI
+43:39 Terbitkan
+44:59 Penutup
 
 Narasi: Cahaya (suara sintetis ElevenLabs). Rekaman layar sungguhan; animasi penjelasan dibuat dengan kode oleh I Teach Software Engineering. Naskah disusun dengan bantuan AI (Claude buatan Anthropic) dan disunting manusia.
 
@@ -178,4 +179,4 @@ Subscribe: https://www.youtube.com/@iTeachSWE
 ```
 
 ## Durasi
-Video 38:24 (1920x1080, 30 fps, suara Cahaya, subtitel .srt). Short 1:13 (1080x1920).
+Video 47:14 (1920x1080, 30 fps, suara Cahaya, subtitel .srt). Short 1:13 (1080x1920).
