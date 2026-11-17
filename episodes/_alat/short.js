@@ -11,7 +11,7 @@
   // pertanyaan kait: 70 px (2 baris) atau 58 px bila perlu 3 baris; mengembalikan batas bawahnya
   function hookBand(ctx, TL, t) {
     text(ctx, (TL.label || "Informatika") + " · " + TL.episode, 60, 96, 30, { color: C.ink2, weight: 700 });
-    ctx.fillStyle = C.bg2; ctx.fillRect(0, 120, SW, 8); ctx.fillStyle = C.accent; ctx.fillRect(0, 120, SW * clamp(t / TL.total, 0, 1), 8);
+    ctx.fillStyle = C.bg2; ctx.fillRect(0, 120, SW, 8); ctx.fillStyle = C.accent; ctx.fillRect(0, 120, SW * (TL.bar_full ? 1 : clamp(t / TL.total, 0, 1)), 8);
     let size = 70, lines = wrap(ctx, TL.hook, size, 900, 940);
     if (lines.length > 2) { size = 58; lines = wrap(ctx, TL.hook, size, 900, 960); }
     const y0 = 170 + (lines.length < 3 ? 40 : 0);
@@ -63,6 +63,32 @@
       text(ctx, TL.link, SW / 2, IMG_TOP + 515, 40, { align: "center", weight: 900, color: C.kikoDark });
       ctx.restore();
       kiko(ctx, SW / 2, IMG_TOP + 650, 120, 0, { wave: l });
+    },
+    // penutup versi TikTok: ajakan subscribe channel YouTube (tombol digambar sendiri, bukan logo). Ruang aman TikTok:
+    // teks penting di x < 900 pada y 900–1500. TL.channel bawaan "youtube.com/@iTeachSWE"; b.tap = detik ketukan tombol.
+    tiktok_subscribe(ctx, b, l, TL) {
+      const u = ease(l / 0.5), top = IMG_TOP + 10;
+      ctx.save(); ctx.globalAlpha = u;
+      card(ctx, 70, top, 940, 740, { fill: "#fff", r: 30 });
+      text(ctx, "PEMBAHASAN LENGKAPNYA ADA DI YOUTUBE", SW / 2, top + 90, 34, { align: "center", weight: 900, color: C.accentDark });
+      para(ctx, TL.full_title || "", SW / 2, top + 165, 44, 820, { align: "center", weight: 900, lh: 1.2 });
+      card(ctx, 120, top + 300, 840, 120, { fill: C.bg2, r: 22 });
+      text(ctx, TL.channel || "youtube.com/@iTeachSWE", SW / 2, top + 378, 52, { align: "center", weight: 900, color: C.kikoDark });
+      ctx.restore();
+      // tombol SUBSCRIBE: muncul, berdenyut, lalu "diketuk" jari (lingkaran putih) menjadi SUBSCRIBED
+      const ub = ease((l - 0.8) / 0.4), tap = l - (b.tap || 4.5), by = top + 545;
+      if (ub > 0) {
+        const pulse = 1 + 0.035 * Math.sin(l * 6), pressed = tap > 0 && tap < 0.25 ? 0.93 : 1, done = tap > 0.12;
+        ctx.save(); ctx.translate(470, by); ctx.scale(ub * pulse * pressed, ub * pulse * pressed);
+        card(ctx, -270, -62, 540, 124, { fill: done ? C.muted : C.bad, r: 62 });
+        text(ctx, done ? "SUBSCRIBED" : "SUBSCRIBE", 30, 18, 50, { align: "center", weight: 900, color: "#fff" });
+        ctx.fillStyle = "#fff"; ctx.beginPath(); ctx.moveTo(-215, 20); ctx.quadraticCurveTo(-212, -28, -188, -28); ctx.quadraticCurveTo(-164, -28, -161, 20); ctx.closePath(); ctx.fill();
+        ctx.beginPath(); ctx.arc(-188, 28, 8, 0, Math.PI * 2); ctx.fill(); ctx.fillRect(-222, 16, 68, 7);
+        ctx.restore();
+        if (tap > 0 && tap < 0.9) { ctx.save(); ctx.strokeStyle = C.ink; ctx.globalAlpha = 1 - tap / 0.9; ctx.lineWidth = 7; ctx.beginPath(); ctx.arc(600, by + 18, 28 + tap * 110, 0, Math.PI * 2); ctx.stroke(); ctx.restore(); }
+        if (tap > -0.6 && tap < 1.2) { ctx.save(); ctx.fillStyle = "rgba(255,255,255,0.95)"; ctx.strokeStyle = C.ink2; ctx.lineWidth = 3; ctx.beginPath(); ctx.arc(600 + Math.max(0, -tap) * 110, by + 18 + Math.max(0, -tap) * 150, 24, 0, Math.PI * 2); ctx.fill(); ctx.stroke(); ctx.restore(); }
+      }
+      kiko(ctx, 830, top + 600, 130, 0, { wave: l });
     }
   };
 
