@@ -26,7 +26,7 @@ CHANNEL = "youtube.com/@iTeachSWE"
 BEBRAS = PARENT.get("kind") == "bebras"   # pembahasan soal Bebras: tanpa kelas dan link latihan; kredit soal di deskripsi
 if BEBRAS:
     bb = PARENT.get("bebras", {}); kelas = ""; LINK = ""; FULL = f"Pembahasan Soal Bebras | {PARENT['title']}"
-    KREDIT = f"Soal: {bb.get('judul_asli', '')}, Bebras {bb.get('tahun', '')}, kontributor {bb.get('negara', '')} ({bb.get('kode', '')}), digambar ulang."
+    KREDIT = f"Soal: {bb.get('judul_asli') or bb.get('judul', '')}, Bebras {bb.get('tahun', '')}, kontributor {bb.get('negara', '')} ({bb.get('kode', '')}), digambar ulang."
 elif DOK:
     kelas = ""; LINK = CHANNEL; FULL = PARENT["title"]
 elif SIM:
