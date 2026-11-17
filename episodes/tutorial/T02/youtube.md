@@ -1,6 +1,6 @@
 # T02 YouTube
 
-## Video utama (4:51)
+## Video utama (6:32)
 
 **Judul:** Bikin Kuis Otomatis yang Langsung Menghitung Skor dengan Python
 
@@ -10,15 +10,15 @@ Bikin kuis dengan Python yang langsung memeriksa jawaban dan menghitung nilai ak
 
 Bab:
 0:00 Pembuka
-0:28 List: rak berlaci
-0:52 Menulis daftar soal
-1:10 Perulangan for
-1:54 Membandingkan teks
-2:20 Memeriksa jawaban
-2:49 Tebak dulu
-3:08 Menghitung nilai
-3:50 Tambah soal dan SyntaxError
-4:11 Rangkuman dan tantangan
+0:30 List: rak berlaci
+0:59 Menulis daftar soal
+1:52 Perulangan for
+2:43 Membandingkan teks
+3:14 Memeriksa jawaban
+3:53 Tebak dulu
+4:22 Menghitung nilai
+5:09 Tambah soal dan SyntaxError
+5:48 Rangkuman dan tantangan
 
 Kode lengkap:
 soal = [

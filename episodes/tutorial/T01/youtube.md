@@ -1,6 +1,6 @@
 # T01 YouTube
 
-## Video utama (5:57)
+## Video utama (7:54)
 
 **Judul:** Bikin Game Tebak Angka Pertamamu dengan Python
 
@@ -10,17 +10,17 @@ Bikin game tebak angka dengan Python dari sel kosong sampai bisa dimainkan. Komp
 
 Bab:
 0:00 Pembuka
-0:21 Notebook dan sel
-0:39 Rencana dulu: algoritma
-1:09 Variabel
-1:37 Angka rahasia dengan random
-2:20 Tebak dulu
-2:46 Perulangan while
-3:05 input dan int
-3:43 Percabangan if, elif, else
-4:33 Mainkan gamenya
-4:56 Ubah kode dan baca pesan error
-5:21 Rangkuman dan tantangan
+0:23 Notebook dan sel
+1:16 Rencana dulu: algoritma
+1:51 Variabel
+2:25 Angka rahasia dengan random
+3:18 Tebak dulu
+3:50 Perulangan while
+4:15 input dan int
+5:07 Percabangan if, elif, else
+6:04 Mainkan gamenya
+6:43 Ubah kode dan baca pesan error
+7:14 Rangkuman dan tantangan
 
 Kode lengkap:
 import random

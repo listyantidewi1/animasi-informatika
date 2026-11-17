@@ -1,6 +1,6 @@
 # T13 YouTube
 
-## Video utama (3:12)
+## Video utama (5:25)
 
 **Judul:** Bikin Chatbot AI Sendiri dengan Python (Tanpa Internet, Tanpa Biaya)
 
@@ -10,15 +10,15 @@ Buat chatbot sekolah sendiri dengan Python yang berjalan tanpa internet dan tanp
 
 Bab:
 0:00 Pembuka
-0:17 Chatbot kata kunci
-0:37 Praktik kata kunci
-0:52 Mencari yang paling mirip
-1:19 Data dan skor kemiripan
-1:37 Mengobrol
-1:54 Tebak dulu
-2:02 Ubah dan uji: ambang batas
-2:24 Chatbot AI besar
-2:47 Rangkuman dan tantangan
+0:18 Chatbot kata kunci
+0:44 Praktik kata kunci
+1:35 Mencari yang paling mirip
+2:07 Data dan skor kemiripan
+2:52 Mengobrol
+3:26 Tebak dulu
+3:39 Ubah dan uji: ambang batas
+4:28 Chatbot AI besar
+4:56 Rangkuman dan tantangan
 
 Kode lengkap:
 tanya_jawab = {

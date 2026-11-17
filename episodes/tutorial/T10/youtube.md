@@ -1,6 +1,6 @@
 # T10 YouTube
 
-## Video utama (4:01)
+## Video utama (6:17)
 
 **Judul:** Bikin Website Daftar Tugas yang Tetap Tersimpan (HTML, CSS, JavaScript, localStorage)
 
@@ -10,16 +10,16 @@ Buat website daftar tugas sendiri dengan HTML, CSS, dan JavaScript, yang isinya 
 
 Bab:
 0:00 Pembuka
-0:15 HTML, CSS, dan JavaScript
-0:39 Kerangka halaman
-1:04 Data dan tampilan
-1:28 Menambah tugas
-1:48 Masalah: data hilang
-2:16 Menyimpan ke localStorage
-2:38 Menandai selesai
-2:58 Tebak dulu
-3:06 Ubah dan uji
-3:28 Rangkuman dan tantangan
+0:17 HTML, CSS, dan JavaScript
+0:46 Kerangka halaman
+2:10 Data dan tampilan
+2:40 Menambah tugas
+3:15 Masalah: data hilang
+3:50 Menyimpan ke localStorage
+4:29 Menandai selesai
+4:56 Tebak dulu
+5:10 Ubah dan uji
+5:39 Rangkuman dan tantangan
 
 Kode lengkap:
 <!DOCTYPE html>

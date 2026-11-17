@@ -1,6 +1,6 @@
 # T04 YouTube
 
-## Video utama (4:47)
+## Video utama (6:38)
 
 **Judul:** Bikin Website Profil Diri dalam 10 Menit (HTML dan CSS untuk Pemula)
 
@@ -10,18 +10,18 @@ Bikin website profil dirimu sendiri dari nol dengan HTML dan CSS. Kamu belajar t
 
 Bab:
 0:00 Pembuka
-0:21 HTML dan tag
-0:48 Kotak di dalam kotak
-1:07 File HTML pertama
-1:30 Tebak dulu
-1:38 Kenapa tag penutup penting
-1:50 Daftar, gambar, dan link
-2:17 CSS: selector, properti, nilai
-2:45 Memberi warna
-3:05 Padding, border, margin
-3:22 Kartu profil
-3:48 Layar HP dan titik koma
-4:12 Rangkuman dan tantangan
+0:23 HTML dan tag
+0:55 Kotak di dalam kotak
+1:20 File HTML pertama
+2:16 Tebak dulu
+2:30 Kenapa tag penutup penting
+2:49 Daftar, gambar, dan link
+3:27 CSS: selector, properti, nilai
+4:01 Memberi warna
+4:30 Padding, border, margin
+4:53 Kartu profil
+5:29 Layar HP dan titik koma
+5:59 Rangkuman dan tantangan
 
 Kode lengkap:
 <!DOCTYPE html>

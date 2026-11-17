@@ -1,6 +1,6 @@
 # T09 YouTube
 
-## Video utama (4:16)
+## Video utama (6:42)
 
 **Judul:** Bikin Kipas Otomatis Pengukur Suhu (Proyek IoT ESP32 di Simulator Wokwi)
 
@@ -10,16 +10,16 @@ Buat alat Internet of Things (IoT) pertamamu: kipas yang menyala sendiri saat ru
 
 Bab:
 0:00 Pembuka
-0:23 Input, proses, output
-0:50 Menyusun rangkaian di Wokwi
-1:20 setup dan loop
-1:41 Membaca suhu
-2:04 Mengambil keputusan
-2:24 Kipas otomatis
-2:50 Tebak dulu
-3:01 Ubah dan uji
-3:19 Dari simulator ke alat sungguhan
-3:42 Rangkuman dan tantangan
+0:25 Input, proses, output
+0:59 Menyusun rangkaian di Wokwi
+1:57 setup dan loop
+2:24 Membaca suhu
+3:06 Mengambil keputusan
+3:32 Kipas otomatis
+4:38 Tebak dulu
+4:55 Ubah dan uji
+5:36 Dari simulator ke alat sungguhan
+6:05 Rangkuman dan tantangan
 
 Kode lengkap:
 Buka https://wokwi.com/projects/new/esp32

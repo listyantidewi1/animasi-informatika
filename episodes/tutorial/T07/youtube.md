@@ -1,6 +1,6 @@
 # T07 YouTube
 
-## Video utama (5:08)
+## Video utama (7:32)
 
 **Judul:** Bikin Game Ular Sendiri di Browser (JavaScript untuk Pemula)
 
@@ -10,19 +10,19 @@ Buat game ular klasik dari nol dengan HTML dan JavaScript, cukup satu file dan s
 
 Bab:
 0:00 Pembuka
-0:19 Papan koordinat
-0:42 Papan dan kotak pertama
-1:09 Ular adalah array
-1:26 Badan ular
-1:45 Game loop
-2:12 Membuat ular bergerak
-2:35 Event keyboard
-2:57 Tombol panah dan dinding
-3:17 Makan dan tumbuh
-3:39 Makanan dan skor
-4:01 Tebak dulu
-4:09 Ubah dan uji
-4:31 Rangkuman dan tantangan
+0:21 Papan koordinat
+0:49 Papan dan kotak pertama
+1:58 Ular adalah array
+2:21 Badan ular
+2:50 Game loop
+3:23 Membuat ular bergerak
+3:57 Event keyboard
+4:25 Tombol panah dan dinding
+5:03 Makan dan tumbuh
+5:30 Makanan dan skor
+6:07 Tebak dulu
+6:20 Ubah dan uji
+6:50 Rangkuman dan tantangan
 
 Kode lengkap:
 <!DOCTYPE html>

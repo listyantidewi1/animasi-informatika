@@ -1,6 +1,6 @@
 # T14 YouTube
 
-## Video utama (2:34)
+## Video utama (4:26)
 
 **Judul:** Olah Data Nilai Otomatis dengan Python dan Excel (Rata-rata, Peringkat, Predikat)
 
@@ -10,14 +10,14 @@ Buat program Python yang membaca file Excel nilai satu kelas, menghitung rata-ra
 
 Bab:
 0:00 Pembuka
-0:18 Dari Excel ke pandas
-0:36 Membaca file Excel
-0:51 Ke bawah atau ke samping: axis
-1:06 Menghitung rata-rata
-1:17 Tebak dulu
-1:28 Ubah dan uji: peringkat yang adil
-1:49 Predikat dan menyimpan ke Excel
-2:07 Rangkuman dan tantangan
+0:20 Dari Excel ke pandas
+0:43 Membaca file Excel
+1:49 Ke bawah atau ke samping: axis
+2:09 Menghitung rata-rata
+2:28 Tebak dulu
+2:45 Ubah dan uji: peringkat yang adil
+3:19 Predikat dan menyimpan ke Excel
+3:55 Rangkuman dan tantangan
 
 Kode lengkap:
 # File nilai_kelas.xlsx berisi kolom: nama, mat, ipa, bahasa
@@ -46,6 +46,17 @@ def predikat(n):
 data["predikat"] = data["rata2"].apply(predikat)
 data.sort_values("peringkat").to_excel("hasil_nilai.xlsx", index=False)
 print("Tersimpan!")
+
+# Isi nilai_kelas.xlsx (ketik di Excel atau Google Sheets, lalu simpan/unduh sebagai nilai_kelas.xlsx):
+nama,mat,ipa,bahasa
+Ayu,88,90,86
+Bima,92,84,79
+Citra,75,70,78
+Dimas,80,86,89
+Eka,95,93,91
+Fajar,68,72,75
+Gita,85,82,88
+Hana,79,81,77
 
 Sebelumnya: Bikin Chatbot AI Sendiri dengan Python. Lebih mudah bila sudah menonton Hitung Nilai Rapor Otomatis.
 Playlist: Proyek Pemrograman Sederhana. Narasi: Cahaya (suara sintetis ElevenLabs). Rekaman layar sungguhan; animasi penjelasan dibuat dengan kode oleh I Teach Software Engineering. Naskah disusun dengan bantuan AI (Claude buatan Anthropic) dan disunting manusia.

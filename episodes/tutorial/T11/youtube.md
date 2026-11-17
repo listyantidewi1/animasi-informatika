@@ -1,6 +1,6 @@
 # T11 YouTube
 
-## Video utama (3:50)
+## Video utama (5:25)
 
 **Judul:** Bikin AI Penyaring Pesan Spam dengan Python (Machine Learning untuk Pemula)
 
@@ -10,16 +10,16 @@ Buat AI penyaring pesan spam dengan Python dan scikit-learn. Kamu belajar bedany
 
 Bab:
 0:00 Pembuka
-0:17 Aturan atau machine learning
-0:40 Menyiapkan data
-0:59 Kata menjadi angka
-1:23 CountVectorizer
-1:42 Naive Bayes
-2:08 Melatih dan mencoba
-2:26 Tebak dulu
-2:37 Ubah dan uji
-2:58 Penyaring spam sungguhan
-3:20 Rangkuman dan tantangan
+0:18 Aturan atau machine learning
+0:47 Menyiapkan data
+1:39 Kata menjadi angka
+2:08 CountVectorizer
+2:38 Naive Bayes
+3:09 Melatih dan mencoba
+3:35 Tebak dulu
+3:52 Ubah dan uji
+4:24 Penyaring spam sungguhan
+4:51 Rangkuman dan tantangan
 
 Kode lengkap:
 pesan = [

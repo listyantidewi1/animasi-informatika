@@ -1,6 +1,6 @@
 # T08 YouTube
 
-## Video utama (5:23)
+## Video utama (7:20)
 
 **Judul:** Bikin Sandi Rahasia dengan Python (Sandi Caesar dan Cara Membobolnya)
 
@@ -10,20 +10,20 @@ Buat program Python untuk mengunci dan membuka pesan rahasia dengan sandi Caesar
 
 Bab:
 0:00 Pembuka
-0:26 Sandi Caesar
-0:48 Huruf menjadi angka
-1:07 Abjad sebagai string
-1:28 Fungsi pengunci
-1:50 Fungsi kunci
-2:14 Fungsi buka
-2:32 Tebak dulu
-2:40 IndexError
-2:59 Modulo
-3:22 Menambahkan modulo
-3:43 Membobol sandi
-4:01 Brute force
-4:24 Sandi modern
-4:43 Rangkuman dan tantangan
+0:28 Sandi Caesar
+0:55 Huruf menjadi angka
+1:20 Abjad sebagai string
+2:16 Fungsi pengunci
+2:44 Fungsi kunci
+3:15 Fungsi buka
+3:40 Tebak dulu
+3:53 IndexError
+4:21 Modulo
+4:49 Menambahkan modulo
+5:16 Membobol sandi
+5:40 Brute force
+6:12 Sandi modern
+6:36 Rangkuman dan tantangan
 
 Kode lengkap:
 huruf = "abcdefghijklmnopqrstuvwxyz"

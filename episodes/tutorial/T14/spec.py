@@ -33,3 +33,5 @@ META = {
  "hashtag": ["python", "excel", "pandas", "belajarcoding"],
  "short_desk": "Olah nilai satu kelas dari Excel dengan Python: rata-rata, peringkat yang adil, predikat, lalu simpan ke Excel.",
 }
+
+META["kode"] += "\n\n# Isi nilai_kelas.xlsx (ketik di Excel atau Google Sheets, lalu simpan/unduh sebagai nilai_kelas.xlsx):\n" + 'nama,mat,ipa,bahasa\nAyu,88,90,86\nBima,92,84,79\nCitra,75,70,78\nDimas,80,86,89\nEka,95,93,91\nFajar,68,72,75\nGita,85,82,88\nHana,79,81,77'

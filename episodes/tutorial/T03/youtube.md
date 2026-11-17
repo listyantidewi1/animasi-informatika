@@ -1,6 +1,6 @@
 # T03 YouTube
 
-## Video utama (4:50)
+## Video utama (6:48)
 
 **Judul:** Hitung Nilai Rapor Otomatis, Lengkap dengan Grafiknya (Python pandas)
 
@@ -10,18 +10,18 @@ Olah data nilai satu kelas dengan Python dan pandas: baca file CSV, hitung rata-
 
 Bab:
 0:00 Pembuka
-0:20 Dari list ke tabel
-0:32 File CSV
-0:58 Membaca tabel dengan pandas
-1:24 Tebak dulu
-1:33 Rata-rata dan axis
-1:56 Menghitung rata-rata
-2:17 Mengurutkan dan menyaring
-2:41 Peringkat dan remedial
-3:07 Grafik batang
-3:26 Membuat grafik
-3:48 Ubah batas dan KeyError
-4:13 Rangkuman dan tantangan
+0:22 Dari list ke tabel
+0:39 File CSV
+1:11 Membaca tabel dengan pandas
+2:14 Tebak dulu
+2:27 Rata-rata dan axis
+2:56 Menghitung rata-rata
+3:37 Mengurutkan dan menyaring
+4:07 Peringkat dan remedial
+4:40 Grafik batang
+5:05 Membuat grafik
+5:35 Ubah batas dan KeyError
+6:08 Rangkuman dan tantangan
 
 Kode lengkap:
 import pandas as pd
