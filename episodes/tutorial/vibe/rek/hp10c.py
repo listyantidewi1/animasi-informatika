@@ -1,0 +1,11 @@
+from hp import *; from isi_cepat import isi_cepat
+h = HP("http://localhost:5173/", profil="/tmp/hpprof412", lebar=412); h.pg.evaluate("localStorage.clear()"); h.pg.reload(); h.tunggu(1)
+isi_cepat(h.pg); h.pg.fill("#form-hitung input[name=voucher]", "999999"); h.tunggu(0.5)
+h.mulai("/home/user/vibe/raw/H10c"); h.tanda("mulai"); h.tunggu(1)
+h.tanda("voucher_besar"); h.tap(".bar-bawah button", 3.5); h.foto("/tmp/h10c_1.png")
+h.tanda("gratis"); h.pg.evaluate("localStorage.clear()"); h.pg.reload(); h.tunggu(0.8)
+h.pg.fill("#form-orang input[name=nama]", "Andi"); h.pg.click("#form-orang button[type=submit]")
+h.pg.fill("#form-menu input[name=nama]", "Air putih"); h.pg.fill("#form-menu input[name=harga]", "0"); h.pg.click("#form-menu button[type=submit]"); h.pg.click("#daftar-menu .chip")
+h.tunggu(0.8); h.tap(".bar-bawah button", 3.5); h.foto("/tmp/h10c_2.png")
+print(h.pg.locator("#hasil").inner_text())
+h.tanda("akhir"); h.stop(); h.pg.evaluate("localStorage.clear()"); h.tutup()

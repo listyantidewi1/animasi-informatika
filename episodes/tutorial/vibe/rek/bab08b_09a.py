@@ -1,0 +1,12 @@
+from vc import *
+v = VC("/home/user/vibe/raw/V08b")
+v.pilih_terminal(0)
+v.mulai("/home/user/vibe/raw/V08b"); v.tanda("mulai"); v.tunggu(1)
+v.tanda("prompt_commit"); v.prompt("Teksnya sudah saya cek, sama persis dengan contoh. Commit dengan pesan \"Bagikan ringkasan ke WhatsApp\".", cps=45, batas=300)
+v.tanda("commit_jadi"); v.tunggu(2); v.stop()
+v.perintah("/clear", tunggu=2)
+v.mulai("/home/user/vibe/raw/V09a"); v.tanda("mulai"); v.tunggu(1)
+v.tanda("prompt_pwa")
+v.prompt("Jadikan aplikasi ini PWA tanpa plugin:\n- public/manifest.webmanifest dengan nama \"Patungan\", warna tema, dan ikon,\n- ikon 192 px dan 512 px yang digambar dengan kode (SVG lalu PNG), bukan diunduh,\n- public/sw.js yang menyimpan semua berkas di cache dengan nama berversi,\n  dan menghapus cache lama saat versi berganti.\nJelaskan setiap bagian sw.js dengan komentar singkat.", cps=45, batas=1200)
+v.tanda("pwa_jadi"); v.tunggu(3)
+v.stop(); v.foto("/tmp/v09a.png"); v.ctx.close(); v.pw.stop()
