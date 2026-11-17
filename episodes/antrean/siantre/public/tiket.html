@@ -1,0 +1,61 @@
+<!doctype html>
+<html lang="id">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>SiAntre · Tiket Saya</title>
+  <link rel="stylesheet" href="/gaya.css">
+</head>
+<body>
+  <header class="atas">
+    <div class="logo">S</div>
+    <div><h1>Bengkel Maju Jaya</h1><small id="layanan">Tiket antrean</small></div>
+  </header>
+  <main>
+    <div class="kartu">
+      <div class="label">Nomor antreanmu</div>
+      <div class="nomor" id="nomor">…</div>
+      <div class="status" id="status"></div>
+      <div class="angka" id="angka">
+        <div><b id="posisi">-</b><span>posisi antrean</span></div>
+        <div><b id="tunggu">-</b><span>perkiraan menit</span></div>
+      </div>
+    </div>
+    <p class="redup">Halaman ini berubah sendiri. Kamu boleh menunggu di luar, asal halaman ini tetap terbuka.</p>
+    <button class="tombol abu" id="batal">Batalkan antrean</button>
+    <p class="pesan" id="pesan"></p>
+  </main>
+  <script src="/umum.js"></script>
+  <script>
+    const kode = new URLSearchParams(location.search).get('k');
+    const $ = (id) => document.getElementById(id);
+
+    async function segarkan() {
+      try {
+        const t = await api('/tiket/' + encodeURIComponent(kode));
+        $('nomor').textContent = t.label;
+        $('layanan').textContent = t.layanan;
+        $('status').className = 'status ' + t.status;
+        $('status').textContent = t.status === 'called' ? `Dipanggil! Silakan ke ${t.loket}` : STATUS[t.status];
+        const menunggu = t.status === 'waiting';
+        $('angka').style.display = menunggu ? '' : 'none';
+        $('batal').style.display = menunggu ? '' : 'none';
+        $('posisi').textContent = t.posisi;
+        $('tunggu').textContent = t.perkiraan_menit;
+        if (t.status === 'called' && navigator.vibrate) navigator.vibrate([300, 150, 300]);
+      } catch (e) {
+        $('pesan').textContent = e.message;
+      }
+    }
+
+    $('batal').onclick = async () => {
+      if (!confirm('Yakin membatalkan antrean?')) return;
+      try { await api('/tiket/' + encodeURIComponent(kode) + '/batal', { method: 'POST' }); segarkan(); }
+      catch (e) { $('pesan').textContent = e.message; }
+    };
+
+    segarkan();
+    dengarkan(['antrean', 'panggil'], segarkan);
+  </script>
+</body>
+</html>
