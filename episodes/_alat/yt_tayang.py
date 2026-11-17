@@ -34,15 +34,19 @@ def cek(vid):
 
 ids = {k: yt_id(v) for k, v in json.load(open(SRC, encoding="utf-8")).items() if not k.startswith("_")}
 lama = json.load(open(OUT, encoding="utf-8")) if os.path.exists(OUT) else {}
-baru = {}
+baru = {}; gagal = []
 for k, vid in ids.items():
     if not vid: continue
     ok, judul = cek(vid)
+    if ok is None: gagal.append(k)
     if ok or (ok is None and lama.get(k, {}).get("id") == vid): baru[k] = {"id": vid, "judul": judul or lama.get(k, {}).get("judul", "")}
     print(f"{k:7} {vid}  {'tayang' if k in baru else 'belum tayang'}  {judul[:70]}")
 ubah = sorted(k for k in set(baru) | set(lama) if baru.get(k, {}).get("id") != lama.get(k, {}).get("id"))
 json.dump(dict(sorted(baru.items())), open(OUT, "w", encoding="utf-8"), ensure_ascii=False, indent=1)
 print(f"\n{len(baru)} tayang dari {sum(1 for v in ids.values() if v)} alamat; berubah: {', '.join(ubah) or '-'}")
+if gagal:
+    print(f"PERINGATAN: {len(gagal)} video tidak bisa diperiksa (jaringan/YouTube tidak terjawab): {', '.join(gagal)}", file=sys.stderr)
+    if len(gagal) == sum(1 for v in ids.values() if v): print("PERINGATAN: semua pemeriksaan gagal; periksa akses www.youtube.com.", file=sys.stderr)
 
 if "--build" in sys.argv and ubah:
     halaman = set()

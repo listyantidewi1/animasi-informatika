@@ -7,7 +7,8 @@ import episode as E
 ROOT, _ = E.find_root(sys.argv[1:])
 script = E.load_script(ROOT)
 teks = E.load_timeline(ROOT, "teks") if os.path.exists(E.timeline_path(ROOT, "teks")) else None
-suara = E.load_timeline(ROOT, "suara") if E.has_variant(ROOT, "suara") else None
+# halaman cukup memakai timeline.json + narasi.mp3 (audio/narration.wav hanya untuk render dan tidak ada di git)
+suara = E.load_timeline(ROOT, "suara") if os.path.exists(E.timeline_path(ROOT, "suara")) and (E.has_variant(ROOT, "suara") or os.path.exists(os.path.join(ROOT, "narasi.mp3"))) else None
 if not teks and not suara: raise SystemExit("belum ada timeline: jalankan timing.py dan/atau voice.py dulu")
 css = open(os.path.join(E.ALAT, "page-core.css"), encoding="utf-8").read()
 js = open(os.path.join(E.ALAT, "page-core.js"), encoding="utf-8").read()
