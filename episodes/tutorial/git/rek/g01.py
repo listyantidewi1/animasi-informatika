@@ -1,0 +1,36 @@
+"""Rekam G01: commit pertama (semua perintah sungguhan)."""
+import sys, subprocess; sys.path.insert(0, "/home/user/git-seri/rek")
+from gs import *
+subprocess.run(["/home/user/git-seri/rek/siap_g01.sh"])
+P = "/home/user/proyek/raka/siantre"
+g = GS(P, graf_repo=P, tempat=True)
+g.lebar_sidebar(170); g.tombol("Control+Backquote", 2.0); g.tinggi_panel(0.56)
+g.buka("antrean.js"); g.terminal()
+g.mulai("G01")
+g.tanda("awal"); g.tunggu = time.sleep
+time.sleep(2.5)
+g.tanda("config"); g.perintah('git config --global user.name "Raka"', tunggu=0.8)
+g.perintah('git config --global user.email "raka@majujaya.id"', tunggu=1.5); g.tanda("config_selesai")
+g.bersih(); g.tanda("init"); g.perintah("git init", tunggu=1.5); g.perintah("ls -a", tunggu=2.5); g.tanda("init_selesai")
+g.bersih(); g.tanda("status"); g.perintah("git status", tunggu=3.5); g.tanda("status_selesai")
+g.bersih(); g.tanda("add_ketik"); g.ketik("git add .", 12); g.tanda("add_tebak"); time.sleep(1.5)
+g.tombol("Enter", 1.2); g.tanda("add_jalan"); g.perintah("git status", tunggu=3.5); g.tanda("add_selesai")
+g.buka(".env"); g.ke_baris(2); g.tombol("End", 0.2); g.tombol("Shift+Home", 2.5); g.tanda("env_sorot"); time.sleep(2.0); g.tanda("env_selesai")
+g.terminal(); g.bersih(); g.tanda("rm"); g.perintah("git rm --cached .env", tunggu=1.5); g.perintah("git status", tunggu=3.5); g.tanda("rm_selesai")
+# .gitignore lewat editor
+g.palet("File: New File..."); time.sleep(0.6); g.ketik(".gitignore", 20); time.sleep(0.6); g.tombol("Enter", 1.2)
+g.panel(False); time.sleep(1.0)
+g.tanda("ignore"); g.ketik(".env\nnode_modules/\n", 12); g.simpan(); time.sleep(1.0)
+g.terminal(); g.bersih(); g.perintah("git status", tunggu=3.5); g.tanda("ignore_selesai")
+g.bersih(); g.tanda("commit"); g.perintah("git add .gitignore", tunggu=1.0)
+g.perintah('git commit -m "Buat kerangka SiAntre"', tunggu=2.5); g.tanda("commit_jalan")
+g.bersih(); g.perintah("git log", tunggu=4.0); g.tanda("log_selesai")
+# ubah format nomor
+g.buka("antrean.js"); g.ke_baris(5, 16); g.tombol("Shift+ArrowRight", 0.6); g.tanda("edit")
+g.ketik("String(n).padStart(3, '0')", 14); g.simpan(); time.sleep(1.0); g.tanda("edit_selesai")
+g.terminal(); g.bersih(); g.tanda("diff"); g.perintah("git diff", tunggu=4.5); g.tanda("diff_selesai")
+g.bersih(); g.tanda("commit2"); g.perintah("git add antrean.js", tunggu=1.0)
+g.perintah('git commit -m "Ubah format nomor menjadi tiga digit"', tunggu=2.5)
+g.perintah("git log --oneline", tunggu=4.0); g.tanda("akhir_log")
+time.sleep(2.0); g.tanda("akhir")
+g.selesai()

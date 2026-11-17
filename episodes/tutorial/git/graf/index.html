@@ -1,0 +1,150 @@
+<!doctype html>
+<html lang="id"><head><meta charset="utf-8"><title>Graf commit</title>
+<style>
+:root { --bg:#141a2b; --panel:#1d2540; --garis:#34406a; --teks:#eef2fb; --redup:#97a3c2; --teal:#2dd4bf; --amber:#ffb020; --coral:#ff6b6b; --sky:#60a5fa; --violet:#a78bfa; --lime:#a3e635; --pink:#f472b6; }
+html,body { margin:0; height:100%; background:var(--bg); color:var(--teks); font-family:Inter, sans-serif; overflow:hidden; }
+#kepala { height:52px; display:flex; align-items:center; gap:10px; padding:0 18px; border-bottom:1px solid var(--garis); background:#111727; }
+#kepala b { font-size:20px; font-weight:800; } #kepala span { font-size:15px; color:var(--redup); font-family:"DejaVu Sans Mono", monospace; }
+#kepala i { margin-left:auto; width:10px; height:10px; border-radius:5px; background:var(--teal); box-shadow:0 0 8px var(--teal); }
+#graf { position:relative; }
+svg { display:block; }
+.node { transition: transform .55s cubic-bezier(.3,.7,.2,1), opacity .5s; }
+.node.baru { animation: muncul .6s cubic-bezier(.3,1.6,.5,1); }
+@keyframes muncul { from { opacity:0; } }
+.edge { fill:none; stroke-width:4; transition: d .55s cubic-bezier(.3,.7,.2,1), opacity .5s; }
+.hash { font:700 17px "DejaVu Sans Mono", monospace; fill:#cdd6ee; }
+.pesan { font:600 17px Inter, sans-serif; fill:var(--teks); }
+.oleh { font:500 13px Inter, sans-serif; fill:var(--redup); }
+.chip text { font:800 14px Inter, sans-serif; }
+#tempat[hidden] { display:none !important; }
+#tempat { position:absolute; left:0; right:0; bottom:0; display:grid; grid-template-columns:1fr 1fr 1fr; gap:10px; padding:12px; border-top:1px solid var(--garis); background:#111727; }
+.kotak { background:var(--panel); border-radius:12px; padding:10px 10px 8px; min-height:150px; border:2px solid transparent; transition: border-color .4s, box-shadow .4s; }
+.kotak.kedip { border-color:var(--amber); box-shadow:0 0 18px rgba(255,176,32,.35); }
+.kotak h3 { margin:0 0 8px; font-size:15px; font-weight:800; letter-spacing:.02em; }
+.kotak .f { font:600 14px "DejaVu Sans Mono", monospace; padding:3px 6px; margin:3px 0; border-radius:6px; background:rgba(255,255,255,.05); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; animation: muncul .4s; }
+.f.baru, .f.ubah, .f.hapus { color:#ffb4b4; } #st .f { color:#b9f5c8; } .f.luar { color:#cfd6ea; } .f.hapus { text-decoration:line-through; }
+.kosong { color:var(--redup); font-size:13px; font-style:italic; }
+#pesanKonflik { position:absolute; left:16px; right:16px; top:64px; padding:10px 14px; border-radius:10px; background:rgba(255,107,107,.15); border:2px solid var(--coral); color:#ffd1d1; font-weight:700; font-size:16px; display:none; }
+</style></head>
+<body>
+<div id="kepala"><b>Graf commit</b><span id="nama"></span><i></i></div>
+<div id="graf"><svg id="svg" width="576" height="800"></svg><div id="pesanKonflik">Merge belum selesai: ada konflik</div></div>
+<div id="tempat" hidden>
+  <div class="kotak" id="kk"><h3 style="color:var(--coral)">Folder kerja</h3><div class="isi"></div></div>
+  <div class="kotak" id="st"><h3 style="color:var(--lime)">Staging</h3><div class="isi"></div></div>
+  <div class="kotak" id="rp"><h3 style="color:var(--sky)">Repository</h3><div class="isi"></div></div>
+</div>
+<script>
+const Q = new URLSearchParams(location.search), REPO = Q.get('repo'), TEMPAT = Q.get('tempat') === '1', MAKS = +(Q.get('maks') || 0);
+const WARNA = { main: 'var(--teal)' }, PAL = ['var(--amber)', 'var(--violet)', 'var(--pink)', 'var(--sky)', 'var(--lime)'];
+let palI = 0; const warnaBranch = n => { const b = n.replace(/^origin\//, ''); if (!WARNA[b]) WARNA[b] = PAL[palI++ % PAL.length]; return WARNA[b]; };
+document.getElementById('nama').textContent = (Q.get('label') || REPO.split('/').pop());
+if (TEMPAT) document.getElementById('tempat').hidden = false;
+const svg = document.getElementById('svg'), NS = 'http://www.w3.org/2000/svg';
+const el = (t, a = {}, p) => { const e = document.createElementNS(NS, t); for (const k in a) e.setAttribute(k, a[k]); if (p) p.appendChild(e); return e; };
+const gEdge = el('g', {}, svg), gNode = el('g', {}, svg);
+const nodes = {}, edges = {}; let terakhir = '';
+function urut(cs) { // anak sebelum induk; jaga urutan asli
+  const byH = Object.fromEntries(cs.map(c => [c.H, c])), anak = {}; cs.forEach(c => c.P.forEach(p => { if (byH[p]) (anak[p] = anak[p] || []).push(c.H); }));
+  const hasil = [], selesai = new Set(), idx = Object.fromEntries(cs.map((c, i) => [c.H, i]));
+  const siap = c => (anak[c.H] || []).every(a => selesai.has(a));
+  const sisa = cs.slice(); while (sisa.length) { let i = sisa.findIndex(siap); if (i < 0) i = 0; const c = sisa.splice(i, 1)[0]; hasil.push(c); selesai.add(c.H); }
+  return hasil;
+}
+function lajur(cs) {
+  const lanes = [], pos = {};
+  for (const c of cs) {
+    let l = lanes.indexOf(c.H);
+    if (l < 0) { l = lanes.indexOf(null); if (l < 0) { l = lanes.length; lanes.push(null); } }
+    for (let k = 0; k < lanes.length; k++) if (k !== l && lanes[k] === c.H) lanes[k] = null; // gabung
+    pos[c.H] = l; lanes[l] = c.P[0] || null;
+    for (const p of c.P.slice(1)) { if (!lanes.includes(p)) { let f = lanes.indexOf(null); if (f < 0) { f = lanes.length; lanes.push(null); } lanes[f] = p; } }
+  }
+  return pos;
+}
+function chip(g, x, y, teks, warna, gelap) {
+  const w = teks.length * 8.6 + 20; const c = el('g', { class: 'chip' }, g);
+  el('rect', { x, y: y - 13, width: w, height: 26, rx: 8, fill: warna, stroke: gelap ? '#fff' : 'none', 'stroke-width': gelap ? 2 : 0 }, c);
+  const t = el('text', { x: x + w / 2, y: y + 5, 'text-anchor': 'middle', fill: gelap ? '#fff' : '#101626' }, c); t.textContent = teks;
+  return w;
+}
+function render(S) {
+  const pk = document.getElementById('pesanKonflik'); pk.style.display = S.merging && S.konflik && S.konflik.length ? 'block' : 'none';
+  if (TEMPAT) tempat(S);
+  const tinggiTempat = TEMPAT ? document.getElementById('tempat').offsetHeight : 0;
+  const H = innerHeight - 52 - tinggiTempat; svg.setAttribute('height', H);
+  let cs = S.ada ? urut(S.commits) : [];
+  const ROW = TEMPAT ? 54 : 62, top = S.merging && S.konflik && S.konflik.length ? 130 : 42;
+  const muat = Math.max(1, Math.floor((H - top - 20) / ROW) + 1); if (cs.length > (MAKS || muat)) cs = cs.slice(0, MAKS || muat);
+  const pos = lajur(cs), nl = Math.max(1, ...Object.values(pos).map(x => x + 1));
+  const X = l => 34 + l * 40, Y = i => top + i * ROW, tx = X(nl - 1) + 30;
+  const idx = Object.fromEntries(cs.map((c, i) => [c.H, i]));
+  const hidup = new Set();
+  cs.forEach((c, i) => {
+    hidup.add(c.H); let n = nodes[c.H];
+    if (!n) { n = nodes[c.H] = el('g', { class: 'node baru' }, gNode); n.style.transform = `translate(${X(pos[c.H])}px, ${Y(i) - 30}px)`; void n.getBoundingClientRect(); }
+    n.innerHTML = ''; n.style.opacity = c.hantu ? 0.38 : 1;
+    const refs = (S.refs[c.H] || []).filter(r => r.nama !== 'origin/HEAD' && r.nama !== 'origin');
+    const br = refs.find(r => r.jenis === 'branch');
+    const warna = c.hantu ? '#7d88a8' : br ? warnaBranch(br.nama) : (refs.find(r => r.jenis === 'remote') ? warnaBranch(refs.find(r => r.jenis === 'remote').nama) : '#c7cfe6');
+    const isHead = c.H === S.headH;
+    el('circle', { r: 13, cx: 0, cy: 0, fill: c.hantu ? 'none' : (isHead ? warna : '#141a2b'), stroke: warna, 'stroke-width': 4, 'stroke-dasharray': c.hantu ? '5 4' : '' }, n);
+    let x = tx - X(pos[c.H]);
+    const th = el('text', { x, y: -2, class: 'hash' }, n); th.textContent = c.h;
+    let cx = x + 84;
+    // chip HEAD & branch
+    const urutRef = refs.slice().sort((a, b) => (a.jenis === 'branch' ? 0 : a.jenis === 'remote' ? 1 : 2) - (b.jenis === 'branch' ? 0 : b.jenis === 'remote' ? 1 : 2));
+    if (isHead && !S.headRef) cx += chip(n, cx, -8, 'HEAD', '#000', true) + 6;
+    for (const r of urutRef) {
+      if (r.jenis === 'tag') { cx += chip(n, cx, -8, '⚑ ' + r.nama, 'var(--amber)') + 6; continue; }
+      const w = chip(n, cx, -8, r.nama, r.jenis === 'remote' ? 'rgba(255,255,255,.18)' : warnaBranch(r.nama));
+      if (r.jenis === 'remote') n.lastChild.querySelector('text').setAttribute('fill', '#dfe5f5');
+      cx += w + 6;
+      if (isHead && S.headRef === r.nama) cx += chip(n, cx, -8, 'HEAD', '#000', true) + 6;
+    }
+    const maxc = Math.floor((576 - (tx + 0) - 16) / 8.4);
+    const sp = el('text', { x, y: 22, class: 'pesan' }, n); sp.textContent = (c.s.length > maxc ? c.s.slice(0, maxc - 1) + '…' : c.s);
+    if (c.hantu) { const o = el('text', { x: x + 84 + 4, y: -2, class: 'oleh' }, n); o.textContent = 'hanya di reflog'; }
+    n.style.transform = `translate(${X(pos[c.H])}px, ${Y(i)}px)`;
+    setTimeout(() => n.classList.remove('baru'), 700);
+  });
+  for (const h in nodes) if (!hidup.has(h)) { nodes[h].remove(); delete nodes[h]; }
+  const ehidup = new Set();
+  cs.forEach((c, i) => c.P.forEach((p, k) => {
+    if (!(p in idx)) { // induk di luar layar: garis ke bawah
+      const key = c.H + '>' + p; ehidup.add(key); let e = edges[key] || (edges[key] = el('path', { class: 'edge' }, gEdge));
+      e.style.d = `path("M ${X(pos[c.H])} ${Y(i)} L ${X(pos[c.H])} ${H}")`; e.style.stroke = '#55618a'; return; }
+    const key = c.H + '>' + p; ehidup.add(key);
+    let e = edges[key]; if (!e) e = edges[key] = el('path', { class: 'edge' }, gEdge);
+    const x1 = X(pos[c.H]), y1 = Y(i), x2 = X(pos[p]), y2 = Y(idx[p]);
+    const d = x1 === x2 ? `M ${x1} ${y1} L ${x1} ${y1 + 0.1} L ${x2} ${y2 - 0.1} L ${x2} ${y2}` : `M ${x1} ${y1} C ${x1} ${y1 + ROW * .8} ${x2} ${y1 + ROW * .2} ${x2} ${Math.min(y2, y1 + ROW)} L ${x2} ${y2}`;
+    e.style.d = `path("${d}")`;
+    const ch = cs[i]; const ph = cs[idx[p]];
+    e.style.stroke = c.hantu || ph.hantu ? '#5b6687' : '#5b6a96'; e.style.opacity = c.hantu ? .5 : 1; e.style.strokeDasharray = c.hantu ? '6 5' : '';
+  }));
+  for (const k in edges) if (!ehidup.has(k)) { edges[k].remove(); delete edges[k]; }
+  let kos = document.getElementById('kosong'); if (!kos) { kos = el('text', { id: 'kosong', x: 288, y: 200, 'text-anchor': 'middle', class: 'pesan' }, svg); kos.style.fill = '#97a3c2'; }
+  kos.textContent = !S.ada ? 'Belum ada repository Git' : (cs.length ? '' : 'Belum ada commit');
+}
+const isiTempat = {};
+function tempat(S) {
+  const set = (id, items, kosong) => {
+    const box = document.querySelector('#' + id + ' .isi'); const key = JSON.stringify(items);
+    if (isiTempat[id] === key) return; const lama = isiTempat[id]; isiTempat[id] = key;
+    box.innerHTML = items.length ? items.map(i => `<div class="f ${i.k}">${i.f}</div>`).join('') : `<div class="kosong">${kosong}</div>`;
+    if (lama !== undefined) { const k = document.getElementById(id); k.classList.add('kedip'); setTimeout(() => k.classList.remove('kedip'), 900); }
+  };
+  const ring = a => a.length > 6 ? a.slice(0, 5).concat([{ f: '+' + (a.length - 5) + ' lagi', k: 'luar' }]) : a;
+  const ringF = a => { const m = {}; for (const i of a) { const parts = i.f.split('/'); const k = parts.length > 1 && parts[0] === 'node_modules' ? 'node_modules/' : i.f; if (!m[k]) m[k] = { f: k, k: i.k }; } return Object.values(m); };
+  if (!S.ada) { set('kk', ring(S.kerja), 'kosong'); set('st', [], 'belum ada Git'); set('rp', [], 'belum ada Git'); return; }
+  set('kk', ring(ringF(S.kerja.concat((S.konflik || []).map(f => ({ f, k: 'ubah' }))))), 'bersih');
+  set('st', ring(ringF(S.staging)), 'kosong');
+  const n = S.commits.filter(c => !c.hantu).length;
+  set('rp', n ? [{ f: n + ' commit', k: 'luar' }].concat(S.headH ? [{ f: 'terakhir ' + S.headH.slice(0, 7), k: 'luar' }] : []) : [], 'belum ada commit');
+}
+async function putar() {
+  try { const r = await fetch('/state?repo=' + encodeURIComponent(REPO)); const t = await r.text(); if (t !== terakhir) { terakhir = t; render(JSON.parse(t)); } } catch (e) {}
+  setTimeout(putar, 250);
+}
+putar();
+</script></body></html>
