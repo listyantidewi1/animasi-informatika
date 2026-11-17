@@ -19,11 +19,11 @@ Semua yang ada di layar adalah rekaman editor, terminal, dan server Git sungguha
 
 Bab:
 0:00 Pembuka
-0:31 Branch itu apa?
-1:07 Membuat branch dan pindah branch
-2:13 Salah branch, lalu diperbaiki
-3:03 Menggabungkan dengan merge
-3:53 Rangkuman dan tantangan
+0:33 Branch itu apa?
+1:10 Membuat branch dan pindah branch
+2:20 Salah branch, lalu diperbaiki
+3:20 Menggabungkan dengan merge
+4:13 Rangkuman dan tantangan
 
 Seri Git dan Kerja Tim:
 G01. Git dari Nol: Commit Pertamamu

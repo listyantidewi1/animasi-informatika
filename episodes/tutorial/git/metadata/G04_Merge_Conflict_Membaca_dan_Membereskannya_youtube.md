@@ -20,11 +20,11 @@ Semua yang ada di layar adalah rekaman editor, terminal, dan server Git sungguha
 
 Bab:
 0:00 Pembuka
-0:27 Konflik itu apa?
-1:02 Konflik pertama
-3:02 Kesalahan: penanda tertinggal
-3:51 Jalan keluar: merge --abort
-4:09 Rangkuman dan tantangan
+0:29 Konflik itu apa?
+1:06 Konflik pertama
+3:08 Kesalahan: penanda tertinggal
+4:03 Jalan keluar: merge --abort
+4:24 Rangkuman dan tantangan
 
 Seri Git dan Kerja Tim:
 G01. Git dari Nol: Commit Pertamamu

@@ -7,7 +7,8 @@ import json, os, sys, re, subprocess, urllib.request, time, shutil
 sys.path.insert(0, "/home/user/git-seri/_alat"); sys.path.insert(0, "/home/user/git-seri/prod")
 from PIL import Image, ImageDraw, ImageFont
 import rencana_git as RC
-ROOT = "/home/user/git-seri/prod/ep"; RAW = "/home/user/git-seri/raw"; FPS = 30; LEAD, TAIL = 0.35, 0.9  # jeda antarbagian lebih lega (masukan Dewi 17 Nov)
+import jeda as JD
+ROOT = "/home/user/git-seri/prod/ep"; RAW = "/home/user/git-seri/raw"; FPS = 30; LEAD, TAIL, JEDA_BAB = 0.35, 0.9, 1.6  # jeda antarbagian lebih lega (masukan Dewi 17 Nov)
 FB = "/usr/share/fonts/opentype/inter/Inter-Bold.otf"; FS = "/usr/share/fonts/opentype/inter/Inter-SemiBold.otf"
 VID = "iWydkXKoiVtvdn4vLKp9"; MODEL = "eleven_v4"
 CROP = {"full": (0, 0, 2560, 1440), "term": (380, 718, 1220, 686), "edit": (0, 0, 1600, 900), "graf": (1200, 0, 1360, 765), "tempat": (1060, 596, 1500, 844),
@@ -118,19 +119,99 @@ def letak_label(p, png, tmp, out):
             skor[i] += sum(ed.crop((x, y, x + lw, y + lh)).histogram()[255:]) * (1.0 if i == 0 else 1.15)  # sedikit utamakan kanan atas
     i = min(range(len(cand)), key=lambda k: skor[k]); return cand[i]
 
+
+# ---------------- sorotan baris yang sedang dijelaskan (OCR)
+_ocr = None
+def cari_baris(src, t, crop, kueri, tmp, tag):
+    """Kotak (x, y, w, h) di bingkai 1920x1080 untuk baris yang memuat kueri pada waktu mentah t."""
+    global _ocr
+    if _ocr is None:
+        from rapidocr_onnxruntime import RapidOCR; _ocr = RapidOCR()
+    png = f"{tmp}/{tag}.ocr.png"; bingkai(src, t, crop, png)
+    res, _ = _ocr(png); res = res or []
+    q = kueri.lower().replace(" ", "")
+    # gabungkan kotak OCR yang sebaris (OCR sering memecah satu baris menjadi beberapa potong)
+    bar = []
+    for r in sorted(res, key=lambda r: (sum(p[1] for p in r[0]) / 4, min(p[0] for p in r[0]))):
+        cy = sum(p[1] for p in r[0]) / 4; hh = max(p[1] for p in r[0]) - min(p[1] for p in r[0])
+        if bar and abs(bar[-1][0] - cy) < max(8, hh * 0.45): bar[-1][1].append(r)
+        else: bar.append([cy, [r]])
+    hit = []
+    for cy, rs in bar:
+        rs.sort(key=lambda r: min(p[0] for p in r[0]))
+        # potongan yang berjauhan (>70 px) dianggap kolom lain (mis. panel graf)
+        grp = [[rs[0]]]
+        for r in rs[1:]:
+            if min(p[0] for p in r[0]) - max(p[0] for p in grp[-1][-1][0]) > 70: grp.append([r])
+            else: grp[-1].append(r)
+        for g in grp:
+            if q in "".join(r[1] for r in g).lower().replace(" ", ""): hit.append(g)
+    if not hit: return None
+    hit = max(hit, key=lambda g: max(p[1] for r in g for p in r[0]))  # baris terbawah = keluaran terbaru di terminal
+    xs = [p[0] for r in hit for p in r[0]]; ys = [p[1] for r in hit for p in r[0]]
+    m = 10; x0, y0, x1, y1 = max(0, min(xs) - m), max(0, min(ys) - m), min(1920, max(xs) + m), min(1080, max(ys) + m)
+    return int(x0), int(y0), int(x1 - x0), int(y1 - y0)
+def ke_mentah(p, u):
+    """Waktu keluaran u (detik sejak awal potongan) -> waktu rekaman mentah, memperhitungkan kecepatan dan jeda beku."""
+    a, b, sp = p["_a"], p["_b"], p["_sp"]; ev = p.get("_ev", [])
+    tt = [a] + [t for t, _ in ev] + [b]; hh = [h for _, h in ev] + [p.get("jeda_akhir", 0)]; o = 0.0
+    for i in range(len(tt) - 1):
+        d = (tt[i + 1] - tt[i]) / sp
+        if u <= o + d: return tt[i] + (u - o) * sp
+        o += d
+        if u <= o + hh[i]: return tt[i + 1] - 0.04
+        o += hh[i]
+    return b - 0.04
+def sorotan(p, out, tmp):
+    """Filter drawbox untuk setiap sorot={k: 'teks'}: tampil selama kalimat ke-k dibacakan, selama layar belum berubah besar."""
+    fl = []
+    for q, (k, kueri) in enumerate((k, x) for k, v in sorted(p.get("sorot", {}).items()) for x in ([v] if isinstance(v, str) else v)):
+        w = [x for x in p.get("_kalrel", []) if x[0] == k]
+        if not w: print("  sorot: kalimat", k, "tidak di potongan ini", out, flush=True); continue
+        _, u0, u1 = w[0]; u0 = max(0.0, u0 + 0.15); u1 = min(p["_d"], u1)
+        if u1 - u0 < 0.4: continue
+        t0 = ke_mentah(p, u0); kot = cari_baris(p["src"], t0, p["crop"], kueri, tmp, f"{os.path.basename(out)}.s{q}")
+        if not kot:  # coba sedikit lebih lambat (teks baru muncul)
+            for du in [x * 0.5 for x in range(1, 40)]:
+                if u0 + du < u1 and (kot := cari_baris(p["src"], ke_mentah(p, u0 + du), p["crop"], kueri, tmp, f"{os.path.basename(out)}.s{q}")): u0 += du; break
+        if not kot: print("  sorot TIDAK KETEMU:", kueri, out, [r[1] for r in (_ocr(f"{tmp}/{os.path.basename(out)}.s{q}.ocr.png")[0] or [])][-12:], flush=True); continue
+        # berhenti bila layar berubah besar (gulir/berganti) setelah sorotan mulai
+        # berhenti bila isi di bawah kotak sorotan berubah (baris bergulir/berganti); perubahan di tempat lain diabaikan
+        x, y, ww, hh = kot; cx, cy, cw, ch = CROP[p["crop"]]; kk = min(1920 / cw, 1080 / ch); ox, oy = (1920 - cw * kk) / 2, (1080 - ch * kk) / 2
+        rx0, ry0 = cx + (x - ox) / kk, cy + (y - oy) / kk; rx1, ry1 = cx + (x + ww - ox) / kk, cy + (y + hh - oy) / kk
+        s = JD.deret(p["src"], (int(rx0), int(ry0), max(1, int(rx1 - rx0)), max(1, int(ry1 - ry0)))); u = u0
+        while u < u1:
+            i = int(ke_mentah(p, u) * JD.FPS)
+            if i < len(s) and s[i] > 250 and u > u0 + 0.5: break
+            u += 1 / JD.FPS
+        fl.append(f"drawbox=x={x}:y={y}:w={ww}:h={hh}:color=0xFFB020@0.22:t=fill:enable='between(t,{u0:.2f},{u:.2f})',"
+                  f"drawbox=x={x}:y={y}:w={ww}:h={hh}:color=0xFFB020@0.95:t=5:enable='between(t,{u0:.2f},{u:.2f})'")
+        print("  sorot", kueri, kot, f"{u0:.1f}-{u:.1f}", flush=True)
+    return ",".join(fl)
+
 # ---------------- potong bagian rekaman
 def potong(p, out, tmp):
     src = f"{RAW}/{p['src']}.mkv"; a, b = p["_a"], p["_b"]; sp = p["_sp"]; D = p["_d"]
     filt = []; inputs = ["-ss", f"{a:.3f}", "-to", f"{b:.3f}", "-i", src]
     if p["k"] == "rek":
-        base = f"[0:v]setpts=(PTS-STARTPTS)/{sp},fps={FPS},{vf_crop(p['crop'])},tpad=stop_mode=clone:stop_duration=60"
+        ev = p.get("_ev", []); jk = p.get("jeda_akhir", 0)
+        if ev or jk:
+            # rekaman dipecah di setiap momen penting; tiap potongan diberi jeda beku supaya perintah dan hasilnya terbaca
+            tt = [0.0] + [t - a for t, _ in ev] + [b - a]; hh = [h for _, h in ev] + [jk]
+            n = len(tt) - 1; parts = [f"[0:v]{vf_crop(p['crop'])},split={n}" + "".join(f"[x{i}]" for i in range(n)) if n > 1 else f"[0:v]{vf_crop(p['crop'])}[x0]"]
+            for i in range(n):
+                parts.append(f"[x{i}]trim=start={tt[i]:.3f}:end={tt[i+1]:.3f},setpts=(PTS-STARTPTS)/{sp}" + (f",tpad=stop_mode=clone:stop_duration={hh[i]:.3f}" if hh[i] > 0 else "") + f"[y{i}]")
+            parts.append("".join(f"[y{i}]" for i in range(n)) + f"concat=n={n}:v=1:a=0,fps={FPS},tpad=stop_mode=clone:stop_duration=60")
+            base = ";".join(parts)
+        else:
+            base = f"[0:v]setpts=(PTS-STARTPTS)/{sp},fps={FPS},{vf_crop(p['crop'])},tpad=stop_mode=clone:stop_duration=60"
     else:
         sw, shh = log(p["src"])["src"]; ph = 1000; pw = int(round(sw * ph / shh / 2)) * 2
         bg = f"{tmp}/{os.path.basename(out)}.bg.png"; x0, y0 = latar_hp(p["cap"], pw, ph, bg)
         inputs = ["-loop", "1", "-i", bg] + inputs
         base = f"[1:v]setpts=(PTS-STARTPTS)/{sp},fps={FPS},scale={pw}:{ph}:flags=lanczos,tpad=stop_mode=clone:stop_duration=60[p];[0:v][p]overlay={x0}:{y0}:shortest=0"
-    P = (b - a) / sp; F = D - P
-    if F > 3:  # rekaman habis sebelum narasi: zoom pelan, tetapi tidak pernah memotong teks
+    P = (b - a) / sp + p.get("_H", 0); F = D - P
+    if F > 3 and not p.get("sorot"):  # rekaman habis sebelum narasi: zoom pelan, tetapi tidak pernah memotong teks
         z, cx, cy = zoom_aman(p, out, tmp)
         if z > 1.01:
             # skala naik ke z, lalu potong jendela 1920x1080 yang memuat seluruh kotak teks
@@ -138,6 +219,8 @@ def potong(p, out, tmp):
             kb = (f",scale=w='trunc(1920*{Z}/2)*2':h='trunc(1080*{Z}/2)*2':eval=frame:flags=bicubic,"
                   f"crop=1920:1080:'min(max({cx:.1f}*iw/1920-960,0),iw-1920)':'min(max({cy:.1f}*ih/1080-540,0),ih-1080)'")
             base = base + kb
+    so = sorotan(p, out, tmp) if p.get("sorot") and p["k"] == "rek" else ""
+    if so: base = base + "," + so
     lab = p.get("lab")
     if sp >= 1.8 and not lab: lab = f"dipercepat {sp:.0f}×"
     if lab:
@@ -181,9 +264,20 @@ def isi_kelompok(parts, D):
     for p in parts:
         if p["k"] in ("rek", "hp"):
             p["_a"], p["_b"] = waktu(p["src"], p["a"]), waktu(p["src"], p["b"]); p["_L"] = max(0.2, p["_b"] - p["_a"])
+            p["_ev"] = [] if p["k"] != "rek" or p.get("tanpa_jeda") else [(t, min(h, 2.6)) for t, h, _ in JD.peristiwa(p["src"], CROP[p["crop"]], p["_a"], p["_b"])]
+            p["_H"] = sum(h for _, h in p["_ev"]) + p.get("jeda_akhir", 0)
+            if p["_ev"]: p["maks"] = max(p["maks"], 3.0)  # ketikan boleh lebih cepat karena hasilnya kini diberi jeda baca
     rec = [p for p in parts if p["k"] in ("rek", "hp")]; flex = [p for p in parts if p["k"] == "adegan"]; tb = [p for p in parts if p["k"] == "tebak"]
     M = sum(p["min"] for p in flex)
-    def total(f): return sum(p["_L"] / min(p["speed"] * f, max(p["maks"], p["speed"])) for p in rec)
+    def total(f): return sum(p["_L"] / min(p["speed"] * f, max(p["maks"], p["speed"])) + p["_H"] for p in rec)
+    # hening tanpa narasi dibatasi ±6 detik per kelompok: ketikan boleh sampai 4x, jeda baca dipendekkan (minimal 0,8 dtk)
+    if rec and total(60) + M > D + 6:
+        for p in rec:
+            if p.get("_ev"): p["maks"] = max(p["maks"], 4.0)
+        for _ in range(12):
+            if total(60) + M <= D + 6: break
+            for p in rec:
+                p["_ev"] = [(t, max(0.8, h * 0.9)) for t, h in p.get("_ev", [])]; p["_H"] = sum(h for _, h in p["_ev"]) + p.get("jeda_akhir", 0)
     f = 1.0
     if rec and total(1) + M > D:
         lo, hi = 1.0, 60.0
@@ -192,7 +286,7 @@ def isi_kelompok(parts, D):
             if total(mid) + M > D: lo = mid
             else: hi = mid
         f = hi
-    for p in rec: p["_sp"] = min(p["speed"] * f, max(p["maks"], p["speed"])); p["_d"] = p["_L"] / p["_sp"]
+    for p in rec: p["_sp"] = min(p["speed"] * f, max(p["maks"], p["speed"])); p["_d"] = p["_L"] / p["_sp"] + p["_H"]
     fix = sum(p["_d"] for p in rec); D = max(D, fix + M); sisa = D - fix
     if flex:
         w = sum(p["bobot"] for p in flex)
@@ -207,6 +301,7 @@ def isi_kelompok(parts, D):
 def rencanakan(kode):
     B = bab(kode); hasil = []; ns = 0
     for i, (teks, parts) in enumerate(B["beats"]):
+        akhir_bab = i + 1 == len(B["beats"]) or not B["beats"][i + 1][0]
         mp3 = f"{ROOT}/{kode}/suara/b{ns:02d}.mp3"; ns += 1 if teks else 0; parts = [dict(p) for p in parts]
         kal = kalimat(teks) if teks else []
         A = dur(mp3) if teks and os.path.exists(mp3) else (len(teks) / 14.5 if teks else 0)
@@ -225,12 +320,19 @@ def rencanakan(kode):
             e = grup[g + 1]["s"] if g + 1 < len(grup) else n
             G["a0"], G["a1"] = (bt[G["s"]], bt[e]) if teks else (0, 0)
             G["lead"] = LEAD if (teks and g == 0) else 0; G["tail"] = TAIL if (teks and g == len(grup) - 1) else 0
+            if teks and g == len(grup) - 1 and akhir_bab: G["tail"] += JEDA_BAB  # status terakhir terlihat jelas sebelum pindah bab
             Dn = (G["a1"] - G["a0"]) + G["lead"] + G["tail"] if teks else 0
             G["D"] = isi_kelompok(G["parts"], Dn)
-            G["kal"] = [(bt[j] - G["a0"] + G["lead"], bt[j + 1] - G["a0"] + G["lead"] - 0.05, kal[j]) for j in range(G["s"], e)] if teks else []
+            # rekaman + jeda baca lebih panjang dari narasi: sisipkan hening di antara kalimat (sebanding panjang kalimat) supaya tetap sinkron
+            js = list(range(G["s"], e)) if teks else []; tamb = max(0.0, G["D"] - Dn) if teks else 0.0
+            dj = [bt[j + 1] - bt[j] for j in js]; pad = [tamb * x / max(1e-6, sum(dj)) for x in dj] if len(js) > 1 else [tamb] * len(js)
+            G["pot"] = []; G["kal"] = []; t = G["lead"]
+            for j, x, pj in zip(js, dj, pad):
+                G["pot"].append((bt[j], bt[j + 1], pj)); G["kal"].append((t, t + x - 0.05, kal[j])); t += x + pj
             # adegan menerima waktu mulai tiap kalimat (relatif ke awal adegan) agar animasinya sinkron dengan narasi
             off = 0.0
             for p in G["parts"]:
+                p["_kalrel"] = [(j, x0 - off, x1 - off) for j, (x0, x1, _) in zip(range(G["s"], e), G["kal"])]
                 if p["k"] == "adegan": p["a"] = dict(p["a"], _kal=[round(x0 - off, 3) for x0, _, _ in G["kal"]])
                 off += p.get("_d", 0)
         hasil.append(dict(no=i, mp3=mp3, teks=teks, A=A, D=sum(G["D"] for G in grup), grup=grup, parts=[p for G in grup for p in G["parts"]]))
@@ -266,8 +368,9 @@ def rakit_bab(kode, cek=False):
             for g, G in enumerate(r["grup"]):
                 w = f"{tmp}/a{r['no']:02d}_{g}.wav"
                 if r["teks"] and G["a1"] > G["a0"]:
-                    sh("ffmpeg", "-loglevel", "error", "-y", "-i", r["mp3"], "-af",
-                       f"atrim={G['a0']:.3f}:{G['a1']:.3f},asetpts=PTS-STARTPTS,adelay={int(G['lead']*1000)}:all=1,apad", "-t", f"{G['D']:.3f}", "-ar", "48000", "-ac", "2", w)
+                    fc = ";".join(f"[0:a]atrim={x0:.3f}:{x1:.3f},asetpts=PTS-STARTPTS,apad=pad_dur={pj:.3f}[s{q}]" for q, (x0, x1, pj) in enumerate(G["pot"]))
+                    fc += ";" + "".join(f"[s{q}]" for q in range(len(G["pot"]))) + f"concat=n={len(G['pot'])}:v=0:a=1,adelay={int(G['lead']*1000)}:all=1,apad"
+                    sh("ffmpeg", "-loglevel", "error", "-y", "-i", r["mp3"], "-filter_complex", fc, "-t", f"{G['D']:.3f}", "-ar", "48000", "-ac", "2", w)
                 else:
                     sh("ffmpeg", "-loglevel", "error", "-y", "-f", "lavfi", "-i", "anullsrc=r=48000:cl=stereo", "-t", f"{G['D']:.3f}", w)
                 fh.write(f"file '{w}'\n")

@@ -22,12 +22,12 @@ Semua yang ada di layar adalah rekaman editor, terminal, dan server Git sungguha
 
 Bab:
 0:00 Pembuka
-0:32 Alur kerja tim
-0:57 Commit kecil yang rapi
-2:08 Stash: menyimpan sementara
-2:35 Merge atau rebase?
-3:22 AI dan rilis
-4:10 Rangkuman seri
+0:34 Alur kerja tim
+1:00 Commit kecil yang rapi
+2:19 Stash: menyimpan sementara
+2:54 Merge atau rebase?
+3:45 AI dan rilis
+4:36 Rangkuman seri
 
 Seri Git dan Kerja Tim:
 G01. Git dari Nol: Commit Pertamamu

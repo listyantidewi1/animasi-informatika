@@ -20,11 +20,11 @@ Semua yang ada di layar adalah rekaman editor, terminal, dan server Git sungguha
 
 Bab:
 0:00 Pembuka
-0:21 Kenapa kita butuh Git?
-1:32 Commit pertama
-3:34 Melihat perubahan
-4:13 Kebiasaan aman saat memakai AI
-4:35 Rangkuman dan tantangan
+0:22 Kenapa kita butuh Git?
+1:36 Commit pertama
+3:39 Melihat perubahan
+4:23 Kebiasaan aman saat memakai AI
+4:47 Rangkuman dan tantangan
 
 Seri Git dan Kerja Tim:
 ▶ G01. Git dari Nol: Commit Pertamamu

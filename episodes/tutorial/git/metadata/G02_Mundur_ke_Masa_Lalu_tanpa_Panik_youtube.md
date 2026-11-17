@@ -20,12 +20,12 @@ Semua yang ada di layar adalah rekaman editor, terminal, dan server Git sungguha
 
 Bab:
 0:00 Pembuka
-0:32 Empat alat untuk mundur
-0:59 git restore
-1:23 git commit --amend
-1:50 git revert
-2:37 git reset dan git reflog
-3:53 Rangkuman dan tantangan
+0:34 Empat alat untuk mundur
+1:02 git restore
+1:32 git commit --amend
+2:10 git revert
+2:59 git reset dan git reflog
+4:19 Rangkuman dan tantangan
 
 Seri Git dan Kerja Tim:
 G01. Git dari Nol: Commit Pertamamu

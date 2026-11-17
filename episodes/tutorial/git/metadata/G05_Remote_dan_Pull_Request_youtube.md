@@ -20,10 +20,10 @@ Semua yang ada di layar adalah rekaman editor, terminal, dan server Git sungguha
 
 Bab:
 0:00 Pembuka
-0:38 Remote: repository di server
-1:32 Push ditolak
-2:41 Pull request
-4:08 Rangkuman dan tantangan
+0:40 Remote: repository di server
+1:37 Push ditolak
+2:53 Pull request
+4:45 Rangkuman dan tantangan
 
 Seri Git dan Kerja Tim:
 G01. Git dari Nol: Commit Pertamamu
