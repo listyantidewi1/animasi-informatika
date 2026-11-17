@@ -3,18 +3,17 @@ const express = require('express');
 const crypto = require('crypto');
 const { pool, transaksi } = require('../db');
 const { buatTiket } = require('./tiket');
-const { siarkan } = require('../siaran');
 
 const router = express.Router();
 
+// Slot yang belum lewat, beserta jumlah pemesanan yang masih aktif
 router.get('/slot', async (req, res) => {
   const { rows } = await pool.query(
     `SELECT sl.id, sl.starts_at, sl.quota, s.name AS layanan,
             (SELECT count(*) FROM bookings b WHERE b.slot_id = sl.id AND b.status <> 'cancelled')::int AS terisi
        FROM slots sl JOIN services s ON s.id = sl.service_id
-      WHERE sl.starts_at > now() AND ($1::int IS NULL OR sl.service_id = $1)
-      ORDER BY sl.starts_at LIMIT 40`,
-    [req.query.service_id ? Number(req.query.service_id) : null]
+      WHERE sl.starts_at > now()
+      ORDER BY sl.starts_at LIMIT 40`
   );
   res.json(rows);
 });
@@ -53,7 +52,6 @@ router.post('/booking/:kode/checkin', async (req, res) => {
     return buatTiket(db, rows[0].service_id);
   });
   if (!tiket) return res.status(409).json({ error: 'Pemesanan tidak ditemukan atau sudah dipakai' });
-  siarkan('antrean', {});
   res.status(201).json({ label: tiket.label, code: tiket.code });
 });
 

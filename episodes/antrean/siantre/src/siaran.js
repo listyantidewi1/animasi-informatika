@@ -1,4 +1,4 @@
-// Server-Sent Events: server mengirim kabar ke semua layar yang sedang terbuka.
+// Server-Sent Events: server mengirim kabar ke semua layar yang sedang terbuka
 const pendengar = new Set();
 
 function dengarkan(req, res) {
@@ -11,7 +11,10 @@ function dengarkan(req, res) {
   res.write('retry: 3000\n\n');
   pendengar.add(res);
   const detak = setInterval(() => res.write(': detak\n\n'), 25000);
-  req.on('close', () => { clearInterval(detak); pendengar.delete(res); });
+  req.on('close', () => {
+    clearInterval(detak);
+    pendengar.delete(res);
+  });
 }
 
 function siarkan(jenis, data) {

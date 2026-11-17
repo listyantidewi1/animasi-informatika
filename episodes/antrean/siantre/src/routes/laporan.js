@@ -1,11 +1,11 @@
-// Laporan untuk pemilik: waktu tunggu, pelanggan batal, dan jam tersibuk.
+// Laporan untuk pemilik (dilengkapi di bab 11)
 const express = require('express');
 const { pool } = require('../db');
 const { wajib } = require('./auth');
 
 const router = express.Router();
 router.get('/laporan', wajib('admin'), async (req, res) => {
-  const tanggal = req.query.tanggal || null; // format YYYY-MM-DD, kosong = hari ini
+  const tanggal = req.query.tanggal || null; // YYYY-MM-DD, kosong = hari ini
   const perLayanan = await pool.query(
     `WITH panggil AS (
        SELECT ticket_id, min(created_at) AS pertama FROM ticket_events
@@ -26,12 +26,11 @@ router.get('/laporan', wajib('admin'), async (req, res) => {
     [tanggal]
   );
   const perJam = await pool.query(
-    `SELECT extract(hour FROM created_at AT TIME ZONE $2)::int AS jam, count(*)::int AS jumlah
+    `SELECT extract(hour FROM created_at AT TIME ZONE 'Asia/Jakarta')::int AS jam, count(*)::int AS jumlah
        FROM tickets WHERE service_date = coalesce($1::date, current_date)
       GROUP BY jam ORDER BY jam`,
-    [tanggal, process.env.ZONA_WAKTU || 'Asia/Jakarta']
+    [tanggal]
   );
   res.json({ layanan: perLayanan.rows, per_jam: perJam.rows });
 });
-
 module.exports = router;
