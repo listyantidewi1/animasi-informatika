@@ -1,0 +1,10 @@
+from vc import *
+v = VC("/home/user/vibe/raw/V04a")
+v.palet("Terminal: Focus Terminal"); time.sleep(1)
+v.mulai("/home/user/vibe/raw/V04a"); v.tanda("mulai"); v.tunggu(1)
+v.perintah("clear", tunggu=0.5)
+v.perintah("claude", tunggu=6); v.tanda("claude_buka"); v.tunggu(2)
+v.tanda("prompt1")
+dt = v.prompt("Buat kerangka proyek Vite dengan JavaScript murni di folder ini.\nCukup satu layar: daftar menu yang bisa ditambah (nama menu dan harga dalam rupiah)\ndan daftar nama orang yang bisa ditambah.\nBelum perlu menghitung apa pun. Tampilan untuk layar HP lebar 360 px.", cps=35, batas=900)
+v.tanda("prompt1_selesai"); print("dt", dt); v.tunggu(4); v.tanda("akhir")
+v.stop(); v.foto("/tmp/v04a.png"); v.ctx.close(); v.pw.stop()
