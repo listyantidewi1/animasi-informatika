@@ -161,6 +161,7 @@ def autocrop(p):
     lama = p["src"] in ("V02", "V03")
     if c.startswith("term"): roi = [1300, 45, 2330 if lama else 2540, 1403]
     elif c == "edit": roi = [440, 52, 1290, 1392]
+    elif c == "editW": roi = [575, 56, 1975, 784]  # rekaman ulang: editor word wrap, panel di bawah
     elif c == "dt": roi = [1040, 100, 2560, 1430]
     else: return None
     n = int(min(12, max(4, (b - a) / 1.5)))
