@@ -1,0 +1,85 @@
+<!doctype html>
+<html lang="id">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>SiAntre · Laporan</title>
+  <link rel="stylesheet" href="/gaya.css">
+  <style> main { max-width: 900px; } canvas { width: 100%; height: 260px; } </style>
+</head>
+<body>
+  <header class="atas">
+    <div class="logo">S</div>
+    <div><h1>Laporan Antrean</h1><small id="siapa">Bengkel Maju Jaya</small></div>
+  </header>
+  <main>
+    <form class="kartu" id="formLogin" hidden>
+      <input id="username" placeholder="Username">
+      <input id="password" type="password" placeholder="Password">
+      <button class="tombol">Masuk</button>
+      <p class="pesan" id="pesanLogin"></p>
+    </form>
+    <div id="isi" hidden>
+      <div class="kartu">
+        <input type="date" id="tanggal">
+        <table>
+          <thead><tr><th>Layanan</th><th>Dilayani</th><th>Rata-rata tunggu</th><th>Batal</th><th>Tunggu sebelum batal</th></tr></thead>
+          <tbody id="tabel"></tbody>
+        </table>
+      </div>
+      <div class="kartu">
+        <div class="label" style="text-align:left">Jumlah tiket per jam</div>
+        <canvas id="grafik" width="1600" height="520"></canvas>
+      </div>
+    </div>
+  </main>
+  <script src="/umum.js"></script>
+  <script>
+    const $ = (id) => document.getElementById(id);
+
+    async function mulai() {
+      const saya = await api('/saya');
+      const admin = saya && saya.role === 'admin';
+      $('formLogin').hidden = admin; $('isi').hidden = !admin;
+      if (admin) muat();
+    }
+    $('formLogin').onsubmit = async (e) => {
+      e.preventDefault();
+      try { await api('/login', { method: 'POST', body: { username: $('username').value, password: $('password').value } }); mulai(); }
+      catch (err) { $('pesanLogin').textContent = err.message; }
+    };
+    $('tanggal').onchange = muat;
+
+    async function muat() {
+      const q = $('tanggal').value ? '?tanggal=' + $('tanggal').value : '';
+      const data = await api('/laporan' + q);
+      const menit = (x) => (x === null ? '-' : `${x} menit`);
+      $('tabel').replaceChildren(...data.layanan.map((l) => {
+        const tr = el('tr');
+        [`${l.code} · ${l.name}`, l.dilayani, menit(l.rata_tunggu_menit), l.batal, menit(l.rata_tunggu_batal_menit)]
+          .forEach((v) => tr.append(el('td', '', String(v))));
+        return tr;
+      }));
+      gambar(data.per_jam);
+    }
+
+    // Grafik batang sederhana di canvas, tanpa pustaka
+    function gambar(perJam) {
+      const c = $('grafik').getContext('2d'), W = 1600, H = 520, kiri = 70, bawah = 60;
+      c.clearRect(0, 0, W, H);
+      const jam = []; for (let j = 7; j <= 17; j++) jam.push(j);
+      const nilai = jam.map((j) => (perJam.find((p) => p.jam === j) || { jumlah: 0 }).jumlah);
+      const maks = Math.max(1, ...nilai), lebar = (W - kiri - 20) / jam.length;
+      c.font = '600 26px Inter, sans-serif'; c.textAlign = 'center';
+      nilai.forEach((n, i) => {
+        const h = (H - bawah - 70) * n / maks, x = kiri + i * lebar + 10;
+        c.fillStyle = n === maks ? '#c2410c' : '#1d4ed8';
+        c.beginPath(); c.roundRect(x, H - bawah - h, lebar - 20, h, 8); c.fill();
+        c.fillStyle = '#0f172a'; if (n) c.fillText(n, x + (lebar - 20) / 2, H - bawah - h - 14);
+        c.fillStyle = '#64748b'; c.fillText(`${jam[i]}.00`, x + (lebar - 20) / 2, H - 20);
+      });
+    }
+    mulai();
+  </script>
+</body>
+</html>
