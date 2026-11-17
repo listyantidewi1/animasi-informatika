@@ -80,6 +80,7 @@ def buat(kode):
     S = SH[kode]; OUT = f"{ROOT}/{kode}/short"; os.makedirs(OUT, exist_ok=True)
     mp3 = f"{OUT}/narasi.mp3"; tts(S["narasi"], mp3)
     kal = R.kalimat(S["narasi"]); A = R.dur(mp3); bt = R.batas_kalimat(mp3, kal, A)
+    if "batas" in S: bt = [0.0] + S["batas"] + [A]  # batas kalimat manual bila deteksi hening keliru
     assert len(S["klip"]) == len(kal), (kode, len(S["klip"]), len(kal))
     LEAD, EKOR, JEDA = 0.3, 1.6, 0.35  # jeda kecil antarkalimat supaya mudah diikuti
     segs, cue, auds, t = [], [], [], 0.0

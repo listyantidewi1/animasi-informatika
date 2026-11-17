@@ -9,7 +9,7 @@ SH = {
   narasi="Kamu mengetik git add titik, lalu commit. Rasanya aman, padahal berkas titik env yang berisi password database ikut tersimpan. Kalau proyek itu diunggah, password-mu bisa dibaca siapa saja. Sebelum commit pertama, keluarkan dulu berkas itu dengan git rm dash dash cached, lalu tulis titik env di berkas titik gitignore. Sejak saat itu, Git tidak akan menyimpannya lagi. Cara lengkapnya ada di episode Git dari Nol.",
   klip=[("rek", "G01", "add_ketik", "add_jalan+1.5", KOL), ("rek", "G01", "add_jalan+1.5", "add_selesai", KOL), ("rek", "G01", "env_sorot-0.5", "env_selesai", (380, 0, 720, 200)),
         ("rek", "G01", "rm", "rm_selesai", KOL), ("rek", "G01", "ignore+3.0", "ignore_selesai", KOL), None]),
- "G02": dict(kait="Kerjaan hilang setelah reset? Belum tentu.",
+ "G02": dict(kait="Kerjaan hilang setelah reset? Belum tentu.", batas=[6.96, 10.96, 12.17, 17.09, 22.33, 26.56],
   narasi="Kamu salah mengetik, lalu menjalankan git reset dash dash hard HEAD tilde tiga. Tiga commit hilang dari git log, termasuk kerjaan seharian. Tenang dulu. Git punya buku harian bernama reflog yang mencatat setiap posisi HEAD. Cari hash sebelum reset, lalu reset ke hash itu, dan semua commit kembali. Ingat, cara ini hanya berhasil untuk yang sudah pernah di-commit. Tonton episode lengkapnya untuk empat cara mundur yang aman.",
   klip=[("rek", "G02", "reset_log", "reset_jalan", KOL), ("rek", "G02", "reset_jalan", "reset_selesai", KOL), ("rek", "G02", "reset_selesai-0.3", "reset_selesai", KOL),
         ("rek", "G02", "reset_selesai", "reflog", KOL), ("rek", "G02", "reflog", "reflog_selesai", KOL), ("Ingat, reflog hanya", 0.2, PENUH), None]),
