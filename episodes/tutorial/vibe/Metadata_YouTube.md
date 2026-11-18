@@ -25,13 +25,13 @@ Chapter
 9:53 Siapkan proyek
 11:54 Prompt pertama: kerangka
 17:07 Logika inti dan tes
-24:13 Rasa aplikasi HP
-27:31 Simpan offline
-31:22 Kirim ke WhatsApp
-33:46 Jadikan aplikasi
-39:21 Cek kerjaan AI
-43:39 Terbitkan
-44:59 Penutup
+24:16 Rasa aplikasi HP
+27:33 Simpan offline
+31:25 Kirim ke WhatsApp
+33:49 Jadikan aplikasi
+39:26 Cek kerjaan AI
+43:45 Terbitkan
+45:05 Penutup
 
 Narasi: Cahaya (suara sintetis ElevenLabs). Rekaman layar sungguhan; animasi penjelasan dibuat dengan kode oleh I Teach Software Engineering. Naskah disusun dengan bantuan AI (Claude buatan Anthropic) dan disunting manusia.
 
@@ -179,4 +179,4 @@ Subscribe: https://www.youtube.com/@iTeachSWE
 ```
 
 ## Durasi
-Video 47:14 (1920x1080, 30 fps, suara Cahaya, subtitel .srt). Short 1:13 (1080x1920).
+Video 47:20 (1920x1080, 30 fps, suara Cahaya, subtitel .srt). Short 1:13 (1080x1920).

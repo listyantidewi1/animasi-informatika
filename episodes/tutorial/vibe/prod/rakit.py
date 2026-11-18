@@ -291,6 +291,35 @@ def sorot_kotak(p, it):
             return [bb[0] - 10, bb[1] - 7, bb[2] + 10, bb[3] + 7]
     print("PERINGATAN sorot tidak ketemu:", p["src"], it["teks"], [d["t"][:40] for d in L][:40], flush=True); return None
 
+def jendela_stabil(p, k, t_ref):
+    """selang waktu KELUARAN (detik) ketika isi kotak k sama dengan isinya pada t_ref (layar tidak sedang bergulir/berubah).
+    Sorotan hanya boleh menyala di selang ini supaya tidak menempel di baris yang salah."""
+    x0, y0, x1, y1 = [int(v) for v in k]; x0, y0 = max(0, x0), max(0, y0); x1, y1 = min(2560, x1), min(1440, y1)
+    w, h = (x1 - x0) // 2 * 2, (y1 - y0) // 2 * 2
+    if w < 8 or h < 8: return None
+    src = f"{RAW}/{p['src']}.mkv"; kp = p["_keep"]
+    ref = _frame(src, t_ref)[y0:y0 + h, x0:x0 + w].astype(np.int16).mean(2)
+    ok = []  # (detik keluaran, cocok?)
+    off = 0.0
+    for xa, xb in kp:
+        raw = subprocess.run(["ffmpeg", "-loglevel", "error", "-ss", f"{xa:.3f}", "-to", f"{xb:.3f}", "-i", src,
+                              "-vf", f"fps=10,crop={w}:{h}:{x0}:{y0},format=gray", "-f", "rawvideo", "-"], capture_output=True).stdout
+        F = np.frombuffer(raw, np.uint8)
+        n = len(F) // (w * h)
+        F = F[:n * w * h].reshape(n, h, w).astype(np.int16)
+        for i in range(n):
+            ok.append(((off + i / 10) / p["_sp"], float(np.abs(F[i] - ref).mean()) < 4.0))
+        off += xb - xa
+    if not ok: return None
+    # deret cocok terakhir (yang berujung di akhir bagian, tempat t_ref berada)
+    j = len(ok) - 1
+    while j >= 0 and not ok[j][1]: j -= 1
+    if j < 0: return None
+    e = j
+    while j > 0 and ok[j - 1][1]: j -= 1
+    a = ok[j][0]; b = p["_d"] + 1 if e >= len(ok) - 3 else ok[e][0] + 0.1
+    return a, b
+
 def filter_sorot(p, ac):
     out = ""
     for it in p.get("sorot", []):
@@ -302,6 +331,12 @@ def filter_sorot(p, ac):
         X0, Y0 = max(4, X0), max(4, Y0); X1, Y1 = min(1916, X1), min(1076, Y1)
         a = it["_a"] if "_a" in it else it.get("dari", 0.0) * p["_d"]; b = it.get("_b", p["_d"] + 1)
         if it.get("saat") == "tahan": a = p["_L"] / p["_sp"]  # menyala saat prompt utuh dibekukan
+        st = jendela_stabil(p, k, it.get("t", p["_keep"][-1][1] - 0.3))
+        if st:
+            if a < st[0]: a = st[0]
+            b = min(b, st[1])
+            if b - a < 0.8: a = max(st[0], b - 0.8)
+            if b - a < 0.5: print("PERINGATAN sorot terlalu singkat:", p["src"], it, flush=True); continue
         en = f":enable='between(t,{a:.2f},{b:.2f})'"
         out += (f",drawbox=x={X0:.0f}:y={Y0:.0f}:w={X1-X0:.0f}:h={Y1-Y0:.0f}:color=0xFFB020@0.16:t=fill{en}"
                 f",drawbox=x={X0:.0f}:y={Y0:.0f}:w={X1-X0:.0f}:h={Y1-Y0:.0f}:color=0xFFB020@0.95:t=5{en}")
