@@ -39,7 +39,7 @@ Bab:
 1:12:07 Bab 11: Laporan dan pengujian
 1:18:12 Bab 12: Online dengan Docker dan HTTPS
 
-Kode lengkap (riwayat Git per bab, tag bab-01 sampai bab-12): [link repo GitHub]
+Kode lengkap (riwayat Git per bab, tag bab-01 sampai bab-12): https://github.com/listyantidewi1/SiAntre
 Daftar periksa kode AI (PDF): [link]
 
 Catatan: semua data di video adalah data contoh. Domain antre.bengkelmajujaya.test hanya untuk demo lokal; di server sungguhan, pakai domain milikmu sendiri dan sertifikat dari Let's Encrypt.
