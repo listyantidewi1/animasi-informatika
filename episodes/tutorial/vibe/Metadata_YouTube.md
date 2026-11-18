@@ -16,7 +16,7 @@ Alat: Vite + JavaScript murni, Vitest, PWA (manifest + service worker tanpa plug
 Catatan: lembar Bagikan di HP pada bab "Kirim ke WhatsApp" adalah tiruan untuk perekaman; teks ringkasannya asli dari aplikasi.
 Alamat 192.168.1.23 di bab "Prompt pertama" hanya contoh alamat Wi-Fi rumah; alamat di laptopmu akan berbeda.
 
-Kode akhir: [link repo]
+Kode akhir: https://github.com/listyantidewi1/patungan
 
 Chapter
 0:00 Kait
