@@ -42,6 +42,8 @@ Bab:
 Kode lengkap (riwayat Git per bab, tag bab-01 sampai bab-12): https://github.com/listyantidewi1/SiAntre
 Daftar periksa kode AI (PDF): [link]
 
+Ingin memakai MySQL? Video ini memakai PostgreSQL yang dijalankan lewat Docker, jadi kamu tidak perlu memasangnya sendiri, dan itu cara termudah untuk mengikuti. Semua konsepnya tetap berlaku di MySQL 8 (termasuk FOR UPDATE SKIP LOCKED), tetapi kodenya perlu disesuaikan: pustaka pg diganti mysql2 dan penanda $1, $2 menjadi tanda tanya, serial menjadi AUTO_INCREMENT, timestamptz menjadi DATETIME, RETURNING diganti insertId atau SELECT tambahan, ON CONFLICT menjadi ON DUPLICATE KEY UPDATE, dan penulisan khas PostgreSQL seperti ::int, generate_series, dan AT TIME ZONE ditulis ulang. Rinciannya ada di README repo.
+
 Catatan: semua data di video adalah data contoh. Domain antre.bengkelmajujaya.test hanya untuk demo lokal; di server sungguhan, pakai domain milikmu sendiri dan sertifikat dari Let's Encrypt.
 
 #fullstack #nodejs #postgresql #webdevelopment #belajarcoding
