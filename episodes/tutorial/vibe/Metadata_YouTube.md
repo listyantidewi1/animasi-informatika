@@ -1,7 +1,7 @@
 # Metadata YouTube: Vibe Coding Patungan
 
 ## Judul
-Vibe Coding Aplikasi HP dari Nol (dan Cara Menangkap Kesalahan AI)
+Vibe Coding yang Benar: Membuat Aplikasi Patungan Sampai Jadi (Claude Code)
 
 ## Judul Short
 AI bikin aplikasi patungan. Di mana salahnya? #shorts
@@ -173,7 +173,7 @@ vibe coding, vibe coding aplikasi android, bikin aplikasi dengan AI, cara membua
 
 ## Deskripsi Short
 ```
-AI membuat aplikasi patungan, semua tesnya lulus, lalu voucher 999999 membuat semua orang "dibayar". Yang menarik: AI sudah memperingatkan masalah ini sejak awal. Video lengkap (38 menit): vibe coding aplikasi HP dari nol, di kanal ini.
+AI membuat aplikasi patungan, semua tesnya lulus, lalu voucher 999999 membuat semua orang "dibayar". Yang menarik: AI sudah memperingatkan masalah ini sejak awal. Video lengkap (47 menit): Vibe Coding yang Benar, membuat aplikasi Patungan sampai jadi, di kanal ini.
 Subscribe: https://www.youtube.com/@iTeachSWE
 #vibecoding #shorts
 ```
