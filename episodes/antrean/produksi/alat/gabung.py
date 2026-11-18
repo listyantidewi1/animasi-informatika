@@ -1,7 +1,7 @@
 """Gabung A00..A12 menjadi satu video penuh, satu SRT, dan daftar chapter YouTube."""
 import subprocess, glob, re, os, json
 B = "/home/user/antre"; OUT = B + "/akhir"; os.makedirs(OUT, exist_ok=True)
-BAB = [("A00", "Pembuka: aplikasi yang dibuat AI dan nomor ganda"), ("A01", "Bab 1: Kebutuhan, bicara dulu dengan pemakai"), ("A02", "Bab 2: Merancang database"),
+BAB = [("A00", "Pembuka: aplikasi yang dibuat AI dan nomor ganda"), ("P01", "Persiapan: memasang alat"), ("A01", "Bab 1: Kebutuhan, bicara dulu dengan pemakai"), ("A02", "Bab 2: Merancang database"),
        ("A03", "Bab 3: SQL dengan tangan sendiri"), ("A04", "Bab 4: Server pertama"), ("A05", "Bab 5: REST API ambil nomor"),
        ("A06", "Bab 6: Dua petugas menekan Panggil bersamaan"), ("A07", "Bab 7: Reservasi slot tanpa dobel booking"), ("A08", "Bab 8: Login dan keamanan"),
        ("A09", "Bab 9: Layar TV real time dan suara"), ("A10", "Bab 10: Halaman pelanggan, petugas, dan TV"), ("A11", "Bab 11: Laporan dan pengujian"),
