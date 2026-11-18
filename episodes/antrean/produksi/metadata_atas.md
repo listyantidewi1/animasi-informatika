@@ -26,18 +26,19 @@ Bonus: daftar periksa kode AI (PDF satu halaman) dan kode lengkap per bab.
 
 Bab:
 0:00 Pembuka: aplikasi yang dibuat AI dan nomor ganda
-3:49 Bab 1: Kebutuhan, bicara dulu dengan pemakai
-10:31 Bab 2: Merancang database
-17:04 Bab 3: SQL dengan tangan sendiri
-25:27 Bab 4: Server pertama
-32:46 Bab 5: REST API ambil nomor
-40:09 Bab 6: Dua petugas menekan Panggil bersamaan
-47:29 Bab 7: Reservasi slot tanpa dobel booking
-53:17 Bab 8: Login dan keamanan
-59:44 Bab 9: Layar TV real time dan suara
-1:06:19 Bab 10: Halaman pelanggan, petugas, dan TV
-1:12:28 Bab 11: Laporan dan pengujian
-1:18:34 Bab 12: Online dengan Docker dan HTTPS
+3:49 Persiapan: memasang alat
+7:32 Bab 1: Kebutuhan, bicara dulu dengan pemakai
+14:14 Bab 2: Merancang database
+20:47 Bab 3: SQL dengan tangan sendiri
+29:10 Bab 4: Server pertama
+37:07 Bab 5: REST API ambil nomor
+44:31 Bab 6: Dua petugas menekan Panggil bersamaan
+51:50 Bab 7: Reservasi slot tanpa dobel booking
+57:38 Bab 8: Login dan keamanan
+1:04:45 Bab 9: Layar TV real time dan suara
+1:11:20 Bab 10: Halaman pelanggan, petugas, dan TV
+1:18:14 Bab 11: Laporan dan pengujian
+1:24:20 Bab 12: Online dengan Docker dan HTTPS
 
 Kode lengkap (riwayat Git per bab, tag bab-01 sampai bab-12): https://github.com/listyantidewi1/SiAntre
 Daftar periksa kode AI (PDF): [link]

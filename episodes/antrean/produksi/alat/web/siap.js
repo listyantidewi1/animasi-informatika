@@ -123,7 +123,8 @@ AD.siapPg = (c, t, D, a) => { K.bg(c); judulAlat(c, 4, 'PostgreSQL', '   databas
   // daftar langkah di kiri
   c.save(); c.globalAlpha = W; langkah.forEach(([n], i) => { const y = 300 + i * 110, on = i === aktif; K.rrect(c, 110, y, 430, 86, 16, on ? 'rgba(45,212,191,.14)' : 'rgba(255,255,255,.03)', on ? C.teal : '#3b4a75', on ? 5 : 2);
     K.text(c, n, 140, y + 44, {size: 30, weight: on ? 900 : 600, color: on ? C.teks : C.redup}); if (i < aktif) K.centang(c, 500, y + 44, 30, 1, C.lime); });
-  K.text(c, 'Halaman yang perlu diperhatikan:', 110, 800, {size: 26, weight: 700, color: C.redup, alpha: muncul(t, kt(a, 3))}); K.text(c, 'Password dan Port', 110, 846, {size: 34, weight: 900, color: C.amber, alpha: muncul(t, kt(a, 3))}); c.restore();
+  K.text(c, 'Halaman yang perlu diperhatikan:', 110, 800, {size: 26, weight: 700, color: C.redup, alpha: muncul(t, kt(a, 3))}); K.text(c, 'Password dan Port', 110, 846, {size: 34, weight: 900, color: C.amber, alpha: muncul(t, kt(a, 3))});
+  K.text(c, 'Halaman lain yang muncul di penginstal:', 110, 920, {size: 24, weight: 700, color: C.redup, alpha: muncul(t, kt(a, 3) + 1)}); K.text(c, 'biarkan apa adanya, lalu tekan Next', 110, 958, {size: 26, weight: 800, alpha: muncul(t, kt(a, 3) + 1)}); c.restore();
   const t0 = langkah[aktif][1], q = aktif === 0 ? 1 : muncul(t, t0, .35);
   wizard(c, 620, 240, 1180, 700, 'PostgreSQL Setup  ·  ' + langkah[aktif][0], (c, x, y, w, h) => { c.save(); c.globalAlpha *= q;
     if (aktif === 0) { K.text(c, 'Pilih komponen yang dipasang:', x + 50, y + 70, {size: 30, weight: 700, color: '#1e293b'});
@@ -162,9 +163,9 @@ AD.siapPsql = (c, t, D, a) => { K.bg(c); K.judul(c, 'Masuk ke PostgreSQL', t, C.
   if (t >= kt(a, 2)) baris.push({at: kt(a, 2), prompt: 'postgres=# ', cmd: t >= kt(a, 3) + .6 ? '\\q' : '', warnaPrompt: '#e6e9f2'});
   if (t >= kt(a, 3) + .6) baris[1].at = kt(a, 3) + .6;
   const pos = K.term(c, 110, 190, 820, 420, t, baris, {size: 30, sorot: [[0, -1, sel, kt(a, 1)], [1, -1, kt(a, 2) + .2, kt(a, 3) + .4]]});
-  const g = antara(t, kt(a, 1), kt(a, 2)); if (g > 0) { c.save(); c.globalAlpha = g; K.rrect(c, 110, 640, 820, 100, 18, 'rgba(255,176,32,.1)', C.amber, 4);
+  const g = antara(t, kt(a, 1), kt(a, 2) + .5); if (g > 0) { c.save(); c.globalAlpha = g; K.rrect(c, 110, 640, 820, 100, 18, 'rgba(255,176,32,.1)', C.amber, 4);
     K.text(c, 'Kata sandi tidak terlihat saat diketik. Itu normal.', 520, 690, {size: 28, weight: 800, align: 'center'}); c.restore(); }
-  const h = antara(t, kt(a, 2) + .3, kt(a, 4)); if (h > 0) { c.save(); c.globalAlpha = h; K.rrect(c, 110, 640, 820, 100, 18, 'rgba(163,230,53,.1)', C.lime, 4);
+  const h = antara(t, kt(a, 2) + .5, kt(a, 4) + .4); if (h > 0) { c.save(); c.globalAlpha = h; K.rrect(c, 110, 640, 820, 100, 18, 'rgba(163,230,53,.1)', C.lime, 4);
     K.text(c, 'postgres=#  berarti kamu berhasil masuk', 520, 690, {size: 28, weight: 800, align: 'center'}); c.restore(); }
   // tabel perbedaan
   const T = muncul(t, kt(a, 4)); if (T > 0) { c.save(); c.globalAlpha = T; const x = 990, y = 190, w = 830; K.rrect(c, x, y, w, 550, 20, '#0d1222', C.amber, 4);
@@ -186,7 +187,7 @@ AD.siapTag = (c, t, D, a) => { K.bg(c); K.judul(c, 'Mulai dari tengah? Pakai tag
   const q1 = muncul(t, t1); if (q1 > 0) { K.text(c, 'ingin mulai di sini', 110 + 5 * 143 + 64, 290, {size: 22, weight: 800, align: 'center', color: C.violet, alpha: q1 * (t < t2 + 2 ? 1 : .0)}); }
   const q2 = muncul(t, t2 + 2); if (q2 > 0) K.text(c, 'kode pada akhir Bab 5 = awal Bab 6', 110 + 4 * 143 + 64, 290, {size: 24, weight: 800, align: 'center', color: C.amber, alpha: q2});
   const baris = [{at: t2 + .3, cmd: 'git clone https://github.com/listyantidewi1/SiAntre.git'}, {at: t2 + 3.2, cmd: 'cd SiAntre'}, {at: t2 + 4.4, cmd: 'git checkout bab-05'},
-    {at: t3 + .2, cmd: 'npm install'}, {at: t3 + 2.2, cmd: 'psql -U postgres -c "CREATE DATABASE antrean"'}, {at: t3 + 4.6, cmd: 'psql -U postgres -d antrean -f db/schema.sql'}, {at: t3 + 7, cmd: 'psql -U postgres -d antrean -f db/seed.sql'}];
+    {at: t3 + .2, cmd: 'npm install'}, {at: t3 + 1.4, cmd: 'psql -U postgres -c "CREATE DATABASE antrean"'}, {at: t3 + 3.2, cmd: 'psql -U postgres -d antrean -f db/schema.sql'}, {at: t3 + 5.0, cmd: 'psql -U postgres -d antrean -f db/seed.sql'}];
   K.term(c, 110, 340, 1700, 480, t, baris, {size: 30, cps: 30, sorot: [[2, -1, t2 + 5.4, t3]]});
   const g = muncul(t, t4); if (g > 0) { c.save(); c.globalAlpha = g; K.rrect(c, 110, 860, 1700, 120, 20, 'rgba(163,230,53,.1)', C.lime, 4);
     K.text(c, 'Kodemu sekarang sama persis dengan kode di awal Bab 6', 960, 920, {size: 38, weight: 900, align: 'center'}); c.restore(); }
@@ -205,8 +206,8 @@ AD.alamatDB = (c, t, D, a) => { K.bg(c); K.judul(c, 'Mengisi DATABASE_URL di lap
       if (s) K.text(c, s, x, 520, {size, weight: 800, mono: true, color: w}); else { c.setLineDash([12, 10]); K.rrect(c, x + 8, 484, lw - 16, 72, 10, null, C.coral, 4); c.setLineDash([]); K.text(c, 'kosong', x + lw / 2, 521, {size: 26, weight: 800, align: 'center', color: C.coral, alpha: muncul(t, t3)}); }
       if (i > 0) { c.fillStyle = w; c.fillRect(x + 6, 572, lw - 12, 6); K.text(c, n, x + lw / 2, i % 2 ? 620 : 668, {size: 28, weight: 800, align: 'center', color: w}); if (!(i % 2)) { c.fillRect(x + lw / 2 - 2, 578, 4, 66); } }
       c.restore(); } x += lw; });
-  if (i3(t, t3, t4)) K.text(c, 'PostgreSQL di komputerku tidak memakai kata sandi', 960, 770, {size: 30, weight: 700, align: 'center', color: C.redup, alpha: antara(t, t3, t4)});
-  const p4 = muncul(t, t4); if (p4 > 0) K.text(c, 'Punyamu memakai kata sandi? Tulis setelah nama pengguna, dipisah titik dua', 960, 770, {size: 30, weight: 800, align: 'center', color: C.coral, alpha: p4 * (t < t5 ? 1 : .0)});
+  if (i3(t, t3, t4)) K.text(c, 'PostgreSQL di komputerku tidak memakai kata sandi', 960, 770, {size: 30, weight: 700, align: 'center', color: C.redup, alpha: antara(t, t3, t4 + .45)});
+  const p4 = muncul(t, t4 + .45); if (p4 > 0) K.text(c, 'Punyamu memakai kata sandi? Tulis setelah nama pengguna, dipisah titik dua', 960, 770, {size: 30, weight: 800, align: 'center', color: C.coral, alpha: p4 * (t < t5 ? 1 : .0)});
   const p5 = muncul(t, t5); if (p5 > 0 ) { c.save(); c.globalAlpha = p5 * (t < t6 ? 1 : 1 - muncul(t, t6, .3)); ['Git Bash', 'Mac', 'Linux'].forEach((s, i) => { const xx = 500 + i * 320; K.rrect(c, xx, 730, 290, 80, 40, 'rgba(163,230,53,.1)', C.lime, 4); K.centang(c, xx + 50, 770, 30, 1, C.lime); K.text(c, s, xx + 90, 771, {size: 32, weight: 800}); }); c.restore(); }
   K.chipRepo(c, muncul(t, t6 + .2), {y: 850, ket: 'Cara menulisnya di PowerShell: README, bagian 3'});
 };

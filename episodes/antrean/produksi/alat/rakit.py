@@ -90,6 +90,11 @@ def main(ep, hanya_adegan=False):
         # bingkai latar untuk adegan setelah rekaman
         prev = None; files = []; tp = 0.0
         kalT = [lead + A[no] * sum(len(x) for x in kal[:j]) / tot for j in range(len(kal))]  # detik mulai tiap kalimat
+        wj = f"{base}/suara/b{nm(no)}.json"  # waktu kalimat sebenarnya dari ElevenLabs (suara.py --waktu)
+        if os.path.exists(wj):
+            w = json.load(open(wj))["kalimat"]
+            if len(w) == len(kal): kalT = [lead + x for x in w]
+            else: print(f"  peringatan b{nm(no)}: jumlah kalimat {len(kal)} != waktu {len(w)}")
         for i, p in enumerate(parts):
             out = f"{tmp}/b{nm(no)}_{i}.mp4"; files.append(out)
             if p["k"] in ("rek", "klip"):

@@ -40,9 +40,18 @@ def main():
             if i + 1 < len(N): body["next_text"] = tts_teks(N[i + 1]["teks"])
         for k in range(4):
             try:
-                r = urllib.request.Request(f"https://api.elevenlabs.io/v1/text-to-speech/{VID}?output_format=mp3_44100_128",
+                ws = "--waktu" in sys.argv  # minta waktu tiap karakter, supaya gambar bisa disinkronkan per kalimat
+                r = urllib.request.Request(f"https://api.elevenlabs.io/v1/text-to-speech/{VID}{'/with-timestamps' if ws else ''}?output_format=mp3_44100_128",
                     data=json.dumps(body).encode(), headers={"xi-api-key": "dummy", "Content-Type": "application/json"})
-                data = urllib.request.urlopen(r, timeout=180).read(); break
+                data = urllib.request.urlopen(r, timeout=180).read()
+                if ws:
+                    import base64
+                    j = json.loads(data); data = base64.b64decode(j["audio_base64"]); al = j["alignment"]
+                    teks = "".join(al["characters"]); mulai = []; pos = 0
+                    for kal in [x for x in re.split(r"(?<=[.!?])\s+", teks.strip()) if x.strip()]:
+                        k = teks.index(kal[:12], pos); mulai.append(round(al["character_start_times_seconds"][k], 3)); pos = k + len(kal)
+                    json.dump({"kalimat": mulai, "akhir": al["character_end_times_seconds"][-1]}, open(out[:-4] + ".json", "w"))
+                break
             except Exception as e:
                 if getattr(e, "code", 0) == 400 and "previous_text" in body:
                     body.pop("previous_text", None); body.pop("next_text", None); continue
