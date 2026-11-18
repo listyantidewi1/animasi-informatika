@@ -32,12 +32,12 @@ Bab:
 25:27 Bab 4: Server pertama
 32:46 Bab 5: REST API ambil nomor
 40:09 Bab 6: Dua petugas menekan Panggil bersamaan
-47:18 Bab 7: Reservasi slot tanpa dobel booking
-53:06 Bab 8: Login dan keamanan
-59:33 Bab 9: Layar TV real time dan suara
-1:06:09 Bab 10: Halaman pelanggan, petugas, dan TV
-1:12:07 Bab 11: Laporan dan pengujian
-1:18:12 Bab 12: Online dengan Docker dan HTTPS
+47:29 Bab 7: Reservasi slot tanpa dobel booking
+53:17 Bab 8: Login dan keamanan
+59:44 Bab 9: Layar TV real time dan suara
+1:06:19 Bab 10: Halaman pelanggan, petugas, dan TV
+1:12:28 Bab 11: Laporan dan pengujian
+1:18:34 Bab 12: Online dengan Docker dan HTTPS
 
 Kode lengkap (riwayat Git per bab, tag bab-01 sampai bab-12): https://github.com/listyantidewi1/SiAntre
 Daftar periksa kode AI (PDF): [link]

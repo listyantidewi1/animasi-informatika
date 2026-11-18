@@ -17,3 +17,11 @@ BEATS = {
  15: [A('masalahAI06', min=8), R('b14_jalan', 'b14_akhir', maks=1.8, kalimat=2)],
  16: [R('b16', 'b16_akhir', maks=1.5), A('tantangan', min=8, a=dict(tantangan='Buka dua terminal, lalu kirim aksi selesai untuk tiket yang sama dari keduanya pada waktu yang hampir sama. Apa jawaban server untuk request kedua, dan kenapa?', berikut='Bab 7: Reservasi slot tanpa dobel booking'))],
 }
+
+# --- Sorot baris: potongan pada kecepatan asli, mulai tepat pada kalimat ke-k (0 = kalimat pertama), ditahan sampai bagian berikutnya
+def S(h, d, k=None):
+    p = dict(k='rek', a=h - 0.15, b=h + d - 0.45, asli=True)
+    if k is not None: p['kalimat'] = k
+    return p
+BEATS[10] = [A('skipLocked', min=10), R('b10_kolom', 'b10', speed=3, maks=1.0, kalimat=5), R('b10', 'b10_sorot', speed=9, maks=1.0)]
+BEATS[11] = [S(247.094, 3, 1), S(251.344, 3, 2), R(254.4, 'b10_akhir', maks=1.6, kalimat=4)]

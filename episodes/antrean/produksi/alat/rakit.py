@@ -41,31 +41,42 @@ def main(ep, hanya_adegan=False):
                 R = rek[p.get("r", "rek")]; a = R["tanda"][p["a"]] if isinstance(p["a"], str) else p["a"]
                 b = R["tanda"][p["b"]] if isinstance(p["b"], str) else p["b"]
                 p["_a"], p["_b"] = a + p.get("da", 0), b + p.get("db", 0); p["_L"] = p["_b"] - p["_a"]
-        fixL = sum(p["_L"] / p.get("speed", 1) for p in parts if p["k"] in ("rek", "klip"))
+        # asli=True: potongan sorot, diputar pada kecepatan asli dan tidak ikut dipercepat
+        fixL = sum(p["_L"] / p.get("speed", 1) for p in parts if p["k"] in ("rek", "klip") and not p.get("asli"))
+        asliL = sum(p["_L"] for p in parts if p.get("asli"))
         flex = [p for p in parts if p["k"] == "adegan"]; minflex = sum(p.get("min", 5) for p in flex)
         speed = 1.0
-        if fixL + minflex > D:
-            need = fixL / max(0.1, D - minflex); speed = min(max(1.0, need), max([p.get("maks", 1.6) for p in parts if p["k"] in ("rek", "klip")] or [1]))
+        if fixL + asliL + minflex > D:
+            need = fixL / max(0.1, D - minflex - asliL); speed = min(max(1.0, need), max([p.get("maks", 1.6) for p in parts if p["k"] in ("rek", "klip") and not p.get("asli")] or [1]))
         for p in parts:
             p["_pre"] = 0.0
-            if p["k"] in ("rek", "klip"): p["_d"] = p["_L"] / p.get("speed", 1) / speed; p["_sp"] = p.get("speed", 1) * speed
+            if p.get("asli"): p["_d"] = p["_L"]; p["_sp"] = 1.0
+            elif p["k"] in ("rek", "klip"): p["_d"] = p["_L"] / p.get("speed", 1) / speed; p["_sp"] = p.get("speed", 1) * speed
         # sinkron: bagian rekaman dengan kalimat=k baru bergerak saat kalimat ke-k narasi mulai terdengar
         # (adegan sebelumnya diperpanjang sampai saat itu; kalau tidak ada adegan, layar diam dulu)
         kal = [x.strip() for x in re.split(r"(?<=[.!?])\s+", naskah[no]) if x.strip()]; tot = sum(len(x) for x in kal)
-        t = 0.0; tunggu = []; kabur = False; sebelum = None
+        t = 0.0; tunggu = []; kabur = False; sebelum = None; ruas = []
         for p in parts:
             if p["k"] == "adegan": tunggu.append(p); continue
-            if "kalimat" in p and not kabur:
-                tk = lead + A[no] * sum(len(x) for x in kal[:p["kalimat"]]) / tot - 0.2; gap = tk - t
-                if tunggu:
-                    w = sum(q.get("bobot", 1) for q in tunggu)
+            if "kalimat" in p:
+                tk = lead + A[no] * sum(len(x) for x in kal[:p["kalimat"]]) / tot - 0.2
+                if tunggu and not kabur:  # adegan tepat sebelum jangkar: adegan mengisi sampai kalimatnya
+                    gap = tk - t; w = sum(q.get("bobot", 1) for q in tunggu)
                     for q in tunggu: q["_d"] = max(q.get("min", 5), gap * q.get("bobot", 1) / w); q["_tetap"] = True; t += q["_d"]
-                    tunggu = []
-                elif sebelum is not None: sebelum["_d"] += max(0.0, gap); t += max(0.0, gap)  # tahan akhir rekaman sebelumnya
-                else: p["_pre"] = max(0.0, gap); p["_d"] += p["_pre"]
-            elif "kalimat" in p: print(f"  peringatan b{no}: kalimat diabaikan")
+                else:
+                    for q in tunggu: q["_d"] = q.get("min", 5); q["_tetap"] = True; t += q["_d"]  # adegan lalu rekaman lalu jangkar
+                    gap = tk - t; lentur = [q for q in ruas if not q.get("asli")]; pj = sum(q["_d"] for q in lentur)
+                    if gap < -0.05 and lentur:  # terlambat: percepat rekaman sejak jangkar sebelumnya
+                        f = max(0.15, (pj + gap) / pj)
+                        for q in lentur: q["_d"] *= f; q["_sp"] /= f
+                        t -= pj * (1 - f); gap = tk - t
+                    if gap < -0.3: print(f"  peringatan b{no}: jangkar kalimat {p['kalimat']} terlambat {-gap:.1f} dtk")
+                    if gap > 0:
+                        if sebelum is not None: sebelum["_d"] += gap; t += gap  # tahan akhir rekaman sebelumnya
+                        else: p["_pre"] = gap; p["_d"] += gap
+                tunggu = []; kabur = False; ruas = []
             elif tunggu: kabur = True
-            t += p["_d"]; sebelum = p
+            t += p["_d"]; sebelum = p; ruas.append(p)
         flex = [p for p in parts if p["k"] == "adegan" and not p.get("_tetap")]; minflex = sum(p.get("min", 5) for p in flex)
         tetap = sum(p["_d"] for p in parts if p["k"] != "adegan" or p.get("_tetap"))
         D = max(D, tetap + minflex)
@@ -81,7 +92,7 @@ def main(ep, hanya_adegan=False):
             out = f"{tmp}/b{no:02d}_{i}.mp4"; files.append(out)
             if p["k"] in ("rek", "klip"):
                 R = rek[p.get("r", "rek")]
-                if not hanya_adegan: potong(R["src"], p["_a"], p["_b"], p["_sp"], p["_d"], out, p["_pre"], p.get("crop"))
+                if not hanya_adegan and not os.environ.get("RENCANA"): potong(R["src"], p["_a"], p["_b"], p["_sp"], p["_d"], out, p["_pre"], p.get("crop"))
                 prev = (R["src"], p["_b"] - 0.05)
             else:
                 a = dict(p.get("a", {}))
@@ -92,6 +103,7 @@ def main(ep, hanya_adegan=False):
                 jobs.append({"nama": p["nama"], "D": p["_d"], "a": a, "out": out})
         rencana.append({"no": no, "D": D, "audio": A[no], "files": files, "lead": lead})
         print(f"b{no:02d} D={D:.1f} audio={A[no]:.1f} " + " ".join(f"{p['k']}:{p['_d']:.1f}" + (f"x{p['_sp']:.2f}" + (f"+{p['_pre']:.1f}" if p['_pre'] else '') if p['k'] != 'adegan' else '') for p in parts), flush=True)
+    if os.environ.get("RENCANA"): return
     ADG.render(jobs, ["/home/user/antre/alat/web/antre.js", f"{base}/adegan.js"] + getattr(S, "SKRIP", []))
     # gabung video
     lst = f"{tmp}/daftar.txt"

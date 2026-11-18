@@ -47,6 +47,21 @@ def jalankan(src, out, judul=None, sub="", dur_kartu=3.5):
             M = cv2.getRotationMatrix2D((OW / 2, OH / 2), 0, s); fr = cv2.warpAffine(k, M, (OW, OH))
             fade = min(1, t / 0.4, (dur_kartu - t) / 0.4); ff.stdin.write((fr * max(0, fade)).astype(np.uint8).tobytes())
     kam = sorted(log["kamera"], key=lambda e: e[0])
+    # Sorot baris: kamera_editor(zoom=...) yang diikuti label = baris yang sedang dijelaskan. Posisi diambil dari
+    # frame yang sudah diam (bingkai baris kursor), bukan dari catatan saat merekam.
+    sorot = []
+    if os.path.basename(src) in ("rek", "rek_ai"):
+        for i, e in enumerate(kam):
+            if not e[1] or min(abs(e[1][2] - z0) for z0 in (1.4, 1.6, 1.7)) > 0.01: continue  # hanya sorot editor
+            lab = [l for l in log["label"] if -0.3 <= l[0] - e[0] <= 0.8]
+            if not lab: continue
+            g = _abu(src + ".mkv", e[0] + 1.3, W, H); ba = baris_aktif(g) if g is not None else None
+            if not ba: print("sorot: baris kursor tidak terdeteksi", round(e[0], 1), lab[0][1], flush=True); continue
+            geser = (e[1][3] if len(e[1]) > 3 else 0) * LH; y0, hh = ba
+            akhir = min(lab[0][0] + (lab[0][2] or 3.0), kam[i + 1][0] if i + 1 < len(kam) else 1e9)
+            atas = (e[1][4] if len(e[1]) > 4 else 0) * LH; bawah = (e[1][5] if len(e[1]) > 5 else 0) * LH  # baris yang terlipat (word wrap)
+            sorot.append((e[0] + 0.3, akhir, y0 + geser - atas, hh + atas + bawah, y0, hh)); e[1] = [e[1][0], y0 + geser + hh / 2, e[1][2]]
+            print("sorot", round(e[0], 1), "y=%d" % (y0 + geser), lab[0][1], flush=True)
     # Zoom tidak boleh memotong teks di kanan: tepi kiri bingkai tetap, lebar diperluas sampai tepi kanan layar.
     for e in (kam if os.path.basename(src) in ("rek", "rek_ai") else []):  # hanya rekaman VS Code
         if e[1] and e[1][2] > 1.0:
@@ -82,15 +97,46 @@ def jalankan(src, out, judul=None, sub="", dur_kartu=3.5):
         az = om * om * (tgt[2] - z) - 2 * om * vz; vz += az * dt; z += vz * dt
         zz = max(1.0, z); cw, ch = W / zz, H / zz
         x0 = min(max(cx - cw / 2, 0), W - cw); y0 = min(max(cy - ch / 2, 0), H - ch)
+        fb = fr
+        for (ta, tb, ys, hh, ycek, hcek) in sorot:
+            if ta <= t < tb and garis_ada(fr, ycek) and garis_ada(fr, ycek + hcek):
+                al = 0.24 * min(1, (t - ta) / 0.25, (tb - t) / 0.25); a0, a1 = int(ys) + 1, int(ys + hh) + 1
+                fb = fr.copy(); blok = fb[a0:a1, 590:2545].astype(np.float32)
+                fb[a0:a1, 590:2545] = (blok * (1 - al) + np.float32([36, 191, 251]) * al).astype(np.uint8)
+                fb[a0:a1, 590:600] = (fb[a0:a1, 590:600] * (1 - al / 0.24) + np.float32([36, 191, 251]) * (al / 0.24)).astype(np.uint8)
         s = OW / cw
         M = np.float32([[s, 0, -x0 * s], [0, s, -y0 * s]])
-        o = cv2.warpAffine(fr, M, (OW, OH), flags=cv2.INTER_AREA if s < 1 else cv2.INTER_CUBIC)
+        o = cv2.warpAffine(fb, M, (OW, OH), flags=cv2.INTER_AREA if s < 1 else cv2.INTER_CUBIC)
         for (lt, ov, d, pos) in labels:
             if lt <= t < lt + d:
                 a = min(1, (t - lt) / 0.25, (lt + d - t) / 0.3); dy = int((1 - min(1, (t - lt) / 0.25)) * 20)
                 tempel(o, ov, max(60, OW - 100 - ov[0].shape[1]), (50 - dy) if pos == 'atas' else (OH - 60 - ov[0].shape[0] + dy), a)
         ff.stdin.write(o.tobytes())
     ff.stdin.close(); ff.wait()
+
+LH = 26 * 1.6667  # tinggi baris editor dalam piksel rekaman
+def _abu(src, t, W, H):
+    raw = subprocess.run(["ffmpeg", "-nostdin", "-loglevel", "error", "-ss", f"{t:.3f}", "-i", src, "-frames:v", "1", "-f", "rawvideo", "-pix_fmt", "gray", "-"], capture_output=True).stdout
+    return np.frombuffer(raw, np.uint8).reshape(H, W) if len(raw) == W * H else None
+def baris_aktif(g, x0=760, x1=2440):
+    """Bingkai baris kursor VS Code (lineHighlightBorder) pada frame abu-abu: (y atas, tinggi) atau None."""
+    H = g.shape[0]
+    med = np.median(g[:, x0:x1], axis=1).astype(int)
+    kand = [y for y in range(2, H - 2) if med[y] - min(med[y - 2], med[y + 2]) >= 5 and 33 <= med[y] <= 52]
+    grp = []
+    for y in kand:
+        if grp and y - grp[-1][-1] <= 1: grp[-1].append(y)
+        else: grp.append([y])
+    ys = [sum(a) / len(a) for a in grp]
+    for i in range(len(ys)):
+        for j in range(i + 1, len(ys)):
+            d = ys[j] - ys[i]
+            if 36 <= d <= 48 or 80 <= d <= 92 or 123 <= d <= 135: return ys[i], d
+    return None
+def garis_ada(fr, y):
+    """Apakah garis bingkai baris kursor masih ada di sekitar y pada frame BGR ini (layar belum bergulir)?"""
+    y = int(round(y)); m = np.median(fr[max(0, y - 3):y + 4, 760:2440:4, 1], axis=1)
+    return m.max() - m.min() >= 5
 
 if __name__ == "__main__":
     a = sys.argv; jalankan(a[1], a[2], a[3].replace("\\n", "\n") if len(a) > 3 else None, a[4] if len(a) > 4 else "")

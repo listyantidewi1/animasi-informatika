@@ -19,3 +19,11 @@ BEATS = {
  13: [W('idor', 'idor_ganti', maks=1.4), W('idor_ganti', 'akhir', maks=1.6)],
  14: [R('b14', 'b14_akhir', maks=1.5), A('tantangan', min=8, a=dict(tantangan='Batasi percobaan login: lima kali salah dalam satu menit, lalu harus menunggu. Di mana kamu menyimpan hitungannya?', berikut='Bab 9: Layar TV yang bergerak sendiri'))],
 }
+
+# --- Sorot baris: potongan pada kecepatan asli, mulai tepat pada kalimat ke-k (0 = kalimat pertama), ditahan sampai bagian berikutnya
+def S(h, d, k=None):
+    p = dict(k='rek', a=h - 0.15, b=h + d - 0.45, asli=True)
+    if k is not None: p['kalimat'] = k
+    return p
+BEATS[4] = [R('b04', 'b04_sorot', speed=2.5, maks=4), S(124.3, 3.5, 2)]
+BEATS[11] = [S(412.1, 4, 1)]

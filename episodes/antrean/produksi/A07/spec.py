@@ -18,3 +18,10 @@ BEATS = {
  13: [A('celah', min=7), R('b13', 'b13_jalan', speed=6, maks=1.0, kalimat=1), R('b13_jalan', 'b13_akhir', maks=1.8)],
  14: [R('b14', 'b14_akhir', maks=1.5), A('tantangan', min=8, a=dict(tantangan='Buat route untuk membatalkan pemesanan dengan kodenya. Pastikan pemesanan yang sudah check-in tidak bisa dibatalkan.', berikut='Bab 8: Login dan keamanan'))],
 }
+
+# --- Sorot baris: potongan pada kecepatan asli, mulai tepat pada kalimat ke-k (0 = kalimat pertama), ditahan sampai bagian berikutnya
+def S(h, d, k=None):
+    p = dict(k='rek', a=h - 0.15, b=h + d - 0.45, asli=True)
+    if k is not None: p['kalimat'] = k
+    return p
+BEATS[9] = [R('b09', 'b09_sorot', speed=2.5, maks=4), S(258.2, 3, 1), S(262.9, 3, 3)]

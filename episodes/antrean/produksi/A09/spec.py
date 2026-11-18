@@ -18,3 +18,14 @@ BEATS = {
  14: [A('hitungRequest', min=12), R('b13_akhir', 'b14_akhir', maks=1.8, kalimat=4)],
  15: [R('b15', 'b15_akhir', maks=1.5), A('tantangan', min=8, a=dict(tantangan='Buat HP pelanggan bergetar saat nomornya dipanggil, dengan navigator.vibrate.', berikut='Bab 10: Halaman pelanggan, petugas, dan TV'))],
 }
+
+# --- Sorot baris: potongan pada kecepatan asli, mulai tepat pada kalimat ke-k (0 = kalimat pertama), ditahan sampai bagian berikutnya
+def S(h, d, k=None):
+    p = dict(k='rek', a=h - 0.15, b=h + d - 0.45, asli=True)
+    if k is not None: p['kalimat'] = k
+    return p
+BEATS[6] = [A('formatPesan', min=12), S(57.2, 3.5, 4), S(62.1, 2.5, 5), R('b06_server', 'b06_akhir', speed=2, maks=3)]
+BEATS[7] = [A('urutanCommit', min=8), R('b07', 131.2, speed=3, maks=6), S(131.3, 3.5)]
+BEATS[10] = [A('ejaNomor', min=12), R('b10', 355.2, speed=2.5, maks=4), S(355.3, 3, 3)]
+BEATS[11] = [A('tombolSuara', min=8), S(359.7, 3, 3), W('suara', 'akhir', maks=1.5)]
+BEATS[12] = [A('wifiPutus', min=12), S(368.5, 4, 3)]
