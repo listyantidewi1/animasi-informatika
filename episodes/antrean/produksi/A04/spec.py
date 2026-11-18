@@ -18,3 +18,7 @@ BEATS = {
  14: [A('cekAI04')], 15: [A('jawab04')],
  16: [R('b16', 'b16_akhir', maks=1.5), A('tantangan', min=8, a=dict(tantangan='Buat route GET /api/jam yang menjawab waktu server sekarang, lalu periksa jawabannya di tab Network.', berikut='Bab 5: REST API dan ambil nomor'))],
 }
+
+# --- Adegan persiapan sisipan (naskah_sisip.json, beat bernomor pecahan)
+SKRIP = ["/home/user/antre/alat/web/siap.js"]
+BEATS[12.5] = [A('alamatDB')]

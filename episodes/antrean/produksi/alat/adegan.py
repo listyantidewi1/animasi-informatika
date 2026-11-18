@@ -8,9 +8,10 @@ def render(jobs, skrip, fps=30):
         pg.goto((WEB / "render.html").as_uri())
         for s in skrip: pg.evaluate("s => muatSkrip(s)", pathlib.Path(s).resolve().as_uri())
         for j in jobs:
-            a = dict(j.get("a", {})); imgs = [v for k, v in a.items() if k == "bg" and v]
-            if imgs: a["bg"] = pathlib.Path(a["bg"]).resolve().as_uri(); pg.evaluate("s => muat(s)", [a["bg"]])
-            else: pg.evaluate("s => muat(s)", [])
+            a = dict(j.get("a", {})); imgs = []
+            for k in list(a):  # bg dan kunci berawalan img: berkas gambar yang dimuat ke K.IMG
+                if (k == "bg" or k.startswith("img")) and a[k]: a[k] = pathlib.Path(a[k]).resolve().as_uri(); imgs.append(a[k])
+            pg.evaluate("s => muat(s)", imgs)
             n = max(1, round(j["D"] * fps))
             ff = subprocess.Popen(["ffmpeg", "-loglevel", "error", "-y", "-f", "image2pipe", "-c:v", "mjpeg", "-r", str(fps), "-i", "-",
                                    "-c:v", "libx264", "-preset", "medium", "-crf", "18", "-pix_fmt", "yuv420p", "-r", str(fps), j["out"]], stdin=subprocess.PIPE)

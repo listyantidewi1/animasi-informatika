@@ -3,7 +3,7 @@ def A(nama, **k): return dict(k='adegan', nama=nama, **k)
 ZOOM = (0.05, 0, 0.9, 0.9)  # terminal psql penuh: sedikit diperbesar, baris terpanjang (pesan error) tetap utuh
 def R(a, b, **k): return dict(k='rek', a=a, b=b, **k)
 BEATS = {
- 1: [A('kartuBab', a=dict(bab='BAB 3', judul='SQL dengan\ntangan sendiri', sub='Ilmu yang berlaku di framework apa pun', lapis='database'))],
+ 1: [A('kartuBab', a=dict(bab='BAB 3', judul='SQL dengan\ntangan sendiri', sub='Ilmu yang berlaku di framework apa pun', lapis='database', catatan=['Belum memasang PostgreSQL?', 'Lihat chapter Persiapan di awal video']))],
  2: [R('b02', 'b02_berkas', da=-0.4), A('catatan', bg=True, min=8, a=dict(judul='Kenapa ditulis di berkas?',
       baris=['schema.sql tersimpan bersama kode', 'Bisa dijalankan ulang kapan saja', 'Ikut masuk Git'])), R('b02_berkas', 'b03')],
  3: [R('b03', 'b05')],

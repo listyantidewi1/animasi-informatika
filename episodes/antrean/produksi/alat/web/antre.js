@@ -68,6 +68,8 @@ K.kartuBab = (c, t, D, a) => {
   for (const b of a.judul.split('\n')) { K.text(c, b, 160, y, {size: 84, weight: 900}); y += 104; } c.restore();
   if (a.sub) K.text(c, a.sub, 160, y + 6, {size: 36, weight: 500, color: '#c9d3ee', alpha: p3});
   K.peta(c, 1010, 760, .92, a.lapis, p3);
+  if (a.catatan) { const q = K.out(K.seg(t, 1.6, 2.2)); c.save(); c.globalAlpha = q; K.rrect(c, 160, 690, 700, 110, 18, 'rgba(45,212,191,.1)', C.teal, 3);
+    K.text(c, a.catatan[0], 190, 726, {size: 26, weight: 800, color: C.teal}); K.text(c, a.catatan[1], 190, 768, {size: 26, weight: 600}); c.restore(); }
 };
 // --- kartu segmen "Cek kerjaan AI" + hitungan "Pikirkan dulu" ---
 K.labelAI = (c, x, y, p = 1) => { c.save(); c.globalAlpha *= p; K.rrect(c, x, y, 470, 50, 25, 'rgba(244,114,182,.16)', C.pink, 2);

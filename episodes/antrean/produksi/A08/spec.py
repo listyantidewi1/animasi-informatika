@@ -27,3 +27,7 @@ def S(h, d, k=None):
     return p
 BEATS[4] = [R('b04', 'b04_sorot', speed=2.5, maks=4), S(124.3, 3.5, 2)]
 BEATS[11] = [S(412.1, 4, 1)]
+
+# --- Adegan persiapan sisipan (naskah_sisip.json, beat bernomor pecahan)
+SKRIP = ["/home/user/antre/alat/web/siap.js"]
+BEATS[6.5] = [A('akunContoh')]

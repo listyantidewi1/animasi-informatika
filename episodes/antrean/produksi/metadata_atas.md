@@ -42,7 +42,15 @@ Bab:
 Kode lengkap (riwayat Git per bab, tag bab-01 sampai bab-12): https://github.com/listyantidewi1/SiAntre
 Daftar periksa kode AI (PDF): [link]
 
-Ingin memakai MySQL? Video ini memakai PostgreSQL yang dijalankan lewat Docker, jadi kamu tidak perlu memasangnya sendiri, dan itu cara termudah untuk mengikuti. Semua konsepnya tetap berlaku di MySQL 8 (termasuk FOR UPDATE SKIP LOCKED), tetapi kodenya perlu disesuaikan: pustaka pg diganti mysql2 dan penanda $1, $2 menjadi tanda tanya, serial menjadi AUTO_INCREMENT, timestamptz menjadi DATETIME, RETURNING diganti insertId atau SELECT tambahan, ON CONFLICT menjadi ON DUPLICATE KEY UPDATE, dan penulisan khas PostgreSQL seperti ::int, generate_series, dan AT TIME ZONE ditulis ulang. Rinciannya ada di README repo.
+Alat yang perlu dipasang (semuanya gratis):
+- Node.js (pilih versi LTS): https://nodejs.org
+- PostgreSQL: https://www.postgresql.org/download/
+- VS Code: https://code.visualstudio.com
+- Git: https://git-scm.com/downloads
+- Docker Desktop (hanya untuk Bab 12): https://www.docker.com/products/docker-desktop/
+Panduan memasang langkah demi langkah, termasuk untuk Windows, Mac, dan Linux, ada di README repo: https://github.com/listyantidewi1/SiAntre
+
+Ingin memakai MySQL? Cara termudah untuk mengikuti video ini adalah tetap memakai PostgreSQL. Semua konsepnya tetap berlaku di MySQL 8, tetapi kodenya perlu disesuaikan, dan ada dua jebakan yang tidak terlihat dari luar. Kami sudah mengubah seluruh SiAntre ke MySQL 8 dan mengujinya. Tutorial tertulisnya, lengkap dengan gambar dan kode siap salin, ada di https://github.com/listyantidewi1/SiAntre/blob/main/docs/mysql/README.md
 
 Catatan: semua data di video adalah data contoh. Domain antre.bengkelmajujaya.test hanya untuk demo lokal; di server sungguhan, pakai domain milikmu sendiri dan sertifikat dari Let's Encrypt.
 

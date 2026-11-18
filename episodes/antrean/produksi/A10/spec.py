@@ -30,3 +30,7 @@ BEATS[7] = [R('b07', 'b07_sorot', speed=5, maks=10), S(346.2, 3, 1), W('tiket', 
 BEATS[8] = [A('tanpaKosong', min=4), S(350.6, 3, 1), S(354.8, 3, 2), W('putus', 'putus_akhir', maks=2, kalimat=3)]
 BEATS[9] = [R('b09', 'b09_api', speed=5, maks=10), R('b09_api', 563.4, speed=3, maks=6), S(563.5, 3, 2), W('petugas', 'petugas_akhir', maks=1.8, kalimat=3)]
 BEATS[12] = [R('b12', 800.7, speed=3, maks=6), S(800.8, 3, 2), A('cekAI10', min=12)]
+
+# --- Adegan persiapan sisipan (naskah_sisip.json, beat bernomor pecahan)
+SKRIP = ["/home/user/antre/alat/web/siap.js"]
+BEATS[10.5] = [A('cobaHP', a=dict(img='/home/user/antre/A10/hp_ambil.png'))]

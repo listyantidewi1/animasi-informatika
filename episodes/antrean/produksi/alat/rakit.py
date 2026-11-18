@@ -2,7 +2,7 @@
 Spesifikasi Txx/spec.py: BEATS = {no: [bagian...]}, bagian = dict(k='rek'|'klip'|'adegan', ...)."""
 import json, os, sys, subprocess, importlib.util, re
 sys.path.insert(0, os.path.dirname(__file__))
-from durasi import audio, LEAD, TAIL
+from durasi import audio, LEAD, TAIL, nm
 import adegan as ADG
 FPS = 30
 def sh(*a): subprocess.run(a, check=True)
@@ -25,6 +25,7 @@ def main(ep, hanya_adegan=False):
     base = f"/home/user/antre/{ep}"; tmp = f"{base}/tmp"; os.makedirs(tmp, exist_ok=True)
     spec = importlib.util.spec_from_file_location("spec", f"{base}/spec.py"); S = importlib.util.module_from_spec(spec); spec.loader.exec_module(S)
     A = audio(ep); naskah = {b["no"]: b["teks"] for b in json.load(open(f"/home/user/antre/naskah_{ep}.json"))}
+    naskah.update({b["no"]: b["teks"] for b in json.load(open("/home/user/antre/naskah_sisip.json")).get(ep, [])})  # beat sisipan bernomor pecahan
     rek = {}
     for nama in getattr(S, "REKAMAN", ["rek"]):
         log = json.load(open(f"{base}/{nama}.json")); rek[nama] = {"src": f"{base}/{nama}_cam.mp4", "tanda": dict((n, t) for t, n in log["tanda"]), "log": log}
@@ -87,22 +88,25 @@ def main(ep, hanya_adegan=False):
         else:
             last = [p for p in parts if p["k"] in ("rek", "klip")][-1]; last["_d"] += sisa
         # bingkai latar untuk adegan setelah rekaman
-        prev = None; files = []
+        prev = None; files = []; tp = 0.0
+        kalT = [lead + A[no] * sum(len(x) for x in kal[:j]) / tot for j in range(len(kal))]  # detik mulai tiap kalimat
         for i, p in enumerate(parts):
-            out = f"{tmp}/b{no:02d}_{i}.mp4"; files.append(out)
+            out = f"{tmp}/b{nm(no)}_{i}.mp4"; files.append(out)
             if p["k"] in ("rek", "klip"):
                 R = rek[p.get("r", "rek")]
                 if not hanya_adegan and not os.environ.get("RENCANA"): potong(R["src"], p["_a"], p["_b"], p["_sp"], p["_d"], out, p["_pre"], p.get("crop"))
                 prev = (R["src"], p["_b"] - 0.05)
             else:
                 a = dict(p.get("a", {}))
+                a["kal"] = [round(x - tp, 3) for x in kalT]  # relatif terhadap awal adegan ini
                 if p.get("bg"):
                     src, t = prev if p["bg"] is True else (rek[p["bg"][0]]["src"], rek[p["bg"][0]]["tanda"].get(p["bg"][1], p["bg"][1]) if isinstance(p["bg"][1], str) else p["bg"][1])
-                    png = f"{tmp}/bg_b{no:02d}_{i}.jpg"; bingkai(src, t, png); a["bg"] = png
+                    png = f"{tmp}/bg_b{nm(no)}_{i}.jpg"; bingkai(src, t, png); a["bg"] = png
                 if callable(p.get("a_fn")): a.update(p["a_fn"](rek))
                 jobs.append({"nama": p["nama"], "D": p["_d"], "a": a, "out": out})
+            tp += p["_d"]
         rencana.append({"no": no, "D": D, "audio": A[no], "files": files, "lead": lead})
-        print(f"b{no:02d} D={D:.1f} audio={A[no]:.1f} " + " ".join(f"{p['k']}:{p['_d']:.1f}" + (f"x{p['_sp']:.2f}" + (f"+{p['_pre']:.1f}" if p['_pre'] else '') if p['k'] != 'adegan' else '') for p in parts), flush=True)
+        print(f"b{nm(no)} D={D:.1f} audio={A[no]:.1f} " + " ".join(f"{p['k']}:{p['_d']:.1f}" + (f"x{p['_sp']:.2f}" + (f"+{p['_pre']:.1f}" if p['_pre'] else '') if p['k'] != 'adegan' else '') for p in parts), flush=True)
     if os.environ.get("RENCANA"): return
     ADG.render(jobs, ["/home/user/antre/alat/web/antre.js", f"{base}/adegan.js"] + getattr(S, "SKRIP", []))
     # gabung video
@@ -114,8 +118,8 @@ def main(ep, hanya_adegan=False):
     # audio
     with open(f"{tmp}/audio.txt", "w") as f:
         for r in rencana:
-            w = f"{tmp}/a{r['no']:02d}.wav"
-            sh("ffmpeg", "-loglevel", "error", "-y", "-i", f"{base}/suara/b{r['no']:02d}.mp3", "-af", f"adelay={int(r['lead']*1000)}:all=1,apad", "-t", f"{r['D']:.3f}", "-ar", "48000", "-ac", "2", w)
+            w = f"{tmp}/a{nm(r['no'])}.wav"
+            sh("ffmpeg", "-loglevel", "error", "-y", "-i", f"{base}/suara/b{nm(r['no'])}.mp3", "-af", f"adelay={int(r['lead']*1000)}:all=1,apad", "-t", f"{r['D']:.3f}", "-ar", "48000", "-ac", "2", w)
             f.write(f"file '{w}'\n")
     sh("ffmpeg", "-loglevel", "error", "-y", "-f", "concat", "-safe", "0", "-i", f"{tmp}/audio.txt", "-af", "loudnorm=I=-16:TP=-1.5:LRA=11", "-ar", "48000", f"{tmp}/audio.wav")
     out = f"{base}/{S.NAMA}.mp4"

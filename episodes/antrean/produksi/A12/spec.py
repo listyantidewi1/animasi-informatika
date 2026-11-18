@@ -31,3 +31,9 @@ BEATS[4] = [A('lapisanDocker', min=14), R('b04', 61.6, speed=3, maks=5), S(61.7,
 BEATS[5] = [A('composeTiga', min=4), R(91.0, 'b05_sorot', speed=5, maks=8, kalimat=1), S(112.6, 2.5), S(116.5, 2.5, 2)]
 BEATS[7] = [A('proxyBalik', min=7), R('b07', 'b07_express', speed=4, maks=8), R('b07_express', 173.0, speed=2, maks=3), S(173.1, 3, 3)]
 BEATS[11] = [A('cekAI12', min=12), R('b11', 229.4, speed=3, maks=5), S(229.5, 3)]
+
+# --- Adegan persiapan sisipan (naskah_sisip.json, beat bernomor pecahan)
+SKRIP = ["/home/user/antre/alat/web/siap.js"]
+BEATS[5.2] = [A('sshDocker')]
+BEATS[5.4] = [A('dnsA')]
+BEATS[5.6] = [A('certbot')]
