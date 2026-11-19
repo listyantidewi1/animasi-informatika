@@ -63,5 +63,26 @@ membuat aplikasi antrean, full stack dari nol, tutorial node js express postgres
 ## Komentar tersemat
 Bab mana yang paling membantumu? Kalau kamu mengerjakan tantangan di akhir bab, tulis jawabanmu di sini. Kode lengkap per bab ada di link deskripsi.
 
-## Short (13 buah, akhir/short/)
-Judul Short = kalimat kait di layar, ditambah "#shorts". Deskripsi Short: "Video lengkap: Membangun Aplikasi dari Nol: Sistem Antrean Bengkel [link video]".
+## Short (13 buah, folder short/)
+Judul Short = kalimat kait di layar, ditambah "#shorts". Deskripsi Short (sama untuk semua, ganti [link video] setelah video lengkap tayang):
+
+```
+Potongan segmen "Cek kerjaan AI" dari video lengkap: Membangun Aplikasi dari Nol, Sistem Antrean Bengkel [link video]
+Kode lengkap per bab: https://github.com/listyantidewi1/SiAntre
+
+#shorts #belajarcoding #nodejs #postgresql
+```
+
+- A00_short.mp4 (0:54, dari Pembuka): AI membuat aplikasi antrean dalam semenit. Lalu dua puluh orang mengambil nomor bersamaan… #shorts
+- A01_short.mp4 (1:52, dari Bab 1): Spesifikasi dari AI ini kelihatan lengkap. Apa yang terlewat? #shorts
+- A02_short.mp4 (0:54, dari Bab 2): Skema database dari AI ini punya satu kolom berbahaya. Kamu lihat? #shorts
+- A03_short.mp4 (1:03, dari Bab 3): Query rata-rata dari AI ini berjalan dan angkanya masuk akal. Tapi… #shorts
+- A04_short.mp4 (0:53, dari Bab 4): Endpoint dari AI ini menjawab 200 OK. Apa masalahnya? #shorts
+- A05_short.mp4 (1:11, dari Bab 5): API ambil nomor dari AI ini rapi. Kenapa nomornya bisa kembar? #shorts
+- A06_short.mp4 (0:50, dari Bab 6): Fitur panggil antrean "yang aman" dari AI. Benarkah aman? #shorts
+- A07_short.mp4 (0:55, dari Bab 7): Booking dengan kuota dari AI: logikanya benar, tapi slotnya tetap kelebihan. #shorts
+- A08_short.mp4 (0:54, dari Bab 8): Halaman tiket dari AI: coba ganti satu angka di alamatnya… #shorts
+- A09_short.mp4 (1:03, dari Bab 9): Layar TV dari AI terasa seketika. Berapa harganya untuk server? #shorts
+- A10_short.mp4 (0:56, dari Bab 10): Satu baris innerHTML dari AI bisa membuat layar TV menulis BENGKEL TUTUP. #shorts
+- A11_short.mp4 (0:54, dari Bab 11): Test dari AI ini selalu hijau. Justru itu masalahnya. #shorts
+- A12_short.mp4 (1:32, dari Bab 12): Deploy dari AI: semuanya menyala. Tapi ada dua masalah. #shorts
