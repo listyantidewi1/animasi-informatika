@@ -15,15 +15,18 @@ Di video ini:
 • Commit di branch yang salah, lalu dipindahkan dengan cherry-pick dan revert
 • Merge fast-forward dan merge commit, dilihat dengan git log --graph
 
-Semua yang ada di layar adalah rekaman editor, terminal, dan server Git sungguhan, pada proyek kecil SiAntre (aplikasi antrean) yang dikerjakan Raka dan Nadia.
+Perintah di terminal adalah rekaman editor, terminal, dan server Git sungguhan, pada proyek kecil SiAntre (aplikasi antrean) yang dikerjakan Raka dan Nadia. Langkah pemasangan dan tampilan GitHub digambar ulang supaya mudah diikuti.
+
+Proyek awal episode ini (g03-awal.zip): https://github.com/listyantidewi1/SiAntre-git/releases
+Unduh Git: https://git-scm.com  ·  VS Code: https://code.visualstudio.com
 
 Bab:
 0:00 Pembuka
-0:33 Branch itu apa?
-1:10 Membuat branch dan pindah branch
-2:20 Salah branch, lalu diperbaiki
-3:20 Menggabungkan dengan merge
-4:13 Rangkuman dan tantangan
+0:43 Branch itu apa?
+1:20 Membuat branch dan pindah branch
+2:30 Salah branch, lalu diperbaiki
+3:32 Menggabungkan dengan merge
+4:46 Rangkuman dan tantangan
 
 Seri Git dan Kerja Tim:
 G01. Git dari Nol: Commit Pertamamu

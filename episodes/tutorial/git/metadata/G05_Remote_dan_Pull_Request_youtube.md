@@ -16,14 +16,17 @@ Di video ini:
 • Push ditolak: kenapa jangan --force, dan cara yang benar dengan git pull
 • Pull request: membuat, review baris demi baris, revisi, approve, merge
 
-Semua yang ada di layar adalah rekaman editor, terminal, dan server Git sungguhan, pada proyek kecil SiAntre (aplikasi antrean) yang dikerjakan Raka dan Nadia.
+Perintah di terminal adalah rekaman editor, terminal, dan server Git sungguhan, pada proyek kecil SiAntre (aplikasi antrean) yang dikerjakan Raka dan Nadia. Langkah pemasangan dan tampilan GitHub digambar ulang supaya mudah diikuti.
+
+Proyek awal episode ini (g05-awal.zip): https://github.com/listyantidewi1/SiAntre-git/releases
+Unduh Git: https://git-scm.com  ·  VS Code: https://code.visualstudio.com
 
 Bab:
 0:00 Pembuka
-0:40 Remote: repository di server
-1:37 Push ditolak
-2:53 Pull request
-4:45 Rangkuman dan tantangan
+0:56 Remote: repository di server
+3:03 Push ditolak
+4:19 Pull request
+6:59 Rangkuman dan tantangan
 
 Seri Git dan Kerja Tim:
 G01. Git dari Nol: Commit Pertamamu

@@ -42,7 +42,9 @@ for kode in NO:
     bab = bab_waktu(kode)
     d = [f"Setelah menonton video ini, kamu bisa {hook}", "",
          "Di video ini:", *[f"• {p}" for p in POIN[kode]], "",
-         "Semua yang ada di layar adalah rekaman editor, terminal, dan server Git sungguhan, pada proyek kecil SiAntre (aplikasi antrean) yang dikerjakan Raka dan Nadia.", "",
+         "Perintah di terminal adalah rekaman editor, terminal, dan server Git sungguhan, pada proyek kecil SiAntre (aplikasi antrean) yang dikerjakan Raka dan Nadia. Langkah pemasangan dan tampilan GitHub digambar ulang supaya mudah diikuti.", "",
+         f"Proyek awal episode ini ({kode.lower()}-awal.zip): https://github.com/listyantidewi1/SiAntre-git/releases",
+         "Unduh Git: https://git-scm.com  ·  VS Code: https://code.visualstudio.com", "",
          "Bab:", *[f"{ts(t)} {j}" for t, j in bab], "",
          "Seri Git dan Kerja Tim:", daftar_seri(kode), "",
          "Seri berikutnya di kanal ini memakai alur Git yang sama untuk membangun aplikasi Sistem Antrean dari nol.", "",

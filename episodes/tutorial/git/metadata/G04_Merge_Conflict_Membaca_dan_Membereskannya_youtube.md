@@ -16,15 +16,18 @@ Di video ini:
 • Penanda yang tertinggal menyebabkan SyntaxError, dan cara mencarinya dengan git grep
 • git merge --abort saat bingung
 
-Semua yang ada di layar adalah rekaman editor, terminal, dan server Git sungguhan, pada proyek kecil SiAntre (aplikasi antrean) yang dikerjakan Raka dan Nadia.
+Perintah di terminal adalah rekaman editor, terminal, dan server Git sungguhan, pada proyek kecil SiAntre (aplikasi antrean) yang dikerjakan Raka dan Nadia. Langkah pemasangan dan tampilan GitHub digambar ulang supaya mudah diikuti.
+
+Proyek awal episode ini (g04-awal.zip): https://github.com/listyantidewi1/SiAntre-git/releases
+Unduh Git: https://git-scm.com  ·  VS Code: https://code.visualstudio.com
 
 Bab:
 0:00 Pembuka
-0:29 Konflik itu apa?
-1:06 Konflik pertama
-3:08 Kesalahan: penanda tertinggal
-4:03 Jalan keluar: merge --abort
-4:24 Rangkuman dan tantangan
+0:38 Konflik itu apa?
+1:16 Konflik pertama
+3:46 Kesalahan: penanda tertinggal
+4:41 Jalan keluar: merge --abort
+5:02 Rangkuman dan tantangan
 
 Seri Git dan Kerja Tim:
 G01. Git dari Nol: Commit Pertamamu

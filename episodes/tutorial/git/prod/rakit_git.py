@@ -24,12 +24,16 @@ def tts_teks(t):
     t = re.sub(r"\b([a-z]+)\.(js|json|css|html)\b", lambda m: m.group(1) + " titik " + {"js": "je es", "json": "jeson", "css": "ce es es", "html": "ha te em el"}[m.group(2)], t)
     t = t.replace("git diff", "git dif").replace("HEAD", "hed").replace("node modules", "nod modyuls")
     return t
+def nama_mp3(kode, teks):
+    """Berkas suara dikunci oleh isi teksnya, supaya beat boleh disisipkan tanpa menggeser nomor."""
+    import hashlib
+    return f"{ROOT}/{kode}/suara/{hashlib.md5(teks.encode()).hexdigest()[:10]}.mp3"
 def suara(kodes):
     for kode in kodes:
         B = bab(kode)["beats"]; os.makedirs(f"{ROOT}/{kode}/suara", exist_ok=True)
         teks = [t for t, _ in B if t]  # kartu bab (tanpa narasi) tidak ikut dinomori
         for i, t in enumerate(teks):
-            out = f"{ROOT}/{kode}/suara/b{i:02d}.mp3"
+            out = nama_mp3(kode, t)
             if not t or os.path.exists(out): continue
             body = {"text": tts_teks(t), "model_id": MODEL, "voice_settings": {"stability": 0.5, "similarity_boost": 0.75, "style": 0.0, "speed": 1.0}}
             prev = [x for x in teks[:i] if x]; nxt = [x for x in teks[i + 1:] if x]
@@ -302,7 +306,7 @@ def rencanakan(kode):
     B = bab(kode); hasil = []; ns = 0
     for i, (teks, parts) in enumerate(B["beats"]):
         akhir_bab = i + 1 == len(B["beats"]) or not B["beats"][i + 1][0]
-        mp3 = f"{ROOT}/{kode}/suara/b{ns:02d}.mp3"; ns += 1 if teks else 0; parts = [dict(p) for p in parts]
+        mp3 = nama_mp3(kode, teks) if teks else ""; parts = [dict(p) for p in parts]
         kal = kalimat(teks) if teks else []
         A = dur(mp3) if teks and os.path.exists(mp3) else (len(teks) / 14.5 if teks else 0)
         bt = batas_kalimat(mp3, kal, A) if teks and os.path.exists(mp3) else [A * j / max(1, len(kal)) for j in range(len(kal) + 1)]
@@ -359,7 +363,7 @@ def rakit_bab(kode, cek=False):
                 jobs.append({"nama": "tebak", "D": p["_d"], "a": {"bg": png}, "out": out})
             else: potong(p, out, tmp)
     import adegan_r as ADG
-    ADG.render(jobs, ["/home/user/git-seri/adegan_git.js"])
+    ADG.render(jobs, ["/home/user/git-seri/adegan_git.js", "/home/user/git-seri/adegan_siap_git.js"])
     with open(f"{tmp}/daftar.txt", "w") as fh:
         for x in files: fh.write(f"file '{x}'\n")
     sh("ffmpeg", "-loglevel", "error", "-y", "-f", "concat", "-safe", "0", "-i", f"{tmp}/daftar.txt", "-c", "copy", f"{tmp}/video.mp4")

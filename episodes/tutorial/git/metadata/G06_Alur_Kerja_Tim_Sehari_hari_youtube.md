@@ -18,16 +18,19 @@ Di video ini:
 • Memeriksa pesan commit buatan AI dengan git diff
 • git tag v1.0.0 dan mengirim tag ke server
 
-Semua yang ada di layar adalah rekaman editor, terminal, dan server Git sungguhan, pada proyek kecil SiAntre (aplikasi antrean) yang dikerjakan Raka dan Nadia.
+Perintah di terminal adalah rekaman editor, terminal, dan server Git sungguhan, pada proyek kecil SiAntre (aplikasi antrean) yang dikerjakan Raka dan Nadia. Langkah pemasangan dan tampilan GitHub digambar ulang supaya mudah diikuti.
+
+Proyek awal episode ini (g06-awal.zip): https://github.com/listyantidewi1/SiAntre-git/releases
+Unduh Git: https://git-scm.com  ·  VS Code: https://code.visualstudio.com
 
 Bab:
 0:00 Pembuka
-0:34 Alur kerja tim
-1:00 Commit kecil yang rapi
-2:19 Stash: menyimpan sementara
-2:54 Merge atau rebase?
-3:45 AI dan rilis
-4:36 Rangkuman seri
+0:43 Alur kerja tim
+1:26 Commit kecil yang rapi
+2:45 Stash: menyimpan sementara
+3:20 Merge atau rebase?
+4:11 AI dan rilis
+5:12 Rangkuman seri
 
 Seri Git dan Kerja Tim:
 G01. Git dari Nol: Commit Pertamamu

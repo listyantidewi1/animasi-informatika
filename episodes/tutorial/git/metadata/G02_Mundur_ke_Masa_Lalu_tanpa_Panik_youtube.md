@@ -16,16 +16,19 @@ Di video ini:
 • git revert untuk commit yang sudah dibagikan
 • git reset --hard yang salah ketik, lalu diselamatkan dengan git reflog
 
-Semua yang ada di layar adalah rekaman editor, terminal, dan server Git sungguhan, pada proyek kecil SiAntre (aplikasi antrean) yang dikerjakan Raka dan Nadia.
+Perintah di terminal adalah rekaman editor, terminal, dan server Git sungguhan, pada proyek kecil SiAntre (aplikasi antrean) yang dikerjakan Raka dan Nadia. Langkah pemasangan dan tampilan GitHub digambar ulang supaya mudah diikuti.
+
+Proyek awal episode ini (g02-awal.zip): https://github.com/listyantidewi1/SiAntre-git/releases
+Unduh Git: https://git-scm.com  ·  VS Code: https://code.visualstudio.com
 
 Bab:
 0:00 Pembuka
-0:34 Empat alat untuk mundur
-1:02 git restore
-1:32 git commit --amend
-2:10 git revert
-2:59 git reset dan git reflog
-4:19 Rangkuman dan tantangan
+0:51 Empat alat untuk mundur
+1:19 git restore
+1:49 git commit --amend
+2:34 git revert
+3:23 git reset dan git reflog
+4:43 Rangkuman dan tantangan
 
 Seri Git dan Kerja Tim:
 G01. Git dari Nol: Commit Pertamamu

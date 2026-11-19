@@ -16,15 +16,19 @@ Di video ini:
 • Membaca git diff sebelum commit
 • Kebiasaan aman saat memakai asisten AI: commit dulu, periksa diff, baru simpan
 
-Semua yang ada di layar adalah rekaman editor, terminal, dan server Git sungguhan, pada proyek kecil SiAntre (aplikasi antrean) yang dikerjakan Raka dan Nadia.
+Perintah di terminal adalah rekaman editor, terminal, dan server Git sungguhan, pada proyek kecil SiAntre (aplikasi antrean) yang dikerjakan Raka dan Nadia. Langkah pemasangan dan tampilan GitHub digambar ulang supaya mudah diikuti.
+
+Proyek awal episode ini (g01-awal.zip): https://github.com/listyantidewi1/SiAntre-git/releases
+Unduh Git: https://git-scm.com  ·  VS Code: https://code.visualstudio.com
 
 Bab:
 0:00 Pembuka
 0:22 Kenapa kita butuh Git?
-1:36 Commit pertama
-3:39 Melihat perubahan
-4:23 Kebiasaan aman saat memakai AI
-4:47 Rangkuman dan tantangan
+1:36 Persiapan: memasang alat
+3:16 Commit pertama
+5:53 Melihat perubahan
+6:38 Kebiasaan aman saat memakai AI
+7:02 Rangkuman dan tantangan
 
 Seri Git dan Kerja Tim:
 ▶ G01. Git dari Nol: Commit Pertamamu
