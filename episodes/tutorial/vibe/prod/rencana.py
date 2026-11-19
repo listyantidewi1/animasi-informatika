@@ -10,13 +10,26 @@ PROMPT = json.load(open("/home/user/vibe/prod/prompts.json"))
 
 def R(src, a, b, crop="full", speed=1.0, maks=1.6, lab=None, **k): return dict(k="rek", src=src, a=a, b=b, crop=crop, speed=speed, maks=maks, lab=lab, **k)
 def H(src, a, b, cap="", speed=1.0, maks=1.6, lab=None, **k): return dict(k="hp", src=src, a=a, b=b, cap=cap, speed=speed, maks=maks, lab=lab, **k)
-def A(nama, min=4, bobot=1, **arg): return dict(k="adegan", nama=nama, min=min, bobot=bobot, a=arg)
-def ketik(src, tanda, crop="termD"):
-    p = PROMPT[f"{src}:{tanda}"]; L = p["n"] / p["cps"] * 1.2 + 1.2
-    return R(src, tanda, f"{tanda}+{L:.1f}", crop, speed=1.5, maks=2.5, lab="Prompt")
-def kerja(src, tanda, jadi, crop="termD", maks=10):
-    p = PROMPT[f"{src}:{tanda}"]; L = p["n"] / p["cps"] * 1.2 + 1.2
-    return R(src, f"{tanda}+{L:.1f}", jadi, crop, speed=3, maks=maks, lab="AI bekerja · dipercepat")
+def A(nama, min=4, bobot=1, s=None, **arg):
+    d = dict(k="adegan", nama=nama, min=min, bobot=bobot, a=arg)
+    if s is not None: d["s"] = s
+    return d
+# detik terakhir sebelum prompt dikirim (huruf terakhir sudah terketik), dideteksi dari rekaman (kotak prompt kosong lagi)
+AKHIR_KETIK = json.load(open("/home/user/vibe/prod/ketik_akhir.json"))
+def _akhir(src, tanda):
+    t = AKHIR_KETIK.get(f"{src}:{tanda}")
+    if t: return t
+    p = PROMPT[f"{src}:{tanda}"]; return f"{tanda}+{p['n'] / p['cps'] * 1.2 + 1.2:.1f}"
+def ketik(src, tanda, crop="termD", **k):
+    # tahan: prompt utuh dibekukan tanpa narasi supaya sempat dibaca (+-3 kata/detik, 2,5-7 detik)
+    p = PROMPT[f"{src}:{tanda}"]
+    k.setdefault("tahan", round(min(7.0, max(2.5, p["n"] / 6 / 3)), 1))
+    return R(src, tanda, _akhir(src, tanda), crop, speed=1.5, maks=4, lab="Prompt", **k)
+def kerja(src, tanda, jadi, crop="termD", maks=10, **k):
+    # tahan: hasil akhir AI di terminal dibekukan sebentar untuk diamati
+    a = _akhir(src, tanda); a = a + 0.25 if isinstance(a, float) else a
+    k.setdefault("tahan", 2.5)
+    return R(src, a, jadi, crop, speed=3, maks=maks, lab="AI bekerja · dipercepat", **k)
 
 BAB = []
 def bab(kode, judul, beats): BAB.append(dict(kode=kode, judul=judul, beats=beats))
@@ -30,7 +43,7 @@ bab("V00", "Kait", [
  ("Setelah menonton, kamu bisa membuat aplikasi HP dengan bantuan AI, dan tahu cara memastikan AI tidak salah hitung.",
   [A("judul", min=5, judul="Vibe Coding\nAplikasi HP dari Nol", hook="Setelah menonton, kamu bisa membuat aplikasi HP dengan bantuan AI, dan tahu cara memastikan AI tidak salah hitung.")]),
  ("Tapi ada satu hal yang perlu kamu tahu sejak awal. Di tengah jalan, aplikasi buatan AI kita akan rusak beberapa kali. Ada riwayat lama yang membuat tombol Hitung gagal, ada versi baru yang tidak pernah sampai ke pengguna, dan ada voucher yang membuat semua orang malah dibayar. Semua kesalahan itu benar-benar terjadi saat video ini direkam. Kita akan menangkapnya bersama, dan cara menangkapnya itulah inti video ini.",
-  [H("H07c", "hitung2", "akhir", "Riwayat lama: Hitung gagal"), H("H10b", "voucher_besar", "akhir", "Voucher kebesaran dan menu gratis")]),
+  [H("H07c", "hitung2", "akhir", "Riwayat lama: Hitung gagal"), R("D09d", "cache", "akhir", "dt"), H("H10b", "voucher_besar", "akhir", "Voucher kebesaran dan menu gratis")]),
 ])
 
 # ---------------------------------------------------------------- V01
@@ -55,6 +68,13 @@ bab("V01", "Vibe coding yang benar", [
 bab("V02", "Spek satu halaman", [
  ("Sebelum menyentuh AI, kita menulis spek dulu. Ini langkah yang paling sering dilewati, padahal inilah bagian yang tidak bisa dikerjakan AI untukmu. AI bisa menulis kode, tetapi AI tidak tahu masalah apa yang sebenarnya ingin kamu selesaikan.",
   [R("V02", "mulai", "masalah", "edit")]),
+ ("Caranya begini. Buat dulu folder kosong untuk proyek ini, misalnya bernama patungan. Buka VS Code, pilih menu File, lalu Open Folder, dan pilih folder itu. Semua berkas proyek akan tinggal di folder ini. Di panel Explorer di sebelah kiri, klik ikon berkas baru, ketik SPEK.md, lalu tekan Enter. Berkas kosong itu terbuka di editor, dan di sinilah kita mengetik spek. Akhiran md berarti Markdown, yaitu teks biasa yang memakai tanda pagar untuk judul.",
+  [R("N02", "mulai", 2.7, "nSide"),
+   R("N02", 2.7, 4.8, "nMenu", s=2, sorot=[{"kotak": [430, 244, 850, 280], "dari": 0.5}]),
+   R("N02", 4.8, 8.6, "nDialog", sorot=[{"kotak": [788, 48, 1718, 96]}]),
+   R("N02", 10.0, "berkas_baru-0.5", "nSide", s=3),
+   R("N02", "berkas_baru-0.5", "spek_terbuka", "nSide", s=4, sorot=[{"kotak": [400, 58, 446, 96], "dari": 0.0, "kal": 4}]),
+   R("N02", "spek_terbuka", "akhir", "nSide", s=5)]),
  ("Spek kita cukup satu halaman. Pertanyaan pertama adalah masalahnya apa. Kita menulisnya dengan bahasa manusia: setelah makan bareng, menghitung bagian tiap orang itu lama dan sering salah, terutama karena pajak, service, voucher, dan menu yang dimakan bersama.",
   [R("V02", "masalah", "pengguna", "edit")]),
  ("Pertanyaan kedua adalah siapa penggunanya dan dalam keadaan apa. Penggunanya adalah satu orang yang menalangi pembayaran. Dia memakai HP dengan satu tangan, di kafe yang mungkin sinyalnya jelek. Dari satu kalimat ini saja, kita sudah mendapat tiga syarat: tampilannya harus nyaman untuk layar HP, tombolnya harus mudah dijangkau jempol, dan aplikasinya harus tetap jalan tanpa internet.",
@@ -62,15 +82,15 @@ bab("V02", "Spek satu halaman", [
  ("Pertanyaan ketiga adalah fitur apa yang wajib ada. Pengguna bisa memasukkan menu dan harganya, lalu memilih siapa saja yang memakan setiap menu. Satu menu boleh dibagi beberapa orang. Pengguna bisa memasukkan voucher, persen service, dan persen pajak. Aplikasi menampilkan berapa yang harus dibayar setiap orang, bisa mengirim ringkasannya ke WhatsApp, dan menyimpan riwayat patungan di HP.",
   [R("V02", "fitur", "tidak", "edit")]),
  ("Pertanyaan keempat sama pentingnya, yaitu fitur apa yang sengaja tidak dibuat. Kita tidak membuat login, tidak memakai server, tidak memindai struk dengan kamera, dan tidak menghubungkan ke rekening bank. Daftar ini melindungi kita dari AI yang terlalu bersemangat. Kalau tidak ditulis, AI bisa saja menambahkan fitur login yang tidak pernah kita minta, lengkap dengan seratus baris kode yang harus kita baca.",
-  [R("V02", "tidak", "aturan", "edit")]),
+  [R("V02", "tidak", "aturan", "edit", fokus=(720, 1392))]),
  ("Sekarang bagian yang paling penting, yaitu aturan hitung. Kalau aturan ini tidak tertulis, AI akan menebak, dan setiap AI bisa menebak dengan cara berbeda.",
-  [R("V02", "aturan", "aturan+6", "edit")]),
+  [R("V02", "aturan", "aturan+6", "edit", fokus=(720, 1392))]),
  ("Aturan pertama: voucher dikurangkan dulu dari subtotal. Aturan kedua: service dihitung dari subtotal setelah voucher. Aturan ketiga: pajak dihitung dari subtotal setelah voucher ditambah service, karena begitulah cara kebanyakan kafe mencetak struknya. Aturan keempat: voucher, service, dan pajak dibagi sebanding dengan porsi pesanan setiap orang. Artinya, orang yang memesan lebih banyak juga menanggung pajak lebih banyak. Aturan kelima: semua uang dihitung dalam rupiah bulat, dan bagian setiap orang dibulatkan ke atas ke kelipatan seratus rupiah, supaya orang yang menalangi tidak pernah rugi.",
-  [R("V02", "aturan+6", "contoh", "edit")]),
+  [R("V02", "aturan+6", "contoh", "edit", fokus=(720, 1392))]),
  ("Terakhir, kita menghitung satu contoh secara manual, tanpa AI. Ini struk dari empat teman: Andi, Bela, Citra, dan Dimas. Subtotalnya seratus tujuh puluh tujuh ribu rupiah. Ada voucher lima belas ribu, service lima persen, dan pajak sepuluh persen, sehingga total struknya seratus delapan puluh tujuh ribu seratus sepuluh rupiah.",
-  [R("V02", "contoh", "tabel_hasil", "edit")]),
+  [R("V02", "contoh", "tabel_hasil", "edit", fokus=(720, 1392))]),
  ("Porsi pesanan Andi adalah empat puluh tujuh ribu lima ratus. Angka itu berasal dari nasi goreng, seperempat kentang goreng, dan satu es teh. Kalau dikalikan dengan perbandingan total struk dan subtotal, bagian Andi menjadi lima puluh ribu dua ratus tiga belas rupiah lebih sedikit, lalu dibulatkan ke atas menjadi lima puluh ribu tiga ratus.",
-  [R("V02", "tabel_hasil", "spek_selesai", "edit")]),
+  [R("V02", "tabel_hasil", "spek_selesai", "edit", fokus=(720, 1392))]),
  ("Kalau semua bagian dijumlahkan, hasilnya seratus delapan puluh tujuh ribu empat ratus. Angka itu lebih dua ratus sembilan puluh rupiah dari total struk, dan kelebihan itu menjadi milik Andi yang menalangi. Aplikasi kita harus menampilkan kelebihan ini terang-terangan, supaya tidak ada yang merasa dicurangi.",
   [A("bulat", min=8)]),
  ("Tabel ini adalah kunci jawaban kita. Apa pun yang nanti ditulis AI, hasilnya harus sama persis dengan tabel ini. Kalau berbeda satu rupiah saja, berarti ada yang salah, dan kita tidak akan melanjutkan sebelum menemukan penyebabnya.",
@@ -80,31 +100,60 @@ bab("V02", "Spek satu halaman", [
 # ---------------------------------------------------------------- V03
 bab("V03", "Siapkan proyek", [
  ("Spek tadi kita simpan di folder proyek sebagai berkas SPEK.md. Dengan begitu, AI bisa membacanya kapan saja, dan kita tidak perlu mengulang penjelasan yang sama di setiap prompt. Lalu kita menjalankan git init. Dengan Git, setiap langkah yang berhasil bisa kita simpan sebagai titik aman. Kalau AI merusak sesuatu, kita tinggal kembali ke titik aman terakhir.",
-  [R("V03", "mulai", "claude_md", "full"), A("teks", min=5, judul="Titik aman", warna="#2dd4bf", isi=["SPEK.md: AI membacanya kapan saja", "git init: setiap langkah bisa disimpan", "Kalau AI merusak, kembali ke titik aman"])]),
+  [R("V03", "mulai", "git_init-2.5", "edit"),
+   R("V03", "git_init-2.5", "claude_md-3", "termK", s=2, sorot=[{"teks": "git init", "baris": 3, "dari": 0.55}]),
+   A("teks", min=5, s=3, judul="Titik aman", warna="#2dd4bf", isi=["SPEK.md: AI membacanya kapan saja", "git init: setiap langkah bisa disimpan", "Kalau AI merusak, kembali ke titik aman"])]),
  ("Berikutnya, kita menulis berkas aturan untuk AI. Di Claude Code, namanya CLAUDE.md. Alat lain punya berkas serupa dengan nama berbeda, misalnya AGENTS.md. Berkas ini dibaca AI setiap kali mulai bekerja, jadi isinya seperti aturan kelas.",
-  [R("V03", "claude_md", "claude_md_selesai", "edit", maks=2)]),
+  [R("V03", "claude_md-3", "claude_md+1", "termK", sorot=[{"teks": "touch CLAUDE.md"}]),
+   R("V03", "claude_md+1", "claude_md_selesai", "edit", s=1, maks=2.5, tahan=4)]),
  ("Perhatikan aturan tentang uang. Komputer menyimpan bilangan desimal dengan cara yang tidak selalu tepat. Kalau kamu menjumlahkan nol koma satu dan nol koma dua di JavaScript, hasilnya bukan nol koma tiga, tetapi nol koma tiga dengan banyak angka nol dan angka empat di ujungnya. Untuk uang, kesalahan sekecil itu bisa menumpuk. Karena itu, kita menyimpan uang sebagai bilangan bulat dalam rupiah.",
-  [R("V03", "claude_md_selesai", 48.4, "termK")]),
+  [R("V03", "claude_md_selesai-1", "claude_md_selesai", "edit", sorot=[{"teks": "Semua uang disimpan", "baris": 2}]),
+   R("V03", "desimal-1.5", 48.4, "termK", s=2, sorot=[{"teks": "node -p", "baris": 2}]),
+   R("V03", "claude_md_selesai-1", "claude_md_selesai", "edit", s=4, sorot=[{"teks": "Semua uang disimpan", "baris": 2}])]),
  ("Aturan kerjakan hanya yang diminta juga penting. AI cenderung sangat membantu, dan kadang terlalu membantu. Kita ingin AI mengerjakan tugas kecil yang bisa kita baca, bukan kejutan.",
-  [R("V03", "claude_md_selesai-1", "claude_md_selesai", "edit")]),
+  [R("V03", "claude_md_selesai-1", "claude_md_selesai", "edit", sorot=[{"teks": "Kerjakan hanya", "baris": 3}])]),
  ("Kita menyimpan titik aman pertama dengan commit. Belum ada satu baris kode pun, tetapi sebenarnya bagian terpenting proyek ini sudah selesai.",
-  [R("V03", "commit", "akhir", "termK")]),
+  [R("V03", "commit", "akhir", "termK", sorot=[{"teks": "root-commit", "dari": 0.5}])]),
 ])
 
 # ---------------------------------------------------------------- V04
 bab("V04", "Prompt pertama: kerangka", [
- ("Sekarang kita membuka asisten AI di terminal dan mengetik prompt pertama. Perhatikan bahwa prompt ini kecil. Kita tidak meminta seluruh aplikasi, tetapi hanya kerangka dan satu layar.",
+ ("Asisten AI yang kita pakai berjalan di terminal. Di VS Code, buka menu Terminal, lalu pilih New Terminal. Terminal ini otomatis berada di folder proyek. Kalau Claude Code belum terpasang, pasang dulu dengan perintah yang tertulis di layar. Setelah itu, ketik claude, lalu tekan Enter. Saat pertama kali dibuka, Claude Code meminta kita masuk dengan akun. Setelah itu, muncul kotak tempat kita mengetik prompt.",
+  [R("N04a", "mulai", 2.5, "nMenu"),
+   R("N04a", 2.5, 5.0, "nMenu", s=1, sorot=[{"kotak": [395, 270, 975, 302], "dari": 0.55}]),
+   R("N04a", 5.6, "pasang-2.5", "termU", s=2),
+   R("N04a", "pasang-2.5", "ketik_claude", "termU", s=3, sorot=[{"teks": "pasang sekali", "baris": 2}]),
+   R("N04a", "ketik_claude", "claude_buka-0.8", "termU", s=4),
+   R("N04a", "claude_buka-0.8", "akhir", "full", s=5, sorot=[{"kotak": [1310, 1295, 2550, 1338], "kal": 6}])]),
+ ("Sekarang kita mengetik prompt pertama di kotak itu. Perhatikan bahwa prompt ini kecil. Kita tidak meminta seluruh aplikasi, tetapi hanya kerangka dan satu layar.",
   [R("V04a", "mulai", "prompt1", "termD"), ketik("V04a", "prompt1")]),
  ("AI membaca spek dan aturan kita, lalu membuat beberapa berkas.",
   [kerja("V04a", "prompt1", "prompt1_selesai")]),
  ("Sebelum menjalankannya, kita membaca dulu laporannya. Ada package.json yang hanya memasang Vite, index.html sebagai halaman utama, main.js sebagai kode utama, dan style.css untuk tampilan. AI juga menulis bagian yang belum dikerjakan, lalu memberi dua saran tanpa langsung membuatnya: tombol hapus dan penyimpanan di localStorage. Itu persis aturan kerjakan hanya yang diminta. Berkas aturan kita bekerja.",
-  [R("V04a", "prompt1_selesai", "akhir", "termU")]),
+  [R("V04a", "prompt1_selesai", "akhir", "termU", sorot=[
+     {"teks": "- package.json", "kal": 1, "kal2": 2}, {"teks": "- index.html", "kal": 1, "kal2": 2},
+     {"teks": "- src/main.js", "kal": 1, "kal2": 2}, {"teks": "- src/style.css", "kal": 1, "kal2": 2},
+     {"teks": "Belum ada perhitungan", "baris": 2, "kal": 2}, {"teks": "Saran (belum", "baris": 5, "kal": 2}])]),
  ("Kita menjalankan npm install untuk memasang Vite, lalu npm run dev. Vite menyalakan server kecil di komputer kita, dan aplikasinya bisa dibuka di browser. Kita membukanya dalam ukuran layar HP.",
   [R("V04b", "terminal2", "main_js", "termU", maks=2.5)]),
+ ("Vite menampilkan alamat localhost dengan nomor port lima ribu seratus tujuh puluh tiga. Buka alamat itu di Chrome. Untuk melihatnya seukuran layar HP, tekan F12 untuk membuka DevTools, lalu klik ikon HP dan tablet di pojok kiri atas, atau tekan Control, Shift, dan M. Halaman langsung tampil seperti di layar HP. Lebar layarnya bisa diubah di kotak angka di bagian atas. Kita mengetik tiga ratus enam puluh, karena banyak HP Android selebar itu. Kamu juga bisa memilih nama HP tertentu dari daftar di sebelah kirinya.",
+  [R("N04c", "dev_lokal", "berhenti-1.6", "termU", sorot=[{"teks": "Local"}]),
+   R("N04b", "mulai", 8.3, "full", s=1),
+   R("N04b", 8.3, 11.6, "full", s=2),
+   R("N04b", 12.05, 15.0, "full", sorot=[{"kotak": [1688, 146, 1734, 186], "dari": 0.25}]),
+   R("N04b", 15.0, 17.3, "full", s=3),
+   R("N04b", 17.3, "lebar+0.5", "nToolbar", s=4, sorot=[{"kotak": [515, 148, 600, 184]}]),
+   R("N04b", "lebar+0.5", "daftar-0.5", "nToolbar", s=5, sorot=[{"kotak": [515, 148, 600, 184]}]),
+   R("N04b", "daftar-0.5", "akhir", "nToolbar", s=6, sorot=[{"kotak": [350, 148, 510, 184]}])]),
+ ("Kalau ingin mencobanya di HP sungguhan, pastikan HP dan laptop tersambung ke Wi-Fi yang sama. Hentikan server dengan Control C, lalu jalankan npm run dev, dua tanda minus, host. Sekarang Vite juga menampilkan alamat Network yang diawali seratus sembilan puluh dua titik seratus enam puluh delapan. Ketik alamat itu persis di browser HP, dan aplikasinya terbuka di HP. Kalau tidak terbuka, biasanya firewall laptop atau Wi-Fi umum yang memblokirnya. Fitur pasang aplikasi dan mode offline baru bisa dicoba di HP setelah aplikasinya terbit dengan alamat https, yang akan kita bahas di akhir video.",
+  [R("N04c", "mulai", "berhenti-0.3", "termU"),
+   R("N04c", "berhenti-0.3", "network+0.5", "termU", s=1),
+   R("N04c", "network+0.5", "akhir", "termU", s=2, sorot=[{"teks": "Network:"}]),
+   A("teks", min=6, s=4, judul="Kalau tidak terbuka di HP", warna="#f59e0b", isi=["HP dan laptop di Wi-Fi yang sama", "Firewall laptop atau Wi-Fi umum bisa memblokir", "Pasang aplikasi dan offline: setelah terbit di https"])]),
  ("Sekarang kita membaca kodenya. Kita tidak perlu paham setiap tanda baca, tetapi kita harus paham apa yang dikerjakan setiap blok.",
-  [R("V04c", "mulai", "blok_state", "full")]),
+  [R("W04c", "mulai", "blok_state", "editW")]),
  ("Blok pertama membuat objek state berisi dua array, yaitu daftar menu dan daftar orang. Inilah data aplikasi kita, dan semua yang tampil di layar berasal dari dua array ini. Blok berikutnya adalah fungsi tampil, yang menggambar ulang daftar setiap kali data berubah. Lalu ada blok yang mendengarkan tombol tambah. Saat tombol diketuk, blok ini membaca isi kotak input, menambahkannya ke array, lalu memanggil tampil.",
-  [R("V04c", "blok_state", "blok_tampil", "full"), R("V04c", "blok_tampil", "commit", "full")]),
+  [R("W04c", "blok_state", "blok_tampil", "editW"), R("W04c", "blok_tampil", "blok_submit_menu", "editW"), R("W04c", "blok_submit_menu", "commit", "editW")]),
  ("Pola ini, yaitu data lalu tampil lalu layar, akan dipakai di seluruh aplikasi. Kalau kamu memahami pola ini, kamu bisa membaca hampir semua kode yang akan ditulis AI berikutnya.",
   [A("pola", min=8)]),
  ("Lalu kita mencoba memakainya di HP. Menu dan nama teman bisa ditambah, dan harganya tampil dengan titik ribuan.",
@@ -130,22 +179,23 @@ bab("V05", "Logika inti dan tes", [
  ("Prompt pertama di bab ini hanya meminta Vitest dan satu tes dari contoh di spek. Fungsinya sengaja belum dibuat.",
   [ketik("V05a", "prompt_tes"), kerja("V05a", "prompt_tes", "tes_jadi")]),
  ("Kita membaca tesnya. Angka lima puluh ribu tiga ratus, empat puluh tujuh ribu seratus, tiga puluh sembilan ribu tujuh ratus, dan kelebihan dua ratus sembilan puluh semuanya sama dengan tabel di spek. Lalu kita menjalankan tesnya, dan hasilnya merah, karena fungsinya memang belum ada. Merah di sini adalah kabar baik, karena artinya tes kita benar-benar memeriksa sesuatu.",
-  [R("V05a", "baca_tes", "baca_tes_akhir", "edit"), R("V05a", "vitest_merah", "vitest_merah_akhir", "termD")]),
+  [R("W05a", "baca_tes", "baca_tes_akhir", "editW"), R("V05a", "vitest_merah", "vitest_merah_akhir", "termD")]),
  ("Baru sekarang kita meminta AI menulis fungsinya sampai tes lulus, dengan mengikuti aturan hitung di spek.",
   [ketik("V05a", "prompt_fungsi"), kerja("V05a", "prompt_fungsi", "fungsi_jadi")]),
  ("Tesnya langsung hijau. Tapi coba baca bagian akhir laporan AI. Di sana AI menulis dua hal yang belum ditangani: subtotal nol atau menu tanpa pemakan akan menghasilkan pembagian dengan nol, dan voucher yang lebih besar dari subtotal belum dicek. Ingat dua kalimat ini, karena nanti salah satunya akan kembali menghantui kita.",
-  [R("V05a", "fungsi_jadi-8", "vitest2_akhir", "termU", maks=2)]),
+  [R("V05a", "fungsi_jadi-8", "vitest2_akhir", "termU", maks=2, sorot=[{"teks": "Belum ditangani", "baris": 3, "kal": 2}])]),
  ("Satu tes hanya membuktikan satu contoh, jadi kita menambah contoh yang lebih licik. Contoh pertama adalah tiga orang berbagi satu menu seharga sepuluh ribu. Sepuluh ribu dibagi tiga tidak habis, jadi bagian tiap orang harus tiga ribu empat ratus, dengan kelebihan dua ratus rupiah. Contoh kedua adalah struk tanpa voucher, service, dan pajak, sehingga hasilnya harus sama persis dengan porsi pesanan. Contoh ketiga adalah menu yang lupa diberi nama pemakannya. Menurut kamu, apa yang seharusnya terjadi?",
   [A("licik", min=14)]),
  ("", [A("pikir", min=4.5, tanya="Menu tanpa pemakan: apa yang seharusnya terjadi?")]),
  ("Spek kita belum menjawab pertanyaan itu, dan di sinilah tes membantu kita menemukan lubang di spek. Kita putuskan bahwa aplikasi harus menolak menghitung dan menampilkan pesan, ada menu yang belum dipilih pemakannya. Kita menambahkan aturan itu ke SPEK.md sebagai aturan keenam.",
-  [R("V05b", "spek_aturan6", "spek_aturan6_akhir", "edit", maks=1.3)]),
+  [R("W05b1", "spek_aturan6", "spek_aturan6_akhir", "editW", maks=1.3)]),
  ("Lalu kita meminta tiga tes itu, dengan satu kalimat penting di akhir: jangan mengubah angka yang diharapkan di tes. Ada AI yang, saat tesnya gagal, justru mengubah tesnya supaya lulus. Kalimat itu menutup jalan pintas tersebut.",
-  [ketik("V05b", "prompt_licik"), kerja("V05b", "prompt_licik", "licik_jadi")]),
+  [ketik("V05b", "prompt_licik", sorot=[{"teks": "Jangan mengubah", "saat": "tahan"}]), kerja("V05b", "prompt_licik", "licik_jadi")]),
  ("Laporannya jujur: hanya tes ketiga yang gagal sebelumnya, karena fungsi lama tetap menghitung walaupun ada menu tanpa pemakan. Sekarang keempat tes hijau. Sebelum percaya, kita periksa sendiri dengan git diff bahwa angka-angka lama di tes memang tidak diubah. Ternyata aman, yang berubah hanya tambahan tes.",
-  [R("V05b", "licik_jadi-6", "licik_jadi", "termU"), R("V05b", "vitest3", "diff_akhir", "termD", maks=2)]),
+  [R("V05b", "licik_jadi-0.6", "licik_jadi", "termU", sorot=[{"teks": "pesan dari SPEK aturan 6", "baris": 2, "kal": 0, "kal2": 1}, {"teks": "Keempat tes lulus", "baris": 2, "kal": 1}]),
+   R("V05b", "vitest3", "diff_akhir", "termD", maks=2, s=2, sorot=[{"teks": "git diff --stat;", "baris": 5}])]),
  ("Satu hal lagi yang perlu dibaca adalah bagaimana fungsi ini menghindari bilangan desimal. AI mengalikan dulu semuanya dengan kelipatan persekutuan, membagi di akhir, lalu membulatkan ke atas dalam satu langkah dengan fungsi bagiKeAtas. Dengan begitu, angka seperti lima puluh ribu dua ratus tiga belas koma empat belas tidak pernah disimpan.",
-  [R("V05b", "baca_bagiatas", "prompt_sambung", "full")]),
+  [R("W05b2", "baca_bagiatas", "prompt_sambung", "editW")]),
  ("Terakhir, kita minta AI menyambungkan fungsi ini ke layar. Setiap menu diberi tombol nama, voucher, service, dan pajak bisa diisi, lalu tombol Hitung menampilkan hasilnya.",
   [ketik("V05b", "prompt_sambung"), kerja("V05b", "prompt_sambung", "sambung_jadi")]),
  ("Kita memasukkan struk contoh lewat aplikasi di HP. Andi lima puluh ribu tiga ratus, Bela lima puluh ribu tiga ratus, Citra empat puluh tujuh ribu seratus, Dimas tiga puluh sembilan ribu tujuh ratus, dan kelebihannya dua ratus sembilan puluh rupiah. Angkanya sama persis dengan kunci jawaban.",
@@ -159,9 +209,9 @@ bab("V06", "Rasa aplikasi HP", [
  ("Perhitungannya sudah benar, tetapi aplikasinya belum terasa seperti aplikasi HP. Ingat pengguna kita di spek: satu orang, satu tangan, berdiri di depan kasir. Saat HP dipegang satu tangan, jempol mudah menjangkau bagian bawah layar, tetapi sulit menjangkau pojok atas. Karena itu, aplikasi HP yang nyaman menaruh tombol utamanya di bawah. Tombol juga harus cukup besar, sekitar empat puluh delapan piksel, kira-kira selebar ujung jari.",
   [A("jempol", min=12)]),
  ("Prompt kali ini berisi empat permintaan tampilan, ditambah satu larangan di baris terakhir: jangan mengubah hitung.js. Fungsi hitung sudah teruji, jadi kalau nanti tesnya merah, kita tahu AI melanggar perintah.",
-  [R("V06a", "mulai", "prompt_hp", "termD"), ketik("V06a", "prompt_hp"), kerja("V06a", "prompt_hp", "hp_jadi")]),
+  [R("V06a", "mulai", "prompt_hp", "termD"), ketik("V06a", "prompt_hp", sorot=[{"teks": "Jangan mengubah", "saat": "tahan"}]), kerja("V06a", "prompt_hp", "hp_jadi")]),
  ("Tesnya tetap hijau, dan git diff menunjukkan hanya main.js dan style.css yang berubah. AI juga jujur bahwa tes kita hanya memeriksa hitungan, bukan tampilan. Untuk tampilan, kita harus melihatnya sendiri di HP.",
-  [R("V06a", "vitest", "diff_akhir", "termD", maks=2.5)]),
+  [R("V06a", "vitest", "diff_akhir", "termD", maks=2.5, sorot=[{"teks": "git diff --stat", "baris": 4, "dari": 0.55}, {"teks": "Tes itu hanya mencakup", "baris": 4, "kal": 1}])]),
  ("Ada satu detail kecil di kode: kotak harga sekarang memakai inputmode numeric, sehingga HP membuka papan ketik angka. Saat kita mengetik dua puluh empat ribu, titik ribuannya langsung muncul. Tombol Hitung juga menempel di bawah layar, di daerah jempol.",
   [H("H06a", "ketik_harga", "hitung", "Titik ribuan, tombol di bawah")]),
  ("Sekarang kita ketuk Hitung. Perhatikan apa yang terjadi.",
@@ -199,7 +249,7 @@ bab("V07", "Simpan offline", [
  ("Kita laporkan apa yang kita lihat, termasuk pesan errornya, lalu minta AI melewati entri yang rusak, menampilkan pesan singkat, dan menambahkan tesnya.",
   [ketik("V07b", "prompt_rusak"), kerja("V07b", "prompt_rusak", "rusak_jadi")]),
  ("AI memindahkan pembacaan data ke berkas baru bernama penyimpanan.js, lalu menulis lima belas tes untuk berbagai bentuk data rusak. Totalnya sekarang sembilan belas tes, dan semuanya hijau.",
-  [R("V07b", "vitest", "vitest_akhir", "termD", maks=2)]),
+  [R("V07b", "vitest", "vitest_akhir", "termD", maks=2, sorot=[{"teks": "Tests 19 passed", "kal": 1}])]),
  ("Kita ulangi serangan kedua. Sekarang aplikasinya memberi tahu bahwa satu data tersimpan rusak dan dilewati, dan tombol Hitung bekerja seperti biasa. Kebiasaan bertanya bagaimana kalau ini rusak adalah salah satu hal yang membedakan programmer dari orang yang sekadar menyuruh AI.",
   [H("H07d", "rusak2", "akhir", "Serangan 2 diulang")]),
  ("Titik aman berikutnya pun disimpan.",
@@ -233,7 +283,7 @@ bab("V09", "Jadikan aplikasi", [
  ("Kita minta AI membuat manifest, ikon yang digambar dengan kode, dan service worker dengan nama gudang yang berversi.",
   [ketik("V09a", "prompt_pwa"), kerja("V09a", "prompt_pwa", "pwa_jadi")]),
  ("Ada satu bagian yang perlu dicek, yaitu daftar berkas yang dimasukkan ke gudang. Vite memberi nama berkas yang berubah setiap kali build, misalnya index dengan kode acak di belakangnya. Kalau daftar itu ditulis tangan, namanya cepat basi. AI menanganinya dengan membaca index.html saat service worker dipasang, lalu mengambil semua alamat berkas di dalamnya.",
-  [R("V09b", "build", "build_akhir", "termD", maks=2), R("V09b", "baca_daftar", "baca_install", "full")]),
+  [R("V09b", "build", "build_akhir", "termD", maks=2), R("W09b", "baca_daftar", 17.25, "editW", tahan=3, sorot=[{"kotak": [700, 98, 1830, 574], "t": 17.2, "kal": 3}])]),
  ("Isinya dibagi menjadi tiga peristiwa. Peristiwa install terjadi saat penjaga baru datang, dan tugasnya mengisi gudang. Peristiwa activate terjadi saat penjaga mulai bertugas, dan tugasnya membuang gudang versi lama. Peristiwa fetch terjadi setiap kali aplikasi meminta berkas, dan tugasnya memutuskan apakah berkas diambil dari gudang atau dari internet.",
   [A("swTiga", min=12)]),
  ("Kita build, lalu membukanya dengan npm run preview. Di DevTools, tab Application, manifest terbaca dengan nama Patungan. Service worker sudah aktif, dan gudang bernama patungan-v1 berisi tujuh berkas, termasuk berkas hasil build dengan nama acaknya.",
@@ -263,15 +313,15 @@ bab("V10", "Cek kerjaan AI", [
  ("Pemeriksaan pertama adalah masukan yang aneh. Apa yang terjadi kalau seseorang mengetik kode HTML sebagai nama orang? Namanya tampil apa adanya sebagai teks, dan tidak ada kode yang dijalankan.",
   [A("cek", min=3, n=0), H("H10a", "xss_nama", "akhir", "Nama berisi kode HTML")]),
  ("Kita cari tahu alasannya di kode. innerHTML hanya dipakai sekali, untuk kerangka halaman yang tidak berisi ketikan pengguna. Semua teks dari pengguna ditampilkan dengan textContent. Kalau AI memakai innerHTML untuk nama orang, aplikasi kita akan menjalankan teks itu sebagai kode. Kesalahan ini disebut XSS, dan di aplikasi yang menampilkan tulisan orang lain, akibatnya bisa sampai akun yang dibajak.",
-  [R("V10a", "grep_innerhtml", "prompt_angka", "termM")]),
+  [R("V10a", "grep_innerhtml", "prompt_angka", "termM", sorot=[{"teks": "grep -n innerHTML", "baris": 2, "kal": 1, "kal2": 2}, {"teks": "itu berisiko XSS", "kal": 2}])]),
  ("Pemeriksaan kedua adalah angka yang tidak masuk akal. Kita isi voucher sembilan ratus sembilan puluh sembilan ribu untuk struk contoh. Hasilnya semua bagian menjadi minus. Andi minus dua ratus lima puluh lima ribu, artinya aplikasi menyuruh Andi membayar teman-temannya. Lalu kita coba struk yang semua menunya gratis, dan bagian Andi menjadi minus tak hingga.",
   [A("cek", min=3, n=1), H("H10b", "voucher_besar", "akhir", "Voucher besar, menu gratis")]),
  ("Ingat laporan AI di bab logika inti? AI sudah menulis bahwa voucher yang lebih besar dari subtotal belum dicek, dan subtotal nol akan menghasilkan pembagian dengan nol. Peringatannya ada, tetapi tidak ada yang menindaklanjutinya. Saran AI yang tidak dibaca tetap menjadi bug.",
-  [R("V05a", "vitest2_akhir-1", "vitest2_akhir", "termU", maks=1)]),
+  [R("V05a", "vitest2_akhir-1", "vitest2_akhir", "termU", maks=1, sorot=[{"teks": "Belum ditangani", "baris": 3, "kal": 1}])]),
  ("Kita jadikan dua kasus ini tes dulu, dan memastikan tesnya merah. Kami juga memeriksanya sendiri: kalau tes baru itu dijalankan pada kode lama, keduanya memang gagal. Lalu kita minta perbaikannya: voucher paling besar sama dengan subtotal, dan subtotal nol menghasilkan bagian nol.",
   [ketik("V10a", "prompt_angka"), kerja("V10a", "prompt_angka", "angka_jadi")]),
  ("Perbaikannya hanya dua baris di hitung.js, dan sekarang ada dua puluh delapan tes yang lulus. Di HP, voucher yang kebesaran sekarang menghasilkan nol untuk semua orang, dan menu gratis juga menghasilkan nol.",
-  [R("V10a", "vitest", "vitest_akhir", "termD", maks=2), H("H10c", "voucher_besar", "akhir", "Setelah diperbaiki")]),
+  [R("V10a", "vitest", "vitest_akhir", "termD", maks=2, sorot=[{"teks": "src/hitung.js: ada dua", "baris": 6, "dari": 0.2}, {"teks": "Tests 28 passed", "dari": 0.55}]), H("H10c", "voucher_besar", "akhir", "Setelah diperbaiki")]),
  ("Pemeriksaan ketiga adalah ke mana data pergi. Spek kita bilang tidak ada server. Kita buktikan dengan tab Network di DevTools. Saat aplikasi dimuat dan dipakai, semua permintaan hanya ke alamat aplikasi kita sendiri. Tidak ada analitik dan tidak ada font dari internet yang ditambahkan diam-diam.",
   [A("cek", min=3, n=2), R("D10", "muat_ulang", "akhir", "dt")]),
  ("Pemeriksaan keempat adalah kode yang tidak dipakai. Kita minta AI menunjukkannya beserta buktinya, tanpa menghapus apa pun dulu. Hasilnya, hampir semua kode terpakai. Yang berlebih hanya satu kata export pada satu fungsi. Jadi kita minta AI membuangnya, menjalankan tes, lalu menyimpan titik aman terakhir.",
@@ -286,7 +336,7 @@ bab("V11", "Terbitkan", [
   [A("terbit", min=8)]),
  ("Lalu repositori itu disambungkan ke layanan hosting yang punya paket gratis, misalnya Vercel atau GitHub Pages. Layanan itu menjalankan npm run build, termasuk skrip versi tadi, dan dalam satu menit aplikasinya sudah punya alamat di internet. Setiap kali kita melakukan push, versi baru terbit, dan nomor gudangnya ikut berganti, sehingga pengguna benar-benar menerima versi baru itu.",
   [A("terbit", min=10)]),
- ("Buka alamatnya di HP, pasang ke layar utama, lalu bagikan link-nya ke teman-temanmu. Mereka tidak perlu Play Store, tidak perlu mengunduh berkas APK, dan tidak perlu mendaftar akun.",
+ ("Buka alamat dari layanan hosting itu di Chrome HP. Ketuk menu titik tiga, lalu pilih Instal aplikasi atau Tambahkan ke layar utama. Ikon Patungan muncul di layar HP seperti aplikasi biasa. Setelah itu, bagikan link-nya ke teman-temanmu. Mereka tidak perlu Play Store, tidak perlu mengunduh berkas APK, dan tidak perlu mendaftar akun.",
   [A("pasang", min=8)]),
 ])
 

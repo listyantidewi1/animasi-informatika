@@ -1,7 +1,7 @@
 # Metadata YouTube: Vibe Coding Patungan
 
 ## Judul
-Vibe Coding Aplikasi HP dari Nol (dan Cara Menangkap Kesalahan AI)
+Vibe Coding yang Benar: Membuat Aplikasi Patungan Sampai Jadi (Claude Code)
 
 ## Judul Short
 AI bikin aplikasi patungan. Di mana salahnya? #shorts
@@ -14,23 +14,24 @@ Semua kesalahan di video ini benar-benar terjadi saat direkam: hasil yang tersem
 
 Alat: Vite + JavaScript murni, Vitest, PWA (manifest + service worker tanpa plugin), Claude Code sebagai asisten AI. Cara yang sama bisa dipakai dengan Gemini CLI, GitHub Copilot, atau Cursor.
 Catatan: lembar Bagikan di HP pada bab "Kirim ke WhatsApp" adalah tiruan untuk perekaman; teks ringkasannya asli dari aplikasi.
+Alamat 192.168.1.23 di bab "Prompt pertama" hanya contoh alamat Wi-Fi rumah; alamat di laptopmu akan berbeda.
 
-Kode akhir: [link repo]
+Kode akhir: https://github.com/listyantidewi1/patungan
 
 Chapter
 0:00 Kait
-1:15 Vibe coding yang benar
-4:04 Spek satu halaman
-8:41 Siapkan proyek
-10:26 Prompt pertama: kerangka
-13:14 Logika inti dan tes
-19:08 Rasa aplikasi HP
-21:48 Simpan offline
-25:00 Kirim ke WhatsApp
-27:02 Jadikan aplikasi
-31:42 Cek kerjaan AI
-35:16 Terbitkan
-36:18 Penutup
+1:22 Vibe coding yang benar
+4:21 Spek satu halaman
+9:53 Siapkan proyek
+11:54 Prompt pertama: kerangka
+17:07 Logika inti dan tes
+24:16 Rasa aplikasi HP
+27:33 Simpan offline
+31:25 Kirim ke WhatsApp
+33:49 Jadikan aplikasi
+39:26 Cek kerjaan AI
+43:45 Terbitkan
+45:05 Penutup
 
 Narasi: Cahaya (suara sintetis ElevenLabs). Rekaman layar sungguhan; animasi penjelasan dibuat dengan kode oleh I Teach Software Engineering. Naskah disusun dengan bantuan AI (Claude buatan Anthropic) dan disunting manusia.
 
@@ -172,10 +173,10 @@ vibe coding, vibe coding aplikasi android, bikin aplikasi dengan AI, cara membua
 
 ## Deskripsi Short
 ```
-AI membuat aplikasi patungan, semua tesnya lulus, lalu voucher 999999 membuat semua orang "dibayar". Yang menarik: AI sudah memperingatkan masalah ini sejak awal. Video lengkap (38 menit): vibe coding aplikasi HP dari nol, di kanal ini.
+AI membuat aplikasi patungan, semua tesnya lulus, lalu voucher 999999 membuat semua orang "dibayar". Yang menarik: AI sudah memperingatkan masalah ini sejak awal. Video lengkap (47 menit): Vibe Coding yang Benar, membuat aplikasi Patungan sampai jadi, di kanal ini.
 Subscribe: https://www.youtube.com/@iTeachSWE
 #vibecoding #shorts
 ```
 
 ## Durasi
-Video 38:24 (1920x1080, 30 fps, suara Cahaya, subtitel .srt). Short 1:13 (1080x1920).
+Video 47:20 (1920x1080, 30 fps, suara Cahaya, subtitel .srt). Short 1:13 (1080x1920).
