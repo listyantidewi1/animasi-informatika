@@ -1,0 +1,52 @@
+<!doctype html><html><head><meta charset="utf-8">
+<link rel="stylesheet" href="xterm-xterm-5.5.0/css/xterm.css">
+<style>
+html,body{margin:0;width:1080px;height:1920px;overflow:hidden;background:#0f1218;font-family:Inter,sans-serif;font-weight:700;color:#fff}
+#atas{position:absolute;left:40px;right:40px;top:70px}
+#judul{font-weight:800;font-size:66px;line-height:1.08;letter-spacing:-1px}
+#judul b{color:#ffb547}
+#langkah{display:flex;gap:12px;margin-top:30px}
+.ch{flex:1;padding:14px 0;border-radius:16px;background:#1c222d;color:#7d8798;text-align:center;font-size:27px;transition:all .3s}
+.ch.on{background:#ffb547;color:#141414}
+.ch.ok{background:#22382a;color:#7fd99a}
+#win{position:absolute;left:30px;right:30px;top:360px;height:1020px;border-radius:22px;background:#1b1e24;box-shadow:0 20px 60px #0008;overflow:hidden;border:2px solid #2c313a}
+#bar{height:56px;background:#2a2e36;display:flex;align-items:center;padding:0 22px;gap:12px}
+.dot{width:18px;height:18px;border-radius:50%}
+#bar span{flex:1;text-align:center;color:#aab;font-size:24px;margin-right:80px}
+#term{position:absolute;left:22px;right:10px;top:72px;bottom:14px}
+#hl{position:absolute;border:4px solid #ffb547;border-radius:10px;background:#ffb54722;opacity:0;transition:opacity .25s,top .25s,left .25s,width .25s,height .25s;pointer-events:none}
+#teks{position:absolute;left:44px;right:44px;top:1430px;font-size:50px;line-height:1.28;text-align:left}
+#teks .u{color:#ffb547}
+#kartu{position:absolute;left:60px;right:60px;top:820px;background:#0b3d66;border:3px solid #4aa3ff;border-radius:24px;padding:34px 36px;opacity:0;transform:translateY(30px);transition:all .35s}
+#kartu.on{opacity:1;transform:none}
+#kartu h3{margin:0 0 18px;font-size:36px;color:#9fd0ff}
+#kartu code{display:block;font-family:"JetBrains Mono";font-size:33px;background:#012035;padding:20px;border-radius:14px;color:#fff}
+</style></head><body>
+<div id="atas"><div id="judul">Cara pasang <b>Claude Code</b><br>dalam 4 langkah</div>
+<div id="langkah"><div class="ch">1 Pasang</div><div class="ch">2 Cek</div><div class="ch">3 Jalankan</div><div class="ch">4 Login</div></div></div>
+<div id="win"><div id="bar"><div class="dot" style="background:#ff5f57"></div><div class="dot" style="background:#febc2e"></div><div class="dot" style="background:#28c840"></div><span>Terminal</span></div><div id="term"></div><div id="hl"></div></div>
+<div id="kartu"><h3>Windows: buka PowerShell, ketik</h3><code>irm https://claude.ai/install.ps1 | iex</code></div>
+<div id="teks"></div>
+<script src="xterm-xterm-5.5.0/lib/xterm.js"></script>
+<script>
+const term = new Terminal({fontFamily:'"JetBrains Mono"',fontSize:30,lineHeight:1.0,cols:50,rows:20,cursorBlink:true,
+ theme:{background:'#1b1e24',foreground:'#e6e6e6',cursor:'#e6e6e6'}});
+term.open(document.getElementById('term'));
+{ const c=term._core._renderService.dimensions.css.cell; const el=document.getElementById('term');
+  const rows=Math.floor(el.clientHeight/c.height), cols=Math.min(52,Math.floor(el.clientWidth/c.width)); term.resize(cols,rows); window.ukuran=[cols,rows,c.width,c.height]; }
+const ws = new WebSocket('ws://127.0.0.1:8765');
+ws.binaryType='arraybuffer';
+ws.onmessage = e => term.write(new Uint8Array(e.data));
+window.baris = () => { const b=term.buffer.active, out=[]; for(let i=0;i<term.rows;i++){const l=b.getLine(b.viewportY+i); out.push(l?l.translateToString(true):'')} return out; };
+window.sorot = (sub, n=1, penuh=false, awal=false) => {
+  const L = baris(); let r=-1; if(awal){r=L.findIndex(l=>l.includes(sub))} else for(let i=L.length-1;i>=0;i--) if(L[i].includes(sub)){r=i;break}
+  const hl=document.getElementById('hl'); if(r<0){hl.style.opacity=0;return false}
+  const c = term._core._renderService.dimensions.css.cell; const col = penuh?0:L[r].indexOf(sub);
+  let w = penuh? Math.max(...L.slice(r,r+n).map(s=>s.length)) : sub.length;
+  hl.style.left=(22+col*c.width-10)+'px'; hl.style.top=(72+r*c.height-6)+'px';
+  hl.style.width=(w*c.width+20)+'px'; hl.style.height=(n*c.height+12)+'px'; hl.style.opacity=1; return true; };
+window.lepas = () => document.getElementById('hl').style.opacity=0;
+window.teks = s => document.getElementById('teks').innerHTML = s;
+window.langkah = k => document.querySelectorAll('.ch').forEach((e,i)=>{e.className='ch'+(i+1<k?' ok':i+1==k?' on':'')});
+window.kartu = on => document.getElementById('kartu').className = on?'on':'';
+</script></body></html>

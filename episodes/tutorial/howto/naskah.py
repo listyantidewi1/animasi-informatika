@@ -1,0 +1,9 @@
+BEATS = [('kait', 'Mau memakai Claude Code, tetapi bingung cara memasangnya? Ikuti empat langkah singkat ini.', 'Mau memakai Klod Kod, tetapi bingung cara memasangnya? Ikuti empat langkah singkat ini.'),
+ ('pasang', 'Langkah pertama, buka terminal. Di Mac atau Linux, ketik perintah ini, lalu tekan Enter.', 'Langkah pertama, buka terminal. Di Mek atau Linuks, ketik perintah ini, lalu tekan Enter.'),
+ ('windows', 'Kalau kamu memakai Windows, buka PowerShell dan ketik perintah yang ini.', 'Kalau kamu memakai Windows, buka Pawersyel, dan ketik perintah yang ini.'),
+ ('path', 'Setelah muncul tulisan successfully installed, baca catatannya. Kalau folder .local/bin belum masuk PATH, jalankan perintah yang disarankan.', 'Setelah muncul tulisan, saksesfuli instold, baca catatannya. Kalau folder lokal bin belum masuk path, jalankan perintah yang disarankan.'),
+ ('versi', 'Langkah kedua, ketik claude --version. Kalau nomor versi muncul, pemasangan berhasil.', 'Langkah kedua, ketik, klod, minus minus vérsyen. Kalau nomor versi muncul, pemasangan berhasil.'),
+ ('folder', 'Langkah ketiga, buat folder proyek, masuk ke folder itu, lalu jalankan claude.', 'Langkah ketiga, buat folder proyek, masuk ke folder itu, lalu jalankan klod.'),
+ ('tema', 'Saat pertama dibuka, pilih tema warna dengan tombol panah, lalu tekan Enter.', 'Saat pertama dibuka, pilih tema warna dengan tombol panah, lalu tekan Enter.'),
+ ('login', 'Langkah keempat, pilih login dengan akun Claude berlangganan, lalu masuk lewat browser.', 'Langkah keempat, pilih login dengan akun Klod berlangganan, lalu masuk lewat brauser.'),
+ ('akun', 'Ingat, Claude Code membutuhkan akun berbayar, misalnya paket Pro. Simpan video ini supaya kamu tidak lupa.', 'Ingat, Klod Kod membutuhkan akun berbayar, misalnya paket Pro. Simpan video ini, supaya kamu tidak lupa.')]
