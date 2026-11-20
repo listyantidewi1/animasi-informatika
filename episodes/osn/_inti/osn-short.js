@@ -23,15 +23,16 @@
       para(ctx, "Bisakah kamu memecahkan ini?", SW / 2, 600, 84, 900, { disp: true, weight: 800, align: "center", lh: 1.1 });
       text(ctx, "00:0" + s, SW / 2, 980, 200, { mono: true, weight: 800, color: C.green, align: "center" });
       ctx.fillStyle = C.line; rr(ctx, 140, 1050, 800, 16, 8); ctx.fill(); ctx.fillStyle = C.red; rr(ctx, 140, 1050, 800 * clamp((l - 0.3) / N, 0, 1), 16, 8); ctx.fill();
-      para(ctx, "Paling sedikit berapa kali menimbang agar 100% yakin label mana yang palsu?", SW / 2, 1180, 44, 920, { weight: 800, align: "center", lh: 1.3 });
+      para(ctx, TL.tanya || "Paling sedikit berapa kali menimbang agar 100% yakin label mana yang palsu?", SW / 2, 1180, 44, 920, { weight: 800, align: "center", lh: 1.3 });
     } else if (b.scene === "ajak") {
       const u = ap(l, 0.2);
       ctx.save(); ctx.globalAlpha = u;
       text(ctx, "JAWABAN DAN CARANYA", SW / 2, 480, 34, { mono: true, weight: 700, color: C.green, align: "center", ls: 4 });
       text(ctx, "ada di video lengkap", SW / 2, 560, 52, { weight: 800, align: "center" });
       rr(ctx, 110, 620, 860, 300, 20); ctx.fillStyle = C.panel; ctx.fill(); ctx.lineWidth = 5; ctx.strokeStyle = C.green; ctx.stroke();
-      text(ctx, "Koin Palsu", SW / 2, 740, 88, { disp: true, weight: 800, align: "center" });
-      text(ctx, "Soal OSN-K Informatika SMA", SW / 2, 820, 40, { weight: 700, align: "center", color: C.mut });
+      const aj = TL.ajak || ["Koin Palsu", "Soal OSN-K Informatika SMA"];
+      text(ctx, aj[0], SW / 2, 740, 88, { disp: true, weight: 800, align: "center", fit: 800 });
+      text(ctx, aj[1], SW / 2, 820, 40, { weight: 700, align: "center", color: C.mut });
       text(ctx, "Bedah Soal OSN-K Informatika", SW / 2, 880, 30, { mono: true, weight: 700, align: "center", color: C.green });
       ctx.restore();
       const v = ap(l, 1.2); ctx.save(); ctx.globalAlpha = v; text(ctx, "↓  ketuk video terkait di bawah", SW / 2, 1010, 38, { weight: 800, align: "center", color: C.red }); ctx.restore();
@@ -45,7 +46,7 @@
       ctx.restore();
     }
     // kredit soal (selalu tampil, di atas daerah antarmuka Shorts)
-    const o = TL.osn; text(ctx, `Soal: OSN-K ${o.tahun} · ${o.jenjang} · No. ${o.nomor} · disusun TOKI · digambar ulang`, SW / 2, 1640, 24, { mono: true, weight: 600, color: C.mut, align: "center", fit: 980 });
+    const o = TL.osn; text(ctx, TL.kredit || `Soal: OSN-K ${o.tahun} · ${o.jenjang} · No. ${o.nomor} · disusun TOKI · digambar ulang`, SW / 2, 1640, 24, { mono: true, weight: 600, color: C.mut, align: "center", fit: 980 });
   }
   Kiko.drawShort = drawShort;
 })();

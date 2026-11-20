@@ -169,7 +169,7 @@
       const tag = b.tag || (TL.tags || [])[b.seg] || ""; ctx.font = font(24, 800, MONO); const tw = ctx.measureText(tag).width + 28;
       rr(ctx, 56, 23, tw, 38, 6); ctx.fillStyle = b.tagColor || (tag === "COBA DULU" ? C.red : tag === "BAGAIMANA KALAU" ? C.purple : C.green); ctx.fill();
       text(ctx, tag, 56 + tw / 2, 51, 24, { mono: true, weight: 800, color: C.white, align: "center", ls: 1 });
-      const o = TL.osn || {}; text(ctx, `OSN-K ${o.tahun} · ${o.jenjang} · No. ${o.nomor} · ${o.judul}`, 56 + tw + 24, 51, 24, { mono: true, weight: 600, color: C.mut });
+      const o = TL.osn || {}; text(ctx, (o.bar && o.bar[b.seg]) || `OSN-K ${o.tahun} · ${o.jenjang} · No. ${o.nomor} · ${o.judul}`, 56 + tw + 24, 51, 24, { mono: true, weight: 600, color: C.mut });
       text(ctx, b.step || TL.segments[b.seg], W - 56, 51, 24, { mono: true, weight: 700, color: C.red, align: "right" });
       ctx.fillStyle = C.green; ctx.fillRect(0, 84, W * clamp(t / TL.total, 0, 1), 3);
     }
