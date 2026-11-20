@@ -1,6 +1,6 @@
 # ON02 Empat Soal OSN-K Tanpa Coding: metadata YouTube
 
-## Video lengkap (13:27)
+## Video lengkap (13:12)
 
 **Judul:** Pembahasan Soal OSN Informatika SMA 2026 Tingkat Kabupaten No. 1, 2, 3 (+ 2025 No. 6)
 
@@ -13,11 +13,11 @@ OSN-K adalah Olimpiade Sains Nasional tingkat kabupaten/kota, babak pertama sebe
 Bab:
 0:00 Kait
 0:36 Pengantar
-1:29 Soal 1: Operasi KWAK dan KWIK (2026 No. 1)
-4:16 Soal 2: Tembolok Komputer, LRU cache (2026 No. 2)
-7:14 Soal 3: Aplikasi Pesan Rahasia, BFS (2026 No. 3)
-9:41 Soal 4: Pencarian Koin, pencarian biner (2025 No. 6)
-12:21 Penutup dan kunci jawaban
+1:14 Soal 1: Operasi KWAK dan KWIK (2026 No. 1)
+4:01 Soal 2: Tembolok Komputer, LRU cache (2026 No. 2)
+6:59 Soal 3: Aplikasi Pesan Rahasia, BFS (2026 No. 3)
+9:26 Soal 4: Pencarian Koin, pencarian biner (2025 No. 6)
+12:05 Penutup dan kunci jawaban
 
 Kredit soal: soal nomor 1 "Operasi KWAK dan KWIK", nomor 2 "Tembolok Komputer", dan nomor 3 "Aplikasi Pesan Rahasia" dari OSN-K Informatika 2026, serta soal nomor 6 "Pencarian Koin" dari OSN-K Informatika 2025, semuanya jenjang SMA, disusun oleh Tim Olimpiade Komputer Indonesia (TOKI). Naskah soal resmi: https://osn.toki.id/arsip . Gambar soal digambar ulang untuk video ini. Jawaban diperiksa dengan program karena kunci resmi tidak dipublikasikan di arsip.
 Latihan soal lain: https://tlx.toki.id

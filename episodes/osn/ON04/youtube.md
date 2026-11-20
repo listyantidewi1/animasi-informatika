@@ -1,6 +1,6 @@
 # ON04 Lipat Kode: metadata YouTube
 
-## Video lengkap (10:53)
+## Video lengkap (10:38)
 
 **Judul:** Pembahasan Soal OSN Informatika SMA 2026 Tingkat Kabupaten No. 35-37 | Lipat Kode (Rekursi C++)
 
@@ -13,12 +13,12 @@ OSN-K adalah Olimpiade Sains Nasional tingkat kabupaten/kota, babak pertama sebe
 Bab:
 0:00 Kait
 0:41 Pengantar
-1:33 Membaca kode C++: LIPAT, KODE, TUNGGAL, GANDA
-2:43 Soal 35: KODE(41)
-4:20 Soal 36: TUNGGAL(63)
-6:06 Soal 37: GANDA(63, 64656667)
-8:59 Konsep: masalah Josephus dan rekursi
-10:01 Penutup dan kunci jawaban
+1:18 Membaca kode C++: LIPAT, KODE, TUNGGAL, GANDA
+2:28 Soal 35: KODE(41)
+4:05 Soal 36: TUNGGAL(63)
+5:51 Soal 37: GANDA(63, 64656667)
+8:44 Konsep: masalah Josephus dan rekursi
+9:46 Penutup dan kunci jawaban
 
 Kredit soal: soal nomor 35, 36, dan 37 "Lipat Kode" dari OSN-K Informatika 2026 jenjang SMA, disusun oleh Tim Olimpiade Komputer Indonesia (TOKI). Naskah soal resmi: https://osn.toki.id/arsip . Kode dan gambar soal ditulis ulang untuk video ini. Jawaban diperiksa dengan program karena kunci resmi tidak dipublikasikan di arsip.
 Latihan soal lain: https://tlx.toki.id

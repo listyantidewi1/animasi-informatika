@@ -8,7 +8,6 @@ b("k2",0,"kait_daftar","Ada mesin yang mengolah deretan angka, ada tembolok komp
 b("k3",0,"kait_judul","Setelah menonton video ini, kamu bisa menjalankan aturan langkah demi langkah dengan teliti, dan kamu akan mengenal empat ide penting dalam informatika.",1.2)
 # 1 Pengantar
 b("bab1",1,"bab","",0.9)
-b("i1",1,"tahap","Halo, selamat datang di Bedah Soal OSN-K Informatika. OSN-K adalah Olimpiade Sains Nasional tingkat kabupaten dan kota, yaitu babak pertama sebelum tingkat provinsi dan tingkat nasional.")
 b("i2",1,"sumber","Tiga soal pertama berasal dari OSN-K Informatika tahun dua ribu dua puluh enam, yaitu soal nomor satu, dua, dan tiga. Soal keempat berasal dari OSN-K tahun dua ribu dua puluh lima, soal nomor enam. Semuanya untuk jenjang SMA, dan disusun oleh Tim Olimpiade Komputer Indonesia.")
 b("i3",1,"alur","Caranya begini. Untuk setiap soal, kita pahami soalnya dulu. Lalu, kamu punya waktu untuk mencoba. Setelah itu, kita bahas bersama-sama.",0.9)
 # 2 Soal 1 KWAK KWIK

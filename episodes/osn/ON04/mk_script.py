@@ -8,7 +8,6 @@ b("k2",0,"kait_kode","Jawabannya ternyata bisa dihitung oleh potongan kode C++ y
 b("k3",0,"kait_judul","Setelah menonton video ini, kamu bisa menelusuri fungsi rekursif tanpa komputer, dan menemukan pola tersembunyi lewat bilangan biner.",1.2)
 # 1 Pengantar
 b("bab1",1,"bab","",0.9)
-b("i1",1,"tahap","Halo, selamat datang di Bedah Soal OSN-K Informatika. OSN-K adalah Olimpiade Sains Nasional tingkat kabupaten dan kota, yaitu babak pertama sebelum tingkat provinsi dan tingkat nasional.")
 b("i2",1,"sumber","Soal di video ini berasal dari OSN-K Informatika tahun dua ribu dua puluh enam jenjang SMA, yaitu soal nomor tiga puluh lima, tiga puluh enam, dan tiga puluh tujuh, yang berjudul Lipat Kode. Soal ini disusun oleh Tim Olimpiade Komputer Indonesia.")
 b("i3",1,"alur","Ketiga soal ini memakai potongan kode yang sama. Kita pahami kodenya dulu, lalu kita kerjakan soalnya satu per satu. Setiap soal punya waktu untuk kamu coba sendiri.",0.9)
 # 2 Kode

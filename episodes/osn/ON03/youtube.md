@@ -1,6 +1,6 @@
 # ON03 Mesin BCS (Stack): metadata YouTube
 
-## Video lengkap (10:19)
+## Video lengkap (10:04)
 
 **Judul:** Pembahasan Soal OSN Informatika SMA 2025 Tingkat Kabupaten No. 11-13 | Mesin BCS (Stack)
 
@@ -13,12 +13,12 @@ OSN-K adalah Olimpiade Sains Nasional tingkat kabupaten/kota, babak pertama sebe
 Bab:
 0:00 Kait
 0:37 Pengantar
-1:29 Cara kerja mesin BCS
-3:31 Soal 11: Jalankan mesinnya
-4:59 Soal 12: Balik arah, dari kertas ke tombol
-6:55 Soal 13: Kertas yang mustahil
-8:45 Konsep: stack dan LIFO
-9:30 Penutup dan kunci jawaban
+1:13 Cara kerja mesin BCS
+3:16 Soal 11: Jalankan mesinnya
+4:44 Soal 12: Balik arah, dari kertas ke tombol
+6:40 Soal 13: Kertas yang mustahil
+8:29 Konsep: stack dan LIFO
+9:15 Penutup dan kunci jawaban
 
 Kredit soal: soal nomor 11, 12, dan 13 "Mesin BCS" dari OSN-K Informatika 2025 jenjang SMA, disusun oleh Tim Olimpiade Komputer Indonesia (TOKI). Naskah soal resmi: https://osn.toki.id/arsip . Gambar soal digambar ulang untuk video ini. Jawaban diperiksa dengan program karena kunci resmi tidak dipublikasikan di arsip.
 Latihan soal lain: https://tlx.toki.id

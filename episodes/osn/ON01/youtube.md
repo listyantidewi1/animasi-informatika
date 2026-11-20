@@ -1,6 +1,6 @@
 # ON01 Koin Palsu: metadata YouTube
 
-## Video lengkap (11:49)
+## Video lengkap (11:34)
 
 **Judul:** Pembahasan Soal OSN Informatika SMA 2026 Tingkat Kabupaten No. 10 | Koin Palsu
 
@@ -13,12 +13,12 @@ OSN-K adalah Olimpiade Sains Nasional tingkat kabupaten/kota, babak pertama sebe
 Bab:
 0:00 Kait
 0:37 Memahami soal
-2:39 Coba dulu
-2:56 Cara biasa dan pemanasan dengan 3 label
-5:37 Lima label
-8:17 Jebakan dan jawaban
-8:49 Rahasia 1, 2, 4, 8 (bilangan biner)
-11:00 Penutup
+2:24 Coba dulu
+2:40 Cara biasa dan pemanasan dengan 3 label
+5:22 Lima label
+8:02 Jebakan dan jawaban
+8:34 Rahasia 1, 2, 4, 8 (bilangan biner)
+10:44 Penutup
 
 Kredit soal: soal nomor 10 "Koin Palsu", OSN-K Informatika 2026 jenjang SMA, disusun oleh Tim Olimpiade Komputer Indonesia (TOKI). Naskah soal resmi: https://osn.toki.id/arsip . Gambar soal digambar ulang untuk video ini. Jawaban diperiksa dengan program karena kunci resmi tidak dipublikasikan di arsip.
 Latihan soal lain: https://tlx.toki.id

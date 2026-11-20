@@ -9,7 +9,6 @@ b("k2",0,"kait_mesin","Mesin itu hanya punya tiga tombol dan sebuah tabung beris
 b("k3",0,"kait_judul","Setelah menonton video ini, kamu bisa mengenali salah satu struktur data terpenting dalam informatika, yaitu stack, hanya dari perilakunya.",1.2)
 # 1 Pengantar
 b("bab1",1,"bab","",0.9)
-b("i1",1,"tahap","Halo, selamat datang di Bedah Soal OSN-K Informatika. OSN-K adalah Olimpiade Sains Nasional tingkat kabupaten dan kota, yaitu babak pertama sebelum tingkat provinsi dan tingkat nasional.")
 b("i2",1,"sumber","Soal di video ini berasal dari OSN-K Informatika tahun dua ribu dua puluh lima jenjang SMA, yaitu soal nomor sebelas, dua belas, dan tiga belas, yang berjudul Mesin BCS. Soal ini disusun oleh Tim Olimpiade Komputer Indonesia.")
 b("i3",1,"alur","Ketiga soal ini memakai satu mesin yang sama. Kita pahami mesinnya dulu, lalu kita kerjakan soalnya satu per satu. Setiap soal punya waktu untuk kamu coba sendiri.",0.9)
 # 2 Mesin BCS
