@@ -84,8 +84,10 @@
     if (a <= 0) return; ctx.save(); ctx.globalAlpha = a;
     { const g = ctx.createLinearGradient(0, 0, 0, HH); g.addColorStop(0, "#1E2C66"); g.addColorStop(1, "#2C3F86"); ctx.fillStyle = g; ctx.fillRect(0, 0, W, HH); }
     glow(ctx, W / 2, HH / 2, 640, P.violet, 0.4);
-    const r = 70; ctx.fillStyle = P.amber; ctx.beginPath(); ctx.arc(W / 2, HH / 2 - 140, r, 0, 6.283); ctx.fill();
-    txt(ctx, String(num), W / 2, HH / 2 - 140 + 34, 96, { align: "center", weight: 900, color: "#10142E" });
+    const bar = String(title).indexOf("|");   // "Bab 2|Tahap 1: Fondasi": label kecil menggantikan lingkaran nomor (R01)
+    if (bar > 0) { const lb = title.slice(0, bar); title = title.slice(bar + 1); pill(ctx, lb, W / 2, HH / 2 - 130, { size: 60, fill: P.amber, color: "#10142E" }); }
+    else { const r = 70; ctx.fillStyle = P.amber; ctx.beginPath(); ctx.arc(W / 2, HH / 2 - 140, r, 0, 6.283); ctx.fill();
+    txt(ctx, String(num), W / 2, HH / 2 - 140 + 34, 96, { align: "center", weight: 900, color: "#10142E" }); }
     txt(ctx, title, W / 2, HH / 2 + 70, 120, { align: "center", weight: 900, fit: 1640 });
     ctx.fillStyle = P.amber; ctx.fillRect(W / 2 - 90, HH / 2 + 118, 180, 7);
     ctx.restore();
