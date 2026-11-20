@@ -7,7 +7,6 @@
 - Layar akhir: 20 detik terakhir (mulai sekitar 29:49; tempatnya sudah disiapkan di layar sejak 29:34); pasang video "SiAntre: Sistem Antrean dari Nol" + tombol subscribe.
 - Kartu: seri Git dan Kerja Tim di sekitar 11:46; repository SiAntre di 21:09; video Vibe Coding dan dokumenter masa depan software engineer di 24:52.
 - Playlist: "Mulai dari Sini" (video ini sebagai video pertama), lalu SiAntre.
-- Sebelum terbit: unggah `Rencana_12_Bulan_Software_Engineer.pdf` ke Google Drive (akses "siapa saja yang memiliki link"), lalu tempel link-nya di deskripsi.
 
 ## Judul
 Mau Jadi Software Engineer di Era AI? Ini Peta Lengkapnya
@@ -15,7 +14,7 @@ Mau Jadi Software Engineer di Era AI? Ini Peta Lengkapnya
 ## Deskripsi
 AI bisa menulis kode dalam sepuluh detik, dan AI juga bisa salah dalam sepuluh detik. Jadi, masih perlukah belajar coding? Video ini adalah peta lengkap menjadi software engineer, dari SMA atau SMK sampai kerja pertama: lima stasiun, apa yang dipelajari di tiap stasiun, cara memilih jalur setelah lulus, cara membuat portofolio yang dilirik perekrut, dan cara memakai AI tanpa menjadi sekadar operator AI.
 
-Unduh rencana 12 bulan (PDF, satu halaman): [TEMPEL LINK PDF DI SINI]
+Unduh rencana 12 bulan (PDF, satu halaman): https://drive.google.com/file/d/1rWurQHhjKAM9V9USsXsvXhVVFHSFPRMg/view?usp=sharing
 
 Bab:
 0:00 Pembuka
