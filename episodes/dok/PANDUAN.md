@@ -45,3 +45,5 @@ Halaman "Unggahan Seri Informatika" (https://claude.ai/artifact/31d36ZDMPwSeD7EQ
 3. "Apakah HP-mu Menguping?" (mitos iklan vs pelacakan data)
 4. "Kenapa Data Kita Bocor Terus?" (kebocoran data)
 Bu Dewi bisa memilih topik lain (D04 adalah pilihan beliau sendiri).
+
+- **Narator sejak D06**: Pratama (voice_id di `D06/tts-kit/suara.json`) dengan model `eleven_v4_turbo` (separuh kredit Eleven v4), pilihan Bu Dewi 19 Nov 2026. Efek suara D06 ditulis di `D06/sfx.js` (satu daftar isyarat per kata kunci). Sesudah render, cari layar kosong: ambil 2 frame per detik dan tandai rentang ≥3 detik yang hanya berisi judul, lalu isi dengan gambar pengantar.

@@ -56,7 +56,7 @@ def timeline(variant):
     if BEBRAS:
         TL.update(episode=code, label=PARENT.get("bebras", {}).get("kategori", "Bebras").split(" (")[0], full_title=FULL, link=LINK, cta_heading="TONTON PEMBAHASAN LENGKAPNYA")
         return TL
-    TL.update(episode=code, label="Dokumenter Animasi" if DOK else ("Simulasi Informatika " if SIM else "Informatika ") + kelas, full_title=FULL, link=LINK,
+    TL.update(episode=code, label=SCRIPT.get("label", "Dokumenter Animasi") if DOK else ("Simulasi Informatika " if SIM else "Informatika ") + kelas, full_title=FULL, link=LINK,
               cta_heading="TONTON VIDEO LENGKAPNYA" if DOK else "TONTON SIMULASI LENGKAPNYA" if SIM else "TONTON EPISODE LENGKAPNYA")
     return TL
 
