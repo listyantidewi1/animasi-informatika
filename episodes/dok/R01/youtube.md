@@ -3,7 +3,7 @@
 ## Pengaturan unggah (wajib)
 - Penonton: **Tidak, video ini tidak dibuat untuk anak-anak** (penonton umum/keluarga).
 - Konten diubah atau sintetis: **Ya** (narasi dibuat dengan AI).
-- Thumbnail: `thumbnail.jpg` (peta lima stasiun, tagline "Jangan Hanya Percaya AI").
+- Thumbnail: `thumbnail.jpg` (peta lima stasiun).
 - Layar akhir: 20 detik terakhir (mulai sekitar 29:49; tempatnya sudah disiapkan di layar sejak 29:34); pasang video "SiAntre: Sistem Antrean dari Nol" + tombol subscribe.
 - Kartu: seri Git dan Kerja Tim di sekitar 11:46; repository SiAntre di 21:09; video Vibe Coding dan dokumenter masa depan software engineer di 24:52.
 - Playlist: "Mulai dari Sini" (video ini sebagai video pertama), lalu SiAntre.

@@ -1,4 +1,4 @@
-// Thumbnail R01: judul besar kiri atas, peta lima stasiun menanjak ke kanan, tiga tokoh kecil di awal jalan, label "Jangan Hanya Percaya AI".
+// Thumbnail R01: judul besar kiri atas, peta lima stasiun menanjak ke kanan, tiga tokoh kecil di awal jalan.
 const K = Kiko, U = K.d06, R = K.r01, KB = K.kit.bipkit, P = D.P, t = 2.0, TAU = Math.PI * 2;
 const g = ctx.createLinearGradient(0, 0, 1920, 1080); g.addColorStop(0, "#121A48"); g.addColorStop(1, "#2B3F8C"); ctx.fillStyle = g; ctx.fillRect(0, 0, 1920, 1080);
 D.glow(ctx, 1500, 380, 800, P.amber, 0.28); D.glow(ctx, 400, 900, 600, P.teal, 0.2);
@@ -7,5 +7,4 @@ ctx.lineCap = "round"; ctx.lineJoin = "round"; ctx.strokeStyle = "rgba(6,10,36,0
 ctx.strokeStyle = "rgba(242,246,255,0.6)"; ctx.lineWidth = 8; ctx.setLineDash([34, 30]); ctx.beginPath(); ctx.moveTo(-40, 960); for (let i = 0; i < 5; i++) ctx.lineTo(X(i), Y(i)); ctx.lineTo(1960, 330); ctx.stroke(); ctx.setLineDash([]);
 for (let i = 0; i < 5; i++) { D.glow(ctx, X(i), Y(i), 190, NC[i], 0.5); ctx.fillStyle = NC[i]; ctx.beginPath(); ctx.arc(X(i), Y(i), 92, 0, TAU); ctx.fill(); ctx.strokeStyle = "#FFFFFF"; ctx.lineWidth = 9; ctx.stroke(); D.txt(ctx, String(i + 1), X(i), Y(i) + 36, 104, { align: "center", weight: 900, color: "#10142E" }); }
 [["ROADMAP", "#FFB547", 176, 215], ["SOFTWARE", "#F4F6FF", 150, 370], ["ENGINEER", "#F4F6FF", 150, 515]].forEach(([s, col, sz, y]) => { ctx.save(); ctx.shadowColor = "rgba(0,0,0,0.55)"; ctx.shadowBlur = 26; ctx.shadowOffsetY = 8; D.txt(ctx, s, 90, y, sz, { weight: 900, color: col }); ctx.restore(); });
-ctx.save(); ctx.translate(1400, 940); ctx.rotate(-0.03); ctx.fillStyle = "rgba(8,14,44,0.94)"; H.rr(ctx, -400, -62, 800, 124, 34); ctx.fill(); ctx.strokeStyle = P.red; ctx.lineWidth = 6; ctx.stroke(); D.txt(ctx, "Jangan Hanya Percaya AI", 0, 22, 62, { align: "center", weight: 900, color: "#F4F6FF" }); ctx.restore();
 KB.draw(ctx, X(4), Y(4) - 215, 190, { pose: "diam", t, mood: "happy" });
