@@ -91,9 +91,10 @@
       const m = b.mode;
       if (m === "kait") {
         const tK = at(b, "koridor"), tP = at(b, "penguat"), tM = at(b, "melemah"), tB = at(b, "baru"), tD = at(b, "daring");
+        const tKu = at(b, "kuat"), gk = r => r === 6 ? ap(l, tKu - 0.3) : ap(l, tM + (Math.abs(r - 6) - 1) * 0.35);
         label(ctx, "// SEKOLAH BEBEK · SATU KORIDOR", 240, 140);
         const amp = { x: 6, y: 4, ia: ap(l, tP - 0.2) };
-        corr(ctx, { N: 12, x0: 240, cw: 120, base: 560, unit: 50, amps: [amp], cellA: ap(l, tK - 0.4), grow: r => ap(l, tM + Math.abs(r - 6) * 0.35), val: r => ap(l, tM + Math.abs(r - 6) * 0.35 + 0.2) });
+        corr(ctx, { N: 12, x0: 240, cw: 120, base: 560, unit: 50, amps: [amp], cellA: ap(l, tK - 0.4), grow: gk, val: gk });
         fadeIn(ctx, ap(l, tB - 0.3), () => {
           const u = (l - tB) * 0.35, xr = 2 + 9 * (0.5 - 0.5 * Math.cos(u * Math.PI)), cx = 240 + (xr - 0.5) * 120;
           wifi(ctx, cx, 250, 56, C.purple); text(ctx, "?", cx + 50, 220, 56, { disp: true, weight: 800, color: C.purple });

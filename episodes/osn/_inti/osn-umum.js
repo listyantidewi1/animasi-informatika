@@ -110,7 +110,7 @@
       if (TL.ajakan) fadeIn(ctx, ap(l, tK - 0.5), () => text(ctx, TL.ajakan, 960, 420, 40, { weight: 800, align: "center", color: C.red, fit: 1600 }));
       fadeIn(ctx, ap(l, tJ - 0.3), () => {
         panel(ctx, 460, 480, 1000, 250, { stroke: C.line });
-        label(ctx, "// BERIKUTNYA DI SERI INI", 960, 545, { align: "center" });
+        label(ctx, TL.berikutLabel || "// BERIKUTNYA DI SERI INI", 960, 545, { align: "center" });
         para(ctx, TL.berikut || "Soal OSN-K berikutnya", 960, 625, 52, 900, { disp: true, weight: 800, align: "center", lh: 1.15 });
       });
     }
