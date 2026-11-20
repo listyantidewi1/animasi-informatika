@@ -57,7 +57,7 @@ for b in script["beats"]:
     dst = os.path.join(OUT, b["id"] + ".wav"); dur, trim = prep(src_for(b["id"]), dst, b.get("efek"))
     lead = b.get("lead", LEAD)                   # beat dialog di tengah kalimat boleh menyambung lebih rapat
     words = len(re.findall(r"\S+", b["text"])); read = words / WPS + 0.8
-    body = dur + 0.3 if DOK else max(dur + 0.3, 0.8 * read)   # narration leads, but a slow reader still gets most of the reading window
+    body = dur + 0.3 if (DOK or script.get("tanpa_waktu_baca")) else max(dur + 0.3, 0.8 * read)   # tanpa_waktu_baca: penonton SMA (seri OSN-K), jeda diatur lewat hold   # narration leads, but a slow reader still gets most of the reading window
     total = round(lead + body + b.get("hold", 0.8), 3)
     extra = {}
     wp = os.path.join(ROOT, "suara_in", "waktu", b["id"] + ".json")   # dari align_dok.py: waktu tiap kata, relatif terhadap awal beat
