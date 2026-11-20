@@ -33,6 +33,6 @@ Pembahasan OSN-K / OSNK / OSN K Informatika 2026 nomor 35, 36, 37 (tingkat kabup
 
 ## Short (1:04)
 
-**Judul:** 41 Orang Melingkar, Siapa yang Terakhir? | Soal OSN Informatika SMA 2026 Tingkat Kabupaten No. 35 #OSNK
+**Judul:** 41 Orang Melingkar, Siapa yang Terakhir? | Soal OSN-K Informatika SMA 2026 No. 35 #OSNK
 
 **Deskripsi:** Soal nomor 35 "Lipat Kode" OSN-K Informatika 2026 jenjang SMA (Tim Olimpiade Komputer Indonesia, ditulis ulang). Bisakah kamu menghitung KODE(41)? Pembahasan lengkapnya ada di video "Pembahasan Soal OSN Informatika SMA 2026 Tingkat Kabupaten No. 35-37 | Lipat Kode (Rekursi C++)" (pasang sebagai Related video). #OSNK #OSNInformatika #Informatika

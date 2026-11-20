@@ -33,6 +33,6 @@ Pembahasan OSN-K / OSNK / OSN K Informatika 2025 nomor 14, 15, 16 (tingkat kabup
 
 ## Short (1:21)
 
-**Judul:** Bebek Hanya Boleh ke Kanan, Ada Berapa Rute? | Soal OSN Informatika SMA 2025 Tingkat Kabupaten No. 14 #OSNK
+**Judul:** Bebek Hanya Boleh ke Kanan, Ada Berapa Rute? | Soal OSN-K Informatika SMA 2025 No. 14 #OSNK
 
 **Deskripsi:** Soal nomor 14 "Perjalanan ke Timur" OSN-K Informatika 2025 jenjang SMA (Tim Olimpiade Komputer Indonesia, digambar ulang). Bisakah kamu menghitung rutenya? Pembahasan lengkapnya ada di video "Pembahasan Soal OSN Informatika SMA 2025 Tingkat Kabupaten No. 14-16 | Perjalanan ke Timur" (pasang sebagai Related video). #OSNK #OSNInformatika #Informatika

@@ -33,6 +33,6 @@ Pembahasan OSN-K / OSNK / OSN K Informatika 2026 nomor 10 (tingkat kabupaten/kot
 
 ## Short (1:29)
 
-**Judul:** 20 Koin, 1 Label Palsu, Cukup Sekali Timbang? | Soal OSN Informatika SMA 2026 Tingkat Kabupaten No. 10 #OSNK
+**Judul:** 20 Koin, 1 Label Palsu, Cukup Sekali Timbang? | Soal OSN-K Informatika SMA 2026 No. 10 #OSNK
 
 **Deskripsi:** Soal nomor 10 OSN-K Informatika 2026 jenjang SMA (Tim Olimpiade Komputer Indonesia, digambar ulang). Bisakah kamu memecahkannya? Pembahasan lengkapnya ada di video "Pembahasan Soal OSN Informatika SMA 2026 Tingkat Kabupaten No. 10 | Koin Palsu" (pasang sebagai Related video). #OSNK #OSNInformatika #Informatika

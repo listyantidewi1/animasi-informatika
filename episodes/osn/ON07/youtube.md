@@ -2,7 +2,7 @@
 
 ## Video lengkap (9:27)
 
-**Judul:** Pembahasan Soal OSN Informatika SMA 2026 Tingkat Kabupaten No. 14-16 | Jadwal Pembinaan Tim Olimpiade
+**Judul:** Pembahasan Soal OSN Informatika SMA 2026 Tingkat Kabupaten No. 14-16 | Jadwal Pembinaan
 
 **Deskripsi:**
 
@@ -33,6 +33,6 @@ Pembahasan OSN-K / OSNK / OSN K Informatika 2026 nomor 14, 15, 16 (tingkat kabup
 
 ## Short (1:12)
 
-**Judul:** 10 Hari Latihan dengan Aturan Jeda, Berapa Poin Terbesar? | Soal OSN Informatika SMA 2026 Tingkat Kabupaten No. 15 #OSNK
+**Judul:** 10 Hari Latihan, Berapa Poin Terbesar? | Soal OSN-K Informatika SMA 2026 No. 15 #OSNK
 
-**Deskripsi:** Soal nomor 15 "Jadwal Pembinaan Tim Olimpiade" OSN-K Informatika 2026 jenjang SMA (Tim Olimpiade Komputer Indonesia, digambar ulang). Bisakah kamu menyusun jadwal terbaiknya? Pembahasan lengkapnya ada di video "Pembahasan Soal OSN Informatika SMA 2026 Tingkat Kabupaten No. 14-16 | Jadwal Pembinaan Tim Olimpiade" (pasang sebagai Related video). #OSNK #OSNInformatika #Informatika
+**Deskripsi:** Soal nomor 15 "Jadwal Pembinaan Tim Olimpiade" OSN-K Informatika 2026 jenjang SMA (Tim Olimpiade Komputer Indonesia, digambar ulang). Bisakah kamu menyusun jadwal terbaiknya? Pembahasan lengkapnya ada di video "Pembahasan Soal OSN Informatika SMA 2026 Tingkat Kabupaten No. 14-16 | Jadwal Pembinaan" (pasang sebagai Related video). #OSNK #OSNInformatika #Informatika

@@ -32,6 +32,6 @@ Pembahasan OSN-K / OSNK / OSN K Informatika 2026 nomor 1, 2, 3 dan 2025 nomor 6 
 
 ## Short (1:00)
 
-**Judul:** 8 Bebek, 1 Pesan Rahasia, Siapa yang Paling Terakhir? | Soal OSN Informatika SMA 2026 Tingkat Kabupaten No. 3 #OSNK
+**Judul:** 8 Bebek, 1 Pesan Rahasia, Siapa yang Paling Terakhir? | Soal OSN-K Informatika SMA 2026 No. 3 #OSNK
 
 **Deskripsi:** Soal nomor 3 "Aplikasi Pesan Rahasia" OSN-K Informatika 2026 jenjang SMA (Tim Olimpiade Komputer Indonesia, digambar ulang). Bisakah kamu memecahkannya? Pembahasan lengkapnya ada di video "Pembahasan Soal OSN Informatika SMA 2026 Tingkat Kabupaten No. 1, 2, 3 (+ 2025 No. 6)" (pasang sebagai Related video). #OSNK #OSNInformatika #Informatika
