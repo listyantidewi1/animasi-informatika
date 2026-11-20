@@ -1,0 +1,17 @@
+import sys, time, os, subprocess; sys.path.insert(0, "/home/user/baca/alat")
+from webbantu import Peramban
+from tulis import server, matikan, sh, db
+print(sh("git reset -q --hard bab-06 && git log --oneline | head -1").stdout); db("contoh"); server()
+w = Peramban("/home/user/baca/B06/web", devtools=False)
+w.mulai(); w.kamera(None); time.sleep(1.0)
+w.tanda("buka"); w.kam_alamat(1.5); w.alamat("http://localhost:5173", tampil="localhost:5173", cps=11, jeda=1.5); w.kamera(None); time.sleep(0.8)
+w.tanda("form"); w.kam("form", pad=70); w.label("Form login muncul", 2.5); time.sleep(3.0)
+w.tanda("salah"); w.ketik("form input >> nth=0", "2425102", 9); w.ketik("input[type=password]", "salahsandi", 9); w.klik("form button", jeda=1.2); w.kam("form", pad=70)
+w.label("Pesan dari server tampil di bawah form", 4.0); time.sleep(4.8)
+w.tanda("nadia"); w.klik("input[type=password]", jeda=0.3); w.pg.keyboard.press("Control+a"); time.sleep(0.4)
+for ch in "rahasia123": w.pg.keyboard.type(ch); time.sleep(0.11)
+time.sleep(0.5); w.label("NIS 2425102, kata sandi rahasia123", 3.5); w.klik("form button", jeda=1.5); w.kamera(None); time.sleep(0.6)
+w.tanda("katalog"); bb = w.kotak("main"); w.kam(rect=[bb[0], 0, bb[2], 520], pad=20); w.label("Daftar buku, lengkap dengan jumlah yang tersedia", 4.0); time.sleep(4.5)
+w.tanda("muat"); w.kamera(None); time.sleep(0.5); subprocess.run(["xdotool", "key", "F5"], env=dict(os.environ, DISPLAY=":99")); time.sleep(1.5); w.label("Dimuat ulang (F5): tetap login, cookie masih ada", 4.5); time.sleep(5.0); w.tanda("muat_akhir")
+w.tanda("gulir"); w.label("525 judul dikirim sekaligus", 6.0); time.sleep(1.5); w.gulir(4000, 2.5); w.gulir(30000, 3.0); w.gulir(80000, 2.5); time.sleep(1.0); w.tanda("gulir_akhir")
+w.selesai(); matikan()
