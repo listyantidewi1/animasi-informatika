@@ -1,0 +1,28 @@
+import sys, time, subprocess; sys.path.insert(0, "/home/user/pinjam/alat")
+from webbantu import Peramban, server, matikan
+def login(w, u, cps=10):
+    w.ketik("input[name=username]", u, cps=cps); w.ketik("input[name=sandi]", "rahasia123", cps=14); time.sleep(0.4); w.klik("form.login button", jeda=1.5)
+# 1) aplikasi kita
+server()
+w = Peramban("/home/user/pinjam/P10/web", devtools=False)
+w.mulai(); w.kamera(None); time.sleep(0.6); w.tanda("mulai")
+w.alamat("http://localhost:8000", tampil="localhost:8000", jeda=1.2); login(w, "rafi"); time.sleep(1.0)
+w.tanda("cari"); w.ketik("input[name=cari]", "tripod", cps=8); w.klik("form.cari button", jeda=1.2); w.kam(".kartu.alat", zoom=1.5); w.label("Tripod: lihat angka Tersedia", 3.5); time.sleep(4.0)
+w.ketik(".kartu.alat input[name=hari]", "", cps=8); w.pg.keyboard.press("Control+a"); w.pg.keyboard.type("2"); time.sleep(1.2); w.tanda("ajukan"); w.klik(".kartu.alat button", jeda=1.5)
+w.kamera(None); w.tanda("diajukan"); w.kam(".grid .kartu", zoom=1.4); w.label("Pinjamanku: status diajukan", 4.5); time.sleep(5.0)
+w.kamera(None); w.klik("nav a:has-text('Daftar alat')", jeda=1.0); w.ketik("input[name=cari]", "tripod", cps=14); w.klik("form.cari button", jeda=1.0); w.tanda("kurang"); w.kam(".kartu.alat", zoom=1.5); w.label("Tersedia berkurang satu", 4.0); time.sleep(4.5)
+w.kamera(None); w.tanda("batal"); w.klik("nav a:has-text('Pinjamanku')", jeda=1.2); w.kam(".grid .kartu", zoom=1.4); w.klik(".grid .kartu button", jeda=1.5); w.kam(".grid .kartu", zoom=1.4); w.label("Dibatalkan", 3.0); time.sleep(3.5)
+w.kamera(None); w.klik("nav a:has-text('Daftar alat')", jeda=1.0); w.ketik("input[name=cari]", "tripod", cps=14); w.klik("form.cari button", jeda=1.0); w.tanda("kembali"); w.kam(".kartu.alat", zoom=1.5); w.label("Angka Tersedia kembali seperti semula", 4.5); time.sleep(5.5)
+w.kamera(None); time.sleep(1.0); w.tanda("akhir"); w.selesai(); matikan()
+# 2) aplikasi contoh bergaya AI: batalkan.php?id=
+subprocess.run("php database/isi_contoh.php", shell=True, cwd="/home/user/pinjam-ai", capture_output=True)
+idw = subprocess.run("""mysql -N sipinjam_ai -e "SELECT p.id FROM peminjaman p JOIN pengguna u ON u.id = p.pengguna_id JOIN alat a ON a.id = p.alat_id WHERE u.username = 'wulan' AND a.nama = 'Laptop' AND p.status = 'disetujui'" """, shell=True, capture_output=True, text=True).stdout.strip(); print("id wulan", idw)
+server("/home/user/pinjam-ai", 8001)
+w = Peramban("/home/user/pinjam/P10/web_ai", devtools=False)
+w.mulai(); w.kamera(None); time.sleep(0.6); w.tanda("mulai")
+w.alamat("http://localhost:8001", tampil="localhost:8001", jeda=1.2); w.label("Contoh kode bergaya hasil AI", 5.0); login(w, "rafi", cps=14); w.klik("nav a:has-text('Pinjamanku')", jeda=1.5)
+w.tanda("alamat"); w.kam_alamat(); w.alamat(f"http://localhost:8001/peminjam/batalkan.php?id={idw}", tampil=f"localhost:8001/peminjam/batalkan.php?id={idw}", cps=8, jeda=1.5)
+w.tanda("pesan"); w.kam("p.pesan", zoom=1.5); w.label("Rafi membatalkan pinjaman milik orang lain", 5.0); time.sleep(6.0)
+w.kamera(None); w.tanda("wulan"); w.pg.goto("http://localhost:8001/keluar.php"); time.sleep(1.2); login(w, "wulan", cps=14); w.klik("nav a:has-text('Pinjamanku')", jeda=1.5)
+w.tanda("dibatalkan"); w.kam(".grid .kartu", zoom=1.4); w.label("Laptop Bu Wulan: dibatalkan, padahal masih dipakai", 7.0); time.sleep(12.0); w.kamera(None); time.sleep(1.5); w.tanda("akhir"); w.selesai(); matikan(8001)
+print(subprocess.run("mysql -N sipinjam_ai -e \"SELECT nama, stok, jumlah_total FROM alat WHERE nama = 'Laptop'\"", shell=True, capture_output=True, text=True).stdout)
