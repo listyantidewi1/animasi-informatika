@@ -30,7 +30,7 @@ b("bab4",4,"bab","",0.9)
 b("b1",4,"graf","Soal nomor lima belas. Sekarang bebek punya tiga kunci sakti, jadi ketiga lajur bergembok bisa dibuka. Satu rute paling banyak melewati dua gembok, jadi kuncinya selalu cukup. Berapa banyak rutenya?",0.8,tag="SOAL 15",mode="soal",soal=15)
 b("b2",4,"coba","Coba hitung sendiri dulu. Pause videonya kalau perlu.",8.5,countdown=8,tag="COBA DULU",soal=15)
 b("b3",4,"graf","Angka di A, B, C, dan E tidak berubah. Titik D sekarang juga bisa dicapai dari E lewat lajur bergembok. Jadi, D bernilai enam ditambah dua, yaitu delapan.",tag="PEMBAHASAN",mode="dp")
-b("b4",4,"graf","Titik F bisa dicapai dari E dengan enam rute, dan dari D lewat lajur bergembok dengan delapan rute. Jadi, F bernilai empat belas.",tag="PEMBAHASAN",mode="dp")
+b("b4",4,"graf","Titik F bisa dicapai dari titik E dengan enam rute, dan dari titik D lewat lajur bergembok, dengan delapan rute. Jadi, F bernilai empat belas.",tag="PEMBAHASAN",mode="dp")
 b("b5",4,"graf","Titik G sekarang punya tiga lajur dari D. Jadi, dari C ada dua, dari D ada delapan kali tiga, yaitu dua puluh empat, dan dari F ada empat belas. Jumlahnya empat puluh.",tag="PEMBAHASAN",mode="dp")
 b("b6",4,"graf","Banyak rute ke H adalah empat puluh kali tiga, yaitu seratus dua puluh. Jawaban soal lima belas adalah seratus dua puluh.",1.0,tag="JAWABAN",mode="dp")
 # 5 Soal 16

@@ -10,8 +10,6 @@ Setelah menonton video ini, kamu bisa memakai ide bit paritas dan aturan membila
 
 ## 1. Pengantar
 
-Halo, selamat datang di Bedah Soal OSN-K Informatika. OSN-K adalah Olimpiade Sains Nasional tingkat kabupaten dan kota, yaitu babak pertama sebelum tingkat provinsi dan tingkat nasional.
-
 Soal di video ini berasal dari OSN-K Informatika tahun dua ribu dua puluh enam jenjang SMA, yaitu soal nomor sembilan, yang berjudul Papan Lampu. Soal ini disusun oleh Tim Olimpiade Komputer Indonesia.
 
 Kita pahami aturan papannya dulu. Setelah itu, kamu punya waktu untuk mencoba, lalu kita bahas bersama langkah demi langkah.
