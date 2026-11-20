@@ -1,0 +1,15 @@
+import sys, time, subprocess; sys.path.insert(0, "/home/user/parkir/alat")
+from webbantu import Peramban, server, matikan
+P = "/home/user/proyek/siparkir"
+subprocess.run(["mysql", "siparkir", "-e", "TRUNCATE sessions;"]); subprocess.run(["/home/user/parkir/alat/bersih.sh", P, "php artisan cache:clear -q"]); server(waktu="2026-11-23 13:00:00")
+w = Peramban("/home/user/parkir/P10/web", devtools=False)
+w.mulai(); w.kamera(None); time.sleep(0.6)
+w.alamat("http://localhost:8000", tampil="localhost:8000", jeda=1.2)
+w.tanda("b06"); w.kam("main", zoom=1.6); w.ketik('input[name=email]', "ratna@nusabakti.test", 14); w.ketik('input[name=password]', "rahasia123", 16); w.klik('button.tombol', jeda=1.5); w.kamera(None)
+w.label("Bu Ratna (owner) tiba di halaman rekap", 3.0); time.sleep(2.0)
+w.tanda("b06_tanggal"); w.kam("form.kartu.sejajar", zoom=1.4); w.klik('input[name=dari]', jeda=0.4); w.pg.fill('input[name=dari]', "2026-10-01"); time.sleep(1.2); w.klik('input[name=sampai]', jeda=0.4); w.pg.fill('input[name=sampai]', "2026-10-31"); time.sleep(1.2)
+w.label("1 sampai 31 Oktober 2026", 3.0); time.sleep(1.5); w.klik('form.kartu.sejajar button.tombol', jeda=1.5)
+w.tanda("b06_hasil"); w.kam(".ringkas", zoom=1.4); w.label("1.500 kendaraan, pendapatan Rp7.775.000", 8.0); time.sleep(8.5)
+w.tanda("b06_harian"); w.kamera(None); w.gulir(430, 1.2); w.label("Rincian per hari", 3.0); time.sleep(3.2)
+x, y, bw, bh = w.kotak("nav.halaman"); time.sleep(0.8); w.label("Daftar transaksi, halaman demi halaman", 4.0); time.sleep(1.5); w.klik("nav.halaman a", jeda=1.5); x, y, bw, bh = w.kotak("nav.halaman"); time.sleep(3.0); w.tanda("b06_akhir")
+w.selesai(); matikan()

@@ -1,0 +1,21 @@
+Bab sepuluh, rekap pendapatan. Bu Ratna ingin memilih rentang tanggal, lalu melihat jumlah kendaraan, total pendapatan, rincian per hari, dan daftar transaksinya. Di akhir bab, rekap itu tetap cepat walaupun datanya dua ratus ribu baris.
+
+Rekap butuh data, jadi kita salin ContohSeeder dari GitHub, lalu menjalankannya dengan php artisan db:seed, minus minus class sama dengan ContohSeeder. Seeder ini membuat sekitar dua ribu empat ratus transaksi tiruan, dari awal Oktober sampai pertengahan November. Angkanya acak, tetapi selalu sama setiap kali dijalankan, supaya hasil di layarmu sama dengan di layarku.
+
+Buat RekapController. Tanggal dari dan sampai kita validasi dulu. Sekarang bagian terpenting di bab ini, yaitu batas waktunya. Sebuah transaksi kita ambil kalau jam keluarnya lebih dari atau sama dengan awal tanggal dari, dan kurang dari awal hari setelah tanggal sampai. Batas bawahnya ikut, batas atasnya tidak. Dengan cara ini, transaksi pada jam sebelas malam di hari terakhir tetap terhitung.
+
+Totalnya kita minta dihitung oleh MySQL, dengan COUNT dan SUM di dalam selectRaw. Kita tidak mengambil ribuan baris ke PHP lalu menjumlahkannya dengan perulangan. Database jauh lebih cepat untuk pekerjaan seperti ini, dan yang dikirim ke PHP hanya satu baris hasil. Rincian per hari memakai cara yang sama, ditambah GROUP BY tanggal.
+
+Daftar transaksinya kita batasi dua puluh baris per halaman dengan paginate. Ada satu kata kecil yang penting di sini, yaitu with. Setiap baris perlu menampilkan plat dan nama area. Tanpa with, Laravel menjalankan satu query tambahan untuk setiap baris, yang dikenal sebagai masalah N plus satu. Dengan with, semua kendaraan dan area diambil sekaligus, cukup dengan dua query.
+
+Tampilannya kita salin dari GitHub, lalu route-nya kita arahkan ke controller ini. Masuk sebagai Bu Ratna, lalu pilih tanggal satu sampai tiga puluh satu Oktober. Hasilnya seribu lima ratus kendaraan, dengan pendapatan tujuh juta tujuh ratus tujuh puluh lima ribu rupiah. Di bawahnya ada rincian per hari, dan daftar transaksi yang bisa dibuka halaman demi halaman.
+
+Sekarang tentang kecepatan. Dua ribu baris itu sedikit. Jadi, kita salin BanyakSeeder, lalu menjalankannya untuk menambah dua ratus ribu transaksi dari dua tahun sebelumnya. Buka MySQL, lalu jalankan query rekap Oktober dengan kata EXPLAIN di depannya. EXPLAIN meminta MySQL menceritakan rencananya. Kolom key menunjukkan bahwa index pada jam keluar dipakai, dan kolom rows menunjukkan hanya sekitar seribu lima ratus baris yang dibaca.
+
+Bandingkan kalau index itu kita larang dengan IGNORE INDEX. Sekarang type-nya ALL, dan rows-nya dua ratus ribu lebih. MySQL membaca seluruh tabel hanya untuk menemukan satu bulan. Inilah gunanya dua baris index yang kita tulis di bab empat.
+
+Cek kerjaan AI, dan inilah jawaban untuk uang yang hilang di awal video. Perintahnya, buatkan rekap pendapatan per rentang tanggal. Inilah query-nya, memakai BETWEEN dari tanggal satu sampai tanggal tiga puluh satu Oktober. Bunyinya persis seperti kalimat permintaan kita. Menurutmu, transaksi mana yang tidak terhitung? Pikirkan dulu.
+
+Kita buktikan di MySQL. Query dengan BETWEEN menghasilkan seribu empat ratus tujuh puluh kendaraan. Query kita menghasilkan seribu lima ratus. Tiga puluh kendaraan hilang, dan semuanya keluar pada tanggal tiga puluh satu. Penyebabnya, tanggal tiga puluh satu Oktober tanpa jam dibaca MySQL sebagai tanggal tiga puluh satu pukul nol nol. Jadi, seluruh hari terakhir tidak ikut, dan nilainya seratus tujuh puluh tujuh ribu rupiah. Tidak ada error, karena query-nya sah. Yang salah adalah maknanya.
+
+Simpan dengan commit. Tantanganmu, tambahkan tombol untuk mengunduh rekap sebagai berkas CSV. Rekap kita sekarang benar, tetapi kita baru tahu karena memeriksanya dengan tangan. Di bab berikutnya, pemeriksaan seperti ini kita serahkan kepada test, dan kita lihat seperti apa test yang selalu hijau walaupun aplikasinya rusak.
