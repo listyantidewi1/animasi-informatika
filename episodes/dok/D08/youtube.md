@@ -9,6 +9,11 @@
 ## Judul
 GTA 6 Dibocorkan oleh Cyberleek Lewat Torrent?
 
+## Alternatif judul untuk A/B testing (Test & compare di YouTube Studio)
+- A (utama): GTA 6 Dibocorkan oleh Cyberleek Lewat Torrent?
+- B: GTA 6 Sudah Bocor 209 GB, tetapi Kenapa Belum Bisa Dimainkan di PC?
+- C: GTA 6 Versi PC Sudah Beredar di Internet. Benarkah Itu Hasil Bocoran Cyberleek?
+
 ## Deskripsi
 GTA 6 akhirnya rilis, dan di hari yang sama kelompok bernama Cyberleek mengaku membocorkannya lewat torrent. Apakah GTA 6 sekarang bisa dimainkan gratis di PC? Ternyata tidak, karena berkas terpentingnya ditahan. Justru di situlah bahayanya: kini beredar "GTA 6 versi PC" yang ukurannya hanya 4 MB. Di video ini kita membongkar apa yang sebenarnya bocor, apa isi berkas kecil itu, tiga jebakan yang sedang beredar (situs unduhan palsu dan keygen, APK yang meminta izin aneh-aneh, dan video "cara main GTA 6 di HP"), lalu cara memeriksa berkas apa pun dalam satu menit dan apa yang harus dilakukan kalau sudah terlanjur kena.
 
