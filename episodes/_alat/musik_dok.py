@@ -115,6 +115,11 @@ def sfx(start, kind, amp):
         L = int(3.0 * SR); tt = np.arange(L) / SR; put(start, amp * 0.6 * np.sin(2 * np.pi * (48 - 10 * tt) * tt) * np.exp(-tt * 1.4))
     elif kind == "pop":
         L = int(0.35 * SR); tt = np.arange(L) / SR; f = 520 + 380 * np.exp(-tt * 30); put(start, amp * (0.5 if V2 else 0.28) * np.sin(2 * np.pi * np.cumsum(f) / SR) * np.exp(-tt * 14))
+    elif kind in ("levelup", "kalah"):   # arpeggio gelombang kotak bergaya game 8-bit (D08): naik = levelup, turun = kalah
+        notes = [72, 76, 79, 84] if kind == "levelup" else [76, 72, 67, 60]
+        for i, m in enumerate(notes):
+            L = int(0.16 * SR); tt = np.arange(L) / SR; sq = np.sign(np.sin(2 * np.pi * midi(m) * tt)).astype(np.float32)
+            put(start + i * 0.085, amp * 0.07 * lp(sq, 3500) * np.exp(-tt * 9))
 if os.path.exists(SFX):
     ev = json.load(open(SFX)); [sfx(a, k, g) for a, k, g in ev]; print(f"{len(ev)} efek suara dari {SFX}")
 
