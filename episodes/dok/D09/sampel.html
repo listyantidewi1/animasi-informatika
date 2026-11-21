@@ -1,0 +1,128 @@
+<!doctype html>
+<html><head><meta charset="utf-8"><title>D09 sampel visual</title>
+<style>html,body{margin:0;background:#000}canvas{display:block}</style></head>
+<body><canvas id="c" width="1920" height="1080"></canvas>
+<script src="kit.js"></script>
+<script>
+K0 = D09; D09.tema(new URLSearchParams(location.search).get("tema") || "grafit");
+const K = D09, C = K.C, cv = document.getElementById("c"), ctx = cv.getContext("2d");
+const T = (s, x, y, size, o) => K.text(ctx, s, x, y, size, o);
+const SC = {
+  // 1. kartu bab = berkas PHP
+  kartu() { K.kartuBab(ctx, 2, "Apa sebenarnya celah keamanan itu?", 0.2, 1); },
+
+  // 2. hook: dua rilis keamanan + cap KRITIS
+  hook() {
+    K.bg(ctx, 0.6);
+    K.kartuCVE(ctx, 200, 230, { w: 860, tag: "RILIS KEAMANAN PHP", id: "21 Oktober 2026", title: "2 celah · eksekusi kode tanpa login", cvss: 9.2, col: C.php, date: "8.2.35 · 8.3.36 · 8.4.27 · 8.5.12" });
+    ctx.save(); ctx.translate(880, 450); ctx.rotate(0.03);
+    K.kartuCVE(ctx, 0, 0, { w: 860, tag: "RILIS KEAMANAN PHP", id: "19 November 2026", title: "8 celah berat · 7 di antaranya skor 9,2", cvss: 9.2, col: C.red, date: "8.2.36 · 8.3.37 · 8.4.28 · 8.5.13" });
+    ctx.restore();
+    K.cap(ctx, "KRITIS", 1420, 880, -0.12, C.red, 70);
+    T("Status per 21 November 2026", 1830, 70, 24, { align: "right", weight: 600, color: C.text2 });
+    T("Sumber: php.net", 1830, 1030, 20, { align: "right", weight: 500, color: C.dim });
+  },
+
+  // 3. loker memori: use-after-free
+  loker() {
+    K.bg(ctx, 1.4);
+    T("use-after-free", 960, 130, 64, { align: "center", mono: true, weight: 700, color: C.text });
+    T("memakai sesuatu setelah dibebaskan", 960, 190, 30, { align: "center", weight: 500, color: C.text2 });
+    const st = ["kosong", "php", "kosong", "rusak", "kosong", "kosong", "php", "kosong", "kosong", "kosong", "kosong", "kosong"];
+    const lb = { 1: "$nama", 3: "$baru", 6: "$sesi" };
+    const cells = K.loker(ctx, 390, 280, 6, 2, { state: st, labels: lb });
+    const c = cells[3];
+    T("dibebaskan,", c.x + c.w / 2, c.y - 46, 22, { align: "center", weight: 700, color: C.text2 });
+    T("lalu dipakai data lain", c.x + c.w / 2, c.y - 18, 22, { align: "center", weight: 700, color: C.text2 });
+    K.kunci(ctx, c.x + c.w / 2 - 200, c.y + c.h + 140, 1.2, C.red);
+    ctx.strokeStyle = C.red; ctx.lineWidth = 4; ctx.setLineDash([12, 10]); ctx.beginPath(); ctx.moveTo(c.x + c.w / 2 - 90, c.y + c.h + 130); ctx.quadraticCurveTo(c.x + c.w / 2, c.y + c.h + 120, c.x + c.w - 24, c.y + c.h / 2 + 30); ctx.stroke(); ctx.setLineDash([]);
+    T("kunci lama masih dipakai", c.x + c.w / 2 - 200, c.y + c.h + 210, 28, { align: "center", weight: 700, color: C.red });
+    K.kartuCVE(ctx, 1240, 700, { w: 560, h: 220, tag: "CONTOH NYATA", id: "CVE-2026-129496", title: "Timezone cache use-after-free", col: C.red });
+  },
+
+  // 4. diff -> peta harta karun
+  diff() {
+    K.bg(ctx, 2.2);
+    T("patch diffing", 960, 120, 60, { align: "center", mono: true, weight: 700 });
+    const L = [
+      "static void decode(buf_t *out,", "        const char *in, size_t n)", "{",
+      "    size_t len = n / 4 * 3;"
+    ];
+    const f1 = K.windowFrame(ctx, 120, 200, 820, 640, { tab: "sebelum.c", fill: C.win });
+    K.code(ctx, f1.x + 40, f1.y + 70, [...L, { t: "    memcpy(out->data, in, len);", bg: K.rgba(C.red, 0.18), mark: C.red, markCh: "-" }, "    out->used += len;", "}"], { size: 26, lh: 50, w: 760, pad: 30 });
+    const f2 = K.windowFrame(ctx, 980, 200, 820, 640, { tab: "sesudah.c", fill: C.win });
+    K.code(ctx, f2.x + 40, f2.y + 70, [...L, { t: "    if (len > out->cap - out->used)", bg: K.rgba(C.term, 0.16), mark: C.term, markCh: "+" }, { t: "        return;", bg: K.rgba(C.term, 0.16), mark: C.term, markCh: "+" }, "    memcpy(out->data, in, len);", "    out->used += len;", "}"], { size: 26, lh: 50, w: 760, pad: 30 });
+    // sorot baris tambahan + ikon kaca pembesar di luar kode
+    const hy = f2.y + 70 + 4 * 50 - 26 - 14; K.glow(ctx, 1390, hy + 50, 420, C.amber, 0.25);
+    ctx.strokeStyle = C.amber; ctx.lineWidth = 5; K.rr(ctx, f2.x - 6, hy, 790, 104, 12); ctx.stroke();
+    const mx = 1760, my = hy + 175; ctx.lineWidth = 8; ctx.beginPath(); ctx.arc(mx, my, 44, 0, 6.283); ctx.stroke();
+    ctx.lineWidth = 14; ctx.lineCap = "round"; ctx.beginPath(); ctx.moveTo(mx + 32, my + 32); ctx.lineTo(mx + 80, my + 80); ctx.stroke();
+    T("baris yang berubah = letak lubangnya", 960, 920, 36, { align: "center", weight: 700, color: C.amber });
+    T("ilustrasi, bukan kode asli", 1800, 1030, 20, { align: "right", weight: 500, color: C.dim });
+  },
+
+  // 5. exploit_agent: lingkaran otomatis
+  agen() {
+    K.bg(ctx, 3.1, { tint: C.red });
+    T("exploit_agent", 960, 130, 60, { align: "center", mono: true, weight: 700, color: C.red, glow: C.red, blur: 20 });
+    const cx = 960, cy = 560, R = 300, labels = ["Bandingkan patch", "Cari celah", "Tulis exploit", "Jalankan"];
+    ctx.strokeStyle = K.rgba(C.red, 0.5); ctx.lineWidth = 4; ctx.setLineDash([14, 12]); ctx.beginPath(); ctx.arc(cx, cy, R, 0, 6.283); ctx.stroke(); ctx.setLineDash([]);
+    labels.forEach((s, i) => { const a = -Math.PI / 2 + i * Math.PI / 2, x = cx + R * Math.cos(a), y = cy + R * Math.sin(a);
+      ctx.fillStyle = C.panel; K.rr(ctx, x - 190, y - 52, 380, 104, 18); ctx.fill(); ctx.strokeStyle = C.red; ctx.lineWidth = 3; K.rr(ctx, x - 190, y - 52, 380, 104, 18); ctx.stroke();
+      T(s, x, y + 14, 34, { align: "center", weight: 700 }); });
+    // orang dicoret
+    ctx.strokeStyle = C.text2; ctx.lineWidth = 8; ctx.beginPath(); ctx.arc(cx, cy - 50, 36, 0, 6.283); ctx.stroke(); ctx.beginPath(); ctx.arc(cx, cy + 70, 70, Math.PI, 0); ctx.stroke();
+    ctx.strokeStyle = C.red; ctx.lineWidth = 12; ctx.beginPath(); ctx.moveTo(cx - 110, cy - 110); ctx.lineTo(cx + 110, cy + 110); ctx.stroke();
+    T("tanpa manusia", cx, cy + 160, 30, { align: "center", weight: 800, color: C.red, spacing: 4 });
+    T("Sumber: Google Threat Intelligence Group, 16 Nov 2026", 1830, 1030, 20, { align: "right", weight: 500, color: C.dim });
+  },
+
+  // 6. jendela patch
+  jendela() {
+    K.bg(ctx, 4.0);
+    K.jam(ctx, 960, 170, 0.9);
+    K.jendelaPatch(ctx, 200, 1720, 600, { gap: 0.72, dots: [[0.08, -0.3], [0.2, 0.4], [0.31, -0.6], [0.36, 0.1], [0.5, 0.55], [0.57, -0.2], [0.66, 0.35], [0.74, -0.5], [0.83, 0.15], [0.9, -0.05]] });
+    T("Hari 0", 240, 920, 26, { weight: 600, color: C.text2 });
+    T("Hari 1: exploit berfungsi", 560, 920, 26, { weight: 600, color: C.text2 });
+    T("Hari 4: ratusan organisasi", 1080, 920, 26, { weight: 600, color: C.text2 });
+    T("Kasus PaperCut · sumber: Google Threat Intelligence Group", 1830, 1030, 20, { align: "right", weight: 500, color: C.dim });
+  },
+
+  // 7. terminal php -v + tabel versi aman
+  terminal() {
+    K.bg(ctx, 5.0);
+    K.terminal(ctx, 110, 170, 980, 560, [
+      { t: "php -v", cmd: true },
+      { t: "PHP 8.3.30 (cli) (NTS)", hl: C.amber, color: C.text },
+      { t: "Copyright (c) The PHP Group", color: C.dim },
+      { t: "" },
+      { t: "composer audit", cmd: true },
+      { t: "Found 1 security vulnerability advisory", hl: C.red, color: C.text },
+      { t: "affecting 1 package: contoh/pengunggah-berkas", color: C.text2 },
+    ], { size: 30, contoh: true });
+    // tabel versi aman bergaya halaman info PHP
+    const x = 1160, y = 200, w = 650; ctx.fillStyle = C.php2; K.rr(ctx, x, y, w, 92, 14); ctx.fill();
+    T("Versi PHP yang sudah di-patch", x + w / 2, y + 58, 30, { align: "center", weight: 800 });
+    ["8.2.36", "8.3.37", "8.4.28", "8.5.13", "8.6.0"].forEach((v, i) => {
+      const ry = y + 100 + i * 82, hl = i === 1; ctx.fillStyle = hl ? K.rgba(C.amber, 0.25) : (i % 2 ? C.row1 : C.row2); ctx.fillRect(x, ry, w, 78);
+      T("PHP " + v.split(".").slice(0, 2).join("."), x + 30, ry + 50, 30, { weight: 600, color: C.text2 });
+      T(v + " ke atas", x + w - 30, ry + 50, 30, { align: "right", mono: true, weight: 700, color: hl ? C.amber : C.term });
+    });
+    T("8.3.30 < 8.3.37 → perlu update", x + w / 2, y + 560, 30, { align: "center", weight: 800, color: C.amber });
+    T("Sumber: php.net, 19 Nov 2026", 1830, 1030, 20, { align: "right", weight: 500, color: C.dim });
+  },
+
+  // 8. thumbnail (tidak membocorkan jawaban)
+  thumb() {
+    K.bg(ctx, 0.3, { scan: false, tint: C.php });
+    K.terminal(ctx, 80, 150, 900, 520, [{ t: "php -v", cmd: true }, { t: "PHP 8.3.30 (cli)", hl: C.red, color: C.text }, { t: "" }, { t: "<?php // celah?", color: C.php }], { size: 44 });
+    K.cap(ctx, "BOCOR LAGI", 560, 800, -0.06, C.red, 86);
+    T("Berapa lama", 1400, 330, 92, { align: "center", weight: 900, color: C.white });
+    T("servermu aman?", 1400, 450, 92, { align: "center", weight: 900, color: C.amber });
+    K.jam(ctx, 1400, 690, 1.25);
+    T("CELAH KEAMANAN PHP", 1400, 960, 52, { align: "center", weight: 900, color: C.php, spacing: 6 });
+  }
+};
+window.render = name => { ctx.clearRect(0, 0, 1920, 1080); SC[name](); };
+window.SCENES = Object.keys(SC);
+</script></body></html>
