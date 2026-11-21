@@ -13,7 +13,7 @@
     // kiri: kartu build
     ctx.save(); ctx.translate(lerp(0, -480, sh), 0);
     const pb = U.pop(l, 1.0); if (pb.a > 0) { ctx.save(); ctx.globalAlpha *= pb.a; U.berkas(ctx, 960, 470, 300 * lerp(0.7, 1, pb.sp), { jenis: "torrent", nama: l > tXb - 0.3 ? "build GTA 6 untuk Xbox" : "bocoran Cyberleek", size: 50, ukuran: l > t209 ? "±209 GB" : "", ukCol: N.gold }); ctx.restore(); }
-    const pp = ramp(l, tPC - 0.1, 0.4); if (pp > 0) { ctx.save(); ctx.globalAlpha *= pp * (1 - sh); ctx.translate(1380, 470); U.perangkat(ctx, 0, 0, 220, "pc", { col: N.red }); ctx.restore(); U.silang(ctx, 1380, 470, 160, ramp(l, tPC + 0.3, 0.4) * (1 - sh)); ctx.save(); ctx.globalAlpha *= pp * (1 - sh); txt(ctx, "bukan PC", 1380, 680, 52, { align: "center", weight: 900, color: N.red }); ctx.restore(); }
+    const pp = ramp(l, tPC - 0.1, 0.4); if (pp > 0) { ctx.save(); ctx.globalAlpha *= pp * (1 - sh); ctx.translate(1520, 470); U.perangkat(ctx, 0, 0, 220, "pc", { col: N.red }); ctx.restore(); U.silang(ctx, 1520, 470, 160, ramp(l, tPC + 0.3, 0.4) * (1 - sh)); ctx.save(); ctx.globalAlpha *= pp * (1 - sh); txt(ctx, "bukan PC", 1520, 680, 52, { align: "center", weight: 900, color: N.red }); ctx.restore(); }
     ctx.restore();
     if (sh > 0) { ctx.save(); ctx.globalAlpha *= sh; U.isiBocoran(ctx, 860, 290, 900, l, tJan, tTid - 0.2, t, { judul: "Isinya" }); ctx.restore(); }
     D.post(c => { U.judulPop(c, "Yang dibagikan Cyberleek", W / 2, 168, 60, l, 0.3, { col: N.violet, a: 1 - sh }); U.judulPop(c, "Tapi ada yang janggal", W / 2, 168, 60, l, tJan, { col: N.red });
