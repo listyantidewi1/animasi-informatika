@@ -4,14 +4,22 @@
 (function (global) {
   const W = 1920, HH = 1080;
   const C = {
-    ink0: "#070B18", ink1: "#0D1530", ink2: "#14204A",          // latar biru tinta
-    grid: "rgba(122,134,184,0.10)",
+    ink0: "#09090B", ink2: "#1C1B20",                            // latar grafit (tema bawaan)
+    grid: "rgba(140,148,216,0.07)",
+    win: "#121115", bar: "#1E1D23", termBg: "#0B0B0D", lokKosong: "#18171C", lokBebas: "#222127", row1: "#1C1B21", row2: "#16151A",
     php: "#8C94D8", php2: "#5B63A8", phpDeep: "#2B2F5C",           // ungu khas PHP
     term: "#3DDC97", termDim: "#1F7A55",                          // hijau terminal = aman/patch
     red: "#FF4D5E", redDeep: "#7A1424",                           // merah alarm = celah
-    amber: "#FFC24B", text: "#E8ECFF", text2: "#A9B3DA", dim: "#5D6898",
-    panel: "rgba(16,24,54,0.92)", line: "rgba(232,236,255,0.14)", white: "#FFFFFF"
+    amber: "#FFC24B", text: "#EEEDF2", text2: "#B4B1BE", dim: "#6E6A78",
+    panel: "rgba(24,23,28,0.94)", line: "rgba(238,237,242,0.14)", white: "#FFFFFF"
   };
+  const TEMA = {
+    grafit: {},
+    plum: { ink0: "#0C070F", ink2: "#221429", win: "#160E1A", bar: "#24172B", termBg: "#0D0810", lokKosong: "#1E1424", lokBebas: "#2A1E30", row1: "#24172B", row2: "#1C1121",
+      text: "#F1EAF5", text2: "#BBAFC4", dim: "#75667F", panel: "rgba(30,18,36,0.94)", grid: "rgba(160,120,200,0.08)" }
+  };
+  const BASE = Object.assign({}, C);
+  function tema(n) { Object.assign(C, BASE, TEMA[n] || {}); }
   const SANS = "Inter, 'DejaVu Sans', sans-serif";
   const MONO = "'JetBrains Mono', 'DejaVu Sans Mono', monospace";
   const clamp = (v, a = 0, b = 1) => Math.max(a, Math.min(b, v));
@@ -32,11 +40,12 @@
   // ---------- latar: biru tinta + grid radar + pindai tipis ----------
   function bg(ctx, t = 0, o = {}) {
     const g = ctx.createRadialGradient(W * 0.5, HH * 0.42, 80, W * 0.5, HH * 0.5, W * 0.75);
-    g.addColorStop(0, o.mid || C.ink2); g.addColorStop(1, C.ink0); ctx.fillStyle = g; ctx.fillRect(0, 0, W, HH);
+    g.addColorStop(0, C.ink2); g.addColorStop(1, C.ink0); ctx.fillStyle = g; ctx.fillRect(0, 0, W, HH);
     ctx.strokeStyle = C.grid; ctx.lineWidth = 1;
     for (let x = 0; x <= W; x += 64) { ctx.beginPath(); ctx.moveTo(x + 0.5, 0); ctx.lineTo(x + 0.5, HH); ctx.stroke(); }
     for (let y = 0; y <= HH; y += 64) { ctx.beginPath(); ctx.moveTo(0, y + 0.5); ctx.lineTo(W, y + 0.5); ctx.stroke(); }
     if (o.scan !== false) { const sy = (t * 140) % (HH + 200) - 100; const s = ctx.createLinearGradient(0, sy - 80, 0, sy + 4); s.addColorStop(0, rgba(C.php, 0)); s.addColorStop(1, rgba(C.php, 0.07)); ctx.fillStyle = s; ctx.fillRect(0, sy - 80, W, 84); }
+    if (o.tint) { const tg = ctx.createRadialGradient(W * 0.5, HH * 0.45, 50, W * 0.5, HH * 0.5, W * 0.6); tg.addColorStop(0, rgba(o.tint, 0.14)); tg.addColorStop(1, rgba(o.tint, 0)); ctx.fillStyle = tg; ctx.fillRect(0, 0, W, HH); }
     const v = ctx.createRadialGradient(W / 2, HH / 2, HH * 0.45, W / 2, HH / 2, HH * 1.05); v.addColorStop(0, "rgba(0,0,0,0)"); v.addColorStop(1, "rgba(0,0,0,0.45)"); ctx.fillStyle = v; ctx.fillRect(0, 0, W, HH);
   }
 
@@ -70,11 +79,11 @@
   // ---------- jendela editor / terminal generik ----------
   function windowFrame(ctx, x, y, w, h, o = {}) {
     ctx.save(); ctx.shadowColor = "rgba(0,0,0,0.55)"; ctx.shadowBlur = 50; ctx.shadowOffsetY = 18;
-    ctx.fillStyle = o.fill || "#0F1426"; rr(ctx, x, y, w, h, 18); ctx.fill(); ctx.restore();
+    ctx.fillStyle = o.fill || C.win; rr(ctx, x, y, w, h, 18); ctx.fill(); ctx.restore();
     ctx.save(); rr(ctx, x, y, w, h, 18); ctx.clip();
-    ctx.fillStyle = o.bar || "#1A2140"; ctx.fillRect(x, y, w, 58);
+    ctx.fillStyle = o.bar || C.bar; ctx.fillRect(x, y, w, 58);
     ["#FF5F57", "#FEBC2E", "#28C840"].forEach((c, i) => { ctx.fillStyle = c; ctx.beginPath(); ctx.arc(x + 32 + i * 30, y + 29, 9, 0, 6.283); ctx.fill(); });
-    if (o.tab) { ctx.fillStyle = o.fill || "#0F1426"; rr(ctx, x + 140, y + 12, Math.max(220, o.tab.length * 17 + 70), 46, 10); ctx.fill(); ctx.fillRect(x + 140, y + 40, Math.max(220, o.tab.length * 17 + 70), 20);
+    if (o.tab) { ctx.fillStyle = o.fill || C.win; rr(ctx, x + 140, y + 12, Math.max(220, o.tab.length * 17 + 70), 46, 10); ctx.fill(); ctx.fillRect(x + 140, y + 40, Math.max(220, o.tab.length * 17 + 70), 20);
       ctx.fillStyle = C.php; ctx.beginPath(); ctx.arc(x + 166, y + 36, 7, 0, 6.283); ctx.fill(); text(ctx, o.tab, x + 184, y + 45, 24, { mono: true, weight: 500, color: C.text }); }
     if (o.title) text(ctx, o.title, x + w / 2, y + 38, 24, { align: "center", weight: 600, color: C.text2 });
     ctx.restore();
@@ -128,7 +137,7 @@
     const lw = o.lw || 150, lh = o.lh || 170, gap = 18; const cells = [];
     for (let r = 0; r < rows; r++) for (let c = 0; c < cols; c++) {
       const i = r * cols + c, lx = x + c * (lw + gap), ly = y + r * (lh + gap), st = (o.state && o.state[i]) || "kosong";
-      const fill = { kosong: "#121B3A", php: C.phpDeep, bebas: "#1B2236", baru: "#123B2E", rusak: C.redDeep }[st];
+      const fill = { kosong: C.lokKosong, php: C.phpDeep, bebas: C.lokBebas, baru: "#123B2E", rusak: C.redDeep }[st];
       const edge = { kosong: C.line, php: C.php, bebas: "rgba(169,179,218,0.35)", baru: C.term, rusak: C.red }[st];
       if (st === "rusak") glow(ctx, lx + lw / 2, ly + lh / 2, lw, C.red, 0.5);
       ctx.fillStyle = fill; rr(ctx, lx, ly, lw, lh, 10); ctx.fill(); ctx.strokeStyle = edge; ctx.lineWidth = st === "kosong" ? 1.5 : 3; rr(ctx, lx, ly, lw, lh, 10); ctx.stroke();
@@ -147,7 +156,7 @@
 
   // ---------- terminal ----------
   function terminal(ctx, x, y, w, h, lines, o = {}) {
-    const in_ = windowFrame(ctx, x, y, w, h, { title: o.title || "Terminal", fill: "#0A0F1E" });
+    const in_ = windowFrame(ctx, x, y, w, h, { title: o.title || "Terminal", fill: C.termBg });
     const size = o.size || 32, lh = size * 1.55; ctx.save(); ctx.font = `500 ${size}px ${MONO}`;
     lines.forEach((L, i) => {
       const by = in_.y + 70 + i * lh; const l = typeof L === "string" ? { t: L } : L;
@@ -179,5 +188,5 @@
     text(ctx, s >= 0 ? "??:??" : "", cx, cy + 40 * s, 110 * s, { align: "center", mono: true, weight: 700, color: C.red, glow: C.red, blur: 24 }); ctx.restore();
   }
 
-  global.D09 = { W, HH, C, SANS, MONO, clamp, lerp, eio, rgba, rr, text, glow, bg, tokens, code, windowFrame, kartuBab, meterCVSS, kartuCVE, cap, loker, kunci, terminal, jendelaPatch, jam };
+  global.D09 = { tema, TEMA, W, HH, C, SANS, MONO, clamp, lerp, eio, rgba, rr, text, glow, bg, tokens, code, windowFrame, kartuBab, meterCVSS, kartuCVE, cap, loker, kunci, terminal, jendelaPatch, jam };
 })(typeof window !== "undefined" ? window : globalThis);
