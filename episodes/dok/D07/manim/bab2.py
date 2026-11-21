@@ -45,9 +45,9 @@ class Bab2(BabScene):
         self.play(Create(ax), FadeIn(lk), run_time=0.5)
         dots = VGroup(*[Dot(ax.point_from_proportion(min(0.999, g_ / 240)), color=NOL, radius=0.05) for g_ in NOLZ])
         cnt = ValueTracker(0)
-        angka_t = always_redraw(lambda: TB(angka(cnt.get_value()) + " nol", 56, INK).move_to(RIGHT * 4.9 + UP * 0.6))
+        angka_t = always_redraw(lambda: TB(angka(cnt.get_value()) + " nol", 56, INK).move_to(RIGHT * 4.3 + UP * 0.6))
         self.add(angka_t)
-        self.play_at(b.at("memeriksa"), LaggedStart(*[GrowFromCenter(d) for d in dots], lag_ratio=0.03), cnt.animate.set_value(1000), dur=2.4)
+        self.play_at(b.at("memeriksa"), LaggedStart(*[GrowFromCenter(d) for d in dots], lag_ratio=0.03), cnt.animate.set_value(1104), dur=2.4)
         self.pc, self.ax, self.dots, self.cnt, self.angka_t, self.lk, self.mt = pc, ax, dots, cnt, angka_t, lk, m
 
     def beat_b2_3(self, b):
@@ -55,7 +55,7 @@ class Bab2(BabScene):
         m = VGroup(Dot(g.n2p(2021), color=AI), T("2021", 22, AI).next_to(g.n2p(2021), UP, buff=0.2))
         self.play_at(b.at("Sekarang"), FadeIn(m, shift=DOWN * 0.2), FadeOut(self.pc, shift=LEFT), FadeOut(self.angka_t), VGroup(self.ax, self.dots, self.lk).animate.shift(LEFT * 7.0), dur=0.8)
         self.angka_t.clear_updaters()
-        cnt = ValueTracker(1000)
+        cnt = ValueTracker(1104)
         def teks():
             v = cnt.get_value()
             return TB(angka(v), 64 if v < 1e9 else 58, INK).move_to(RIGHT * 1.2 + UP * 0.9)

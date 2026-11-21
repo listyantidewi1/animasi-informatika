@@ -51,7 +51,7 @@ class Bab3(BabScene):
         lampu = VGroup(*[Circle(radius=0.085, fill_color=GARIS, fill_opacity=1, stroke_width=0) for _ in range(650)]).arrange_in_grid(25, 26, buff=0.09).shift(DOWN * 0.45 + LEFT * 2.0)
         self.play(FadeIn(lampu), run_time=0.4)
         cnt = ValueTracker(0)
-        lab = always_redraw(lambda: VGroup(TB(angka(cnt.get_value()), 80, NOL), T("ide dicoba, gagal", 30, INK2)).arrange(DOWN, buff=0.2).move_to(RIGHT * 4.6 + DOWN * 0.3))
+        lab = always_redraw(lambda: VGroup(TB(angka(cnt.get_value()), 80, NOL), T("gagasan dicoba, gagal", 30, INK2)).arrange(DOWN, buff=0.2).move_to(RIGHT * 4.6 + DOWN * 0.3))
         self.add(lab)
         urut = list(range(650)); random.Random(5).shuffle(urut)
         anims = [Succession(lampu[i].animate(run_time=0.05).set_fill(PRIMA), lampu[i].animate(run_time=0.15).set_fill("#3B1E24")) for i in urut]
@@ -61,8 +61,8 @@ class Bab3(BabScene):
 
     def beat_b3_4(self, b):
         satu = self.lampu[12 * 26 + 13]
-        self.play_at(b.at("Ide yang berhasil"), satu.animate.set_fill(LEAN).scale(2.6), Flash(satu, color=LEAN, line_length=0.3), dur=0.8)
-        ok = T("1 ide berhasil", 34, LEAN).next_to(self.lab3, DOWN, buff=0.5)
+        self.play_at(b.at("Gagasan yang berhasil"), satu.animate.set_fill(LEAN).scale(2.6), Flash(satu, color=LEAN, line_length=0.3), dur=0.8)
+        ok = T("1 gagasan berhasil", 34, LEAN).next_to(self.lab3, DOWN, buff=0.5)
         self.play(FadeIn(ok, shift=UP * 0.2), run_time=0.4)
         self.ok = ok
 
@@ -71,7 +71,7 @@ class Bab3(BabScene):
         ag = VGroup(*[agen(0.36) for _ in range(60)]).arrange_in_grid(6, 10, buff=0.2).shift(LEFT * 3.6 + DOWN * 0.4)
         k1 = VGroup(TB("± 60", 64, AI), T("subagen", 28, INK2)).arrange(DOWN, buff=0.1)
         k2 = VGroup(TB("31 juta", 64, INK), T("token ditulis", 28, INK2)).arrange(DOWN, buff=0.1)
-        k3 = VGroup(TB("2.000+", 64, LEAN), T("perintah di terminal", 28, INK2)).arrange(DOWN, buff=0.1)
+        k3 = VGroup(TB("2.400", 64, LEAN), T("perintah di terminal", 28, INK2)).arrange(DOWN, buff=0.1)
         kol = VGroup(k1, k2, k3).arrange(DOWN, buff=0.5, aligned_edge=LEFT).shift(RIGHT * 3.4 + DOWN * 0.3)
         self.play_at(b.at("enam puluh"), LaggedStart(*[FadeIn(a, scale=0.5) for a in ag], lag_ratio=0.02), FadeIn(k1, shift=LEFT * 0.2), dur=1.1)
         self.play_at(b.at("tiga puluh satu"), FadeIn(k2, shift=LEFT * 0.2), dur=0.5)

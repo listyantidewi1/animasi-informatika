@@ -76,7 +76,7 @@ class Bab5(BabScene):
         r = self.r3
         und = Line(r["ln2"][0].get_corner(DL), r["ln2"][-1].get_corner(DR), color=NOL, stroke_width=4).shift(DOWN * 0.08)
         x = VGroup(Circle(radius=0.6, fill_color=NOL, fill_opacity=1, stroke_width=0), T("✗", 54, BG, weight=BOLD)).move_to(r["info"]).shift(UP * 0.2)
-        er = kode("error: rfl gagal", 24, NOL).next_to(x, DOWN, buff=0.35)
+        er = T("bukti ditolak", 28, NOL, weight=BOLD).next_to(x, DOWN, buff=0.35)
         self.play_at(b.at("menolak"), Create(und), GrowFromCenter(x), FadeIn(er), Wiggle(r["ln2"]), dur=0.9)
         self.r6 = VGroup(self.win, r["info"], r["it"], r["ln"], r["ln2"], und, x, er)
 
@@ -122,6 +122,7 @@ class Bab5(BabScene):
         self.play(LaggedStart(*[c.animate(rate_func=rate_functions.ease_out_sine).scale(9).set_stroke(opacity=0) for c in gel], lag_ratio=0.35),
                   titik.animate.set_color(LEAN).set_opacity(0.9), run_time=1.8)
         kecil = T("program kecil yang memeriksa setiap langkah", 26, INK2).next_to(inti, DOWN, buff=0.35)
+        kecil.add_background_rectangle(color=BG, opacity=0.92, buff=0.15)
         self.play(FadeIn(kecil), run_time=0.4)
         self.r9 = VGroup(titik, inti, kecil, *gel)
 
@@ -129,5 +130,6 @@ class Bab5(BabScene):
         self.play_at(b.at("Itulah"), FadeOut(self.r9), dur=0.6)
         q = TB("“Peluang ada yang janggal\ndi sini hampir nol.”", 60, INK, line_spacing=1.1)
         en = T("“The chance that anything is fishy here is approximately zero.”", 24, INK2).next_to(q, DOWN, buff=0.4)
-        src = T("Andrew Sutherland, MIT", 24, DIM).next_to(en, DOWN, buff=0.2)
-        self.play_at(b.at("peluang"), FadeIn(q, scale=1.05), FadeIn(en), FadeIn(src), dur=0.8)
+        src = TB("Andrew Sutherland, MIT", 36, INK2).next_to(q, UP, buff=0.7)
+        self.play_at(b.at("Sutherland"), FadeIn(src, shift=DOWN * 0.2), dur=0.5)
+        self.play_at(b.at("peluang"), FadeIn(q, scale=1.05), FadeIn(en), dur=0.8)

@@ -68,7 +68,7 @@ class Bab1(BabScene):
             celah.add(VGroup(br, T(str(c - a), 22, INK2).next_to(br, UP, buff=0.08)))
         dua = VGroup(*[BraceBetweenPoints(ax.n2p(a) + UP * 0.9, ax.n2p(c) + UP * 0.9, UP, color=INK2) for a, c in [(41, 43), (59, 61)]])
         dua_l = VGroup(*[T("2", 22, INK2).next_to(x, UP, buff=0.08) for x in dua])
-        self.play_at(b.at("acak"), LaggedStart(*[FadeIn(c, shift=DOWN * 0.1) for c in celah], FadeIn(dua), FadeIn(dua_l), lag_ratio=0.2), dur=1.4)
+        self.play_at(b.at("acak"), LaggedStart(*[FadeIn(c, shift=DOWN * 0.1) for c in celah], FadeIn(dua), FadeIn(dua_l), lag_ratio=0.2), dur=1.4, sebelum=b.at("sulit"))
         tanya = TB("?", 90, PRIMA).shift(UP * 2.2)
         self.play_at(b.at("sulit"), FadeIn(tanya, scale=1.5), dur=0.5)
         self.garis = VGroup(ax, tanda, celah, dua, dua_l, tanya)
@@ -130,7 +130,6 @@ class Bab1(BabScene):
         self.r5 = VGroup(bid1, bid2, mesin, l1, l2, s, sl, s2)
 
     def beat_b1_6(self, b):
-        self.play_at(b.at("Ada"), FadeOut(self.r5), dur=0.5)
         ax = Axes(x_range=[-0.5, 1.5, 0.5], y_range=[0, 32, 10], x_length=3, y_length=5.4, axis_config={"color": DIM, "include_ticks": False}).shift(LEFT * 4.3 + DOWN * 0.3)
         ax2 = Axes(x_range=[-1.5, 3.5, 1], y_range=[-2.5, 2.5, 1], x_length=6.2, y_length=6.2, axis_config={"color": DIM}).shift(RIGHT * 2.6 + DOWN * 0.3)
         l1 = T("masukan: 1/2 + t·i", 24, INK2).next_to(ax, DOWN, buff=0.15)
@@ -140,7 +139,7 @@ class Bab1(BabScene):
         jejak = always_redraw(lambda: ParametricFunction(lambda u: ax2.c2p(f(u).real, f(u).imag), t_range=[0.01, max(0.02, tt.get_value()), 0.05], color=AI, stroke_width=4))
         ttk = always_redraw(lambda: Dot(ax2.c2p(f(tt.get_value()).real, f(tt.get_value()).imag), color=INK, radius=0.08))
         mas = always_redraw(lambda: Dot(ax.c2p(0.5, tt.get_value()), color=INK, radius=0.08))
-        self.play_at(b.at("Ada"), FadeIn(ax), FadeIn(ax2), FadeIn(l1), FadeIn(l2), dur=0.6)
+        self.play_at(b.at("Ada"), FadeOut(self.r5), FadeIn(ax), FadeIn(ax2), FadeIn(l1), FadeIn(l2), dur=0.6, sebelum=b.at("titik-titik khusus"))
         self.add(jejak, ttk, mas)
         self.play_at(b.at("titik-titik khusus"), tt.animate.set_value(14.1347), dur=3.2, rate_func=rate_functions.ease_in_out_sine)
         # sampai di pusat: kilat
@@ -159,7 +158,7 @@ class Bab1(BabScene):
         def ping(g):
             return Succession(Wait(0), GrowFromCenter(Dot(ax.c2p(0.5, g), color=NOL, radius=0.11)))
         # jejak berlanjut, tiap kali lewat pusat muncul titik merah
-        self.play_at(b.at("semua nol"), r["tt"].animate.set_value(31.5), dur=3.0, rate_func=linear)
+        self.play_at(b.at("semua nol"), r["tt"].animate.set_value(31.5), dur=3.0, rate_func=linear, sebelum=b.at("garis lurus"))
         titik = VGroup(*[Dot(ax.c2p(0.5, g), color=NOL, radius=0.11) for g in lanjut])
         self.add(titik)
         self.play_at(b.at("garis lurus"), Create(garis), dur=0.9)
@@ -202,11 +201,11 @@ class Bab1(BabScene):
         g1 = kurva(1)
         cap = always_redraw(lambda: None) if False else None
         lab = T("1 nol", 30, AI).to_corner(UR, buff=0.6)
-        self.play_at(b.at("satu nada"), Create(g1), FadeIn(lab), dur=1.6)
-        for n in (5, 20, 100):
+        jadwal = [b.at("satu nada"), b.at("semua nada"), b.at("dijumlahkan"), b.at("hasilnya"), b.at("persis")]
+        self.play_at(jadwal[0], Create(g1), FadeIn(lab), dur=1.6, sebelum=jadwal[1])
+        for k, n in enumerate((5, 20, 100)):
             lb2 = T(f"{n} nol", 30, AI).to_corner(UR, buff=0.6)
-            self.play(Transform(g1, kurva(n)), Transform(lab, lb2), run_time=1.5)
-            self.wait(0.4)
+            self.play_at(jadwal[k + 1], Transform(g1, kurva(n)), Transform(lab, lb2), dur=1.5, sebelum=jadwal[k + 2])
         self.play_at(b.at("persis"), Indicate(lt, color=PRIMA, scale_factor=1.15), dur=0.8)
         self.r9 = VGroup(ax, tangga, lt, g1, lab)
 

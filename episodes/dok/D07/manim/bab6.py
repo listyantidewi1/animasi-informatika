@@ -49,11 +49,13 @@ class Bab6(BabScene):
         self.r3 = VGroup(wf, wt, f, t, box, seh, bug, lulus)
 
     def beat_b6_4(self, b):
-        self.play_at(b.at("Di Lean"), FadeOut(self.r3), dur=0.5)
         s = TB("masalah spesifikasi", 80, ORANYE)
         sub = T("apakah yang dibuktikan memang hal yang kita maksud?", 30, INK2).next_to(s, DOWN, buff=0.4)
-        self.play_at(b.at("spesifikasi"), FadeIn(s, scale=1.2), FadeIn(sub), dur=0.7)
-        self.r4 = VGroup(s, sub)
+        di = TB("Di Lean:", 44, LEAN).next_to(s, UP, buff=0.6)
+        self.play_at(b.at("Di Lean"), FadeOut(self.r3), FadeIn(di, shift=DOWN * 0.2), dur=0.5)
+        self.play_at(b.at("masalah yang sama"), FadeIn(sub), dur=0.6)
+        self.play_at(b.at("spesifikasi"), FadeIn(s, scale=1.2), dur=0.7)
+        self.r4 = VGroup(s, sub, di)
 
     def beat_b6_5(self, b):
         self.play_at(b.at("Lean hanya"), FadeOut(self.r4), dur=0.5)
@@ -102,6 +104,8 @@ class Bab6(BabScene):
         for r in rows:
             r[1].next_to(r[0], RIGHT, buff=0.4)
         rows.arrange(DOWN, aligned_edge=LEFT, buff=0.38).move_to(LEFT * 0.8)
+        xt = max(r[0].get_right()[0] for r in rows) + 0.4   # kolom teks rata kiri meski lebar ikon berbeda
+        for r in rows: r[0].set_x(xt - 0.4 - 0.25); r[1].set_x(xt + r[1].width / 2)
         xr = rows.get_right()[0] + 0.8
         for r in rows: r[2].move_to([xr, r[1].get_y(), 0], aligned_edge=LEFT)
         VGroup(rows).move_to(DOWN * 0.3)

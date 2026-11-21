@@ -52,12 +52,14 @@ class Bab7(BabScene):
         self.r3 = VGroup(l, bar, kita, lm, lk)
 
     def beat_b7_4(self, b):
-        self.play_at(b.at("Jadi"), FadeOut(self.r3), dur=0.5)
         t = TB("Jangan Langsung\nPercaya Hasil AI", 84, PRIMA, line_spacing=1.0)
         sub = T("periksa dengan alat yang tepat", 34, INK2).next_to(t, DOWN, buff=0.45)
+        pesan = T("pesan yang sama seperti di video-video sebelumnya:", 30, INK2).next_to(t, UP, buff=0.6)
+        self.play_at(b.at("Jadi"), FadeOut(self.r3), dur=0.5)
+        self.play_at(b.at("pesannya"), FadeIn(pesan, shift=DOWN * 0.2), dur=0.6)
         self.play_at(b.at("Jangan"), FadeIn(t, scale=1.1), dur=0.8)
         self.play_at(b.at("periksa"), FadeIn(sub, shift=UP * 0.2), dur=0.5)
-        self.r4 = VGroup(t, sub)
+        self.r4 = VGroup(t, sub, pesan)
 
     def beat_b7_5(self, b):
         self.play_at(b.at("Klaim"), FadeOut(self.r4), dur=0.5)
@@ -74,7 +76,8 @@ class Bab7(BabScene):
         self.r5 = VGroup(g, dots, top, q, k1, k2)
 
     def beat_b7_6(self, b):
-        self.play_at(b.at("Saya akan"), self.r5.animate.set_opacity(0.15), dur=0.5)
+        g, dots, top, q, k1, k2 = self.r5
+        self.play_at(b.at("Saya akan"), FadeOut(VGroup(k1, k2, q)), VGroup(g, dots, top).animate.set_opacity(0.12), dur=0.5)
         box = VGroup(panel(8.4, 1.5), T("Pembaruan status: lihat komentar tersemat", 34, INK))
         box[1].move_to(box[0])
         self.play_at(b.at("kolom komentar"), FadeIn(box, shift=UP * 0.2), dur=0.6)

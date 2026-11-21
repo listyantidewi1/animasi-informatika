@@ -120,8 +120,13 @@ class BabScene(MovingCameraScene):
         if d > 1 / 60:
             self.wait(d)
 
-    def play_at(self, t, *anims, dur=1.0, **kw):
-        """Mulai animasi pada waktu t (detik dari awal bab); kalau sudah lewat, mulai sekarang."""
+    def play_at(self, t, *anims, dur=1.0, sebelum=None, **kw):
+        """Mulai animasi pada waktu t (detik dari awal bab); kalau sudah lewat, mulai sekarang.
+        sebelum: waktu animasi berikutnya; durasi dipendekkan supaya selesai sebelum itu."""
+        if sebelum is not None:
+            dur = max(0.3, min(dur, sebelum - max(t, self.now) - 0.05))
+        if self.now - t > 0.35:
+            print(f"TELAT {type(self).__name__} t={t:.2f} mulai={self.now:.2f} (+{self.now - t:.2f} dtk)")
         self.until(t)
         self.play(*anims, run_time=max(dur, 1 / 30), **kw)
 
@@ -157,8 +162,9 @@ class BabScene(MovingCameraScene):
             if self.SEG + 1 < len(self.segs) and self.segs[self.SEG + 1].strip().lower() != "penutup":   # kartu bab berikutnya menutup layar (jeda antarbab lega)
                 k = self.kartu(self.SEG + 1).move_to(self.camera.frame.get_center()).scale(self.camera.frame.width / config.frame_width)
                 self.play(FadeIn(k), run_time=min(0.8, sisa))
-            else:
-                self.play(*[FadeOut(m) for m in self.mobjects], run_time=min(1.2, sisa))
+            else:   # menuju Penutup / akhir video: biarkan layar terakhir tetap terbaca, lalu memudar
+                self.until(self.total - 1.3)
+                self.play(*[FadeOut(m) for m in self.mobjects], run_time=min(1.2, max(0.1, self.total - self.now)))
             self.until(self.total)
 
     def construct(self):

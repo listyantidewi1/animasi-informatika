@@ -39,7 +39,7 @@ class Bab0(BabScene):
         tahun = always_redraw(lambda: TB(str(int(th.get_value())), 150, INK))
         self.tahun, self.titik = tahun, titik
         self.play(LaggedStart(*[FadeIn(x, scale=0.6) for x in titik], lag_ratio=0.02), FadeIn(tahun), run_time=1.2)
-        self.play_at(b.at("seratus"), th.animate.set_value(2026), dur=2.4, rate_func=rate_functions.ease_in_out_cubic)
+        self.play_at(b.at("seratus"), th.animate.set_value(2026), dur=2.4, rate_func=rate_functions.ease_in_out_cubic, sebelum=b.at("matematikawan"))
         lbl = TB("167 tahun", 56, PRIMA).shift(DOWN * 1.6)
         self.play_at(b.at("matematikawan"), FadeIn(lbl, shift=UP * 0.3), dur=0.6)
         self.lbl = lbl
@@ -59,7 +59,7 @@ class Bab0(BabScene):
         self.play_at(b.at("muncul"), FadeOut(self.uang, shift=UP * 0.5), FadeIn(doc, shift=UP * 0.3), dur=0.8)
         silang = Cross(doc, stroke_color=NOL, stroke_width=10).scale(0.6)
         self.play_at(b.at("tidak ditulis"), Create(silang), dur=0.6)
-        win = jendela("bukti.lean", 9.2, 5.6)
+        win = jendela("bukti.lean (ilustrasi)", 9.2, 5.6)
         kd = baris_kode(12).next_to(win[1], DOWN, buff=0.3).align_to(win[0], LEFT).shift(RIGHT * 0.35)
         self.play_at(b.at("kode program"), FadeOut(VGroup(doc, silang), scale=0.7), FadeIn(win, scale=0.9), dur=0.7)
         self.play(LaggedStart(*[AddTextLetterByLetter(x, time_per_char=0.008) for x in kd], lag_ratio=0.12), run_time=1.0)
@@ -74,7 +74,7 @@ class Bab0(BabScene):
             h.move_to([0.6 + 0.03 * ((i * 7) % 5 - 2), -3.4 + i * 0.16, 0]); tumpuk.add(h)
         self.play(LaggedStart(*[FadeIn(h, shift=DOWN * 0.6) for h in tumpuk], lag_ratio=0.06), run_time=2.2)
         self.play(self.camera.frame.animate.shift(UP * 2.2), tumpuk.animate.stretch(2.4, 1, about_edge=DOWN), run_time=1.2)
-        ang = TB("250.000+", 72, INK).move_to(self.camera.frame.get_center() + RIGHT * 4.3 + UP * 0.6)
+        ang = TB("250.000+", 72, INK).move_to(self.camera.frame.get_center() + RIGHT * 3.9 + UP * 0.6)
         hal = T("halaman (perkiraan)", 34, INK2).next_to(ang, DOWN, buff=0.25)
         self.play_at(b.at("dua ratus"), FadeIn(ang, scale=1.3), FadeIn(hal), dur=0.7)
         self.tumpuk = VGroup(tumpuk, ang, hal)
