@@ -1,8 +1,8 @@
 # T02 YouTube
 
-## Video utama (4:51)
+## Video utama (6:32)
 
-**Judul:** Bikin Kuis Otomatis yang Langsung Menghitung Skor dengan Python
+**Judul:** Bikin Kuis Otomatis dengan Python | Project Python untuk Pemula
 
 **Deskripsi:**
 
@@ -10,15 +10,17 @@ Bikin kuis dengan Python yang langsung memeriksa jawaban dan menghitung nilai ak
 
 Bab:
 0:00 Pembuka
-0:28 List: rak berlaci
-0:52 Menulis daftar soal
-1:10 Perulangan for
-1:54 Membandingkan teks
-2:20 Memeriksa jawaban
-2:49 Tebak dulu
-3:08 Menghitung nilai
-3:50 Tambah soal dan SyntaxError
-4:11 Rangkuman dan tantangan
+0:30 List: rak berlaci
+0:59 Menulis daftar soal
+1:52 Perulangan for
+2:43 Membandingkan teks
+3:14 Memeriksa jawaban
+3:53 Tebak dulu
+4:22 Menghitung nilai
+5:09 Tambah soal dan SyntaxError
+5:48 Rangkuman dan tantangan
+
+Kode lengkap (bisa diunduh): https://github.com/listyantidewi1/animasi-informatika/tree/main/bahan-tutorial/T02
 
 Kode lengkap:
 soal = [
@@ -40,7 +42,7 @@ for pertanyaan, kunci in soal:
 nilai = skor / len(soal) * 100
 print(f"Skor kamu {skor} dari {len(soal)} ({round(nilai)}%)")
 
-Sebelumnya: Bikin Game Tebak Angka Pertamamu dengan Python. Berikutnya: Hitung Nilai Rapor Otomatis, Lengkap dengan Grafiknya.
+Sebelumnya: Cara Membuat Game Tebak Angka di Python | Project Python untuk Pemula. Berikutnya: Hitung Nilai Rapor Otomatis, Lengkap dengan Grafiknya.
 Playlist: Proyek Pemrograman Sederhana. Narasi: Cahaya (suara sintetis ElevenLabs). Rekaman layar sungguhan; animasi penjelasan dibuat dengan kode oleh I Teach Software Engineering. Naskah disusun dengan bantuan AI (Claude buatan Anthropic) dan disunting manusia.
 
 Subscribe: https://www.youtube.com/@iTeachSWE
@@ -59,8 +61,8 @@ Subscribe: https://www.youtube.com/@iTeachSWE
 
 Kuis yang langsung menilai dirinya sendiri, dibuat dengan Python. Kuncinya: list, perulangan for, merapikan teks dengan strip dan lower, dan rumus nilai.
 
-Tutorial lengkapnya: Bikin Kuis Otomatis yang Langsung Menghitung Skor dengan Python (playlist Proyek Pemrograman Sederhana).
+Tutorial lengkapnya: Bikin Kuis Otomatis dengan Python | Project Python untuk Pemula (playlist Proyek Pemrograman Sederhana).
 Subscribe: https://www.youtube.com/@iTeachSWE
 #shorts #python #belajarpython #coding
 
-**Video terkait:** Bikin Kuis Otomatis yang Langsung Menghitung Skor dengan Python
+**Video terkait:** Bikin Kuis Otomatis dengan Python | Project Python untuk Pemula
