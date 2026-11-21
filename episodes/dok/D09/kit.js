@@ -120,10 +120,10 @@
     ctx.save(); ctx.shadowColor = "rgba(0,0,0,0.5)"; ctx.shadowBlur = 40; ctx.fillStyle = C.panel; rr(ctx, x, y, w, h, 20); ctx.fill(); ctx.restore();
     ctx.strokeStyle = rgba(o.col || C.red, 0.7); ctx.lineWidth = 2; rr(ctx, x, y, w, h, 20); ctx.stroke();
     ctx.fillStyle = o.col || C.red; rr(ctx, x, y, 12, h, 6); ctx.fill();
-    text(ctx, o.tag || "PENGUMUMAN KEAMANAN", x + 44, y + 54, 22, { weight: 800, color: o.col || C.red, spacing: 4 });
-    text(ctx, o.id, x + 44, y + 108, 40, { mono: true, weight: 700 });
-    text(ctx, o.title, x + 44, y + 158, 28, { weight: 600, color: C.text2 });
-    if (o.date) text(ctx, o.date, x + 44, y + h - 40, 24, { mono: true, weight: 500, color: C.dim });
+    text(ctx, o.tag || "PENGUMUMAN KEAMANAN", x + 44, y + 58, 26, { weight: 800, color: o.col || C.red, spacing: 4 });
+    text(ctx, o.id, x + 44, y + 116, o.idSize || 44, { mono: true, weight: 700 });
+    text(ctx, o.title, x + 44, y + 172, o.titleSize || 34, { weight: 600, color: C.text2 });
+    if (o.date) text(ctx, o.date, x + 44, y + h - 36, 28, { mono: true, weight: 500, color: C.dim });
     if (o.cvss != null) meterCVSS(ctx, x + w - 120, y + h / 2 + 10, 78, o.cvss);
   }
   function cap(ctx, s, cx, cy, ang, col = C.red, size = 64) {
@@ -142,9 +142,9 @@
       if (st === "rusak") glow(ctx, lx + lw / 2, ly + lh / 2, lw, C.red, 0.5);
       ctx.fillStyle = fill; rr(ctx, lx, ly, lw, lh, 10); ctx.fill(); ctx.strokeStyle = edge; ctx.lineWidth = st === "kosong" ? 1.5 : 3; rr(ctx, lx, ly, lw, lh, 10); ctx.stroke();
       for (let k = 0; k < 3; k++) { ctx.fillStyle = "rgba(255,255,255,0.06)"; ctx.fillRect(lx + 22, ly + 34 + k * 12, lw - 44, 4); }   // kisi ventilasi
-      ctx.fillStyle = edge; ctx.beginPath(); ctx.arc(lx + lw - 24, ly + lh / 2 + 10, 6, 0, 6.283); ctx.fill();             // gagang
+      ctx.fillStyle = edge; ctx.beginPath(); ctx.arc(lx + lw - 16, ly + 24, 6, 0, 6.283); ctx.fill();             // lampu
       text(ctx, "0x7f3a" + (0x10 * i + 0x40).toString(16).padStart(3, "0"), lx + lw / 2, ly + lh - 18, 17, { mono: true, weight: 500, align: "center", color: C.dim });
-      if (o.labels && o.labels[i]) text(ctx, o.labels[i], lx + lw / 2, ly + lh / 2 + 22, 24, { mono: true, weight: 700, align: "center", color: edge });
+      if (o.labels && o.labels[i]) text(ctx, o.labels[i], lx + lw / 2, ly + lh / 2 + 22, o.labelSize || 24, { mono: true, weight: 700, align: "center", color: edge });
       cells.push({ x: lx, y: ly, w: lw, h: lh });
     }
     return cells;
@@ -177,15 +177,15 @@
     ctx.fillStyle = g; rr(ctx, a, y - 150, bx - a, 300, 16); ctx.fill(); ctx.strokeStyle = rgba(C.red, 0.8); ctx.lineWidth = 2; ctx.setLineDash([10, 8]); rr(ctx, a, y - 150, bx - a, 300, 16); ctx.stroke(); ctx.setLineDash([]);
     // daun jendela
     [[a, -1], [bx, 1]].forEach(([px, d]) => { ctx.fillStyle = rgba(C.php, 0.25); ctx.strokeStyle = C.php; ctx.lineWidth = 3; ctx.beginPath(); ctx.moveTo(px, y - 150); ctx.lineTo(px + d * 46, y - 120); ctx.lineTo(px + d * 46, y + 120); ctx.lineTo(px, y + 150); ctx.closePath(); ctx.fill(); ctx.stroke(); });
-    const mk = (px, lab, col) => { ctx.fillStyle = col; ctx.beginPath(); ctx.arc(px, y, 14, 0, 6.283); ctx.fill(); text(ctx, lab, px, y + 210, 30, { align: "center", weight: 700, color: col }); };
-    mk(a, "Patch terbit", C.amber); mk(bx, "Server diperbarui", C.term);
-    text(ctx, o.label || "JENDELA PATCH", (a + bx) / 2, y - 180, 30, { align: "center", weight: 800, color: C.red, spacing: 6 });
+    const mk = (px, lab, col) => { ctx.fillStyle = col; ctx.beginPath(); ctx.arc(px, y, 14, 0, 6.283); ctx.fill(); text(ctx, lab, px, y + 214, 40, { align: "center", weight: 700, color: col }); };
+    if (o.noLabels) { ctx.fillStyle = C.amber; ctx.beginPath(); ctx.arc(a, y, 14, 0, 6.283); ctx.fill(); ctx.fillStyle = C.term; ctx.beginPath(); ctx.arc(bx, y, 14, 0, 6.283); ctx.fill(); } else { mk(a, "Patch terbit", C.amber); mk(bx, "Server diperbarui", C.term); }
+    text(ctx, o.label || "JENDELA PATCH", (a + bx) / 2, y - 184, 40, { align: "center", weight: 800, color: C.red, spacing: 6 });
     (o.dots || []).forEach(([u, v]) => { const px = lerp(a + 20, bx - 20, u), py = y + v * 120; glow(ctx, px, py, 26, C.red, 0.8); ctx.fillStyle = C.red; ctx.beginPath(); ctx.arc(px, py, 7, 0, 6.283); ctx.fill(); });
     return { a, b: bx };
   }
-  function jam(ctx, cx, cy, s, t = 0) {
-    ctx.save(); ctx.fillStyle = C.panel; rr(ctx, cx - 210 * s, cy - 80 * s, 420 * s, 160 * s, 24 * s); ctx.fill(); ctx.strokeStyle = rgba(C.red, 0.8); ctx.lineWidth = 3; rr(ctx, cx - 210 * s, cy - 80 * s, 420 * s, 160 * s, 24 * s); ctx.stroke();
-    text(ctx, s >= 0 ? "??:??" : "", cx, cy + 40 * s, 110 * s, { align: "center", mono: true, weight: 700, color: C.red, glow: C.red, blur: 24 }); ctx.restore();
+  function jam(ctx, cx, cy, s, t = 0, lab) {
+    const hw = (lab ? 310 : 210) * s; ctx.save(); ctx.fillStyle = C.panel; rr(ctx, cx - hw, cy - 80 * s, 2 * hw, 160 * s, 24 * s); ctx.fill(); ctx.strokeStyle = rgba(C.red, 0.8); ctx.lineWidth = 3; rr(ctx, cx - hw, cy - 80 * s, 2 * hw, 160 * s, 24 * s); ctx.stroke();
+    text(ctx, lab || "??:??", cx, cy + (lab ? 28 : 40) * s, (lab ? 64 : 110) * s, { align: "center", mono: true, weight: 700, color: C.red, glow: C.red, blur: 24 }); ctx.restore();
   }
 
   global.D09 = { tema, TEMA, W, HH, C, SANS, MONO, clamp, lerp, eio, rgba, rr, text, glow, bg, tokens, code, windowFrame, kartuBab, meterCVSS, kartuCVE, cap, loker, kunci, terminal, jendelaPatch, jam };
