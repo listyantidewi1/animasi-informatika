@@ -1,0 +1,25 @@
+import sys, time, subprocess, os; sys.path.insert(0, "/home/user/antre/alat")
+P = "/home/user/proyek/siantre"
+srv = subprocess.Popen("cd /home/user/proyek/siantre && DATABASE_URL=postgres://postgres@localhost/antrean exec node src/server.js", shell=True)
+time.sleep(1.5)
+from rekam_web import Web, CW
+w = Web("/home/user/antre/A04/web", "http://localhost:3001/")
+def baris(teks):
+    try: w.dt.get_by_text(teks, exact=True).first.click(timeout=4000)
+    except Exception as e: print("baris gagal", teks, e)
+def tab(n):
+    try: w.dt.get_by_text(n, exact=True).first.click(timeout=4000)
+    except Exception as e: print("tab gagal", n, e)
+w.mulai(); w.kamera(None); time.sleep(0.5)
+w.tanda("b05"); w.label("F12, lalu tab Network", 3); time.sleep(2.0)
+w.pg.reload(); time.sleep(2.0); w.kamera_bawah(); w.label("Setiap baris = satu request", 3); time.sleep(3.0)
+baris("gaya.css"); time.sleep(1.0); w.kamera([0, w.atas + 120, CW * 0.75, 260]); w.label("Method dan status code", 3); time.sleep(3.5)
+tab("Response"); time.sleep(1.0); time.sleep(3.0); w.kamera(None); time.sleep(1.0); w.tanda("b05_akhir")
+w.tanda("b10"); w.pg.goto("http://localhost:3000/halo"); time.sleep(1.0); w.kamera_atas(); time.sleep(2.5)
+baris("halo"); time.sleep(0.5); tab("Headers"); time.sleep(0.5); w.kamera([0, w.atas + 120, CW * 0.75, 260]); w.label("GET /halo → 200", 3); time.sleep(3.5)
+w.kamera(None); time.sleep(0.6); w.tanda("b10_404"); w.pg.goto("http://localhost:3000/apaini"); time.sleep(1.0); w.kamera_atas(); time.sleep(2.0)
+baris("apaini"); time.sleep(0.5); tab("Headers"); time.sleep(0.5); w.kamera([0, w.atas + 120, CW * 0.75, 260]); w.label("Alamat tidak ada → 404", 3); time.sleep(3.5); w.tanda("b10_akhir")
+w.kamera(None); time.sleep(0.6); w.tanda("b13"); w.pg.goto("http://localhost:3000/api/layanan"); time.sleep(1.0)
+w.pg.mouse.move(400, 200); time.sleep(0.2); w.pg.mouse.click(104, 14); time.sleep(0.5)
+w.kamera_atas(); w.label("Tiga layanan dari database", 3); time.sleep(4.0); w.tanda("b13_akhir")
+w.kamera(None); time.sleep(0.6); w.selesai(); srv.terminate()

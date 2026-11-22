@@ -1,0 +1,10 @@
+import sys, time, subprocess; sys.path.insert(0, "/home/user/antre/alat")
+kode = subprocess.run(["psql", "-U", "postgres", "-d", "antrean", "-tAc", "SELECT code FROM tickets WHERE label = 'A-003' ORDER BY id LIMIT 1"], capture_output=True, text=True).stdout.strip()
+srv = subprocess.Popen("cd /home/user/proyek/siantre && DATABASE_URL=postgres://postgres@localhost/antrean exec node src/server.js", shell=True); time.sleep(1.5)
+from rekam_web import Web, CW
+w = Web("/home/user/antre/A05/web", "about:blank")
+w.mulai(); w.kamera(None); time.sleep(0.4); w.tanda("mulai")
+w.pg.goto(f"http://localhost:3000/api/tiket/{kode}"); time.sleep(0.8)
+w.pg.mouse.move(400, 200); w.pg.mouse.click(104, 14); time.sleep(0.6)
+w.kamera_atas(); w.label("Posisi 3, perkiraan 20 menit", 4); time.sleep(4.5)
+w.kamera(None); time.sleep(1.0); w.tanda("akhir"); w.selesai(); srv.terminate()
