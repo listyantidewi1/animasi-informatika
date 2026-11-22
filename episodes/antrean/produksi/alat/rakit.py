@@ -10,13 +10,13 @@ def dur_file(f): return float(subprocess.check_output(["ffprobe", "-v", "error",
 def bingkai(src, t, out):
     sh("ffmpeg", "-loglevel", "error", "-y", "-ss", f"{max(0, t):.3f}", "-i", src, "-frames:v", "1", "-q:v", "2", out)
 FONT = "/usr/share/fonts/opentype/inter/Inter-Bold.otf"
-def potong(src, a, b, speed, dur, out, pre=0.0, crop=None):
+def potong(src, a, b, speed, dur, out, pre=0.0, crop=None, ketik=False):
     vf = (f"crop=iw*{crop[2]}:ih*{crop[3]}:iw*{crop[0]}:ih*{crop[1]},scale=1920:1080:flags=lanczos," if crop else "") + f"setpts=(PTS-STARTPTS)/{speed},fps={FPS},tpad=stop_mode=clone:stop_duration=30"
     if pre > 0.04: vf += f":start_mode=clone:start_duration={pre:.3f}"
     if speed >= 1.8:
-        tx = f"dipercepat {speed:.1f}x".replace(".", ",")
-        vf += (f",drawbox=x=w-330:y=h-92:w=300:h=56:color=0x0e1424@0.82:t=fill"
-               f",drawtext=fontfile={FONT}:text='{tx}':x=w-180-tw/2:y=h-64-th/2:fontsize=30:fontcolor=0xfbbf24")
+        tx = (f"mengetik · dipercepat {speed:.1f}x" if ketik else f"dipercepat {speed:.1f}x").replace(".", ","); lb = 470 if ketik else 300
+        vf += (f",drawbox=x=w-{lb + 30}:y=h-92:w={lb}:h=56:color=0x0e1424@0.82:t=fill"
+               f",drawtext=fontfile={FONT}:text='{tx}':x=w-{30 + lb // 2}-tw/2:y=h-64-th/2:fontsize=30:fontcolor=0xfbbf24")
         if pre > 0.04: vf = vf.replace(":t=fill", f":t=fill:enable='gte(t,{pre:.3f})'").replace("fontcolor=0xfbbf24", f"fontcolor=0xfbbf24:enable='gte(t,{pre:.3f})'")
     sh("ffmpeg", "-loglevel", "error", "-y", "-ss", f"{a:.3f}", "-to", f"{b:.3f}", "-i", src, "-vf", vf, "-t", f"{dur:.3f}", "-an",
        "-c:v", "libx264", "-preset", "medium", "-crf", "18", "-pix_fmt", "yuv420p", "-r", str(FPS), out)
@@ -163,7 +163,7 @@ def main(ep, hanya_adegan=False):
             out = f"{tmp}/b{nm(no)}_{i}.mp4"; files.append(out)
             if p["k"] in ("rek", "klip"):
                 R = rek[p.get("r", "rek")]
-                if not hanya_adegan and not os.environ.get("RENCANA"): potong(R["src"], p["_a"], p["_b"], p["_spn"], p["_dn"], out, p["_pre"], p.get("crop"))
+                if not hanya_adegan and not os.environ.get("RENCANA"): potong(R["src"], p["_a"], p["_b"], p["_spn"], p["_dn"], out, p["_pre"], p.get("crop"), bool(p.get("_kode")))
                 prev = (R["src"], p["_b"] - 0.05)
             else:
                 a = dict(p.get("a", {}))

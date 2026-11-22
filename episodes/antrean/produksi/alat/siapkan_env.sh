@@ -21,7 +21,8 @@ su postgres -c "$PGB/pg_ctl -D /home/user/pg/data status" >/dev/null 2>&1 || { r
 # Xvfb
 pgrep -x Xvfb >/dev/null || (nohup Xvfb :99 -screen 0 2560x1440x24 >/dev/null 2>&1 &)
 # repo proyek dari bundle (hanya bila belum ada)
-if [ ! -d /home/user/proyek/siantre/.git ]; then git clone -q /mnt/project-files/antrean/repo/siantre.bundle /home/user/proyek/siantre && (cd /home/user/proyek/siantre && git fetch -q --tags origin; git checkout -q -B main bab-12); fi
+if [ ! -d /home/user/proyek/siantre/.git ]; then git clone -q /mnt/project-files/antrean/repo/siantre.bundle /home/user/proyek/siantre && (cd /home/user/proyek/siantre && git fetch -q --tags origin; git checkout -q -B main bab-12; git remote remove origin); fi
+git -C /home/user/proyek/siantre fetch -q /mnt/project-files/antrean/repo/siantre.bundle 'refs/tags/*:refs/asli/*'  # tag asli untuk pembanding
 echo "env siap: $(ls /home/user/cs/node_modules/.bin/code-server 2>&1) | pg $(psql -U postgres -Atc 'select 1' 2>&1) | tag $(cd /home/user/proyek/siantre && git tag | wc -l)"
 # Proyek contoh "kode AI" (port 4000, DB antrean_ai) dan aplikasi jadi untuk demo (port 3001, DB siantre_demo)
 if [ ! -d /home/user/proyek/antrean-ai/node_modules ]; then mkdir -p /home/user/proyek/antrean-ai && cp "$PROD/antrean-ai/server.js" /home/user/proyek/antrean-ai/ && (cd /home/user/proyek/antrean-ai && npm init -y >/dev/null && npm i express pg >/dev/null 2>&1); fi
