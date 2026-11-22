@@ -34,3 +34,9 @@ if ! psql -U postgres -tAc "select 1 from pg_database where datname='siantre_dem
 fi
 curl -s -o /dev/null localhost:3001/ || (cd $D && PORT=3001 DATABASE_URL=postgres://postgres@localhost/siantre_demo SESSION_SECRET=demo setsid nohup node src/server.js > /tmp/claude-0/demo.log 2>&1 < /dev/null &)
 sleep 1; echo "demo 3001: $(curl -s -o /dev/null -w '%{http_code}' localhost:3001/)"
+psql -U postgres -d antrean_ai -q <<'SQL'
+CREATE TABLE IF NOT EXISTS tiket_pelanggan (id int PRIMARY KEY, label text, nama text, hp text, status text);
+INSERT INTO tiket_pelanggan VALUES (121,'A-021','Budi Santoso','0812-5550-0121','selesai'),(122,'B-007','Siti Rahayu','0813-5550-0122','menunggu'),
+ (123,'A-022','Agus Wijaya','0857-5550-0123','menunggu'),(124,'A-023','Rina Kartika','0821-5550-0124','menunggu'),(125,'C-004','Hendra Gunawan','0878-5550-0125','menunggu'),
+ (126,'B-008','Wulan Sari','0838-5550-0126','menunggu'),(127,'A-024','Yoga Pratama','0896-5550-0127','menunggu') ON CONFLICT DO NOTHING;
+SQL
