@@ -35,7 +35,7 @@ def operasi():
             # label perintah singkat cukup muncul sejak ketikannya dimulai (maks 12 dtk sebelum titik)
             label.append((a, t, x["label"], x["bab"])); prev = t
     for b in BAB[1:]:
-        c = T[b]["mulai"]; beku.append(dict(t=c, F=2.5, label=[], bab=bab_dari(c - 0.01), cepat=False, audio=c, bab_freeze=True))
+        c = T[b]["mulai"] - 0.25; beku.append(dict(t=c, F=2.5, label=[], bab=bab_dari(c), cepat=False, audio=c, bab_freeze=True))
     beku.sort(key=lambda z: z["t"])
     return beku, lambat, label
 BEKU, LAMBAT, LABEL = operasi()
@@ -88,7 +88,7 @@ def potongan():
         for z in BEKU:
             if abs(z["t"] - x0) < 1e-9:
                 n0 = vbaru(x0, False); lab, bb = (z["label"], z["bab"]) if not z.get("bab_freeze") else ([], z["bab"])
-                P.append(dict(jenis="beku", src=x0, mulai=n0, akhir=n0 + z["F"], label=lab, bab=bb, tutup="dijeda" if z["cepat"] else None))
+                P.append(dict(jenis="beku", src=x0, mulai=n0, akhir=n0 + z["F"], label=lab, bab=bb, tutup="dijeda" if (z["cepat"] or any(a - 0.01 <= x0 <= b + 0.1 for a, b, _, _ in LAMBAT)) else None))
         if i + 1 == len(batas): break
         x1 = batas[i + 1]
         if x1 - x0 < 1e-6: continue

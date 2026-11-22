@@ -6,7 +6,7 @@ FI = "/usr/share/fonts/opentype/inter/"; FM = "/usr/share/fonts/truetype/jetbrai
 REPO = "github.com/listyantidewi1/SiLapor"; LOKAL = "/home/user/listyantidewi1/silapor"
 TAG = {"L01": "bab-01", "L04": "bab-04", "L05": "bab-05", "L06": "bab-06", "L07": "bab-07", "L08": "bab-08", "L09": "bab-09"}
 NOMOR = {"L00": 0, "L01": 1, "L02": 2, "L03": 3, "L04": 4, "L05": 5, "L06": 6, "L07": 7, "L08": 8, "L09": 9}
-def f(nama, s): return ImageFont.truetype(nama, s)
+def f(nama, s): return ImageFont.truetype(nama, s, layout_engine=ImageFont.Layout.BASIC)
 def ada(tag, path): return subprocess.run(["git", "-C", LOKAL, "cat-file", "-e", f"{tag}:{path}"]).returncode == 0
 def muat(d, teks, font_nama, maks_w, s0, s_min=16):
     s = s0
