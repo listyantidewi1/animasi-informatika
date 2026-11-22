@@ -2,7 +2,7 @@
 const { Pool } = require('pg');
 
 const pool = new Pool({
-  connectionString: process.env.DATABASE_URL || 'postgres://postgres@localhost/antrean',
+  connectionString: process.env.DATABASE_URL,
 });
 
 // Menjalankan beberapa query sebagai satu transaksi: semua berhasil, atau tidak sama sekali.

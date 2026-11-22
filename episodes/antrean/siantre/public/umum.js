@@ -10,7 +10,7 @@ async function api(alamat, opsi = {}) {
   return data;
 }
 
-// Membuat elemen dengan teks yang aman (tidak pernah memakai innerHTML untuk data pengguna)
+// Membuat elemen. Isinya selalu lewat textContent, tidak pernah innerHTML.
 function el(tag, kelas, teks) {
   const e = document.createElement(tag);
   if (kelas) e.className = kelas;
@@ -18,10 +18,12 @@ function el(tag, kelas, teks) {
   return e;
 }
 
-// Mendengarkan siaran server; otomatis tersambung ulang bila koneksi putus
+// Mendengarkan siaran server; setiap kali tersambung (lagi), ambil keadaan terbaru
 function dengarkan(jenis, aksi) {
   const sumber = new EventSource('/api/siaran');
   jenis.forEach((j) => sumber.addEventListener(j, (e) => aksi(j, JSON.parse(e.data))));
+  sumber.onopen = () => aksi('buka', {});
+  sumber.onerror = () => aksi('putus', {});
   return sumber;
 }
 
