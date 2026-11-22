@@ -24,13 +24,13 @@ BEATS = {
 
 # --- Sorot baris: potongan pada kecepatan asli, mulai tepat pada kalimat ke-k (0 = kalimat pertama), ditahan sampai bagian berikutnya
 def S(h, d, k=None):
-    p = dict(k='rek', a=h - 0.15, b=h + d - 0.45, asli=True)
+    p = dict(k='rek', a=h, b=h, da=-0.15, db=d - 0.45, asli=True)  # h = tanda 'sorotN' (otomatis dari rekam_vs.kamera_editor(zoom=...))
     if k is not None: p['kalimat'] = k
     return p
-BEATS[4] = [A('lapisanDocker', min=14), R('b04', 61.6, speed=3, maks=5), S(61.7, 3, 3), S(65.8, 2.5, 4)]
-BEATS[5] = [A('composeTiga', min=4), R(91.0, 'b05_sorot', speed=5, maks=8, kalimat=1), S(112.6, 2.5), S(116.5, 2.5, 2)]
-BEATS[7] = [A('proxyBalik', min=7), R('b07', 'b07_express', speed=4, maks=8), R('b07_express', 173.0, speed=2, maks=3), S(173.1, 3, 3)]
-BEATS[11] = [A('cekAI12', min=12), R('b11', 229.4, speed=3, maks=5), S(229.5, 3)]
+BEATS[4] = [A('lapisanDocker', min=14), R('b04', 'sorot1', db=-0.1, speed=3, maks=5), S('sorot1', 3, 3), S('sorot2', 2.5, 4)]
+BEATS[5] = [A('composeTiga', min=4), R('b05', 'b05_sorot', speed=5, maks=8, kalimat=1), S('sorot3', 2.5), S('sorot4', 2.5, 2)]
+BEATS[7] = [A('proxyBalik', min=7), R('b07', 'b07_express', speed=4, maks=8), R('b07_express', 'sorot5', db=-0.1, speed=2, maks=3), S('sorot5', 3, 3)]
+BEATS[11] = [A('cekAI12', min=12), R('b11', 'sorot6', db=-0.1, speed=3, maks=5), S('sorot6', 3)]
 
 # --- Adegan persiapan sisipan (naskah_sisip.json, beat bernomor pecahan)
 SKRIP = ["/home/user/antre/alat/web/siap.js"]

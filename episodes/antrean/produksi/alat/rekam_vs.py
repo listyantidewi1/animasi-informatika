@@ -59,8 +59,12 @@ class VS:
         self.log["kamera"].append([self.t(), [sx + sw / 2, sy + sh / 2, z]])
     def kotak(self, sel):
         bb = self.pg.locator(sel).first.bounding_box(); return [bb["x"], bb["y"], bb["width"], bb["height"]]
-    def kamera_editor(self, zoom=1.45):
-        """Fokus ke baris kursor di editor, lebar tetap supaya kode terbaca."""
+    def kamera_editor(self, zoom=None):
+        """Fokus ke baris kursor di editor, lebar tetap supaya kode terbaca.
+        zoom disebut = sorot baris: otomatis diberi tanda 'sorotN' (N urut panggilan) untuk dipakai S('sorotN', ...) di spec."""
+        if zoom is not None and hasattr(self, "t0"):
+            self.n_sorot = getattr(self, "n_sorot", 0) + 1; self.tanda(f"sorot{self.n_sorot}")
+        zoom = zoom or 1.45
         loc = self.pg.locator(".monaco-editor.focused .cursors-layer .cursor").first
         try: c = loc.bounding_box(timeout=3000)
         except Exception:

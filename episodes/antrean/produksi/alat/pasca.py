@@ -76,7 +76,7 @@ def jalankan(src, out, judul=None, sub="", dur_kartu=3.5):
         labels.append((t, label_img(tx), d, pos))
     # Label tetap alamat GitHub berkas aktif (typing along), kiri bawah
     import re, label_gh
-    m = re.search(r"/A(\d\d)/", src); bab = int(m.group(1)) if m else 0; pil_gh = {}; BK = sorted(log.get("berkas", []))
+    m = re.search(r"A(\d\d)/", src); bab = int(m.group(1)) if m else 0; pil_gh = {}; BK = sorted(log.get("berkas", []))
     def gh(t):
         if not bab or os.path.basename(src) != "rek": return None
         b = None

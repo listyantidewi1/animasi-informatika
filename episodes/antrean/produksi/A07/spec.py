@@ -21,7 +21,7 @@ BEATS = {
 
 # --- Sorot baris: potongan pada kecepatan asli, mulai tepat pada kalimat ke-k (0 = kalimat pertama), ditahan sampai bagian berikutnya
 def S(h, d, k=None):
-    p = dict(k='rek', a=h - 0.15, b=h + d - 0.45, asli=True)
+    p = dict(k='rek', a=h, b=h, da=-0.15, db=d - 0.45, asli=True)  # h = tanda 'sorotN' (otomatis dari rekam_vs.kamera_editor(zoom=...))
     if k is not None: p['kalimat'] = k
     return p
-BEATS[9] = [R('b09', 'b09_sorot', speed=2.5, maks=4), S(258.2, 3, 1), S(262.9, 3, 3)]
+BEATS[9] = [R('b09', 'b09_sorot', speed=2.5, maks=4), S('sorot1', 3, 1), S('sorot2', 3, 3)]

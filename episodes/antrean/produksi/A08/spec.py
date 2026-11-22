@@ -22,11 +22,11 @@ BEATS = {
 
 # --- Sorot baris: potongan pada kecepatan asli, mulai tepat pada kalimat ke-k (0 = kalimat pertama), ditahan sampai bagian berikutnya
 def S(h, d, k=None):
-    p = dict(k='rek', a=h - 0.15, b=h + d - 0.45, asli=True)
+    p = dict(k='rek', a=h, b=h, da=-0.15, db=d - 0.45, asli=True)  # h = tanda 'sorotN' (otomatis dari rekam_vs.kamera_editor(zoom=...))
     if k is not None: p['kalimat'] = k
     return p
-BEATS[4] = [R('b04', 'b04_sorot', speed=2.5, maks=4), S(124.3, 3.5, 2)]
-BEATS[11] = [S(412.1, 4, 1)]
+BEATS[4] = [R('b04', 'b04_sorot', speed=2.5, maks=4), S('sorot1', 3.5, 2)]
+BEATS[11] = [S('sorot2', 4, 1)]
 
 # --- Adegan persiapan sisipan (naskah_sisip.json, beat bernomor pecahan)
 SKRIP = ["/home/user/antre/alat/web/siap.js"]
