@@ -76,7 +76,7 @@ def main():
     base = os.path.basename(src)[:-4]
     runs = json.load(open(f"scan/{base}.speed.json"))
     peta = json.load(open("peta.json")).get(ep, [[0, "umum", None]])
-    N = int(round(dur(src) * FPS))
+    N = int(subprocess.check_output(["ffprobe", "-v", "error", "-count_packets", "-select_streams", "v", "-show_entries", "stream=nb_read_packets", "-of", "csv=p=0", src]))  # jumlah frame nyata (durasi kontainer bisa lebih panjang)
     # --- kecepatan per frame masukan
     S = np.ones(N + 400)
     for a, b, s in runs:
