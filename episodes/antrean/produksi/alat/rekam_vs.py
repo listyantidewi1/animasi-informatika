@@ -1,7 +1,8 @@
 import re
 """Perekam VS Code sungguhan (code-server) di Chromium --app pada Xvfb :99 2560x1440.
 Menyimpan <keluar>.mkv dan <keluar>.json (kamera, label, tanda) untuk pasca.py."""
-import os, time, json, random, subprocess, atexit, shutil
+import os, time, json, random, subprocess, atexit, shutil, glob
+CPS_KODE, CPS_TERM = 16, 20  # batas kecepatan ketik mentah (typing along)
 os.environ["DISPLAY"] = ":99"
 from playwright.sync_api import sync_playwright
 W, H, DSF = 2560, 1440, 1.6667
@@ -19,7 +20,8 @@ def hentikan_lama(skrip, proyek="/home/user/proyek/siantre"):
 
 class VS:
     def __init__(self, keluar, url=URL, profil="/tmp/claude-0/prof_rek"):
-        self.keluar = keluar; self.log = {"src": [W, H], "kamera": [], "label": [], "tanda": []}
+        self.keluar = keluar; self.log = {"src": [W, H], "kamera": [], "label": [], "tanda": [], "berkas": [], "ketik": []}
+        self.akar = url.split("folder=")[-1]; self.berkas = None
         shutil.rmtree(profil, ignore_errors=True)
         self.pw = sync_playwright().start()
         self.ctx = self.pw.chromium.launch_persistent_context(profil, headless=False, no_viewport=True,
@@ -86,8 +88,21 @@ class VS:
             x, y, w, h = self.kotak(sel); xy = (x + w / 2, y + h / 2)
         self.gerak(*xy, dur=dur); time.sleep(0.1); self.pg.mouse.down(); time.sleep(0.07); self.pg.mouse.up(); time.sleep(0.25)
 
+    # --- catatan berkas aktif dan ketikan (untuk label GitHub dan titik jeda) ---
+    def _t(self): return self.t() if hasattr(self, "t0") else 0.0
+    def catat_berkas(self, nama, baru=False):
+        c = [f for f in glob.glob(self.akar + "/**/" + os.path.basename(nama), recursive=True) + glob.glob(self.akar + "/" + os.path.basename(nama)) if "/node_modules/" not in f]
+        c = sorted(set(c), key=lambda f: (-os.path.getctime(f) if baru else 0, not f.endswith("/" + nama), len(f)))
+        self.berkas = os.path.relpath(c[0], self.akar) if c else nama
+        self.log["berkas"].append([self._t(), self.berkas]); print(f"[{self._t():7.2f}] berkas {self.berkas}", flush=True)
+    def _di_editor(self):
+        try: return bool(self.pg.evaluate("() => !!(document.activeElement && document.activeElement.closest('.editor-group-container'))"))
+        except Exception: return False
     # --- ketik ---
-    def ketik(self, teks, cps=16):
+    def ketik(self, teks, cps=16, _catat=True):
+        if _catat and len(teks) >= 12:
+            ed = self._di_editor(); minta = cps; cps = min(cps, CPS_KODE if ed else CPS_TERM); t0 = self._t(); self.ketik(teks, cps, _catat=False)
+            self.log["ketik"].append([t0, self._t(), len(teks), self.berkas if ed else None, "kode" if ed else "cmd", minta, cps]); return
         for ch in teks:
             self.pg.keyboard.type(ch)
             d = 1 / cps * random.uniform(0.55, 1.45)
@@ -96,7 +111,7 @@ class VS:
     def ketik_kode(self, kode, cps=16, ikuti=True, durasi=None):
         """Ketik kode baris demi baris (autoIndent mati, jadi spasi diketik sendiri).
         durasi: perkiraan total detik, cps disesuaikan."""
-        baris = kode.strip("\n").split("\n")
+        baris = kode.strip("\n").split("\n"); minta = cps; cps = min(cps, CPS_KODE); t_mulai = self._t()
         # Kalau kursor berada sebelum teks yang sudah ada di baris ini, teks itu jangan ikut "terdorong" di belakang
         # kursor selama mengetik (membingungkan penonton): pindahkan dulu ke baris bawah, lalu sambung lagi di akhir.
         pisah = False
@@ -112,7 +127,7 @@ class VS:
                 pisah = True; self.pg.keyboard.press("Enter"); time.sleep(0.08); self.pg.keyboard.press("ArrowUp"); time.sleep(0.05); self.pg.keyboard.press("End"); time.sleep(0.1)
         except Exception as e: print("pisah?", e)
         if durasi:
-            n = sum(len(b.strip()) for b in baris); cps = max(6, min(60, n / max(1, durasi - 0.35 * len(baris))))
+            n = sum(len(b.strip()) for b in baris); cps = max(6, min(CPS_KODE, n / max(1, durasi - 0.35 * len(baris))))
         for i, b in enumerate(baris):
             if i:
                 self.pg.keyboard.press("Enter"); time.sleep(0.1)
@@ -120,7 +135,8 @@ class VS:
             isi = b.lstrip(" "); sp = len(b) - len(isi)
             if sp: self.pg.keyboard.type(" " * sp)
             if ikuti and (i % 4 == 0): self.kamera_editor()
-            self.ketik(isi, cps); time.sleep(0.12)
+            self.ketik(isi, cps, _catat=False); time.sleep(0.12)
+        self.log["ketik"].append([t_mulai, self._t(), sum(len(b.strip()) for b in baris), self.berkas, "kode", minta, cps])
         if pisah: self.pg.keyboard.press("Delete"); time.sleep(0.1)  # sambung lagi: hasil akhir sama persis
     def tekan(self, k, jeda=0.3): self.pg.keyboard.press(k); time.sleep(jeda)
     def perintah(self, nama, jeda=0.8):
@@ -131,7 +147,8 @@ class VS:
         if ikuti: self.kamera_terminal()
         m = re.search(r"node (\S+) &$", cmd.strip())
         if m: hentikan_lama(m.group(1))  # pastikan server lama di port yang sama sudah mati
-        self.ketik(cmd, cps); time.sleep(0.25); self.pg.keyboard.press("Enter"); time.sleep(tunggu)
+        t0 = self._t(); self.ketik(cmd, min(cps, CPS_TERM), _catat=False); self.log["ketik"].append([t0, self._t(), len(cmd), None, "cmd", cps, min(cps, CPS_TERM)]); time.sleep(0.6)
+        self.pg.keyboard.press("Enter"); time.sleep(tunggu)
     def fokus_terminal(self):
         self.perintah("Terminal: Focus Terminal", 0.6)
     def fokus_editor(self):
@@ -145,7 +162,7 @@ class VS:
             try:
                 if nama.split("/")[-1] in self.pg.locator(".tab.active").first.inner_text(timeout=2000):
                     if self.pg.locator(".monaco-editor.focused").count() == 0: self.fokus_editor()
-                    return
+                    self.catat_berkas(nama); return
             except Exception: pass
             self.pg.keyboard.press("Escape"); time.sleep(0.3)
         print("buka gagal", nama, flush=True)
@@ -155,4 +172,4 @@ class VS:
             b = self.kotak(".explorer-folders-view"); self.klik(xy=(b[0] + b[2] / 2, b[1] + b[3] - 30)); time.sleep(0.3)
         self.gerak(200, 36, 0.5); time.sleep(0.4)
         self.klik('[aria-label^="New File"]'); time.sleep(0.4); self.ketik(nama, 14); time.sleep(0.3)
-        self.pg.keyboard.press("Enter"); time.sleep(1.0)
+        self.pg.keyboard.press("Enter"); time.sleep(1.0); self.catat_berkas(nama, baru=True)

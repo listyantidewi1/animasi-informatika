@@ -1,5 +1,6 @@
 """Pascaproduksi rekaman layar: kamera halus (zoom/geser), label langkah, kartu judul. Keluaran 1920x1080 30fps."""
 import os, cv2, json, sys, subprocess, numpy as np, math
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from PIL import Image, ImageDraw, ImageFont
 OW, OH, FPS = 1920, 1080, 30
 FB = "/usr/share/fonts/opentype/inter/Inter-Bold.otf"; FS = "/usr/share/fonts/opentype/inter/Inter-SemiBold.otf"
@@ -73,6 +74,16 @@ def jalankan(src, out, judul=None, sub="", dur_kartu=3.5):
         d = d or 3.0
         if j + 1 < len(L): d = min(d, L[j + 1][0] - t - 0.05)
         labels.append((t, label_img(tx), d, pos))
+    # Label tetap alamat GitHub berkas aktif (typing along), kiri bawah
+    import re, label_gh
+    m = re.search(r"/A(\d\d)/", src); bab = int(m.group(1)) if m else 0; pil_gh = {}; BK = sorted(log.get("berkas", []))
+    def gh(t):
+        if not bab or os.path.basename(src) != "rek": return None
+        b = None
+        for tb, nm_ in BK:
+            if tb <= t: b = nm_
+        if b not in pil_gh: pil_gh[b] = pil_rgba(label_gh.pil(b, bab))
+        return pil_gh[b]
     cx, cy, z = W / 2, H / 2, 1.0; vx = vy = vz = 0.0; om = 4.0; dt = 1 / FPS; ki = 0; tgt = [W / 2, H / 2, 1.0]
     # Pakai stempel waktu asli tiap frame: bila perekam sempat kehilangan frame, frame terakhir diulang supaya waktu tetap pas.
     ok, fr = cap.read(); tf = cap.get(cv2.CAP_PROP_POS_MSEC) / 1000; nxt = None
@@ -111,6 +122,8 @@ def jalankan(src, out, judul=None, sub="", dur_kartu=3.5):
             if lt <= t < lt + d:
                 a = min(1, (t - lt) / 0.25, (lt + d - t) / 0.3); dy = int((1 - min(1, (t - lt) / 0.25)) * 20)
                 tempel(o, ov, max(60, OW - 100 - ov[0].shape[1]), (50 - dy) if pos == 'atas' else (OH - 60 - ov[0].shape[0] + dy), a)
+        g = gh(t)
+        if g is not None: tempel(o, g, 34, OH - 34 - g[0].shape[0], 1.0)
         ff.stdin.write(o.tobytes())
     ff.stdin.close(); ff.wait()
 
