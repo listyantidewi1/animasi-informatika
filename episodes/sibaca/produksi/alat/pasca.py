@@ -7,12 +7,36 @@ FB = "/usr/share/fonts/opentype/inter/Inter-Bold.otf"; FS = "/usr/share/fonts/op
 def pil_rgba(img): a = np.array(img); return a[:, :, :3][:, :, ::-1].copy(), a[:, :, 3:4] / 255.0
 
 def label_img(teks):
-    f = ImageFont.truetype(FB, 44); w = int(f.getlength(teks)) + 90; h = 92
+    uk = 44
+    while uk > 28 and ImageFont.truetype(FB, uk).getlength(teks) + 90 > OW - 140: uk -= 2  # label panjang: huruf dikecilkan supaya muat di bingkai
+    f = ImageFont.truetype(FB, uk); w = int(f.getlength(teks)) + 90; h = 92
     im = Image.new("RGBA", (w + 20, h + 20), (0, 0, 0, 0)); d = ImageDraw.Draw(im)
     d.rounded_rectangle([10, 14, w + 10, h + 14], 22, fill=(0, 0, 0, 70))
     d.rounded_rectangle([6, 6, w + 6, h + 6], 22, fill=(20, 24, 38, 235))
     d.rounded_rectangle([6, 6, 22, h + 6], 8, fill=(255, 176, 32, 255))
     d.text((52, 6 + h / 2), teks, font=f, fill=(255, 255, 255, 255), anchor="lm")
+    return pil_rgba(im)
+
+FM = "/usr/share/fonts/truetype/dejavu/DejaVuSansMono-Bold.ttf"
+CHIP = {"ketik": ("KETIK BERSAMA", (255, 176, 32), "Salin dari: "), "tahan": ("JEDA VIDEO BILA PERLU", (74, 222, 128), "Salin dari: "),
+        "berkas": ("BERKAS INI", (125, 170, 255), ""), "term": ("KETIK DI TERMINAL", (255, 176, 32), "")}
+def chip_img(jenis, teks):
+    """Pita kiri bawah: lencana kecil + alamat GitHub berkas yang sedang diketik, atau perintah terminal."""
+    tag, warna, awal = CHIP[jenis]
+    if "github.com" not in teks: awal = ""
+    ft = ImageFont.truetype(FB, 22); uk = 32
+    mono = jenis == "term" or "github.com" in teks
+    def F(u): return ImageFont.truetype(FM if mono else FS, u)
+    wt = int(ft.getlength(tag)) + 36; fa = ImageFont.truetype(FS, 30); wa = int(fa.getlength(awal)) if awal else 0
+    while uk > 20 and wt + wa + F(uk).getlength(teks) + 80 > OW - 120: uk -= 1
+    f = F(uk); w = wt + wa + int(f.getlength(teks)) + 70; h = 68
+    im = Image.new("RGBA", (w + 16, h + 16), (0, 0, 0, 0)); d = ImageDraw.Draw(im)
+    d.rounded_rectangle([8, 10, w + 8, h + 10], 18, fill=(0, 0, 0, 80))
+    d.rounded_rectangle([4, 4, w + 4, h + 4], 18, fill=(16, 20, 34, 240), outline=warna + (255,), width=2)
+    d.rounded_rectangle([14, 16, 14 + wt, h - 8], 12, fill=warna + (255,)); d.text((14 + wt / 2, 4 + h / 2), tag, font=ft, fill=(16, 20, 34, 255), anchor="mm")
+    x = 14 + wt + 20
+    if awal: d.text((x, 4 + h / 2), awal, font=fa, fill=(190, 200, 225, 255), anchor="lm"); x += wa
+    d.text((x, 4 + h / 2), teks, font=f, fill=(255, 255, 255, 255), anchor="lm")
     return pil_rgba(im)
 
 def tempel(fr, ov, x, y, alpha):
@@ -75,6 +99,9 @@ def jalankan(src, out, judul=None, sub="", dur_kartu=3.5):
         brk = [x[0] for x in L[j + 1:] if x[3] == pos]  # label berikutnya di posisi yang sama
         if brk: d = min(d, brk[0] - t - 0.05)
         labels.append((t, label_img(tx), d, pos))
+    CL = sorted(log.get("chip", []), key=lambda e: e[0]); chips = []
+    for j, (t, jenis, tx) in enumerate(CL):
+        if jenis and tx: chips.append((t, CL[j + 1][0] if j + 1 < len(CL) else 1e9, chip_img(jenis, tx)))
     cx, cy, z = W / 2, H / 2, 1.0; vx = vy = vz = 0.0; om = 4.0; dt = 1 / FPS; ki = 0; tgt = [W / 2, H / 2, 1.0]
     # Pakai stempel waktu asli tiap frame: bila perekam sempat kehilangan frame, frame terakhir diulang supaya waktu tetap pas.
     ok, fr = cap.read(); tf = cap.get(cv2.CAP_PROP_POS_MSEC) / 1000; nxt = None
@@ -109,10 +136,15 @@ def jalankan(src, out, judul=None, sub="", dur_kartu=3.5):
         s = OW / cw
         M = np.float32([[s, 0, -x0 * s], [0, s, -y0 * s]])
         o = cv2.warpAffine(fb, M, (OW, OH), flags=cv2.INTER_AREA if s < 1 else cv2.INTER_CUBIC)
+        ada_chip = False
+        for (ca, cb, ov) in chips:
+            if ca <= t < cb:
+                a = min(1, (t - ca) / 0.2, (cb - t) / 0.2); tempel(o, ov, 40, OH - 34 - ov[0].shape[0], max(0, a)); ada_chip = True
         for (lt, ov, d, pos) in labels:
+            if pos != 'atas' and ada_chip: pos = 'bawah2'  # label bawah naik di atas pita
             if lt <= t < lt + d:
                 a = min(1, (t - lt) / 0.25, (lt + d - t) / 0.3); dy = int((1 - min(1, (t - lt) / 0.25)) * 20)
-                tempel(o, ov, max(60, OW - 100 - ov[0].shape[1]), (50 - dy) if pos == 'atas' else (OH - 60 - ov[0].shape[0] + dy), a)
+                tempel(o, ov, max(60, OW - 100 - ov[0].shape[1]), (50 - dy) if pos == 'atas' else (OH - (150 if pos == 'bawah2' else 60) - ov[0].shape[0] + dy), a)
         ff.stdin.write(o.tobytes())
     ff.stdin.close(); ff.wait()
 

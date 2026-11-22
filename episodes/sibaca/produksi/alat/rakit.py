@@ -10,14 +10,33 @@ def dur_file(f): return float(subprocess.check_output(["ffprobe", "-v", "error",
 def bingkai(src, t, out):
     sh("ffmpeg", "-loglevel", "error", "-y", "-ss", f"{max(0, t):.3f}", "-i", src, "-frames:v", "1", "-q:v", "2", out)
 FONT = "/usr/share/fonts/opentype/inter/Inter-Bold.otf"
-def potong(src, a, b, speed, dur, out, pre=0.0, crop=None):
-    vf = (f"crop=iw*{crop[2]}:ih*{crop[3]}:iw*{crop[0]}:ih*{crop[1]},scale=1920:1080:flags=lanczos," if crop else "") + f"setpts=(PTS-STARTPTS)/{speed},fps={FPS},tpad=stop_mode=clone:stop_duration=30"
+CAP = 1.3  # bagian mengetik dan menahan hasil ketikan tidak diputar lebih cepat dari ini
+def peta(L, c, pel):
+    """Bagi klip sepanjang L (dimainkan dalam c detik) menjadi ruas [x0, x1, kecepatan]: ruas `pel` paling cepat CAP, sisanya menanggung percepatan."""
+    Ls = sum(b - a for a, b in pel); Lf = L - Ls; u = L / max(0.05, c)
+    if not pel or u <= CAP or Lf < 0.3: return [[0.0, L, u]]
+    sf = Lf / max(0.05, c - Ls / CAP); ruas = []; x = 0.0
+    for a, b in pel:
+        if a > x + 1e-3: ruas.append([x, a, sf])
+        ruas.append([a, b, CAP]); x = b
+    if x < L - 1e-3: ruas.append([x, L, sf])
+    return ruas
+def potong(src, a, b, speed, dur, out, pre=0.0, crop=None, pel=None):
+    ruas = peta(b - a, (b - a) / speed, pel or [])
+    ex = ""; acc = 0.0; cepat = []
+    for i, (x0, x1, sp) in enumerate(ruas):
+        bagian = f"{acc:.4f}+(T-{x0:.4f})/{sp:.4f}"
+        ex += bagian if i == len(ruas) - 1 else f"if(lt(T,{x1:.4f}),{bagian},"
+        if sp >= 1.8: cepat.append((acc + pre, acc + pre + (x1 - x0) / sp, sp))
+        acc += (x1 - x0) / sp
+    ex += ")" * (len(ruas) - 1)
+    vf = (f"crop=iw*{crop[2]}:ih*{crop[3]}:iw*{crop[0]}:ih*{crop[1]},scale=1920:1080:flags=lanczos," if crop else "") + f"setpts='({ex})/TB',fps={FPS},tpad=stop_mode=clone:stop_duration=30"
     if pre > 0.04: vf += f":start_mode=clone:start_duration={pre:.3f}"
-    if speed >= 1.8:
-        tx = f"dipercepat {speed:.1f}x".replace(".", ",")
-        vf += (f",drawbox=x=w-330:y=h-92:w=300:h=56:color=0x0e1424@0.82:t=fill"
-               f",drawtext=fontfile={FONT}:text='{tx}':x=w-180-tw/2:y=h-64-th/2:fontsize=30:fontcolor=0xfbbf24")
-        if pre > 0.04: vf = vf.replace(":t=fill", f":t=fill:enable='gte(t,{pre:.3f})'").replace("fontcolor=0xfbbf24", f"fontcolor=0xfbbf24:enable='gte(t,{pre:.3f})'")
+    for (o0, o1, sp) in cepat:
+        if o1 - o0 < 1.2: continue
+        tx = f"dipercepat {sp:.1f}x".replace(".", ","); en = f"enable='between(t,{o0:.3f},{o1:.3f})'"
+        vf += (f",drawbox=x=w-330:y=h-92:w=300:h=56:color=0x0e1424@0.82:t=fill:{en}"
+               f",drawtext=fontfile={FONT}:text='{tx}':x=w-180-tw/2:y=h-64-th/2:fontsize=30:fontcolor=0xfbbf24:{en}")
     sh("ffmpeg", "-loglevel", "error", "-y", "-ss", f"{a:.3f}", "-to", f"{b:.3f}", "-i", src, "-vf", vf, "-t", f"{dur:.3f}", "-an",
        "-c:v", "libx264", "-preset", "medium", "-crf", "18", "-pix_fmt", "yuv420p", "-r", str(FPS), out)
 JEDA_AWAL, JEDA_AKHIR = 0.4, 1.6
@@ -42,6 +61,15 @@ def main(ep, hanya_adegan=False):
                 R = rek[p.get("r", "rek")]; a = R["tanda"][p["a"]] if isinstance(p["a"], str) else p["a"]
                 b = R["tanda"][p["b"]] if isinstance(p["b"], str) else p["b"]
                 p["_a"], p["_b"] = a + p.get("da", 0), b + p.get("db", 0); p["_L"] = p["_b"] - p["_a"]
+                pel = []
+                for x0, x1 in sorted(R["log"].get("pelan", [])):
+                    x0, x1 = max(x0, p["_a"]) - p["_a"], min(x1, p["_b"]) - p["_a"]
+                    if x1 - x0 < 0.2: continue
+                    if pel and x0 <= pel[-1][1] + 0.3: pel[-1][1] = max(pel[-1][1], x1)
+                    else: pel.append([x0, x1])
+                p["_pel"] = pel; Ls = sum(y - x for x, y in pel); Lf = p["_L"] - Ls
+                mk = p.get("speed", 1) if p.get("asli") else p.get("maks", 1.6); cs = min(CAP, mk)
+                p["_maks"] = p["_L"] / max(0.05, Ls / cs + Lf / mk)  # percepatan rata-rata tertinggi yang masih menjaga ketikan tetap pelan
         # asli=True: potongan sorot, diputar pada kecepatan asli dan tidak ikut dipercepat
         # --- waktu mulai tiap kalimat di dalam berkas suara (nyata bila ada, kalau tidak perkiraan dari panjang kalimat)
         kal = [x.strip() for x in re.split(r"(?<=[.!?])\s+", naskah[no]) if x.strip()]; tot = sum(len(x) for x in kal)
@@ -69,18 +97,18 @@ def main(ep, hanya_adegan=False):
             for p in g["parts"]: p["_pre"] = 0.0
             tetap = 0.0; lentur = []
             for p in rk:
-                if p.get("asli"): p["_d"] = p["_L"] / p.get("speed", 1); p["_sp"] = p.get("speed", 1); tetap += p["_d"]
+                if p.get("asli"): p["_d"] = p["_L"] / p["_maks"]; p["_sp"] = p["_maks"]; tetap += p["_d"]
                 else: lentur.append(p)
             minflex = sum(p.get("min", 5) for p in ad)
             sisa = ag - tetap - minflex; rem = list(lentur)
             while rem:
                 need = max(1.0, sum(p["_L"] / p.get("speed", 1) for p in rem) / max(0.1, sisa))
-                cap = [p for p in rem if p.get("maks", 1.6) < need]
+                cap = [p for p in rem if p["_maks"] < need]
                 if not cap:
                     for p in rem: p["_sp"] = p.get("speed", 1) * need; p["_d"] = p["_L"] / p["_sp"]
                     break
                 for p in cap:
-                    p["_sp"] = p.get("speed", 1) * p.get("maks", 1.6); p["_d"] = p["_L"] / p["_sp"]; sisa -= p["_d"]; rem.remove(p)
+                    p["_sp"] = p["_maks"]; p["_d"] = p["_L"] / p["_sp"]; sisa -= p["_d"]; rem.remove(p)
             drek = sum(p["_d"] for p in rk); longgar = ag - drek - minflex
             if ad:
                 W = sum(p.get("bobot", 1) for p in ad); prop = [(ag - drek) * p.get("bobot", 1) / W for p in ad]
@@ -108,7 +136,7 @@ def main(ep, hanya_adegan=False):
                 kn = grup[gi + 1]["k"]
                 for j in range(kn, len(kal)): geser[j] += lebih
                 potongA.append((w[kn] - 0.1, lebih))
-        for p in ekor: p["_pre"] = 0.0; p["_d"] = p["_L"] / p.get("speed", 1); p["_sp"] = p.get("speed", 1)
+        for p in ekor: p["_pre"] = 0.0; p["_d"] = p["_L"] / p["_maks"]; p["_sp"] = p["_maks"]
         D = sum(p["_d"] for p in parts)
         # bingkai latar untuk adegan setelah rekaman
         prev = None; files = []; tp = 0.0
@@ -117,7 +145,7 @@ def main(ep, hanya_adegan=False):
             out = f"{tmp}/b{nm(no)}_{i}.mp4"; files.append(out)
             if p["k"] in ("rek", "klip"):
                 R = rek[p.get("r", "rek")]
-                if not hanya_adegan and not os.environ.get("RENCANA"): potong(R["src"], p["_a"], p["_b"], p["_sp"], p["_d"], out, p["_pre"], p.get("crop"))
+                if not hanya_adegan and not os.environ.get("RENCANA"): potong(R["src"], p["_a"], p["_b"], p["_sp"], p["_d"], out, p["_pre"], p.get("crop"), p["_pel"])
                 prev = (R["src"], p["_b"] - 0.05)
             else:
                 a = dict(p.get("a", {}))
@@ -126,6 +154,10 @@ def main(ep, hanya_adegan=False):
                     src, t = prev if p["bg"] is True else (rek[p["bg"][0]]["src"], rek[p["bg"][0]]["tanda"].get(p["bg"][1], p["bg"][1]) if isinstance(p["bg"][1], str) else p["bg"][1])
                     png = f"{tmp}/bg_b{nm(no)}_{i}.jpg"; bingkai(src, t, png); a["bg"] = png
                 if callable(p.get("a_fn")): a.update(p["a_fn"](rek))
+                nb = int(ep[1:]); GH = "github.com/listyantidewi1/SiBaca/tree/bab-%02d"
+                if p["nama"] == "dariGitHub": a.setdefault("y", 760)  # di atas pita kiri bawah pada latar beku
+                if p["nama"] == "kartuBab" and nb >= 3: a.setdefault("mulai", GH % (nb - 1))  # kode awal bab = akhir bab sebelumnya
+                if p["nama"] == "lanjut" and nb >= 1 and nb != 2: a.setdefault("kode", GH % nb)
                 jobs.append({"nama": p["nama"], "D": p["_d"], "a": a, "out": out})
             tp += p["_d"]
         rencana.append({"no": no, "D": D, "audio": A[no], "files": files, "lead": lead, "kalT": kalT, "w": w, "potong": potongA})
