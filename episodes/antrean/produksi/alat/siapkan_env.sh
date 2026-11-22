@@ -40,3 +40,19 @@ INSERT INTO tiket_pelanggan VALUES (121,'A-021','Budi Santoso','0812-5550-0121',
  (123,'A-022','Agus Wijaya','0857-5550-0123','menunggu'),(124,'A-023','Rina Kartika','0821-5550-0124','menunggu'),(125,'C-004','Hendra Gunawan','0878-5550-0125','menunggu'),
  (126,'B-008','Wulan Sari','0838-5550-0126','menunggu'),(127,'A-024','Yoga Pratama','0896-5550-0127','menunggu') ON CONFLICT DO NOTHING;
 SQL
+# Bab 12: Docker, CA demo lokal + sertifikat antre.bengkelmajujaya.test, dipercaya Chromium (NSS)
+docker info >/dev/null 2>&1 || { (setsid nohup dockerd > /tmp/claude-0/dockerd.log 2>&1 < /dev/null &); sleep 8; }
+H=antre.bengkelmajujaya.test; CA=/home/user/ca; L=/etc/letsencrypt/live/$H
+if [ ! -s $L/fullchain.pem ]; then
+  mkdir -p $CA $L && cd $CA
+  openssl req -x509 -newkey rsa:2048 -nodes -days 3650 -subj "/CN=CA Demo Lokal SiAntre" -keyout ca.key -out ca.pem 2>/dev/null
+  openssl req -newkey rsa:2048 -nodes -subj "/CN=$H" -keyout $L/privkey.pem -out h.csr 2>/dev/null
+  printf "subjectAltName=DNS:$H\nbasicConstraints=CA:FALSE\n" > ext.cnf
+  openssl x509 -req -in h.csr -CA ca.pem -CAkey ca.key -CAcreateserial -days 825 -extfile ext.cnf -out $L/cert.pem 2>/dev/null
+  cat $L/cert.pem ca.pem > $L/fullchain.pem; cd - >/dev/null
+fi
+mkdir -p /tmp/claude-0/ca && cp $CA/ca.pem /tmp/claude-0/ca/ca.pem
+grep -q "$H" /etc/hosts || echo "127.0.0.1 $H" >> /etc/hosts
+mkdir -p /root/.pki/nssdb; [ -f /root/.pki/nssdb/cert9.db ] || certutil -d sql:/root/.pki/nssdb -N --empty-password
+certutil -d sql:/root/.pki/nssdb -L 2>/dev/null | grep -q "CA Demo SiAntre" || certutil -d sql:/root/.pki/nssdb -A -t "C,," -n "CA Demo SiAntre" -i $CA/ca.pem
+echo "docker: $(docker info 2>/dev/null | grep -c 'Server Version') | sertifikat: $(ls $L | wc -l) berkas"

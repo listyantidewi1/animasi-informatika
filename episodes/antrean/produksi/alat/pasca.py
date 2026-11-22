@@ -77,11 +77,18 @@ def jalankan(src, out, judul=None, sub="", dur_kartu=3.5):
     # Label tetap alamat GitHub berkas aktif (typing along), kiri bawah
     import re, label_gh
     m = re.search(r"A(\d\d)/", src); bab = int(m.group(1)) if m else 0; pil_gh = {}; BK = sorted(log.get("berkas", []))
+    # Pil hanya tampil selama bekerja di berkas: menyala saat berkas dibuka/kode diketik, padam saat perintah terminal mulai diketik
+    # (supaya tidak menutupi baris perintah di terminal).
+    SAKLAR = sorted([(tb, True) for tb, _ in BK] + [(e[0] - 0.5, True) for e in log.get("ketik", []) if e[4] == "kode"]
+                    + [(e[0] - 0.3, False) for e in log.get("ketik", []) if e[4] == "cmd"])
     def gh(t):
         if not bab or os.path.basename(src) != "rek": return None
-        b = None
+        b = None; nyala = False
         for tb, nm_ in BK:
             if tb <= t: b = nm_
+        for ts_, v in SAKLAR:
+            if ts_ <= t: nyala = v
+        if not nyala: return None
         if b not in pil_gh: pil_gh[b] = pil_rgba(label_gh.pil(b, bab))
         return pil_gh[b]
     cx, cy, z = W / 2, H / 2, 1.0; vx = vy = vz = 0.0; om = 4.0; dt = 1 / FPS; ki = 0; tgt = [W / 2, H / 2, 1.0]
