@@ -28,7 +28,8 @@ def zoom_timeline(a_, b_):
 langkah = []
 def L(dt, f): langkah.append((dt, f))
 sc = bpy.context.scene
-L(1.0, lambda: (T("buka"), kamera_view(), zoom_timeline(1, 1800)))
+sc.sync_mode = "FRAME_DROP"
+L(1.0, lambda: (T("buka"), kamera_view()))
 L(4.0, lambda: (T("marker"),))
 L(5.0, lambda: (T("putar"), bpy.ops.screen.animation_play()))
 L(14.0, lambda: (T("berhenti"), bpy.ops.screen.animation_cancel(restore_frame=False)))

@@ -44,11 +44,13 @@ def _ke_terminal(self, nama="claude"):
     """Fokus ke terminal bernama nama (klik daftar tab bila ada)."""
     if not self.pg.locator(".part.panel").first.is_visible():
         self.palet("View: Toggle Panel Visibility"); time.sleep(1)
-    tabs = self.pg.locator(".terminal-tabs-entry", has_text=nama)
-    if tabs.count() > 0 and tabs.first.is_visible():
-        self.klik(tabs.first, 0.6)
+    idx = {"claude": 0, "bash": 1}.get(nama, 0)
+    tabs = self.pg.locator(".terminal-tabs-entry")
+    if tabs.count() > idx and tabs.nth(idx).is_visible():
+        self.klik(tabs.nth(idx), 0.6)
     else:
-        self.palet("Terminal: Focus Terminal"); time.sleep(0.6)
+        raise RuntimeError("daftar tab terminal tidak terlihat")
+    self.palet("Terminal: Focus Terminal"); time.sleep(0.5)
 Sesi.ke_terminal = _ke_terminal
 def _pratinjau(self, path):
     self.palet("View: Close All Editors"); time.sleep(0.5)
