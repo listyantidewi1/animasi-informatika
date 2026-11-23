@@ -86,3 +86,10 @@ K.adegan.lanjut = (c, t, D, a) => { const C = K.C, muncul = K.muncul; K.bg(c); c
 K.adegan.aturanBesar = (c, t, D, a) => { const C = K.C, muncul = K.muncul; if (a.bg) K.latar(c, a.bg, .9); else K.bg(c); const p = muncul(t, .2), w = a.warna || C.amber;
   c.save(); c.globalAlpha = p; K.rrect(c, 160, 330, 1600, a.sub ? 420 : 320, 36, 'rgba(255,176,32,.08)', w, 6); K.text(c, a.kecil || 'Aturannya', 240, 410, {size: 34, weight: 800, color: C.redup});
   K.text(c, a.teks, 240, 530, {size: a.size || 68, weight: 900, color: w, maxW: 1440, lh: 1.2}); if (a.sub) K.text(c, a.sub, 240, 680, {size: 34, weight: 700, maxW: 1440, lh: 1.3, alpha: muncul(t, 1.2)}); c.restore(); };
+// Pita alamat kode per bab (supaya penonton yang mengetik bersama bisa menyamakan atau mengejar): ket + alamat GitHub
+K.pitaKode = (c, p, ket, alamat, x, y) => { if (p <= 0) return; const C = K.C, w = Math.max(600, alamat.length * 17 + 60);
+  c.save(); c.globalAlpha = p; K.rrect(c, x, y + (1 - p) * 16, w, 104, 18, 'rgba(125,170,255,.10)', '#7daaff', 3);
+  K.text(c, ket, x + 30, y + 34 + (1 - p) * 16, {size: 24, weight: 800, color: '#7daaff'}); K.text(c, alamat, x + 30, y + 72 + (1 - p) * 16, {size: 28, weight: 800, mono: true}); c.restore(); };
+(() => { const kb = K.adegan.kartuBab, lj = K.adegan.lanjut;
+  K.adegan.kartuBab = (c, t, D, a) => { kb(c, t, D, a); if (a.mulai) K.pitaKode(c, K.muncul(t, 1.9), 'Tertinggal? Mulai bab ini dari kode di sini', a.mulai, 160, a.catatan ? 830 : 760); };
+  K.adegan.lanjut = (c, t, D, a) => { lj(c, t, D, a); if (a.kode) K.pitaKode(c, K.muncul(t, a.tanya ? 3.8 : 1.6), 'Kode sampai akhir bab ini', a.kode, 140, 930); }; })();

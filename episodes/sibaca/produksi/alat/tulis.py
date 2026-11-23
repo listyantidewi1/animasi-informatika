@@ -1,16 +1,44 @@
 """Mesin penyunting untuk rekaman bab: mengetik perubahan berkas di VS Code sungguhan sampai isinya sama dengan target,
 lalu memeriksa hasilnya di disk. Dipakai rekam.py tiap bab."""
-import os, time, difflib, subprocess, sys
+import os, time, difflib, subprocess, sys, re
 sys.path.insert(0, os.path.dirname(__file__))
 from rekam_vs import VS
 P = "/home/user/proyek/sibaca"
 CACAT = []
+REPO = "github.com/listyantidewi1/SiBaca"; GH = "/home/user/sibaca-github"  # salinan repo publik, untuk memeriksa berkas ada di tag bab
+CPS_MAKS = 13  # ketikan tidak lebih cepat dari ini supaya bisa diikuti
 
 class Bab:
     def __init__(self, keluar, proyek=P, url=None):
         self.P = proyek
         self.r = VS(keluar, url=url or f"http://localhost:8080/?folder={proyek}")
         self.aktif = None
+        m = re.search(r"/B(\d\d)/", keluar); self.tag = f"bab-{m.group(1)}" if m else None
+    # ---------- pita "salin dari" ----------
+    def alamat(self, rel):
+        if self.tag and subprocess.run(["git", "-C", GH, "cat-file", "-e", f"{self.tag}:{rel}"], capture_output=True).returncode == 0: return f"{REPO}/blob/{self.tag}/{rel}"
+        return None
+    def pita(self, jenis, rel):
+        u = self.alamat(rel)
+        if u: self.r.chip(jenis, u)
+        elif rel == ".env": self.r.chip(jenis, ".env tidak ikut ke GitHub, ketik sendiri di komputermu")
+        else: self.r.chip(jenis, rel)
+    def halaman(self):
+        """Jumlah baris yang terlihat di editor aktif."""
+        try: return max(8, int(self.r.pg.evaluate("() => document.querySelector('.editor-group-container.active .monaco-editor .overflow-guard').getBoundingClientRect().height") / 26) - 1)
+        except Exception: return 18
+    def tahan(self, rel, awal, nb, nch, penuh):
+        """Setelah mengetik: tampilkan hasilnya utuh dan diam sebentar supaya penonton sempat menyamakan kodenya."""
+        r = self.r; self.pita("tahan", rel); total = len(self.isi(rel).rstrip("\n").split("\n")); hal = self.halaman()
+        if penuh:
+            r.pg.keyboard.press("Control+Home"); time.sleep(0.3); self.editor(); atas = 1
+            while True:
+                n = min(hal, total - atas + 1); time.sleep(min(6.0, 2.8 + 0.16 * n))
+                if atas + hal > total: break
+                atas += hal - 2; self.ke(min(total, atas + hal // 2 + 1)); time.sleep(0.5)
+        else:
+            self.ke(max(1, awal)); self.editor(); time.sleep(min(7.0, 2.8 + nch / 28 + 0.3 * nb))
+        self.pita("berkas", rel)
     # ---------- navigasi ----------
     def uri(self):
         try: return self.r.pg.evaluate("() => { const e = document.querySelector('.editor-group-container.active .monaco-editor[data-uri]'); return e ? e.getAttribute('data-uri') : ''; }")
@@ -20,6 +48,7 @@ class Bab:
         if self.uri().endswith("/" + rel) and r.pg.locator(".monaco-editor.focused").count(): return
         if "/" not in rel:  # berkas di folder utama (termasuk .env): klik di Explorer
             r.perintah("File: Focus on Files Explorer", 0.4); r.perintah("Collapse Folders in Explorer", 0.5)
+            if r.pg.locator(f'.explorer-folders-view .monaco-list-row[aria-label="{rel}"]').count() == 0: r.perintah("File: Refresh Explorer", 1.0)
             r.klik(f'.explorer-folders-view .monaco-list-row[aria-label="{rel}"]'); time.sleep(0.8)
             if self.uri().endswith("/" + rel): r.fokus_editor(); return
         for coba in range(3):
@@ -51,17 +80,22 @@ class Bab:
             if sp: r.pg.keyboard.type(" " * sp)
             if ikuti and i % 4 == 0: r.kamera_editor()
             r.ketik(isi, cps); time.sleep(0.08)
-    def ubah(self, rel, target, cps=24, ikuti=True, durasi=None):
+    def ubah(self, rel, target, cps=24, ikuti=True, durasi=None, tahan=True):
         """Sunting berkas rel sampai isinya = target (teks utuh). Berkas baru dibuat lewat Explorer."""
         r = self.r; lama = self.isi(rel)
         if not target.endswith("\n"): target += "\n"
+        baru_berkas = lama is None
         if lama is None: self.baru(rel); lama = ""
         else: self.buka(rel)
+        self.pita("ketik", rel); t_mulai = r.t()
         a = lama.split("\n"); b = target.split("\n")
         ops = [o for o in difflib.SequenceMatcher(None, a, b, autojunk=False).get_opcodes() if o[0] != "equal"]
         if durasi:
             n = sum(len(x.strip()) for o in ops for x in b[o[3]:o[4]]); nb = sum(o[4] - o[3] for o in ops)
             cps = max(8, min(70, n / max(1, durasi - 0.3 * nb)))
+        cps = min(cps, CPS_MAKS)
+        nch = sum(len(x.strip()) for o in ops for x in b[o[3]:o[4]]); nbr = sum(o[4] - o[3] for o in ops); awal = ops[0][3] + 1 if ops else 1
+        penuh = baru_berkas or nbr >= 0.6 * max(1, len(b) - 1)
         geser = 0
         for tag, i1, i2, j1, j2 in ops:
             L = i1 + 1 + geser; n = i2 - i1; baru = b[j1:j2]
@@ -76,7 +110,7 @@ class Bab:
                     time.sleep(0.4)
                     for _ in xs: r.pg.keyboard.press("Shift+ArrowRight"); time.sleep(0.03)
                     time.sleep(0.35)
-                    if ys: r.ketik(ys, min(cps, 14))
+                    if ys: r.ketik(ys, min(cps, 12))
                     elif xs: r.pg.keyboard.press("Delete")
                     time.sleep(0.3)
                 continue
@@ -90,6 +124,9 @@ class Bab:
                 self.ke(L); r.pg.keyboard.press("Enter"); time.sleep(0.08); r.pg.keyboard.press("ArrowUp"); time.sleep(0.08)
                 self._ketik_baris(baru, cps, ikuti); geser += len(baru)
         self.simpan(); time.sleep(0.3)
+        if tahan and ops and self.isi(rel) == target: self.tahan(rel, awal, nbr, nch, penuh)
+        else: self.pita("berkas", rel)
+        r.pelan(t_mulai)
         if self.isi(rel) != target:
             CACAT.append(rel); print("CACAT", rel, flush=True)
             if os.environ.get("CACAT_STOP", "1") == "1" and len(CACAT) >= 2: print("BERHENTI: dua cacat", flush=True); os._exit(3)
@@ -111,25 +148,25 @@ class Bab:
         raise Exception(f"tidak ketemu '{cari}' di {rel}")
     def sorot(self, rel, cari, label, dur=3.0, tanda=None, n=1, zoom=1.4, ke=1):
         """Kursor ke baris berisi `cari`, kamera mendekat, label tampil; n = jumlah baris yang disorot."""
-        r = self.r; self.buka(rel); self.ke(self.baris(rel, cari, ke)); time.sleep(0.25)
+        r = self.r; self.buka(rel); self.pita("berkas", rel); self.ke(self.baris(rel, cari, ke)); time.sleep(0.25)
         if tanda: r.tanda(tanda)
         r.kamera_editor(zoom=zoom)
         if n > 1 and r.log["kamera"][-1][1]: r.log["kamera"][-1][1] += [0, 0, n - 1]
         r.label(label, dur); time.sleep(dur)
     def lihat(self, rel, cari=None, jeda=1.0):
         """Buka berkas, tampilkan seluruh editor (tanpa zoom)."""
-        self.buka(rel)
+        self.buka(rel); self.pita("berkas", rel)
         if cari: self.ke(self.baris(rel, cari))
         self.editor(); time.sleep(jeda)
     def editor(self): self.r.kamera(self.r.kotak(".editor-group-container"), pad=0)
     # ---------- terminal ----------
     def term(self, bersih=True):
-        r = self.r; r.kamera(None); r.fokus_terminal(); time.sleep(0.3)
+        r = self.r; r.kamera(None); r.chip(None); r.fokus_terminal(); time.sleep(0.3)
         if bersih: r.tekan("Control+l", 0.3)
         r.kamera_terminal()
     def jalan(self, cmd, tunggu=1.5, cps=22, label=None, dur=3.0, sampai=None, maks=120):
         """Ketik perintah di terminal; sampai = teks yang ditunggu muncul di layar terminal."""
-        r = self.r; r.terminal(cmd, cps=cps, tunggu=0.3)
+        r = self.r; r.chip("term", cmd); r.terminal(cmd, cps=cps, tunggu=0.3)
         if sampai:
             t0 = time.time()
             while time.time() - t0 < maks:
@@ -148,7 +185,7 @@ A = "/home/user/acuan-sibaca/"
 def acuan(rel): return open(A + rel).read()
 def _besar(self):
     """Panel terminal layar penuh (untuk keluaran panjang atau sesi mysql)."""
-    self.r.kamera(None); self.r.fokus_terminal(); time.sleep(0.3); self.r.perintah("View: Toggle Maximized Panel", 0.8); self.r.tekan("Control+l", 0.3); self.r.kamera_terminal()
+    self.r.kamera(None); self.r.chip(None); self.r.fokus_terminal(); time.sleep(0.3); self.r.perintah("View: Toggle Maximized Panel", 0.8); self.r.tekan("Control+l", 0.3); self.r.kamera_terminal()
 def _kecil(self):
     self.r.kamera(None); self.r.fokus_terminal(); time.sleep(0.2); self.r.perintah("View: Toggle Maximized Panel", 0.8)
 def _tunggu(self, teks, maks=30):
@@ -158,12 +195,14 @@ def _tunggu(self, teks, maks=30):
         time.sleep(0.3)
     print("PERINGATAN: tidak muncul:", teks, flush=True); return False
 def _mysql(self, sandi="gantiSandiIni!", user="sibaca", db="sibaca", bersih=True):
-    r = self.r; r.terminal(f"mysql -u {user} -p {db}".strip(), tunggu=0.5); self.tunggu("Enter password"); time.sleep(0.8); r.ketik(sandi, 10); time.sleep(0.5); r.tekan("Enter", 0.5); self.tunggu("mysql>"); time.sleep(1.0)
+    r = self.r; r.chip("term", f"mysql -u {user} -p {db}".strip()); r.terminal(f"mysql -u {user} -p {db}".strip(), tunggu=0.5); self.tunggu("Enter password"); time.sleep(0.8); r.ketik(sandi, 10); time.sleep(0.5); r.tekan("Enter", 0.5); self.tunggu("mysql>"); time.sleep(1.0); r.chip(None)
     if bersih: r.tekan("Control+l", 0.4)
 def _sql(self, baris, label=None, dur=3.5, tunggu=1.2, cps=20):
     """Ketik satu perintah SQL (boleh beberapa baris) di sesi mysql."""
     r = self.r
-    for i, b in enumerate(baris if isinstance(baris, list) else [baris]): r.terminal(b, cps=cps, tunggu=0.35)
+    if isinstance(baris, str) and len(baris) <= 80: r.chip("term", baris)
+    else: r.chip(None)
+    for i, b in enumerate(baris if isinstance(baris, list) else [baris]): r.terminal(b, cps=cps, tunggu=0.35, chip=False)
     time.sleep(tunggu)
     if label: r.label(label, dur); time.sleep(dur)
 def _salin(self, rel, label=None, dur=3.0):
@@ -221,6 +260,7 @@ def _hapus(self, rel):
     """Hapus berkas atau folder lewat Explorer: klik, tombol Delete, lalu konfirmasi."""
     r = self.r; nama = rel.split("/")[-1]
     try:
+        if r.pg.locator(f'.explorer-folders-view .monaco-list-row[aria-label="{nama}"]').count() == 0: r.perintah("File: Refresh Explorer", 1.0)
         r.klik(f'.explorer-folders-view .monaco-list-row[aria-label="{nama}"]'); time.sleep(0.6); r.tekan("Delete", 1.0)
         btn = r.pg.locator('.monaco-dialog-box .dialog-buttons .monaco-button:not(.secondary)').first
         if btn.count(): bb = btn.bounding_box(); time.sleep(0.8); r.klik(xy=(bb["x"] + bb["width"] / 2, bb["y"] + bb["height"] / 2))

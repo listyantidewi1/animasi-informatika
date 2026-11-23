@@ -96,5 +96,6 @@ AD.duaProgram = (c, t, D, a) => { K.bg(c); K.judul(c, 'Dua program berjalan', t,
 // b14: penutup bab
 AD.lanjut = (c, t, D, a) => { K.bg(c); const p = muncul(t, .2), p2 = muncul(t, 1.0);
   c.save(); c.globalAlpha = p; K.rrect(c, 140, 250, 1640, 220, 26, 'rgba(163,230,53,.08)', C.lime, 4); K.centang(c, 230, 360, 70, p, C.lime); K.text(c, a.selesai, 320, 360, {size: 44, weight: 800, maxW: 1400, lh: 1.25}); c.restore();
-  c.save(); c.globalAlpha = p2; K.text(c, 'Bab berikutnya', 140, 620, {size: 30, weight: 700, color: C.redup}); K.text(c, a.berikut, 140, 700, {size: 60, weight: 900, maxW: 1640}); c.restore(); };
+  c.save(); c.globalAlpha = p2; K.text(c, 'Bab berikutnya', 140, 620, {size: 30, weight: 700, color: C.redup}); K.text(c, a.berikut, 140, 700, {size: 60, weight: 900, maxW: 1640}); c.restore();
+  if (a.kode) K.pitaKode(c, muncul(t, 1.6), 'Kode sampai akhir bab ini', a.kode, 140, 930); };
 })();

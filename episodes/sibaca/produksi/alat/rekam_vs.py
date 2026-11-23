@@ -19,7 +19,7 @@ def hentikan_lama(skrip, proyek="/home/user/proyek/sibaca"):
 
 class VS:
     def __init__(self, keluar, url=URL, profil="/tmp/claude-0/prof_rek"):
-        self.keluar = keluar; self.log = {"src": [W, H], "kamera": [], "label": [], "tanda": []}
+        self.keluar = keluar; self.log = {"src": [W, H], "kamera": [], "label": [], "tanda": [], "chip": [], "pelan": []}; self._chip = None
         shutil.rmtree(profil, ignore_errors=True)
         self.pw = sync_playwright().start()
         self.ctx = self.pw.chromium.launch_persistent_context(profil, headless=False, no_viewport=True,
@@ -47,6 +47,13 @@ class VS:
         self.ctx.close(); self.pw.stop()
     def tanda(self, nama): self.log["tanda"].append([self.t(), nama]); print(f"[{self.t():7.2f}] {nama}", flush=True)
     def label(self, teks, dur=3.0, posisi="atas"): self.log["label"].append([self.t(), teks, dur, posisi])
+    def chip(self, jenis=None, teks=None):
+        """Pita kiri bawah yang menetap sampai diganti: jenis 'ketik' | 'tahan' | 'berkas' | 'term' | None (hilang)."""
+        if (jenis, teks) == self._chip: return
+        self._chip = (jenis, teks); self.log["chip"].append([self.t(), jenis, teks])
+    def pelan(self, t0, t1=None):
+        """Selang yang tidak boleh dikebut saat dirakit (mengetik, menahan hasil ketikan)."""
+        self.log["pelan"].append([round(t0, 3), round(self.t() if t1 is None else t1, 3)])
 
     # --- kamera (kotak dalam css px) ---
     def kamera(self, rect=None, zoom=None, pad=30):
@@ -127,11 +134,13 @@ class VS:
         """Jalankan perintah VS Code lewat Command Palette (F1)."""
         self.pg.keyboard.press("F1"); time.sleep(0.5); self.pg.keyboard.type(nama); time.sleep(0.7)
         self.pg.keyboard.press("Enter"); time.sleep(jeda)
-    def terminal(self, cmd, cps=18, tunggu=1.0, ikuti=True):
+    def terminal(self, cmd, cps=18, tunggu=1.0, ikuti=True, chip=True):
+        if chip: self.chip("term", cmd) if len(cmd) <= 95 else self.chip(None)
         if ikuti: self.kamera_terminal()
         m = re.search(r"node (\S+) &$", cmd.strip())
         if m: hentikan_lama(m.group(1))  # pastikan server lama di port yang sama sudah mati
-        self.ketik(cmd, cps); time.sleep(0.25); self.pg.keyboard.press("Enter"); time.sleep(tunggu)
+        t0 = self.t(); self.ketik(cmd, min(cps, 13)); time.sleep(max(0.9, min(2.5, len(cmd) / 30)))  # perintah selesai diketik: beri waktu membaca sebelum Enter
+        self.pg.keyboard.press("Enter"); self.pelan(t0, self.t() + 0.8); time.sleep(tunggu)
     def fokus_terminal(self):
         self.perintah("Terminal: Focus Terminal", 0.6)
     def fokus_editor(self):
