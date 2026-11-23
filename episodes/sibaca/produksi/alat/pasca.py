@@ -101,7 +101,7 @@ def jalankan(src, out, judul=None, sub="", dur_kartu=3.5):
         labels.append((t, label_img(tx), d, pos))
     CL = sorted(log.get("chip", []), key=lambda e: e[0]); chips = []
     for j, (t, jenis, tx) in enumerate(CL):
-        if jenis and tx: chips.append((t, CL[j + 1][0] if j + 1 < len(CL) else 1e9, chip_img(jenis, tx)))
+        if jenis and tx: chips.append((t, CL[j + 1][0] if j + 1 < len(CL) else 1e9, chip_img(jenis, tx), jenis == "term"))
     cx, cy, z = W / 2, H / 2, 1.0; vx = vy = vz = 0.0; om = 4.0; dt = 1 / FPS; ki = 0; tgt = [W / 2, H / 2, 1.0]
     # Pakai stempel waktu asli tiap frame: bila perekam sempat kehilangan frame, frame terakhir diulang supaya waktu tetap pas.
     ok, fr = cap.read(); tf = cap.get(cv2.CAP_PROP_POS_MSEC) / 1000; nxt = None
@@ -137,9 +137,13 @@ def jalankan(src, out, judul=None, sub="", dur_kartu=3.5):
         M = np.float32([[s, 0, -x0 * s], [0, s, -y0 * s]])
         o = cv2.warpAffine(fb, M, (OW, OH), flags=cv2.INTER_AREA if s < 1 else cv2.INTER_CUBIC)
         ada_chip = False
-        for (ca, cb, ov) in chips:
+        for (ca, cb, ov, atas) in chips:
             if ca <= t < cb:
-                a = min(1, (t - ca) / 0.2, (cb - t) / 0.2); tempel(o, ov, 40, OH - 34 - ov[0].shape[0], max(0, a)); ada_chip = True
+                al = max(0, min(1, (t - ca) / 0.2, (cb - t) / 0.2))
+                if atas:  # perintah terminal: di kiri atas supaya baris terakhir terminal tidak tertutup; turun bila bertabrakan dengan label
+                    tabrak = any(lt <= t < lt + d and pos == 'atas' and 40 + ov[0].shape[1] > OW - 110 - lv[0].shape[1] for (lt, lv, d, pos) in labels)
+                    tempel(o, ov, 40, 150 if tabrak else 54, al)
+                else: tempel(o, ov, 40, OH - 34 - ov[0].shape[0], al); ada_chip = True
         for (lt, ov, d, pos) in labels:
             if pos != 'atas' and ada_chip: pos = 'bawah2'  # label bawah naik di atas pita
             if lt <= t < lt + d:

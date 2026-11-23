@@ -48,6 +48,7 @@ class Bab:
         if self.uri().endswith("/" + rel) and r.pg.locator(".monaco-editor.focused").count(): return
         if "/" not in rel:  # berkas di folder utama (termasuk .env): klik di Explorer
             r.perintah("File: Focus on Files Explorer", 0.4); r.perintah("Collapse Folders in Explorer", 0.5)
+            if r.pg.locator(f'.explorer-folders-view .monaco-list-row[aria-label="{rel}"]').count() == 0: r.perintah("File: Refresh Explorer", 1.0)
             r.klik(f'.explorer-folders-view .monaco-list-row[aria-label="{rel}"]'); time.sleep(0.8)
             if self.uri().endswith("/" + rel): r.fokus_editor(); return
         for coba in range(3):
@@ -259,6 +260,7 @@ def _hapus(self, rel):
     """Hapus berkas atau folder lewat Explorer: klik, tombol Delete, lalu konfirmasi."""
     r = self.r; nama = rel.split("/")[-1]
     try:
+        if r.pg.locator(f'.explorer-folders-view .monaco-list-row[aria-label="{nama}"]').count() == 0: r.perintah("File: Refresh Explorer", 1.0)
         r.klik(f'.explorer-folders-view .monaco-list-row[aria-label="{nama}"]'); time.sleep(0.6); r.tekan("Delete", 1.0)
         btn = r.pg.locator('.monaco-dialog-box .dialog-buttons .monaco-button:not(.secondary)').first
         if btn.count(): bb = btn.bounding_box(); time.sleep(0.8); r.klik(xy=(bb["x"] + bb["width"] / 2, bb["y"] + bb["height"] / 2))
