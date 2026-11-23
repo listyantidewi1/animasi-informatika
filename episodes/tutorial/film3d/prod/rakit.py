@@ -148,7 +148,7 @@ def popup_spans(src, a, b, fps=5):
 
 def bersih(src, a, b):
     """potongan [a,b] tanpa popup: daftar (s,e) absolut, potongan < 0.3 s dibuang"""
-    if src.startswith("H"): return [(a, b)]
+    if src.startswith("H") or b - a > 120: return [(a, b)]  # rekaman panjang (AI bekerja): tanpa deteksi popup, hemat memori
     keep, cur = [], a
     for s0, e0 in popup_spans(src, a, b):
         if s0 > cur: keep.append((cur, min(s0, b)))
