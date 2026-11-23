@@ -19,7 +19,7 @@ PGB=/usr/lib/postgresql/16/bin
 if [ ! -d /home/user/pg/data ]; then mkdir -p /home/user/pg && chown postgres /home/user/pg && su postgres -c "$PGB/initdb -D /home/user/pg/data -A trust -E UTF8 >/dev/null"; fi
 su postgres -c "$PGB/pg_ctl -D /home/user/pg/data status" >/dev/null 2>&1 || { rm -f /home/user/pg/data/postmaster.pid; mkdir -p /var/run/postgresql; chown postgres /var/run/postgresql; su postgres -c "$PGB/pg_ctl -D /home/user/pg/data -l /home/user/pg/log -w start" >/dev/null; }
 # Xvfb
-pgrep -x Xvfb >/dev/null || (nohup Xvfb :99 -screen 0 2560x1440x24 >/dev/null 2>&1 &)
+pgrep -x Xvfb >/dev/null || (setsid nohup Xvfb :99 -screen 0 2560x1440x24 >/dev/null 2>&1 < /dev/null &)
 # repo proyek dari bundle (hanya bila belum ada)
 if [ ! -d /home/user/proyek/siantre/.git ]; then git clone -q /mnt/project-files/antrean/repo/siantre.bundle /home/user/proyek/siantre && (cd /home/user/proyek/siantre && git fetch -q --tags origin; git checkout -q -B main bab-12; git remote remove origin); fi
 git -C /home/user/proyek/siantre fetch -q /mnt/project-files/antrean/repo/siantre.bundle 'refs/tags/*:refs/asli/*'  # tag asli untuk pembanding
