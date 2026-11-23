@@ -26,8 +26,19 @@ DAFTAR = [
     ("5.3", "Kurir Mas Adit", "p_kurir.txt"),
     ("5.4", "Motor melaju di shot 1", "p_gerak.txt"),
     ("5.5", "Kucing oren", "p_kucing.txt"),
+    ("5.5b", "Ponco saat berjalan", "p_ponco_jalan.txt"),
+    ("5.5c", "Ponco mengikuti tulang", "p_ponco_tulang.txt"),
     ("5.6", "Layar HP", "p_hp.txt"),
     ("5.7", "Pintu dan siluet anak", "p_pintu.txt"),
+    ("5.8", "Bingkai shot 6 dan 7", "p_pintu_bingkai.txt"),
+    ("5.9", "Siluet anak dan bentuk ponco", "p_siluet.txt"),
+    ("6.1", "Kamera sinematik", "p_kamera.txt"),
+    ("6.1b", "Gambar cek yang cepat", "p_cek_cepat.txt"),
+    ("6.1c", "Ponco tanpa simulasi kain", "p_tanpa_simulasi.txt"),
+    ("6.1d", "Memperbaiki kamera shot 2 dan 5", "p_kamera_fix.txt"),
+    ("6.1e", "Kamera shot 2 dari belakang bahu", "p_kamera_fix2.txt"),
+    ("6.1f", "Shot 2 dipotong menjadi tiga sudut", "p_shot2_potong.txt"),
+    ("6.2", "Versi tegak untuk Short", "p_tegak.txt"),
 ]
 
 KEPALA = """# Prompt di video "Paket Terakhir Malam Ini"
