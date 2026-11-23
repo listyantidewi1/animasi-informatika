@@ -39,6 +39,12 @@ DAFTAR = [
     ("6.1e", "Kamera shot 2 dari belakang bahu", "p_kamera_fix2.txt"),
     ("6.1f", "Shot 2 dipotong menjadi tiga sudut", "p_shot2_potong.txt"),
     ("6.2", "Versi tegak untuk Short", "p_tegak.txt"),
+    ("7.1", "Efek suara dari kode", "p_sfx.txt"),
+    ("7.2", "Sinkronisasi suara dan subtitle", "p_sinkron.txt"),
+    ("8.1", "Skrip render akhir dan penggabung video", "p_render.txt"),
+    ("8.2", "Poles sebelum render", "p_poles.txt"),
+    ("9.1", "Memeriksa hasil render", "p_periksa.txt"),
+    ("9.2", "Ekspor motor dan helm untuk game", "p_ekspor.txt"),
 ]
 
 KEPALA = """# Prompt di video "Paket Terakhir Malam Ini"
