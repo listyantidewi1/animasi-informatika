@@ -44,6 +44,58 @@ def commit(src, a="mulai", b="akhir", **k):
 BAB = []
 def bab(kode, judul, beats): BAB.append(dict(kode=kode, judul=judul, beats=beats))
 
+# ---------------------------------------------------------------- F01 (semua layar digambar dengan kode: siap.js)
+BL = "C:\\Program Files\\Blender Foundation\\Blender 5.3"
+def _term(baris, **k): return A("terminal", baris=[dict(cmd=b[0], out=list(b[1:])) for b in baris], **k)
+_GALAT = [["blender : The term 'blender' is not recognized as the name of a cmdlet...", "Tutup terminal, lalu buka terminal baru. Periksa Path: isinya harus folder, bukan file blender.exe."],
+          ["...cannot be loaded because running scripts is disabled on this system.", "Jalankan satu kali, lalu ketik Y:", "Set-ExecutionPolicy -Scope CurrentUser RemoteSigned"],
+          ["ffmpeg : The term 'ffmpeg' is not recognized as the name of a cmdlet...", "Penyebabnya sama dengan nomor 1: buka terminal baru."]]
+def _galat(n, **k): return A("galat", kartu=_GALAT, wkt=[-9 if i < n - 1 else .3 if i == n - 1 else 1e9 for i in range(3)], **k)
+bab("F01", "Persiapan: memasang alat", [
+ ("Kita membutuhkan lima alat. Blender adalah tempat film kita dibangun dan dirender. Git menyimpan riwayat pekerjaan. VS Code adalah tempat kita membuka dan membaca kode. FFmpeg menggabungkan gambar, suara, dan teks menjadi video. Terakhir, Claude Code adalah asisten AI yang menulis kodenya. Saya memakai Windows, dan untuk macOS serta Linux, langkahnya ada di README repositori. Kita juga memakai tekstur dan langit malam dari Poly Haven, tetapi aset itu tidak perlu dipasang, karena skrip kita akan mengunduhnya sendiri.",
+  [A("alat", min=20), A("teks", s=6, min=10, judul="Windows, macOS, dan Linux", sub=REPO, isi=["Video ini memakai Windows.", "Langkah untuk macOS dan Linux ada di README repositori.", "Tekstur dan langit malam Poly Haven diunduh sendiri oleh skrip."])]),
+ ("Kita mulai dari Blender. Buka browser, lalu ketik alamat blender.org. Klik Download, lalu unduh versi untuk Windows. Buka file installernya, klik Next sampai selesai, lalu buka Blender sekali dari menu Start untuk memastikan Blender bisa berjalan. Di video ini, saya memakai Blender versi lima koma tiga.",
+  [A("alat", min=2.5, aktif=0, wkt=[0, 0, 0, 0, 0]),
+   A("situs", s=1, min=10, url="blender.org", merek="Blender", judulHal="Download Blender", ket="Gratis dan open source", tombol="Download Blender 5.3 untuk Windows", sub="Windows Installer  ·  .msi"),
+   A("pasang", s=3, min=9, judul="Blender Setup", kepala="Memasang Blender", teks="Klik Next sampai selesai, lalu buka Blender sekali dari menu Start.", akhir=True, cap="Saya memakai Blender 5.3")]),
+ ("Supaya Claude Code bisa menjalankan Blender dari terminal, terminal harus tahu letak Blender. Buka File Explorer, masuk ke C, Program Files, Blender Foundation, lalu buka folder Blender yang ada nomor versinya. Di dalamnya ada file blender dot exe. Salin alamat folder ini dari kolom alamat di bagian atas.",
+  [A("explorer", min=10, path=BL, isi=[["5.3", "folder"], ["blender.exe", "file"], ["blender-launcher.exe", "file"], ["license", "folder"]], cap="C:  >  Program Files  >  Blender Foundation  >  Blender 5.3"),
+   A("explorer", s=2, min=8, path=BL, isi=[["5.3", "folder"], ["blender.exe", "file"], ["blender-launcher.exe", "file"], ["license", "folder"]], sorot=1, tsorot=0.3, salin=True, denyut=False, cap="Salin alamat FOLDER, bukan file blender.exe")]),
+ ("Sekarang buka menu Start, lalu ketik environment. Pilih Edit environment variables for your account. Di jendela yang muncul, klik baris Path, lalu klik Edit. Klik New, tempel alamat folder Blender tadi, lalu klik OK dua kali. Mulai sekarang, terminal baru akan mengenali perintah blender.",
+  [A("start", min=8, ketik="environment", hasil="Edit environment variables for your account"),
+   A("envpath", s=2, min=6, langkah=0, cap="Klik baris Path, lalu klik Edit"),
+   A("envpath", s=3, min=10, langkah=1, alamat=BL, cap="New, tempel alamat folder Blender, lalu OK dua kali")]),
+ ("Kita periksa hasilnya. Buka menu Start, ketik terminal, lalu buka aplikasi Terminal. Ketik blender spasi minus minus version, lalu tekan Enter. Kalau muncul tulisan Blender dengan nomor versinya, langkah ini berhasil.",
+  [A("start", min=7, ketik="terminal", hasil="Terminal", jenis="App"),
+   _term([["blender --version", "Blender 5.3.0"]], s=2, min=9, cap="Muncul nomor versi, berarti berhasil")]),
+ ("Alat kedua adalah Git. Buka git-scm.com, unduh installer untuk Windows, lalu klik Next sampai selesai. Setelah itu, tutup terminal yang lama dan buka terminal baru, supaya terminal mengenali alat yang baru dipasang. Periksa dengan perintah git spasi minus minus version. Lalu, kenalkan dirimu ke Git dengan dua perintah ini, supaya setiap commit tercatat atas namamu.",
+  [A("situs", min=10, url="git-scm.com", merek="Git", judulHal="Download for Windows", ket="Unduh installer, lalu klik Next sampai selesai.", tombol="Git for Windows Setup", nav=["About", "Download", "Docs"], warna="#dc5a35"),
+   _term([["git --version", "git version 2.52.0.windows.1"], ['git config --global user.name "Nama Kamu"'], ['git config --global user.email "email@kamu.com"']], s=2, min=20, kepala="Terminal BARU", cap="Ganti dengan nama dan email kamu sendiri. Nomor versi boleh berbeda.")]),
+ ("Alat ketiga adalah VS Code. Buka code.visualstudio.com, lalu unduh dan jalankan installernya. Di salah satu langkah, ada beberapa kotak pilihan. Centang Add to PATH dan Open with Code, karena dua pilihan ini memudahkan kita membuka folder proyek nanti.",
+  [A("situs", min=9, url="code.visualstudio.com", merek="VS Code", judulHal="Code editing. Redefined.", ket="Unduh, lalu jalankan installernya.", tombol="Download for Windows", nav=["Docs", "Download", "Updates"], warna="#0b6cbd"),
+   A("pasang", s=2, min=10, judul="Setup - VS Code", kepala="Select Additional Tasks", opsi=[["Create a desktop icon", 0], ['Add "Open with Code" action to file context menu', 1], ['Add "Open with Code" action to directory context menu', 1], ["Register Code as an editor for supported file types", 0], ["Add to PATH (requires shell restart)", 1]])]),
+ ("Alat keempat adalah FFmpeg. FFmpeg tidak punya installer biasa, jadi kita memakai winget, yaitu pemasang aplikasi bawaan Windows. Ketik perintah ini, lalu tunggu sampai selesai. Setelah itu, tutup terminal dan buka lagi, lalu periksa dengan ffmpeg spasi minus version.",
+  [A("alat", min=2.5, aktif=3, wkt=[0, 0, 0, 0, 0]),
+   _term([["winget install --id Gyan.FFmpeg -e", "Found FFmpeg [Gyan.FFmpeg]", "Downloading...", ["Successfully installed", "#a3e635"]]], s=2, min=9, cap="winget = pemasang aplikasi bawaan Windows"),
+   _term([["ffmpeg -version", "ffmpeg version 8.0-full_build-www.gyan.dev"]], s=3, min=7, kepala="Terminal BARU", cap="Satu tanda minus saja: ffmpeg -version")]),
+ ("Alat kelima adalah Claude Code. Perintah pemasangannya ada di situs resminya, code.claude.com. Di Windows, salin perintah ini ke terminal, lalu tekan Enter. Setelah selesai, buka terminal baru dan periksa dengan claude spasi minus minus version.",
+  [A("situs", min=9, url="code.claude.com", merek="Claude Code", judulHal="Pasang Claude Code", ket="Perintah pemasangan untuk Windows (PowerShell):", tombol="irm https://claude.ai/install.ps1 | iex", menu=False, nav=["Docs", "Setup", "Help"], warna="#1e293b"),
+   _term([["irm https://claude.ai/install.ps1 | iex", "Installing Claude Code...", ["Installation complete!", "#a3e635"]]], s=2, min=9, cap="Salin dari situs resminya, lalu tekan Enter"),
+   _term([["claude --version", "2.1.0 (Claude Code)"]], s=3, min=7, kepala="Terminal BARU", cap="Nomor versi boleh berbeda")]),
+ ("Sekarang kita login. Ketik claude, lalu tekan Enter. Claude Code akan menanyakan cara login. Pilih login dengan akun Claude, lalu browser akan terbuka. Klik tombol untuk mengizinkan, kembali ke terminal, dan Claude Code siap dipakai. Ketik garis miring exit untuk keluar dulu.",
+  [_term([["claude", "Select login method:", ["❯ 1. Claude account with subscription", "#fff"], "  2. Anthropic Console account"]], min=12, cap="Pilih login dengan akun Claude"),
+   A("situs", s=4, min=7, url="claude.ai", langsung=True, merek="Claude", judulHal="Izinkan Claude Code?", ket="Claude Code meminta izin memakai akunmu.", tombol="Authorize", menu=False, nav=["", "", ""], warna="#c2410c"),
+   A("terminal", s=5, min=5, prompt="> ", judul="Terminal  ·  claude", baris=[dict(cmd="/exit", out=[])], cap="Ketik /exit untuk keluar dulu")]),
+ ("Terakhir, kita membuat folder proyek. Buka File Explorer, masuk ke folder Documents, lalu buat folder baru bernama paket-terakhir. Klik kanan folder itu, lalu pilih Open with Code. Di VS Code, buka menu Terminal, lalu pilih New Terminal. Panel terminal akan muncul di bagian bawah, dan inilah tempat kita bekerja sepanjang video. Ketik git spasi init untuk mulai mencatat riwayat proyek.",
+  [A("explorer", min=9, path="C:\\Users\\kamu\\Documents", isi=[["paket-terakhir", "folder"]], sorot=0, baru=0, denyut=False, cap="Folder baru: paket-terakhir"),
+   A("explorer", s=2, min=6, path="C:\\Users\\kamu\\Documents", isi=[["paket-terakhir", "folder"]], sorot=0, tsorot=0, tmenu=0.6, menu=["Open", "Open in Terminal", "Open with Code", "Copy as path", "Properties"], menuSorot=2, cap="Klik kanan, lalu Open with Code"),
+   A("editor", s=3, min=16, folder="paket-terakhir", cmd="git init", out="Initialized empty Git repository in .../paket-terakhir/.git/", cap="Menu Terminal  >  New Terminal")]),
+ ("Ada tiga error yang paling sering muncul di tahap ini. Pertama, terminal bilang perintah tidak dikenali, misalnya \"blender is not recognized\". Biasanya, terminal itu dibuka sebelum alatnya terpasang atau sebelum Path diubah, jadi tutup terminal dan buka yang baru. Kalau masih gagal, periksa lagi apakah alamat yang kamu tempel di Path adalah folder, bukan file blender dot exe. Kedua, PowerShell menolak menjalankan skrip dengan pesan \"running scripts is disabled\". Untuk mengatasinya, jalankan perintah ini satu kali, lalu ketik Y. Ketiga, FFmpeg tidak ditemukan padahal winget sudah selesai. Penyebabnya sama dengan error pertama, jadi buka terminal baru.",
+  [_galat(1, min=20), _galat(2, s=4, min=9), _galat(3, s=6, min=7)]),
+ ("Kalau kelima alat sudah memberi nomor versi, persiapan kita selesai.",
+  [A("alat", min=8, cek=True, judul="Kelima alat sudah memberi nomor versi")]),
+])
+
 # ---------------------------------------------------------------- F02
 bab("F02", "Dari ide ke storyboard", [
  (N[0], [A("duaJalan", min=14, judul="Jangan langsung meminta filmnya",

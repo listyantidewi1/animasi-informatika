@@ -26,7 +26,7 @@ def tts_teks(t):
     for a, b in [("localStorage", "local storage"), ("innerHTML", "inner HTML"), ("textContent", "text content"), ("bagiKeAtas", "bagi ke atas"), ("DevTools", "Dev Tools"), ("F12", "ef dua belas"), ("alamat https", "alamat ha te te pe es"), ("Wi-Fi", "wai fai")]:
         t = t.replace(a, b)
     t = t.replace("wa.me", "wa titik mi").replace("npm run", "en pe em ran").replace("npm install", "en pe em install").replace("git diff", "git dif")
-    for a, b in [("ASET.md", "aset titik em de"), ("STORYBOARD.md", "storyboard titik em de"), ("CC0", "C C nol"), ("EEVEE", "ivi"), ("LUFS", "luf"), ("numpy", "nampai"), ("dot mp3", "dot em pe tiga"), ("dot MP4", "dot em pe empat")]:
+    for a, b in [("ASET.md", "aset titik em de"), ("STORYBOARD.md", "storyboard titik em de"), ("CC0", "C C nol"), ("EEVEE", "ivi"), ("LUFS", "luf"), ("numpy", "nampai"), ("blender.org", "blender dot org"), ("git-scm.com", "git s c m dot com"), ("code.visualstudio.com", "code dot visual studio dot com"), ("code.claude.com", "code dot klod dot com"), ("winget", "win get"), ("macOS", "mek o es"), ("dot mp3", "dot em pe tiga"), ("dot MP4", "dot em pe empat")]:
         t = t.replace(a, b)
     return t
 import hashlib
@@ -519,7 +519,7 @@ def rakit_bab(kode, cek=False):
             if p["k"] == "adegan": jobs.append({"nama": p["nama"], "D": p["_d"], "a": p["a"], "out": out})
             else: potong(p, out, tmp)
     import adegan as ADG
-    ADG.render(jobs, ["/home/user/animasi-informatika/episodes/tutorial/film3d/adegan.js"])
+    ADG.render(jobs, ["/home/user/animasi-informatika/episodes/tutorial/film3d/adegan.js", "/home/user/animasi-informatika/episodes/tutorial/film3d/siap.js"])
     with open(f"{tmp}/daftar.txt", "w") as fh:
         for x in files: fh.write(f"file '{x}'\n")
     sh("ffmpeg", "-loglevel", "error", "-y", "-f", "concat", "-safe", "0", "-i", f"{tmp}/daftar.txt", "-c", "copy", f"{tmp}/video.mp4")
