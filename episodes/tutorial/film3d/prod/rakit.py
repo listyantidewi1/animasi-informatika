@@ -250,6 +250,7 @@ def autocrop(p):
                 U[1], U[3] = int(max(U[1], y0, r0)), int(min(U[3], y1, max(r1, r0 + need)))
     if ketik and c.startswith("term"):
         U[0], U[2] = x0, x1  # baris prompt dan keluaran di atasnya selalu selebar terminal
+        U[1] = max(U[1], U[3] - int((x1 - x0) * (1080 - PITA) / 1920))  # typing along: prompt yang diketik tampil sebesar mungkin, dijangkar di bawah
     bw, bh = U[2] - U[0], U[3] - U[1]
     w = max(bw, bh * 16 / 9, 1100); h = w * 9 / 16
     w = min(w, x1 - x0); h = min(max(h, bh), y1 - y0)
@@ -420,7 +421,7 @@ def _pas(parts, D, diam=False):
     rec = [p for p in parts if p["k"] != "adegan"]; flex = [p for p in parts if p["k"] == "adegan"]
     if diam:  # kelompok tanpa narasi: rekaman dipercepat supaya tiap bagian +-5 detik
         for p in rec:
-            p["_sp"] = max(p["speed"], min(30.0, p["_L"] / 5.0)); p["_d"] = p["_L"] / p["_sp"]
+            p["_sp"] = max(p["speed"], min(max(30.0, p["_L"] / 20.0), p["_L"] / 5.0)); p["_d"] = p["_L"] / p["_sp"]
         for p in flex: p["_d"] = p["min"]
         return sum(p["_d"] for p in parts)
     M = sum(p["min"] for p in flex)
