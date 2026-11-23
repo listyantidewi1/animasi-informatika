@@ -30,9 +30,9 @@ LP = P + "/src/routes/laporan.js"; TK = P + "/src/routes/tiket.js"; SV = P + "/s
 SERVER = "SESSION_SECRET=rahasia-lokal DATABASE_URL=postgres://postgres@localhost/antrean node src/server.js &"
 r.mulai(); r.kamera(None); time.sleep(0.6)
 # b02 laporan dengan WITH
-ke_editor("laporan.js"); r.perintah("View: Toggle Word Wrap", 0.5); ke_baris(baris_ke(LP, "router.get('/laporan'")); r.tekan("Home", 0.1)
-r.tekan("Shift+ArrowDown", 0.1); r.tekan("Shift+ArrowDown", 0.1); r.tekan("Shift+ArrowDown", 0.1); r.tekan("Shift+ArrowDown", 0.1); r.tekan("Shift+ArrowDown", 0.1); r.tekan("Shift+ArrowDown", 0.1)
-r.tekan("Delete", 0.3); r.perintah("View: Toggle Word Wrap", 0.5); r.kamera_editor(); r.tanda("b02"); r.ketik_kode(open(K + "laporan_route.js").read(), cps=34); r.tanda("b02_akhir")
+ke_editor("laporan.js"); time.sleep(0.4); ke_baris(baris_ke(LP, "router.get('/laporan'")); r.tekan("Home", 0.1)
+for _ in range(6): r.tekan("Control+Shift+K", 0.15)   # hapus baris: tidak bergantung word wrap
+time.sleep(0.3); r.kamera_editor(); r.tanda("b02"); r.ketik_kode(open(K + "laporan_route.js").read(), cps=34); r.tanda("b02_akhir")
 # b03 jam tersibuk
 r.tanda("b03"); r.tekan("Enter", 0.1); r.ketik_kode(open(K + "laporan_jam.js").read(), cps=30); r.tekan("Control+s", 0.4)
 ke_baris(baris_ke(LP, "AT TIME ZONE")); r.kamera_editor(zoom=1.7); r.label("Sebutkan zona waktu bengkel", 3); time.sleep(3.5); r.tanda("b03_akhir")

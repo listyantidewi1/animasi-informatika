@@ -15,8 +15,8 @@ def potong(src, a, b, speed, dur, out, pre=0.0, crop=None, ketik=False):
     if pre > 0.04: vf += f":start_mode=clone:start_duration={pre:.3f}"
     if speed >= 1.8:
         tx = (f"mengetik · dipercepat {speed:.1f}x" if ketik else f"dipercepat {speed:.1f}x").replace(".", ","); lb = 470 if ketik else 300
-        vf += (f",drawbox=x=w-{lb + 30}:y=h-92:w={lb}:h=56:color=0x0e1424@0.82:t=fill"
-               f",drawtext=fontfile={FONT}:text='{tx}':x=w-{30 + lb // 2}-tw/2:y=h-64-th/2:fontsize=30:fontcolor=0xfbbf24")
+        vf += (f",drawbox=x=w-{lb + 30}:y=h-160:w={lb}:h=56:color=0x0e1424@0.82:t=fill"
+               f",drawtext=fontfile={FONT}:text='{tx}':x=w-{30 + lb // 2}-tw/2:y=h-132-th/2:fontsize=30:fontcolor=0xfbbf24")
         if pre > 0.04: vf = vf.replace(":t=fill", f":t=fill:enable='gte(t,{pre:.3f})'").replace("fontcolor=0xfbbf24", f"fontcolor=0xfbbf24:enable='gte(t,{pre:.3f})'")
     sh("ffmpeg", "-loglevel", "error", "-y", "-ss", f"{a:.3f}", "-to", f"{b:.3f}", "-i", src, "-vf", vf, "-t", f"{dur:.3f}", "-an",
        "-c:v", "libx264", "-preset", "medium", "-crf", "18", "-pix_fmt", "yuv420p", "-r", str(FPS), out)
