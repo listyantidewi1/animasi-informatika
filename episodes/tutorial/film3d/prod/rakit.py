@@ -26,6 +26,8 @@ def tts_teks(t):
     for a, b in [("localStorage", "local storage"), ("innerHTML", "inner HTML"), ("textContent", "text content"), ("bagiKeAtas", "bagi ke atas"), ("DevTools", "Dev Tools"), ("F12", "ef dua belas"), ("alamat https", "alamat ha te te pe es"), ("Wi-Fi", "wai fai")]:
         t = t.replace(a, b)
     t = t.replace("wa.me", "wa titik mi").replace("npm run", "en pe em ran").replace("npm install", "en pe em install").replace("git diff", "git dif")
+    for a, b in [("ASET.md", "aset titik em de"), ("STORYBOARD.md", "storyboard titik em de"), ("CC0", "C C nol"), ("EEVEE", "ivi"), ("LUFS", "luf"), ("numpy", "nampai"), ("dot mp3", "dot em pe tiga"), ("dot MP4", "dot em pe empat")]:
+        t = t.replace(a, b)
     return t
 import hashlib
 def mp3(kode, t):
@@ -166,6 +168,7 @@ def bersih(src, a, b):
     return keep or [(a, b)]
 
 _AC = {}
+PITA = 112
 def autocrop(p):
     """Kotak potong yang memuat SEMUA teks di daerah panel (union beberapa frame), lalu dipas ke 1920x1080 dengan bingkai.
     Tidak pernah memotong teks di dalam panel dan tidak mengambil sebagian panel tetangga."""
@@ -174,7 +177,11 @@ def autocrop(p):
     src = f"{RAW}/{p['src']}.mkv"; a, b = p["_a"], p["_b"]; c = p["crop"]
     lama = p["src"] in ("V02", "V03")
     if c.startswith("term"): roi = [1212, 45, 2355, 1403]
-    elif c == "edit": roi = [468, 52, 1195, 1392]
+    elif c == "edit":
+        roi = [468, 52, 1195, 1392]
+        # panel terminal disembunyikan (editor selebar layar): tidak ada tulisan tab panel di kanan atas
+        g0 = _frame(src, (a + b) / 2).astype(np.int16).mean(2)[8:50, 1240:1900]
+        if (np.abs(np.diff(g0, axis=1)) > 40).sum() < 60: roi = [468, 52, 2520, 1392]
     elif c == "editW": roi = [575, 56, 1975, 784]  # rekaman ulang: editor word wrap, panel di bawah
     elif c == "dt": roi = [1040, 100, 2560, 1430]
     else: return None
@@ -263,9 +270,9 @@ def autocrop(p):
         if X + w < x1 and M[Y:Y + h, X + w - 1].any(): w += 1
         else: break
     X, Y, w, h = X // 2 * 2, Y // 2 * 2, (w + 1) // 2 * 2, (h + 1) // 2 * 2
-    s = min(1920 / w, 1080 / h, 1.75)
+    s = min(1920 / w, (1080 - PITA) / h, 1.75)  # pita atas dikosongkan untuk label
     bg = np.median(np.array(bgv), axis=0).astype(int)
-    r = dict(x=X, y=Y, w=w, h=h, ow=int(w * s) // 2 * 2, oh=int(h * s) // 2 * 2, bg="0x%02x%02x%02x" % tuple(bg))
+    r = dict(x=X, y=Y, w=w, h=h, ow=int(w * s) // 2 * 2, oh=int(h * s) // 2 * 2, py=PITA + (1080 - PITA - int(h * s) // 2 * 2) // 2, bg="0x%02x%02x%02x" % tuple(bg))
     _AC[key] = r; return r
 
 # ---------------- sorotan baris (OCR tesseract untuk mencari letak baris)
@@ -333,7 +340,7 @@ def filter_sorot(p, ac):
     for it in p.get("sorot", []):
         k = sorot_kotak(p, it)
         if not k: continue
-        if ac: sx = ac["ow"] / ac["w"]; ox = (1920 - ac["ow"]) / 2 - ac["x"] * sx; oy = (1080 - ac["oh"]) / 2 - ac["y"] * sx
+        if ac: sx = ac["ow"] / ac["w"]; ox = (1920 - ac["ow"]) / 2 - ac["x"] * sx; oy = ac["py"] - ac["y"] * sx
         else: x, y, w, h = CROP[p["crop"]]; sx = 1920 / w; ox = -x * sx; oy = -y * sx
         X0, Y0, X1, Y1 = k[0] * sx + ox, k[1] * sx + oy, k[2] * sx + ox, k[3] * sx + oy
         X0, Y0 = max(4, X0), max(4, Y0); X1, Y1 = min(1916, X1), min(1076, Y1)
@@ -363,7 +370,7 @@ def potong(p, out, tmp):
         ac = autocrop(p)
         if ac:
             base = (f"[0:v]{sel}setpts=(PTS-STARTPTS)/{sp},fps={FPS},crop={ac['w']}:{ac['h']}:{ac['x']}:{ac['y']},scale={ac['ow']}:{ac['oh']}:flags=lanczos,"
-                    f"pad=1920:1080:(ow-iw)/2:(oh-ih)/2:color={ac['bg']},tpad=stop_mode=clone:stop_duration=60" + filter_sorot(p, ac))
+                    f"pad=1920:1080:(ow-iw)/2:{ac['py']}:color={ac['bg']},tpad=stop_mode=clone:stop_duration=60" + filter_sorot(p, ac))
         else:
             x, y, w, h = CROP[p["crop"]]
             base = f"[0:v]{sel}setpts=(PTS-STARTPTS)/{sp},fps={FPS},crop={w}:{h}:{x}:{y},scale=1920:1080:flags=lanczos,tpad=stop_mode=clone:stop_duration=60" + filter_sorot(p, None)
@@ -495,7 +502,7 @@ def rencanakan(kode):
 
 def rakit_bab(kode, cek=False):
     base = f"{ROOT}/{kode}"; tmp = f"{base}/tmp"; os.makedirs(tmp, exist_ok=True)
-    R = rencanakan(kode); n = RC.BAB.index(bab(kode))
+    R = rencanakan(kode); n = int(kode[1:])
     # kartu bab di depan (kecuali V00)
     for r in R:
         print(f"{kode} b{r['no']:02d} D={r['D']:.1f} A={r['A']:.1f} " + " ".join(
