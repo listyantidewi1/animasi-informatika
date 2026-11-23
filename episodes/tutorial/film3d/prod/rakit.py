@@ -12,7 +12,7 @@ import rencana as RC
 ROOT = "/home/user/animasi-informatika/episodes/tutorial/film3d/prod"; RAW = "/home/user/animasi-informatika/episodes/tutorial/film3d/raw"; FPS = 30; LEAD, TAIL = 0.4, 1.3
 FB = "/usr/share/fonts/opentype/inter/Inter-Bold.otf"; FS = "/usr/share/fonts/opentype/inter/Inter-SemiBold.otf"
 VID = "iWydkXKoiVtvdn4vLKp9"; MODEL = "eleven_v4_turbo"
-CROP = {"full": (0, 0, 2560, 1440), "termU": (1300, 40, 1260, 709), "termK": (1300, 30, 1040, 585), "termM": (1300, 330, 1260, 709), "termD": (1300, 700, 1260, 709),
+CROP = {"full": (0, 0, 2560, 1440), "termU": (1205, 40, 1160, 652), "termK": (1205, 30, 1040, 585), "termM": (1205, 330, 1160, 652), "termD": (1205, 750, 1160, 652),
         "edit": (400, 40, 1440, 810), "dt": (1040, 140, 1520, 855),
         "nMenu": (0, 0, 1600, 900), "nDialog": (640, 0, 1280, 720), "nSide": (0, 0, 1280, 720), "nToolbar": (0, 0, 1680, 945)}
 def sh(*a): subprocess.run(a, check=True)
@@ -28,7 +28,15 @@ def tts_teks(t):
     t = t.replace("wa.me", "wa titik mi").replace("npm run", "en pe em ran").replace("npm install", "en pe em install").replace("git diff", "git dif")
     return t
 import hashlib
-def mp3(kode, t): return f"{ROOT}/{kode}/suara/h_{hashlib.md5(tts_teks(t).encode()).hexdigest()[:12]}.mp3"
+def mp3(kode, t):
+    h = hashlib.md5(tts_teks(t).encode()).hexdigest()[:12]
+    if os.environ.get("DIAM"):  # uji visual tanpa kredit: narasi diganti hening sepanjang perkiraan
+        out = f"{ROOT}/{kode}/suara_diam/h_{h}.mp3"
+        if not os.path.exists(out):
+            os.makedirs(os.path.dirname(out), exist_ok=True)
+            sh("ffmpeg", "-loglevel", "error", "-y", "-f", "lavfi", "-i", "anullsrc=r=44100:cl=mono", "-t", f"{len(t) / 14.5:.2f}", "-b:a", "64k", out)
+        return out
+    return f"{ROOT}/{kode}/suara/h_{h}.mp3"
 def suara(kodes):
     for kode in kodes:
         B = bab(kode)["beats"]; os.makedirs(f"{ROOT}/{kode}/suara", exist_ok=True)
@@ -64,7 +72,7 @@ def waktu(src, ref):
 
 # ---------------- gambar bantu
 def pil_label(teks, out):
-    f = ImageFont.truetype(FB, 40); w = int(f.getlength(teks)) + 84; h = 84
+    f = ImageFont.truetype(FB, 40 if len(teks) < 42 else 30); w = int(f.getlength(teks)) + 84; h = 84 if len(teks) < 42 else 68
     im = Image.new("RGBA", (w + 16, h + 16), (0, 0, 0, 0)); d = ImageDraw.Draw(im)
     d.rounded_rectangle([8, 8, w + 8, h + 8], 22, fill=(20, 24, 38, 235)); d.rounded_rectangle([8, 8, 22, h + 8], 7, fill=(255, 176, 32, 255))
     d.text((48, 8 + h / 2), teks, font=f, fill=(255, 255, 255, 255), anchor="lm"); im.save(out)
@@ -165,8 +173,8 @@ def autocrop(p):
     if key in _AC: return _AC[key]
     src = f"{RAW}/{p['src']}.mkv"; a, b = p["_a"], p["_b"]; c = p["crop"]
     lama = p["src"] in ("V02", "V03")
-    if c.startswith("term"): roi = [1300, 45, 2330 if lama else 2540, 1403]
-    elif c == "edit": roi = [440, 52, 1290, 1392]
+    if c.startswith("term"): roi = [1212, 45, 2355, 1403]
+    elif c == "edit": roi = [468, 52, 1195, 1392]
     elif c == "editW": roi = [575, 56, 1975, 784]  # rekaman ulang: editor word wrap, panel di bawah
     elif c == "dt": roi = [1040, 100, 2560, 1430]
     else: return None
@@ -179,7 +187,7 @@ def autocrop(p):
         return kp[-1][1] - 0.05
     ts = [_abs(Lk * k / (n - 1)) for k in range(n)]; ts[-1] = max(kp[-1][0], kp[-1][1] - 0.05)
     F0 = None; CH = np.zeros((1440, 2560), bool)
-    ketik = p.get("lab") == "Prompt"
+    ketik = (p.get("lab") or "").startswith("Prompt")
     U = None; bgv = []; M = np.zeros((1440, 2560), bool)
     for k, t in enumerate(ts):
         f = _frame(src, t); g = f.astype(np.int16).mean(2)
@@ -189,7 +197,7 @@ def autocrop(p):
             F0 = g
         if c.startswith("term") and not lama:
             # spanduk Claude Code (logo oranye) bukan isi: lewati sampai di bawah baris promosi
-            o = (f[45:420, 1300:1460, 0] > 190) & (f[45:420, 1300:1460, 1] > 90) & (f[45:420, 1300:1460, 1] < 150) & (f[45:420, 1300:1460, 2] < 120)
+            o = (f[45:420, 1212:1372, 0] > 190) & (f[45:420, 1212:1372, 1] > 90) & (f[45:420, 1212:1372, 1] < 150) & (f[45:420, 1212:1372, 2] < 120)
             ys = np.where(o.sum(1) > 6)[0]
             if len(ys) and o.sum() > 1500: y0 = max(y0, 45 + int(ys.min()) + 228)
             gs = _garis(g, x0, x1, 1000, 1398)
@@ -365,7 +373,11 @@ def potong(p, out, tmp):
         inputs = ["-loop", "1", "-i", bg] + inputs
         base = f"[1:v]setpts=(PTS-STARTPTS)/{sp},fps={FPS},scale={pw}:{ph}:flags=lanczos,tpad=stop_mode=clone:stop_duration=60[p];[0:v][p]overlay={x0}:{y0}:shortest=0"
     lab = None
-    if sp >= 1.8: lab = ("AI bekerja · " if (p.get("lab") or "").startswith("AI") else "") + f"dipercepat {sp:.0f}×"
+    pl = p.get("lab") or ""
+    if pl.startswith("AI") or pl.startswith("Gambar cek"):
+        if sp >= 1.8: lab = pl if ("menit" in pl or "jam" in pl) else pl.split(" · ")[0] + f" · dipercepat {sp:.0f}×"
+    elif pl: lab = pl + (f"  ·  {sp:.0f}× lebih cepat" if sp >= 1.8 else "")
+    elif sp >= 1.8: lab = f"dipercepat {sp:.0f}×"
     if lab:
         png = f"{tmp}/{os.path.basename(out)}.lab.png"; pil_label(lab, png); inputs += ["-i", png]
         n = 2 if p["k"] == "hp" else 1

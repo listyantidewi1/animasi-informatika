@@ -32,7 +32,7 @@ def ketik(no, src, tanda, crop="termD", **k):
     Label menyebut nomor prompt di PROMPT.md supaya penonton bisa menyalinnya."""
     b = AKHIR_KETIK[f"{src}:{tanda}"]
     k.setdefault("tahan", round(min(8.0, max(3.0, (b - 1) * 40 / 6 / 3.5 / 6)), 1))
-    return R(src, tanda, b, crop, speed=1.0, maks=2.0, lab=f"Prompt {no}  ·  salin dari PROMPT.md di {REPO}", **k)
+    return R(src, tanda, b, crop, speed=1.0, maks=1.5, lab=f"Prompt {no}  ·  salin dari PROMPT.md di {REPO}", **k)
 def kerja(src, tanda, jadi, crop="termD", maks=12, **k):
     a = AKHIR_KETIK[f"{src}:{tanda}"] + 0.3
     k.setdefault("tahan", 2.5); k.setdefault("lab", "AI bekerja · dipercepat")
