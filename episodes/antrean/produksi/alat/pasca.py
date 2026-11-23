@@ -130,7 +130,7 @@ def jalankan(src, out, judul=None, sub="", dur_kartu=3.5):
                 a = min(1, (t - lt) / 0.25, (lt + d - t) / 0.3); dy = int((1 - min(1, (t - lt) / 0.25)) * 20)
                 tempel(o, ov, max(60, OW - 100 - ov[0].shape[1]), (50 - dy) if pos == 'atas' else (OH - 60 - ov[0].shape[0] + dy), a)
         g = gh(t)
-        if g is not None: tempel(o, g, 34, OH - 34 - g[0].shape[0], 1.0)
+        if g is not None: tempel(o, g, 34, OH - 2 - g[0].shape[0], 1.0)
         ff.stdin.write(o.tobytes())
     ff.stdin.close(); ff.wait()
 
