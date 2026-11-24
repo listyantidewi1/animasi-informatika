@@ -76,6 +76,14 @@ if not SIM:
                  '.simbtn span{display:block;font-weight:600;font-size:15px;opacity:.9}</style>')
         i = page.find("</section>")
         if i > 0: page = page[:i + 10] + card + page[i + 10:] + style
+# tombol kembali ke beranda (index.html) di atas setiap halaman; path relatif supaya tetap jalan luring
+_home = os.path.relpath(os.path.join(E.EPISODES, "..", "index.html"), ROOT).replace(os.sep, "/")
+_nav = (f'<nav class="topnav" aria-label="Navigasi"><a href="{_home}">&larr; Kembali ke daftar episode</a></nav>\n  '
+        '<style>.topnav{position:sticky;top:0;z-index:20;margin:-16px -16px 12px;padding:10px 16px;background:var(--bg);border-bottom:1px solid var(--line)}'
+        '.topnav a{display:inline-flex;align-items:center;min-height:44px;padding:8px 14px;border-radius:12px;background:var(--surface2);color:var(--ink);font-weight:800;text-decoration:none}'
+        '.topnav a:hover,.topnav a:focus-visible{background:var(--accent);color:var(--accent-ink)}</style>\n  ')
+if 'class="topnav"' not in page and "<header>" in page:
+    page = page.replace("<header>", _nav + "<header>", 1)
 out = os.path.join(ROOT, f"{'simulasi' if SIM else 'episode'}-{E.code_slug(script['episode'])}.html")
 open(out, "w", encoding="utf-8").write(page)
 print(out, len(page) // 1024, "KB", "(suara + teks)" if suara and teks else "(teks saja)" if teks else "(suara saja)")
