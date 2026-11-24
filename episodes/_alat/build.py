@@ -76,6 +76,43 @@ if not SIM:
                  '.simbtn span{display:block;font-weight:600;font-size:15px;opacity:.9}</style>')
         i = page.find("</section>")
         if i > 0: page = page[:i + 10] + card + page[i + 10:] + style
+# kartu "Tonton dulu": link ke episode prasyarat (kunci youtube.prasyarat di script.json) + video YouTube-nya yang sudah tayang
+def prasyarat_kodes(teks_pr):
+    import re
+    kode = []
+    for m in re.finditer(r"\b([DEF]\d*)\.(\d+)\b(?:\s+sampai\s+\1\.(\d+)\b)?", teks_pr):
+        a = int(m.group(2)); b = int(m.group(3)) if m.group(3) else a
+        for n in range(a, b + 1):
+            c = f"{m.group(1)}.{n}"
+            if c not in kode and c != script["episode"]: kode.append(c)
+    return kode
+
+
+_pr = script.get("youtube", {}).get("prasyarat", "")
+if not SIM and _pr and 'class="prasyarat"' not in page and "</header>" in page:
+    import html
+    _tay = E.load_json(_TAYANG) if os.path.exists(_TAYANG) else {}
+    _items = []
+    for c in prasyarat_kodes(_pr):
+        d = os.path.join(E.EPISODES, c)
+        if not os.path.exists(os.path.join(d, "script.json")): continue
+        ps = E.load_script(d); pparts = list(ps.get("parts", {}).keys()) or [c]
+        vids = [(k, _tay[k]["id"]) for k in pparts if _tay.get(k, {}).get("id")]
+        yt = "".join(f'<a class="pr-yt" href="https://www.youtube.com/watch?v={v}" target="_blank" rel="noopener">&#9654; YouTube{(" bagian " + str(i + 1)) if len(vids) > 1 else ""}</a>'
+                     for i, (k, v) in enumerate(vids))
+        _items.append(f'<li><a class="pr-ep" href="../{c}/episode-{E.code_slug(c)}.html">Episode {c}: {html.escape(ps["title"])}</a>'
+                      + (f'<span class="pr-yts">{yt}</span>' if yt else "") + "</li>")
+    if _items:
+        _ket = html.escape(_pr[0].upper() + _pr[1:])
+        _card = ('<section class="card prasyarat" aria-label="Prasyarat">\n    <h2>Tonton dulu (prasyarat)</h2>\n'
+                 f'    <p class="hint">{_ket}. Ketuk judul untuk membuka halaman latihannya, atau langsung tonton videonya di YouTube.</p>\n'
+                 f'    <ul class="pr-list">{"".join(_items)}</ul>\n  </section>\n  '
+                 '<style>.pr-list{list-style:none;padding:0;margin:0;display:grid;gap:10px}.pr-list li{background:var(--surface2);border-radius:12px;padding:10px 14px}'
+                 '.pr-ep{display:block;color:var(--ink);font-weight:800;text-decoration:none;min-height:28px}.pr-ep:hover,.pr-ep:focus-visible{text-decoration:underline}'
+                 '.pr-yts{display:flex;flex-wrap:wrap;gap:8px;margin-top:6px}.pr-yt{display:inline-flex;align-items:center;min-height:40px;padding:6px 12px;border-radius:10px;background:#D9443B;color:#fff;font-weight:800;font-size:15px;text-decoration:none}</style>\n  ')
+        i = page.find("</header>") + len("</header>")
+        page = page[:i] + "\n\n  " + _card + page[i:]
+
 # tombol kembali ke beranda (index.html) di atas setiap halaman; path relatif supaya tetap jalan luring
 _home = os.path.relpath(os.path.join(E.EPISODES, "..", "index.html"), ROOT).replace(os.sep, "/")
 _nav = (f'<nav class="topnav" aria-label="Navigasi"><a href="{_home}">&larr; Kembali ke daftar episode</a></nav>\n  '
