@@ -89,27 +89,56 @@ def prasyarat_kodes(teks_pr):
 
 
 _pr = script.get("youtube", {}).get("prasyarat", "")
-if not SIM and _pr and 'class="prasyarat"' not in page and "</header>" in page:
+if not SIM and _pr and 'class="card prasyarat"' not in page and "</header>" in page:
     import html
     _tay = E.load_json(_TAYANG) if os.path.exists(_TAYANG) else {}
-    _items = []
+    _items = []; esc = html.escape
+
+    def rangkuman_html(c, ps):
+        """Rangkuman materi episode prasyarat: episodes/<kode>/rangkuman.json (per bagian, ditulis tangan); cadangan: ringkas + belajar + recap dari script.json."""
+        rp = os.path.join(E.EPISODES, c, "rangkuman.json"); y = ps.get("youtube", {}); out = []
+        if os.path.exists(rp):
+            r = E.load_json(rp)
+            if r.get("inti"): out.append(f'<p>{esc(r["inti"])}</p>')
+            for bg in r.get("bagian", []):
+                out.append(f'<h4>{esc(bg["judul"])}</h4><ul>{"".join(f"<li>{esc(x)}</li>" for x in bg["poin"])}</ul>')
+            if r.get("ingat"): out.append(f'<h4>Yang perlu diingat</h4><ul>{"".join(f"<li>{esc(x)}</li>" for x in r["ingat"])}</ul>')
+        else:
+            if y.get("ringkas"): out.append(f'<p>{esc(y["ringkas"])}</p>')
+            if y.get("belajar"): out.append(f'<h4>Yang dipelajari</h4><ul>{"".join(f"<li>{esc(x)}</li>" for x in y["belajar"])}</ul>')
+            if ps.get("recap"): out.append(f'<h4>Yang perlu diingat</h4><ul>{"".join(f"<li>{esc(x)}</li>" for x in ps["recap"])}</ul>')
+        return "".join(out)
+
     for c in prasyarat_kodes(_pr):
         d = os.path.join(E.EPISODES, c)
         if not os.path.exists(os.path.join(d, "script.json")): continue
         ps = E.load_script(d); pparts = list(ps.get("parts", {}).keys()) or [c]
         vids = [(k, _tay[k]["id"]) for k in pparts if _tay.get(k, {}).get("id")]
-        yt = "".join(f'<a class="pr-yt" href="https://www.youtube.com/watch?v={v}" target="_blank" rel="noopener">&#9654; YouTube{(" bagian " + str(i + 1)) if len(vids) > 1 else ""}</a>'
-                     for i, (k, v) in enumerate(vids))
-        _items.append(f'<li><a class="pr-ep" href="../{c}/episode-{E.code_slug(c)}.html">Episode {c}: {html.escape(ps["title"])}</a>'
-                      + (f'<span class="pr-yts">{yt}</span>' if yt else "") + "</li>")
+        vid = ""
+        if vids:
+            fr = "".join((f'<p class="pr-bag">Bagian {i + 1}</p>' if len(vids) > 1 else "")
+                         + f'<div class="yt-frame"><iframe data-src="https://www.youtube-nocookie.com/embed/{v}?rel=0" title="Video episode {c}{(" bagian " + str(i + 1)) if len(vids) > 1 else ""}" loading="lazy" allow="accelerometer; encrypted-media; gyroscope; picture-in-picture; fullscreen" allowfullscreen></iframe></div>'
+                         + f'<p class="pr-luar"><a href="https://www.youtube.com/watch?v={v}" target="_blank" rel="noopener">Buka di YouTube</a></p>'
+                         for i, (k, v) in enumerate(vids))
+            vid = f'<details class="pr-d pr-vid"><summary>&#9654; Tonton videonya di sini</summary><div class="pr-isi">{fr}</div></details>'
+        rk = rangkuman_html(c, ps)
+        rk = f'<details class="pr-d"><summary>Baca rangkuman materinya</summary><div class="pr-isi pr-rk">{rk}</div></details>' if rk else ""
+        _items.append(f'<li><a class="pr-ep" href="../{c}/episode-{E.code_slug(c)}.html">Episode {c}: {esc(ps["title"])}</a>{vid}{rk}</li>')
     if _items:
-        _ket = html.escape(_pr[0].upper() + _pr[1:])
-        _card = ('<section class="card prasyarat" aria-label="Prasyarat">\n    <h2>Tonton dulu (prasyarat)</h2>\n'
-                 f'    <p class="hint">{_ket}. Ketuk judul untuk membuka halaman latihannya, atau langsung tonton videonya di YouTube.</p>\n'
-                 f'    <ul class="pr-list">{"".join(_items)}</ul>\n  </section>\n  '
-                 '<style>.pr-list{list-style:none;padding:0;margin:0;display:grid;gap:10px}.pr-list li{background:var(--surface2);border-radius:12px;padding:10px 14px}'
-                 '.pr-ep{display:block;color:var(--ink);font-weight:800;text-decoration:none;min-height:28px}.pr-ep:hover,.pr-ep:focus-visible{text-decoration:underline}'
-                 '.pr-yts{display:flex;flex-wrap:wrap;gap:8px;margin-top:6px}.pr-yt{display:inline-flex;align-items:center;min-height:40px;padding:6px 12px;border-radius:10px;background:#D9443B;color:#fff;font-weight:800;font-size:15px;text-decoration:none}</style>\n  ')
+        _ket = esc(_pr[0].upper() + _pr[1:])
+        _card = ('<details class="card prasyarat" aria-label="Prasyarat">\n    <summary><b>Prasyarat</b> <span>' + _ket + '</span></summary>\n'
+                 '    <p class="hint">Belum menonton episode prasyaratnya? Ketuk judulnya untuk membuka halaman latihannya, tonton videonya di sini, atau baca rangkumannya bila waktumu sedikit.</p>\n'
+                 f'    <ul class="pr-list">{"".join(_items)}</ul>\n  </details>\n  '
+                 '<style>.prasyarat{padding:0}.prasyarat>summary{cursor:pointer;padding:14px 18px;min-height:48px;list-style-position:outside;margin-left:22px;padding-left:4px}'
+                 '.prasyarat>summary b{font-weight:900}.prasyarat>summary span{color:var(--ink2);font-weight:600}.prasyarat>.hint{margin:0 18px 14px}.prasyarat>.pr-list{margin:0 10px 12px}'
+                 '.pr-list{list-style:none;padding:0;display:grid;gap:10px}.pr-list>li{background:var(--surface2);border-radius:12px;padding:10px;min-width:0}'
+                 '.pr-ep{display:block;color:var(--ink);font-weight:800;text-decoration:underline;text-decoration-color:var(--line);text-underline-offset:3px;min-height:28px}'
+                 '.pr-d{margin-top:8px;background:var(--surface);border:1px solid var(--line);border-radius:10px}.pr-d>summary{cursor:pointer;font-weight:800;padding:10px 12px;min-height:44px}'
+                 '.pr-vid>summary{color:#B8322A}.pr-isi{padding:0 12px 12px}.pr-bag{font-weight:800;margin:10px 0 6px}.pr-luar{margin:6px 0 0;font-size:14px}.pr-luar a{color:var(--accent);font-weight:700}'
+                 '.pr-rk{font-size:16px}.pr-rk h4{margin:12px 0 4px;font-size:16px}.pr-rk p{margin:0 0 6px}.pr-rk ul{margin:0;padding-left:20px}.pr-rk li{margin-bottom:4px}'
+                 '@media (prefers-color-scheme: dark){.pr-vid>summary{color:#FF8A80}}</style>\n  '
+                 '<script>document.addEventListener("toggle",function(e){var d=e.target;if(!d.classList||!d.classList.contains("pr-vid"))return;'
+                 '[].forEach.call(d.querySelectorAll("iframe"),function(f){if(d.open){if(!f.src)f.src=f.getAttribute("data-src");}else if(f.src){f.removeAttribute("src");}});},true);</script>\n  ')
         i = page.find("</header>") + len("</header>")
         page = page[:i] + "\n\n  " + _card + page[i:]
 
