@@ -52,7 +52,11 @@ if "--build" in sys.argv and ubah:
     halaman = set()
     for p in glob.glob(os.path.join(ROOT, "episodes", "*", "script.json")) + glob.glob(os.path.join(ROOT, "episodes", "sim", "*", "script.json")):
         s = json.load(open(p, encoding="utf-8")); parts = list(s.get("parts", {}).keys()) or [s.get("episode")]
-        if set(parts) & set(ubah):
+        # halaman yang videonya berubah, plus halaman yang menautkan episode itu sebagai prasyarat (tombol YouTube di kartu "Tonton dulu")
+        ep_ubah = {re.sub(r"[a-z]$", "", k) for k in ubah}
+        pr = set(re.findall(r"\b[DEF]\d*\.\d+\b", s.get("youtube", {}).get("prasyarat", "")))
+        if "sampai" in s.get("youtube", {}).get("prasyarat", ""): pr |= {re.sub(r"[a-z]$", "", k) for k in ubah}  # rentang: bangun ulang saja
+        if set(parts) & set(ubah) or pr & ep_ubah:
             d = os.path.relpath(os.path.dirname(p), os.path.join(ROOT, "episodes")); halaman.add(d)
     for d in sorted(halaman):
         subprocess.run([sys.executable, os.path.join(ALAT, "build.py"), d], check=True)
