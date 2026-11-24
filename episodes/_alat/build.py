@@ -76,6 +76,34 @@ if not SIM:
                  '.simbtn span{display:block;font-weight:600;font-size:15px;opacity:.9}</style>')
         i = page.find("</section>")
         if i > 0: page = page[:i + 10] + card + page[i + 10:] + style
+# kartu "File untuk latihan": file data/kode yang dipakai di video (bahan/bahan.json), untuk halaman simulasi dan episode pemakainya
+import html as _html
+_bahan_path = os.path.join(E.EPISODES, "..", "bahan", "bahan.json")
+_bahan = json.load(open(_bahan_path, encoding="utf-8")) if os.path.exists(_bahan_path) else {}
+_kode = script["episode"]
+_sumber = [(_kode, None)] if _kode in _bahan else []
+if not SIM:
+    _sumber += [(c, t) for c, t, k in sims if c in _bahan]
+if _sumber:
+    _bdir = os.path.relpath(os.path.join(E.EPISODES, "..", "bahan"), ROOT).replace(os.sep, "/")
+    _isi = ""
+    for c, t in _sumber:
+        if t and len(_sumber) > 1 or t and not SIM:
+            _isi += f'    <h3 class="bh-s">Dari simulasi {c}: {_html.escape(t)}</h3>\n'
+        elif len(_sumber) > 1:
+            _isi += '    <h3 class="bh-s">Dari episode ini</h3>\n'
+        _isi += '    <div class="bh-list">' + "".join(
+            f'<a class="bh-f" href="{_bdir}/{c}/{b["file"]}" download><b>&darr; {_html.escape(b["file"])}</b><span>{_html.escape(b["ket"])}</span></a>'
+            for b in _bahan[c]) + '</div>\n'
+    _card = ('\n  <section class="card bahan" aria-label="File untuk latihan">\n    <h2>File untuk latihan</h2>\n'
+             '    <p class="hint">Download file yang dipakai di video, lalu buka di aplikasimu supaya kamu bisa ikut mencoba. Semua datanya rekaan.</p>\n'
+             + _isi + '  </section>')
+    _style = ('<style>.bh-list{display:grid;gap:10px}.bh-s{font-size:16px;margin:14px 0 8px}.bh-f{display:block;background:var(--surface2);color:var(--ink);text-decoration:none;border-radius:12px;padding:12px 16px;overflow-wrap:anywhere}'
+              '.bh-f b{display:block;font-weight:900}.bh-f span{display:block;font-size:15px;opacity:.9}.bh-f:hover,.bh-f:focus-visible{background:var(--accent);color:var(--accent-ink)}</style>')
+    # setelah kartu "Video simulasi" bila ada, kalau tidak setelah kartu pertama (pemutar)
+    i = page.find('aria-label="Video simulasi"')
+    i = page.find("</section>", i if i > 0 else 0)
+    if i > 0: page = page[:i + 10] + _card + page[i + 10:] + _style
 # kartu "Tonton dulu": link ke episode prasyarat (kunci youtube.prasyarat di script.json) + video YouTube-nya yang sudah tayang
 def prasyarat_kodes(teks_pr):
     import re
