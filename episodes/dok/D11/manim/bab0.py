@@ -64,7 +64,7 @@ class Bab0(BabScene):
         self.play_at(b.at("serius"), FadeIn(s1, scale=1.3), FadeIn(q, scale=0.6), dur=0.6)
         j0 = T("soal paling terkenal di ilmu komputer", 34, INK2)
         j1 = TB("P vs NP", 170, INK)
-        j2 = TB("dan sepupunya yang baru saja diklaim terbukti", 40, PRIMA)
+        j2 = TB("dan versi aljabarnya yang baru saja diklaim terbukti", 40, PRIMA)
         judul = VGroup(j0, j1, j2).arrange(DOWN, buff=0.4).move_to(UP * 0.3)
         st = status_chip().next_to(judul, DOWN, buff=0.6)
         self.play_at(b.at("Untuk menjawabnya"), FadeOut(VGroup(s1, s2, q), scale=0.9), dur=0.5)

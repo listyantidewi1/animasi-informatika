@@ -43,7 +43,7 @@ if "--gabung" in sys.argv:
     vid = os.path.join(hd, "gabung_video.mp4")
     subprocess.run(["ffmpeg", "-v", "error", "-y", "-f", "concat", "-safe", "0", "-i", lst, "-c", "copy", vid], check=True)
     aud = os.path.join(R, "audio", "narration.wav")
-    out = os.path.join(R, "video", "D11_AI_dan_Sepupu_P_vs_NP.mp4")
+    out = os.path.join(R, "video", "D11_AI_Mengklaim_VP_vs_VNP.mp4")
     if os.path.exists(aud):
         subprocess.run(["ffmpeg", "-v", "error", "-y", "-i", vid, "-i", aud, "-map", "0:v", "-map", "1:a", "-c:v", "copy", "-c:a", "aac", "-b:a", "192k", "-shortest", "-movflags", "+faststart", out], check=True)
     else:

@@ -1,15 +1,15 @@
-# YouTube: D11 Setelah Hipotesis Riemann, AI Mengklaim Membuktikan Sepupu P vs NP
+# YouTube: D11 AI Mengklaim Membuktikan VP ≠ VNP, Versi Aljabar dari P vs NP
 
 ## Pengaturan unggah (wajib)
 - Penonton: **Tidak, video ini tidak dibuat untuk anak-anak**.
 - Konten diubah atau sintetis: **Ya** (narasi dibuat dengan AI).
 - Sebelum unggah: cek ulang status klaim (apakah sudah ada matematikawan yang mengumumkan hasil pemeriksaan). Kalau ada perubahan besar, tulis di komentar tersemat dan di baris pertama deskripsi.
 - Layar akhir: 20 detik terakhir (mulai sekitar 10:39), tombol subscribe + video D07 (Hipotesis Riemann) di kotak kiri.
-- Subtitle: unggah `D11_AI_dan_Sepupu_P_vs_NP.srt` sebagai Bahasa Indonesia.
+- Subtitle: unggah `D11_AI_Mengklaim_VP_vs_VNP.srt` sebagai Bahasa Indonesia.
 - Thumbnail: `thumbnail.jpg`.
 
-## Judul (92 karakter)
-Setelah Hipotesis Riemann, AI Mengklaim Membuktikan Sepupu P vs NP. Siapa yang Memeriksanya?
+## Judul (87 karakter)
+AI Mengklaim Membuktikan VP ≠ VNP, Versi Aljabar dari P vs NP. Siapa yang Memeriksanya?
 
 Cadangan: Bukti 70 Halaman Ini Ditulis oleh AI dan Belum Dibaca Satu Pun Matematikawan. Mengapa Tetap Serius?
 
@@ -46,7 +46,7 @@ Sumber:
 #PvsNP #AI #Lean #Matematika #IlmuKomputer
 
 ## Tag
-p vs np, vp vs vnp, vp vnp claude, ai membuktikan p vs np, sepupu p vs np, permanen dan determinan, sirkuit aritmetika, leslie valiant, lean theorem prover, bukti matematika ai, claude anthropic matematika, millennium prize, kompleksitas komputasi, hipotesis riemann ai, dokumenter animasi indonesia
+p vs np, vp vs vnp, vp vnp claude, ai membuktikan p vs np, versi aljabar p vs np, permanen dan determinan, sirkuit aritmetika, leslie valiant, lean theorem prover, bukti matematika ai, claude anthropic matematika, millennium prize, kompleksitas komputasi, hipotesis riemann ai, dokumenter animasi indonesia
 
 ## Frasa pencarian
 - apa itu p vs np

@@ -1,6 +1,6 @@
 """Subtitle .srt D11 dari timeline.json (waktu per kata hasil penyelarasan ElevenLabs).
 Angka yang dieja untuk TTS ditulis kembali sebagai angka supaya mudah dibaca.
-  python3 manim/subtitle.py   ->  video/D11_AI_dan_Sepupu_P_vs_NP.srt (dan salinan .id.srt)"""
+  python3 manim/subtitle.py   ->  video/D11_AI_Mengklaim_VP_vs_VNP.srt (dan salinan .id.srt)"""
 import json, os, re
 D = os.path.dirname(os.path.abspath(__file__)); R = os.path.dirname(D)
 
@@ -50,7 +50,7 @@ def dua_baris(s):
     return " ".join(w[:best]) + "\n" + " ".join(w[best:])
 
 
-def main(tl_path=os.path.join(R, "timeline.json"), out_path=os.path.join(R, "video", "D11_AI_dan_Sepupu_P_vs_NP.srt")):
+def main(tl_path=os.path.join(R, "timeline.json"), out_path=os.path.join(R, "video", "D11_AI_Mengklaim_VP_vs_VNP.srt")):
     TL = json.load(open(tl_path))
     cues = []
     for b in TL["beats"]:
