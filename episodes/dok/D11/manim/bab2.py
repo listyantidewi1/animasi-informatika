@@ -66,7 +66,7 @@ class Bab2(BabScene):
         e4 = ArcBetweenPoints(plus.get_top() + RIGHT * 0.15, kali.get_bottom() + RIGHT * 0.15, angle=0.9, color=INK2, stroke_width=4)
         l1 = T("x + y", 26, LEAN).next_to(plus, LEFT, buff=0.3); l2 = T("(x + y) × (x + y)", 26, PRIMA).next_to(kali, LEFT, buff=0.3)
         n = ValueTracker(0)
-        ctr = always_redraw(lambda: VGroup(T("langkah", 26, INK2), TB(str(int(round(n.get_value()))), 64, INK)).arrange(DOWN, buff=0.08).move_to(RIGHT * 6.05 + UP * 0.3))
+        ctr = always_redraw(lambda: VGroup(T("langkah", 26, INK2), TB(str(int(round(n.get_value()))), 64, INK)).arrange(DOWN, buff=0.08).move_to(RIGHT * 6.15 + UP * 0.3))
         self.play_at(b.at("menekan tombol"), FadeIn(x), FadeIn(y), FadeIn(ctr), dur=0.5)
         self.play_at(b.at("sesedikit mungkin"), Indicate(self.tp, color=LEAN), Create(e1), Create(e2), FadeIn(plus, scale=0.6), FadeIn(l1), n.animate.set_value(1), dur=0.8)
         self.play(Indicate(self.tk, color=PRIMA), Create(e3), Create(e4), FadeIn(kali, scale=0.6), FadeIn(l2), n.animate.set_value(2), run_time=0.8)
@@ -75,7 +75,7 @@ class Bab2(BabScene):
         kur = SurroundingRectangle(VGroup(sir, l2, Dot(RIGHT * 2.3 + DOWN * 3.0), Dot(RIGHT * 4.75 + DOWN * 2.0)), color=AI, buff=0.22, corner_radius=0.2, stroke_width=3)
         ls = TB("sirkuit aritmetika", 30, AI).next_to(kur, DOWN, buff=0.12)
         self.play_at(b.at("sirkuit aritmetika"), Create(kur), FadeIn(ls), dur=0.7)
-        lu = T("ukuran sirkuit", 24, PRIMA).next_to(ctr, DOWN, buff=0.15)
+        lu = T("ukuran sirkuit", 21, PRIMA).next_to(ctr, DOWN, buff=0.15)
         self.play_at(b.at("ukuran sirkuit"), FadeIn(lu), Indicate(ctr, color=PRIMA), dur=0.6)
         self.sir = sir; self.x, self.y, self.kali = x, y, kali
         self.r3 = VGroup(rumus, lr, l1, l2, ctr, kur, ls, lu, sir)
