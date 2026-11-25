@@ -1,6 +1,6 @@
 # T05 YouTube
 
-## Video utama (6:28)
+## Video utama (4:18)
 
 **Judul:** Ajari Komputer Membedakan Kucing dan Anjing (Machine Learning Tanpa Coding)
 
@@ -10,18 +10,18 @@ Latih model kecerdasan buatan pertamamu untuk membedakan kucing dan anjing denga
 
 Bab:
 0:00 Pembuka
-0:28 Aturan atau contoh
-1:01 Kelas dan label
-1:26 Membuat proyek
-2:14 Data latih
-2:39 Apa itu training
-3:02 Melatih model
-3:17 Tebak dulu
-3:34 Data uji dan keyakinan
-4:00 Menguji model
-4:29 Bias data
-4:58 Kelas ketiga
-5:48 Rangkuman dan tantangan
+0:27 Aturan atau contoh
+0:54 Kelas dan label
+1:14 Membuat proyek
+1:26 Data latih
+1:43 Apa itu training
+2:01 Melatih model
+2:08 Tebak dulu
+2:19 Data uji dan keyakinan
+2:40 Menguji model
+2:54 Bias data
+3:17 Kelas ketiga
+3:43 Rangkuman dan tantangan
 
 Langkah singkat:
 1. Buka teachablemachine.withgoogle.com, klik Get Started, pilih Image Project, lalu Standard image model.

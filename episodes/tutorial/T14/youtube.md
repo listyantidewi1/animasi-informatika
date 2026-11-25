@@ -21,17 +21,6 @@ Bab:
 
 Kode lengkap dan file nilai_kelas.xlsx (bisa diunduh): https://github.com/listyantidewi1/animasi-informatika/tree/main/bahan-tutorial/T14
 
-# Isi nilai_kelas.xlsx (ketik di Excel atau Google Sheets, lalu simpan/unduh sebagai nilai_kelas.xlsx):
-nama,mat,ipa,bahasa
-Ayu,88,90,86
-Bima,92,84,79
-Citra,75,70,78
-Dimas,80,86,89
-Eka,95,93,91
-Fajar,68,72,75
-Gita,85,82,88
-Hana,79,81,77
-
 Sebelumnya: Bikin Chatbot AI Sendiri dengan Python. Lebih mudah bila sudah menonton Hitung Nilai Rapor Otomatis.
 Playlist: Proyek Pemrograman Sederhana. Narasi: Cahaya (suara sintetis ElevenLabs). Rekaman layar sungguhan; animasi penjelasan dibuat dengan kode oleh I Teach Software Engineering. Naskah disusun dengan bantuan AI (Claude buatan Anthropic) dan disunting manusia.
 
