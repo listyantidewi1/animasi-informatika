@@ -16,7 +16,7 @@ Cadangan: Bukti 70 Halaman Ini Ditulis oleh AI dan Belum Dibaca Satu Pun Matemat
 ## Deskripsi
 Status per 25 November 2026: ini masih KLAIM. Buktinya sudah lolos pemeriksaan dua kernel Lean, tetapi belum ada matematikawan yang mengumumkan hasil pemeriksaannya. Pembaruan ada di komentar tersemat.
 
-Sekitar 23 November 2026, sebuah makalah 70 halaman berjudul "VP ≠ VNP over every field" muncul di repositori GitHub milik Anthropic. Di kolom penulis hanya tertulis satu nama, yaitu Claude. Kalau klaimnya benar, tebakan Leslie Valiant dari tahun 1979 terbukti setelah 47 tahun terbuka. Video ini menjelaskan apa itu P vs NP, mengapa VP vs VNP disebut sepupunya, apa bedanya determinan dan permanen, bagaimana Lean memeriksa bukti seperti compiler, bagian mana yang tidak bisa diperiksa oleh mesin, dan mengapa klaim ini tetap tidak menjawab P vs NP.
+Sekitar 23 November 2026, sebuah makalah 70 halaman berjudul "VP ≠ VNP over every field" muncul di repositori GitHub milik Anthropic. Di kolom penulis hanya tertulis satu nama, yaitu Claude. Kalau klaimnya benar, tebakan Leslie Valiant dari tahun 1979 terbukti setelah 47 tahun terbuka. Video ini menjelaskan apa itu P vs NP, mengapa VP vs VNP disebut versi aljabarnya, apa bedanya determinan dan permanen, bagaimana Lean memeriksa bukti seperti compiler, bagian mana yang tidak bisa diperiksa oleh mesin, dan mengapa klaim ini tetap tidak menjawab P vs NP.
 
 Bab:
 0:00 Pembuka
