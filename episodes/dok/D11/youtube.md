@@ -9,7 +9,7 @@
 - Thumbnail: `thumbnail.jpg`.
 
 ## Judul (87 karakter)
-AI Mengklaim Membuktikan VP ≠ VNP, Versi Aljabar dari P vs NP. Siapa yang Memeriksanya?
+Apa Itu P vs NP, dan Mengapa AI Mengklaim Sudah Membuktikan Versi Aljabarnya (VP ≠ VNP)?
 
 Cadangan: Bukti 70 Halaman Ini Ditulis oleh AI dan Belum Dibaca Satu Pun Matematikawan. Mengapa Tetap Serius?
 

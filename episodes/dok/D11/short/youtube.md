@@ -11,12 +11,12 @@ Determinan dan permanen hanya berbeda pada tanda tambah dan tanda kurang. Untuk 
 
 Naskah disusun dengan bantuan AI (termasuk Claude buatan Anthropic, pihak yang mengajukan klaim ini), lalu diperiksa faktanya dan disunting oleh manusia. Narasi: suara sintetis ElevenLabs. Sumber: https://github.com/anthropics/formal-math/tree/main/vp-vnp
 
-Dokumenter lengkap: AI Mengklaim Membuktikan VP ≠ VNP, Versi Aljabar dari P vs NP. Siapa yang Memeriksanya? (lihat video terkait di atas judul).
+Dokumenter lengkap: Apa Itu P vs NP, dan Mengapa AI Mengklaim Sudah Membuktikan Versi Aljabarnya (VP ≠ VNP)? (lihat video terkait di atas judul).
 Subscribe: https://www.youtube.com/@iTeachSWE
 
 #shorts #PvsNP #AI #Matematika #IlmuKomputer
 ```
 
-**Video terkait** (fitur "Related video" di YouTube Studio): AI Mengklaim Membuktikan VP ≠ VNP, Versi Aljabar dari P vs NP. Siapa yang Memeriksanya?
+**Video terkait** (fitur "Related video" di YouTube Studio): Apa Itu P vs NP, dan Mengapa AI Mengklaim Sudah Membuktikan Versi Aljabarnya (VP ≠ VNP)?
 
 **Berkas:** `video/D11_Short.mp4` (hanya versi bersuara) dan `video/D11_Short.srt`.
