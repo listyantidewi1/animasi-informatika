@@ -31,4 +31,4 @@ def main():
                     body.pop("previous_text", None); body.pop("next_text", None); continue
                 print("ulang", e); time.sleep(3 * (k + 1))
         open(out, "wb").write(data); print(ep, b["no"], len(b["teks"]))
-main()
+if __name__ == "__main__": main()

@@ -6,7 +6,8 @@ def main(ep, urut):
     spec = importlib.util.spec_from_file_location("spec", f"{base}/spec.py"); S = importlib.util.module_from_spec(spec); spec.loader.exec_module(S)
     W = {b["no"]: b for b in json.load(open(f"{base}/waktu.json"))}; M = S.META
     bab = "\n".join(f"{mmss(W[n]['mulai'])} {j}" for n, j in M["bab"])
-    dur = sum(b["D"] for b in W.values())
+    import subprocess; vid = f"{base}/{S.NAMA}.mp4"
+    dur = float(subprocess.check_output(["ffprobe", "-v", "error", "-show_entries", "format=duration", "-of", "csv=p=0", vid])) if os.path.exists(vid) else sum(b["D"] for b in W.values())
     judul = S.JUDUL_YT
     desk = (M["ringkas"] + "\n\nBab:\n" + bab + ("\n\nKode lengkap:\n" + M["kode"].strip() if M.get("kode") else "\n\nLangkah singkat:\n" + M["langkah"].strip()) + "\n\n" + M.get("prasyarat", "") +
             "\nPlaylist: Proyek Pemrograman Sederhana. Narasi: Cahaya (suara sintetis ElevenLabs). Rekaman layar sungguhan; animasi penjelasan dibuat dengan kode oleh I Teach Software Engineering. Naskah disusun dengan bantuan AI (Claude buatan Anthropic) dan disunting manusia.\n\n"

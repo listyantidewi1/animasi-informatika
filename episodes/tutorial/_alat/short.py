@@ -3,7 +3,9 @@ SHORT = {"judul": "...", "beats": [{"teks": "...", "dari": (beat_no, detik_ke, "
 import json, os, sys, subprocess, importlib.util, urllib.request, time, re
 from PIL import Image, ImageDraw, ImageFont
 sys.path.insert(0, os.path.dirname(__file__))
-from suara import tts_teks, VID, MODEL
+from suara import tts_teks as _tt, VID, MODEL
+from lafal import lafal
+def tts_teks(t): return _tt(lafal(t))
 FB = "/usr/share/fonts/opentype/inter/Inter-ExtraBold.otf"
 if not os.path.exists(FB): FB = "/usr/share/fonts/opentype/inter/Inter-Bold.otf"
 def sh(*a): subprocess.run(a, check=True)
@@ -37,7 +39,8 @@ def png_teks(s, out, size, warna=(255, 255, 255), lebar=960, bg=None):
 def main(ep):
     base = f"/home/user/tut/{ep}"; sd = f"{base}/short"; os.makedirs(sd, exist_ok=True)
     spec = importlib.util.spec_from_file_location("spec", f"{base}/spec.py"); S = importlib.util.module_from_spec(spec); spec.loader.exec_module(S)
-    SH = S.SHORT; W = {b["no"]: b for b in json.load(open(f"{base}/waktu.json"))}; vid = f"{base}/{S.NAMA}.mp4"
+    SH = S.SHORT; lama = os.path.exists(f"{base}/lama.mp4") and os.path.exists(f"{base}/waktu_lama.json")
+    W = {b["no"]: b for b in json.load(open(f"{base}/waktu_lama.json" if lama else f"{base}/waktu.json"))}; vid = f"{base}/lama.mp4" if lama else f"{base}/{S.NAMA}.mp4"
     B = SH["beats"]
     for i, b in enumerate(B): tts(b["teks"], f"{sd}/s{i+1:02d}.mp3", B[i-1]["teks"] if i else None, B[i+1]["teks"] if i + 1 < len(B) else None)
     hj = png_teks(SH["judul"], f"{sd}/judul.png", 74, (255, 255, 255), 940, bg=(255, 176, 32, 255))
