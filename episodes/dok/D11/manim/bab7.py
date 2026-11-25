@@ -9,7 +9,7 @@ class Bab7(BabScene):
         seg = Triangle(fill_color=AI, fill_opacity=1, stroke_width=0).rotate(-90 * DEGREES).scale(0.45).move_to(kartu.get_center() + UP * 0.5)
         jk = VGroup(TB("Hipotesis Riemann,", 30, INK), TB("Claude, dan Lean", 30, INK)).arrange(DOWN, buff=0.1).move_to(kartu.get_center() + DOWN * 0.85)
         ld = T("tautannya ada di deskripsi", 28, AI).next_to(kartu, DOWN, buff=0.25)
-        self.play_at(b.at("bagaimana Lean"), FadeIn(kartu, shift=UP * 0.2), FadeIn(seg), FadeIn(jk), dur=0.7)
+        self.play(FadeIn(kartu, shift=UP * 0.2), FadeIn(seg), FadeIn(jk), run_time=0.6)
         self.play_at(b.at("videonya ada di deskripsi"), FadeIn(ld, shift=UP * 0.15), dur=0.5)
         kanal = TB("I Teach Software Engineering", 34, INK)
         st = status_chip()
