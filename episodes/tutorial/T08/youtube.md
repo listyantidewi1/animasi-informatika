@@ -2,7 +2,7 @@
 
 ## Video utama (7:20)
 
-**Judul:** Bikin Sandi Rahasia dengan Python (Sandi Caesar dan Cara Membobolnya)
+**Judul:** Sandi Caesar dengan Python: Bikin Sandi Rahasia dan Cara Membobolnya
 
 **Deskripsi:**
 
@@ -24,6 +24,8 @@ Bab:
 5:40 Brute force
 6:12 Sandi modern
 6:36 Rangkuman dan tantangan
+
+Kode lengkap (bisa diunduh): https://github.com/listyantidewi1/animasi-informatika/tree/main/bahan-tutorial/T08
 
 Kode lengkap:
 huruf = "abcdefghijklmnopqrstuvwxyz"
@@ -70,8 +72,8 @@ Subscribe: https://www.youtube.com/@iTeachSWE
 
 Sandi Caesar dengan Python: huruf jadi angka, modulo seperti jarum jam, dan kenapa 26 kunci mudah dibobol.
 
-Tutorial lengkapnya: Bikin Sandi Rahasia dengan Python (Sandi Caesar dan Cara Membobolnya) (playlist Proyek Pemrograman Sederhana).
+Tutorial lengkapnya: Sandi Caesar dengan Python: Bikin Sandi Rahasia dan Cara Membobolnya (playlist Proyek Pemrograman Sederhana).
 Subscribe: https://www.youtube.com/@iTeachSWE
 #shorts #python #kriptografi #belajarcoding
 
-**Video terkait:** Bikin Sandi Rahasia dengan Python (Sandi Caesar dan Cara Membobolnya)
+**Video terkait:** Sandi Caesar dengan Python: Bikin Sandi Rahasia dan Cara Membobolnya

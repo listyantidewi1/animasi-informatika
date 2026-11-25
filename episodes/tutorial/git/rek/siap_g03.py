@@ -1,0 +1,11 @@
+import sys; sys.path.insert(0, "/home/user/git-seri/rek")
+from proyek import *
+R = "/home/user/proyek/raka/siantre"; rumah("Raka", "raka@majujaya.id")
+dasar_g01(R)
+shutil.copy(D + "/package.json", R + "/package.json"); commit(R, "Tambahkan package.json", "2026-11-11T10:20:00+07:00")
+ganti(R, "antrean.js", "  nomorTerakhir = nomorTerakhir + 1;\n  return formatNomor(nomorTerakhir);", "  return formatNomor(nomorTerakhir + 1);")
+commit(R, "Sederhanakan fungsi ambilNomor", "2026-11-12T09:30:00+07:00")
+tulis(R, "public/tv.html", "<!doctype html>\n<html lang=\"id\">\n<body>\n  <h1>Nomor dipanggil</h1>\n  <div id=\"nomor\">-</div>\n  <script src=\"tv.js\"></script>\n</body>\n</html>\n")
+tulis(R, "public/tv.js", "// Layar TV SiAntre\nconst layar = document.getElementById('nomor');\n\nasync function perbarui() {\n  const data = await (await fetch('/api/info')).json();\n  layar.textContent = data.dipanggil;\n}\nsetInterval(perbarui, 2000);\n")
+commit(R, "Tambah halaman TV", "2026-11-13T14:10:00+07:00")
+print(git(R, "log", "--oneline"))

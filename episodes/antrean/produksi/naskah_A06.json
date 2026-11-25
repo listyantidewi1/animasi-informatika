@@ -1,0 +1,66 @@
+[
+ {
+  "no": 1,
+  "teks": "Bab enam. Ini bab yang paling jarang dibahas tutorial, padahal paling sering membuat aplikasi antrean kacau. Di akhir bab ini, dua puluh orang yang menekan tombol bersamaan akan mendapat nomor yang berbeda, dan dua petugas yang menekan panggil bersamaan tidak akan pernah memanggil orang yang sama."
+ },
+ {
+  "no": 2,
+  "teks": "Kita perlambat kejadian di bab lima. Request pertama membaca nomor terbesar, yaitu enam. Pada saat yang hampir sama, request kedua juga membaca enam, karena request pertama belum sempat menyimpan. Keduanya menambah satu, dan keduanya menulis tujuh. Kejadian ini disebut race condition, atau kondisi balapan, karena hasilnya bergantung pada siapa yang lebih cepat."
+ },
+ {
+  "no": 3,
+  "teks": "Bug seperti ini hampir tidak pernah muncul saat kamu mencoba sendiri, karena jarak waktunya hanya beberapa milidetik. Tetapi pada Senin pagi, saat bengkel ramai, jarak sekecil itu akan terlewati juga. Itulah sebabnya kode yang tampak berjalan belum tentu benar."
+ },
+ {
+  "no": 4,
+  "teks": "Alat pertama kita adalah transaksi. Beberapa query dibungkus di antara BEGIN dan COMMIT, sehingga semuanya berhasil, atau tidak satu pun yang tersimpan. Contohnya, membuat tiket dan mencatat ticket_events harus terjadi bersama. Kalau query kedua gagal, ROLLBACK membatalkan query pertama, sehingga tidak ada tiket tanpa riwayat."
+ },
+ {
+  "no": 5,
+  "teks": "Kita buat fungsi bantu bernama transaksi di db titik js. Fungsi ini meminjam satu koneksi dari pool, menjalankan BEGIN, lalu menjalankan pekerjaan kita. Kalau berhasil, COMMIT. Kalau ada error, ROLLBACK. Apa pun yang terjadi, koneksinya dikembalikan di bagian finally. Penting, semua query dalam satu transaksi harus lewat koneksi yang sama."
+ },
+ {
+  "no": 6,
+  "teks": "Apakah transaksi saja sudah menyelesaikan nomor ganda? Kita coba. Ternyata belum. Dua transaksi tetap bisa membaca angka enam yang sama pada saat yang sama. Transaksi menjamin semua atau tidak sama sekali, tetapi tidak membuat orang lain menunggu."
+ },
+ {
+  "no": 7,
+  "teks": "Alat kedua adalah penguncian baris. Sebelum menghitung nomor, kita jalankan SELECT dari services dengan FOR UPDATE. Baris layanan itu terkunci sampai transaksi kita selesai. Request lain yang ingin nomor untuk layanan yang sama harus antre di belakang kita. Bayangkan mesin nomor di meja depan yang hanya boleh dipegang satu orang dalam satu waktu. Kita jalankan lagi skripnya. Dua puluh request, dua puluh nomor berbeda, dan tidak ada error."
+ },
+ {
+  "no": 8,
+  "teks": "Sekarang sisi petugas. Cara paling mudah memanggil adalah mencari tiket menunggu yang paling awal, lalu mengubah statusnya menjadi dipanggil. Tetapi kalau petugas loket satu dan loket dua menekan tombol pada saat yang sama, keduanya menemukan tiket yang sama, yaitu A-003. Layar TV memanggil A-003 ke dua loket, dan pelanggan kebingungan harus ke mana."
+ },
+ {
+  "no": 9,
+  "teks": "Bagaimana kalau kita pakai FOR UPDATE lagi? Loket dua akan menunggu sampai loket satu selesai. Setelah itu, A-003 sudah berstatus dipanggil, sehingga loket dua malah mendapat jawaban antrean kosong, padahal masih ada orang lain yang menunggu. Menunggu bukan jawaban yang tepat di sini."
+ },
+ {
+  "no": 10,
+  "teks": "Jawabannya adalah FOR UPDATE SKIP LOCKED. Artinya, kunci tiket yang kuambil, dan lompati tiket yang sedang dikunci orang lain. Bayangkan tumpukan formulir di meja. Kalau tangan temanmu sedang memegang lembar paling atas, kamu langsung mengambil lembar berikutnya, bukan menunggu. Jadi, loket satu mendapat A-003, dan loket dua mendapat A-004 pada saat yang sama."
+ },
+ {
+  "no": 11,
+  "teks": "Perhatikan bentuk query-nya. Kita menulis UPDATE yang di dalamnya ada SELECT untuk memilih satu tiket. Memilih dan mengubah terjadi dalam satu langkah, lalu RETURNING mengembalikan tiket yang didapat. Di transaksi yang sama, kita mencatat ticket_events dengan status called. Kolom petugasnya kita isi setelah ada login di bab delapan."
+ },
+ {
+  "no": 12,
+  "teks": "Ingat diagram status di bab satu? Sekarang diagram itu menjadi kode. Kita tulis objek BOLEH yang berisi setiap aksi beserta status asal yang diizinkan. Misalnya, lewati hanya boleh dari dipanggil, dan selesai hanya boleh dari dilayani. Query UPDATE-nya memeriksa status asal di bagian WHERE. Kalau tidak cocok, tidak ada baris yang berubah, dan server menjawab empat ratus sembilan. Tiket yang sudah selesai tidak bisa dipanggil lagi."
+ },
+ {
+  "no": 13,
+  "teks": "Kita buktikan. Skrip ini membuat dua loket menekan panggil lima puluh kali secara bersamaan. Lalu kita tanya database, adakah tiket yang dipanggil lebih dari sekali? Hasilnya nol baris. Inilah perbedaan antara mengira kodenya benar dan tahu kodenya benar."
+ },
+ {
+  "no": 14,
+  "teks": "Cek kerjaan AI. Ini kode panggil dari perintah, buatkan fitur panggil antrean yang aman. Sudah ada BEGIN dan COMMIT, jadi kelihatannya aman. Dicoba oleh satu petugas, semuanya lancar. Apa masalahnya? Pikirkan dulu."
+ },
+ {
+  "no": 15,
+  "teks": "Transaksi bukan kunci. Di dalam BEGIN dan COMMIT itu, SELECT-nya tidak mengunci apa pun, jadi dua petugas tetap bisa membaca tiket yang sama. Kita jalankan skrip dua loket, dan hasilnya puluhan tiket dipanggil dua kali. Kata aman di dalam perintah tidak membuat kodenya aman. Yang membuatnya aman adalah kamu, yang tahu harus memeriksa apa."
+ },
+ {
+  "no": 16,
+  "teks": "Commit dengan pesan, transaksi dan penguncian. Tantanganmu, buka dua terminal, lalu kirim aksi selesai untuk tiket yang sama dari keduanya pada waktu yang hampir sama. Apa yang dijawab server untuk request kedua, dan kenapa? Di bab berikutnya, kita memakai ilmu ini untuk masalah yang mirip, yaitu slot jam yang tidak boleh dipesan melebihi kuotanya."
+ }
+]

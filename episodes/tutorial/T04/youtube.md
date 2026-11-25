@@ -2,7 +2,7 @@
 
 ## Video utama (6:38)
 
-**Judul:** Bikin Website Profil Diri dalam 10 Menit (HTML dan CSS untuk Pemula)
+**Judul:** Membuat Website Profil Pribadi dengan HTML dan CSS untuk Pemula
 
 **Deskripsi:**
 
@@ -23,46 +23,7 @@ Bab:
 5:29 Layar HP dan titik koma
 5:59 Rangkuman dan tantangan
 
-Kode lengkap:
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Profil Raka</title>
-    <style>
-        body {
-            font-family: sans-serif;
-            background-color: #e0f2f1;
-        }
-        h1 {
-            color: teal;
-        }
-        .kartu {
-            background: white;
-            padding: 24px;
-            border-radius: 16px;
-            max-width: 400px;
-            margin: 40px auto;
-        }
-        img {
-            border-radius: 50%;
-        }
-    </style>
-</head>
-<body>
-    <div class="kartu">
-        <h1>Halo, aku Raka</h1>
-        <p>Aku kelas 8 dan suka menggambar.</p>
-        <h2>Hobiku</h2>
-        <ul>
-            <li>Menggambar</li>
-            <li>Bulu tangkis</li>
-            <li>Membaca komik</li>
-        </ul>
-        <img src="raka.png" width="150">
-        <a href="https://id.wikipedia.org">Tempat aku belajar</a>
-    </div>
-</body>
-</html>
+Kode lengkap (index.html) (bisa diunduh): https://github.com/listyantidewi1/animasi-informatika/tree/main/bahan-tutorial/T04
 
 Tidak perlu menonton episode sebelumnya. Berikutnya: Ajari Komputer Membedakan Kucing dan Anjing.
 Playlist: Proyek Pemrograman Sederhana. Narasi: Cahaya (suara sintetis ElevenLabs). Rekaman layar sungguhan; animasi penjelasan dibuat dengan kode oleh I Teach Software Engineering. Naskah disusun dengan bantuan AI (Claude buatan Anthropic) dan disunting manusia.
@@ -83,8 +44,8 @@ Subscribe: https://www.youtube.com/@iTeachSWE
 
 Website profil sendiri dari nol: HTML untuk menyusun isi, CSS untuk warna, jarak, dan bentuk kartu.
 
-Tutorial lengkapnya: Bikin Website Profil Diri dalam 10 Menit (HTML dan CSS untuk Pemula) (playlist Proyek Pemrograman Sederhana).
+Tutorial lengkapnya: Membuat Website Profil Pribadi dengan HTML dan CSS untuk Pemula (playlist Proyek Pemrograman Sederhana).
 Subscribe: https://www.youtube.com/@iTeachSWE
 #shorts #html #css #belajarcoding
 
-**Video terkait:** Bikin Website Profil Diri dalam 10 Menit (HTML dan CSS untuk Pemula)
+**Video terkait:** Membuat Website Profil Pribadi dengan HTML dan CSS untuk Pemula

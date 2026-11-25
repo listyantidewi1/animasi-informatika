@@ -2,7 +2,7 @@
 
 ## Video utama (4:26)
 
-**Judul:** Olah Data Nilai Otomatis dengan Python dan Excel (Rata-rata, Peringkat, Predikat)
+**Judul:** Olah Data Nilai Otomatis dengan Python dan Excel | Project Python untuk Pemula
 
 **Deskripsi:**
 
@@ -19,33 +19,7 @@ Bab:
 3:19 Predikat dan menyimpan ke Excel
 3:55 Rangkuman dan tantangan
 
-Kode lengkap:
-# File nilai_kelas.xlsx berisi kolom: nama, mat, ipa, bahasa
-# Perlu: pip install pandas openpyxl
-
-import pandas as pd
-data = pd.read_excel("nilai_kelas.xlsx")
-data
-
-data["rata2"] = data[["mat", "ipa", "bahasa"]].mean(axis=1).round(1)
-data
-
-data["peringkat"] = data["rata2"].rank(ascending=False, method="min").astype(int)
-data
-
-def predikat(n):
-    if n >= 90:
-        return "A"
-    elif n >= 80:
-        return "B"
-    elif n >= 70:
-        return "C"
-    else:
-        return "D"
-
-data["predikat"] = data["rata2"].apply(predikat)
-data.sort_values("peringkat").to_excel("hasil_nilai.xlsx", index=False)
-print("Tersimpan!")
+Kode lengkap dan file nilai_kelas.xlsx (bisa diunduh): https://github.com/listyantidewi1/animasi-informatika/tree/main/bahan-tutorial/T14
 
 # Isi nilai_kelas.xlsx (ketik di Excel atau Google Sheets, lalu simpan/unduh sebagai nilai_kelas.xlsx):
 nama,mat,ipa,bahasa
@@ -77,8 +51,8 @@ Subscribe: https://www.youtube.com/@iTeachSWE
 
 Olah nilai satu kelas dari Excel dengan Python: rata-rata, peringkat yang adil, predikat, lalu simpan ke Excel.
 
-Tutorial lengkapnya: Olah Data Nilai Otomatis dengan Python dan Excel (Rata-rata, Peringkat, Predikat) (playlist Proyek Pemrograman Sederhana).
+Tutorial lengkapnya: Olah Data Nilai Otomatis dengan Python dan Excel | Project Python untuk Pemula (playlist Proyek Pemrograman Sederhana).
 Subscribe: https://www.youtube.com/@iTeachSWE
 #shorts #python #excel #pandas
 
-**Video terkait:** Olah Data Nilai Otomatis dengan Python dan Excel (Rata-rata, Peringkat, Predikat)
+**Video terkait:** Olah Data Nilai Otomatis dengan Python dan Excel | Project Python untuk Pemula

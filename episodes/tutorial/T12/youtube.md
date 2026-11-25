@@ -2,7 +2,7 @@
 
 ## Video utama (5:24)
 
-**Judul:** Bikin AI Pembaca Angka Tulisan Tangan dengan Python (Machine Learning untuk Pemula)
+**Judul:** Membuat AI Pembaca Angka Tulisan Tangan dengan Python | Machine Learning untuk Pemula
 
 **Deskripsi:**
 
@@ -21,6 +21,8 @@ Bab:
 3:53 Ubah dan uji
 4:25 AI pembaca sungguhan
 4:49 Rangkuman dan tantangan
+
+Kode lengkap (bisa diunduh): https://github.com/listyantidewi1/animasi-informatika/tree/main/bahan-tutorial/T12
 
 Kode lengkap:
 from sklearn.datasets import load_digits
@@ -91,8 +93,8 @@ Subscribe: https://www.youtube.com/@iTeachSWE
 
 AI pembaca angka tulisan tangan dengan Python: gambar adalah angka, tetangga terdekat, dan kenapa AI bisa salah.
 
-Tutorial lengkapnya: Bikin AI Pembaca Angka Tulisan Tangan dengan Python (Machine Learning untuk Pemula) (playlist Proyek Pemrograman Sederhana).
+Tutorial lengkapnya: Membuat AI Pembaca Angka Tulisan Tangan dengan Python | Machine Learning untuk Pemula (playlist Proyek Pemrograman Sederhana).
 Subscribe: https://www.youtube.com/@iTeachSWE
 #shorts #AI #machinelearning #python
 
-**Video terkait:** Bikin AI Pembaca Angka Tulisan Tangan dengan Python (Machine Learning untuk Pemula)
+**Video terkait:** Membuat AI Pembaca Angka Tulisan Tangan dengan Python | Machine Learning untuk Pemula

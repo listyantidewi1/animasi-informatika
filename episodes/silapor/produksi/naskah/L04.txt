@@ -1,0 +1,27 @@
+Bab empat, migration dan SQL. Di akhir bab ini, keempat tabel dari rancangan kita sudah ada di MySQL dan terisi data contoh. Kita juga berlatih membaca SQL yang dihasilkan Laravel, karena alat boleh menuliskannya untuk kita, tetapi kita tetap harus paham isinya.
+
+Di Laravel, tabel tidak dibuat dengan mengeklik di aplikasi database. Tabel ditulis sebagai berkas PHP yang disebut migration. Keuntungannya, rancangan tabel ikut tersimpan di Git bersama kodenya. Temanmu, atau server nanti, cukup menjalankan satu perintah untuk mendapat tabel yang sama persis.
+
+Kita mulai dari tabel users, yang migration-nya sudah dibuatkan Laravel. Buka berkasnya di folder database garis miring migrations. Kita menambah dua kolom. Kolom role bertipe string dengan nilai bawaan siswa, jadi setiap akun baru otomatis menjadi siswa. Kolom classroom boleh kosong, karena petugas tidak punya kelas.
+
+Untuk kategori, kita ketik php artisan make:model Category minus m. Perintah ini membuat dua berkas sekaligus, yaitu model dan migration-nya. Di migration, kita menulis id, lalu kolom name yang unique, supaya tidak ada dua kategori bernama sama.
+
+Berikutnya, tabel reports. Baris foreignId user_id, disambung constrained, berarti kolom ini wajib menunjuk ke id yang benar-benar ada di tabel users. Hal yang sama berlaku untuk category_id. Lalu ada title dengan panjang maksimal seratus, description bertipe text, location, photo yang boleh kosong, dan status dengan nilai bawaan baru. Baris timestamps membuat kolom created_at dan updated_at. Terakhir, kita memberi index pada created_at dan status, karena dua kolom itulah yang akan sering disaring.
+
+Tabel keempat adalah report_updates, yaitu riwayat. Isinya report_id, user_id, status, note, dan photo. Perhatikan, di sini kita hanya membuat created_at, tanpa updated_at. Itu disengaja, karena baris riwayat tidak pernah diubah.
+
+Jalankan php artisan migrate:fresh. Perintah ini menghapus semua tabel lalu membuatnya ulang dari awal, jadi pakai hanya di komputer sendiri, jangan di server sungguhan. Sekarang kita lihat hasilnya dari sisi MySQL dengan perintah show create table reports. Inilah SQL yang ditulis Laravel untuk kita. Ada foreign key, ada nilai bawaan, dan ada index, persis seperti rancangan di bab tiga.
+
+Sekarang model, yaitu class PHP yang mewakili satu tabel. Di model Report, kita menulis fillable, yaitu daftar kolom yang boleh diisi langsung dari form. Isinya hanya category_id, title, description, dan location. Kolom user_id dan status sengaja tidak dimasukkan. Dengan begitu, tidak ada orang yang bisa menyelipkan status selesai atau id orang lain lewat form.
+
+Lalu kita menulis hubungan antartabel sebagai fungsi. Fungsi user berisi belongsTo, artinya satu laporan dimiliki oleh satu pengguna. Fungsi updates berisi hasMany, artinya satu laporan punya banyak baris riwayat. Di model User, kita menambah fungsi reports dan satu fungsi kecil bernama isAdmin. Model ReportUpdate kita buat dengan cara yang sama.
+
+Tabel kosong sulit dicoba, jadi kita mengisinya lewat seeder. Di DatabaseSeeder, kita membuat enam kategori dan tiga akun, yaitu Pak Hendra sebagai admin, serta Lina dan Dimas sebagai siswa. Kata sandinya kita tulis biasa, karena model User otomatis mengubahnya menjadi hash sebelum disimpan. Aku juga menyiapkan ContohSeeder di GitHub, yang membuat empat puluh delapan laporan contoh. Jalankan migrate:fresh minus minus seed, lalu db:seed untuk ContohSeeder.
+
+Sekarang kita bertanya kepada data. Di MySQL, kita menulis select yang menggabungkan tiga tabel dengan join, untuk melihat judul laporan, nama pelapor, dan kategorinya. Di Laravel, hal yang sama cukup ditulis Report with user dan category. Keduanya menghasilkan data yang sama. Bedanya, yang satu kita tulis sendiri, sedangkan yang lain dituliskan Laravel.
+
+Pak Hendra butuh rekap. Dengan group by status, kita mendapat jumlah laporan di setiap status. Untuk laporan bulan November, kita menulis where created_at lebih dari atau sama dengan tanggal satu November, dan kurang dari tanggal satu Desember. Ingat pola ini, yaitu awal bulan ini sampai sebelum awal bulan depan.
+
+Cek kerjaan AI. Ini query dari perintah, tampilkan laporan bulan November. AI menulis where created_at like persen sebelas persen. Hasilnya muncul, dan sekilas terlihat benar. Apa masalahnya? Pikirkan dulu.
+
+Kita hitung. Query buatan AI menjawab tiga belas laporan, sedangkan cara rentang menjawab sembilan. Dari mana selisihnya? Tanda persen sebelas persen cocok dengan angka sebelas di mana saja. Di data kita, empat laporan dari bulan lain ikut terhitung, karena dikirim pada jam sebelas siang. Laporan tanggal sebelas dan menit kesebelas pun akan ikut terhitung. Selain salah, query ini juga lambat, karena index pada created_at tidak bisa dipakai. Commit dengan pesan, tabel dan model. Tantanganmu, tulis query yang menghitung jumlah laporan per kategori, diurutkan dari yang terbanyak. Di bab berikutnya, kita membuat login.

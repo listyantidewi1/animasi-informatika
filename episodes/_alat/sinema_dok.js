@@ -84,8 +84,10 @@
     if (a <= 0) return; ctx.save(); ctx.globalAlpha = a;
     { const g = ctx.createLinearGradient(0, 0, 0, HH); g.addColorStop(0, "#1E2C66"); g.addColorStop(1, "#2C3F86"); ctx.fillStyle = g; ctx.fillRect(0, 0, W, HH); }
     glow(ctx, W / 2, HH / 2, 640, P.violet, 0.4);
-    const r = 70; ctx.fillStyle = P.amber; ctx.beginPath(); ctx.arc(W / 2, HH / 2 - 140, r, 0, 6.283); ctx.fill();
-    txt(ctx, String(num), W / 2, HH / 2 - 140 + 34, 96, { align: "center", weight: 900, color: "#10142E" });
+    const bar = String(title).indexOf("|");   // "Bab 2|Tahap 1: Fondasi": label kecil menggantikan lingkaran nomor (R01)
+    if (bar > 0) { const lb = title.slice(0, bar); title = title.slice(bar + 1); pill(ctx, lb, W / 2, HH / 2 - 130, { size: 60, fill: P.amber, color: "#10142E" }); }
+    else { const r = 70; ctx.fillStyle = P.amber; ctx.beginPath(); ctx.arc(W / 2, HH / 2 - 140, r, 0, 6.283); ctx.fill();
+    txt(ctx, String(num), W / 2, HH / 2 - 140 + 34, 96, { align: "center", weight: 900, color: "#10142E" }); }
     txt(ctx, title, W / 2, HH / 2 + 70, 120, { align: "center", weight: 900, fit: 1640 });
     ctx.fillStyle = P.amber; ctx.fillRect(W / 2 - 90, HH / 2 + 118, 180, 7);
     ctx.restore();
@@ -121,8 +123,8 @@
     // label dramatisasi pada beat suara tokoh (dialog dibuat AI)
     if (b.suara) { const a = Math.min(fade(l, 0, 0.3), 1); ctx.save(); ctx.globalAlpha = a; pill(ctx, "Dramatisasi · suara dibuat AI", W - SAFE.x - 400, 118, { size: 40, fill: "rgba(10,18,52,0.85)", stroke: hexA(P.pink, 0.8) }); ctx.restore(); }
     // kartu bab: di ekor beat terakhir bab, lalu memudar di awal beat pertama bab berikutnya
-    if (nx && nx.seg !== b.seg && !CARD_SKIP(TL.segments[nx.seg])) { const s0 = speechEnd(b) + 0.3; const a = clamp((l - s0) / 0.35); chapterCard(ctx, nx.seg, TL.segments[nx.seg], a, t); }
-    if (cardBefore && l < 0.6) chapterCard(ctx, b.seg, TL.segments[b.seg], 1 - eio(l / 0.6), t);
+    if (nx && nx.seg !== b.seg && !CARD_SKIP(TL.segments[nx.seg])) { const s0 = speechEnd(b) + (b.cardDelay != null ? b.cardDelay : 0.3); const a = clamp((l - s0) / (b.cardFade || 0.35)); (K.dok.cardFn || chapterCard)(ctx, nx.seg, TL.segments[nx.seg], a, t, b, l); }
+    const co = b.cardOut || 0.6; if (cardBefore && l < co) (K.dok.cardFn || chapterCard)(ctx, b.seg, TL.segments[b.seg], 1 - eio(l / co), t, b, l);   // cardDelay/cardFade/cardOut per beat (D05: jeda bab lebih lega)
     ctx.restore(); return b;
   };
   K.dok = { P, W, HH, SAFE, clamp, lerp, sm, eio, eout, spring, rng, A, lead, at, atEnd, word, speechEnd, pr, fade, bg, glow, hexA, vignette, txt, cam, path, pill, panel, bip, label, kicker, post, flushPost, chapterCard,

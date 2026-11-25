@@ -2,7 +2,7 @@
 
 ## Video utama (6:48)
 
-**Judul:** Hitung Nilai Rapor Otomatis, Lengkap dengan Grafiknya (Python pandas)
+**Judul:** Hitung Nilai Rapor Otomatis dengan Python, Lengkap dengan Grafik | Project Python untuk Pemula
 
 **Deskripsi:**
 
@@ -23,39 +23,9 @@ Bab:
 5:35 Ubah batas dan KeyError
 6:08 Rangkuman dan tantangan
 
-Kode lengkap:
-import pandas as pd
-
-data = pd.read_csv("nilai.csv")
-data
-
-data["Rata-rata"] = data[["Matematika", "IPA", "Bahasa"]].mean(axis=1).round(1)
-data
-
-data.sort_values(by="Rata-rata", ascending=False)
-
-data[data["Rata-rata"] < 75]
-
-import matplotlib.pyplot as plt
-
-plt.figure(figsize=(10, 4))
-plt.bar(data["Nama"], data["Rata-rata"])
-plt.axhline(75, color="red", linestyle="--")
-plt.title("Rata-rata Nilai Kelas 8A")
-plt.show()
-
-# isi nilai.csv
-Nama,Matematika,IPA,Bahasa
-Andi,80,75,85
-Bunga,92,88,90
-Citra,70,65,72
-Dimas,85,90,78
-Eka,60,72,70
-Fajar,78,80,82
-Gita,88,85,94
-Hana,75,70,79
-Iqbal,90,82,76
-Jihan,82,79,85
+Kode lengkap dan file nilai.csv (bisa diunduh): https://github.com/listyantidewi1/animasi-informatika/tree/main/bahan-tutorial/T03
+Di Google Colab, file bisa langsung dibaca tanpa diunggah:
+data = pd.read_csv("https://raw.githubusercontent.com/listyantidewi1/animasi-informatika/main/bahan-tutorial/T03/nilai.csv")
 
 Sebelumnya: Bikin Kuis Otomatis yang Langsung Menghitung Skor. Berikutnya: Bikin Website Profil Diri dalam 10 Menit.
 Playlist: Proyek Pemrograman Sederhana. Narasi: Cahaya (suara sintetis ElevenLabs). Rekaman layar sungguhan; animasi penjelasan dibuat dengan kode oleh I Teach Software Engineering. Naskah disusun dengan bantuan AI (Claude buatan Anthropic) dan disunting manusia.
@@ -76,8 +46,8 @@ Subscribe: https://www.youtube.com/@iTeachSWE
 
 Rata-rata nilai satu kelas, peringkat, daftar remedial, dan grafiknya, semua dalam beberapa baris Python dengan pandas dan matplotlib.
 
-Tutorial lengkapnya: Hitung Nilai Rapor Otomatis, Lengkap dengan Grafiknya (Python pandas) (playlist Proyek Pemrograman Sederhana).
+Tutorial lengkapnya: Hitung Nilai Rapor Otomatis dengan Python, Lengkap dengan Grafik | Project Python untuk Pemula (playlist Proyek Pemrograman Sederhana).
 Subscribe: https://www.youtube.com/@iTeachSWE
 #shorts #python #pandas #belajarpython
 
-**Video terkait:** Hitung Nilai Rapor Otomatis, Lengkap dengan Grafiknya (Python pandas)
+**Video terkait:** Hitung Nilai Rapor Otomatis dengan Python, Lengkap dengan Grafik | Project Python untuk Pemula

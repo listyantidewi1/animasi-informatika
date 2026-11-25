@@ -2,7 +2,7 @@
 
 ## Video utama (7:32)
 
-**Judul:** Bikin Game Ular Sendiri di Browser (JavaScript untuk Pemula)
+**Judul:** Membuat Game Snake dengan JavaScript, HTML, dan CSS untuk Pemula
 
 **Deskripsi:**
 
@@ -24,64 +24,7 @@ Bab:
 6:20 Ubah dan uji
 6:50 Rangkuman dan tantangan
 
-Kode lengkap:
-<!DOCTYPE html>
-<html>
-<body style="background: #1e293b; text-align: center; font-family: sans-serif">
-  <h2 style="color: white">Skor: <span id="skor">0</span></h2>
-  <canvas id="papan" width="400" height="400"></canvas>
-  <script>
-    const papan = document.getElementById("papan");
-    const pena = papan.getContext("2d");
-    const kotak = 20;
-    let ular = [{x: 10, y: 10}, {x: 9, y: 10}, {x: 8, y: 10}];
-    let arah = {x: 1, y: 0};
-    let makanan = {x: 15, y: 5};
-    let skor = 0;
-
-    function gambar() {
-      pena.fillStyle = "black";
-      pena.fillRect(0, 0, 400, 400);
-      pena.fillStyle = "red";
-      pena.fillRect(makanan.x * kotak, makanan.y * kotak, kotak - 2, kotak - 2);
-      pena.fillStyle = "lime";
-      for (const bagian of ular) {
-        pena.fillRect(bagian.x * kotak, bagian.y * kotak, kotak - 2, kotak - 2);
-      }
-    }
-
-    function langkah() {
-      const kepala = {x: ular[0].x + arah.x, y: ular[0].y + arah.y};
-      if (kepala.x < 0 || kepala.x >= 20 || kepala.y < 0 || kepala.y >= 20) {
-        clearInterval(jalan);
-        pena.fillStyle = "white";
-        pena.font = "40px sans-serif";
-        pena.fillText("Game Over", 100, 200);
-        return;
-      }
-      ular.unshift(kepala);
-      if (kepala.x === makanan.x && kepala.y === makanan.y) {
-        skor = skor + 1;
-        document.getElementById("skor").textContent = skor;
-        makanan = {x: Math.floor(Math.random() * 20), y: Math.floor(Math.random() * 20)};
-      } else {
-        ular.pop();
-      }
-      gambar();
-    }
-
-    document.addEventListener("keydown", function (e) {
-      if (e.key === "ArrowUp") arah = {x: 0, y: -1};
-      if (e.key === "ArrowDown") arah = {x: 0, y: 1};
-      if (e.key === "ArrowLeft") arah = {x: -1, y: 0};
-      if (e.key === "ArrowRight") arah = {x: 1, y: 0};
-    });
-
-    gambar();
-    const jalan = setInterval(langkah, 150);
-  </script>
-</body>
-</html>
+Kode lengkap (index.html) (bisa diunduh): https://github.com/listyantidewi1/animasi-informatika/tree/main/bahan-tutorial/T07
 
 Sebelumnya: Bikin AI Penebak Kelulusan dari Data Nilai. Lebih mudah bila sudah menonton Bikin Website Profil Diri dalam 10 Menit. Berikutnya: Bikin Sandi Rahasia dengan Python.
 Playlist: Proyek Pemrograman Sederhana. Narasi: Cahaya (suara sintetis ElevenLabs). Rekaman layar sungguhan; animasi penjelasan dibuat dengan kode oleh I Teach Software Engineering. Naskah disusun dengan bantuan AI (Claude buatan Anthropic) dan disunting manusia.
@@ -102,8 +45,8 @@ Subscribe: https://www.youtube.com/@iTeachSWE
 
 Game ular dari nol dengan JavaScript: papan koordinat, array, game loop, dan cara ular tumbuh.
 
-Tutorial lengkapnya: Bikin Game Ular Sendiri di Browser (JavaScript untuk Pemula) (playlist Proyek Pemrograman Sederhana).
+Tutorial lengkapnya: Membuat Game Snake dengan JavaScript, HTML, dan CSS untuk Pemula (playlist Proyek Pemrograman Sederhana).
 Subscribe: https://www.youtube.com/@iTeachSWE
 #shorts #javascript #bikingame #belajarcoding
 
-**Video terkait:** Bikin Game Ular Sendiri di Browser (JavaScript untuk Pemula)
+**Video terkait:** Membuat Game Snake dengan JavaScript, HTML, dan CSS untuk Pemula

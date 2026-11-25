@@ -2,7 +2,7 @@
 
 ## Video utama (5:25)
 
-**Judul:** Bikin AI Penyaring Pesan Spam dengan Python (Machine Learning untuk Pemula)
+**Judul:** Membuat AI Penyaring Pesan Spam dengan Python | Machine Learning untuk Pemula
 
 **Deskripsi:**
 
@@ -20,6 +20,8 @@ Bab:
 3:52 Ubah dan uji
 4:24 Penyaring spam sungguhan
 4:51 Rangkuman dan tantangan
+
+Kode lengkap (bisa diunduh): https://github.com/listyantidewi1/animasi-informatika/tree/main/bahan-tutorial/T11
 
 Kode lengkap:
 pesan = [
@@ -106,8 +108,8 @@ Subscribe: https://www.youtube.com/@iTeachSWE
 
 AI penyaring spam dengan Python: kata menjadi angka, Naive Bayes, dan kenapa AI bergantung pada contoh.
 
-Tutorial lengkapnya: Bikin AI Penyaring Pesan Spam dengan Python (Machine Learning untuk Pemula) (playlist Proyek Pemrograman Sederhana).
+Tutorial lengkapnya: Membuat AI Penyaring Pesan Spam dengan Python | Machine Learning untuk Pemula (playlist Proyek Pemrograman Sederhana).
 Subscribe: https://www.youtube.com/@iTeachSWE
 #shorts #AI #machinelearning #python
 
-**Video terkait:** Bikin AI Penyaring Pesan Spam dengan Python (Machine Learning untuk Pemula)
+**Video terkait:** Membuat AI Penyaring Pesan Spam dengan Python | Machine Learning untuk Pemula

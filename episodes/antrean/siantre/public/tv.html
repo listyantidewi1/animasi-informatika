@@ -1,0 +1,85 @@
+<!doctype html>
+<html lang="id">
+<head>
+  <meta charset="utf-8">
+  <title>SiAntre · Layar Ruang Tunggu</title>
+  <link rel="stylesheet" href="/gaya.css">
+  <style>
+    body { background: #0b1736; color: #fff; height: 100vh; overflow: hidden; }
+    .tv { display: grid; grid-template-columns: 1.6fr 1fr; gap: 28px; padding: 32px; height: 100vh; }
+    .utama { background: linear-gradient(160deg, #1d4ed8, #1e3a8a); border-radius: 28px; display: flex; flex-direction: column;
+      align-items: center; justify-content: center; text-align: center; }
+    .utama .kecil { font-size: 2.4vw; opacity: .85; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; }
+    .utama .besar { font-size: 15vw; font-weight: 900; line-height: 1; margin: 1vw 0; }
+    .utama .loket { font-size: 4vw; font-weight: 800; background: #fbbf24; color: #1e293b; padding: .4vw 2.4vw; border-radius: 99px; }
+    .utama.baru { animation: sorot 1.2s ease 3; }
+    @keyframes sorot { 50% { transform: scale(1.03); box-shadow: 0 0 0 1vw rgba(251,191,36,.5); } }
+    .samping { display: flex; flex-direction: column; gap: 20px; }
+    .panel { background: #13224d; border-radius: 24px; padding: 22px 26px; }
+    .panel h2 { margin: 0 0 12px; font-size: 1.5vw; opacity: .7; text-transform: uppercase; letter-spacing: 2px; }
+    .riwayat div { display: flex; justify-content: space-between; font-size: 2.6vw; font-weight: 800; padding: .5vw 0; border-bottom: 1px solid #22356b; }
+    .riwayat span { color: #fbbf24; }
+    .qr { display: flex; gap: 20px; align-items: center; font-size: 1.4vw; font-weight: 600; }
+    .qr img { width: 9vw; background: #fff; border-radius: 12px; padding: 6px; }
+    .jam { font-size: 3vw; font-weight: 800; text-align: right; }
+  </style>
+</head>
+<body>
+  <button id="suara" style="position:fixed;top:12px;right:12px;z-index:9;font-size:20px;padding:10px 20px;border-radius:12px">Aktifkan suara</button>
+  <div class="tv">
+    <div class="utama" id="utama">
+      <div class="kecil">Nomor antrean</div>
+      <div class="besar" id="nomor">-</div>
+      <div class="loket" id="loket">Belum ada panggilan</div>
+    </div>
+    <div class="samping">
+      <div class="jam" id="jam"></div>
+      <div class="panel"><h2>Panggilan sebelumnya</h2><div class="riwayat" id="riwayat"></div></div>
+      <div class="panel"><h2>Menunggu</h2><div class="riwayat" id="tunggu"></div></div>
+      <div class="panel qr"><img src="/api/qr.svg" alt="QR"><div>Pindai untuk mengambil nomor dan pantau giliranmu dari HP.</div></div>
+    </div>
+  </div>
+  <script src="/umum.js"></script>
+  <script>
+    const $ = (id) => document.getElementById(id);
+    const riwayat = [];
+
+    // Suara panggilan memakai fitur suara bawaan browser
+    function ucapkan(label, loket) {
+      if (!('speechSynthesis' in window)) return;
+      const huruf = label.split('-')[0];
+      const angka = Number(label.split('-')[1]);
+      const u = new SpeechSynthesisUtterance(`Nomor antrean ${huruf}, ${angka}. Silakan ke ${loket}.`);
+      u.lang = 'id-ID'; u.rate = 0.9;
+      speechSynthesis.speak(u);
+    }
+
+    function tampilkan(data) {
+      if ($('nomor').textContent !== '-') {
+        riwayat.unshift([$('nomor').textContent, $('loket').textContent]);
+        riwayat.length = Math.min(riwayat.length, 4);
+      }
+      $('nomor').textContent = data.label;
+      $('loket').textContent = data.loket;
+      $('utama').classList.remove('baru'); void $('utama').offsetWidth; $('utama').classList.add('baru');
+      $('riwayat').replaceChildren(...riwayat.map(([n, l]) => { const d = el('div'); d.append(el('b', '', n), el('span', '', l)); return d; }));
+      if (bolehBersuara) ucapkan(data.label, data.loket);
+    }
+
+    async function hitungTunggu() {
+      const layanan = await api('/ringkas');
+      $('tunggu').replaceChildren(...layanan.map((l) => { const d = el('div'); d.append(el('b', '', l.name), el('span', '', `${l.menunggu} orang`)); return d; }));
+    }
+
+    setInterval(() => { $('jam').textContent = new Date().toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' }); }, 1000);
+    hitungTunggu();
+    dengarkan(['panggil', 'antrean'], (jenis, data) => {
+      if (jenis === 'panggil') tampilkan(data);
+      if (jenis !== 'putus') hitungTunggu();
+    });
+    // Browser baru mengizinkan suara setelah ada klik
+    let bolehBersuara = false;
+    document.getElementById('suara').onclick = (e) => { bolehBersuara = true; e.target.remove(); };
+  </script>
+</body>
+</html>

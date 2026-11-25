@@ -2,7 +2,7 @@
 
 ## Video utama (7:54)
 
-**Judul:** Bikin Game Tebak Angka Pertamamu dengan Python
+**Judul:** Cara Membuat Game Tebak Angka di Python | Project Python untuk Pemula
 
 **Deskripsi:**
 
@@ -22,23 +22,7 @@ Bab:
 6:43 Ubah kode dan baca pesan error
 7:14 Rangkuman dan tantangan
 
-Kode lengkap:
-import random
-
-angka_rahasia = random.randint(1, 100)
-jumlah_tebakan = 0
-print("Aku sudah memilih angka dari 1 sampai 100. Coba tebak!")
-
-while True:
-    tebakan = int(input("Tebakanmu: "))
-    jumlah_tebakan = jumlah_tebakan + 1
-    if tebakan < angka_rahasia:
-        print("Terlalu kecil!")
-    elif tebakan > angka_rahasia:
-        print("Terlalu besar!")
-    else:
-        print("Benar! Kamu menebak dalam", jumlah_tebakan, "kali.")
-        break
+Kode lengkap (bisa diunduh): https://github.com/listyantidewi1/animasi-informatika/tree/main/bahan-tutorial/T01
 
 Episode berikutnya: Bikin Kuis Otomatis yang Langsung Menghitung Skor.
 Playlist: Proyek Pemrograman Sederhana. Narasi: Cahaya (suara sintetis ElevenLabs). Rekaman layar sungguhan; animasi penjelasan dibuat dengan kode oleh I Teach Software Engineering. Naskah disusun dengan bantuan AI (Claude buatan Anthropic) dan disunting manusia.
@@ -59,8 +43,8 @@ Subscribe: https://www.youtube.com/@iTeachSWE
 
 Bikin game tebak angka dengan Python cuma dengan belasan baris kode. Rahasianya tiga ide: variabel, perulangan, dan percabangan. Plus trik menebak di tengah: angka 1 sampai 100 selalu tertebak paling banyak 7 kali.
 
-Tutorial lengkapnya: Bikin Game Tebak Angka Pertamamu dengan Python (playlist Proyek Pemrograman Sederhana).
+Tutorial lengkapnya: Cara Membuat Game Tebak Angka di Python | Project Python untuk Pemula (playlist Proyek Pemrograman Sederhana).
 Subscribe: https://www.youtube.com/@iTeachSWE
 #shorts #python #belajarpython #coding
 
-**Video terkait:** Bikin Game Tebak Angka Pertamamu dengan Python
+**Video terkait:** Cara Membuat Game Tebak Angka di Python | Project Python untuk Pemula

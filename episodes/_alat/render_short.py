@@ -26,7 +26,7 @@ CHANNEL = "youtube.com/@iTeachSWE"
 BEBRAS = PARENT.get("kind") == "bebras"   # pembahasan soal Bebras: tanpa kelas dan link latihan; kredit soal di deskripsi
 if BEBRAS:
     bb = PARENT.get("bebras", {}); kelas = ""; LINK = ""; FULL = f"Pembahasan Soal Bebras | {PARENT['title']}"
-    KREDIT = f"Soal: {bb.get('judul_asli', '')}, Bebras {bb.get('tahun', '')}, kontributor {bb.get('negara', '')} ({bb.get('kode', '')}), digambar ulang."
+    KREDIT = f"Soal: {bb.get('judul_asli') or bb.get('judul', '')}, Bebras {bb.get('tahun', '')}, kontributor {bb.get('negara', '')} ({bb.get('kode', '')}), digambar ulang."
 elif DOK:
     kelas = ""; LINK = CHANNEL; FULL = PARENT["title"]
 elif SIM:
@@ -56,7 +56,7 @@ def timeline(variant):
     if BEBRAS:
         TL.update(episode=code, label=PARENT.get("bebras", {}).get("kategori", "Bebras").split(" (")[0], full_title=FULL, link=LINK, cta_heading="TONTON PEMBAHASAN LENGKAPNYA")
         return TL
-    TL.update(episode=code, label="Dokumenter Animasi" if DOK else ("Simulasi Informatika " if SIM else "Informatika ") + kelas, full_title=FULL, link=LINK,
+    TL.update(episode=code, label=SCRIPT.get("label", "Dokumenter Animasi") if DOK else ("Simulasi Informatika " if SIM else "Informatika ") + kelas, full_title=FULL, link=LINK,
               cta_heading="TONTON VIDEO LENGKAPNYA" if DOK else "TONTON SIMULASI LENGKAPNYA" if SIM else "TONTON EPISODE LENGKAPNYA")
     return TL
 

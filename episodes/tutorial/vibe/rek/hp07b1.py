@@ -1,0 +1,10 @@
+from hp import *; from isi_cepat import isi_cepat
+h = HP("http://localhost:5173/", profil="/tmp/hpprof412", lebar=412); h.pg.evaluate("localStorage.clear()"); h.pg.reload(); h.tunggu(1)
+isi_cepat(h.pg); h.pg.fill("#form-hitung input[name=tempat]", ""); h.tunggu(0.5)
+h.mulai("/home/user/vibe/raw/H07b"); h.tanda("mulai"); h.tunggu(2)
+h.tanda("muat_ulang"); h.pg.reload(); h.tunggu(3); h.foto("/tmp/h07b_1.png")
+h.tanda("tempat"); h.isi("#form-hitung input[name=tempat]", "Kafe Senja", 10); h.tunggu(0.5)
+h.tanda("hitung"); h.tap(".bar-bawah button", 2.5)
+h.tanda("riwayat"); h.pg.locator("#daftar-riwayat").scroll_into_view_if_needed(); h.tunggu(3); h.foto("/tmp/h07b_2.png")
+h.tanda("akhir"); h.stop()
+h.tutup()

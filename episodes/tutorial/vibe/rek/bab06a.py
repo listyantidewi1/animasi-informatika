@@ -1,0 +1,11 @@
+from vc import *
+v = VC("/home/user/vibe/raw/V06a")
+v.pilih_terminal(0)
+v.mulai("/home/user/vibe/raw/V06a"); v.tanda("mulai"); v.tunggu(1)
+v.perintah("claude", tunggu=7); v.tanda("claude_buka"); v.tunggu(1.5)
+v.tanda("prompt_hp")
+v.prompt("Perbaiki tampilan untuk HP yang dipegang satu tangan:\n- tombol utama \"Hitung\" menempel di bawah layar,\n- semua tombol minimal 48 px,\n- kotak harga membuka papan ketik angka di HP,\n- harga ditampilkan dengan titik ribuan (50.300).\nJangan mengubah src/hitung.js.", cps=45, batas=900)
+v.tanda("hp_jadi"); v.tunggu(3)
+v.tanda("vitest"); v.bash("npx vitest run", tunggu=12); v.tanda("vitest_akhir"); v.tunggu(2)
+v.tanda("diff"); v.bash("git diff --stat", tunggu=5); v.tanda("diff_akhir"); v.tunggu(3)
+v.stop(); v.foto("/tmp/v06a.png"); v.ctx.close(); v.pw.stop()

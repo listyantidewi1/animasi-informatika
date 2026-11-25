@@ -165,7 +165,7 @@ def main():
     for b in todo:
         i = ids.index(b["id"]); rc = roles.get(b.get("suara")) or {}
         same = lambda j: 0 <= j < len(beats) and beats[j].get("suara") == b.get("suara")
-        body = {"text": b["text"], "model_id": cfg["model"],
+        body = {"text": b.get("ucap") or b["text"], "model_id": cfg["model"],
                 "voice_settings": {"stability": rc.get("stability", cfg["stability"]), "similarity_boost": rc.get("similarity", cfg["similarity"]),
                                    "style": rc.get("style", cfg["style"]), "speed": rc.get("speed", cfg["speed"])},
                 "previous_text": beats[i - 1]["text"] if same(i - 1) else None, "next_text": beats[i + 1]["text"] if same(i + 1) else None}

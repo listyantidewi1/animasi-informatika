@@ -1,0 +1,37 @@
+"""Naskah video "Google Colab pertama" (sapaan Anda, tanpa merek kanal). (id, teks, tts|None)"""
+BAB = {"k": None, "a": "Membuka Google Colab dan login", "b": "Membuat notebook", "c": "Program pertama",
+       "d": "Program kedua, lalu error", "e": "Membaca error dan memperbaikinya", "p": None}
+BEATS = [
+ ("k1", "Pesan error berwarna merah ini bukan musibah, karena sebenarnya ia memberi tahu letak kesalahan kita.", None),
+ ("k2", "Dalam beberapa menit, Anda akan menulis program Python pertama Anda di Google Colab, lalu belajar membaca error seperti ini dan memperbaikinya.", None),
+ ("a1", "Kita mulai dari browser. Di kolom alamat, ketik colab.research.google.com, lalu tekan Enter.",
+        "Kita mulai dari browser. Di kolom alamat, ketik kolab, titik, research, titik, google, titik, kom, lalu tekan Enter."),
+ ("a2", "Google Colab itu gratis dan berjalan di browser, jadi Anda tidak perlu memasang apa pun di komputer.", None),
+ ("a3", "Supaya bisa menjalankan program, Anda harus login dulu. Klik tombol Sign in di pojok kanan atas.", None),
+ ("a4", "Masukkan alamat email akun Google Anda, klik Next, lalu masukkan password dan klik Next sekali lagi.", None),
+ ("a5", "Kalau foto profil Anda sudah muncul di pojok kanan atas, berarti Anda sudah berhasil login.", None),
+ ("b1", "Sekarang kita buat notebook, yaitu lembar kerja tempat kita menulis program. Klik tombol New notebook yang berwarna biru.", None),
+ ("b2", "Notebook baru terbuka dengan nama Untitled0. Klik nama itu, lalu ganti menjadi program pertama, supaya nanti mudah dicari di Google Drive.",
+        "Notebook baru terbuka dengan nama Untitled nol. Klik nama itu, lalu ganti menjadi program pertama, supaya nanti mudah dicari di Google Drive."),
+ ("b3", "Kotak panjang ini disebut sel kode. Di sinilah kita mengetik program, dan tombol bulat di sebelah kirinya dipakai untuk menjalankan program.", None),
+ ("c1", "Klik di dalam sel, lalu ketik print, kurung buka, tanda petik, Halo dunia, tanda petik, dan kurung tutup.", None),
+ ("c2", "Perintah print menyuruh komputer menampilkan tulisan yang ada di dalam tanda petik.", None),
+ ("c3", "Untuk menjalankannya, klik tombol run, atau tekan Control dan Enter bersamaan.", None),
+ ("c4", "Saat pertama kali dijalankan, Colab perlu beberapa detik untuk menyambung ke komputer milik Google.", None),
+ ("c5", "Setelah itu, hasilnya muncul tepat di bawah sel, dan tanda centang hijau berarti program selesai tanpa masalah.", None),
+ ("d1", "Program kedua kita tulis di sel baru. Klik tombol plus Code di bagian atas.", None),
+ ("d2", "Ketik empat baris ini pelan-pelan. Dua baris pertama menyimpan nama dan umur, lalu dua baris berikutnya menampilkan sapaan dan umur tahun depan.", None),
+ ("d3", "Sekarang jalankan. Ternyata baris ketiga berhasil menampilkan Halo Rani, tetapi setelah itu muncul tulisan merah yang panjang.", None),
+ ("d4", "Jangan panik, karena kita cukup membacanya dengan tiga langkah.", None),
+ ("e1", "Langkah pertama, lihat baris paling bawah. Di sana tertulis jenis error-nya, yaitu TypeError, yang artinya ada jenis data yang tidak cocok.",
+        "Langkah pertama, lihat baris paling bawah. Di sana tertulis jenis errornya, yaitu Type Error, yang artinya ada jenis data yang tidak cocok."),
+ ("e2", "Langkah kedua, baca pesan di sebelahnya. Pesan ini berkata bahwa teks hanya bisa digabung dengan teks, bukan dengan angka.", None),
+ ("e3", "Langkah ketiga, cari tanda panah. Panah ini menunjuk baris keempat, jadi di situlah kesalahannya.", None),
+ ("e4", "Sekarang semuanya jelas. Di baris keempat, kita menggabungkan teks dengan umur memakai tanda tambah, padahal umur berisi angka.", None),
+ ("e5", "Cara memperbaikinya mudah. Ganti tanda tambah yang pertama dengan koma, supaya print menampilkan teks dan angka secara terpisah.", None),
+ ("e6", "Jalankan lagi. Tulisan merahnya hilang, dan hasilnya benar, yaitu tahun depan umurku enam belas.", None),
+ ("p1", "Jadi, setiap kali muncul error, ingat tiga langkah tadi: lihat jenis error di baris paling bawah, baca pesannya, lalu cari tanda panahnya.", None),
+ ("p2", "Sekarang giliran Anda. Coba hapus satu tanda petik di program Anda, jalankan, lalu baca error yang muncul dengan tiga langkah itu.", None),
+]
+if __name__ == "__main__":
+    print(len(BEATS), sum(len(b[2] or b[1]) for b in BEATS))

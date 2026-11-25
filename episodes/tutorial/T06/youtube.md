@@ -2,7 +2,7 @@
 
 ## Video utama (7:29)
 
-**Judul:** Bikin AI Penebak Kelulusan dari Data Nilai (Machine Learning Python untuk Pemula)
+**Judul:** Membuat AI Sederhana dengan Python: Penebak Kelulusan | Machine Learning untuk Pemula
 
 **Deskripsi:**
 
@@ -24,6 +24,10 @@ Bab:
 5:44 Batas model
 6:12 Overfitting
 6:45 Rangkuman dan tantangan
+
+Kode lengkap dan file kelulusan.csv (bisa diunduh): https://github.com/listyantidewi1/animasi-informatika/tree/main/bahan-tutorial/T06
+Di Google Colab, file bisa langsung dibaca tanpa diunggah:
+data = pd.read_csv("https://raw.githubusercontent.com/listyantidewi1/animasi-informatika/main/bahan-tutorial/T06/kelulusan.csv")
 
 Kode lengkap:
 import pandas as pd
@@ -142,8 +146,8 @@ Subscribe: https://www.youtube.com/@iTeachSWE
 
 Model AI sederhana dengan Python: fitur dan label, pohon keputusan, akurasi 92%, dan kenapa model tidak boleh dipakai untuk menghakimi.
 
-Tutorial lengkapnya: Bikin AI Penebak Kelulusan dari Data Nilai (Machine Learning Python untuk Pemula) (playlist Proyek Pemrograman Sederhana).
+Tutorial lengkapnya: Membuat AI Sederhana dengan Python: Penebak Kelulusan | Machine Learning untuk Pemula (playlist Proyek Pemrograman Sederhana).
 Subscribe: https://www.youtube.com/@iTeachSWE
 #shorts #machinelearning #python #AI
 
-**Video terkait:** Bikin AI Penebak Kelulusan dari Data Nilai (Machine Learning Python untuk Pemula)
+**Video terkait:** Membuat AI Sederhana dengan Python: Penebak Kelulusan | Machine Learning untuk Pemula

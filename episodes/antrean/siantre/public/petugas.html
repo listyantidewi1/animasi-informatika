@@ -1,0 +1,112 @@
+<!doctype html>
+<html lang="id">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>SiAntre · Petugas Loket</title>
+  <link rel="stylesheet" href="/gaya.css">
+  <style>
+    main { max-width: 960px; }
+    .dua { display: grid; grid-template-columns: 1.2fr 1fr; gap: 16px; }
+    .aksi { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 12px; }
+    .aksi .tombol { text-align: center; }
+    .baris { display: flex; justify-content: space-between; padding: 10px 4px; border-bottom: 1px solid var(--garis); font-weight: 600; }
+    .baris b { font-size: 20px; }
+    @media (max-width: 700px) { .dua { grid-template-columns: 1fr; } }
+  </style>
+</head>
+<body>
+  <header class="atas">
+    <div class="logo">S</div>
+    <div><h1 id="judul">Petugas Loket</h1><small id="siapa">Silakan login</small></div>
+  </header>
+  <main>
+    <form class="kartu" id="formLogin" hidden>
+      <input id="username" placeholder="Username" autocomplete="username">
+      <input id="password" type="password" placeholder="Password" autocomplete="current-password">
+      <button class="tombol">Masuk</button>
+      <p class="pesan" id="pesanLogin"></p>
+    </form>
+
+    <div class="dua" id="panel" hidden>
+      <div class="kartu">
+        <div class="label">Sedang ditangani</div>
+        <div class="nomor" id="aktif">-</div>
+        <div class="status" id="statusAktif"></div>
+        <button class="tombol" id="panggil" style="text-align:center;margin-top:14px">Panggil berikutnya</button>
+        <div class="aksi">
+          <button class="tombol garis" data-aksi="ulang" hidden>Panggil ulang</button>
+          <button class="tombol oranye" data-aksi="lewati" hidden>Lewati</button>
+          <button class="tombol hijau" data-aksi="layani" hidden>Mulai layani</button>
+          <button class="tombol abu" data-aksi="selesai" hidden>Selesai</button>
+        </div>
+        <p class="pesan" id="pesan"></p>
+      </div>
+      <div class="kartu">
+        <div class="label" style="text-align:left">Menunggu (<span id="jumlah">0</span>)</div>
+        <div id="menunggu"></div>
+      </div>
+    </div>
+  </main>
+  <script src="/umum.js"></script>
+  <script>
+    const $ = (id) => document.getElementById(id);
+    const KET = { called: 'Dipanggil, menunggu pelanggan', serving: 'Sedang dilayani', skipped: 'Dilewati' };
+    const BOLEH = { called: ['ulang', 'lewati', 'layani'], serving: ['selesai'], skipped: ['ulang'] };
+    let saya = null, tiketAktif = null;
+
+    async function mulai() {
+      saya = await api('/saya');
+      $('formLogin').hidden = !!saya;
+      $('panel').hidden = !saya;
+      if (!saya) return;
+      $('siapa').textContent = `Login sebagai ${saya.username}`;
+      $('judul').textContent = `Loket ${saya.counter_id || '-'}`;
+      segarkan();
+      dengarkan(['antrean', 'panggil'], (jenis) => { if (jenis !== 'putus') segarkan(); });
+    }
+
+    $('formLogin').onsubmit = async (e) => {
+      e.preventDefault();
+      try {
+        await api('/login', { method: 'POST', body: { username: $('username').value, password: $('password').value } });
+        mulai();
+      } catch (err) { $('pesanLogin').textContent = err.message; }
+    };
+
+    async function segarkan() {
+      const data = await api(`/loket/${saya.counter_id}/antrean`);
+      tiketAktif = data.aktif[0] || null;
+      $('aktif').textContent = tiketAktif ? tiketAktif.label : '-';
+      $('statusAktif').className = 'status ' + (tiketAktif ? tiketAktif.status : '');
+      $('statusAktif').textContent = tiketAktif ? `${tiketAktif.layanan} · ${KET[tiketAktif.status]}` : 'Belum ada';
+      // Hanya aksi yang boleh menurut diagram status. Penjaga sesungguhnya tetap server (409).
+      const boleh = tiketAktif ? BOLEH[tiketAktif.status] : [];
+      document.querySelectorAll('[data-aksi]').forEach((b) => { b.hidden = !boleh.includes(b.dataset.aksi); });
+      $('jumlah').textContent = data.menunggu.length;
+      $('menunggu').replaceChildren(...data.menunggu.map((t) => {
+        const d = el('div', 'baris');
+        d.append(el('b', '', t.label), el('span', 'redup', t.layanan));
+        return d;
+      }));
+    }
+
+    async function kirim(tombol, kerja) {
+      tombol.disabled = true; // cegah klik ganda
+      $('pesan').textContent = '';
+      try { await kerja(); await segarkan(); }
+      catch (e) { $('pesan').textContent = e.message; }
+      finally { tombol.disabled = false; }
+    }
+
+    $('panggil').onclick = (e) => kirim(e.target, () => api(`/loket/${saya.counter_id}/panggil`, { method: 'POST' }));
+    document.querySelectorAll('[data-aksi]').forEach((b) => {
+      b.onclick = () => kirim(b, () => {
+        if (!tiketAktif) throw new Error('Belum ada tiket yang ditangani');
+        return api(`/tiket-loket/${tiketAktif.id}/${b.dataset.aksi}`, { method: 'POST' });
+      });
+    });
+    mulai();
+  </script>
+</body>
+</html>
