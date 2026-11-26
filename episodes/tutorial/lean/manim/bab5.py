@@ -26,7 +26,7 @@ class Bab5(BabScene):
         c1 = VGroup(centang(0.26), T("diperiksa Lean", 28, LEAN)).arrange(RIGHT, buff=0.2).next_to(VGroup(bukti, tulis), UP, buff=0.4)
         p2 = DashedLine(tulis.get_bottom() + RIGHT * 0.8, maksud.get_top(), color=NOL, stroke_width=6)
         tq = VGroup(TB("?", 60, NOL), T("tidak diperiksa Lean", 28, NOL)).arrange(RIGHT, buff=0.25).next_to(p2, LEFT, buff=0.35)
-        self.play_at(b.at("Namun"), FadeOut(self.s6), dur=0.4)
+        self.play_at(b.at("Lean hanya memastikan") - 0.5, FadeOut(self.s6), dur=0.4)
         self.play_at(b.at("Lean hanya memastikan"), FadeIn(bukti), FadeIn(tulis), dur=0.5)
         self.play_at(b.at("bukti cocok dengan"), GrowFromCenter(p1), FadeIn(c1), dur=0.6)
         self.play_at(b.at("Lean tidak tahu"), FadeIn(maksud), Create(p2), dur=0.6)

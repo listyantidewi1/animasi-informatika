@@ -244,7 +244,7 @@ B_ID = {b["id"]: b for b in TL["beats"]}
 def seg_info(seg):
     bs = [b for b in TL["beats"] if b["seg"] == seg]; t0 = bs[0]["start"]; total = bs[-1]["start"] + bs[-1]["dur"] - t0
     akhir_ucap = bs[-1]["start"] - t0 + bs[-1]["words"][-1][2]
-    keluar = min(akhir_ucap + 2.8, total - 1.5) if seg != 5 else B_ID[AKHIR5]["start"] - t0 - 0.3
+    keluar = min(akhir_ucap + 2.8, total - 1.5) if seg != 5 else B_ID[AKHIR5]["start"] + cari(B_ID[AKHIR5], "pertanyaan pertama") - t0 - 0.7
     return bs, t0, total, keluar
 
 def render(seg, S):
