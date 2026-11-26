@@ -43,6 +43,7 @@ Subscribe: https://www.youtube.com/@iTeachSWE
 Website daftar tugas yang tidak hilang saat browser ditutup: HTML, CSS, JavaScript, dan localStorage.
 
 Tutorial lengkapnya: Membuat To Do List dengan HTML, CSS, dan JavaScript untuk Pemula (playlist Proyek Pemrograman Sederhana).
+Kode lengkap (index.html) (bisa diunduh): https://github.com/listyantidewi1/animasi-informatika/tree/main/bahan-tutorial/T10
 Subscribe: https://www.youtube.com/@iTeachSWE
 #shorts #javascript #html #webdev
 

@@ -73,6 +73,7 @@ Subscribe: https://www.youtube.com/@iTeachSWE
 Sandi Caesar dengan Python: huruf jadi angka, modulo seperti jarum jam, dan kenapa 26 kunci mudah dibobol.
 
 Tutorial lengkapnya: Sandi Caesar dengan Python: Bikin Sandi Rahasia dan Cara Membobolnya (playlist Proyek Pemrograman Sederhana).
+Kode lengkap (bisa diunduh): https://github.com/listyantidewi1/animasi-informatika/tree/main/bahan-tutorial/T08
 Subscribe: https://www.youtube.com/@iTeachSWE
 #shorts #python #kriptografi #belajarcoding
 

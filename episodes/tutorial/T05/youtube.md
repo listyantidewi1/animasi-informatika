@@ -31,6 +31,8 @@ Langkah singkat:
 5. Di Preview, ganti Input menjadi File, lalu unggah gambar baru (data uji).
 6. Tambahkan kelas Bukan keduanya, isi dengan gambar benda lain, lalu latih ulang.
 
+Gambar contoh kucing, anjing, benda lain, dan gambar uji (satu file zip, bisa diunduh): https://github.com/listyantidewi1/animasi-informatika/tree/main/bahan-tutorial/T05
+
 Sebelumnya: Bikin Website Profil Diri dalam 10 Menit. Berikutnya: Bikin AI Penebak Kelulusan dari Data Nilai.
 Playlist: Proyek Pemrograman Sederhana. Narasi: Cahaya (suara sintetis ElevenLabs). Rekaman layar sungguhan; animasi penjelasan dibuat dengan kode oleh I Teach Software Engineering. Naskah disusun dengan bantuan AI (Claude buatan Anthropic) dan disunting manusia.
 
@@ -51,6 +53,7 @@ Subscribe: https://www.youtube.com/@iTeachSWE
 Melatih AI pembeda kucing dan anjing tanpa coding: contoh, training, tingkat keyakinan, dan bias data.
 
 Tutorial lengkapnya: Ajari Komputer Membedakan Kucing dan Anjing (Machine Learning Tanpa Coding) (playlist Proyek Pemrograman Sederhana).
+Gambar contoh untuk latihan (bisa diunduh): https://github.com/listyantidewi1/animasi-informatika/tree/main/bahan-tutorial/T05
 Subscribe: https://www.youtube.com/@iTeachSWE
 #shorts #machinelearning #AI #teachablemachine
 

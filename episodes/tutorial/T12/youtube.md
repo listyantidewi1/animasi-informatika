@@ -94,6 +94,7 @@ Subscribe: https://www.youtube.com/@iTeachSWE
 AI pembaca angka tulisan tangan dengan Python: gambar adalah angka, tetangga terdekat, dan kenapa AI bisa salah.
 
 Tutorial lengkapnya: Membuat AI Pembaca Angka Tulisan Tangan dengan Python | Machine Learning untuk Pemula (playlist Proyek Pemrograman Sederhana).
+Kode lengkap (bisa diunduh): https://github.com/listyantidewi1/animasi-informatika/tree/main/bahan-tutorial/T12
 Subscribe: https://www.youtube.com/@iTeachSWE
 #shorts #AI #machinelearning #python
 

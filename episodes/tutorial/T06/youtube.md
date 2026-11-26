@@ -147,6 +147,7 @@ Subscribe: https://www.youtube.com/@iTeachSWE
 Model AI sederhana dengan Python: fitur dan label, pohon keputusan, akurasi 92%, dan kenapa model tidak boleh dipakai untuk menghakimi.
 
 Tutorial lengkapnya: Membuat AI Sederhana dengan Python: Penebak Kelulusan | Machine Learning untuk Pemula (playlist Proyek Pemrograman Sederhana).
+Kode lengkap dan file kelulusan.csv (bisa diunduh): https://github.com/listyantidewi1/animasi-informatika/tree/main/bahan-tutorial/T06
 Subscribe: https://www.youtube.com/@iTeachSWE
 #shorts #machinelearning #python #AI
 

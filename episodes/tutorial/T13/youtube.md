@@ -42,6 +42,7 @@ Subscribe: https://www.youtube.com/@iTeachSWE
 Chatbot sekolah buatan sendiri dengan Python: kata kunci, potongan huruf, skor kemiripan, dan ambang batas.
 
 Tutorial lengkapnya: Cara Membuat Chatbot AI dengan Python (Gratis, Tanpa Internet) (playlist Proyek Pemrograman Sederhana).
+Kode lengkap (bisa diunduh): https://github.com/listyantidewi1/animasi-informatika/tree/main/bahan-tutorial/T13
 Subscribe: https://www.youtube.com/@iTeachSWE
 #shorts #chatbot #AI #python
 

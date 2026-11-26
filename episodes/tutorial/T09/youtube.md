@@ -45,6 +45,7 @@ Subscribe: https://www.youtube.com/@iTeachSWE
 Kipas yang menyala sendiri saat panas: proyek IoT pertamamu dengan ESP32 di simulator Wokwi, tanpa membeli komponen.
 
 Tutorial lengkapnya: Proyek IoT Sederhana dengan ESP32 di Wokwi: Kipas Otomatis Pengukur Suhu (playlist Proyek Pemrograman Sederhana).
+Kode lengkap (sketch.ino) dan diagram.json (bisa diunduh): https://github.com/listyantidewi1/animasi-informatika/tree/main/bahan-tutorial/T09
 Subscribe: https://www.youtube.com/@iTeachSWE
 #shorts #iot #esp32 #belajarcoding
 
