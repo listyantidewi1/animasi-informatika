@@ -45,6 +45,7 @@ Subscribe: https://www.youtube.com/@iTeachSWE
 Website profil sendiri dari nol: HTML untuk menyusun isi, CSS untuk warna, jarak, dan bentuk kartu.
 
 Tutorial lengkapnya: Membuat Website Profil Pribadi dengan HTML dan CSS untuk Pemula (playlist Proyek Pemrograman Sederhana).
+Kode lengkap (index.html) (bisa diunduh): https://github.com/listyantidewi1/animasi-informatika/tree/main/bahan-tutorial/T04
 Subscribe: https://www.youtube.com/@iTeachSWE
 #shorts #html #css #belajarcoding
 
