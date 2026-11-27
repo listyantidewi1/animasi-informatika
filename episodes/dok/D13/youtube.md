@@ -1,4 +1,4 @@
-# YouTube: D13 Video GTA 6 di PC Ini Mengaku 4K 120 FPS. Bisakah Kamu Menemukan Kejanggalannya?
+# YouTube: D13 GTA 6 di PC Sudah 4K 120 FPS? Mari Periksa Videonya dan Temukan Lima Kejanggalannya
 
 ## Pengaturan unggah (wajib)
 - Penonton: **Tidak, video ini tidak dibuat untuk anak-anak** (penonton umum/keluarga).
@@ -9,14 +9,14 @@
 - Thumbnail: `thumbnail.jpg` (1280×720).
 
 ## Judul
-Video GTA 6 di PC Ini Mengaku 4K 120 FPS. Bisakah Kamu Menemukan Kejanggalannya?
+GTA 6 di PC Sudah 4K 120 FPS? Mari Periksa Videonya dan Temukan Lima Kejanggalannya
 
 ## Alternatif judul untuk A/B testing (Test & compare di YouTube Studio)
-- A (utama): Video GTA 6 di PC Ini Mengaku 4K 120 FPS. Bisakah Kamu Menemukan Kejanggalannya?
-- B: GTA 6 Sudah Jalan di PC dengan 4K 120 FPS? Mari Kita Periksa Lima Petunjuk di Videonya
-- C: Benarkah GTA 6 Sudah Bisa Dimainkan di PC dengan 120 FPS? Kita Bedah Video yang Viral Ini
+- A (utama): GTA 6 di PC Sudah 4K 120 FPS? Mari Periksa Videonya dan Temukan Lima Kejanggalannya
+- B: Port PC GTA 6 Sudah Bisa Dimainkan 120 FPS? Bisakah Kamu Menemukan Kejanggalan di Video Ini?
+- C: Video GTA 6 di PC Ini Mengaku 4K 120 FPS. Bisakah Kamu Menemukan Kejanggalannya?
 
-A mengajak penonton ikut bermain detektif. B menaruh frasa pencarian "GTA 6 PC 4K 120 FPS" paling depan. C memakai pertanyaan yang biasa diketik penonton Indonesia ("GTA 6 sudah bisa dimainkan di PC"). Ketiganya kalimat lengkap dan tidak membocorkan kesimpulan.
+Dasar riset (saran pencarian dan hasil pencarian YouTube Indonesia, 27 Nov 2026 siang): autocomplete memunculkan "gta 6 di pc", "main gta 6 di pc", "gta 6 bisa di pc", "gta 6 pc port", "gta 6 pc gameplay", "gta 6 pc 30fps", dan "gta 6 sudah bisa di download". Frasa "gta 6 pc 4k" dan "gta 6 120" tidak muncul di autocomplete, tetapi pencarian "gta 6 pc 120 fps" penuh video yang mengaku 120 FPS (ratusan ribu tayangan, sebagian berjudul bahasa Indonesia seperti "PORT PC GTA 6 Sekarang Sudah ..."). Belum ada video yang memeriksa klaim itu. A menaruh "GTA 6 di PC" di depan (frasa yang paling sering diketik) dan menjanjikan pemeriksaan. B menumpang frasa "Port PC GTA 6" dan "sudah bisa dimainkan" yang dipakai video pesaing. C adalah judul awal dari naskah. Ketiganya kalimat lengkap, frasa kuncinya ada di 60 karakter pertama, dan tidak membocorkan kesimpulan. Catatan: kartu penutup Short masih menampilkan judul C; bisa dirender ulang tanpa kredit setelah judul utama dipilih.
 
 ## Deskripsi
 Sebuah video viral mengaku bahwa GTA 6 sudah berjalan di PC dengan resolusi 4K dan 120 FPS, dan katanya semua perbaikannya dikerjakan oleh AI. Dalam sehari, video itu ditonton ratusan ribu kali. Di video ini, kamu yang menjadi detektifnya: kita memeriksa berkas videonya sendiri, catatan angka di pojok layarnya, dan kalender kejadiannya, lalu mencari lima petunjuk. Di Bonus Stage, kita juga memeriksa kabar lain yang ramai, yaitu GTA 6 yang katanya berjalan 3 sampai 5 FPS lewat emulator Xbox.

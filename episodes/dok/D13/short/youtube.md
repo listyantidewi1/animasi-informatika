@@ -2,7 +2,7 @@
 
 **Judul** (≤100 karakter):
 
-Video GTA 6 di PC Ini Mengaku 120 FPS. Bisakah Kamu Menemukan Kejanggalannya? #shorts
+GTA 6 di PC Mengaku 120 FPS? Coba Temukan Kejanggalan di Video Ini #shorts
 
 **Deskripsi:**
 
@@ -14,13 +14,13 @@ Naskah disusun dengan bantuan AI (termasuk Claude buatan Anthropic), lalu diperi
 - Notebookcheck https://www.notebookcheck.net/GTA-6-PC-ports-reach-gameplay-despite-Take-Two-s-GitHub-DMCA.1459752.0.html
 - XDA https://www.xda-developers.com/that-viral-gta-6-pc-port-video-hoax-made-from-recycled-gta-5-footage/
 
-Dokumenter lengkap: Video GTA 6 di PC Ini Mengaku 4K 120 FPS. Bisakah Kamu Menemukan Kejanggalannya? (lihat video terkait di atas judul).
+Dokumenter lengkap: GTA 6 di PC Sudah 4K 120 FPS? Mari Periksa Videonya dan Temukan Lima Kejanggalannya (lihat video terkait di atas judul).
 Subscribe: https://www.youtube.com/@iTeachSWE
 Belajar informatika gratis: https://belajar-informatika.vercel.app/
 
 #shorts #GTA6 #GTA6PC #CekFakta #Pemrograman
 ```
 
-**Video terkait** (fitur "Related video" di YouTube Studio): Video GTA 6 di PC Ini Mengaku 4K 120 FPS. Bisakah Kamu Menemukan Kejanggalannya?
+**Video terkait** (fitur "Related video" di YouTube Studio): GTA 6 di PC Sudah 4K 120 FPS? Mari Periksa Videonya dan Temukan Lima Kejanggalannya
 
 **Berkas:** `video/Short_*_suara.mp4` (narasi; hanya versi bersuara).
