@@ -46,6 +46,7 @@ Subscribe: https://www.youtube.com/@iTeachSWE
 Game ular dari nol dengan JavaScript: papan koordinat, array, game loop, dan cara ular tumbuh.
 
 Tutorial lengkapnya: Membuat Game Snake dengan JavaScript, HTML, dan CSS untuk Pemula (playlist Proyek Pemrograman Sederhana).
+Kode lengkap (index.html) (bisa diunduh): https://github.com/listyantidewi1/animasi-informatika/tree/main/bahan-tutorial/T07
 Subscribe: https://www.youtube.com/@iTeachSWE
 #shorts #javascript #bikingame #belajarcoding
 

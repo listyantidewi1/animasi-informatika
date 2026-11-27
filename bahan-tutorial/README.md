@@ -10,7 +10,7 @@ Cara mengunduh satu file: klik nama file, lalu klik tombol **Download raw file**
 | [T02](T02) Kuis otomatis (Python) | `kuis.py` |
 | [T03](T03) Nilai rapor otomatis + grafik (pandas) | `nilai_rapor.py`, `nilai.csv` |
 | [T04](T04) Website profil diri (HTML, CSS) | `index.html` |
-| T05 Kucing vs anjing (Teachable Machine) | tidak ada kode, cukup browser |
+| [T05](T05) Kucing vs anjing (Teachable Machine) | `gambar_T05.zip` (gambar latih Kucing, Anjing, Bukan, dan gambar uji); tanpa kode, cukup browser |
 | [T06](T06) AI penebak kelulusan (scikit-learn) | `penebak_kelulusan.py`, `kelulusan.csv` (60 baris data fiktif) |
 | [T07](T07) Game ular (JavaScript) | `index.html` |
 | [T08](T08) Sandi Caesar (Python) | `sandi_caesar.py` |
