@@ -28,3 +28,5 @@ data = pd.read_csv("https://raw.githubusercontent.com/listyantidewi1/animasi-inf
 ```
 
 Semua data di folder ini fiktif (nama dan nilai karangan).
+
+Di luar playlist itu: folder [lean](lean) berisi `pertama.lean`, kode yang diketik di video "Apa Itu Lean 4?" (bisa ditempel langsung ke https://live.lean-lang.org).
