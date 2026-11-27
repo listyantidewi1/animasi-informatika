@@ -1,0 +1,54 @@
+/* D13 — kartu bab gaya game (LEVEL / PETUNJUK / JAWABAN / BONUS STAGE / MISI SELESAI) lewat K.dok.cardFn,
+   label HUD kiri atas, dan pelacak lima petunjuk kanan atas (bab Petunjuk 1 sampai Jawaban). Meniru kartu D10. */
+(function (g) {
+  const K = g.Kiko, D = K.dok, U = K.d08, N = U.N, Z = K.d13;
+  const { clamp, lerp, eio, eout } = D, { txt, RR } = U, W = 1920;
+  const KARTU = {
+    1: { jenis: "level", besar: "LEVEL 1", judul: "Apa yang Sedang Terjadi?", baris: "Misi: susun urutan kejadiannya.", col: N.cyan },
+    2: { jenis: "level", besar: "LEVEL 2", judul: "Apa Itu FPS?", baris: "Misi: siapkan alat detektif pertama.", col: N.cyan },
+    3: { jenis: "clue", besar: "PETUNJUK 1", judul: "Videonya Sendiri", baris: "Periksa berkas videonya.", col: N.gold },
+    4: { jenis: "clue", besar: "PETUNJUK 2", judul: "Nama Penulis di Tengah Log", baris: "Baca catatan di pojok layar.", col: N.gold },
+    5: { jenis: "clue", besar: "PETUNJUK 3", judul: "Log yang Berulang seperti Lagu", baris: "Perhatikan urutan barisnya.", col: N.gold },
+    6: { jenis: "clue", besar: "PETUNJUK 4", judul: "Dua Angka yang Tidak Akur", baris: "Bandingkan dua angka shader.", col: N.gold },
+    7: { jenis: "clue", besar: "PETUNJUK 5", judul: "Lompatan yang Terlalu Jauh", baris: "Buka kalendernya.", col: N.gold },
+    8: { jenis: "jawab", besar: "JAWABAN", judul: "Kumpulkan Kelima Petunjuk", baris: "Saatnya menyimpulkan.", col: N.green },
+    9: { jenis: "bonus", besar: "BONUS STAGE", judul: "Kabar 3 sampai 5 FPS", baris: "Satu kabar lain yang juga ramai.", col: N.pink },
+    10: { jenis: "level", besar: "MISI SELESAI", judul: "Lima Pertanyaan Detektif", baris: "Bawa pulang cara memeriksanya.", col: N.green }
+  };
+  const beats = () => g.__beats || [];
+  function cardStart(seg) { const bs = beats(); const i = bs.findIndex(x => x.seg === seg); if (i <= 0) return 0; const pb = bs[i - 1]; return pb.start + D.speechEnd(pb) + (pb.cardDelay != null ? pb.cardDelay : 0.3); }
+  function glitch(ctx, draw, u) { if (u >= 1) { draw(ctx); return; }
+    const c = document.createElement("canvas"); c.width = W; c.height = 420; const o = c.getContext("2d"); o.translate(0, -330); draw(o);
+    const r = U.rng(Math.floor(u * 12) + 3); for (let y = 0; y < 420; y += 30) { const dx = (r() - 0.5) * 180 * (1 - u); ctx.drawImage(c, 0, y, W, 30, dx, 330 + y, W, 30); } }
+  D.cardFn = function (ctx, seg, title, a, t) {
+    const k = KARTU[seg]; if (!k || a <= 0) return; const ct = t - cardStart(seg);
+    ctx.save(); ctx.globalAlpha = a; K.kota3d.draw(ctx, t, { dim: 0.5, z: t * 7 });
+    const gr = ctx.createLinearGradient(0, 300, 0, 800); gr.addColorStop(0, "rgba(8,3,22,0)"); gr.addColorStop(0.2, "rgba(8,3,22,0.8)"); gr.addColorStop(0.8, "rgba(8,3,22,0.8)"); gr.addColorStop(1, "rgba(8,3,22,0)");
+    ctx.fillStyle = gr; ctx.fillRect(0, 280, W, 560);
+    glitch(ctx, c => U.neon(c, k.besar, W / 2, 470, 150, k.col, { align: "center", fit: 1700 }), clamp(ct / 0.35));
+    const s2 = clamp((ct - 0.25) / 0.4);
+    if (s2 > 0) { ctx.save(); ctx.globalAlpha *= s2; ctx.translate(0, (1 - eout(s2)) * 30);
+      txt(ctx, k.judul, W / 2, 606, 76, { align: "center", weight: 900, color: N.ink, fit: 1640 });
+      txt(ctx, k.baris, W / 2, 690, 46, { align: "center", weight: 700, color: N.ink2, fit: 1600 }); ctx.restore(); }
+    const v = clamp((ct - 0.4) / 2.6);
+    if (k.jenis === "level" || k.jenis === "jawab") { const x = 560, y = 810, w = 800; txt(ctx, k.jenis === "jawab" ? "MENYUSUN JAWABAN" : "MEMUAT LEVEL", x, y - 16, 40, { weight: 800, color: N.ink2 });
+      ctx.save(); ctx.fillStyle = "rgba(10,4,26,0.85)"; RR(ctx, x, y, w, 34, 17); ctx.fill(); ctx.strokeStyle = D.hexA(k.col, 0.8); ctx.lineWidth = 3; ctx.stroke();
+      ctx.shadowColor = k.col; ctx.shadowBlur = 14; ctx.fillStyle = k.col; RR(ctx, x + 5, y + 5, (w - 10) * eio(v), 24, 12); ctx.fill(); ctx.restore();
+      txt(ctx, Math.round(eio(v) * 100) + "%", x + w + 24, y + 31, 40, { weight: 900, color: k.col }); }
+    if (k.jenis === "clue") { const n = seg - 3; for (let i = 0; i < 5; i++) { const on = i === n ? clamp(v * 3) : 0; ctx.save(); ctx.globalAlpha *= i === n ? 1 : 0.6;
+      Z.slot(ctx, 640 + i * 160, 820, lerp(90, 110, on), i + 1, i < n ? 2 : i === n ? 1 : 0, t); ctx.restore(); } }
+    if (k.jenis === "bonus") { for (let i = 0; i < 5; i++) { const on = clamp(v * 5 - i), x = 680 + i * 140, y = 836, s = 34 * (0.6 + 0.4 * eout(on)); ctx.save(); ctx.translate(x, y); ctx.rotate(t * 0.6 + i);
+      ctx.fillStyle = D.hexA(k.col, 0.25 + 0.75 * on); ctx.shadowColor = k.col; ctx.shadowBlur = 22 * on; ctx.beginPath(); for (let j = 0; j < 10; j++) { const r = j % 2 ? s * 0.45 : s, an = j * Math.PI / 5 - Math.PI / 2; j ? ctx.lineTo(Math.cos(an) * r, Math.sin(an) * r) : ctx.moveTo(Math.cos(an) * r, Math.sin(an) * r); } ctx.closePath(); ctx.fill(); ctx.restore(); } }
+    ctx.restore();
+  };
+  // HUD kiri atas + pelacak petunjuk kanan atas
+  function hud(ctx, b, l, t) { const k = KARTU[b.seg]; if (!k || b.id === "b10_99") return; const bs = beats(), i = bs.findIndex(x => x.id === b.id), pv = bs[i - 1]; let a = 1; if (i < 0) return;
+    if (pv && pv.seg !== b.seg) a = clamp((l - (b.cardOut || 0.9) - 0.2) / 0.4); if (a <= 0) return; ctx.save(); ctx.globalAlpha *= a * 0.92;
+    ctx.font = `48px Bungee, ${K.FONT}`; const w = ctx.measureText(k.besar).width * 0.86 + 60;
+    ctx.fillStyle = "rgba(10,4,26,0.72)"; RR(ctx, 96, 28, w, 66, 20); ctx.fill(); U.neon(ctx, k.besar, 120, 78, 40, k.col, { blur: 10 }); ctx.restore();
+    if (b.seg >= 3 && b.seg <= 8) { const nx = bs[i + 1], akhir = !nx || nx.seg !== b.seg; let n = b.seg - 3, kk = b.seg - 2;
+      if (b.seg === 8) { n = 5; kk = 0; } else if (akhir && l > D.speechEnd(b) - 0.6) { n = b.seg - 2; kk = 0; }
+      Z.pelacak(ctx, n, kk, t, { a }); } }
+  for (let seg = 0; seg <= 10; seg++) { const f = K.SCENES["d13_b" + seg]; if (!f) continue;
+    K.SCENES["d13_b" + seg] = function (ctx, b, l, t, TL) { f(ctx, b, l, t, TL); D.post(c => hud(c, b, l, t)); }; }
+})(typeof window !== "undefined" ? window : globalThis);
