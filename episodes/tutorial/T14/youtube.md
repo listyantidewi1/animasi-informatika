@@ -41,6 +41,7 @@ Subscribe: https://www.youtube.com/@iTeachSWE
 Olah nilai satu kelas dari Excel dengan Python: rata-rata, peringkat yang adil, predikat, lalu simpan ke Excel.
 
 Tutorial lengkapnya: Olah Data Nilai Otomatis dengan Python dan Excel | Project Python untuk Pemula (playlist Proyek Pemrograman Sederhana).
+Kode lengkap dan file nilai_kelas.xlsx (bisa diunduh): https://github.com/listyantidewi1/animasi-informatika/tree/main/bahan-tutorial/T14
 Subscribe: https://www.youtube.com/@iTeachSWE
 #shorts #python #excel #pandas
 

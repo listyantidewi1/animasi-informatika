@@ -47,6 +47,7 @@ Subscribe: https://www.youtube.com/@iTeachSWE
 Rata-rata nilai satu kelas, peringkat, daftar remedial, dan grafiknya, semua dalam beberapa baris Python dengan pandas dan matplotlib.
 
 Tutorial lengkapnya: Hitung Nilai Rapor Otomatis dengan Python, Lengkap dengan Grafik | Project Python untuk Pemula (playlist Proyek Pemrograman Sederhana).
+Kode lengkap dan file nilai.csv (bisa diunduh): https://github.com/listyantidewi1/animasi-informatika/tree/main/bahan-tutorial/T03
 Subscribe: https://www.youtube.com/@iTeachSWE
 #shorts #python #pandas #belajarpython
 

@@ -109,6 +109,7 @@ Subscribe: https://www.youtube.com/@iTeachSWE
 AI penyaring spam dengan Python: kata menjadi angka, Naive Bayes, dan kenapa AI bergantung pada contoh.
 
 Tutorial lengkapnya: Membuat AI Penyaring Pesan Spam dengan Python | Machine Learning untuk Pemula (playlist Proyek Pemrograman Sederhana).
+Kode lengkap (bisa diunduh): https://github.com/listyantidewi1/animasi-informatika/tree/main/bahan-tutorial/T11
 Subscribe: https://www.youtube.com/@iTeachSWE
 #shorts #AI #machinelearning #python
 

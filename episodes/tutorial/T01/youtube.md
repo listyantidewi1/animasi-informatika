@@ -44,6 +44,7 @@ Subscribe: https://www.youtube.com/@iTeachSWE
 Bikin game tebak angka dengan Python cuma dengan belasan baris kode. Rahasianya tiga ide: variabel, perulangan, dan percabangan. Plus trik menebak di tengah: angka 1 sampai 100 selalu tertebak paling banyak 7 kali.
 
 Tutorial lengkapnya: Cara Membuat Game Tebak Angka di Python | Project Python untuk Pemula (playlist Proyek Pemrograman Sederhana).
+Kode lengkap (bisa diunduh): https://github.com/listyantidewi1/animasi-informatika/tree/main/bahan-tutorial/T01
 Subscribe: https://www.youtube.com/@iTeachSWE
 #shorts #python #belajarpython #coding
 

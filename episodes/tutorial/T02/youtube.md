@@ -62,6 +62,7 @@ Subscribe: https://www.youtube.com/@iTeachSWE
 Kuis yang langsung menilai dirinya sendiri, dibuat dengan Python. Kuncinya: list, perulangan for, merapikan teks dengan strip dan lower, dan rumus nilai.
 
 Tutorial lengkapnya: Bikin Kuis Otomatis dengan Python | Project Python untuk Pemula (playlist Proyek Pemrograman Sederhana).
+Kode lengkap (bisa diunduh): https://github.com/listyantidewi1/animasi-informatika/tree/main/bahan-tutorial/T02
 Subscribe: https://www.youtube.com/@iTeachSWE
 #shorts #python #belajarpython #coding
 
