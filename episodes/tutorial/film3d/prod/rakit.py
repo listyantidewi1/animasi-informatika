@@ -14,7 +14,7 @@ FB = "/usr/share/fonts/opentype/inter/Inter-Bold.otf"; FS = "/usr/share/fonts/op
 VID = "iWydkXKoiVtvdn4vLKp9"; MODEL = "eleven_v4_turbo"
 CROP = {"full": (0, 0, 2560, 1440), "termU": (1205, 40, 1160, 652), "termK": (1205, 30, 1040, 585), "termM": (1205, 330, 1160, 652), "termD": (1205, 750, 1160, 652),
         "edit": (400, 40, 1440, 810), "dt": (1040, 140, 1520, 855),
-        "nMenu": (0, 0, 1600, 900), "nDialog": (640, 0, 1280, 720), "nSide": (0, 0, 1280, 720), "nToolbar": (0, 0, 1680, 945)}
+        "nMenu": (0, 0, 1600, 900), "nDialog": (640, 0, 1280, 720), "nSide": (0, 0, 1280, 720), "nToolbar": (0, 0, 1680, 945), "film": (0, 0, 1920, 1080)}
 def sh(*a): subprocess.run(a, check=True)
 def dur(f): return float(subprocess.check_output(["ffprobe", "-v", "error", "-show_entries", "format=duration", "-of", "csv=p=0", f]))
 def bab(kode): return next(b for b in RC.BAB if b["kode"] == kode)
@@ -78,6 +78,11 @@ def pil_label(teks, out):
     im = Image.new("RGBA", (w + 16, h + 16), (0, 0, 0, 0)); d = ImageDraw.Draw(im)
     d.rounded_rectangle([8, 8, w + 8, h + 8], 22, fill=(20, 24, 38, 235)); d.rounded_rectangle([8, 8, 22, h + 8], 7, fill=(255, 176, 32, 255))
     d.text((48, 8 + h / 2), teks, font=f, fill=(255, 255, 255, 255), anchor="lm"); im.save(out)
+def pil_besar(teks, out):
+    f = ImageFont.truetype(FB, 64); w = int(f.getlength(teks)) + 120; h = 130
+    im = Image.new("RGBA", (w, h), (0, 0, 0, 0)); d = ImageDraw.Draw(im)
+    d.rounded_rectangle([0, 0, w - 1, h - 1], 30, fill=(12, 16, 28, 215)); d.rounded_rectangle([0, 0, 16, h - 1], 8, fill=(255, 176, 32, 255))
+    d.text((w / 2 + 8, h / 2), teks, font=f, fill=(255, 255, 255, 255), anchor="mm"); im.save(out)
 def bungkus(d, teks, f, maxw):
     baris, cur = [], ""
     for w in teks.split():
@@ -158,7 +163,7 @@ def popup_spans(src, a, b, fps=5):
 
 def bersih(src, a, b):
     """potongan [a,b] tanpa popup: daftar (s,e) absolut, potongan < 0.3 s dibuang"""
-    if src.startswith("H") or b - a > 120: return [(a, b)]  # rekaman panjang (AI bekerja): tanpa deteksi popup, hemat memori
+    if src.startswith(("H", "film")) or b - a > 120: return [(a, b)]  # rekaman panjang (AI bekerja): tanpa deteksi popup, hemat memori
     keep, cur = [], a
     for s0, e0 in popup_spans(src, a, b):
         if s0 > cur: keep.append((cur, min(s0, b)))
@@ -172,6 +177,7 @@ PITA = 112
 def autocrop(p):
     """Kotak potong yang memuat SEMUA teks di daerah panel (union beberapa frame), lalu dipas ke 1920x1080 dengan bingkai.
     Tidak pernah memotong teks di dalam panel dan tidak mengambil sebagian panel tetangga."""
+    if p["crop"] == "film": return None  # potongan film: utuh, tanpa deteksi panel
     key = (p["src"], p["_a"], p["_b"], p["crop"], p.get("lab"))
     if key in _AC: return _AC[key]
     src = f"{RAW}/{p['src']}.mkv"; a, b = p["_a"], p["_b"]; c = p["crop"]
@@ -380,6 +386,9 @@ def potong(p, out, tmp):
         bg = f"{tmp}/{os.path.basename(out)}.bg.png"; x0, y0 = latar_hp(p["cap"], pw, ph, bg)
         inputs = ["-loop", "1", "-i", bg] + inputs
         base = f"[1:v]setpts=(PTS-STARTPTS)/{sp},fps={FPS},scale={pw}:{ph}:flags=lanczos,tpad=stop_mode=clone:stop_duration=60[p];[0:v][p]overlay={x0}:{y0}:shortest=0"
+    if p.get("besar"):  # tulisan besar di sepertiga bawah (kait film)
+        png = f"{tmp}/{os.path.basename(out)}.besar.png"; pil_besar(p["besar"], png); inputs += ["-i", png]
+        base += f"[vb];[vb][{inputs.count('-i') - 1}:v]overlay=(W-w)/2:H-h-90:enable='gte(t,{p.get('besar_dari', 0.6)})'"
     lab = None
     pl = p.get("lab") or ""
     if pl.startswith("AI") or pl.startswith("Gambar cek"):
@@ -388,7 +397,7 @@ def potong(p, out, tmp):
     elif sp >= 1.8: lab = f"dipercepat {sp:.0f}×"
     if lab:
         png = f"{tmp}/{os.path.basename(out)}.lab.png"; pil_label(lab, png); inputs += ["-i", png]
-        n = 2 if p["k"] == "hp" else 1
+        n = inputs.count("-i") - 1
         fc = base + f"[v0];[v0][{n}:v]overlay=W-w-36:24"
     else: fc = base
     sh("ffmpeg", "-loglevel", "error", "-y", *inputs, "-filter_complex", fc, "-t", f"{D:.3f}", "-an", "-r", str(FPS),
@@ -421,7 +430,7 @@ def _pas(parts, D, diam=False):
     rec = [p for p in parts if p["k"] != "adegan"]; flex = [p for p in parts if p["k"] == "adegan"]
     if diam:  # kelompok tanpa narasi: rekaman dipercepat supaya tiap bagian +-5 detik
         for p in rec:
-            p["_sp"] = max(p["speed"], min(max(30.0, p["_L"] / 20.0), p["_L"] / 5.0)); p["_d"] = p["_L"] / p["_sp"]
+            p["_sp"] = p["speed"] if p.get("utuh") else max(p["speed"], min(max(30.0, p["_L"] / 20.0), p["_L"] / 5.0)); p["_d"] = p["_L"] / p["_sp"]
         for p in flex: p["_d"] = p["min"]
         return sum(p["_d"] for p in parts)
     M = sum(p["min"] for p in flex)
@@ -442,7 +451,8 @@ def _pas(parts, D, diam=False):
         D = fix + sum(p["_d"] for p in flex)
     elif rec and sisa > 0:
         for p in rec:
-            p["_d"] += sisa * p["_d"] / fix; p["_sp"] = max(0.6 * p["speed"], p["_L"] / p["_d"])
+            p["_d"] += sisa * p["_d"] / fix
+            if not p.get("utuh"): p["_sp"] = max(0.6 * p["speed"], p["_L"] / p["_d"])  # utuh: kecepatan tetap, akhir dibekukan
     return D
 
 AKHIR_BAB = 3.0
@@ -501,6 +511,21 @@ def rencanakan(kode):
         g = hasil[-1]["grup"][-1]; g["parts"][-1]["_d"] += AKHIR_BAB; g["D"] += AKHIR_BAB; hasil[-1]["D"] += AKHIR_BAB
     return hasil
 
+def alas(g, pre):
+    """suara asli potongan film (p['vol']) sepanjang kelompok; bagian lain hening"""
+    fs = []
+    for j, p in enumerate(g["parts"]):
+        f = f"{pre}_{j}.wav"; fs.append(f)
+        if p.get("vol") and p["k"] == "rek":
+            sh("ffmpeg", "-loglevel", "error", "-y", "-ss", f"{p['_a']:.3f}", "-to", f"{p['_b']:.3f}", "-i", f"{RAW}/{p['src']}.mkv", "-vn",
+               "-af", f"atempo={max(0.5, min(2.0, p['_sp'])):.4f},volume={p['vol']},afade=t=in:d=0.3,apad", "-t", f"{p['_d']:.3f}", "-ar", "48000", "-ac", "2", f)
+        else:
+            sh("ffmpeg", "-loglevel", "error", "-y", "-f", "lavfi", "-i", "anullsrc=r=48000:cl=stereo", "-t", f"{p['_d']:.3f}", f)
+    with open(pre + ".txt", "w") as fh:
+        for f in fs: fh.write(f"file '{f}'\n")
+    sh("ffmpeg", "-loglevel", "error", "-y", "-f", "concat", "-safe", "0", "-i", pre + ".txt", "-c:a", "pcm_s16le", pre + ".wav")
+    return pre + ".wav"
+
 def rakit_bab(kode, cek=False):
     base = f"{ROOT}/{kode}"; tmp = f"{base}/tmp"; os.makedirs(tmp, exist_ok=True)
     R = rencanakan(kode); n = int(kode[1:])
@@ -512,7 +537,7 @@ def rakit_bab(kode, cek=False):
     if cek: return
     jobs, files = [], []
     kartu = 0.0
-    if kode != "V00":
+    if kode not in ("V00", "F00"):
         kartu = 4.0; out = f"{tmp}/kartu.mp4"; files.append(out); jobs.append({"nama": "bab", "D": kartu, "a": {"n": n}, "out": out})
     for r in R:
         for j, p in enumerate(r["parts"]):
@@ -531,9 +556,14 @@ def rakit_bab(kode, cek=False):
         for r in R:
             for k, g in enumerate(r["grup"]):
                 w = f"{tmp}/a{r['no']:02d}_{k}.wav"
+                bed = alas(g, f"{tmp}/bed{r['no']:02d}_{k}") if any(p.get("vol") for p in g["parts"]) else None
                 if r["teks"] and not g["diam"] and g["t1"] > g["t0"]:
                     sh("ffmpeg", "-loglevel", "error", "-y", "-ss", f"{g['t0']:.3f}", "-to", f"{g['t1']:.3f}", "-i", r["mp3"],
                        "-af", f"afade=t=in:d=0.02,adelay={int(g['lead']*1000)}:all=1,apad", "-t", f"{g['D']:.3f}", "-ar", "48000", "-ac", "2", w)
+                    if bed:
+                        sh("ffmpeg", "-loglevel", "error", "-y", "-i", w, "-i", bed, "-filter_complex", "[0:a][1:a]amix=inputs=2:duration=first:normalize=0",
+                           "-ar", "48000", "-ac", "2", w + ".m.wav"); os.replace(w + ".m.wav", w)
+                elif bed: shutil.copy(bed, w)
                 else:
                     sh("ffmpeg", "-loglevel", "error", "-y", "-f", "lavfi", "-i", "anullsrc=r=48000:cl=stereo", "-t", f"{g['D']:.3f}", w)
                 fh.write(f"file '{w}'\n")
@@ -551,7 +581,7 @@ def rakit_bab(kode, cek=False):
     print("SELESAI", kode, dur(f"{base}/{kode}.mp4"), flush=True)
 
 def ts(x): h = int(x // 3600); m = int(x % 3600 // 60); s = x % 60; return f"{h:02d}:{m:02d}:{int(s):02d},{int(round((s % 1) * 1000)) % 1000:03d}"
-def gabung(nama="Vibe_Coding_Patungan"):
+def gabung(nama="Vibe_Coding_Film_3D"):
     lst = f"{ROOT}/gabung.txt"; t = 0; srt = []; bab_t = []
     with open(lst, "w") as fh:
         for B in RC.BAB:

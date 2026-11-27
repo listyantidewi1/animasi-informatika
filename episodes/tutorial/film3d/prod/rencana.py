@@ -229,3 +229,137 @@ bab("F08", "Render menjadi MP4", [
  (N[68], [G("F06h_lembar.png", min=8, cap="Sebelum poles: motor di shot 2 terlalu kecil", warna="#ff6b6b"), ketik("8.2", "F08c_poles", "prompt_poles", s=3),
           kerja("F08c_poles", "prompt_poles", "poles_selesai", maks=14, lab="AI bekerja · 30 menit dipercepat"), G("F08c_poles_lembar.png", min=10, s=6, cap="Sesudah poles"), commit("F08d", "commit", "akhir")]),
 ])
+
+# ================================================================ naskah sisa (tab "Naskah sisa (27 Nov)", disalin ke naskah/C.md)
+def _narasi_c():
+    out, cur = {}, None
+    for l in open(f"{F}/naskah/C.md", encoding="utf-8").read().split("\n"):
+        if l.startswith("## "): cur = l[3:6]; out[cur] = []; continue
+        if cur and l.strip() and not l.startswith("Layar:"): out[cur].append(l.strip())
+    return out
+NC = _narasi_c()
+def FILM(a, b, versi="film_v3", **k):
+    """potongan film jadi: utuh 1920x1080, kecepatan asli; vol = suara film di bawah narasi"""
+    k.setdefault("speed", 1.0); k.setdefault("maks", k["speed"]); k.setdefault("utuh", True)
+    return R(versi, a, b, "film", **k)
+def lanjut(src, b, crop="termU", maks=40, **k):
+    """lanjutan rekaman AI bekerja (rekaman dimulai dari tanda tunggu)"""
+    k.setdefault("lab", "AI bekerja · dipercepat")
+    return R(src, "tunggu", b, crop, speed=4, maks=maks, **k)
+def bab_tambah(kode, beats): next(b for b in BAB if b["kode"] == kode)["beats"].extend(beats)
+
+# ---------------------------------------------------------------- F00 (tanpa kartu bab; dipindah ke depan)
+c = NC["F00"]
+HOOK = "Setelah menonton, kamu bisa membuat film animasi 3D pendek di Blender bersama AI, dan tahu cara memeriksa hasilnya sebelum diunggah."
+_KARTU0 = [
+     ["Butuh apa", "Laptop atau komputer: Windows, macOS, atau Linux. Kartu grafis membuat render jauh lebih cepat.", "sky"],
+     ["Biaya", "Blender gratis. Tekstur Poly Haven CC0. Claude Code: langganan, paket termurah cukup.", "teal"],
+     ["Waktu render", "RTX 3050, memori 4 GB: ±32 jam untuk 1.800 frame. Tanpa kartu grafis: turunkan kualitas.", "amber"]]
+bab("F00", "Kait dan pembuka", [
+ (c[0], [FILM(0.0, 6.6, vol=.35, besar="Film ini dibuat oleh manusia dan AI."), FILM("s2+3", "s2+12.5", vol=.35, s=1)]),
+ (c[1], [G("F05_pintu_lembar.png", min=4, cap="Ponco menggembung menutupi layar", warna="#ff6b6b"),
+         G("F06d_lembar.png", min=4, s=1, cap="Kamera terselip di dalam bahu kurir", warna="#ff6b6b", tanda=[dict(x=.375, y=.25, r=.11, k="salah", dari=.15)])]),
+ (c[2], [FILM("s3+1", "s3+12", vol=.3), A("daftar", min=14, s=1)]),
+ (c[3], [L("Masih ada kesalahan yang lolos.", label="SETELAH 32 JAM RENDER", warna="#ff6b6b", bg=f"{RAW}/film_t29.png", sub="Di bab 9 kita belajar cara menangkapnya.", min=9)]),
+ ("", [A("judul", min=6, judul="Film Animasi 3D dari Nol\nbersama Claude Code dan Blender", hook=HOOK, bg=f"{RAW}/film_t72.5.png")]),
+ (c[4], [A("judul", min=5, judul="Paket Terakhir Malam Ini", hook="Film pendek 75 detik, tanpa narasi.", bg=f"{RAW}/film_t1.5.png")]),
+ ("", [FILM(0.0, "akhir", vol=1.0, utuh=True, tahan=1.5)]),
+ (c[5], [A("kartu", min=10, serempak=True, sorot=0, h=470, judul="Sebelum mulai", kartu=_KARTU0),
+         A("kartu", min=8, s=2, serempak=True, sorot=2, h=470, judul="Sebelum mulai", kartu=_KARTU0)]),
+ (c[6], [A("kartu", min=10, serempak=True, sorot=1, h=470, judul="Sebelum mulai", kartu=_KARTU0),
+         A("teks", min=6, s=3, judul="Semua prompt dan kode", sub=REPO, warna="#60a5fa", isi=["PROMPT.md: setiap prompt di video ini, termasuk yang gagal.", "Link ada di deskripsi."])]),
+ (c[7], [A("siklus", min=16)]),
+])
+
+# ---------------------------------------------------------------- F08 lanjutan: render di laptop
+c = NC["F08"]
+PS = "PS C:\\Users\\kamu\\Documents\\paket-terakhir> "
+bab_tambah("F08", [
+ (c[0], [A("kartu", min=16, serempak=True, h=440, judul="Bake sebelum render?", kartu=[
+     ["Ponco", "Dulu memakai simulasi kain (bab 6). Sekarang ikut tulang kurir, jadi tidak perlu bake.", "amber"],
+     ["Cipratan roda", "Satu-satunya simulasi. render.py menghitungnya sekali secara otomatis, lalu menyimpannya.", "sky"]])]),
+ (c[1], [A("terminal", min=14, prompt=PS, judul="Terminal  ·  laptop dengan kartu grafis", size=28, baris=[
+     dict(cmd="foreach ($f in 300, 700, 1200, 1400) { blender -b -P render.py -- --frame $f }", out=[
+         ["[render] perangkat: OPTIX - NVIDIA GeForce RTX 3050 Laptop GPU", "#ffb020"], "[render] 1920x1080, 128 sampel, denoiser OPTIX ...",
+         "[render] shot 2 frame  300 (1/1): ...", "[render] shot 3 frame  700 (1/1): ...", "[render] shot 6 frame 1200 (1/1): ...", "[render] shot 7 frame 1400 (1/1): ..."])],
+     cap="Empat frame uji: memakai kartu grafis? Berapa lama satu frame?")]),
+ (c[2], [A("terminal", min=8, prompt=PS, judul="Terminal  ·  render seluruh film", size=28, baris=[
+     dict(cmd="blender -b -P render.py -- --shot 1 --sampel 64", out=["[render] perangkat: OPTIX - NVIDIA GeForce RTX 3050 Laptop GPU", ["System is out of GPU memory", "#ff6b6b"]])],
+     cap="Shot 1: pemandangan kota, terlalu banyak benda untuk memori 4 GB"),
+         A("terminal", min=8, s=3, prompt=PS, judul="Terminal  ·  render seluruh film", size=28, baris=[
+     dict(cmd="foreach ($s in 2, 3, 4, 5, 6, 7, 8, 1) { blender -b -P render.py -- --shot $s }", out=[["... shot 1 dirender paling akhir: berhasil", "#a3e635"]])],
+     cap="Shot 1 dipindah ke urutan terakhir")]),
+ (c[3], [A("batang", min=16, judul="Waktu render per frame (render pertama)", sub="Laptop RTX 3050, memori 4 GB", rata=65, maks=110,
+           data=[["S1", 52, "amber"], ["S2", 42, "amber"], ["S3", 55, "amber"], ["S4", 50, "amber"], ["S5", 61, "amber"], ["S6", 88, "violet"], ["S7", 94, "violet"], ["S8", 83, "violet"]],
+           legenda=[["64 sampel", "amber"], ["128 sampel", "violet"]], cap="1.800 frame × ±65 detik ≈ 32 jam"),
+         A("teks", min=7, s=3, judul="Render terhenti? Jalankan lagi.", warna="#2dd4bf", isi=["Terhenti enam kali.", "render.py melewati frame yang sudah ada, lalu meneruskan dari frame yang belum ada."])]),
+ (c[4], [A("teks", min=14, judul="Komputer lebih lambat?", isi=["Turunkan jumlah sampel: denoising merapikan sisa bintik.", "Render di malam hari, laptop dicolokkan ke listrik.", "Render satu shot dulu, periksa, baru seluruh film."])]),
+ (c[5], [A("terminal", min=6, prompt=PS, judul="Terminal", size=30, baris=[dict(cmd="python gabung.py", out=["[gabung] 1800 frame + film.wav + film.srt -> film_lebar.mp4"])]),
+         FILM("s1", "s1+7", vol=.5, s=1)]),
+ (c[6], [L("Jangan diunggah dulu.", label="SATU LANGKAH LAGI", warna="#ff6b6b", bg=f"{RAW}/film_t72.5.png", min=6)]),
+])
+
+# ---------------------------------------------------------------- F09 Cek kerjaan AI
+c = NC["F09"]
+bab("F09", "Cek kerjaan AI", [
+ (c[0], [FILM("s2+3", "s2+12", vol=.3, besar="Kelihatannya sudah benar. Benarkah?", besar_dari=.4),
+         G("F09_v1_tembok.png", min=6, s=1, cap="Kurir dan motor menembus sudut tembok kali", warna="#ff6b6b", tanda=[dict(x=.37, y=.5, r=.06, k="salah", dari=.1)]),
+         G("F09_v1_gang.png", min=6, s=3, cap="Motor menembus tanaman, anak menembus pintu", warna="#ff6b6b", tanda=[dict(x=.15, y=.74, r=.09, k="salah", dari=.1), dict(x=.79, y=.5, r=.07, k="salah", dari=.4)]),
+         G("cek-jalan-basah.png", min=3, s=4, cap="Jalan terlalu kering untuk hujan sederas itu", warna="#ff6b6b")]),
+ (c[1], [G("F09_cek_perbaikan.png", min=9, cap="Versi 2 setelah perbaikan", warna="#a3e635"),
+         A("teks", min=5, s=2, judul="Render kedua", warna="#ffb020", isi=["Gerakan berubah, jadi seluruh film dirender ulang.", "±34 jam."])]),
+ (c[2], [L("Mata bisa lelah. Skrip tidak.", label="PELAJARAN", min=8), A("teks", min=6, s=2, judul="Kesalahan satu atau dua frame", warna="#ff6b6b", isi=["Tidak terlihat saat menonton sekali.", "Terlihat saat penonton menjeda video."])]),
+ (c[3], [ketik("9.1", "F09a_periksa", "prompt_periksa"),
+         A("kartu", min=16, s=1, judul="periksa.py: empat pemeriksaan", kartu=[
+             ["Tembus", "Membaca bentuk setiap benda di film.blend, mencari benda bergerak yang masuk ke benda lain.", "coral"],
+             ["Roda", "Jarak tempuh motor dibandingkan dengan putaran rodanya.", "sky"],
+             ["Lompatan", "Setiap frame video dibandingkan dengan frame sebelumnya.", "violet"],
+             ["Lembar kontak", "Satu gambar kecil setiap setengah detik.", "teal"]])]),
+ (c[4], [R("F09a_periksa", "prompt_periksa-5", "prompt_periksa", "termD", maks=1.0, lab="Kalimat terakhir prompt 9.1", tahan=3),
+         L("Uji pemeriksanya dulu pada kesalahan yang sudah kita ketahui.", label="PEMERIKSA YANG BAIK", warna="#ffb020", s=1, min=8)]),
+ (c[5], [kerja("F09a_periksa", "prompt_periksa", "periksa_selesai", crop="termU", maks=400, lab="AI bekerja · 1 jam dipercepat", tahan=0),
+         lanjut("F09c_periksa", "periksa_selesai-2", maks=400, lab="AI bekerja · 1 jam dipercepat", tahan=0),
+         R("F09c_periksa", "periksa_selesai-1", "periksa_selesai", "termU", maks=1.0, lab="Laporan Claude: tembus kecil yang wajar", s=1),
+         A("teks", min=8, s=3, judul="Membaca laporan tetap tugas kita", warna="#2dd4bf", isi=["Jok masuk sedikit ke ponco: wajar, kurir duduk di jok.", "Tidak semua temuan adalah kesalahan."])]),
+ (c[6], [R("F09c_periksa", "periksa_selesai-1", "periksa_selesai", "termM", maks=1.0, lab="Laporan Claude: lompatan"),
+         FILM(6.2, 7.8, versi="film_v2", s=3, lab="Kecepatan normal"),
+         FILM(6.85, 7.2, versi="film_v2", speed=.1, maks=.1, lab="Diperlambat 10×"),
+         G("film_v2_f169.png", min=5, s=4, cap="Frame 169: tulisan di layar HP dobel", warna="#ff6b6b", tanda=[dict(x=.5, y=.61, r=.15, ry=1.1, k="salah", dari=.1)])]),
+ (c[7], [R("F09d_blur", 395, 405, "termM", maks=1.0, lab="Claude membuktikan penyebabnya"),
+         A("rana", min=12, s=1), A("rana", min=10, s=4, benar=True)]),
+ (c[8], [ketik("9.2", "F09d_blur", "prompt_blur"),
+         A("teks", min=10, s=1, judul="Cara meminta perbaikan", warna="#2dd4bf", isi=["Sebut nomor frame dan apa yang terlihat salah.", "Minta bukti penyebab dengan angka.", "Minta daftar frame yang harus dirender ulang.", "Jelaskan temuan mana yang bukan kesalahan."]),
+         kerja("F09d_blur", "prompt_blur", "blur_selesai", crop="termU", maks=400, lab="AI bekerja · 72 menit dipercepat", tahan=0),
+         lanjut("F09e_blur", "blur_selesai", crop="termU", maks=400, lab="AI bekerja · 72 menit dipercepat", tahan=0),
+         lanjut("F09f_blur", "blur_selesai", crop="termU", maks=400, lab="AI bekerja · 72 menit dipercepat")]),
+ (c[9], [A("teks", min=9, judul="Render ulang: hanya 24 frame", warna="#a3e635", isi=["Daftar frame dari cek/render_ulang.txt.", "PNG lama dipindahkan, render.py merender yang hilang.", "24 frame dalam 27 menit, lalu gabung.py."]),
+         ketik("9.3", "F09h_ulang", "prompt_ulang", s=1), kerja("F09h_ulang", "prompt_ulang", "ulang_selesai", crop="termU", maks=30, tahan=0),
+         G("F09_ss_hp.png", min=5, cap="Kiri: sebelum. Kanan: sesudah. Frame 169 dan 240."), G("F09_ss_label.png", min=5, cap="Kiri: sebelum. Kanan: sesudah. Frame 961 dan 1152.")]),
+ (c[10], [A("teks", min=18, judul="Daftar periksa sebelum unggah", warna="#a3e635", size=40, jarak=100, isi=[
+     "Tidak ada benda yang menembus atau tertinggal.", "Roda berputar sesuai laju motor.", "Tidak ada frame yang kabur, berkedip, atau melompat.",
+     "Suara pas dengan gambarnya.", "Teks tidak terpotong.", "Setiap aset dari luar tercatat di ASET.md beserta lisensinya."])]),
+ (c[11], [commit("F09g", "commit", "akhir"), R("F09h_ulang", "ulang_selesai-1", "ulang_selesai", "termU", maks=1.0, lab="Laporan terakhir: bersih", s=0)]),
+])
+
+# ---------------------------------------------------------------- F10 Penutup
+c = NC["F10"]
+bab("F10", "Penutup", [
+ (c[0], [A("unggah", min=16, bg=f"{RAW}/film_t1.5.png", judulVid="Paket Terakhir Malam Ini | Film Animasi Pendek",
+           desk="Film ini dibuat oleh manusia bersama AI (Claude Code dan Blender). Tekstur dan langit: Poly Haven (CC0).", cap="Thumbnail: indah, tanpa membocorkan akhir cerita"),
+         A("terminal", min=6, s=3, prompt=PS, judul="Terminal  ·  versi tegak untuk Short", size=30, baris=[dict(cmd="blender -b -P render.py -- --versi tegak"), dict(cmd="python gabung.py --versi tegak")])]),
+ (c[1], [A("kartu", min=20, judul="Lisensi", kartu=[
+     ["Blender", "Gratis. Film yang kamu render sepenuhnya milikmu, boleh dimonetisasi.", "sky"],
+     ["Poly Haven", "Tekstur dan langit malam CC0. Tetap ditulis di ASET.md dan deskripsi.", "teal"],
+     ["Buatan kode", "Benda lain dan efek suara dibuat dengan kode.", "violet"],
+     ["Suara buatan", "Ikuti aturan pemakaian layanannya.", "amber"]])]),
+ (c[2], [ketik("10.1", "F10a_ekspor", "prompt_ekspor"), kerja("F10a_ekspor", "prompt_ekspor", "ekspor_selesai", crop="termU", maks=20),
+         G("F10_glb.png", min=5, cap="motor_bebek.glb dan helm.glb: siap dipakai game di browser")]),
+ (c[3], [A("teks", min=14, judul=REPO, sub="Link di deskripsi", warna="#60a5fa", jarak=96, isi=["STORYBOARD.md, CLAUDE.md, ASET.md, PROMPT.md", "aset.py: mengunduh tekstur dan langit malam", "bangun.py: membangun film.blend dari kode", "render.py, gabung.py, periksa.py", "folder film/: kota, kurir, motor, kamera, suara"]), commit("F10b", "commit", "akhir", s=3)]),
+ (c[4], [A("siklus", min=20, judul="Cara kerja kita, sekali lagi")]),
+ (c[5], [A("kartu", min=12, judul="Giliranmu: tiga ide film pendek", serempak=True, h=420, kartu=[
+     ["Satpam kompleks", "dan kucing yang selalu lolos.", "sky"], ["Payung yang tertinggal", "di angkot.", "teal"], ["Lampu terakhir", "yang masih menyala di kantor.", "amber"]])]),
+ (c[6], [A("akhir", min=8, bg=f"{RAW}/patungan_thumb.jpg", judulVid="Vibe Coding yang Benar: Membuat Aplikasi Patungan Sampai Jadi")]),
+])
+
+# urutan: F00 di depan
+BAB.sort(key=lambda b: int(b["kode"][1:]))
