@@ -5,7 +5,7 @@
 - Konten diubah atau sintetis: **Ya** (narasi dibuat dengan AI).
 - Video memuat potongan pendek video dan tangkapan layar postingan yang beredar (diredupkan, sumber disebut di layar, akun kecil diburamkan) untuk keperluan ulasan dan cek fakta.
 - Layar akhir: 20 detik terakhir (mulai sekitar 8:52, durasi total 9:12). Tulisan keterbukaan AI ada di tengah layar, jadi taruh tombol subscribe dan video "GTA 6 Sudah Bisa Jalan di PC?" (D10) di bagian bawah layar.
-- Tautan: tempel tautan video D10 di deskripsi (baris "Video sebelumnya"), karena narasi menyebutnya.
+- Tautan video D10 (https://youtu.be/O-XdYJ9JBcU) sudah ada di deskripsi, baris "Video sebelumnya".
 - Thumbnail: `thumbnail.jpg` (1280×720).
 
 ## Judul
@@ -21,7 +21,7 @@ Dasar riset (saran pencarian dan hasil pencarian YouTube Indonesia, 27 Nov 2026 
 ## Deskripsi
 Sebuah video viral mengaku bahwa GTA 6 sudah berjalan di PC dengan resolusi 4K dan 120 FPS, dan katanya semua perbaikannya dikerjakan oleh AI. Dalam sehari, video itu ditonton ratusan ribu kali. Di video ini, kamu yang menjadi detektifnya: kita memeriksa berkas videonya sendiri, catatan angka di pojok layarnya, dan kalender kejadiannya, lalu mencari lima petunjuk. Di Bonus Stage, kita juga memeriksa kabar lain yang ramai, yaitu GTA 6 yang katanya berjalan 3 sampai 5 FPS lewat emulator Xbox.
 
-Video sebelumnya (cara modder memindahkan game Xbox ke PC tanpa kode sumber): GTA 6 Sudah Bisa Jalan di PC? (tempel tautan videonya di sini)
+Video sebelumnya (cara modder memindahkan game Xbox ke PC tanpa kode sumber): GTA 6 Sudah Bisa Jalan di PC? https://youtu.be/O-XdYJ9JBcU
 
 Bab:
 0:00 Pembuka
