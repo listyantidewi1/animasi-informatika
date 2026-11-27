@@ -68,7 +68,7 @@ GL_ARGS = ["--use-gl=angle", "--use-angle=swiftshader", "--enable-unsafe-swiftsh
 
 def browser_args(script):
     """Argumen Chromium: episode dengan adegan 3D (kunci "webgl": true di script.json) butuh WebGL lewat SwiftShader."""
-    return GL_ARGS if script.get("webgl") else []
+    return (GL_ARGS if script.get("webgl") else []) + list(script.get("browser_args", []))   # mis. gambar lokal (D13)
 
 
 def engine_js(root, script):
