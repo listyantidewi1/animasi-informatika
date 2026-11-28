@@ -66,7 +66,13 @@ Perhatikan cara kita meminta perbaikan. Kita menyebut nomor frame dan apa yang t
 
 Hanya dua puluh empat frame yang dirender ulang, dan pekerjaannya selesai dalam dua puluh tujuh menit. Setelah film digabung ulang, kita jalankan pemeriksa sekali lagi untuk memastikan kesalahannya benar-benar hilang.
 
-Sebelum mengunggah film apa pun, periksa daftar ini. Tidak ada benda yang menembus atau tertinggal. Roda berputar sesuai laju motor. Tidak ada frame yang kabur, berkedip, atau melompat. Suara pas dengan gambarnya. Teks tidak terpotong. Terakhir, setiap aset dari luar tercatat di ASET.md beserta lisensinya.
+Setelah pemeriksa bersih, saya menonton film versi ketiga sekali lagi, dan saya menemukan kesalahan yang tidak ditangkap pemeriksa. Saat pintu terbuka, anak yang membawa kue tidak melangkah. Ia hanya bergeser maju, seperti boneka yang didorong. Pemeriksa kita tidak menandainya, karena tidak ada benda yang menembus benda lain. Pemeriksa hanya menemukan kesalahan yang kita minta untuk dicari.
+
+Kita menjelaskan kepada Claude apa yang terlihat salah dan seperti apa gerakan yang benar. Claude memberi anak rangka tulang, sehingga kaki kiri dan kanan melangkah bergantian, dan sandal yang menapak tidak tergelincir di lantai. Untuk memeriksanya, Claude membuat gambar dari samping dengan kaki kiri berwarna merah dan kaki kanan berwarna biru, sehingga setiap langkah mudah dilihat.
+
+Lalu kita meminta Claude membandingkan posisi anak di versi lama dan versi baru. Hasilnya, hanya enam puluh delapan frame yang berubah, jadi hanya frame itu yang dirender ulang. Pelajarannya, skrip pemeriksa membantu kita, tetapi tidak menggantikan mata kita. Tetap tonton filmmu dengan teliti sebelum mengunggahnya.
+
+Sebelum mengunggah film apa pun, periksa daftar ini. Tidak ada benda yang menembus atau tertinggal. Roda berputar sesuai laju motor. Tidak ada frame yang kabur, berkedip, atau melompat. Gerakan tokoh terlihat alami, misalnya kaki benar-benar melangkah. Suara pas dengan gambarnya. Teks tidak terpotong. Terakhir, setiap aset dari luar tercatat di ASET.md beserta lisensinya.
 
 Sekarang film kita benar-benar siap.
 

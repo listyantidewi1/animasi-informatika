@@ -335,10 +335,16 @@ bab("F09", "Cek kerjaan AI", [
  (c[9], [A("teks", min=9, judul="Render ulang: hanya 24 frame", warna="#a3e635", isi=["Daftar frame dari cek/render_ulang.txt.", "PNG lama dipindahkan, render.py merender yang hilang.", "24 frame dalam 27 menit, lalu gabung.py."]),
          ketik("9.3", "F09h_ulang", "prompt_ulang", s=1), kerja("F09h_ulang", "prompt_ulang", "ulang_selesai", crop="termU", maks=30, tahan=0),
          G("F09_ss_hp.png", min=5, cap="Kiri: sebelum. Kanan: sesudah. Frame 169 dan 240."), G("F09_ss_label.png", min=5, cap="Kiri: sebelum. Kanan: sesudah. Frame 961 dan 1152.")]),
- (c[10], [A("teks", min=18, judul="Daftar periksa sebelum unggah", warna="#a3e635", size=40, jarak=100, isi=[
+ (c[10], [FILM(56.0, 58.5, vol=.3, besar="Lolos dari pemeriksa.", besar_dari=.3), FILM(56.0, 58.5, speed=.5, maks=.5, lab="Diperlambat 2×: kaki tidak melangkah"),
+          L("Pemeriksa hanya menemukan kesalahan yang kita minta untuk dicari.", label="TEMUAN KEDUA", warna="#ff6b6b", s=3, min=7)]),
+ (c[11], [ketik("9.4", "F09i_anak", "prompt_anak"), kerja("F09i_anak", "prompt_anak", "anak_selesai", crop="termU", maks=400, lab="AI bekerja · 27 menit dipercepat", tahan=0, s=1),
+          G("F09_langkah_maju.png", min=8, s=2, cap="Kaki kiri merah, kaki kanan biru: melangkah bergantian", warna="#a3e635")]),
+ (c[12], [ketik("9.5", "F09l_anak", "prompt_cepat"), R("F09l_anak", "cepat_selesai-1", "cepat_selesai", "termU", maks=1.0, lab="Laporan Claude: 68 frame berubah", s=0),
+          L("Skrip pemeriksa membantu, tetapi tidak menggantikan mata kita.", label="PELAJARAN", s=2, min=7), commit("F09m", "commit", "akhir")]),
+ (c[13], [A("teks", min=18, judul="Daftar periksa sebelum unggah", warna="#a3e635", size=40, jarak=100, isi=[
      "Tidak ada benda yang menembus atau tertinggal.", "Roda berputar sesuai laju motor.", "Tidak ada frame yang kabur, berkedip, atau melompat.",
-     "Suara pas dengan gambarnya.", "Teks tidak terpotong.", "Setiap aset dari luar tercatat di ASET.md beserta lisensinya."])]),
- (c[11], [commit("F09g", "commit", "akhir"), R("F09h_ulang", "ulang_selesai-1", "ulang_selesai", "termU", maks=1.0, lab="Laporan terakhir: bersih", s=0)]),
+     "Gerakan tokoh terlihat alami: kaki benar-benar melangkah.", "Suara pas dengan gambarnya.", "Teks tidak terpotong.", "Setiap aset dari luar tercatat di ASET.md beserta lisensinya."])]),
+ (c[14], [commit("F09g", "commit", "akhir"), R("F09h_ulang", "ulang_selesai-1", "ulang_selesai", "termU", maks=1.0, lab="Laporan terakhir: bersih", s=0)]),
 ])
 
 # ---------------------------------------------------------------- F10 Penutup

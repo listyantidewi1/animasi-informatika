@@ -45,6 +45,10 @@ DAFTAR = [
     ("8.1", "Skrip render akhir dan penggabung video", "p_render.txt"),
     ("8.2", "Poles sebelum render", "p_poles.txt"),
     ("9.1", "Memeriksa hasil render", "p_periksa.txt"),
+    ("9.2", "Frame kabur di pergantian shot", "p_perbaiki_blur.txt"),
+    ("9.3", "Memeriksa ulang setelah render ulang", "p_periksa_ulang.txt"),
+    ("9.4", "Anak berjalan, bukan bergeser", "p_langkah_anak.txt"),
+    ("9.5", "Daftar frame render ulang yang lebih cepat", "p_langkah_anak_cepat.txt"),
     ("10.1", "Ekspor motor dan helm untuk game", "p_ekspor.txt"),
 ]
 
